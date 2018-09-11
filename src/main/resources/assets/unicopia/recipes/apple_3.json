@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+        {
+        	"item": "minecraft:apple",
+        	"data": 4
+        },
+        {
+        	"item": "minecraft:dye",
+        	"data": 14
+        }
+    ],
+	"result": {
+		"item": "minecraft:apple",
+		"count": 1,
+		"data": 8
+	}
+}

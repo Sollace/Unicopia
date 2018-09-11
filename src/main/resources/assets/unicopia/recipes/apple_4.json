@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+        {
+        	"item": "minecraft:apple",
+        	"data": 4
+        },
+        {
+        	"item": "minecraft:rotten_flesh"
+        }
+    ],
+	"result": {
+		"item": "minecraft:apple",
+		"count": 1,
+		"data": 9
+	}
+}

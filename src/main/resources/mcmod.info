@@ -1,0 +1,16 @@
+[
+	{
+	  "modid": "unicopia",
+	  "name": "${name}",
+	  "description": "${description}",
+	  "version": "${version}",
+	  "mcversion": "${mcversion}",
+	  "url": "",
+	  "updateUrl": "",
+	  "authorList": ["${author}"],
+	  "credits": "",
+	  "logoFile": "",
+	  "screenshots": [],
+	  "dependencies": []
+	}
+]
