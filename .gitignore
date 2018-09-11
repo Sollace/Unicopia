@@ -1,0 +1,16 @@
+.gradle/
+.settings/
+bin/
+build/
+run/
+.classpath
+.project
+*.launch
+/.apt_generated/
+.factorypath
+logs/
+.idea/
+*.iml
+classes/
+out/
+jars/

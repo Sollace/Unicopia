@@ -1,0 +1,75 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name 'forge'
+            url 'http://files.minecraftforge.net/maven/'
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+        maven {
+            name = 'sponge'
+            url = 'http://repo.spongepowered.org/maven'
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:' + project.forgeGradleVersion
+        classpath 'org.spongepowered:mixingradle:' + project.mixinGradleVersion
+    }
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
+
+def ver = "${project.mcVersion}.${project.buildVersion}-${project.buildType}"
+
+version = ver
+group = project.group
+description = project.name
+
+minecraft {
+    version = project.mcVersion + '-' + project.mcfVersion
+    mappings = project.mcMappings
+    runDir = 'run'
+		makeObfSourceJar = false
+    replace '@MODID@', project.modid
+    replace '@NAME@', project.name
+    replace '@AUTHOR@', project.author
+		replace '@VERSION@', ver
+		replace '@DESCRIPTION@', project.description
+}
+
+mixin {
+    defaultObfuscationEnv notch
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+sourceSets {
+    main {
+        refMap = project.refCore
+    }
+}
+
+jar {
+		def props = [
+				modid: project.modid,
+				name: project.name,
+				description: project.description,
+        version: ver,
+        revision: project.buildRevision,
+        mcversion: project.mcVersion,
+        author: project.author
+    ]
+    inputs.properties props
+		
+		from(sourceSets.main.output) {
+        exclude 'mcmod.info'
+    }
+		from(sourceSets.main.output) {
+        include 'mcmod.info'
+        expand props
+    }
+}
