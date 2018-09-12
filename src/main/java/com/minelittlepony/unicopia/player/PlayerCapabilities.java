@@ -18,16 +18,16 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
     private Race playerSpecies = Race.HUMAN;
 
-    private UUID playerId;
-
     private final PlayerAbilityDelegate powers = new PlayerAbilityDelegate(this);
 
     private final PlayerGravityDelegate gravity = new PlayerGravityDelegate(this);
 
     private IMagicEffect effect;
 
+    private EntityPlayer entity;
+
     PlayerCapabilities(UUID playerId) {
-        this.playerId = playerId;
+
     }
 
     @Override
@@ -37,10 +37,6 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
     @Override
     public void setPlayerSpecies(Race race) {
-        if (race == playerSpecies) {
-            return;
-        }
-
         playerSpecies = race;
 
         EntityPlayer self = getOwner();
@@ -53,7 +49,7 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
     @Override
     public void sendCapabilities() {
-        PlayerSpeciesList.instance().sendCapabilities(playerId);
+        PlayerSpeciesList.instance().sendCapabilities(getOwner().getGameProfile().getId());
     }
 
     @Override
@@ -64,26 +60,26 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
     @Override
     public boolean isClientPlayer() {
         return UClient.isClientSide() &&
-                Minecraft.getMinecraft().player.getGameProfile().getId().equals(playerId);
+                Minecraft.getMinecraft().player.getGameProfile().getId().equals(getOwner().getGameProfile().getId());
     }
 
     @Override
-    public void onEntityUpdate() {
-        EntityPlayer player = getOwner();
+    public void onUpdate(EntityPlayer entity) {
+        this.entity = entity;
 
-        powers.onUpdate(player);
-        gravity.onUpdate(player);
+        powers.onUpdate(entity);
+        gravity.onUpdate(entity);
 
         if (!getPlayerSpecies().canCast()) {
             effect = null;
         }
 
         if (effect != null) {
-            if (player.getEntityWorld().isRemote && player.getEntityWorld().getWorldTime() % 10 == 0) {
-                effect.render(player);
+            if (entity.getEntityWorld().isRemote && entity.getEntityWorld().getWorldTime() % 10 == 0) {
+                effect.render(entity);
             }
 
-            if (!effect.update(player)) {
+            if (!effect.update(entity)) {
                 effect = null;
             }
         }
@@ -100,7 +96,6 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
-        compound.setUniqueId("playerId", playerId);
         compound.setString("playerSpecies", playerSpecies.name());
         compound.setTag("powers", powers.toNBT());
         compound.setTag("gravity", gravity.toNBT());
@@ -113,7 +108,6 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        playerId = compound.getUniqueId("playerId");
         playerSpecies = Race.fromName(compound.getString("playerSpecies"));
         powers.readFromNBT(compound.getCompoundTag("powers"));
         gravity.readFromNBT(compound.getCompoundTag("gravity"));
@@ -139,6 +133,6 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
     @Override
     public EntityPlayer getOwner() {
-        return IPlayer.getPlayerEntity(playerId);
+        return entity;
     }
 }

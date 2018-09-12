@@ -16,7 +16,6 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -89,7 +88,7 @@ public class Unicopia {
     @SubscribeEvent
     public static void onPlyerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == Phase.END) {
-            PlayerSpeciesList.instance().getPlayer(event.player).onEntityUpdate();
+            PlayerSpeciesList.instance().getPlayer(event.player).onUpdate(event.player);
         }
     }
 

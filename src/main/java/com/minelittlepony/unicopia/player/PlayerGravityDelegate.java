@@ -25,7 +25,8 @@ class PlayerGravityDelegate implements IUpdatable, InbtSerialisable {
                     ticksSinceLanding++;
                 }
 
-                entity.capabilities.allowFlying = entity.capabilities.isFlying = false;
+                entity.capabilities.allowFlying = player.getPlayerSpecies().canFly();
+                entity.capabilities.isFlying = false;
             }
         }
 

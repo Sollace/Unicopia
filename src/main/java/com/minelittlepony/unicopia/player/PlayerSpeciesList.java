@@ -28,7 +28,7 @@ public class PlayerSpeciesList {
     }
 
     public void sendCapabilities(UUID playerId) {
-        Unicopia.channel.send(new MsgPlayerCapabilities(getPlayer(playerId).getPlayerSpecies(), playerId), Target.SERVER_AND_CLIENTS);
+        Unicopia.channel.send(new MsgPlayerCapabilities(getPlayer(playerId).getPlayerSpecies(), playerId), playerId);
     }
 
     public void handleSpeciesChange(UUID playerId, Race race) {

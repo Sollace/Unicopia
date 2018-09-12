@@ -53,7 +53,7 @@ final class DefaultPlayerSpecies implements IPlayer, IAbilityReceiver {
     }
 
     @Override
-    public void onEntityUpdate() {
+    public void onUpdate(EntityPlayer entity) {
 
     }
 
