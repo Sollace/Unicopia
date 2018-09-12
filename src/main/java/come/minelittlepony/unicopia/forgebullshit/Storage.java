@@ -10,11 +10,7 @@ class Storage implements IStorage<IPlayerCapabilitiesProxyContainer> {
 
     @Override
     public NBTBase writeNBT(Capability<IPlayerCapabilitiesProxyContainer> capability, IPlayerCapabilitiesProxyContainer instance, EnumFacing side) {
-        NBTTagCompound compound = new NBTTagCompound();
-
-        instance.writeToNBT(compound);
-
-        return compound;
+        return instance.toNBT();
     }
 
     @Override

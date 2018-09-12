@@ -23,7 +23,7 @@ public class Particles {
     public int registerParticle(IParticleFactory factory) {
         int id = registeredParticles.size();
         registeredParticles.add(factory);
-        return -id;
+        return -id - 1;
     }
 
     public Particle spawnParticle(int particleId, boolean ignoreDistance, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, int ...pars) {
@@ -51,6 +51,7 @@ public class Particles {
             return mc.effectRenderer.spawnEffectParticle(particleId, posX, posY, posZ, speedX, speedY, speedZ, pars);
         }
 
+        particleId ++;
 
         IParticleFactory iparticlefactory = registeredParticles.get(-particleId);
 

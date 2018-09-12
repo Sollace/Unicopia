@@ -50,6 +50,13 @@ commands.race.tell.other.alt=%s is an
 commands.decloud.success=%s clouds removed
 commands.decloud.usage=/decloud <all>
 
+unicopia.race.human=Human
+unicopia.race.earth=Earth Pony
+unicopia.race.unicorn=Unicorn
+unicopia.race.pegasus=Pegasus
+unicopia.race.alicorn=Alicorn
+unicopia.race.changeling=Changeling
+
 unicopia.category.name=Pony Abilities
 
 unicopia.power.grow=Earth Pony (Primary)

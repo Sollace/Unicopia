@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.common.base.Strings;
 
 import net.minecraft.client.resources.I18n;
@@ -15,6 +18,13 @@ public enum Race {
     private final boolean magic;
     private final boolean flight;
     private final boolean earth;
+
+    private final static Map<Integer, Race> raceIdMap = new HashMap<>();
+    static {
+        for (Race race : values()) {
+            raceIdMap.put(race.ordinal(), race);
+        }
+    }
 
     Race(boolean magic, boolean flight, boolean earth) {
         this.magic = magic;
@@ -43,7 +53,7 @@ public enum Race {
     }
 
     public String getTranslationString() {
-        return String.format("unicopia.race.%s", name());
+        return String.format("unicopia.race.%s", name().toLowerCase());
     }
 
     public boolean isSameAs(String s) {
@@ -59,19 +69,14 @@ public enum Race {
             }
         }
 
-        return fromId(s);
-    }
-
-    public static Race fromId(String s) {
         try {
-            int id = Integer.parseInt(s);
-            Race[] values = values();
-            if (id >= 0 || id < values.length) {
-                return values[id];
-            }
+            return fromId(Integer.parseInt(s));
         } catch (NumberFormatException e) { }
 
         return HUMAN;
     }
 
+    public static Race fromId(int id) {
+        return raceIdMap.getOrDefault(id, HUMAN);
+    }
 }

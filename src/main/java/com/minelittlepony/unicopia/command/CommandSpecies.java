@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.command.CommandBase;
@@ -72,10 +71,7 @@ class CommandSpecies extends CommandBase {
 					player.sendMessage(new TextComponentTranslation("commands.race.fail", args[1].toUpperCase()));
 				} else {
 					if (PlayerSpeciesList.instance().speciesPermitted(species)) {
-					    IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(player);
-
-					    iplayer.setPlayerSpecies(species);
-					    iplayer.sendCapabilities();
+					    PlayerSpeciesList.instance().getPlayer(player).setPlayerSpecies(species);
 
 						TextComponentTranslation formattedName = new TextComponentTranslation(species.name().toLowerCase());
 
@@ -96,7 +92,7 @@ class CommandSpecies extends CommandBase {
 			String name = "commands.race.tell.";
 			name += player == sender ? "self" : "other";
 
-			ITextComponent race = new TextComponentString(spec.getTranslationString());
+			ITextComponent race = new TextComponentTranslation(spec.getTranslationString());
 
 			TextComponentTranslation message = new TextComponentTranslation(name);
 

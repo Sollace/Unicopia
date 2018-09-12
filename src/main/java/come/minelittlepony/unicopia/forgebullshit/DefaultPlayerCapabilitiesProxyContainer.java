@@ -3,6 +3,7 @@ package come.minelittlepony.unicopia.forgebullshit;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -16,6 +17,10 @@ class DefaultPlayerCapabilitiesProxyContainer implements IPlayerCapabilitiesProx
 
     @Override
     public IPlayer getPlayer() {
+        if (player == null) {
+            player = PlayerSpeciesList.instance().emptyPlayer(null);
+        }
+
         return player;
     }
 
@@ -25,18 +30,20 @@ class DefaultPlayerCapabilitiesProxyContainer implements IPlayerCapabilitiesProx
     }
 
     public void writeToNBT(NBTTagCompound compound) {
-        if (player == null) {
-            return;
-        }
-
-        player.writeToNBT(compound);
+        getPlayer().writeToNBT(compound);
     }
 
     public void readFromNBT(NBTTagCompound compound) {
-        if (player == null) {
-            player = PlayerSpeciesList.instance().emptyPlayer(null);
+        getPlayer().readFromNBT(compound);
+    }
+
+    public IPlayerCapabilitiesProxyContainer withEntity(EntityPlayer player) {
+        if (this.player == null) {
+            this.player = PlayerSpeciesList.instance().emptyPlayer(player);
+        } else {
+            getPlayer().setOwner(player);
         }
 
-        player.readFromNBT(compound);
+        return this;
     }
 }

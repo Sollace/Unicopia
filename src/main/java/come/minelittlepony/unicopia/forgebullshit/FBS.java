@@ -17,7 +17,7 @@ public class FBS {
 
     public static void attach(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof EntityPlayer) {
-            event.addCapability(new ResourceLocation("unicopia", "race"), new Provider());
+            event.addCapability(new ResourceLocation("unicopia", "race"), new Provider((EntityPlayer)event.getObject()));
         }
     }
 
@@ -30,12 +30,12 @@ public class FBS {
 
         final IPlayerCapabilitiesProxyContainer clone = of(event.getEntity());
 
-        clone.setPlayer(original.getPlayer());
+        clone.getPlayer().copyFrom(original.getPlayer());
     }
 
     public static IPlayerCapabilitiesProxyContainer of(Entity entity) {
         if (entity.hasCapability(DefaultPlayerCapabilitiesProxyContainer.CAPABILITY, EnumFacing.DOWN)) {
-            return entity.getCapability(DefaultPlayerCapabilitiesProxyContainer.CAPABILITY, EnumFacing.DOWN);
+            return entity.getCapability(DefaultPlayerCapabilitiesProxyContainer.CAPABILITY, EnumFacing.DOWN).withEntity((EntityPlayer)entity);
         }
 
         return null;

@@ -16,9 +16,6 @@ public class SpellRegistry {
     private final Map<String, Callable<IMagicEffect>> factories = new HashMap<>();
 
     private SpellRegistry() {
-    }
-
-    public void init() {
         registerSpell("shield", SpellShield::new);
     }
 

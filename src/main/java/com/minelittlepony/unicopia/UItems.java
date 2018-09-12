@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.item.ItemApple;
 
 import come.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
@@ -18,16 +19,17 @@ public class UItems {
     static void registerItems() {
         RegistryLockSpinner.unlock(Item.REGISTRY);
 
-        Item.REGISTRY.register(260, new ResourceLocation("minecraft", "apple"), apple);
+        ResourceLocation res = new ResourceLocation("apple");
+
+        Item.REGISTRY.register(Item.getIdFromItem(Items.APPLE), res, apple);
 
         if (UClient.isClientSide()) {
             String[] variants = apple.getVariants();
 
-            ResourceLocation app = new ResourceLocation("minecraft", "apple");
-
             for (int i = 0; i < variants.length; i++) {
-                ModelLoader.setCustomModelResourceLocation(apple, i, new ModelResourceLocation(app, variants[i]));
+                ModelLoader.setCustomModelResourceLocation(apple, i, new ModelResourceLocation("unicopia:" + variants[i]));
             }
+           // ModelBakery.registerItemVariants(apple, NoNameSpacedResource.ofAllDomained("unicopia", apple.getVariants()));
         }
 
         RegistryLockSpinner.lock(Item.REGISTRY);

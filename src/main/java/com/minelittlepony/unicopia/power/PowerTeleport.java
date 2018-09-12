@@ -107,15 +107,17 @@ public class PowerTeleport implements IPower<Location> {
 
     @Override
     public void apply(EntityPlayer player, Location data) {
-        player.world.playSound(player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1, true);
+        player.world.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
 
         double distance = player.getDistance(data.x, data.y, data.z) / 10;
         player.dismountRidingEntity();
 
         player.setPositionAndUpdate(data.x + (player.posX - Math.floor(player.posX)), data.y, data.z + (player.posZ - Math.floor(player.posZ)));
         IPower.takeFromPlayer(player, distance);
+
         player.fallDistance /= distance;
-        player.world.playSound(data.x, data.y, data.z, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1, true);
+
+        player.world.playSound(null, data.x, data.y, data.z, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
     }
 
     private boolean enterable(World w, BlockPos pos) {
@@ -141,12 +143,11 @@ public class PowerTeleport implements IPower<Location> {
 
     @Override
     public void preApply(EntityPlayer player) {
-        postApply(player);
+        IPower.spawnParticles(Unicopia.MAGIC_PARTICLE, player, 5);
     }
 
     @Override
     public void postApply(EntityPlayer player) {
-        IPower.spawnParticles(Unicopia.MAGIC_PARTICLE, player, 1);
+        IPower.spawnParticles(Unicopia.MAGIC_PARTICLE, player, 5);
     }
-
 }

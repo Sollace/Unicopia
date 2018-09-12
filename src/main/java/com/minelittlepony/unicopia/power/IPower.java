@@ -1,17 +1,16 @@
 package com.minelittlepony.unicopia.power;
 
-import java.util.Random;
-
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.client.particle.Particles;
 import com.minelittlepony.unicopia.input.IKeyBind;
 import com.minelittlepony.unicopia.player.IPlayer;
+import com.minelittlepony.util.shape.IShape;
+import com.minelittlepony.util.shape.Sphere;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public interface IPower<T extends IData> extends IKeyBind {
 
@@ -41,20 +40,20 @@ public interface IPower<T extends IData> extends IKeyBind {
     }
 
     static void spawnParticles(int particleId, EntityPlayer player, int count) {
+
         double halfDist = player.getEyeHeight() / 1.5;
         double middle = player.getEntityBoundingBox().minY + halfDist;
 
-        Random rand = player.getEntityWorld().rand;
+        IShape shape = new Sphere(false, (float)halfDist);
+
         for (int i = 0; i < count; i++) {
-            double x = (rand.nextFloat() * halfDist) - halfDist;
-            double y = (rand.nextFloat() * halfDist) - halfDist;
-            double z = (rand.nextFloat() * halfDist) - halfDist;
+            Vec3d point = shape.computePoint(player.world.rand);
 
             Particles.instance().spawnParticle(particleId, false,
-                player.posX + x,
-                middle + y,
-                player.posZ + z,
-                0, 0, 0);
+                    player.posX + point.x,
+                    middle + point.y,
+                    player.posZ + point.z,
+                    0, 0, 0);
         }
     }
 
@@ -109,21 +108,18 @@ public interface IPower<T extends IData> extends IKeyBind {
      * @param player    The player that triggered the ability
      * @param data      Data previously sent from the client
      */
-    @SideOnly(Side.SERVER)
     void apply(EntityPlayer player, T data);
 
     /**
      * Called just before the ability is activated.
      * @param player    The current player
      */
-    @SideOnly(Side.CLIENT)
     void preApply(EntityPlayer player);
 
     /**
      * Called every tick until the cooldown timer runs out.
      * @param player    The current player
      */
-    @SideOnly(Side.CLIENT)
     void postApply(EntityPlayer player);
 
 }

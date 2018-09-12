@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.power;
 import org.lwjgl.input.Keyboard;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.power.data.Location;
 import com.minelittlepony.util.vector.VecHelper;
@@ -84,18 +85,13 @@ public class PowerGrow implements IPower<Location> {
             IGrowable g = ((IGrowable)state.getBlock());
 
             if (g.canGrow(w, pos, state, w.isRemote) && g.canUseBonemeal(w, w.rand, pos, state)) {
-                do {
-                    if (ItemDye.applyBonemeal(new ItemStack(Items.DYE, 1), w, pos)) {
-                        w.playEvent(2005, pos, 0);
+                if (ItemDye.applyBonemeal(new ItemStack(Items.DYE, 1), w, pos)) {
+                    w.playEvent(2005, pos, 0);
 
-                        if (g instanceof BlockDoublePlant) {
-                            w.playEvent(2005, pos.up(), 0);
-                        }
+                    if (g instanceof BlockDoublePlant) {
+                        w.playEvent(2005, pos.up(), 0);
                     }
-
-                    state = w.getBlockState(pos);
-                    g = ((IGrowable)state.getBlock());
-                } while (g.canGrow(w, pos, state, w.isRemote));
+                }
 
                 return 1;
             }
@@ -105,7 +101,7 @@ public class PowerGrow implements IPower<Location> {
 
     @Override
     public void preApply(EntityPlayer player) {
-        IPower.spawnParticles(com.minelittlepony.unicopia.Unicopia.MAGIC_PARTICLE, player, 1);
+        IPower.spawnParticles(Unicopia.MAGIC_PARTICLE, player, 1);
     }
 
     @Override

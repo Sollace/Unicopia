@@ -23,7 +23,7 @@ final class DefaultPlayerSpecies implements IPlayer, IAbilityReceiver {
     }
 
     @Override
-    public void sendCapabilities() {
+    public void sendCapabilities(boolean full) {
 
     }
 
@@ -70,5 +70,10 @@ final class DefaultPlayerSpecies implements IPlayer, IAbilityReceiver {
     @Override
     public EntityPlayer getOwner() {
         return null;
+    }
+
+    @Override
+    public void copyFrom(IPlayer oldPlayer) {
+
     }
 }

@@ -12,7 +12,7 @@ public interface ICaster<E extends EntityLivingBase> {
         return getEffect() != null;
     }
 
-    default void setOwner(EntityLivingBase owner) {
+    default void setOwner(E owner) {
 
     }
 

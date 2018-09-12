@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import org.lwjgl.input.Keyboard;
 
+import com.google.gson.annotations.Expose;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.client.particle.Particles;
@@ -95,7 +96,11 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
 
     @Override
     public void apply(EntityPlayer player, Data data) {
+
         double rad = 4;
+
+        data.hitType = 1;
+
         if (data.hitType == 0) {
             player.addVelocity(0, -6, 0);
             BlockPos pos = player.getPosition();
@@ -115,22 +120,28 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
                     i.attackEntityFrom(damage, amount);
                 }
             }
+
             Iterable<BlockPos> area = BlockPos.getAllInBox(pos.add(-rad, -rad, -rad), pos.add(rad, rad, rad));
             for (BlockPos i : area) {
                 if (i.distanceSqToCenter(player.posX, player.posY, player.posZ) <= rad*rad) {
                     spawnEffect(player.world, i);
                 }
             }
+
             for (int i = 1; i < 202; i+= 2) {
                 spawnParticleRing(player, i);
             }
+
             IPower.takeFromPlayer(player, 4);
+
         } else if (data.hitType == 1) {
+
             if (player.world.rand.nextInt(30) == 0) {
                 removeTree(player.world, new BlockPos(data.x, data.y, data.z));
             } else {
                 dropApples(player.world, new BlockPos(data.x, data.y, data.z));
             }
+
             IPower.takeFromPlayer(player, 1);
         }
     }
@@ -394,7 +405,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
     }
 
     protected static class Data extends Location {
-
+        @Expose
         public int hitType;
 
         public Data(int x, int y, int z, int hit) {

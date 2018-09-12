@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.spell;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.particle.Particles;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
@@ -46,37 +45,37 @@ public class SpellShield extends AbstractSpell {
 
 	@Override
 	public void render(Entity source) {
-		if (UClient.isClientSide()) {
-			spawnParticles(source.getEntityWorld(), source.posX, source.posY, source.posZ, 4 + (strength * 2));
-		}
+		spawnParticles(source.getEntityWorld(), source.posX, source.posY, source.posZ, 4 + (strength * 2));
 	}
 
 	public void renderAt(ICaster<?> source, World w, double x, double y, double z, int level) {
-		if (UClient.isClientSide()) {
-			if (w.rand.nextInt(4 + level * 4) == 0) {
-				spawnParticles(w, x, y, z, 4 + (level * 2));
-			}
+		if (w.rand.nextInt(4 + level * 4) == 0) {
+			spawnParticles(w, x, y, z, 4 + (level * 2));
 		}
 	}
 
 	protected void spawnParticles(World w, double x, double y, double z, int strength) {
 	    IShape sphere = new Sphere(true, strength);
 
-	    Vec3d pos = sphere.computePoint(w.rand);
-	    Particles.instance().spawnParticle(Unicopia.MAGIC_PARTICLE, false,
-	            pos.x + x, pos.y + y, pos.z + z,
-	            0, 0, 0);
+	    for (int i = 0; i < strength; i++) {
+    	    Vec3d pos = sphere.computePoint(w.rand);
+    	    Particles.instance().spawnParticle(Unicopia.MAGIC_PARTICLE, false,
+    	            pos.x + x, pos.y + y, pos.z + z,
+    	            0, 0, 0);
+	    }
 	}
 
 	@Override
 	public boolean update(Entity source) {
 		applyEntities(null, source, source.getEntityWorld(), source.posX, source.posY, source.posZ, strength);
+
 		if (source.getEntityWorld().getWorldTime() % 50 == 0) {
 			double radius = 4 + (strength * 2);
 			if (!IPower.takeFromPlayer((EntityPlayer)source, radius/4)) {
 				setDead();
 			}
 		}
+
 		return !isDead;
 	}
 
@@ -90,7 +89,7 @@ public class SpellShield extends AbstractSpell {
 
 		AxisAlignedBB bb = new AxisAlignedBB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius);
 
-		for (Entity i : w.getEntitiesWithinAABBExcludingEntity(source.getEntity(), bb)) {
+		for (Entity i : w.getEntitiesWithinAABBExcludingEntity(source == null ? null : source.getEntity(), bb)) {
 			if ((!i.equals(owner)
 			        || (owner instanceof EntityPlayer
 			                && !PlayerSpeciesList.instance().getPlayer((EntityPlayer)owner).getPlayerSpecies().canCast()))) {

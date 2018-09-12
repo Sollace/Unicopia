@@ -4,13 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.minelittlepony.jumpingcastle.api.Target;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 
 import come.minelittlepony.unicopia.forgebullshit.FBS;
-import come.minelittlepony.unicopia.forgebullshit.IPlayerCapabilitiesProxyContainer;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class PlayerSpeciesList {
@@ -27,16 +23,8 @@ public class PlayerSpeciesList {
         return race.isDefault() || serverPermittedRaces.isEmpty() || serverPermittedRaces.contains(race);
     }
 
-    public void sendCapabilities(UUID playerId) {
-        Unicopia.channel.send(new MsgPlayerCapabilities(getPlayer(playerId).getPlayerSpecies(), playerId), playerId);
-    }
-
-    public void handleSpeciesChange(UUID playerId, Race race) {
-        getPlayer(playerId).setPlayerSpecies(race);
-    }
-
-    public IPlayer emptyPlayer(UUID playerId) {
-        return new PlayerCapabilities(playerId);
+    public IPlayer emptyPlayer(EntityPlayer player) {
+        return new PlayerCapabilities(player);
     }
 
     public IPlayer getPlayer(EntityPlayer player) {
@@ -44,16 +32,7 @@ public class PlayerSpeciesList {
             return DefaultPlayerSpecies.INSTANCE;
         }
 
-        IPlayerCapabilitiesProxyContainer container = FBS.of(player);
-
-        IPlayer ply = container.getPlayer();
-        if (ply == null) {
-            ply = emptyPlayer(player.getGameProfile().getId());
-
-            container.setPlayer(ply);
-        }
-
-        return ply;
+        return FBS.of(player).getPlayer();
     }
 
     public IPlayer getPlayer(UUID playerId) {

@@ -15,13 +15,19 @@ public interface IPlayer extends ICaster<EntityPlayer>, InbtSerialisable, IUpdat
 
     void setPlayerSpecies(Race race);
 
-    void sendCapabilities();
+    void sendCapabilities(boolean full);
 
     IAbilityReceiver getAbilities();
 
     boolean isClientPlayer();
 
+    void copyFrom(IPlayer oldPlayer);
+
     default void onEntityEat() {
+
+    }
+
+    default void onFall(float distance, float damageMultiplier) {
 
     }
 

@@ -15,6 +15,7 @@ import com.minelittlepony.util.vector.VecHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.passive.EntityCow;
+import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
@@ -66,6 +67,7 @@ public class PowerFeed implements IPower<Hit> {
         return e instanceof EntityCow
             || e instanceof EntityVillager
             || e instanceof EntityPlayer
+            || e instanceof EntitySheep
             || EnumCreatureType.MONSTER.getCreatureClass().isAssignableFrom(e.getClass());
     }
 
