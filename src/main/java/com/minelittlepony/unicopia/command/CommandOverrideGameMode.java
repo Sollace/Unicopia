@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.command;
 
-import com.minelittlepony.unicopia.player.IPlayer;
+import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandGameMode;
@@ -37,7 +37,7 @@ class CommandOverrideGameMode extends CommandGameMode {
 		boolean flying = player.capabilities.isFlying;
 
 		player.setGameType(m);
-		player.capabilities.isFlying = ((IPlayer)player).getPlayerSpecies().canFly();
+		player.capabilities.isFlying = PlayerSpeciesList.instance().getPlayer(player).getPlayerSpecies().canFly();
 
 		if (flying != player.capabilities.isFlying) {
 		    player.sendPlayerAbilities();
