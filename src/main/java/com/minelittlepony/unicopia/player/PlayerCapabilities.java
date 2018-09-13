@@ -50,12 +50,17 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
         if (getOwner() == null) {
             return Race.HUMAN;
         }
+
         return Race.fromId(getOwner().getDataManager().get(PLAYER_RACE));
     }
 
     @Override
     public void setPlayerSpecies(Race race) {
         EntityPlayer self = getOwner();
+
+        if (!PlayerSpeciesList.instance().speciesPermitted(race)) {
+            race = Race.HUMAN;
+        }
 
         if (self != null) {
             getOwner().getDataManager().set(PLAYER_RACE, race.ordinal());
