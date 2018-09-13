@@ -23,13 +23,9 @@ public interface IPlayer extends ICaster<EntityPlayer>, InbtSerialisable, IUpdat
 
     void copyFrom(IPlayer oldPlayer);
 
-    default void onEntityEat() {
+    void onEntityEat();
 
-    }
-
-    default void onFall(float distance, float damageMultiplier) {
-
-    }
+    void onFall(float distance, float damageMultiplier);
 
     static EntityPlayer getPlayerEntity(UUID playerId) {
         EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(playerId);
