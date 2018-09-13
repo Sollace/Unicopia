@@ -26,12 +26,14 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -94,30 +96,61 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
         return PowerStomp.Data.class;
     }
 
+    public static BlockPos getSolidBlockBelow(BlockPos pos, World w) {
+        while (w.isValid(pos)) {
+            pos = pos.down();
+            if (w.getBlockState(pos).isSideSolid(w, pos, EnumFacing.UP)) {
+                return pos;
+            }
+        }
+
+        return pos;
+    }
+
     @Override
     public void apply(EntityPlayer player, Data data) {
 
         double rad = 4;
 
-        data.hitType = 1;
-
         if (data.hitType == 0) {
-            player.addVelocity(0, -6, 0);
-            BlockPos pos = player.getPosition();
-            AxisAlignedBB box = new AxisAlignedBB(player.posX - rad, player.posY - rad, player.posZ - rad, player.posX + rad, player.posY + rad, player.posZ + rad);
+            BlockPos ppos = player.getPosition();
+            BlockPos pos = getSolidBlockBelow(ppos, player.getEntityWorld());
+
+            player.addVelocity(0, -(ppos.distanceSq(pos)), 0);
+
+            AxisAlignedBB box = new AxisAlignedBB(
+                    player.posX - rad, player.posY - rad, player.posZ - rad,
+                    player.posX + rad, player.posY + rad, player.posZ + rad
+            );
             List<Entity> entities = player.world.getEntitiesWithinAABBExcludingEntity(player, box);
+
             for (Entity i : entities) {
                 double dist = Math.sqrt(i.getDistanceSq(pos));
+
                 if (dist <= rad + 3) {
-                    i.addVelocity(i.posX - player.posX, i.posY - player.posY, i.posZ - player.posZ);
+                    double force = dist / 5;
+                    i.addVelocity(
+                            -(player.posX - i.posX) / force,
+                            -(player.posY - i.posY - 2) / force + (dist < 1 ? dist : 0),
+                            -(player.posZ - i.posZ) / force);
+
                     DamageSource damage = MagicalDamageSource.causePlayerDamage("smash", player);
-                    float amount = 4 / (float)dist;
+
+                    double amount = (4 * player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue()) / (float)dist;
+
+
                     if (i instanceof EntityPlayer) {
                         Race race = PlayerSpeciesList.instance().getPlayer((EntityPlayer)i).getPlayerSpecies();
-                        if (race.canUseEarth()) amount /= 3;
-                        if (race.canFly()) amount *= 4;
+                        if (race.canUseEarth()) {
+                            amount /= 3;
+                        }
+
+                        if (race.canFly()) {
+                            amount *= 4;
+                        }
                     }
-                    i.attackEntityFrom(damage, amount);
+
+                    i.attackEntityFrom(damage, (float)amount);
                 }
             }
 
@@ -157,18 +190,17 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
     }
 
     @Override
-    public void preApply(EntityPlayer player) {
-        player.spawnRunningParticles();
+    public void preApply(IPlayer player) {
+        player.addExertion(40);
+        player.getOwner().spawnRunningParticles();
     }
 
     @Override
-    public void postApply(EntityPlayer player) {
-        IPlayer prop = PlayerSpeciesList.instance().getPlayer(player);
+    public void postApply(IPlayer player) {
+        int timeDiff = getCooldownTime(player) - player.getAbilities().getRemainingCooldown();
 
-        int timeDiff = getCooldownTime(prop) - prop.getAbilities().getRemainingCooldown();
-
-        if (player.world.getWorldTime() % 1 == 0 || timeDiff == 0) {
-            spawnParticleRing(player, timeDiff, 1);
+        if (player.getOwner().getEntityWorld().getWorldTime() % 1 == 0 || timeDiff == 0) {
+            spawnParticleRing(player.getOwner(), timeDiff, 1);
         }
     }
 

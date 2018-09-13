@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -115,6 +116,15 @@ public class Unicopia {
                 .getPlayer(event.getEntityPlayer())
                 .onEntityEat();
         }
+    }
+
+    @SubscribeEvent
+    public static void modifyFOV(EntityViewRenderEvent.FOVModifier event) {
+        float fov = event.getFOV();
+
+        fov += PlayerSpeciesList.instance().getPlayer(Minecraft.getMinecraft().player).getExertion() * 5;
+
+        event.setFOV(fov);
     }
 
     @SubscribeEvent

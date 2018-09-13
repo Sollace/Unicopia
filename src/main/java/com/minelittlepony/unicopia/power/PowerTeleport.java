@@ -142,12 +142,14 @@ public class PowerTeleport implements IPower<Location> {
     }
 
     @Override
-    public void preApply(EntityPlayer player) {
+    public void preApply(IPlayer player) {
+        player.addExertion(1);
+
         IPower.spawnParticles(Unicopia.MAGIC_PARTICLE, player, 5);
     }
 
     @Override
-    public void postApply(EntityPlayer player) {
+    public void postApply(IPlayer player) {
         IPower.spawnParticles(Unicopia.MAGIC_PARTICLE, player, 5);
     }
 }

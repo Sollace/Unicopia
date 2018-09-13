@@ -123,15 +123,19 @@ public class PowerFeed implements IPower<Hit> {
     }
 
     @Override
-    public void preApply(EntityPlayer player) { }
+    public void preApply(IPlayer player) {
+        player.addExertion(6);
+    }
 
     @Override
-    public void postApply(EntityPlayer player) {
+    public void postApply(IPlayer player) {
+        EntityPlayer entity = player.getOwner();
+
         for (int i = 0; i < 10; i++) {
             Particles.instance().spawnParticle(EnumParticleTypes.HEART.getParticleID(), false,
-                    player.posX + player.world.rand.nextFloat() * 2 - 1,
-                    player.posY + player.world.rand.nextFloat() * 2 - 1,
-                    player.posZ + player.world.rand.nextFloat() * 2 - 1,
+                    entity.posX + entity.world.rand.nextFloat() * 2 - 1,
+                    entity.posY + entity.world.rand.nextFloat() * 2 - 1,
+                    entity.posZ + entity.world.rand.nextFloat() * 2 - 1,
                     0, 0.25, 0);
         }
     }

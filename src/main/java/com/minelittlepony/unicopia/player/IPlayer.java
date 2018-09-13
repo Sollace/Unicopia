@@ -19,6 +19,14 @@ public interface IPlayer extends ICaster<EntityPlayer>, InbtSerialisable, IUpdat
 
     IAbilityReceiver getAbilities();
 
+    float getExertion();
+
+    void setExertion(float exertion);
+
+    default void addExertion(int exertion) {
+        setExertion(getExertion() + exertion/100F);
+    }
+
     boolean isClientPlayer();
 
     void copyFrom(IPlayer oldPlayer);

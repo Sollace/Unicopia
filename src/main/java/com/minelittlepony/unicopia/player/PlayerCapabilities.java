@@ -29,6 +29,8 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
     private static final DataParameter<Integer> PLAYER_RACE = EntityDataManager
             .createKey(EntityPlayer.class, DataSerializers.VARINT);
+    private static final DataParameter<Float> EXERTION = EntityDataManager
+            .createKey(EntityPlayer.class, DataSerializers.FLOAT);
 
     private final PlayerAbilityDelegate powers = new PlayerAbilityDelegate(this);
 
@@ -43,6 +45,7 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
         setOwner(player);
 
         player.getDataManager().register(PLAYER_RACE, Race.HUMAN.ordinal());
+        player.getDataManager().register(EXERTION, 0F);
     }
 
     @Override
@@ -71,6 +74,16 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
             self.sendPlayerAbilities();
             sendCapabilities(false);
         }
+    }
+
+    @Override
+    public float getExertion() {
+        return getOwner().getDataManager().get(EXERTION);
+    }
+
+    @Override
+    public void setExertion(float exertion) {
+        getOwner().getDataManager().set(EXERTION, Math.max(0, exertion));
     }
 
     @Override
@@ -113,6 +126,8 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
                 }
             }
         }
+
+        addExertion(-1);
     }
 
     @Override

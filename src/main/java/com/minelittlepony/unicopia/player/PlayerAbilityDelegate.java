@@ -61,7 +61,7 @@ class PlayerAbilityDelegate implements IAbilityReceiver, IUpdatable, InbtSeriali
         if (activeAbility != null && activeAbility.canUse(player.getPlayerSpecies())) {
             if (!abilityTriggered) {
                 if (warmup < activeAbility.getWarmupTime(player)) {
-                    activeAbility.preApply(entity);
+                    activeAbility.preApply(player);
                     warmup++;
                 } else if (player.isClientPlayer()) {
                     if (activeAbility.canActivate(entity.getEntityWorld(), player)) {
@@ -76,7 +76,7 @@ class PlayerAbilityDelegate implements IAbilityReceiver, IUpdatable, InbtSeriali
                     }
                 }
             } else if (cooldown > 0) {
-                activeAbility.postApply(entity);
+                activeAbility.postApply(player);
                 cooldown--;
             }
         }

@@ -100,12 +100,13 @@ public class PowerGrow implements IPower<Location> {
     }
 
     @Override
-    public void preApply(EntityPlayer player) {
+    public void preApply(IPlayer player) {
+        player.addExertion(3);
         IPower.spawnParticles(Unicopia.MAGIC_PARTICLE, player, 1);
     }
 
     @Override
-    public void postApply(EntityPlayer player) {
+    public void postApply(IPlayer player) {
 
     }
 }

@@ -64,10 +64,14 @@ public class PowerMagic implements IPower<PowerMagic.Magic> {
     }
 
     @Override
-    public void preApply(EntityPlayer player) { }
+    public void preApply(IPlayer player) {
+
+    }
 
     @Override
-    public void postApply(EntityPlayer player) { }
+    public void postApply(IPlayer player) {
+
+    }
 
     class Magic implements IData {
 

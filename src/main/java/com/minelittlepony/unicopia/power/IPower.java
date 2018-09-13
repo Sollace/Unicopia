@@ -39,20 +39,22 @@ public interface IPower<T extends IData> extends IKeyBind {
         return player.posY + player.getEyeHeight() - 1;
     }
 
-    static void spawnParticles(int particleId, EntityPlayer player, int count) {
+    static void spawnParticles(int particleId, IPlayer player, int count) {
 
-        double halfDist = player.getEyeHeight() / 1.5;
-        double middle = player.getEntityBoundingBox().minY + halfDist;
+        EntityPlayer entity = player.getOwner();
+
+        double halfDist = entity.getEyeHeight() / 1.5;
+        double middle = entity.getEntityBoundingBox().minY + halfDist;
 
         IShape shape = new Sphere(false, (float)halfDist);
 
         for (int i = 0; i < count; i++) {
-            Vec3d point = shape.computePoint(player.world.rand);
+            Vec3d point = shape.computePoint(entity.getEntityWorld().rand);
 
             Particles.instance().spawnParticle(particleId, false,
-                    player.posX + point.x,
+                    entity.posX + point.x,
                     middle + point.y,
-                    player.posZ + point.z,
+                    entity.posZ + point.z,
                     0, 0, 0);
         }
     }
@@ -114,12 +116,12 @@ public interface IPower<T extends IData> extends IKeyBind {
      * Called just before the ability is activated.
      * @param player    The current player
      */
-    void preApply(EntityPlayer player);
+    void preApply(IPlayer player);
 
     /**
      * Called every tick until the cooldown timer runs out.
      * @param player    The current player
      */
-    void postApply(EntityPlayer player);
+    void postApply(IPlayer player);
 
 }
