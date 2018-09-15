@@ -121,9 +121,11 @@ public class ItemApple extends ItemFood {
 
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-		for (int i = 0; i < subTypes.length; i++) {
-			items.add(new ItemStack(UItems.apple, 1, i));
-		}
+	    if (isInCreativeTab(tab)) {
+    		for (int i = 0; i < subTypes.length; i++) {
+    			items.add(new ItemStack(UItems.apple, 1, i));
+    		}
+	    }
 	}
 
 	@Override
