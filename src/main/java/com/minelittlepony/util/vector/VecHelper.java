@@ -2,6 +2,8 @@ package com.minelittlepony.util.vector;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.Predicate;
 
 import net.minecraft.entity.Entity;
@@ -23,11 +25,11 @@ public class VecHelper {
 	 *
 	 * @return	RayTraceResult result or null
 	 */
-	public static RayTraceResult rayTrace(Entity e, double distance, float partialTick) {
-        Vec3d pos = geteEyePosition(e, partialTick);
-        Vec3d look = e.getLook(partialTick);
-        Vec3d ray = pos.add(look.x * distance, look.y * distance, look.z * distance);
-        return e.world.rayTraceBlocks(pos, ray, false, false, true);
+	public static RayTraceResult rayTrace(Entity e, double distance, float partialTicks) {
+        Vec3d pos = e.getPositionEyes(partialTicks);
+        Vec3d look = e.getLook(partialTicks).scale(distance);
+
+        return e.world.rayTraceBlocks(pos, pos.add(look), false, false, true);
 	}
 
 	/**
@@ -46,28 +48,14 @@ public class VecHelper {
     /**
      * Gets all entities within a given range from the player.
      */
-    public static List<Entity> getWithinRange(EntityPlayer player, double reach) {
-        Vec3d look = player.getLook(0);
-        float var9 = 1.0F;
-        return player.world.getEntitiesWithinAABBExcludingEntity(player, player.getEntityBoundingBox().expand(look.x * reach, look.y * reach, look.z * reach).expand((double)var9, (double)var9, (double)var9));
-    }
+    public static List<Entity> getWithinRange(EntityPlayer player, double reach, @Nullable Predicate <? super Entity > predicate) {
+        Vec3d look = player.getLook(0).scale(reach);
 
-	/**
-	 * Gets the position vector of an entity's eyes for ray tracing.
-	 *
-	 * @param e				Entity
-	 * @param partialTick	Client partial ticks
-	 *
-	 * @return A vector of the entity's eye position
-	 */
-	public static Vec3d geteEyePosition(Entity e, float partialTick) {
-		double eyeHeight = e.getEyeHeight();
-        if (partialTick == 1) return new Vec3d(e.posX, e.posY + eyeHeight, e.posZ);
-        double x = e.prevPosX + (e.posX - e.prevPosX) * partialTick;
-        double y = e.prevPosY + (e.posY - e.prevPosY) * partialTick + eyeHeight;
-        double z = e.prevPosZ + (e.posZ - e.prevPosZ) * partialTick;
-        return new Vec3d(x, y, z);
-	}
+        return player.world.getEntitiesInAABBexcluding(player, player
+                .getEntityBoundingBox()
+                .expand(look.x, look.y, look.z)
+                .expand(1, 1, 1), predicate);
+    }
 
 	/**
 	 * Performs a ray trace from the given entity and returns a result for the first Entity or block that the ray intercepts.
@@ -79,7 +67,7 @@ public class VecHelper {
 	 * @return	RayTraceResult result or null
 	 */
 	public static RayTraceResult getObjectMouseOver(Entity e, double distance, float partialTick) {
-		return getObjectMouseOverExcept(e, distance, partialTick, EntitySelectors.NOT_SPECTATING);
+		return getObjectMouseOver(e, distance, partialTick, EntitySelectors.NOT_SPECTATING);
 	}
 
 	/**
@@ -94,23 +82,28 @@ public class VecHelper {
 	 *
 	 * @return	RayTraceResult result or null
 	 */
-	public static RayTraceResult getObjectMouseOverExcept(Entity e, double distance, float partialTick, Predicate<Entity> predicate) {
+	public static RayTraceResult getObjectMouseOver(Entity e, double distance, float partialTick, Predicate<Entity> predicate) {
         RayTraceResult tracedBlock = rayTrace(e, distance, partialTick);
 
         double totalTraceDistance = distance;
 
-        Vec3d pos = geteEyePosition(e, partialTick);
+        Vec3d pos = e.getPositionEyes(partialTick);
 
-        if (tracedBlock != null) totalTraceDistance = tracedBlock.hitVec.distanceTo(pos);
+        if (tracedBlock != null) {
+            totalTraceDistance = tracedBlock.hitVec.distanceTo(pos);
+        }
 
         Vec3d look = e.getLook(partialTick);
-        Vec3d ray = pos.add(look.x * distance, look.y * distance, look.z * distance);
+        Vec3d ray = pos.add(look.scale(distance));
 
         Vec3d hit = null;
         Entity pointedEntity = null;
-        List<Entity> entitiesWithinRange = e.world.getEntitiesInAABBexcluding(e, e.getEntityBoundingBox().grow(look.x * distance, look.y * distance, look.z * distance).expand(1, 1, 1), predicate);
+        List<Entity> entitiesWithinRange = e.world.getEntitiesInAABBexcluding(e, e.getEntityBoundingBox()
+                .grow(look.x * distance, look.y * distance, look.z * distance)
+                .expand(1, 1, 1), predicate);
 
         double traceDistance = totalTraceDistance;
+
         for (Entity entity : entitiesWithinRange) {
             if (entity.canBeCollidedWith()) {
                 double size = entity.getCollisionBorderSize();
@@ -144,6 +137,7 @@ public class VecHelper {
         if (pointedEntity != null && (traceDistance < totalTraceDistance || tracedBlock == null)) {
             return new RayTraceResult(pointedEntity, hit);
         }
+
         return tracedBlock;
     }
 }

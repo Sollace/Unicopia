@@ -10,6 +10,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -34,12 +35,7 @@ class CommandSpecies extends CommandBase {
 
     private String getRacesString() {
 		String values = "";
-		for (Race i : Race.values()) {
-			if (PlayerSpeciesList.instance().speciesPermitted(i)) {
-				if (values != "") values += ", ";
-				values += i.toString();
-			}
-		}
+
 		return values;
     }
 
@@ -55,7 +51,9 @@ class CommandSpecies extends CommandBase {
 		EntityPlayerMP player;
 		int playerIndex = 1;
 
-		if (args[0].contentEquals("set")) playerIndex++;
+		if (args[0].contentEquals("set") || args[0].contentEquals("describe")) {
+		    playerIndex++;
+		}
 
 		if (args.length > playerIndex) {
 			player = getPlayer(server, sender, args[playerIndex]);
@@ -63,27 +61,25 @@ class CommandSpecies extends CommandBase {
 			player = getCommandSenderAsPlayer(sender);
 		}
 
-		if (args[0].contentEquals("set")) {
-			if (args.length >= 2) {
-				Race species = Race.fromName(args[1]);
+		if (args[0].contentEquals("set") && args.length >= 2) {
+			Race species = Race.fromName(args[1], null);
 
-				if (species == null) {
-					player.sendMessage(new TextComponentTranslation("commands.race.fail", args[1].toUpperCase()));
+			if (species == null) {
+				player.sendMessage(new TextComponentTranslation("commands.race.fail", args[1].toUpperCase()));
+			} else {
+				if (PlayerSpeciesList.instance().speciesPermitted(species, player)) {
+				    PlayerSpeciesList.instance().getPlayer(player).setPlayerSpecies(species);
+
+					TextComponentTranslation formattedName = new TextComponentTranslation(species.name().toLowerCase());
+
+					if (player != sender) {
+						notifyCommandListener(sender, this, 1, "commands.race.success.other", player.getName(), formattedName);
+		            } else {
+		            	player.sendMessage(new TextComponentTranslation("commands.race.success.self"));
+		            	notifyCommandListener(sender, this, 1, "commands.race.success.otherself", player.getName(), formattedName);
+		            }
 				} else {
-					if (PlayerSpeciesList.instance().speciesPermitted(species)) {
-					    PlayerSpeciesList.instance().getPlayer(player).setPlayerSpecies(species);
-
-						TextComponentTranslation formattedName = new TextComponentTranslation(species.name().toLowerCase());
-
-						if (player != sender) {
-							notifyCommandListener(sender, this, 1, "commands.race.success.other", player.getName(), formattedName);
-			            } else {
-			            	player.sendMessage(new TextComponentTranslation("commands.race.success.self"));
-			            	notifyCommandListener(sender, this, 1, "commands.race.success.otherself", player.getName(), formattedName);
-			            }
-					} else {
-						player.sendMessage(new TextComponentTranslation("commands.race.permission"));
-					}
+					player.sendMessage(new TextComponentTranslation("commands.race.permission"));
 				}
 			}
 		} else if (args[0].contentEquals("get")) {
@@ -104,29 +100,68 @@ class CommandSpecies extends CommandBase {
 		} else if (args[0].contentEquals("list")) {
 			player.sendMessage(new TextComponentTranslation("commands.race.list"));
 
-			ITextComponent message = new TextComponentString(" " + getRacesString());
+			ITextComponent message = new TextComponentString(getRacesString());
+
+			boolean first = true;
+			for (Race i : Race.values()) {
+	            if (PlayerSpeciesList.instance().speciesPermitted(i, player)) {
+	                message.appendSibling(new TextComponentString((!first ? "\n" : "") + " - " + i.name().toLowerCase()));
+	                first = false;
+	            }
+	        }
 
 			message.getStyle().setColor(TextFormatting.GOLD);
 
 			player.sendMessage(message);
-		}
+		} else if (args[0].contentEquals("describe") && args.length >= 2) {
+		    Race species = Race.fromName(args[1], null);
+
+            if (species == null) {
+                player.sendMessage(new TextComponentTranslation("commands.race.fail", args[1].toUpperCase()));
+            } else {
+                String name = species.name().toLowerCase();
+
+                ITextComponent line1 = new TextComponentTranslation(String.format("commands.race.describe.%s.1", name));
+                line1.getStyle().setColor(TextFormatting.YELLOW);
+
+                player.sendMessage(line1);
+
+                player.sendMessage(new TextComponentTranslation(String.format("commands.race.describe.%s.2", name)));
+
+                ITextComponent line3 = new TextComponentTranslation(String.format("commands.race.describe.%s.3", name));
+                line3.getStyle().setColor(TextFormatting.RED);
+
+                player.sendMessage(line3);
+            }
+		} else {
+            throw new WrongUsageException(getUsage(sender));
+        }
 	}
 
     /**
      * Adds the strings available in this command to the given list of tab completion options.
      */
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender par1ICommandSender, String[] args, BlockPos pos) {
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos) {
+
     	if (args.length == 1) {
-    		return getListOfStringsMatchingLastWord(args, new String[] { "get", "set", "list" });
-    	} else if (args.length == 2 && args[0].contentEquals("set")) {
+    		return getListOfStringsMatchingLastWord(args, "get", "set", "list", "describe");
+    	}
+
+    	if (args.length == 2 && (args[0].contentEquals("set") || args[0].contentEquals("describe"))) {
     		ArrayList<String> names = new ArrayList<String>();
+
+    		EntityPlayer player = sender instanceof EntityPlayer ? (EntityPlayer)sender : null;
+
     		for (Race i : Race.values()) {
-    			if (PlayerSpeciesList.instance().speciesPermitted(i)) {
-    				names.add(i.toString());
+    			if (args[0].contentEquals("describe") || PlayerSpeciesList.instance().speciesPermitted(i, player)) {
+    				names.add(i.name().toLowerCase());
     			}
     		}
+
 			return getListOfStringsMatchingLastWord(args, names.toArray(new String[names.size()]));
-    	} else if ((args.length == 3 && args[0].contentEquals("set")) || (args[0].contentEquals("get") && args.length == 2)) {
+    	}
+
+    	if ((args.length == 3 && args[0].contentEquals("set")) || (args[0].contentEquals("get") && args.length == 2)) {
     		return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
     	}
 

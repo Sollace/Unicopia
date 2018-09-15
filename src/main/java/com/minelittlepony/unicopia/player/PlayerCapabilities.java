@@ -36,6 +36,8 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
     private final PlayerGravityDelegate gravity = new PlayerGravityDelegate(this);
 
+    private float nextStepDistance = 1;
+
     private IMagicEffect effect;
 
     private EntityPlayer entity;
@@ -61,7 +63,7 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
     public void setPlayerSpecies(Race race) {
         EntityPlayer self = getOwner();
 
-        if (!PlayerSpeciesList.instance().speciesPermitted(race)) {
+        if (!PlayerSpeciesList.instance().speciesPermitted(race, getOwner())) {
             race = Race.HUMAN;
         }
 
@@ -128,6 +130,8 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
         }
 
         addExertion(-1);
+
+        PlayerAttributes.instance.applyAttributes(entity, getPlayerSpecies());
     }
 
     @Override
@@ -143,6 +147,22 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
         }
     }
 
+
+    @Override
+    public boolean stepOnCloud() {
+        EntityPlayer player = getOwner();
+
+        if ((player.fallDistance > 1) || player.distanceWalkedOnStepModified > nextStepDistance) {
+            nextStepDistance = player.distanceWalkedOnStepModified + 2;
+            player.fallDistance = 0;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
     public void onEntityEat() {
         if (getPlayerSpecies() == Race.CHANGELING) {
             EntityPlayer player = getOwner();
@@ -166,7 +186,7 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        setPlayerSpecies(Race.fromName(compound.getString("playerSpecies")));
+        setPlayerSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
         powers.readFromNBT(compound.getCompoundTag("powers"));
         gravity.readFromNBT(compound.getCompoundTag("gravity"));
 

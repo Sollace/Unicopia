@@ -11,7 +11,7 @@ import com.minelittlepony.unicopia.power.PowersRegistry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
-class PlayerAbilityDelegate implements IAbilityReceiver, IUpdatable, InbtSerialisable {
+class PlayerAbilityDelegate implements IAbilityReceiver, IUpdatable<EntityPlayer>, InbtSerialisable {
 
     private final IPlayer player;
 

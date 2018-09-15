@@ -1,17 +1,17 @@
-tile.cloudBlock.normal.name=Block of Cloud
-tile.cloudBlock.packed.name=Dense Cloud
-tile.cloudBlock.enchanted.name=Enchanted Cloud
+tile.cloud_block.normal.name=Block of Cloud
+tile.cloud_block.packed.name=Dense Cloud
+tile.cloud_block.enchanted.name=Enchanted Cloud
 
-tile.cloudSlab.normal.name=Cloud Slab
-tile.cloudSlab.packed.name=Dense Cloud Slab
-tile.cloudSlab.enchanted.name=Enchanted Cloud Slab
+tile.cloud_slab.normal.name=Cloud Slab
+tile.cloud_slab.packed.name=Dense Cloud Slab
+tile.cloud_slab.enchanted.name=Enchanted Cloud Slab
 
-tile.stairsCloud.name=Cloud Stairs
+tile.cloud_stairs.name=Cloud Stairs
 
-item.cloud_matter.name=Cloud Matter
-item.cloud.small.name=Small Cloud
-item.cloud.medium.name=Medium Cloud
-item.cloud.large.name=Large Cloud
+item.cloud_matter.name=Lump of Cloud
+item.cloud.small.name=Bucking Bronco
+item.cloud.medium.name=Construction Cloud
+item.cloud.large.name=Wild Cloud
 
 item.spell.name=Gem
 item.spell.shield.name=Gem of Repulsion
@@ -29,17 +29,18 @@ item.apple.rotten.name=Rotten Apple
 item.apple.zap.name=Zap Apple
 item.apple.zap_cooked.name=Cooked Zap Apple
 
-entity.cloud.name=Cloud
-entity.cloud_natural.name=Cloud
+entity.racing_cloud.name=Bucking Bronco
+entity.construction_cloud.name=Construction Cloud
+entity.wild_cloud.name=Cloud
 entity.spell.name=Magic
 
 
 commands.race.success.self=Your race has been updated
 commands.race.success.otherself=%s changed race to %s
 commands.race.success.other=Changed %s's race to %s
-commands.race.usage=/race <get|set|list> [player] <species>
+commands.race.usage=/race <get|set|list|describe> [player] <species>
 commands.race.list=The available races are:
-commands.race.permission=Selected Race is not permitted
+commands.race.permission=Selected Race is not permitted by your current server
 commands.race.fail="%s" is not a recognised Race
 
 commands.race.tell.self=You are a 
@@ -47,29 +48,59 @@ commands.race.tell.self.alt=You are an
 commands.race.tell.other=%s is a 
 commands.race.tell.other.alt=%s is an 
 
+commands.race.describe.title=%s
+commands.race.describe.human.1=This is the default race for new players.
+commands.race.describe.human.2=It has no special abilities.
+
+commands.race.describe.earth.1=Earth Ponies can grow crops using mana and punch trees for apples (yeeeeeeehaaaaawwwwwwwwwww)
+commands.race.describe.earth.2=Their offensive ability is to kick down whilst jumping for a deafening ground smash.
+commands.race.describe.earth.3=They are strong but slow.
+
+commands.race.describe.unicorn.1=Unicorns are the primary magic users. They can teleport and cast powerful spells.
+commands.race.describe.unicorn.2=Their defensive features a powerful shield powered by their mana.
+commands.race.describe.unicorn.3=They are prone to tiring quickly.
+
+commands.race.describe.pegasus.1=Pegasi are the masters of the skies.
+commands.race.describe.pegasus.2=They live mostly in the air and are the only species with the ability to mould and harness cloud materials for their homes.
+commands.race.describe.pegasus.3=They are fast and light but easy to knock down.
+
+commands.race.describe.alicorn.1=Praise the sun!
+commands.race.describe.alicorn.2=Alicorns have all abilities of the other races.
+commands.race.describe.alicorn.3=Only available to CREATIVE mode players.
+
+commands.race.describe.changeling.1=Beware the changeling, for they can appear when least expected.
+commands.race.describe.changeling.2=Changelings can fly but but do not interact with clouds.
+commands.race.describe.changeling.3=They have to feed on mobs and other players to eat.
+
 commands.decloud.success=%s clouds removed
 commands.decloud.usage=/decloud <all>
 
 unicopia.race.human=Human
+unicopia.race.human.alt=Humans
 unicopia.race.earth=Earth Pony
+unicopia.race.earth.alt=Earth Ponies
 unicopia.race.unicorn=Unicorn
+unicopia.race.unicorn.alt=Unicorns
 unicopia.race.pegasus=Pegasus
+unicopia.race.pegasus.alt=Pegasi
 unicopia.race.alicorn=Alicorn
+unicopia.race.alicorn.alt=Alicorns
 unicopia.race.changeling=Changeling
+unicopia.race.changeling.alt=Changelings
 
 unicopia.category.name=Pony Abilities
 
-unicopia.power.grow=Earth Pony (Primary)
-unicopia.power.earth=Earth Pony (Secondary)
+unicopia.power.grow=Primary Earth Pony ability
+unicopia.power.earth=Secondary Earth Pony ability
 
-unicopia.power.teleport=Unicorn (Primary)
-unicopia.power.magic=Unicorn (Secondary)
+unicopia.power.teleport=Primary Unicorn ability
+unicopia.power.magic=Secondary Unicorn ability
 
-unicopia.power.rain=Pegasus (Primary)
-unicopia.power.thunder=Pegasus (Secondary)
+unicopia.power.rain=Primary Pegasus ability
+unicopia.power.thunder=Secondary Pegasus ability
 
-unicopia.power.feed=Changeling (Primary)
-unicopia.power.disguise=Changeling (Secondary)
+unicopia.power.feed=Primary Changeling ability
+unicopia.power.disguise=Secondary Changeling ability
 
 death.attack.feed=%1$s was drained of all life
 death.attack.feed.player=%1$s died to feed %2$s

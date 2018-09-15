@@ -20,6 +20,12 @@ public class Particles {
 
     private final List<IParticleFactory> registeredParticles = new ArrayList<>();
 
+    private final EntityParticleEmitter entityEmitter = new EntityParticleEmitter();
+
+    public EntityParticleEmitter getEntityEmitter() {
+        return entityEmitter;
+    }
+
     public int registerParticle(IParticleFactory factory) {
         int id = registeredParticles.size();
         registeredParticles.add(factory);

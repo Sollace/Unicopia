@@ -1,9 +1,11 @@
 package com.minelittlepony.unicopia.spell;
 
+import com.minelittlepony.unicopia.player.IOwned;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 
-public interface ICaster<E extends EntityLivingBase> {
+public interface ICaster<E extends EntityLivingBase> extends IOwned<E> {
     void setEffect(IMagicEffect effect);
 
     IMagicEffect getEffect();
@@ -11,12 +13,6 @@ public interface ICaster<E extends EntityLivingBase> {
     default boolean hasEffect() {
         return getEffect() != null;
     }
-
-    default void setOwner(E owner) {
-
-    }
-
-    E getOwner();
 
     default Entity getEntity() {
         return getOwner();

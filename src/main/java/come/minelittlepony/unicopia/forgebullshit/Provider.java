@@ -1,29 +1,30 @@
 package come.minelittlepony.unicopia.forgebullshit;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
 class Provider implements ICapabilitySerializable<NBTTagCompound> {
-    DefaultPlayerCapabilitiesProxyContainer instance = (DefaultPlayerCapabilitiesProxyContainer) DefaultPlayerCapabilitiesProxyContainer.CAPABILITY.getDefaultInstance();
+    @SuppressWarnings("unchecked")
+    DefaultEntityCapabilitiesProxyContainer<Entity> instance = (DefaultEntityCapabilitiesProxyContainer<Entity>) DefaultEntityCapabilitiesProxyContainer.CAPABILITY.getDefaultInstance();
 
-    private final EntityPlayer entity;
+    private final Entity entity;
 
-    Provider(EntityPlayer entity) {
+    Provider(Entity entity) {
         this.entity = entity;
     }
 
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-        return capability == DefaultPlayerCapabilitiesProxyContainer.CAPABILITY;
+        return capability == DefaultEntityCapabilitiesProxyContainer.CAPABILITY;
     }
 
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
         if (hasCapability(capability, facing)) {
-            return DefaultPlayerCapabilitiesProxyContainer.CAPABILITY.<T>cast(instance.withEntity(entity));
+            return DefaultEntityCapabilitiesProxyContainer.CAPABILITY.<T>cast(instance.withEntity(entity));
         }
 
         return null;
@@ -31,13 +32,13 @@ class Provider implements ICapabilitySerializable<NBTTagCompound> {
 
     @Override
     public NBTTagCompound serializeNBT() {
-        return (NBTTagCompound) DefaultPlayerCapabilitiesProxyContainer.CAPABILITY.getStorage()
-                .writeNBT(DefaultPlayerCapabilitiesProxyContainer.CAPABILITY, instance.withEntity(entity), null);
+        return (NBTTagCompound) DefaultEntityCapabilitiesProxyContainer.CAPABILITY.getStorage()
+                .writeNBT(DefaultEntityCapabilitiesProxyContainer.CAPABILITY, instance.withEntity(entity), null);
     }
 
     @Override
     public void deserializeNBT(NBTTagCompound nbt) {
-        DefaultPlayerCapabilitiesProxyContainer.CAPABILITY.getStorage()
-                .readNBT(DefaultPlayerCapabilitiesProxyContainer.CAPABILITY, instance.withEntity(entity), null, nbt);
+        DefaultEntityCapabilitiesProxyContainer.CAPABILITY.getStorage()
+                .readNBT(DefaultEntityCapabilitiesProxyContainer.CAPABILITY, instance.withEntity(entity), null, nbt);
     }
 }

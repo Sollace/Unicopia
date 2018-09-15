@@ -48,6 +48,10 @@ public enum Race {
         return earth;
     }
 
+    public boolean canInteractWithClouds() {
+        return canFly() && this != CHANGELING;
+    }
+
     public String getDisplayString() {
         return I18n.format(getTranslationString());
     }
@@ -62,7 +66,7 @@ public enum Race {
                 || getDisplayString().equalsIgnoreCase(s);
     }
 
-    public static Race fromName(String s) {
+    public static Race fromName(String s, Race def) {
         if (!Strings.isNullOrEmpty(s)) {
             for (Race i : values()) {
                 if (i.isSameAs(s)) return i;
@@ -73,7 +77,7 @@ public enum Race {
             return fromId(Integer.parseInt(s));
         } catch (NumberFormatException e) { }
 
-        return HUMAN;
+        return def;
     }
 
     public static Race fromId(int id) {

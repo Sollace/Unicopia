@@ -7,6 +7,8 @@ import java.util.UUID;
 import com.minelittlepony.unicopia.Race;
 
 import come.minelittlepony.unicopia.forgebullshit.FBS;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class PlayerSpeciesList {
@@ -19,12 +21,24 @@ public class PlayerSpeciesList {
 
     private List<Race> serverPermittedRaces = new ArrayList<>();
 
-    public boolean speciesPermitted(Race race) {
+    public boolean speciesPermitted(Race race, EntityPlayer sender) {
+        if (race == Race.ALICORN && (sender == null || !sender.capabilities.isCreativeMode)) {
+            return false;
+        }
+
         return race.isDefault() || serverPermittedRaces.isEmpty() || serverPermittedRaces.contains(race);
     }
 
-    public IPlayer emptyPlayer(EntityPlayer player) {
-        return new PlayerCapabilities(player);
+    public IRaceContainer<?> emptyContainer(Entity entity) {
+        if (entity instanceof EntityPlayer) {
+            return new PlayerCapabilities((EntityPlayer)entity);
+        }
+
+        if (entity instanceof EntityItem) {
+            return new ItemCapabilities();
+        }
+
+        throw new IllegalArgumentException("entity");
     }
 
     public IPlayer getPlayer(EntityPlayer player) {
@@ -33,5 +47,9 @@ public class PlayerSpeciesList {
 
     public IPlayer getPlayer(UUID playerId) {
         return getPlayer(IPlayer.getPlayerEntity(playerId));
+    }
+
+    public <T extends Entity> IRaceContainer<T> getEntity(T entity) {
+        return FBS.of(entity).getRaceContainer();
     }
 }

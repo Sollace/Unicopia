@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.power;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -78,10 +77,7 @@ public class PowerFeed implements IPower<Hit> {
 
     @Override
     public void apply(EntityPlayer player, Hit data) {
-        List<Entity> list = new ArrayList<Entity>();
-        for (Entity i : VecHelper.getWithinRange(player, 3)) {
-            if (canDrain(i)) list.add(i);
-        }
+        List<Entity> list = VecHelper.getWithinRange(player, 3, this::canDrain);
 
         Entity looked = VecHelper.getLookedAtEntity(player, 10);
         if (looked != null && !list.contains(looked)) {
@@ -97,8 +93,7 @@ public class PowerFeed implements IPower<Hit> {
             for (Entity i : list) {
                 DamageSource d = MagicalDamageSource.causePlayerDamage("feed", player);
 
-                if (EnumCreatureType.CREATURE.getCreatureClass().isAssignableFrom(i.getClass())
-                        || player.world.rand.nextFloat() > 0.95f) {
+                if (EnumCreatureType.CREATURE.getCreatureClass().isAssignableFrom(i.getClass()) || player.world.rand.nextFloat() > 0.95f) {
                     i.attackEntityFrom(d, Integer.MAX_VALUE);
                 } else {
                     i.attackEntityFrom(d, drained);

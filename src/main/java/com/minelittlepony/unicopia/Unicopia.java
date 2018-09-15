@@ -1,12 +1,15 @@
 package com.minelittlepony.unicopia;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerFlyableFallEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -19,6 +22,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -26,6 +30,7 @@ import com.minelittlepony.jumpingcastle.api.IChannel;
 import com.minelittlepony.jumpingcastle.api.JumpingCastle;
 import com.minelittlepony.jumpingcastle.api.Target;
 import com.minelittlepony.unicopia.client.particle.EntityMagicFX;
+import com.minelittlepony.unicopia.client.particle.EntityRaindropFX;
 import com.minelittlepony.unicopia.client.particle.Particles;
 import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.input.Keyboard;
@@ -47,10 +52,13 @@ public class Unicopia {
     public static IChannel channel;
 
     public static int MAGIC_PARTICLE;
+    public static int RAIN_PARTICLE;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-
+        if (UClient.isClientSide()) {
+            UEntities.preInit();
+        }
     }
 
     @EventHandler
@@ -68,6 +76,7 @@ public class Unicopia {
             .consume(MsgPlayerAbility.class);
 
         MAGIC_PARTICLE = Particles.instance().registerParticle(new EntityMagicFX.Factory());
+        RAIN_PARTICLE = Particles.instance().registerParticle(new EntityRaindropFX.Factory());
 
         PowersRegistry.instance().init();
 
@@ -76,7 +85,17 @@ public class Unicopia {
 
     @SubscribeEvent
     public static void registerItemsStatic(RegistryEvent.Register<Item> event) {
-        UItems.registerItems();
+        UItems.registerItems(event.getRegistry());
+    }
+
+    @SubscribeEvent
+    public static void registerBlocksStatic(RegistryEvent.Register<Block> event) {
+        UBlocks.registerBlocks(event.getRegistry());
+    }
+
+    @SubscribeEvent
+    public static void registerEntitiesStatic(RegistryEvent.Register<EntityEntry> event) {
+        UEntities.init(event.getRegistry());
     }
 
     @SideOnly(Side.CLIENT)
@@ -94,6 +113,23 @@ public class Unicopia {
                 .getPlayer(event.player)
                 .onUpdate(event.player);
         }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTossItem(ItemTossEvent event) {
+        Race race = PlayerSpeciesList.instance().getPlayer(event.getPlayer()).getPlayerSpecies();
+
+        PlayerSpeciesList.instance().getEntity(event.getEntityItem()).setPlayerSpecies(race);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerDropItems(PlayerDropsEvent event) {
+
+        Race race = PlayerSpeciesList.instance().getPlayer(event.getEntityPlayer()).getPlayerSpecies();
+
+        event.getDrops().stream().map(PlayerSpeciesList.instance()::getEntity).forEach(item -> {
+            item.setPlayerSpecies(race);
+        });
     }
 
     @SubscribeEvent
@@ -119,12 +155,12 @@ public class Unicopia {
     }
 
     @SubscribeEvent
-    public static void modifyFOV(EntityViewRenderEvent.FOVModifier event) {
-        float fov = event.getFOV();
+    public static void modifyFOV(FOVUpdateEvent event) {
+        float fov = event.getFov();
 
-        fov += PlayerSpeciesList.instance().getPlayer(Minecraft.getMinecraft().player).getExertion() * 5;
+        fov += PlayerSpeciesList.instance().getPlayer(event.getEntity()).getExertion() / 5;
 
-        event.setFOV(fov);
+        event.setNewfov(fov);
     }
 
     @SubscribeEvent
