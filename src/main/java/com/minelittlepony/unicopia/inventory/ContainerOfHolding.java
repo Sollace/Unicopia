@@ -7,8 +7,9 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.IWorldNameable;
 
-public class ContainerOfHolding extends Container {
+public class ContainerOfHolding extends Container implements IWorldNameable {
 
     private final InventoryOfHolding inventory;
 
@@ -54,6 +55,18 @@ public class ContainerOfHolding extends Container {
         return true;
     }
 
+
+    @Override
+    public String getName() {
+        return getDisplayName().getUnformattedText();
+    }
+
+    @Override
+    public boolean hasCustomName() {
+        return inventory.hasCustomName();
+    }
+
+    @Override
     public ITextComponent getDisplayName() {
         return inventory.getDisplayName();
     }

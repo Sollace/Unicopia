@@ -45,7 +45,13 @@ public class InventoryOfHolding extends InventoryBasic implements InbtSerialisab
             return true;
         });
 
-        return new InventoryOfHolding(items);
+        InventoryOfHolding result = new InventoryOfHolding(items);
+
+        if (stack.hasDisplayName()) {
+            result.setCustomName(stack.getDisplayName());
+        }
+
+        return result;
     }
 
     public static void iterateContents(ItemStack stack, BiFunction<Integer, ItemStack, Boolean> itemConsumer) {
@@ -69,12 +75,14 @@ public class InventoryOfHolding extends InventoryBasic implements InbtSerialisab
     private InventoryOfHolding(List<ItemStack> items) {
         super("unicopia.gui.title.bagofholding", false, items.size() + 9 - (items.size() % 9));
 
+
         for (int i = 0; i < items.size(); i++) {
             setInventorySlotContents(i, items.get(i));
         }
     }
 
-    public <T extends TileEntity & IInventory> void addBlockEntity(World world, BlockPos pos, IBlockState state, T blockInventory) {
+    public <T extends TileEntity & IInventory> void addBlockEntity(World world, BlockPos pos, T blockInventory) {
+        IBlockState state = world.getBlockState(pos);
         ItemStack blockStack = new ItemStack(state.getBlock(), 1, state.getBlock().damageDropped(state));
 
         blockInventory.writeToNBT(blockStack.getOrCreateSubCompound("BlockEntityTag"));

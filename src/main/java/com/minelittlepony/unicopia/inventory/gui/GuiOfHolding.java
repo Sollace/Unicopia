@@ -88,7 +88,7 @@ public class GuiOfHolding extends GuiContainer {
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         ContainerOfHolding coh = (ContainerOfHolding)inventorySlots;
 
-        fontRenderer.drawString(coh.getDisplayName().getUnformattedText(), 8, 6, 4210752);
+        fontRenderer.drawString(coh.getName(), 8, 6, 0x404040);
     }
 
     @Override

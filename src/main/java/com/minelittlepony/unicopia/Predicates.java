@@ -16,8 +16,12 @@ public final class Predicates {
         return player != null && PlayerSpeciesList.instance().getPlayer(player).getPlayerSpecies().canCast();
     };
 
+    public static final Predicate<Entity> ITEMS = entity -> {
+        return entity.isEntityAlive() && entity instanceof EntityItem;
+    };
+
     public static final Predicate<EntityItem> ITEM_INTERACT_WITH_CLOUDS = item -> {
-        return item != null && PlayerSpeciesList.instance().getEntity(item).getPlayerSpecies().canInteractWithClouds();
+        return ITEMS.test(item) && PlayerSpeciesList.instance().getEntity(item).getPlayerSpecies().canInteractWithClouds();
     };
 
     public static final Predicate<Entity> ENTITY_INTERACT_WITH_CLOUDS = entity -> {

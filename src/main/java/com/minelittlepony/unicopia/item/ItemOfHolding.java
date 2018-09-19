@@ -13,13 +13,11 @@ import com.minelittlepony.unicopia.inventory.InventoryOfHolding;
 import com.minelittlepony.unicopia.inventory.gui.GuiOfHolding;
 import com.minelittlepony.util.vector.VecHelper;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -36,6 +34,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.World;
@@ -83,13 +82,12 @@ public class ItemOfHolding extends Item implements IMagicalItem {
                 if (hit.typeOfHit == RayTraceResult.Type.BLOCK) {
                     BlockPos pos = hit.getBlockPos();
 
-                    IBlockState state = world.getBlockState(pos);
                     TileEntity tile = world.getTileEntity(pos);
 
                     if (tile instanceof IInventory) {
                         InventoryOfHolding inventory = InventoryOfHolding.getInventoryFromStack(stack);
 
-                        inventory.addBlockEntity(world, pos, state, (TileEntity & IInventory)tile);
+                        inventory.addBlockEntity(world, pos, (TileEntity & IInventory)tile);
                         inventory.writeTostack(stack);
                         inventory.closeInventory(player);
 
@@ -98,7 +96,7 @@ public class ItemOfHolding extends Item implements IMagicalItem {
 
                     AxisAlignedBB box = new AxisAlignedBB(pos.offset(hit.sideHit)).grow(0.5);
 
-                    List<Entity> itemsAround = world.getEntitiesInAABBexcluding(player, box, e -> e.isEntityAlive() && e instanceof EntityItem);
+                    List<Entity> itemsAround = world.getEntitiesInAABBexcluding(player, box, Predicates.ITEMS);
 
                     if (itemsAround.size() > 0) {
                         InventoryOfHolding inventory = InventoryOfHolding.getInventoryFromStack(stack);
@@ -109,39 +107,33 @@ public class ItemOfHolding extends Item implements IMagicalItem {
 
                         return new ActionResult<>(EnumActionResult.SUCCESS, stack);
                     }
-
-                } else if (hit.typeOfHit == RayTraceResult.Type.ENTITY && hit.entityHit instanceof EntityLiving) {
-
-                    /*if (!(hit.entityHit instanceof EntityPlayer)) {
-                        InventoryOfHolding inventory = InventoryOfHolding.getInventoryFromStack(stack);
-
-                        inventory.addPrisoner((EntityLiving)hit.entityHit);
-                        inventory.writeTostack(stack);
-                        inventory.closeInventory(player);
-
-                        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
-                    }*/
                 }
             }
 
-
             return new ActionResult<>(EnumActionResult.FAIL, stack);
-        } else {
-
-            IInteractionObject inventory = new Inventory();
-
-            if (UClient.isClientSide() && player instanceof EntityPlayerSP) {
-                Minecraft.getMinecraft().displayGuiScreen(new GuiOfHolding(inventory));
-                player.playSound(SoundEvents.BLOCK_ENDERCHEST_OPEN, 0.5F, 1);
-            } else {
-                player.displayGui(inventory);
-            }
-
-            return new ActionResult<>(EnumActionResult.SUCCESS, stack);
         }
+
+        IInteractionObject inventory = new Inventory(stack);
+
+        if (UClient.isClientSide() && player instanceof EntityPlayerSP) {
+            Minecraft.getMinecraft().displayGuiScreen(new GuiOfHolding(inventory));
+            player.playSound(SoundEvents.BLOCK_ENDERCHEST_OPEN, 0.5F, 1);
+        } else {
+            player.displayGui(inventory);
+        }
+
+        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
     }
 
     public class Inventory implements IInteractionObject {
+
+        private String customname = null;
+
+        Inventory(ItemStack stack) {
+            if (stack.hasDisplayName()) {
+                customname = stack.getDisplayName();
+            }
+        }
 
         @Override
         public String getName() {
@@ -150,11 +142,14 @@ public class ItemOfHolding extends Item implements IMagicalItem {
 
         @Override
         public boolean hasCustomName() {
-            return false;
+            return customname != null;
         }
 
         @Override
         public ITextComponent getDisplayName() {
+            if (hasCustomName()) {
+                return new TextComponentString(customname);
+            }
             return new TextComponentTranslation(getName());
         }
 
