@@ -8,7 +8,9 @@ import com.minelittlepony.unicopia.CloudType;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
+import net.minecraft.block.BlockSlab.EnumBlockHalf;
 import net.minecraft.block.BlockStairs;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -102,24 +104,50 @@ public class BlockCloudStairs extends BlockStairs implements ICloudBlock {
 
     @Override
     public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
+        state = state.getActualState(world, pos);
 
-        IBlockState beside = world.getBlockState(pos.offset(face));
+        IBlockState beside = world.getBlockState(pos.offset(face)).getActualState(world, pos);
 
         if (beside.getBlock() instanceof ICloudBlock) {
             ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
 
-            EnumFacing front = state.getValue(FACING);
-            EnumHalf half = state.getValue(HALF);
-
             if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
+                EnumFacing front = state.getValue(FACING);
+                EnumHalf half = state.getValue(HALF);
+
+                boolean sideIsBack = state.getBlockFaceShape(world, pos, face) == BlockFaceShape.SOLID;
+                boolean sideIsFront = state.getBlockFaceShape(world, pos, face.getOpposite()) == BlockFaceShape.SOLID;
+                boolean sideIsSide = !(sideIsBack || sideIsFront);
+
                 if (beside.getBlock() == this) {
                     EnumFacing bfront = beside.getValue(FACING);
                     EnumHalf bhalf = beside.getValue(HALF);
 
-                    return (bfront == front && front != face && half == bhalf)
-                        || (bfront.getOpposite() == front && front == face);
+                    if (face == EnumFacing.UP || face == EnumFacing.DOWN) {
+                        return half != bhalf
+                                && ( (face == EnumFacing.UP && half == EnumHalf.TOP)
+                                  || (face == EnumFacing.DOWN && half == EnumHalf.BOTTOM)
+                            );
+                    }
+
+                    boolean bsideIsBack = beside.getBlockFaceShape(world, pos, face) == BlockFaceShape.SOLID;
+                    boolean bsideIsFront = beside.getBlockFaceShape(world, pos, face.getOpposite()) == BlockFaceShape.SOLID;
+                    boolean bsideIsSide = !(bsideIsBack || bsideIsFront);
+
+                    return sideIsBack
+                            || (sideIsSide && bsideIsSide && front == bfront && half == bhalf);
                 } else if (beside.getBlock() instanceof BlockCloudSlab) {
-                    return beside.getValue(BlockSlab.HALF).ordinal() == half.ordinal();
+                    EnumBlockHalf bhalf = beside.getValue(BlockSlab.HALF);
+
+                    if (face == EnumFacing.UP || face == EnumFacing.DOWN) {
+                        return bhalf == EnumBlockHalf.TOP && half == EnumHalf.BOTTOM;
+                    }
+
+                    return bhalf == EnumBlockHalf.TOP && half == EnumHalf.BOTTOM;
+                } else {
+                    if (face == EnumFacing.UP || face == EnumFacing.DOWN) {
+                        return half == EnumHalf.BOTTOM && face == EnumFacing.DOWN;
+                    }
                 }
 
                 return front == face;

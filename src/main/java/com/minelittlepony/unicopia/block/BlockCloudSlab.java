@@ -128,7 +128,7 @@ public class BlockCloudSlab extends BlockSlab implements ICloudBlock {
                 }
 
                 if (face == EnumFacing.UP || face == EnumFacing.DOWN) {
-                    return true;
+                    return (state.getValue(HALF) == EnumBlockHalf.TOP) && (face == EnumFacing.UP);
                 }
 
                 if (beside.getBlock() == this) {
