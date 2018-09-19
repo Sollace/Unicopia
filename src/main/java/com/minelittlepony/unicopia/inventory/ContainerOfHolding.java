@@ -1,8 +1,5 @@
 package com.minelittlepony.unicopia.inventory;
 
-import java.util.List;
-
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
@@ -10,18 +7,14 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
 
 public class ContainerOfHolding extends Container {
 
     private final InventoryOfHolding inventory;
 
-    private final World world;
-
     private ItemStack sourceStack;
 
     public ContainerOfHolding(EntityPlayer player) {
-        world = player.world;
         sourceStack = player.getHeldItem(EnumHand.MAIN_HAND);
         inventory = InventoryOfHolding.getInventoryFromStack(sourceStack);
 
@@ -59,10 +52,6 @@ public class ContainerOfHolding extends Container {
     @Override
     public boolean canInteractWith(EntityPlayer playerIn) {
         return true;
-    }
-
-    public List<EntityLiving> getEntities() {
-        return inventory.getEntities(world);
     }
 
     public ITextComponent getDisplayName() {

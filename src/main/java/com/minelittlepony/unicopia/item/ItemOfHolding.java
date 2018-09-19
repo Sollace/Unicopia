@@ -60,10 +60,6 @@ public class ItemOfHolding extends Item implements IMagicalItem {
 
             counts.put(name, counts.getOrDefault(name, 0) + itemstack.getCount());
             return true;
-        }, tag -> {
-            String name = tag.getString("id");
-
-            counts.put(name, counts.getOrDefault(name, 0) + 1);
         });
 
         for (String name : counts.keySet()) {

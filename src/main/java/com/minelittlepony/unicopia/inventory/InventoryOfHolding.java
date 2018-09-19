@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.inventory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 import com.minelittlepony.unicopia.InbtSerialisable;
 import com.minelittlepony.unicopia.advancements.UAdvancements;
@@ -13,9 +12,6 @@ import com.minelittlepony.util.MagicalDamageSource;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEnderChest;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.gui.advancements.AdvancementState;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -37,34 +33,22 @@ public class InventoryOfHolding extends InventoryBasic implements InbtSerialisab
     public static final int NBT_COMPOUND = 10;
     public static final int MIN_SIZE = 18;
 
-    List<NBTTagCompound> entities;
-
-    private boolean entitiesLoaded = false;
-
-    List<EntityLiving> livingEntities = new ArrayList<>();
-
     static InventoryOfHolding empty() {
-        List<ItemStack> items = new ArrayList<>();
-        List<NBTTagCompound> entities = new ArrayList<>();
-
-        return new InventoryOfHolding(items, entities);
+        return new InventoryOfHolding(new ArrayList<>());
     }
 
     public static InventoryOfHolding getInventoryFromStack(ItemStack stack) {
         List<ItemStack> items = new ArrayList<>();
-        List<NBTTagCompound> entities = new ArrayList<>();
 
         iterateContents(stack, (i, item) -> {
             items.add(item);
             return true;
-        }, tag -> {
-            entities.add((NBTTagCompound)tag);
         });
 
-        return new InventoryOfHolding(items, entities);
+        return new InventoryOfHolding(items);
     }
 
-    public static void iterateContents(ItemStack stack, BiFunction<Integer, ItemStack, Boolean> itemConsumer, Consumer<NBTTagCompound> entityConsumer) {
+    public static void iterateContents(ItemStack stack, BiFunction<Integer, ItemStack, Boolean> itemConsumer) {
         if (stack.hasTagCompound() && stack.getTagCompound().hasKey("inventory")) {
             NBTTagCompound compound = stack.getOrCreateSubCompound("inventory");
 
@@ -82,18 +66,12 @@ public class InventoryOfHolding extends InventoryBasic implements InbtSerialisab
         }
     }
 
-    private InventoryOfHolding(List<ItemStack> items, List<NBTTagCompound> entities) {
+    private InventoryOfHolding(List<ItemStack> items) {
         super("unicopia.gui.title.bagofholding", false, items.size() + 9 - (items.size() % 9));
-
-        this.entities = entities;
 
         for (int i = 0; i < items.size(); i++) {
             setInventorySlotContents(i, items.get(i));
         }
-    }
-
-    public List<EntityLiving> getEntities(World world) {
-        return livingEntities;
     }
 
     public <T extends TileEntity & IInventory> void addBlockEntity(World world, BlockPos pos, IBlockState state, T blockInventory) {
@@ -117,20 +95,6 @@ public class InventoryOfHolding extends InventoryBasic implements InbtSerialisab
 
         addItem(blockStack);
         world.playSound(null, pos, SoundEvents.UI_TOAST_IN, SoundCategory.PLAYERS, 3.5F, 0.25F);
-    }
-
-    public void addPrisoner(EntityLiving entity) {
-        getEntities(entity.world).add(entity);
-
-        NBTTagCompound compound = new NBTTagCompound();
-        compound.setString("id", EntityList.getKey(entity).toString());
-        entity.writeToNBT(compound);
-        entities.add(compound);
-
-        entity.setDead();
-
-        entity.playLivingSound();
-        entity.playSound(SoundEvents.UI_TOAST_IN, 3.5F, 0.25F);
     }
 
     public void addItem(EntityItem entity) {

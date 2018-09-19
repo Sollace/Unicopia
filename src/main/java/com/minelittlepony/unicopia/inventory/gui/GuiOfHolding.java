@@ -6,9 +6,7 @@ import com.minelittlepony.unicopia.inventory.ContainerOfHolding;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.IInteractionObject;
@@ -88,13 +86,9 @@ public class GuiOfHolding extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-
         ContainerOfHolding coh = (ContainerOfHolding)inventorySlots;
 
         fontRenderer.drawString(coh.getDisplayName().getUnformattedText(), 8, 6, 4210752);
-
-
-
     }
 
     @Override
@@ -111,19 +105,5 @@ public class GuiOfHolding extends GuiContainer {
             drawTexturedModalRect(midX, midY + (18 * (i + 1)), 0, 18, xSize, 18);
         }
         drawTexturedModalRect(midX, midY + inventoryRows * 18 + 17, 0, 193, xSize, 30);
-
-        ContainerOfHolding coh = (ContainerOfHolding)inventorySlots;
-
-        int left = (width - xSize) / 2;
-        int top = (height - ySize) / 2;
-
-        int i = 0;
-        for (EntityLiving entity : coh.getEntities()) {
-            int x = i % 9;
-            int y = i / 9;
-            GuiInventory.drawEntityOnScreen(left + x * 18, top + y * 30, 18, xSize - mouseX, guiTop + 30 - mouseY, entity);
-
-            i++;
-        }
     }
 }
