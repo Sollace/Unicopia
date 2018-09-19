@@ -13,6 +13,10 @@ item.cloud.small.name=Bucking Bronco
 item.cloud.medium.name=Construction Cloud
 item.cloud.large.name=Wild Cloud
 
+item.mist_door.name=Cloud Door
+item.dew_drop.name=Dew Drop
+item.cloud_anvil.name=Anvilhead Anvil
+
 item.spell.name=Gem
 item.spell.shield.name=Gem of Repulsion
 item.spell.fire.name=Gem of Flame
@@ -22,6 +26,7 @@ item.spell.portal.name=Gem of Teleportation
 item.spell.attract.name=Gem of Retention
 item.spell.minion.name=Gem of Obedience
 item.spellbook.name=Spellbook
+item.bag_of_holding.name=Bag of Holding
 
 item.apple.green.name=Granny Smith Apple
 item.apple.sweet.name=Sweet Apple Acres Apple
@@ -31,7 +36,7 @@ item.apple.zap_cooked.name=Cooked Zap Apple
 
 entity.racing_cloud.name=Bucking Bronco
 entity.construction_cloud.name=Construction Cloud
-entity.wild_cloud.name=Cloud
+entity.cloud.name=Cloud
 entity.spell.name=Magic
 
 
@@ -102,6 +107,8 @@ unicopia.power.thunder=Secondary Pegasus ability
 unicopia.power.feed=Primary Changeling ability
 unicopia.power.disguise=Secondary Changeling ability
 
+unicopia.gui.title.bagofholding=Bag of Holding
+
 death.attack.feed=%1$s was drained of all life
 death.attack.feed.player=%1$s died to feed %2$s
 death.attack.cold=%1$s died of frost bite
@@ -113,3 +120,13 @@ death.attack.fire=%1$s was burnt to a crisp by magic
 death.attack.fire.player=%1$s was burnt to a crisp by %2$s
 death.attack.fire.own=%1$s was burnt to a crisp by their own spell
 death.attack.zap=%1$s ate a Zap Apple
+death.attack.paradox=%1$s imploded
+
+advancements.adventure.bag_of_holding.title=Read the Manual
+advancements.adventure.bag_of_holding.description=Successfuly die using the Bag of Holding
+
+advancements.adventure.bag_of_holding_2.title=Oops! I did it again
+advancements.adventure.bag_of_holding_2.description=Die by the Bag of Holding a second time
+
+advancements.adventure.bag_of_holding_3.title=Oh come on!
+advancements.adventure.bag_of_holding_3.description=-_-

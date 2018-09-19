@@ -36,6 +36,8 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
     private final PlayerGravityDelegate gravity = new PlayerGravityDelegate(this);
 
+    private final PlayerAttributes attributes = new PlayerAttributes();
+
     private float nextStepDistance = 1;
 
     private IMagicEffect effect;
@@ -131,7 +133,7 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
         addExertion(-1);
 
-        PlayerAttributes.instance.applyAttributes(entity, getPlayerSpecies());
+        attributes.applyAttributes(entity, getPlayerSpecies());
     }
 
     @Override

@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
@@ -29,6 +30,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import com.minelittlepony.jumpingcastle.api.IChannel;
 import com.minelittlepony.jumpingcastle.api.JumpingCastle;
 import com.minelittlepony.jumpingcastle.api.Target;
+import com.minelittlepony.unicopia.advancements.UAdvancements;
 import com.minelittlepony.unicopia.client.particle.EntityMagicFX;
 import com.minelittlepony.unicopia.client.particle.EntityRaindropFX;
 import com.minelittlepony.unicopia.client.particle.Particles;
@@ -67,18 +69,27 @@ public class Unicopia {
             channel.send(new MsgRequestCapabilities(Minecraft.getMinecraft().player), Target.SERVER);
         })
             // client ------> server
-            .consume(MsgRequestCapabilities.class)
+            .consume(MsgRequestCapabilities.class, (msg, channel) -> {
+
+            })
 
             // client <------ server
-            .consume(MsgPlayerCapabilities.class)
+            .consume(MsgPlayerCapabilities.class, (msg, channel) -> {
+                System.out.println("[CLIENT] Got capabilities for player I am "
+                        + Minecraft.getMinecraft().player.getGameProfile().getId());
+            })
 
             // client ------> server
-            .consume(MsgPlayerAbility.class);
+            .consume(MsgPlayerAbility.class, (msg, channel) -> {
+
+            });
 
         MAGIC_PARTICLE = Particles.instance().registerParticle(new EntityMagicFX.Factory());
         RAIN_PARTICLE = Particles.instance().registerParticle(new EntityRaindropFX.Factory());
 
         PowersRegistry.instance().init();
+
+        UAdvancements.init();
 
         FBS.init();
     }
@@ -91,6 +102,11 @@ public class Unicopia {
     @SubscribeEvent
     public static void registerBlocksStatic(RegistryEvent.Register<Block> event) {
         UBlocks.registerBlocks(event.getRegistry());
+    }
+
+    @SubscribeEvent
+    public static void registerRecipesStatic(RegistryEvent.Register<IRecipe> event) {
+        UItems.registerRecipes(event.getRegistry());
     }
 
     @SubscribeEvent

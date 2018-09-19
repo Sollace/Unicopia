@@ -1,0 +1,23 @@
+{
+    "display": {
+        "icon": {
+            "item": "unicopia:bag_of_holding"
+        },
+        "title": {
+            "translate": "advancements.adventure.bag_of_holding_3.title"
+        },
+        "description": {
+            "translate": "advancements.adventure.bag_of_holding_3.description"
+        },
+        "frame": "challenge"
+    },
+    "parent": "unicopia:bag_of_holding_2",
+    "criteria": {
+        "death_by_bag_of_holding": {
+            "trigger": "unicopia:death_by_bag_of_holding",
+            "conditions": {
+    			"advancement": "unicopia:bag_of_holding_2"
+    		}
+        }
+    }
+}
