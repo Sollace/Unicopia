@@ -118,13 +118,11 @@ public class BlockCloudStairs extends BlockStairs implements ICloudBlock {
 
                     return (bfront == front && front != face && half == bhalf)
                         || (bfront.getOpposite() == front && front == face);
-                } else {
-                    if (beside.getBlock() instanceof BlockCloudSlab) {
-                        return beside.getValue(BlockSlab.HALF).ordinal() == half.ordinal();
-                    }
+                } else if (beside.getBlock() instanceof BlockCloudSlab) {
+                    return beside.getValue(BlockSlab.HALF).ordinal() == half.ordinal();
                 }
 
-                return true;
+                return front == face;
             }
         }
 
