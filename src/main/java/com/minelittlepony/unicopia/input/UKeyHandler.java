@@ -12,7 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
-public class UKeyHandler implements IKeyHandler {
+class UKeyHandler implements IKeyHandler {
 	private static ArrayList<KeyBinding> bindings = new ArrayList<KeyBinding>();
 	private static ArrayList<KeyBinding> removed = new ArrayList<KeyBinding>();
 
