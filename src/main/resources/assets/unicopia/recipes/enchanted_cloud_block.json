@@ -1,0 +1,64 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "$$$",
+    "#*#",
+    "###"
+  ],
+  "key": {
+    "#": [
+      {
+        "item": "unicopia:cloud_block",
+        "data": 0
+      }
+    ],
+    "$": [
+      {
+    	"item": "unicopia:dew_drop"
+      }
+    ],
+    "*": [
+      {
+    	"item": "minecraft:enchanted_book",
+    	"data": 2,
+    	"nbt": {
+    	  "StoredEnchantments": [
+             { "id": 2, "level": 1 }
+          ]
+      	}
+      },
+      {
+      	"item": "minecraft:enchanted_book",
+      	"data": 2,
+      	"nbt": {
+      	  "StoredEnchantments": [
+               { "id": 2, "level": 2 }
+            ]
+          }
+      },
+      {
+    	"item": "minecraft:enchanted_book",
+    	"data": 2,
+    	"nbt": {
+    	  "StoredEnchantments": [
+             { "id": 2, "level": 3 }
+          ]
+        }
+      },
+      {
+    	"item": "minecraft:enchanted_book",
+    	"data": 2,
+    	"nbt": {
+    	  "StoredEnchantments": [
+             { "id": 2, "level": 4 }
+          ]
+        }
+      }
+    ]
+  },
+  "result": {
+    "item": "unicopia:cloud_block",
+    "data": 2,
+    "count": 4
+  }
+}

@@ -1,0 +1,8 @@
+{
+    "parent": "block/anvil",
+    "textures": {
+        "particle": "unicopia:blocks/cloud_normal",
+        "body": "unicopia:blocks/cloud_normal",
+        "top": "unicopia:blocks/cloud_normal"
+    }
+}

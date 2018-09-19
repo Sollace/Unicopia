@@ -426,8 +426,6 @@ public class EntityCloud extends EntityFlying implements IAnimals {
 		    return;
 		}
 
-	    setStationary(true);
-
 	    EnumFacing direction = trace.sideHit;
 
 	    BlockPos blockPos = new BlockPos(trace.hitVec);
@@ -447,7 +445,11 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     }
 
     private boolean onAttackByPlayer(DamageSource source, float amount, EntityPlayer player) {
-    	boolean canFly = PlayerSpeciesList.instance().getPlayer(player).getPlayerSpecies().canInteractWithClouds();
+
+        ItemStack stack = player.getHeldItemMainhand();
+
+    	boolean canFly = EnchantmentHelper.getEnchantments(stack).containsKey(Enchantments.FEATHER_FALLING)
+    	        || Predicates.INTERACT_WITH_CLOUDS.test(player);
     	boolean stat = getStationary();
 
     	if (stat || canFly) {
@@ -457,7 +459,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
                 }
             }
 
-			ItemStack stack = player.getHeldItemMainhand();
+
 			if (stack != null && stack.getItem() instanceof ItemSword) {
 				return super.attackEntityFrom(source, amount);
 			} else if (stack != null && stack.getItem() instanceof ItemSpade) {
@@ -483,15 +485,39 @@ public class EntityCloud extends EntityFlying implements IAnimals {
 			setDead();
     	}
     	super.onDeath(s);
+    	clearItemFloatingState();
     }
+
+    @Override
+    public void setDead() {
+        super.setDead();
+        clearItemFloatingState();
+    }
+
+    protected void clearItemFloatingState() {
+        AxisAlignedBB bounds = getEntityBoundingBox().grow(1 / (1 + getCloudSize())).grow(5);
+
+        for (Entity i : world.getEntitiesInAABBexcluding(this, bounds, this::entityIsFloatingItem)) {
+            i.setNoGravity(false);
+        }
+    }
+
+    private boolean entityIsFloatingItem(Entity e) {
+        return e instanceof EntityItem
+                && Predicates.ITEM_INTERACT_WITH_CLOUDS.test((EntityItem)e);
+    }
+
 
     @Override
     protected void dropFewItems(boolean hitByPlayer, int looting) {
     	if (hitByPlayer) {
 	    	Item item = getDropItem();
-	    	int amount = 2 + world.rand.nextInt(3 + looting);
-	    	for (int i = 0; i < amount; i++) {
-	    		dropItem(item, 1);
+	    	int amount = 2 + world.rand.nextInt(3);
+
+    		dropItem(item, amount * (1 + looting));
+
+	    	if (world.rand.nextBoolean()) {
+	    	    dropItem(UItems.dew_drop, 2 + looting);
 	    	}
     	}
     }
@@ -530,7 +556,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
 				spawnThunderbolt(getPosition());
 			}
 
-			if (entity instanceof EntityItem) {
+			if (getStationary() && entity instanceof EntityItem) {
 			    entity.motionX /= 8;
 			    entity.motionZ /= 8;
 			    entity.motionY /= 16;

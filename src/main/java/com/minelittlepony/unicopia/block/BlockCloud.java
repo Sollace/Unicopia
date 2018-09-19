@@ -58,6 +58,11 @@ public class BlockCloud extends Block implements ICloudBlock {
     }
 
     @Override
+    public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return allowsFallingBlockToPass(state, world, pos);
+    }
+
+    @Override
     public boolean isNormalCube(IBlockState state) {
     	return false;
     }
@@ -65,12 +70,6 @@ public class BlockCloud extends Block implements ICloudBlock {
     @Override
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.TRANSLUCENT;
-    }
-
-    @Deprecated
-    @Override
-    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-        return super.shouldSideBeRendered(blockState, blockAccess, pos, side);
     }
 
     @Override
@@ -87,12 +86,6 @@ public class BlockCloud extends Block implements ICloudBlock {
         }
 
         return super.doesSideBlockRendering(state, world, pos, face);
-    }
-
-    //Can entities walk through?
-    @Override
-    public boolean isPassable(IBlockAccess w, BlockPos pos) {
-        return super.isPassable(w, pos);
     }
 
     @Override

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###"
+  ],
+  "key": {
+    "#": [
+      {
+        "item": "unicopia:cloud_block",
+        "data": 0,
+        "data": 1
+      }
+    ]
+  },
+  "result": {
+    "item": "unicopia:cloud_slab",
+    "data": 1,
+    "count": 6
+  }
+}

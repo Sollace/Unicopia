@@ -38,6 +38,7 @@ public class BlockCloudSlab extends BlockSlab implements ICloudBlock {
 
 	public BlockCloudSlab(boolean isDouble, Material material, String domain, String name) {
 		super(material);
+
 		setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
 		setHardness(0.5F);
 		setResistance(1.0F);
@@ -52,6 +53,11 @@ public class BlockCloudSlab extends BlockSlab implements ICloudBlock {
 	@Override
     public boolean isTranslucent(IBlockState state) {
         return UBlocks.cloud.isTranslucent(state);
+    }
+
+    @Override
+    public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return allowsFallingBlockToPass(state, world, pos);
     }
 
 	@Override

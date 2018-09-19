@@ -62,6 +62,11 @@ public class BlockCloudStairs extends BlockStairs implements ICloudBlock {
     	theBlock.onFallenUpon(w, pos, entity, fallDistance);
     }
 
+    @Override
+    public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return allowsFallingBlockToPass(state, world, pos);
+    }
+
 	@Override
     public void onLanded(World w, Entity entity) {
     	theBlock.onLanded(w, entity);
