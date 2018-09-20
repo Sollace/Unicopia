@@ -30,6 +30,7 @@ public class PowersRegistry {
         registerPower(new PowerStomp());
         registerPower(new PowerGrow());
         registerPower(new PowerFeed());
+        registerPower(new PowerCarry());
     }
 
     public boolean hasRegisteredPower(int keyCode) {

@@ -57,9 +57,22 @@ public class MsgPlayerCapabilities implements IMessage, IMessageHandler<MsgPlaye
 
     @Override
     public void onPayload(MsgPlayerCapabilities message, IChannel channel) {
-        System.out.println("[CLIENT] Got capabilities for player id " + senderId + " I am "
-                    + Minecraft.getMinecraft().player.getGameProfile().getId());
-        IPlayer player = PlayerSpeciesList.instance().getPlayer(Minecraft.getMinecraft().player);
+        EntityPlayer self = Minecraft.getMinecraft().player;
+        UUID myid = self.getGameProfile().getId();
+
+        IPlayer player;
+        if (senderId.equals(myid)) {
+            player = PlayerSpeciesList.instance().getPlayer(self);
+        } else {
+            EntityPlayer found = Minecraft.getMinecraft().world.getPlayerEntityByUUID(senderId);
+
+            if (found == null) {
+                System.out.println("Player with id " + senderId + " was not found!");
+                return;
+            }
+
+            player = PlayerSpeciesList.instance().getPlayer(found);
+        }
 
         if (compoundTag.length > 0) {
             try (ByteArrayInputStream input = new ByteArrayInputStream(compoundTag)) {

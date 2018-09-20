@@ -25,10 +25,6 @@ public class PowerMagic implements IPower<PowerMagic.Magic> {
 
     @Override
     public int getWarmupTime(IPlayer player) {
-       // if (player.hasEffect() && "shield".contentEquals(player.getEffect().getName())) {
-       //     return 0;
-       // }
-
         return 20;
     }
 

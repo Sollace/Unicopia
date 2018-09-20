@@ -69,20 +69,11 @@ public class Unicopia {
             channel.send(new MsgRequestCapabilities(Minecraft.getMinecraft().player), Target.SERVER);
         })
             // client ------> server
-            .consume(MsgRequestCapabilities.class, (msg, channel) -> {
-
-            })
-
+            .consume(MsgRequestCapabilities.class)
             // client <------ server
-            .consume(MsgPlayerCapabilities.class, (msg, channel) -> {
-                System.out.println("[CLIENT] Got capabilities for player I am "
-                        + Minecraft.getMinecraft().player.getGameProfile().getId());
-            })
-
+            .consume(MsgPlayerCapabilities.class)
             // client ------> server
-            .consume(MsgPlayerAbility.class, (msg, channel) -> {
-
-            });
+            .consume(MsgPlayerAbility.class);
 
         MAGIC_PARTICLE = Particles.instance().registerParticle(new EntityMagicFX.Factory());
         RAIN_PARTICLE = Particles.instance().registerParticle(new EntityRaindropFX.Factory());
@@ -125,9 +116,9 @@ public class Unicopia {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == Phase.END) {
-            PlayerSpeciesList.instance()
-                .getPlayer(event.player)
-                .onUpdate(event.player);
+            PlayerSpeciesList.instance().getPlayer(event.player).onUpdate(event.player);
+        } else {
+            PlayerSpeciesList.instance().getPlayer(event.player).beforeUpdate(event.player);
         }
     }
 

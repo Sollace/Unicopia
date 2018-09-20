@@ -32,6 +32,8 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
 
     void onFall(float distance, float damageMultiplier);
 
+    void beforeUpdate(EntityPlayer entity);
+
     static EntityPlayer getPlayerEntity(UUID playerId) {
         EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(playerId);
 

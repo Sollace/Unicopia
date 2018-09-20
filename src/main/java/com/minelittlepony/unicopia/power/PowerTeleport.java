@@ -13,8 +13,11 @@ import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockWall;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.network.play.server.SPacketSetPassengers;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -110,7 +113,16 @@ public class PowerTeleport implements IPower<Location> {
         player.world.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
 
         double distance = player.getDistance(data.x, data.y, data.z) / 10;
-        player.dismountRidingEntity();
+
+        if (player.isRiding()) {
+            Entity mount = player.getRidingEntity();
+
+            player.dismountRidingEntity();
+
+            if (mount instanceof EntityPlayerMP) {
+                ((EntityPlayerMP)player).getServerWorld().getEntityTracker().sendToTrackingAndSelf(player, new SPacketSetPassengers(mount));
+            }
+        }
 
         player.setPositionAndUpdate(data.x + (player.posX - Math.floor(player.posX)), data.y, data.z + (player.posZ - Math.floor(player.posZ)));
         IPower.takeFromPlayer(player, distance);

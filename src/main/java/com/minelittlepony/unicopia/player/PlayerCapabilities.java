@@ -14,12 +14,15 @@ import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.network.play.server.SPacketSetPassengers;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.StatList;
 
@@ -110,6 +113,22 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
     public boolean isClientPlayer() {
         return UClient.isClientSide() &&
                 Minecraft.getMinecraft().player.getGameProfile().getId().equals(getOwner().getGameProfile().getId());
+    }
+
+    @Override
+    public void beforeUpdate(EntityPlayer entity) {
+        if (entity.world.isRemote) {
+            if (entity.isRiding() && entity.isSneaking()) {
+
+                Entity ridee = entity.getRidingEntity();
+
+                entity.dismountRidingEntity();
+
+                if (ridee instanceof EntityPlayerMP) {
+                    ((EntityPlayerMP)ridee).getServerWorld().getEntityTracker().sendToTrackingAndSelf(ridee, new SPacketSetPassengers(ridee));
+                }
+            }
+        }
     }
 
     @Override
