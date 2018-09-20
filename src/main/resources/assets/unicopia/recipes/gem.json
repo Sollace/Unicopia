@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " # ",
+    "###",
+    " # "
+  ],
+  "key": {
+    "#": [
+      {
+        "item": "unicopia:corrupted_gem",
+        "data": 0
+      }
+    ]
+  },
+  "result": {
+    "item": "unicopia:gem",
+    "data": 0,
+    "count": 1
+  }
+}
