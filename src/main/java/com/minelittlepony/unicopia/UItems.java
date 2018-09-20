@@ -2,13 +2,18 @@ package com.minelittlepony.unicopia;
 
 import com.minelittlepony.unicopia.item.ItemApple;
 import com.minelittlepony.unicopia.item.ItemCloud;
+import com.minelittlepony.unicopia.item.ItemCurse;
 import com.minelittlepony.unicopia.item.ItemOfHolding;
+import com.minelittlepony.unicopia.item.ItemSpell;
 import com.minelittlepony.unicopia.item.UItemBlock;
 import com.minelittlepony.unicopia.item.UItemMultiTexture;
 import com.minelittlepony.unicopia.item.UItemSlab;
+import com.minelittlepony.unicopia.spell.SpellRegistry;
 
 import come.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
@@ -65,6 +70,8 @@ public class UItems {
             .setTranslationKey("cloud_slab")
             .setRegistryName(Unicopia.MODID, "cloud_slab");
 
+    public static final ItemSpell spell = new ItemSpell(Unicopia.MODID, "gem");
+    public static final ItemSpell curse = new ItemCurse(Unicopia.MODID, "corrupted_gem");
 
     public static final ItemOfHolding bag_of_holding = new ItemOfHolding(Unicopia.MODID, "bag_of_holding");
 
@@ -77,7 +84,7 @@ public class UItems {
 
         registry.registerAll(cloud_spawner, dew_drop, cloud_matter, cloud_block,
                              cloud_stairs, cloud_slab, mist_door, anvil,
-                             bag_of_holding);
+                             bag_of_holding, spell, curse);
 
         if (UClient.isClientSide()) {
             registerAllVariants(apple, apple.getVariants());
@@ -90,6 +97,8 @@ public class UItems {
             registerAllVariants(mist_door, "mist_door");
             registerAllVariants(anvil, "anvil");
             registerAllVariants(bag_of_holding, "bag_of_holding");
+            registerAllVariants(spell, "gem");
+            registerAllVariants(curse, "corrupted_gem");
         }
 
         registerFuels();
@@ -122,5 +131,15 @@ public class UItems {
                 cloud, book, cloud,
                 cloud, cloud, cloud
         ), new ItemStack(cloud_block, 1, 2)).setRegistryName(Unicopia.MODID, "id_dont_care_just_use_it"));
+    }
+
+    static void registerColors(ItemColors registry) {
+        registry.registerItemColorHandler((stack, tint) -> {
+            if (Predicates.MAGI.test(Minecraft.getMinecraft().player)) {
+                return SpellRegistry.instance().getSpellTintFromStack(stack);
+            }
+
+            return 0xffffff;
+        }, spell, curse);
     }
 }

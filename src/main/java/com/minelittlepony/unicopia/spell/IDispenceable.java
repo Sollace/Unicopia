@@ -18,5 +18,5 @@ public interface IDispenceable {
 	 * @param source	The dispenser currently dispensing
 	 * @return	an ActionResult for the type of action to perform.
 	 */
-	public ActionResult onDispenced(BlockPos pos, EnumFacing facing, IBlockSource source);
+	public SpellCastResult onDispenced(BlockPos pos, EnumFacing facing, IBlockSource source);
 }

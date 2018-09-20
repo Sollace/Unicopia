@@ -17,14 +17,23 @@ item.mist_door.name=Cloud Door
 item.dew_drop.name=Dew Drop
 item.cloud_anvil.name=Anvilhead Anvil
 
-item.spell.name=Gem
-item.spell.shield.name=Gem of Repulsion
-item.spell.fire.name=Gem of Flame
-item.spell.inferno.name=Gem of Inferno
-item.spell.ice.name=Gem of Freezing
-item.spell.portal.name=Gem of Teleportation
-item.spell.attract.name=Gem of Retention
-item.spell.minion.name=Gem of Obedience
+item.gem.name=Gem
+item.corrupted_gem.name=Fractured Gem
+item.gem.shield.name=Gem of Repulsion
+item.corrupted_gem.shield.name=Corrupt Gem of Repulsion
+item.gem.fire.name=Gem of Flame
+item.corrupted_gem.fire.name=Corrupt Gem of Burning
+item.gem.inferno.name=Gem of Inferno
+item.corrupted_gem.inferno.name=Corrupt Gem of Inferno
+item.gem.ice.name=Gem of Freezing
+item.corrupted_gem.ice.name=Corrupt Gem of Freezing
+item.gem.portal.name=Gem of Transportation
+item.corrupted_gem.portal.name=Corrupt Gem of Transportation
+item.gem.attract.name=Gem of Retention
+item.corrupted_gem.attract.name=Gem of Entrapment
+item.gem.minion.name=Gem of Obedience
+item.corrupted_gem.minion.name=Corrupt Gem of Obedience
+
 item.spellbook.name=Spellbook
 item.bag_of_holding.name=Bag of Holding
 

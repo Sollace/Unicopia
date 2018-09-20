@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.spell;
 /**
  * A type of action to perform after a spell has completed its handling.
  */
-public enum ActionResult {
+public enum SpellCastResult {
 	/**
 	 * No action.
 	 */

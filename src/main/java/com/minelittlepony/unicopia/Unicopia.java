@@ -2,18 +2,19 @@ package com.minelittlepony.unicopia;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.FOVUpdateEvent;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerFlyableFallEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -65,15 +66,12 @@ public class Unicopia {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        channel = JumpingCastle.listen(MODID, () -> {
+        channel = JumpingCastle.subscribeTo(MODID, () -> {
             channel.send(new MsgRequestCapabilities(Minecraft.getMinecraft().player), Target.SERVER);
         })
-            // client ------> server
-            .consume(MsgRequestCapabilities.class)
-            // client <------ server
-            .consume(MsgPlayerCapabilities.class)
-            // client ------> server
-            .consume(MsgPlayerAbility.class);
+            .listenFor(MsgRequestCapabilities.class)
+            .listenFor(MsgPlayerCapabilities.class)
+            .listenFor(MsgPlayerAbility.class);
 
         MAGIC_PARTICLE = Particles.instance().registerParticle(new EntityMagicFX.Factory());
         RAIN_PARTICLE = Particles.instance().registerParticle(new EntityRaindropFX.Factory());
@@ -88,6 +86,11 @@ public class Unicopia {
     @SubscribeEvent
     public static void registerItemsStatic(RegistryEvent.Register<Item> event) {
         UItems.registerItems(event.getRegistry());
+    }
+
+    @SubscribeEvent
+    public static void registerItemColoursStatic(ColorHandlerEvent.Item event) {
+        UItems.registerColors(event.getItemColors());
     }
 
     @SubscribeEvent
@@ -110,6 +113,24 @@ public class Unicopia {
     public static void onGameTick(TickEvent.ClientTickEvent event) {
         if (event.phase == Phase.END) {
             Keyboard.getKeyHandler().onKeyInput();
+        }
+    }
+
+    @SubscribeEvent
+    public static void onBlockHarvested(BlockEvent.HarvestDropsEvent event) {
+        if (event.getState().getBlock() == Blocks.STONE) {
+            int fortuneFactor = 1 + event.getFortuneLevel() * 15;
+            System.out.println(event.getFortuneLevel());
+
+            if (event.getWorld().rand.nextInt(500 / fortuneFactor) == 0) {
+                for (int i = 0; i < 1 + event.getFortuneLevel(); i++) {
+                    if (event.getWorld().rand.nextInt(10) > 3) {
+                        event.getDrops().add(new ItemStack(UItems.curse, 1));
+                    } else {
+                        event.getDrops().add(new ItemStack(UItems.spell, 1));
+                    }
+                }
+            }
         }
     }
 
@@ -168,15 +189,5 @@ public class Unicopia {
         fov += PlayerSpeciesList.instance().getPlayer(event.getEntity()).getExertion() / 5;
 
         event.setNewfov(fov);
-    }
-
-    @SubscribeEvent
-    public static void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {
-        FBS.attach(event);
-    }
-
-    @SubscribeEvent
-    public static void clonePlayer(PlayerEvent.Clone event) {
-        FBS.clone(event);
     }
 }

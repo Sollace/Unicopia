@@ -2,8 +2,11 @@ package com.minelittlepony.unicopia.spell;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Callable;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class SpellRegistry {
 
@@ -13,25 +16,116 @@ public class SpellRegistry {
         return instance;
     }
 
-    private final Map<String, Callable<IMagicEffect>> factories = new HashMap<>();
-
-    private SpellRegistry() {
-        registerSpell("shield", SpellShield::new);
+    public static boolean stackHasEnchantment(ItemStack stack) {
+        return stack.hasTagCompound() && stack.getTagCompound().hasKey("spell");
     }
 
-    public Optional<IMagicEffect> getSpellFromName(String name) {
-        try {
-            if (factories.containsKey(name)) {
-                return Optional.ofNullable(factories.get(name).call());
+    private final Map<String, Entry> entries = new HashMap<>();
+
+    private SpellRegistry() {
+        registerSpell("shield", 0xffff00, SpellShield::new);
+    }
+
+    public IMagicEffect getSpellFromName(String name) {
+        if (entries.containsKey(name)) {
+            return entries.get(name).create();
+        }
+
+        return null;
+    }
+
+    public IMagicEffect createEffectFroNBT(NBTTagCompound compound) {
+        if (compound.hasKey("effect_id") && compound.hasKey("effect")) {
+            IMagicEffect effect = getSpellFromName(compound.getString("effect_id"));
+
+            if (effect != null) {
+                effect.readFromNBT(compound.getCompoundTag("effect"));
             }
+
+            return effect;
+        }
+
+        return null;
+    }
+
+    public IDispenceable getDispenseActionFrom(ItemStack stack) {
+        String key = getKeyFromStack(stack);
+
+        if (entries.containsKey(key)) {
+            Entry entry = entries.get(key);
+            if (entry.canDispense) {
+                return entry.create();
+            }
+        }
+
+        return null;
+    }
+
+    public IMagicEffect getSpellFromItemStack(ItemStack stack) {
+        return getSpellFromName(getKeyFromStack(stack));
+    }
+
+    public void registerSpell(String key, int tint, Callable<IMagicEffect> factory) {
+        try {
+            entries.put(key, new Entry(factory, tint));
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return Optional.empty();
     }
 
-    public void registerSpell(String key, Callable<IMagicEffect> factory) {
-        factories.put(key, factory);
+    public ItemStack enchantStack(ItemStack stack, String name) {
+        stack.setTagCompound(new NBTTagCompound());
+        stack.getTagCompound().setString("spell", name);
+
+        return stack;
+    }
+
+    private String getKeyFromStack(ItemStack stack) {
+        if (stack.isEmpty() || !stack.hasTagCompound() || !stack.getTagCompound().hasKey("spell")) {
+            return "";
+        }
+
+        return stack.getTagCompound().getString("spell");
+    }
+
+    public int getSpellTintFromStack(ItemStack stack) {
+        return getSpellTint(getKeyFromStack(stack));
+    }
+
+    public int getSpellTint(String key) {
+        if (entries.containsKey(key)) {
+            return entries.get(key).color;
+        }
+
+        return 0xffffff;
+    }
+
+    public Set<String> getAllNames() {
+        return entries.keySet();
+    }
+
+    class Entry {
+        Callable<IMagicEffect> factory;
+
+        int color;
+
+        boolean canDispense;
+
+        Entry(Callable<IMagicEffect> factory, int color) throws Exception {
+            this.factory = factory;
+            this.color = color;
+            this.canDispense = factory.call() instanceof IDispenceable;
+        }
+
+        @SuppressWarnings("unchecked")
+        <T extends IMagicEffect> T create() {
+            try {
+                return (T) factory.call();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
     }
 }

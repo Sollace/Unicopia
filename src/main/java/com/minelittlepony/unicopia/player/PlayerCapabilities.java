@@ -210,15 +210,7 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
         setPlayerSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
         powers.readFromNBT(compound.getCompoundTag("powers"));
         gravity.readFromNBT(compound.getCompoundTag("gravity"));
-
-        effect = null;
-
-        if (compound.hasKey("effect_id") && compound.hasKey("effect")) {
-            SpellRegistry.instance().getSpellFromName(compound.getString("effect_id")).ifPresent(f -> {
-                effect = f;
-                effect.readFromNBT(compound.getCompoundTag("effect"));
-            });
-        }
+        effect = SpellRegistry.instance().createEffectFroNBT(compound);
     }
 
     @Override
