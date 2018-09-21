@@ -14,6 +14,9 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E> {
         return getEffect() != null;
     }
 
+    /**
+     * Gets the entity directly responsible for casting.
+     */
     default Entity getEntity() {
         return getOwner();
     }

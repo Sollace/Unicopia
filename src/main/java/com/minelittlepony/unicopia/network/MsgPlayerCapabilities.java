@@ -15,7 +15,6 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,12 +31,14 @@ public class MsgPlayerCapabilities implements IMessage, IMessageHandler<MsgPlaye
     byte[] compoundTag;
 
     public MsgPlayerCapabilities(Race race, EntityPlayer player) {
-        this(race, player.getGameProfile().getId());
+        newRace = race;
+        senderId = player.getUniqueID();
+        compoundTag = new byte[0];
     }
 
     public MsgPlayerCapabilities(IPlayer player) {
         newRace = player.getPlayerSpecies();
-        senderId = player.getOwner().getGameProfile().getId();
+        senderId = player.getOwner().getUniqueID();
 
         try (ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
             NBTTagCompound nbt = player.toNBT();
@@ -49,40 +50,27 @@ public class MsgPlayerCapabilities implements IMessage, IMessageHandler<MsgPlaye
         }
     }
 
-    public MsgPlayerCapabilities(Race race, UUID playerId) {
-        newRace = race;
-        senderId = playerId;
-        compoundTag = new byte[0];
-    }
-
     @Override
     public void onPayload(MsgPlayerCapabilities message, IChannel channel) {
-        EntityPlayer self = Minecraft.getMinecraft().player;
-        UUID myid = self.getGameProfile().getId();
+        EntityPlayer self = IPlayer.getPlayerFromClient(senderId);
 
-        IPlayer player;
-        if (senderId.equals(myid)) {
-            player = PlayerSpeciesList.instance().getPlayer(self);
+        if (self == null) {
+            System.out.println("[CLIENT] Player with id " + senderId + " was not found!");
         } else {
-            EntityPlayer found = Minecraft.getMinecraft().world.getPlayerEntityByUUID(senderId);
+            System.out.println("[CLIENT] Got capabilities for " + senderId);
+            IPlayer player = PlayerSpeciesList.instance().getPlayer(self);
 
-            if (found == null) {
-                System.out.println("Player with id " + senderId + " was not found!");
-                return;
+            if (compoundTag.length > 0) {
+                try (ByteArrayInputStream input = new ByteArrayInputStream(compoundTag)) {
+                    NBTTagCompound nbt = CompressedStreamTools.read(new DataInputStream(input));
+
+                    player.readFromNBT(nbt);
+                } catch (IOException e) {
+
+                }
+            } else {
+                player.setPlayerSpecies(newRace);
             }
-
-            player = PlayerSpeciesList.instance().getPlayer(found);
-        }
-
-        if (compoundTag.length > 0) {
-            try (ByteArrayInputStream input = new ByteArrayInputStream(compoundTag)) {
-                NBTTagCompound nbt = CompressedStreamTools.read(new DataInputStream(input));
-
-                player.readFromNBT(nbt);
-            } catch (IOException e) {
-            }
-        } else {
-            player.setPlayerSpecies(newRace);
         }
     }
 }

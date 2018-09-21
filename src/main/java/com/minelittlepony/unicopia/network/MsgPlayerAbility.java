@@ -32,13 +32,13 @@ public class MsgPlayerAbility implements IMessage, IMessageHandler<MsgPlayerAbil
     private String abilityJson;
 
     public MsgPlayerAbility(EntityPlayer player, IPower<?> power, IData data) {
-        senderId = player.getGameProfile().getId();
+        senderId = player.getUniqueID();
         powerIdentifier = power.getKeyName();
         abilityJson = gson.toJson(data, power.getPackageType());
     }
 
     private <T extends IData> void apply(IPower<T> power) {
-        EntityPlayer player = IPlayer.getPlayerEntity(senderId);
+        EntityPlayer player = IPlayer.getPlayerFromServer(senderId);
         if (player == null) {
             return;
         }

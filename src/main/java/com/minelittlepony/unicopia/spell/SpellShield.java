@@ -57,7 +57,7 @@ public class SpellShield extends AbstractSpell {
 	protected void spawnParticles(World w, double x, double y, double z, int strength) {
 	    IShape sphere = new Sphere(true, strength);
 
-	    for (int i = 0; i < strength; i++) {
+	    for (int i = 0; i < strength * 6; i++) {
     	    Vec3d pos = sphere.computePoint(w.rand);
     	    Particles.instance().spawnParticle(Unicopia.MAGIC_PARTICLE, false,
     	            pos.x + x, pos.y + y, pos.z + z,

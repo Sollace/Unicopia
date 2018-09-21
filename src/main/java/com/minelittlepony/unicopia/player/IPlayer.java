@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.minelittlepony.unicopia.spell.ICaster;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -34,16 +35,23 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
 
     void beforeUpdate(EntityPlayer entity);
 
-    static EntityPlayer getPlayerEntity(UUID playerId) {
-        EntityPlayer player = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getPlayerByUUID(playerId);
+    static EntityPlayer getPlayerFromServer(UUID playerId) {
+        Entity e = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityFromUuid(playerId);
 
-        if (player == null) {
-            Entity e = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityFromUuid(playerId);
-            if (e instanceof EntityPlayer) {
-                return (EntityPlayer)e;
-            }
+        if (e instanceof EntityPlayer) {
+            return (EntityPlayer)e;
         }
 
-        return player;
+        return null;
+    }
+
+    static EntityPlayer getPlayerFromClient(UUID playerId) {
+        Minecraft mc = Minecraft.getMinecraft();
+
+        if (mc.player.getUniqueID().equals(playerId)) {
+            return mc.player;
+        }
+
+        return mc.world.getPlayerEntityByUUID(playerId);
     }
 }

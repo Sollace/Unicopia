@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.entity.EntitySpell;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.IUseAction;
 import com.minelittlepony.unicopia.spell.SpellCastResult;
@@ -43,8 +44,9 @@ public class ItemSpell extends Item implements ICastable {
             }
 
             if (dispenceResult == SpellCastResult.PLACE) {
+                BlockPos pos = source.getBlockPos();
 
-               // castContainedSpell(source.getWorld(), pos.getX(), pos.getY(), pos.getZ(), stack, effect);
+                castContainedSpell(source.getWorld(), pos, stack, effect);
 
                 stack.shrink(1);
             }
@@ -114,7 +116,7 @@ public class ItemSpell extends Item implements ICastable {
             pos = pos.offset(side);
 
             if (result == SpellCastResult.PLACE) {
-               // castContainedSpell(world, pos.getX(), pos.getY(), pos.getZ(), stack, effect).setOwner(player);
+                castContainedSpell(world, pos, stack, effect).setOwner(player);
             }
         }
 
@@ -169,11 +171,13 @@ public class ItemSpell extends Item implements ICastable {
 		return result;
 	}
 
-/*	protected static EntitySpell castContainedSpell(World world, int x, int y, int z, ItemStack stack, IMagicEffect effect) {
+	protected static EntitySpell castContainedSpell(World world, BlockPos pos, ItemStack stack, IMagicEffect effect) {
 		EntitySpell spell = new EntitySpell(world);
+
         spell.setEffect(effect);
-		spell.setLocationAndAngles(x + 0.5, y + 0.5, z + 0.5, 0, 0);
+		spell.setLocationAndAngles(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0);
     	world.spawnEntity(spell);
+
     	return spell;
-	} */
+	}
 }

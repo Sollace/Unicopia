@@ -34,8 +34,8 @@ public class SpellRegistry {
         return null;
     }
 
-    public IMagicEffect createEffectFroNBT(NBTTagCompound compound) {
-        if (compound.hasKey("effect_id") && compound.hasKey("effect")) {
+    public IMagicEffect createEffectFromNBT(NBTTagCompound compound) {
+        if (compound.hasKey("effect_id")) {
             IMagicEffect effect = getSpellFromName(compound.getString("effect_id"));
 
             if (effect != null) {
@@ -46,6 +46,14 @@ public class SpellRegistry {
         }
 
         return null;
+    }
+
+    public NBTTagCompound serializeEffectToNBT(IMagicEffect effect) {
+        NBTTagCompound compound = effect.toNBT();
+
+        compound.setString("effect_id", effect.getName());
+
+        return compound;
     }
 
     public IDispenceable getDispenseActionFrom(ItemStack stack) {
@@ -80,7 +88,7 @@ public class SpellRegistry {
         return stack;
     }
 
-    private String getKeyFromStack(ItemStack stack) {
+    public static String getKeyFromStack(ItemStack stack) {
         if (stack.isEmpty() || !stack.hasTagCompound() || !stack.getTagCompound().hasKey("spell")) {
             return "";
         }

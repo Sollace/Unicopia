@@ -46,7 +46,7 @@ public class PlayerSpeciesList {
     }
 
     public IPlayer getPlayer(UUID playerId) {
-        return getPlayer(IPlayer.getPlayerEntity(playerId));
+        return getPlayer(IPlayer.getPlayerFromServer(playerId));
     }
 
     public <T extends Entity> IRaceContainer<T> getEntity(T entity) {

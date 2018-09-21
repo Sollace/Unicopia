@@ -1,13 +1,9 @@
 package com.minelittlepony.unicopia.player;
 
-import java.util.UUID;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.spell.ICaster;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
@@ -28,12 +24,14 @@ import net.minecraft.stats.StatList;
 
 class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
-    private static final Logger logger = LogManager.getLogger();
-
     private static final DataParameter<Integer> PLAYER_RACE = EntityDataManager
             .createKey(EntityPlayer.class, DataSerializers.VARINT);
+
     private static final DataParameter<Float> EXERTION = EntityDataManager
             .createKey(EntityPlayer.class, DataSerializers.FLOAT);
+
+    private static final DataParameter<NBTTagCompound> EFFECT = EntityDataManager
+            .createKey(EntityPlayer.class, DataSerializers.COMPOUND_TAG);
 
     private final PlayerAbilityDelegate powers = new PlayerAbilityDelegate(this);
 
@@ -41,18 +39,18 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
     private final PlayerAttributes attributes = new PlayerAttributes();
 
+    private final EffectSync<EntityPlayer> effectDelegate = new EffectSync<>(this, EFFECT);
+
     private float nextStepDistance = 1;
 
-    private IMagicEffect effect;
-
     private EntityPlayer entity;
-    private UUID playerId;
 
     PlayerCapabilities(EntityPlayer player) {
         setOwner(player);
 
         player.getDataManager().register(PLAYER_RACE, Race.HUMAN.ordinal());
         player.getDataManager().register(EXERTION, 0F);
+        player.getDataManager().register(EFFECT, new NBTTagCompound());
     }
 
     @Override
@@ -66,21 +64,19 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
     @Override
     public void setPlayerSpecies(Race race) {
-        EntityPlayer self = getOwner();
+        EntityPlayer player = getOwner();
 
-        if (!PlayerSpeciesList.instance().speciesPermitted(race, getOwner())) {
+        if (!PlayerSpeciesList.instance().speciesPermitted(race, player)) {
             race = Race.HUMAN;
         }
 
-        if (self != null) {
-            getOwner().getDataManager().set(PLAYER_RACE, race.ordinal());
+        player.getDataManager().set(PLAYER_RACE, race.ordinal());
 
-            self.capabilities.allowFlying = race.canFly();
-            gravity.updateFlightStat(self, self.capabilities.isFlying);
+        player.capabilities.allowFlying = race.canFly();
+        gravity.updateFlightStat(player, player.capabilities.isFlying);
 
-            self.sendPlayerAbilities();
-            sendCapabilities(false);
-        }
+        player.sendPlayerAbilities();
+        sendCapabilities(false);
     }
 
     @Override
@@ -96,10 +92,12 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
     @Override
     public void sendCapabilities(boolean full) {
         if (!getOwner().getEntityWorld().isRemote) {
+            System.out.println("[SERVER] Sending player capabilities.");
+
             if (full) {
                 Unicopia.channel.broadcast(new MsgPlayerCapabilities(this));
             } else {
-                Unicopia.channel.broadcast(new MsgPlayerCapabilities(getPlayerSpecies(), getOwner().getGameProfile().getId()));
+                Unicopia.channel.broadcast(new MsgPlayerCapabilities(getPlayerSpecies(), getOwner()));
             }
         }
     }
@@ -136,15 +134,15 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
         powers.onUpdate(entity);
         gravity.onUpdate(entity);
 
-        if (effect != null) {
+        if (hasEffect()) {
             if (!getPlayerSpecies().canCast()) {
                 setEffect(null);
             } else {
                 if (entity.getEntityWorld().isRemote) { //  && entity.getEntityWorld().getWorldTime() % 10 == 0
-                    effect.render(entity);
+                    getEffect().render(entity);
                 }
 
-                if (!effect.update(entity)) {
+                if (!getEffect().update(entity)) {
                     setEffect(null);
                 }
             }
@@ -196,21 +194,27 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         compound.setString("playerSpecies", getPlayerSpecies().name());
+
         compound.setTag("powers", powers.toNBT());
         compound.setTag("gravity", gravity.toNBT());
 
+        IMagicEffect effect = getEffect();
+
         if (effect != null) {
-            compound.setString("effect_id", effect.getName());
-            compound.setTag("effect", effect.toNBT());
+            compound.setTag("effect", SpellRegistry.instance().serializeEffectToNBT(effect));
         }
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         setPlayerSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
+
         powers.readFromNBT(compound.getCompoundTag("powers"));
         gravity.readFromNBT(compound.getCompoundTag("gravity"));
-        effect = SpellRegistry.instance().createEffectFroNBT(compound);
+
+        if (compound.hasKey("effect")) {
+            setEffect(SpellRegistry.instance().createEffectFromNBT(compound.getCompoundTag("effect")));
+        }
     }
 
     @Override
@@ -221,30 +225,23 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
     @Override
     public void setEffect(IMagicEffect effect) {
-        this.effect = effect;
+        effectDelegate.set(effect);
 
         sendCapabilities(true);
     }
 
     @Override
     public IMagicEffect getEffect() {
-        return effect;
+        return effectDelegate.get();
     }
 
     @Override
     public void setOwner(EntityPlayer owner) {
         entity = owner;
-        playerId = owner.getGameProfile().getId();
     }
 
     @Override
     public EntityPlayer getOwner() {
-        if (entity == null) {
-            entity = IPlayer.getPlayerEntity(playerId);
-            if (entity == null) {
-                logger.error("Capabilities without player! Mismatched id was" + playerId);
-            }
-        }
         return entity;
     }
 }
