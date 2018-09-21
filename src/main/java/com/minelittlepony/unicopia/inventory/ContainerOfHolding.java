@@ -25,18 +25,27 @@ public class ContainerOfHolding extends Container implements IWorldNameable {
         final int LEFT_MARGIN = 8;
         final int TOP_MARGIN = 18;
 
-        final int inventoryRows = (int)Math.ceil(inventory.getSizeInventory() / 9);
+        final int containerRows = (int)Math.ceil(inventory.getSizeInventory() / 9);
+        final int inventoryRows = (int)Math.ceil((player.inventory.getSizeInventory() - 9) / 9);
 
         for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            int slotX = i % 9;
-            int slotY = (int)Math.floor(i / 9);
+            int slotX = (i % 9) * 18;
+            int slotY = (int)Math.floor(i / 9) * 18;
 
-            addSlotToContainer(new SlotOfHolding(inventory, i, LEFT_MARGIN + slotX * 18, TOP_MARGIN + slotY * 18));
+            addSlotToContainer(new SlotOfHolding(inventory, i, LEFT_MARGIN + slotX, TOP_MARGIN + slotY));
         }
 
-        int hotbarY = TOP_MARGIN + (inventoryRows * 18) + 4;
+        int inventoryY = (containerRows * 18) + 8;
+        int hotbarY = inventoryY + TOP_MARGIN + (inventoryRows * 18) + 4;
 
-        for (int i = 0; i < 9; ++i) {
+        for (int i = 9; i < player.inventory.getSizeInventory() - 5; i++) {
+            int slotX = (i % 9) * 18;
+            int slotY = (int)Math.floor(i / 9) * 18;
+
+            addSlotToContainer(new Slot(player.inventory, i, LEFT_MARGIN + slotX, inventoryY + slotY));
+        }
+
+        for (int i = 0; i < 9; i++) {
             addSlotToContainer(new Slot(player.inventory, i, LEFT_MARGIN + i * 18, hotbarY));
         }
     }

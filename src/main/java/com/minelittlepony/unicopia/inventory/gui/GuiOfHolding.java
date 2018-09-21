@@ -15,12 +15,14 @@ public class GuiOfHolding extends GuiContainer {
     private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
 
     private final int inventoryRows;
+    private final int playerRows;
 
     private final Scrollbar scrollbar = new Scrollbar();
 
     public GuiOfHolding(IInteractionObject interaction) {
         super(interaction.createContainer(Minecraft.getMinecraft().player.inventory, Minecraft.getMinecraft().player));
 
+        playerRows = Minecraft.getMinecraft().player.inventory.getSizeInventory() / 9;
         inventoryRows = (inventorySlots.inventorySlots.size() / 9) - 1;
     }
 
@@ -101,9 +103,10 @@ public class GuiOfHolding extends GuiContainer {
         int midY = (height - ySize) / 2;
 
         drawTexturedModalRect(midX, midY, 0, 0, xSize, 18);
-        for (int i = 0; i < inventoryRows; i++) {
+        for (int i = 0; i < inventoryRows - (playerRows - 1); i++) {
             drawTexturedModalRect(midX, midY + (18 * (i + 1)), 0, 18, xSize, 18);
         }
-        drawTexturedModalRect(midX, midY + inventoryRows * 18 + 17, 0, 193, xSize, 30);
+
+        drawTexturedModalRect(midX, midY + (18 * (inventoryRows - (playerRows - 2))) - 1, 0, 131, xSize, 98);
     }
 }
