@@ -20,7 +20,7 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, InbtSerialisabl
 
     private final IPlayer player;
 
-    private static final float MAXIMUM_FLIGHT_EXPERIENCE = 100;
+    private static final float MAXIMUM_FLIGHT_EXPERIENCE = 500;
 
     private int ticksInAir = 0;
     private float flightExperience = 0;
@@ -34,10 +34,15 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, InbtSerialisabl
     @Override
     public void onUpdate(EntityPlayer entity) {
         entity.capabilities.allowFlying = entity.capabilities.isCreativeMode || player.getPlayerSpecies().canFly();
-        entity.capabilities.isFlying |= entity.capabilities.allowFlying && isFlying;
+
+        if (!entity.capabilities.isCreativeMode) {
+            entity.capabilities.isFlying |= entity.capabilities.allowFlying && isFlying && !entity.onGround;
+        }
+
+        isFlying = entity.capabilities.isFlying;
 
         if (!entity.capabilities.isCreativeMode && !entity.isElytraFlying()) {
-            if (entity.capabilities.isFlying && !entity.isRiding()) {
+            if (isFlying && !entity.isRiding()) {
 
                 entity.fallDistance = 0;
 
@@ -48,9 +53,17 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, InbtSerialisabl
 
                 entity.addExhaustion(exhaustion * (1 - flightExperience));
 
-                if (entity.ticksExisted % 20000 == 0) {
+                if (ticksInAir > 2000) {
+                    ticksInAir = 1;
                     addFlightExperience(entity);
+                    entity.playSound(SoundEvents.ENTITY_GUARDIAN_FLOP, 1, 1);
                 }
+
+                float forward = 0.00015F * flightExperience;
+
+                entity.motionX += - forward * MathHelper.sin(entity.rotationYaw * 0.017453292F);
+                entity.motionY -= 0.05F - ((entity.motionX * entity.motionX) + (entity.motionZ + entity.motionZ)) / 100;
+                entity.motionZ += forward * MathHelper.cos(entity.rotationYaw * 0.017453292F);
             } else {
                 ticksInAir = 0;
             }
@@ -95,7 +108,7 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, InbtSerialisabl
     private void addFlightExperience(EntityPlayer entity) {
         entity.addExperience(1);
 
-        flightExperience += (flightExperience - MAXIMUM_FLIGHT_EXPERIENCE) / 20;
+        flightExperience += (MAXIMUM_FLIGHT_EXPERIENCE - flightExperience) / 20;
     }
 
     public void updateFlightStat(EntityPlayer entity, boolean flying) {
