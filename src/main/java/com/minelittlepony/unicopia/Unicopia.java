@@ -7,8 +7,11 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.FOVUpdateEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
@@ -36,10 +39,12 @@ import com.minelittlepony.unicopia.client.particle.EntityMagicFX;
 import com.minelittlepony.unicopia.client.particle.EntityRaindropFX;
 import com.minelittlepony.unicopia.client.particle.Particles;
 import com.minelittlepony.unicopia.command.Commands;
+import com.minelittlepony.unicopia.hud.UHud;
 import com.minelittlepony.unicopia.input.Keyboard;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
+import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.PowersRegistry;
 import com.minelittlepony.pony.data.IPony;
@@ -86,9 +91,7 @@ public class Unicopia {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        channel = JumpingCastle.subscribeTo(MODID, () -> {
-            channel.send(new MsgRequestCapabilities(Minecraft.getMinecraft().player, clientPlayerRace), Target.SERVER);
-        })
+        channel = JumpingCastle.subscribeTo(MODID, () -> {})
             .listenFor(MsgRequestCapabilities.class)
             .listenFor(MsgPlayerCapabilities.class)
             .listenFor(MsgPlayerAbility.class);
@@ -119,8 +122,13 @@ public class Unicopia {
     }
 
     @SubscribeEvent
-    public static void registerRecipesStatic(RegistryEvent.Register<IRecipe> event) {
+    public static void registerSounds(RegistryEvent.Register<IRecipe> event) {
         UItems.registerRecipes(event.getRegistry());
+    }
+
+    @SubscribeEvent
+    public static void registerRecipesStatic(RegistryEvent.Register<SoundEvent> event) {
+        USounds.init(event.getRegistry());
     }
 
     @SubscribeEvent
@@ -133,7 +141,7 @@ public class Unicopia {
     public static void onGameTick(TickEvent.ClientTickEvent event) {
         Race newRace = getclientPlayerRace();
 
-        if (newRace != clientPlayerRace) {
+        if (newRace != clientPlayerRace && Minecraft.getMinecraft().player != null) {
             clientPlayerRace = newRace;
 
             channel.send(new MsgRequestCapabilities(Minecraft.getMinecraft().player, clientPlayerRace), Target.SERVER);
@@ -198,6 +206,23 @@ public class Unicopia {
     @EventHandler
     public void onServerStarted(FMLServerStartingEvent event) {
         Commands.init(event);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public static void onRenderHud(RenderGameOverlayEvent.Post event) {
+        if (event.getType() != ElementType.ALL) {
+            return;
+        }
+
+        if (UClient.isClientSide()) {
+            Minecraft mc = Minecraft.getMinecraft();
+            if (mc.player != null && mc.world != null) {
+                IPlayer player = PlayerSpeciesList.instance().getPlayer(mc.player);
+
+                UHud.instance.renderHud(player, event.getResolution());
+            }
+        }
     }
 
     @SubscribeEvent

@@ -15,6 +15,8 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
 
     IAbilityReceiver getAbilities();
 
+    IGravity getGravity();
+
     float getExertion();
 
     void setExertion(float exertion);

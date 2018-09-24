@@ -108,6 +108,11 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
     }
 
     @Override
+    public IGravity getGravity() {
+        return gravity;
+    }
+
+    @Override
     public boolean isClientPlayer() {
         return UClient.isClientSide() &&
                 Minecraft.getMinecraft().player.getGameProfile().getId().equals(getOwner().getGameProfile().getId());

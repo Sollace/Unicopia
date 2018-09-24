@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.player;
 
 import com.minelittlepony.unicopia.InbtSerialisable;
+import com.minelittlepony.unicopia.USounds;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -16,14 +17,14 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
-class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, InbtSerialisable {
+class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtSerialisable {
 
     private final IPlayer player;
 
     private static final float MAXIMUM_FLIGHT_EXPERIENCE = 500;
 
-    private int ticksInAir = 0;
-    private float flightExperience = 0;
+    public int ticksInAir = 0;
+    public float flightExperience = 0;
 
     public boolean isFlying = false;
 
@@ -53,8 +54,8 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, InbtSerialisabl
 
                 entity.addExhaustion(exhaustion * (1 - flightExperience));
 
-                if (ticksInAir > 2000) {
-                    ticksInAir = 1;
+                if (ticksInAir >= MAXIMUM_FLIGHT_EXPERIENCE) {
+                    ticksInAir = 0;
                     addFlightExperience(entity);
                     entity.playSound(SoundEvents.ENTITY_GUARDIAN_FLOP, 1, 1);
                 }
@@ -64,8 +65,17 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, InbtSerialisabl
                 entity.motionX += - forward * MathHelper.sin(entity.rotationYaw * 0.017453292F);
                 entity.motionY -= 0.05F - ((entity.motionX * entity.motionX) + (entity.motionZ + entity.motionZ)) / 100;
                 entity.motionZ += forward * MathHelper.cos(entity.rotationYaw * 0.017453292F);
+
+                if (ticksInAir > 0 && ticksInAir % 12 == 0) {
+                    entity.playSound(USounds.WING_FLAP, 0.1F, 1);
+                }
             } else {
+                if (ticksInAir != 0) {
+                    entity.playSound(USounds.WING_FLAP, 0.04F, 1);
+                }
+
                 ticksInAir = 0;
+                flightExperience *= 0.9991342;
             }
         }
     }
@@ -143,5 +153,20 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, InbtSerialisabl
         ticksInAir = compound.getInteger("flightDuration");
         flightExperience = compound.getFloat("flightExperience");
         isFlying = compound.getBoolean("isFlying");
+    }
+
+    @Override
+    public boolean isFlying() {
+        return isFlying;
+    }
+
+    @Override
+    public float getFlightExperience() {
+        return flightExperience / MAXIMUM_FLIGHT_EXPERIENCE;
+    }
+
+    @Override
+    public float getFlightDuration() {
+        return ticksInAir / MAXIMUM_FLIGHT_EXPERIENCE;
     }
 }

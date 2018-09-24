@@ -1,0 +1,12 @@
+{
+  "wing_flap": {
+    "category": "player",
+    "subtitle": "unicopia.subtitle.flap_wings",
+    "sounds": [
+       "unicopia:wing/wing0",
+       "unicopia:wing/wing1",
+       "unicopia:wing/wing2",
+       "unicopia:wing/wing3"
+     ]
+  }
+}
