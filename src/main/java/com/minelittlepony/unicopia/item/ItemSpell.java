@@ -180,4 +180,12 @@ public class ItemSpell extends Item implements ICastable {
 
     	return spell;
 	}
+
+    @Override
+    public boolean canFeed(EntitySpell entity, ItemStack stack) {
+
+        IMagicEffect effect = entity.getEffect();
+
+        return effect != null && effect.getName().equals(SpellRegistry.getKeyFromStack(stack));
+    }
 }

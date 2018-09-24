@@ -80,8 +80,8 @@ public class ModelGem extends ModelBase {
         GlStateManager.translate(0, floatOffset, 0);
 
         floatOffset = (spell.ticksExisted + stutter) / 20;
-        if (spell.getLevel() > 0) {
-        	floatOffset *= spell.getLevel() + 1;
+        if (spell.getCurrentLevel() > 0) {
+        	floatOffset *= spell.getCurrentLevel() + 1;
         }
 
         floatOffset += spell.hoverStart;

@@ -1,10 +1,13 @@
 package com.minelittlepony.unicopia.entity;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.UItems;
-import com.minelittlepony.unicopia.item.ItemSpell;
+import com.minelittlepony.unicopia.item.ICastable;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.spell.ICaster;
+import com.minelittlepony.unicopia.spell.ILevelled;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
@@ -28,7 +31,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class EntitySpell extends EntityLiving implements IMagicals, ICaster<EntityLivingBase> {
+public class EntitySpell extends EntityLiving implements IMagicals, ICaster<EntityLivingBase>, ILevelled {
 
 	private EntityLivingBase owner = null;
 
@@ -102,7 +105,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 	}
 
 	protected void setOwner(String ownerName) {
-		if (ownerName != null && ownerName.length() != 0) {
+		if (!StringUtils.isEmpty(ownerName)) {
 			dataManager.set(OWNER, ownerName);
 		}
 	}
@@ -110,7 +113,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 	protected String getOwnerName() {
 		String ownerName = dataManager.get(OWNER);
 
-		if (ownerName == null || ownerName.length() == 0) {
+		if (!StringUtils.isEmpty(ownerName)) {
 			if (owner instanceof EntityPlayer) {
 				return owner.getName();
 			}
@@ -135,7 +138,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 
 	protected void displayTick() {
 		if (hasEffect()) {
-		    getEffect().renderAt(this, world, posX, posY, posZ, getLevel());
+		    getEffect().render(this, getCurrentLevel());
 		}
 	}
 
@@ -152,7 +155,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 				setDead();
 				onDeath();
 			} else {
-			    getEffect().updateAt(this, world, posX, posY, posZ, getLevel());
+			    getEffect().update(this, getCurrentLevel());
 			}
 
 			if (getEffect().allowAI()) {
@@ -186,7 +189,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 		world.playSound(posX, posY, posZ, sound.getBreakSound(), SoundCategory.NEUTRAL, sound.getVolume(), sound.getPitch(), true);
 
 		if (world.getGameRules().getBoolean("doTileDrops")) {
-			int level = getLevel();
+			int level = getCurrentLevel();
 
 			ItemStack stack = new ItemStack(UItems.spell, level + 1);
 			if (hasEffect()) {
@@ -204,44 +207,14 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 		super.setDead();
 	}
 
-	public int getLevel() {
-		return dataManager.get(LEVEL);
-	}
-
-	public void setLevel(int radius) {
-		dataManager.set(LEVEL, radius);
-	}
-
-	public boolean tryLevelUp(ItemStack stack) {
-
-		if (SpellRegistry.stackHasEnchantment(stack)) {
-		    if (!getEffect().getName().equals(SpellRegistry.getKeyFromStack(stack))) {
-		        return false;
-		    }
-
-			increaseLevel();
-
-			if (!world.isRemote) {
-				if ((rand.nextFloat() * getLevel()) > 10 || overLevelCap()) {
-					world.createExplosion(this, posX, posY, posZ, getLevel()/2, true);
-					setDead();
-					return false;
-				}
-            }
-
-			playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 0.1f, 1);
-
-			return true;
-		}
-		return false;
-	}
-
 	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand) {
 		if (Predicates.MAGI.test(player)) {
 			ItemStack currentItem = player.getHeldItem(EnumHand.MAIN_HAND);
 
-			if (currentItem != null && currentItem.getItem() instanceof ItemSpell) {
-				tryLevelUp(currentItem);
+			if (currentItem != null
+			        && currentItem.getItem() instanceof ICastable
+			        && ((ICastable)currentItem.getItem()).canFeed(this, currentItem)
+			        && tryLevelUp(currentItem)) {
 
 				if (!player.capabilities.isCreativeMode) {
 					currentItem.shrink(1);
@@ -258,24 +231,48 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 		return EnumActionResult.FAIL;
 	}
 
-	public void increaseLevel() {
-		setLevel(getLevel() + 1);
+    public boolean tryLevelUp(ItemStack stack) {
+        if (SpellRegistry.stackHasEnchantment(stack)) {
+            if (!getEffect().getName().equals(SpellRegistry.getKeyFromStack(stack))) {
+                return false;
+            }
+
+            addLevels(1);
+
+            if (!world.isRemote) {
+                if ((rand.nextFloat() * getCurrentLevel()) > 10 || overLevelCap()) {
+                    world.createExplosion(this, posX, posY, posZ, getCurrentLevel()/2, true);
+                    setDead();
+                    return false;
+                }
+            }
+
+            playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 0.1f, 1);
+
+            return true;
+        }
+
+        return false;
+    }
+
+	@Override
+	public int getMaxLevel() {
+	    return getEffect().getMaxLevel();
 	}
 
-	public boolean canLevelUp() {
-		int max = getEffect().getMaxLevel();
-		return max < 0 || getLevel() < max;
-	}
+	@Override
+    public int getCurrentLevel() {
+        return dataManager.get(LEVEL);
+    }
+
+	@Override
+    public void setCurrentLevel(int level) {
+        dataManager.set(LEVEL, Math.min(level, 0));
+    }
 
 	public boolean overLevelCap() {
-		int max = getEffect().getMaxLevel();
-		return max > 0 && getLevel() >= (max * 1.1);
-	}
-
-	public void decreaseLevel() {
-		int level = getLevel() - 1;
-		if (level < 0) level = 0;
-		setLevel(level);
+		int max = getMaxLevel();
+		return max > 0 && getCurrentLevel() >= (max * 1.1);
 	}
 
 	@Override
@@ -287,7 +284,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 	public void readEntityFromNBT(NBTTagCompound compound) {
 		super.readEntityFromNBT(compound);
 		setOwner(compound.getString("ownerName"));
-        setLevel(compound.getInteger("level"));
+        setCurrentLevel(compound.getInteger("level"));
 
 		if (compound.hasKey("effect")) {
 		    setEffect(SpellRegistry.instance().createEffectFromNBT(compound.getCompoundTag("effect")));
@@ -299,7 +296,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 		super.writeEntityToNBT(compound);
 
         compound.setString("ownerName", getOwnerName());
-        compound.setInteger("level", getLevel());
+        compound.setInteger("level", getCurrentLevel());
 
         if (hasEffect()) {
 			compound.setTag("effect", SpellRegistry.instance().serializeEffectToNBT(getEffect()));

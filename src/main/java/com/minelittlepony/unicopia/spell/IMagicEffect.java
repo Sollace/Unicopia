@@ -2,24 +2,10 @@ package com.minelittlepony.unicopia.spell;
 
 import com.minelittlepony.unicopia.InbtSerialisable;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.world.World;
-
 /**
- *
- * Interface for a magic spell
- *
+ * Interface for a magic spells
  */
-public interface IMagicEffect extends InbtSerialisable {
-
-	/**
-	 * Maximum level this spell can reach or -1 for unlimited.
-	 * <br>
-	 * If a gem goes past this level it is more likely to explode.
-	 */
-	default int getMaxLevel() {
-	    return 0;
-	}
+public interface IMagicEffect extends InbtSerialisable, ILevelled {
 
 	String getName();
 
@@ -39,42 +25,34 @@ public interface IMagicEffect extends InbtSerialisable {
 	 * @param source	The entity we are currently attached to.
 	 * @return true to keep alive
 	 */
-	boolean update(Entity source);
-
-	/**
-	 * Called every tick when attached to a player. Used to apply particle effects.
-	 * Is only called on the client side.
-	 *
-	 * @param source	The entity we are currently attached to.
-	 */
-	default void render(Entity source) {
-
-	}
+	boolean update(ICaster<?> caster);
 
 	/**
 	 * Called every tick when attached to a gem.
 	 *
-	 * @param source	The entity we are attached to.
-	 * @param w			The world
-	 * @param x			Entity position x
-	 * @param y			Entity position y
-	 * @param z			Entity position z
-	 * @param level		Current spell level
+	 * @param source   The entity we are currently attached to.
+	 * @param level		Current active spell level
 	 */
-	boolean updateAt(ICaster<?> source, World w, double x, double y, double z, int level);
+	boolean update(ICaster<?> source, int level);
+
+    /**
+     * Called every tick when attached to a player. Used to apply particle effects.
+     * Is only called on the client side.
+     *
+     * @param source    The entity we are currently attached to.
+     */
+    default void render(ICaster<?> source) {
+
+    }
 
 	/**
 	 * Called every tick when attached to an entity to produce particle effects.
 	 * Is only called on the client side.
 	 *
 	 * @param source	The entity we are attached to.
-	 * @param w			The world
-	 * @param x			Entity position x
-	 * @param y			Entity position y
-	 * @param z			Entity position z
 	 * @param level		Current spell level
 	 */
-	default void renderAt(ICaster<?> source, World w, double x, double y, double z, int level) {
+	default void render(ICaster<?> source, int level) {
 
 	}
 

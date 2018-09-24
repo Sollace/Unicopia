@@ -139,10 +139,10 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
                 setEffect(null);
             } else {
                 if (entity.getEntityWorld().isRemote) { //  && entity.getEntityWorld().getWorldTime() % 10 == 0
-                    getEffect().render(entity);
+                    getEffect().render(this);
                 }
 
-                if (!getEffect().update(entity)) {
+                if (!getEffect().update(this)) {
                     setEffect(null);
                 }
             }
