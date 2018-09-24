@@ -4,8 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.base.Strings;
+import com.minelittlepony.pony.data.PonyRace;
 
 import net.minecraft.client.resources.I18n;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public enum Race {
     HUMAN(false, false, false),
@@ -78,6 +81,31 @@ public enum Race {
         } catch (NumberFormatException e) { }
 
         return def;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static Race fromPonyRace(PonyRace ponyRace) {
+        switch (ponyRace) {
+            case ALICORN:
+                return ALICORN;
+            case CHANGELING:
+            case REFORMED_CHANGELING:
+                return CHANGELING;
+            case ZEBRA:
+            case EARTH:
+                return EARTH;
+            case GRIFFIN:
+            case HIPPOGRIFF:
+            case PEGASUS:
+            case BATPONY:
+                return PEGASUS;
+            case SEAPONY:
+            case UNICORN:
+                return UNICORN;
+            default:
+                return HUMAN;
+
+        }
     }
 
     public static Race fromId(int id) {

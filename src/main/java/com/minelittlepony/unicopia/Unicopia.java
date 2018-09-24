@@ -42,6 +42,7 @@ import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.PowersRegistry;
+import com.minelittlepony.pony.data.IPony;
 
 import come.minelittlepony.unicopia.forgebullshit.FBS;
 
@@ -57,6 +58,16 @@ public class Unicopia {
     public static int MAGIC_PARTICLE;
     public static int RAIN_PARTICLE;
 
+    /**
+     * The race preferred by the client - as determined by mine little pony.
+     * Human if minelp was not installed.
+     *
+     * This is not neccessarily the _actual_ race used for the player,
+     * as the server may not allow certain race types, or the player may override
+     * this option in-game themselves.
+     */
+    private static Race clientPlayerRace = getclientPlayerRace();
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         if (UClient.isClientSide()) {
@@ -64,10 +75,19 @@ public class Unicopia {
         }
     }
 
+    @SideOnly(Side.CLIENT)
+    private static Race getclientPlayerRace() {
+        if (Minecraft.getMinecraft().player != null && MineLP.modIsActive()) {
+            return Race.fromPonyRace(IPony.forPlayer(Minecraft.getMinecraft().player).getRace(false));
+        }
+
+        return Race.HUMAN;
+    }
+
     @EventHandler
     public void init(FMLInitializationEvent event) {
         channel = JumpingCastle.subscribeTo(MODID, () -> {
-            channel.send(new MsgRequestCapabilities(Minecraft.getMinecraft().player), Target.SERVER);
+            channel.send(new MsgRequestCapabilities(Minecraft.getMinecraft().player, clientPlayerRace), Target.SERVER);
         })
             .listenFor(MsgRequestCapabilities.class)
             .listenFor(MsgPlayerCapabilities.class)
@@ -111,6 +131,14 @@ public class Unicopia {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public static void onGameTick(TickEvent.ClientTickEvent event) {
+        Race newRace = getclientPlayerRace();
+
+        if (newRace != clientPlayerRace) {
+            clientPlayerRace = newRace;
+
+            channel.send(new MsgRequestCapabilities(Minecraft.getMinecraft().player, clientPlayerRace), Target.SERVER);
+        }
+
         if (event.phase == Phase.END) {
             Keyboard.getKeyHandler().onKeyInput();
         }
