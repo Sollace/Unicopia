@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.player;
 
 import com.minelittlepony.unicopia.InbtSerialisable;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.mixin.MixinEntity;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -35,6 +36,7 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
 
     @Override
     public void onUpdate(EntityPlayer entity) {
+
         entity.capabilities.allowFlying = entity.capabilities.isCreativeMode || player.getPlayerSpecies().canFly();
 
         if (!entity.capabilities.isCreativeMode) {
@@ -42,6 +44,13 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
         }
 
         isFlying = entity.capabilities.isFlying && !entity.capabilities.isCreativeMode;
+
+        if (isFlying) {
+            MixinEntity.setSize(entity, entity.width, 0.5F);
+            entity.eyeHeight = entity.height / 2;
+        } else {
+            entity.eyeHeight = entity.getDefaultEyeHeight();
+        }
 
         if (!entity.capabilities.isCreativeMode && !entity.isElytraFlying()) {
             if (isFlying && !entity.isRiding()) {

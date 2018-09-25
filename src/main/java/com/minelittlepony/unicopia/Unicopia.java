@@ -156,7 +156,6 @@ public class Unicopia {
     public static void onBlockHarvested(BlockEvent.HarvestDropsEvent event) {
         if (event.getState().getBlock() == Blocks.STONE) {
             int fortuneFactor = 1 + event.getFortuneLevel() * 15;
-            System.out.println(event.getFortuneLevel());
 
             if (event.getWorld().rand.nextInt(500 / fortuneFactor) == 0) {
                 for (int i = 0; i < 1 + event.getFortuneLevel(); i++) {
