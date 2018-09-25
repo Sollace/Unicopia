@@ -41,7 +41,7 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
             entity.capabilities.isFlying |= entity.capabilities.allowFlying && isFlying && !entity.onGround;
         }
 
-        isFlying = entity.capabilities.isFlying;
+        isFlying = entity.capabilities.isFlying && !entity.capabilities.isCreativeMode;
 
         if (!entity.capabilities.isCreativeMode && !entity.isElytraFlying()) {
             if (isFlying && !entity.isRiding()) {
