@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
@@ -63,7 +64,7 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
                 float forward = 0.00015F * flightExperience;
 
                 entity.motionX += - forward * MathHelper.sin(entity.rotationYaw * 0.017453292F);
-                entity.motionY -= 0.05F - ((entity.motionX * entity.motionX) + (entity.motionZ + entity.motionZ)) / 100;
+                entity.motionY -= 0.05F - getHorizontalMotion(entity) / 100;
                 entity.motionZ += forward * MathHelper.cos(entity.rotationYaw * 0.017453292F);
 
                 if (ticksInAir > 0 && ticksInAir % 12 == 0) {
@@ -109,6 +110,11 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
                 player.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.5f, soundtype.getPitch() * 0.75f);
             }
         }
+    }
+
+    protected double getHorizontalMotion(Entity e) {
+        return (e.motionX * e.motionX)
+               + (e.motionZ * e.motionZ);
     }
 
     protected SoundEvent getFallSound(int distance) {

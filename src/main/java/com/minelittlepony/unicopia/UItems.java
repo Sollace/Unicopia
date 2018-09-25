@@ -15,10 +15,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemDoor;
+import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
@@ -75,6 +77,10 @@ public class UItems {
 
     public static final ItemOfHolding bag_of_holding = new ItemOfHolding(Unicopia.MODID, "bag_of_holding");
 
+    public static final Item alfalfa_seeds = new ItemSeeds(UBlocks.alfalfa, Blocks.FARMLAND)
+            .setTranslationKey("alfalfa_seeds")
+            .setRegistryName(Unicopia.MODID, "alfalfa_seeds");
+
     static void registerItems(IForgeRegistry<Item> registry) {
         RegistryLockSpinner.unlock(Item.REGISTRY);
 
@@ -84,7 +90,8 @@ public class UItems {
 
         registry.registerAll(cloud_spawner, dew_drop, cloud_matter, cloud_block,
                              cloud_stairs, cloud_slab, mist_door, anvil,
-                             bag_of_holding, spell, curse);
+                             bag_of_holding, spell, curse,
+                             alfalfa_seeds);
 
         if (UClient.isClientSide()) {
             registerAllVariants(apple, apple.getVariants());
@@ -99,6 +106,7 @@ public class UItems {
             registerAllVariants(bag_of_holding, "bag_of_holding");
             registerAllVariants(spell, "gem");
             registerAllVariants(curse, "corrupted_gem");
+            registerAllVariants(alfalfa_seeds, "alfalfa_seeds");
         }
 
         registerFuels();

@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia;
 
+import com.minelittlepony.unicopia.block.BlockAlfalfa;
 import com.minelittlepony.unicopia.block.BlockCloud;
 import com.minelittlepony.unicopia.block.BlockCloudAnvil;
 import com.minelittlepony.unicopia.block.BlockCloudSlab;
@@ -21,7 +22,10 @@ public class UBlocks {
 
     public static final BlockCloudAnvil anvil = new BlockCloudAnvil(Unicopia.MODID, "anvil");
 
+    public static final BlockAlfalfa alfalfa = new BlockAlfalfa(Unicopia.MODID, "alfalfa");
+
     static void registerBlocks(IForgeRegistry<Block> registry) {
-        registry.registerAll(cloud, stairsCloud, cloud_double_slab, cloud_slab, mist_door, anvil);
+        registry.registerAll(cloud, stairsCloud, cloud_double_slab, cloud_slab, mist_door, anvil,
+                             alfalfa);
     }
 }
