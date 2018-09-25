@@ -93,6 +93,11 @@ public class BlockAlfalfa extends BlockCrops {
         }
     }
 
+    @Override
+    protected boolean canSustainBush(IBlockState state) {
+        return super.canSustainBush(state) || state.getBlock() == this;
+    }
+
     protected void growUpwards(World world, BlockPos pos, IBlockState state, int increase) {
         boolean hasDown = world.getBlockState(pos.down()).getBlock() == this;
         boolean hasTrunk = world.getBlockState(pos.down(2)).getBlock() == this;
