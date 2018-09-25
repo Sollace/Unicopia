@@ -45,7 +45,9 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
 
         isFlying = entity.capabilities.isFlying && !entity.capabilities.isCreativeMode;
 
-        if (isFlying) {
+        boolean rainboom = Math.sqrt(getHorizontalMotion(entity)) > 0.4F;
+
+        if (isFlying && rainboom) {
             MixinEntity.setSize(entity, entity.width, 0.5F);
             entity.eyeHeight = entity.height / 2;
         } else {
