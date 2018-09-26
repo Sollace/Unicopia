@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    " # ",
+    "###"
+  ],
+  "key": {
+    "#": [
+      {
+        "item": "unicopia:cloud_block",
+        "data": 0
+      }
+    ]
+  },
+  "result": {
+    "item": "unicopia:anvil",
+    "data": 0,
+    "count": 1
+  }
+}

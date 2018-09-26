@@ -20,7 +20,9 @@ import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemDoor;
-import net.minecraft.item.ItemSeeds;
+import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemSeedFood;
+import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
@@ -77,9 +79,17 @@ public class UItems {
 
     public static final ItemOfHolding bag_of_holding = new ItemOfHolding(Unicopia.MODID, "bag_of_holding");
 
-    public static final Item alfalfa_seeds = new ItemSeeds(UBlocks.alfalfa, Blocks.FARMLAND)
+    public static final Item alfalfa_seeds = new ItemSeedFood(1, 4, UBlocks.alfalfa, Blocks.FARMLAND)
             .setTranslationKey("alfalfa_seeds")
             .setRegistryName(Unicopia.MODID, "alfalfa_seeds");
+
+    public static final Item alfalfa_leaves = new ItemFood(1, 3, false)
+            .setTranslationKey("alfalfa_leaves")
+            .setRegistryName(Unicopia.MODID, "alfalfa_leaves");
+
+    public static final Item cereal = new ItemSoup(15)
+            .setTranslationKey("cereal")
+            .setRegistryName(Unicopia.MODID, "cereal");
 
     static void registerItems(IForgeRegistry<Item> registry) {
         RegistryLockSpinner.unlock(Item.REGISTRY);
@@ -88,10 +98,12 @@ public class UItems {
 
         RegistryLockSpinner.lock(Item.REGISTRY);
 
+
+
         registry.registerAll(cloud_spawner, dew_drop, cloud_matter, cloud_block,
                              cloud_stairs, cloud_slab, mist_door, anvil,
                              bag_of_holding, spell, curse,
-                             alfalfa_seeds);
+                             alfalfa_seeds, alfalfa_leaves, cereal);
 
         if (UClient.isClientSide()) {
             registerAllVariants(apple, apple.getVariants());
@@ -107,6 +119,8 @@ public class UItems {
             registerAllVariants(spell, "gem");
             registerAllVariants(curse, "corrupted_gem");
             registerAllVariants(alfalfa_seeds, "alfalfa_seeds");
+            registerAllVariants(alfalfa_leaves, "alfalfa_leaves");
+            registerAllVariants(cereal, "cereal");
         }
 
         registerFuels();

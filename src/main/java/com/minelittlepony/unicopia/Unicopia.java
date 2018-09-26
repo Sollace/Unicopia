@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockCrops;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumAction;
@@ -154,7 +155,9 @@ public class Unicopia {
 
     @SubscribeEvent
     public static void onBlockHarvested(BlockEvent.HarvestDropsEvent event) {
-        if (event.getState().getBlock() == Blocks.STONE) {
+        Block block = event.getState().getBlock();
+
+        if (block == Blocks.STONE) {
             int fortuneFactor = 1 + event.getFortuneLevel() * 15;
 
             if (event.getWorld().rand.nextInt(500 / fortuneFactor) == 0) {
@@ -164,6 +167,14 @@ public class Unicopia {
                     } else {
                         event.getDrops().add(new ItemStack(UItems.spell, 1));
                     }
+                }
+            }
+        } else if (block instanceof BlockCrops) {
+            int fortuneFactor = 1 + event.getFortuneLevel() * 15;
+
+            if (event.getWorld().rand.nextInt(500 / fortuneFactor) == 0) {
+                for (int i = 0; i < 1 + event.getFortuneLevel(); i++) {
+                    event.getDrops().add(new ItemStack(UItems.alfalfa_seeds, 1));
                 }
             }
         }

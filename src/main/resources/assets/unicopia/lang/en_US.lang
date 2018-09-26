@@ -45,6 +45,9 @@ item.apple.rotten.name=Rotten Apple
 item.apple.zap.name=Zap Apple
 item.apple.zap_cooked.name=Cooked Zap Apple
 
+item.alfalfa_leaves.name=Alfalfa
+item.alfalfa_seeds.name=Grain
+
 entity.racing_cloud.name=Bucking Bronco
 entity.construction_cloud.name=Construction Cloud
 entity.cloud.name=Cloud
