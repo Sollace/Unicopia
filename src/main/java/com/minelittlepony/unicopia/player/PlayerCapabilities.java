@@ -144,10 +144,10 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
                 setEffect(null);
             } else {
                 if (entity.getEntityWorld().isRemote) { //  && entity.getEntityWorld().getWorldTime() % 10 == 0
-                    getEffect().render(this);
+                    getEffect().renderOnPerson(this);
                 }
 
-                if (!getEffect().update(this)) {
+                if (!getEffect().updateOnPerson(this)) {
                     setEffect(null);
                 }
             }
@@ -248,5 +248,14 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
     @Override
     public EntityPlayer getOwner() {
         return entity;
+    }
+
+    @Override
+    public int getCurrentLevel() {
+        return 0;
+    }
+
+    @Override
+    public void setCurrentLevel(int level) {
     }
 }

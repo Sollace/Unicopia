@@ -2,16 +2,16 @@ package com.minelittlepony.unicopia.power;
 
 import org.lwjgl.input.Keyboard;
 
-import com.google.gson.annotations.Expose;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.power.data.Hit;
 import com.minelittlepony.unicopia.spell.SpellShield;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
-public class PowerMagic implements IPower<PowerMagic.Magic> {
+public class PowerMagic implements IPower<Hit> {
 
     @Override
     public String getKeyName() {
@@ -39,23 +39,23 @@ public class PowerMagic implements IPower<PowerMagic.Magic> {
     }
 
     @Override
-    public Magic tryActivate(EntityPlayer player, World w) {
-        return new Magic(0);
+    public Hit tryActivate(EntityPlayer player, World w) {
+        return new Hit();
     }
 
     @Override
-    public Class<Magic> getPackageType() {
-        return Magic.class;
+    public Class<Hit> getPackageType() {
+        return Hit.class;
     }
 
     @Override
-    public void apply(EntityPlayer player, Magic data) {
+    public void apply(EntityPlayer player, Hit data) {
         IPlayer prop = PlayerSpeciesList.instance().getPlayer(player);
 
         if (prop.getEffect() instanceof SpellShield) {
             prop.setEffect(null);
         } else {
-            prop.setEffect(new SpellShield(data.type));
+            prop.setEffect(new SpellShield());
         }
     }
 
@@ -67,15 +67,5 @@ public class PowerMagic implements IPower<PowerMagic.Magic> {
     @Override
     public void postApply(IPlayer player) {
 
-    }
-
-    class Magic implements IData {
-
-        @Expose
-        public int type;
-
-        public Magic(int strength) {
-            type = strength;
-        }
     }
 }

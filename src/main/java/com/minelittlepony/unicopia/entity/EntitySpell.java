@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.item.ICastable;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.spell.ICaster;
-import com.minelittlepony.unicopia.spell.ILevelled;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
@@ -31,7 +30,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class EntitySpell extends EntityLiving implements IMagicals, ICaster<EntityLivingBase>, ILevelled {
+public class EntitySpell extends EntityLiving implements IMagicals, ICaster<EntityLivingBase> {
 
 	private EntityLivingBase owner = null;
 
@@ -57,14 +56,20 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 		enablePersistence();
 	}
 
+	@Override
 	public boolean isInRangeToRenderDist(double distance) {
+	    if (getCurrentLevel() > 0) {
+	        distance /= getCurrentLevel();
+	    }
 		return super.isInRangeToRenderDist(distance);
     }
 
+	@Override
 	public void setEffect(IMagicEffect effect) {
 	    effectDelegate.set(effect);
 	}
 
+	@Override
 	public IMagicEffect getEffect() {
 	    return effectDelegate.get();
 	}
@@ -162,6 +167,19 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 				super.onUpdate();
 			}
 		}
+
+		if (getCurrentLevel() > 0 && !world.isRemote && world.rand.nextInt(200) == 0) {
+		    addLevels(-1);
+		    if (getCurrentLevel() <= 0) {
+		        setDead();
+		    }
+		}
+
+		if (overLevelCap()) {
+		    if (world.rand.nextInt(10) == 0) {
+		        spawnExplosionParticle();
+		    }
+		}
 	}
 
 	@Override
@@ -175,6 +193,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
     	//super.updateFallState(y, onGround = this.onGround = true, state, pos);
     }
 
+	@Override
 	public boolean attackEntityFrom(DamageSource source, float amount) {
 		if (!world.isRemote) {
 			setDead();
@@ -200,6 +219,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 		}
 	}
 
+	@Override
 	public void setDead() {
 		if (hasEffect()) {
 			getEffect().setDead();
@@ -207,6 +227,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 		super.setDead();
 	}
 
+	@Override
 	public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand) {
 		if (Predicates.MAGI.test(player)) {
 			ItemStack currentItem = player.getHeldItem(EnumHand.MAIN_HAND);
@@ -240,7 +261,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
             addLevels(1);
 
             if (!world.isRemote) {
-                if ((rand.nextFloat() * getCurrentLevel()) > 10 || overLevelCap()) {
+                if (overLevelCap() || (rand.nextFloat() * getCurrentLevel()) > 10) {
                     world.createExplosion(this, posX, posY, posZ, getCurrentLevel()/2, true);
                     setDead();
                     return false;
@@ -257,7 +278,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 
 	@Override
 	public int getMaxLevel() {
-	    return getEffect().getMaxLevel();
+	    return hasEffect() ? getEffect().getMaxLevel() : 0;
 	}
 
 	@Override
@@ -267,7 +288,13 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 
 	@Override
     public void setCurrentLevel(int level) {
-        dataManager.set(LEVEL, Math.min(level, 0));
+        level = Math.max(level, 0);
+        if (hasEffect()) {
+            getEffect().setCurrentLevel(level);
+            level = getEffect().getCurrentLevel();
+        }
+
+        dataManager.set(LEVEL, level);
     }
 
 	public boolean overLevelCap() {

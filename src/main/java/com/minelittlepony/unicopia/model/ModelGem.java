@@ -87,6 +87,14 @@ public class ModelGem extends ModelBase {
         floatOffset += spell.hoverStart;
         floatOffset *= 180 / (float)Math.PI;
 
+        GlStateManager.pushMatrix();
+
+        if (spell.overLevelCap()) {
+            GlStateManager.translate(Math.sin(stutter) / 5, 0, Math.cos(stutter) / 5);
+
+            GlStateManager.rotate((float)Math.sin(stutter), 0, 1, 0);
+        }
+
         GlStateManager.rotate(floatOffset, 0, 1, 0);
 
         body.render(scale);
@@ -99,10 +107,35 @@ public class ModelGem extends ModelBase {
 
         Color.glColor(SpellRegistry.instance().getSpellTint(spell.getEffect().getName()), 1);
 
-        GlStateManager.scale(1.2F, 1.2F, 1.2F);
-        GlStateManager.translate(0, -0.2F, 0);
 
-		body.render(scale);
+        int tiers = Math.min(spell.getCurrentLevel(), 5);
+
+        for (int i = 0; i <= tiers; i++) {
+            float grow = (1 + i) * 0.2F;
+
+            GlStateManager.scale(1 + grow, 1 + grow, 1 + grow);
+            GlStateManager.translate(0, -grow, 0);
+            renderOverlay(grow, scale);
+
+            if (i == 5) {
+                GlStateManager.pushMatrix();
+                GlStateManager.rotate(-floatOffset * 0.9F, 0, 1, 0);
+                GlStateManager.translate(0.6F, 0.8F, 0);
+                GlStateManager.scale(0.4F, 0.4F, 0.4F);
+                renderOverlay(grow, scale);
+                GlStateManager.popMatrix();
+            }
+
+        }
+        GlStateManager.popMatrix();
+
+        for (int i = spell.getCurrentLevel(); i > 0; i--) {
+            GlStateManager.pushMatrix();
+            GlStateManager.rotate(floatOffset / i, 0, 1, 0);
+            GlStateManager.translate(0.6F, 0, 0);
+            renderOverlay(0.6F, scale);
+            GlStateManager.popMatrix();
+        }
 
 		setLightingConditionsBrightness(entity.getBrightnessForRender());
 
@@ -110,6 +143,13 @@ public class ModelGem extends ModelBase {
         GlStateManager.enableAlpha();
 
 		GlStateManager.popMatrix();
+	}
+
+	protected void renderOverlay(float grow, float scale) {
+
+
+        body.render(scale);
+
 	}
 
 	private void setLightingConditionsBrightness(int brightness) {

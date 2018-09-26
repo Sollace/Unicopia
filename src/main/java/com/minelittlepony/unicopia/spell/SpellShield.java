@@ -25,13 +25,6 @@ public class SpellShield extends AbstractSpell {
 
 	private int strength = 0;
 
-	public SpellShield() {
-	}
-
-	public SpellShield(int type) {
-	    setCurrentLevel(type);
-	}
-
     @Override
     public int getCurrentLevel() {
         return strength;
@@ -49,19 +42,12 @@ public class SpellShield extends AbstractSpell {
 
 	@Override
 	public int getMaxLevel() {
-		return -1;
-	}
-
-	@Override
-	public void render(ICaster<?> source) {
-		spawnParticles(source, 4 + (strength * 2));
+		return 17;
 	}
 
 	@Override
 	public void render(ICaster<?> source, int level) {
-		if (source.getWorld().rand.nextInt(4 + level * 4) == 0) {
-			spawnParticles(source, 4 + (level * 2));
-		}
+		spawnParticles(source, 4 + (level * 2));
 	}
 
 	protected void spawnParticles(ICaster<?> source, int strength) {
@@ -82,7 +68,7 @@ public class SpellShield extends AbstractSpell {
 	}
 
 	@Override
-	public boolean update(ICaster<?> source) {
+	public boolean updateOnPerson(ICaster<?> source) {
 	    update(source, strength);
 
 		if (source.getEntity().getEntityWorld().getWorldTime() % 50 == 0) {

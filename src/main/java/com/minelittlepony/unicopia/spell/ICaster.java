@@ -7,7 +7,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public interface ICaster<E extends EntityLivingBase> extends IOwned<E> {
+public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelled {
     void setEffect(IMagicEffect effect);
 
     IMagicEffect getEffect();

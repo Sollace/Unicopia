@@ -25,7 +25,9 @@ public interface IMagicEffect extends InbtSerialisable, ILevelled {
 	 * @param source	The entity we are currently attached to.
 	 * @return true to keep alive
 	 */
-	boolean update(ICaster<?> caster);
+    default boolean updateOnPerson(ICaster<?> caster) {
+        return update(caster, getCurrentLevel());
+    }
 
 	/**
 	 * Called every tick when attached to a gem.
@@ -41,8 +43,8 @@ public interface IMagicEffect extends InbtSerialisable, ILevelled {
      *
      * @param source    The entity we are currently attached to.
      */
-    default void render(ICaster<?> source) {
-
+    default void renderOnPerson(ICaster<?> source) {
+        render(source, getCurrentLevel());
     }
 
 	/**
@@ -52,9 +54,7 @@ public interface IMagicEffect extends InbtSerialisable, ILevelled {
 	 * @param source	The entity we are attached to.
 	 * @param level		Current spell level
 	 */
-	default void render(ICaster<?> source, int level) {
-
-	}
+	void render(ICaster<?> source, int level);
 
 	/**
 	 * Return true to allow the gem update and move.

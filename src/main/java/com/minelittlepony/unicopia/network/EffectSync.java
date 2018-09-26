@@ -33,7 +33,7 @@ public class EffectSync<T extends EntityLivingBase> {
             String id = comp.getString("effect_id");
             if (effect == null || id != effect.getName()) {
                 effect = SpellRegistry.instance().createEffectFromNBT(comp);
-            } else {
+            } else if (owned.getEntity().world.isRemote) {
                 effect.readFromNBT(comp);
             }
         }

@@ -24,6 +24,7 @@ public class SpellRegistry {
 
     private SpellRegistry() {
         registerSpell("shield", 0xffff00, SpellShield::new);
+        registerSpell("charge", 0x0000ff, SpellCharge::new);
     }
 
     public IMagicEffect getSpellFromName(String name) {
