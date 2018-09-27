@@ -48,7 +48,10 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 sourceSets {
+    external {
+    }
     main {
+        compileClasspath += external.output
         refMap = project.refCore
     }
 }

@@ -5,6 +5,7 @@ import net.minecraft.util.math.MathHelper;
 
 import com.minelittlepony.util.math.MathUtil;
 
+//#MineLittlePony#
 public abstract class MotionCompositor {
 
     protected double calculateRoll(EntityPlayer player, double motionX, double motionY, double motionZ) {

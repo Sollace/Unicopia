@@ -3,6 +3,7 @@ package com.minelittlepony.model.anim;
 import java.util.HashMap;
 import java.util.Map;
 
+//#MineLittlePony#
 public class BasicEasingInterpolator implements IInterpolator {
 
     private final Map<String, Float> properties = new HashMap<String, Float>();

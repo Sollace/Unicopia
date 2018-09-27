@@ -2,6 +2,7 @@ package com.minelittlepony.util.math;
 
 import net.minecraft.util.math.MathHelper;
 
+//#MineLittlePony#
 public class MathUtil {
 
     public static double clampLimit(double num, double limit) {
