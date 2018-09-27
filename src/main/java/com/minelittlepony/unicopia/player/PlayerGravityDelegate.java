@@ -48,10 +48,11 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
         boolean rainboom = Math.sqrt(getHorizontalMotion(entity)) > 0.4F;
 
         if (isFlying && rainboom) {
-            MixinEntity.setSize(entity, entity.width, 0.5F);
-            entity.eyeHeight = entity.height / 2;
+            MixinEntity.setSize(entity, entity.width, player.getInterpolator().interpolate("standingHeight", 0.5F, 10));
+            entity.eyeHeight = player.getInterpolator().interpolate("eyeHeight", entity.height / 2, 10);
         } else {
-            entity.eyeHeight = entity.getDefaultEyeHeight();
+            MixinEntity.setSize(entity, entity.width, player.getInterpolator().interpolate("standingHeight", entity.height, 10));
+            entity.eyeHeight = player.getInterpolator().interpolate("eyeHeight", entity.getDefaultEyeHeight(), 10);
         }
 
         if (!entity.capabilities.isCreativeMode && !entity.isElytraFlying()) {

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.player;
 
+import com.minelittlepony.model.anim.BasicEasingInterpolator;
+import com.minelittlepony.model.anim.IInterpolator;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.Unicopia;
@@ -39,7 +41,11 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
     private final PlayerAttributes attributes = new PlayerAttributes();
 
+    private final PlayerView view = new PlayerView(this);
+
     private final EffectSync<EntityPlayer> effectDelegate = new EffectSync<>(this, EFFECT);
+
+    private final IInterpolator interpolator = new BasicEasingInterpolator();
 
     private float nextStepDistance = 1;
 
@@ -110,6 +116,16 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
     @Override
     public IGravity getGravity() {
         return gravity;
+    }
+
+    @Override
+    public IView getCamera() {
+        return view;
+    }
+
+    @Override
+    public IInterpolator getInterpolator() {
+        return interpolator;
     }
 
     @Override

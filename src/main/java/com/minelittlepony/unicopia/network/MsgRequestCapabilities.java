@@ -30,7 +30,9 @@ public class MsgRequestCapabilities implements IMessage, IMessageHandler<MsgRequ
         System.out.println("[SERVER] Sending capabilities to player id " + senderId);
         IPlayer player = PlayerSpeciesList.instance().getPlayer(senderId);
 
-        player.setPlayerSpecies(message.race);
+        if (player.getPlayerSpecies().isDefault()) {
+            player.setPlayerSpecies(message.race);
+        }
 
         channel.respond(new MsgPlayerCapabilities(player), senderId);
     }

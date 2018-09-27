@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.player;
 
 import java.util.UUID;
 
+import com.minelittlepony.model.anim.IInterpolator;
 import com.minelittlepony.unicopia.spell.ICaster;
 
 import net.minecraft.client.Minecraft;
@@ -16,6 +17,10 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
     IAbilityReceiver getAbilities();
 
     IGravity getGravity();
+
+    IView getCamera();
+
+    IInterpolator getInterpolator();
 
     float getExertion();
 

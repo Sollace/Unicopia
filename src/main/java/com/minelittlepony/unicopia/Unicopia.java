@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
@@ -10,6 +11,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -150,6 +152,17 @@ public class Unicopia {
 
         if (event.phase == Phase.END) {
             Keyboard.getKeyHandler().onKeyInput();
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public static void setupPlayerCamera(EntityViewRenderEvent.CameraSetup event) {
+
+        EntityPlayer player = Minecraft.getMinecraft().player;
+
+        if (player != null) {
+            event.setRoll((float)PlayerSpeciesList.instance().getPlayer(player).getCamera().calculateRoll(player));
         }
     }
 
