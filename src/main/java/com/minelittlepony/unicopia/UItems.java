@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.item.ItemCloud;
 import com.minelittlepony.unicopia.item.ItemCurse;
 import com.minelittlepony.unicopia.item.ItemOfHolding;
 import com.minelittlepony.unicopia.item.ItemSpell;
+import com.minelittlepony.unicopia.item.ItemTomato;
 import com.minelittlepony.unicopia.item.UItemBlock;
 import com.minelittlepony.unicopia.item.UItemMultiTexture;
 import com.minelittlepony.unicopia.item.UItemSlab;
@@ -57,7 +58,7 @@ public class UItems {
     }, INTERACT_WITH_CLOUDS)
             .setRegistryName(Unicopia.MODID, "cloud_block");
 
-    public static final Item cloud_stairs = new UItemBlock(UBlocks.stairsCloud, INTERACT_WITH_CLOUDS)
+    public static final Item cloud_stairs = new UItemBlock(UBlocks.cloud_stairs, INTERACT_WITH_CLOUDS)
             .setTranslationKey("cloud_stairs")
             .setRegistryName(Unicopia.MODID, "cloud_stairs");
 
@@ -70,7 +71,7 @@ public class UItems {
             .setTranslationKey("mist_door")
             .setRegistryName(Unicopia.MODID, "mist_door");
 
-    public static final Item cloud_slab = new UItemSlab(UBlocks.cloud_slab, UBlocks.cloud_slab, UBlocks.cloud_double_slab, INTERACT_WITH_CLOUDS)
+    public static final Item cloud_slab = new UItemSlab(UBlocks.cloud_slab, UBlocks.cloud_slab, UBlocks.double_cloud_slab, INTERACT_WITH_CLOUDS)
             .setTranslationKey("cloud_slab")
             .setRegistryName(Unicopia.MODID, "cloud_slab");
 
@@ -91,6 +92,9 @@ public class UItems {
             .setTranslationKey("cereal")
             .setRegistryName(Unicopia.MODID, "cereal");
 
+    public static final ItemTomato tomato = new ItemTomato(Unicopia.MODID, "tomato", 4, 34);
+    public static final ItemTomato cloudsdale_tomato = new ItemTomato(Unicopia.MODID, "cloudsdale_tomato", 16, 4);
+
     static void registerItems(IForgeRegistry<Item> registry) {
         RegistryLockSpinner.unlock(Item.REGISTRY);
 
@@ -98,12 +102,10 @@ public class UItems {
 
         RegistryLockSpinner.lock(Item.REGISTRY);
 
-
-
         registry.registerAll(cloud_spawner, dew_drop, cloud_matter, cloud_block,
                              cloud_stairs, cloud_slab, mist_door, anvil,
                              bag_of_holding, spell, curse,
-                             alfalfa_seeds, alfalfa_leaves, cereal);
+                             alfalfa_seeds, alfalfa_leaves, cereal, tomato);
 
         if (UClient.isClientSide()) {
             registerAllVariants(apple, apple.getVariants());
@@ -121,6 +123,8 @@ public class UItems {
             registerAllVariants(alfalfa_seeds, "alfalfa_seeds");
             registerAllVariants(alfalfa_leaves, "alfalfa_leaves");
             registerAllVariants(cereal, "cereal");
+            registerAllVariants(tomato, "tomato", "rotten_tomato");
+            registerAllVariants(cloudsdale_tomato, "cloudsdale_tomato", "rotten_cloudsdale_tomato");
         }
 
         registerFuels();

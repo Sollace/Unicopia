@@ -19,6 +19,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.common.ForgeHooks;
 
 public class BlockAlfalfa extends BlockCrops {
@@ -116,19 +117,20 @@ public class BlockAlfalfa extends BlockCrops {
         int max = getMaxAge();
 
         if (age > max) {
-            growUpwards(world, pos.up(), world.getBlockState(pos.up()), age - max);
+            if (!(hasDown && hasTrunk)) {
+                growUpwards(world, pos.up(), world.getBlockState(pos.up()), age - max);
+            }
             age = max;
         }
-
 
         boolean hasUp = world.getBlockState(pos.up()).getBlock() == this;
 
         if (hasDown && hasUp) {
-            world.setBlockState(pos, this.withAge(age).withProperty(HALF, Half.MIDDLE));
+            world.setBlockState(pos, withAge(age).withProperty(HALF, Half.MIDDLE));
         } else if (hasUp) {
-            world.setBlockState(pos, this.withAge(age).withProperty(HALF, Half.BOTTOM));
+            world.setBlockState(pos, withAge(age).withProperty(HALF, Half.BOTTOM));
         } else {
-            world.setBlockState(pos, this.withAge(age).withProperty(HALF, Half.TOP));
+            world.setBlockState(pos, withAge(age).withProperty(HALF, Half.TOP));
         }
     }
 
@@ -267,6 +269,11 @@ public class BlockAlfalfa extends BlockCrops {
 
     protected Half getHalf(IBlockState state) {
         return (Half)state.getValue(HALF);
+    }
+
+    @Override
+    public EnumPlantType getPlantType(IBlockAccess world, BlockPos pos) {
+        return EnumPlantType.Crop;
     }
 
     public static enum Half implements IStringSerializable {

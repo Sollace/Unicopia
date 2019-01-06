@@ -1,0 +1,8 @@
+{
+    "parent": "block/farmland",
+    "textures": {
+	    "particle": "unicopia:blocks/cloud_normal",
+	    "dirt": "unicopia:blocks/cloud_normal",
+	    "top": "unicopia:blocks/cloud_farmland_wet"
+    }
+}

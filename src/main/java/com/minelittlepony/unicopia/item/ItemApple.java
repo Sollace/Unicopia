@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.Random;
 
-import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.vector.VecHelper;
 
@@ -63,20 +62,25 @@ public class ItemApple extends ItemFood {
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
 		RayTraceResult mop = VecHelper.getObjectMouseOver(player, 5, 0);
+
 		if (mop != null && mop.typeOfHit == RayTraceResult.Type.ENTITY) {
 			ItemStack stack = player.getHeldItem(hand);
+
 			if (canFeedTo(stack, mop.entityHit)) {
 				return onFedTo(stack, player, mop.entityHit);
 			}
 		}
+
 		return super.onItemRightClick(world, player, hand);
 	}
 
 	@Override
 	protected void onFoodEaten(ItemStack stack, World w, EntityPlayer player) {
 		super.onFoodEaten(stack, w, player);
+
 		if (isZapApple(stack)) {
 			player.attackEntityFrom(MagicalDamageSource.create("zap"), 120);
+
 			w.addWeatherEffect(new EntityLightningBolt(w, player.posX, player.posY, player.posZ, false));
 		}
 	}
@@ -92,7 +96,11 @@ public class ItemApple extends ItemFood {
 
 	public ActionResult<ItemStack> onFedTo(ItemStack stack, EntityPlayer player, Entity e) {
 		e.onStruckByLightning(new EntityLightningBolt(e.world, e.posX, e.posY, e.posZ, false));
-		if (!player.capabilities.isCreativeMode) stack.shrink(1);
+
+		if (!player.capabilities.isCreativeMode) {
+		    stack.shrink(1);
+		}
+
 		return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
 	}
 
@@ -103,7 +111,9 @@ public class ItemApple extends ItemFood {
 	public ItemApple setSubTypes(String... types) {
 		subTypes = types;
 		variants = new String[subTypes.length * 2];
+
 		setTranslationKey(variants[0] = types[0]);
+
 		for (int i = 1; i < variants.length; i++) {
 			variants[i] = variants[0] + (i % subTypes.length != 0 ? "_" + subTypes[i % subTypes.length] : "");
 		}
@@ -123,7 +133,7 @@ public class ItemApple extends ItemFood {
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
 	    if (isInCreativeTab(tab)) {
     		for (int i = 0; i < subTypes.length; i++) {
-    			items.add(new ItemStack(UItems.apple, 1, i));
+    			items.add(new ItemStack(this, 1, i));
     		}
 	    }
 	}
@@ -131,23 +141,22 @@ public class ItemApple extends ItemFood {
 	@Override
 	public EnumRarity getRarity(ItemStack stack) {
 		int meta = stack.getMetadata();
-		if (meta == getZapAppleMetadata()) return EnumRarity.EPIC;
-        if (meta >= subTypes.length) return EnumRarity.RARE;
+
+		if (meta == getZapAppleMetadata()) {
+		    return EnumRarity.EPIC;
+		}
+
+        if (meta >= subTypes.length) {
+            return EnumRarity.RARE;
+        }
+
         return EnumRarity.COMMON;
     }
 
-	/*public String getItemStackDisplayName(ItemStack stack) {
-		String result = super.getItemStackDisplayName(stack);
-        if (stack.getMetadata() >= subTypes.length) {
-        	return ChatColor.ITALIC + result;
-        }
-        return result;
-    }*/
-
 	@Override
 	public String getTranslationKey(ItemStack stack) {
-		int meta = stack.getMetadata() % subTypes.length;
-		if (meta < 0) meta = 0;
+	    int meta = Math.max(0, stack.getMetadata() % subTypes.length);
+
 		return super.getTranslationKey(stack) + (meta > 0 ? "." + subTypes[meta] : "");
 	}
 

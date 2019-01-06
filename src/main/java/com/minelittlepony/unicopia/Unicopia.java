@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -10,6 +11,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.FOVUpdateEvent;
@@ -20,6 +23,7 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerFlyableFallEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.UseHoeEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -27,6 +31,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
@@ -38,6 +43,7 @@ import com.minelittlepony.jumpingcastle.api.IChannel;
 import com.minelittlepony.jumpingcastle.api.JumpingCastle;
 import com.minelittlepony.jumpingcastle.api.Target;
 import com.minelittlepony.unicopia.advancements.UAdvancements;
+import com.minelittlepony.unicopia.block.ITillable;
 import com.minelittlepony.unicopia.client.particle.EntityMagicFX;
 import com.minelittlepony.unicopia.client.particle.EntityRaindropFX;
 import com.minelittlepony.unicopia.client.particle.Particles;
@@ -189,6 +195,25 @@ public class Unicopia {
                 for (int i = 0; i < 1 + event.getFortuneLevel(); i++) {
                     event.getDrops().add(new ItemStack(UItems.alfalfa_seeds, 1));
                 }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onBlockTilled(UseHoeEvent event) {
+        BlockPos pos = event.getPos();
+        World world = event.getWorld();
+
+        IBlockState state = world.getBlockState(pos);
+
+        if (state.getBlock() instanceof ITillable) {
+            ITillable farm = ((ITillable)state.getBlock());
+
+            if (farm.canBeTilled(event.getCurrent(), event.getEntityPlayer(), world, state, pos)) {
+
+                world.setBlockState(pos, farm.getFarmlandState(event.getCurrent(), event.getEntityPlayer(), world, state, pos));
+
+                event.setResult(Result.ALLOW);
             }
         }
     }

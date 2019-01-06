@@ -5,6 +5,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.CloudType;
+import com.minelittlepony.unicopia.UBlocks;
+import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -25,7 +27,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockCloud extends Block implements ICloudBlock {
+public class BlockCloud extends Block implements ICloudBlock, ITillable {
 
 	public static final PropertyEnum<CloudType> VARIANT = PropertyEnum.create("variant", CloudType.class);
 
@@ -139,9 +141,9 @@ public class BlockCloud extends Block implements ICloudBlock {
     @Override
     public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos) {
         if (!CloudType.NORMAL.canInteract(player)) {
-            return -1;
+            return super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
         }
-        return super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
+        return -1;
     }
 
 	@Override
@@ -174,6 +176,17 @@ public class BlockCloud extends Block implements ICloudBlock {
     @Override
     public CloudType getCloudMaterialType(IBlockState blockState) {
         return (CloudType)blockState.getValue(VARIANT);
+    }
+
+    @Override
+    public boolean canBeTilled(ItemStack hoe, EntityPlayer player, World world, IBlockState state, BlockPos pos) {
+        return PlayerSpeciesList.instance().getPlayer(player).getPlayerSpecies().canInteractWithClouds()
+                && ITillable.super.canBeTilled(hoe, player, world, state, pos);
+    }
+
+    @Override
+    public IBlockState getFarmlandState(ItemStack hoe, EntityPlayer player, World world, IBlockState state, BlockPos pos) {
+        return UBlocks.cloud_farmland.getDefaultState();
     }
 
 }

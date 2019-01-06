@@ -2,9 +2,13 @@ package com.minelittlepony.util;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
+
+import com.google.common.collect.Streams;
 
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
 
 public class PosHelper {
 
@@ -21,5 +25,12 @@ public class PosHelper {
             }
         }
         return false;
+    }
+
+    /**
+     * Creates a stream of mutable block positions ranging from the beginning position to end.
+     */
+    public static Stream<MutableBlockPos> inRegion(BlockPos from, BlockPos to) {
+        return Streams.stream(BlockPos.getAllInBoxMutable(from, to));
     }
 }

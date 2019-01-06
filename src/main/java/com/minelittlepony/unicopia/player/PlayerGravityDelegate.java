@@ -60,11 +60,10 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
 
                 entity.fallDistance = 0;
 
-                float exhaustion = (0.2F * ticksInAir++) / 90;
+                float exhaustion = (0.5F * ticksInAir++) / 70;
                 if (entity.isSprinting()) {
                     exhaustion *= 3.11F;
                 }
-
 
                 exhaustion *= (1 - flightExperience/MAXIMUM_FLIGHT_EXPERIENCE);
 

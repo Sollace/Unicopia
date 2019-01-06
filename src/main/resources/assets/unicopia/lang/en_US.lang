@@ -45,6 +45,10 @@ item.apple.rotten.name=Rotten Apple
 item.apple.zap.name=Zap Apple
 item.apple.zap_cooked.name=Cooked Zap Apple
 
+item.tomato.name=Tomato
+item.tomato.rotten.name=Rotten Tomato
+item.tomato.cloud.name=Cloudsdale Tomato
+
 item.alfalfa_leaves.name=Alfalfa
 item.alfalfa_seeds.name=Grain
 
