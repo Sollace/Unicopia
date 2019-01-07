@@ -26,7 +26,7 @@ def ver = "${project.mcVersion}.${project.buildVersion}-${project.buildType}"
 
 version = ver
 group = project.group
-description = project.name
+description = project.description
 
 minecraft {
     version = project.mcVersion + '-' + project.mcfVersion
@@ -53,7 +53,7 @@ sourceSets {
     }
     main {
         compileClasspath += external.output
-        refMap = project.refCore
+        ext.refMap = project.refCore
     }
 }
 
@@ -66,23 +66,23 @@ dependencies {
     deobfCompile('com.minelittlepony:jumpingcastle:1.12.2.1.0.0:universal')
 }
 
-jar {
+processResources {
 		def props = [
 				modid: project.modid,
-				name: project.name,
+				name: project.title,
 				description: project.description,
         version: ver,
         revision: project.buildRevision,
         mcversion: project.mcVersion,
         author: project.author
     ]
-    inputs.properties props
-		
-		from(sourceSets.main.output) {
-        exclude 'mcmod.info'
-    }
-		from(sourceSets.main.output) {
+    
+    from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
         expand props
+    }
+
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
     }
 }
