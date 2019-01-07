@@ -49,11 +49,21 @@ targetCompatibility = 1.8
 
 sourceSets {
     external {
+				compileClasspath += main.compileClasspath
     }
     main {
         compileClasspath += external.output
         refMap = project.refCore
     }
+}
+
+repositories {
+    flatDir {
+        dir 'lib'
+    }
+}
+dependencies {
+    deobfCompile('com.minelittlepony:jumpingcastle:1.12.2.1.0.0:universal')
 }
 
 jar {
