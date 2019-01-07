@@ -48,6 +48,7 @@ import com.minelittlepony.unicopia.client.particle.EntityMagicFX;
 import com.minelittlepony.unicopia.client.particle.EntityRaindropFX;
 import com.minelittlepony.unicopia.client.particle.Particles;
 import com.minelittlepony.unicopia.command.Commands;
+import com.minelittlepony.unicopia.forgebullshit.FBS;
 import com.minelittlepony.unicopia.hud.UHud;
 import com.minelittlepony.unicopia.input.Keyboard;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
@@ -57,8 +58,6 @@ import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.PowersRegistry;
 import com.minelittlepony.pony.data.IPony;
-
-import come.minelittlepony.unicopia.forgebullshit.FBS;
 
 @Mod(modid = Unicopia.MODID, name = Unicopia.NAME, version = Unicopia.VERSION)
 @EventBusSubscriber

@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.forgebullshit.FBS;
 
-import come.minelittlepony.unicopia.forgebullshit.FBS;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;

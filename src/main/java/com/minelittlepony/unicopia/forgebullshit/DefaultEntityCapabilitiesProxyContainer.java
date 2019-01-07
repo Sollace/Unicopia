@@ -1,4 +1,4 @@
-package come.minelittlepony.unicopia.forgebullshit;
+package com.minelittlepony.unicopia.forgebullshit;
 
 import com.minelittlepony.unicopia.player.IOwned;
 import com.minelittlepony.unicopia.player.IPlayer;

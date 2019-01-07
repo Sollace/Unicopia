@@ -11,7 +11,6 @@ import com.minelittlepony.unicopia.item.UItemMultiTexture;
 import com.minelittlepony.unicopia.item.UItemSlab;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
-import come.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.ItemColors;
@@ -35,6 +34,8 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import static com.minelittlepony.unicopia.Predicates.*;
+
+import com.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
 
 public class UItems {
     public static final ItemApple apple = new ItemApple()

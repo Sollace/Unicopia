@@ -1,4 +1,4 @@
-package come.minelittlepony.unicopia.forgebullshit;
+package com.minelittlepony.unicopia.forgebullshit;
 
 import java.lang.reflect.Field;
 
