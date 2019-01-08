@@ -59,7 +59,12 @@ import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.PowersRegistry;
 import com.minelittlepony.pony.data.IPony;
 
-@Mod(modid = Unicopia.MODID, name = Unicopia.NAME, version = Unicopia.VERSION)
+@Mod(
+    modid = Unicopia.MODID,
+    name = Unicopia.NAME,
+    version = Unicopia.VERSION,
+    dependencies = "required-after:jumpingcastle"
+)
 @EventBusSubscriber
 public class Unicopia {
     public static final String MODID = "unicopia";
