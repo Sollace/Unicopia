@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.block.BlockCloud;
 import com.minelittlepony.unicopia.block.BlockCloudAnvil;
 import com.minelittlepony.unicopia.block.BlockCloudSlab;
 import com.minelittlepony.unicopia.block.BlockCloudStairs;
+import com.minelittlepony.unicopia.block.BlockTomatoPlant;
 import com.minelittlepony.unicopia.block.BlockCloudDoor;
 import com.minelittlepony.unicopia.block.BlockCloudFarm;
 
@@ -25,10 +26,13 @@ public class UBlocks {
 
     public static final BlockAlfalfa alfalfa = new BlockAlfalfa(Unicopia.MODID, "alfalfa");
 
+    public static final BlockTomatoPlant tomato_plant = new BlockTomatoPlant(Unicopia.MODID, "tomato_plant");
+
     public static final BlockCloudFarm cloud_farmland = new BlockCloudFarm(Unicopia.MODID, "cloud_farmland");
 
     static void registerBlocks(IForgeRegistry<Block> registry) {
         registry.registerAll(cloud, cloud_stairs, double_cloud_slab, cloud_slab, mist_door, anvil, cloud_farmland,
-                             alfalfa);
+                             alfalfa,
+                             tomato_plant);
     }
 }

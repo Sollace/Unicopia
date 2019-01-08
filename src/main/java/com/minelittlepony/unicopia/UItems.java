@@ -5,7 +5,9 @@ import com.minelittlepony.unicopia.item.ItemCloud;
 import com.minelittlepony.unicopia.item.ItemCurse;
 import com.minelittlepony.unicopia.item.ItemOfHolding;
 import com.minelittlepony.unicopia.item.ItemSpell;
+import com.minelittlepony.unicopia.item.ItemStick;
 import com.minelittlepony.unicopia.item.ItemTomato;
+import com.minelittlepony.unicopia.item.ItemTomatoSeeds;
 import com.minelittlepony.unicopia.item.UItemBlock;
 import com.minelittlepony.unicopia.item.UItemMultiTexture;
 import com.minelittlepony.unicopia.item.UItemSlab;
@@ -29,7 +31,6 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -83,7 +84,10 @@ public class UItems {
 
     public static final Item alfalfa_seeds = new ItemSeedFood(1, 4, UBlocks.alfalfa, Blocks.FARMLAND)
             .setTranslationKey("alfalfa_seeds")
-            .setRegistryName(Unicopia.MODID, "alfalfa_seeds");
+            .setRegistryName(Unicopia.MODID, "alfalfa_seeds")
+            .setCreativeTab(CreativeTabs.MATERIALS);
+
+    public static final ItemStick stick = new ItemStick();
 
     public static final Item alfalfa_leaves = new ItemFood(1, 3, false)
             .setTranslationKey("alfalfa_leaves")
@@ -95,18 +99,22 @@ public class UItems {
 
     public static final ItemTomato tomato = new ItemTomato(Unicopia.MODID, "tomato", 4, 34);
     public static final ItemTomato cloudsdale_tomato = new ItemTomato(Unicopia.MODID, "cloudsdale_tomato", 16, 4);
+    public static final ItemTomatoSeeds tomato_seeds = new ItemTomatoSeeds(Unicopia.MODID, "tomato_seeds");
 
     static void registerItems(IForgeRegistry<Item> registry) {
         RegistryLockSpinner.unlock(Item.REGISTRY);
 
-        Item.REGISTRY.register(Item.getIdFromItem(Items.APPLE), new ResourceLocation("apple"), apple);
+        RegistryLockSpinner.commit(Item.REGISTRY, Items.APPLE, apple, Items.class);
+        RegistryLockSpinner.commit(Item.REGISTRY, Items.STICK, stick, Items.class);
 
         RegistryLockSpinner.lock(Item.REGISTRY);
 
         registry.registerAll(cloud_spawner, dew_drop, cloud_matter, cloud_block,
                              cloud_stairs, cloud_slab, mist_door, anvil,
                              bag_of_holding, spell, curse,
-                             alfalfa_seeds, alfalfa_leaves, cereal, tomato);
+                             alfalfa_seeds, alfalfa_leaves, cereal,
+
+                             tomato_seeds, tomato);
 
         if (UClient.isClientSide()) {
             registerAllVariants(apple, apple.getVariants());
@@ -126,6 +134,7 @@ public class UItems {
             registerAllVariants(cereal, "cereal");
             registerAllVariants(tomato, "tomato", "rotten_tomato");
             registerAllVariants(cloudsdale_tomato, "cloudsdale_tomato", "rotten_cloudsdale_tomato");
+            registerAllVariants(tomato_seeds, "tomato_seeds");
         }
 
         registerFuels();

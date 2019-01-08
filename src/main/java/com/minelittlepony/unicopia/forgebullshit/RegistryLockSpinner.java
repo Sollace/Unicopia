@@ -20,6 +20,21 @@ public class RegistryLockSpinner {
         }
     }
 
+    public static <K, V> void commit(RegistryNamespaced<K, V> registry, V from, V to, Class<?> inClass) {
+
+        registry.register(registry.getIDForObject(from), registry.getNameForObject(from), to);
+
+        for (Field i : inClass.getDeclaredFields()) {
+            try {
+                if (i.get(null) == from) {
+                    i.set(null, to);
+                }
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void lock(RegistryNamespaced<?, ?> registry) {
         if (registry instanceof ILockableRegistry) {
             ((ILockableRegistry) registry).lock();
