@@ -12,7 +12,7 @@ public final class MineLP {
     public static boolean modIsActive() {
         if (!checkComplete) {
             try {
-                MineLittlePony.getConfig();
+                MineLittlePony.getInstance();
                 modIsActive = true;
             } catch (Exception e) {
                 modIsActive = false;

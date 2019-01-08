@@ -5,7 +5,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public abstract class MineLittlePony {
-    public static Object getConfig() {
+    public static MineLittlePony getInstance() {
         throw new RuntimeException();
     }
 }
