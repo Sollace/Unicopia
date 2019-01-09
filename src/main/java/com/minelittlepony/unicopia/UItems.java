@@ -97,6 +97,10 @@ public class UItems {
             .setTranslationKey("cereal")
             .setRegistryName(Unicopia.MODID, "cereal");
 
+    public static final Item sugar_cereal = new ItemSoup(15)
+            .setTranslationKey("sugar_cereal")
+            .setRegistryName(Unicopia.MODID, "sugar_cereal");
+
     public static final ItemTomato tomato = new ItemTomato(Unicopia.MODID, "tomato", 4, 34);
     public static final ItemTomato cloudsdale_tomato = new ItemTomato(Unicopia.MODID, "cloudsdale_tomato", 16, 4);
     public static final ItemTomatoSeeds tomato_seeds = new ItemTomatoSeeds(Unicopia.MODID, "tomato_seeds");
@@ -114,7 +118,7 @@ public class UItems {
                              bag_of_holding, spell, curse,
                              alfalfa_seeds, alfalfa_leaves, cereal,
 
-                             tomato_seeds, tomato);
+                             cloudsdale_tomato, tomato_seeds, tomato);
 
         if (UClient.isClientSide()) {
             registerAllVariants(apple, apple.getVariants());
@@ -132,6 +136,7 @@ public class UItems {
             registerAllVariants(alfalfa_seeds, "alfalfa_seeds");
             registerAllVariants(alfalfa_leaves, "alfalfa_leaves");
             registerAllVariants(cereal, "cereal");
+            registerAllVariants(sugar_cereal, "sugar_cereal");
             registerAllVariants(tomato, "tomato", "rotten_tomato");
             registerAllVariants(cloudsdale_tomato, "cloudsdale_tomato", "rotten_cloudsdale_tomato");
             registerAllVariants(tomato_seeds, "tomato_seeds");
