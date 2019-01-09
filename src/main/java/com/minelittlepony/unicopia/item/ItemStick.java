@@ -1,9 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.UBlocks;
-import com.minelittlepony.unicopia.block.BlockCloudFarm;
-import com.minelittlepony.unicopia.block.BlockTomatoPlant;
-import com.minelittlepony.unicopia.block.BlockTomatoPlant.Type;
 
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.block.SoundType;
@@ -38,13 +35,7 @@ public class ItemStick extends ItemSeeds {
 
         if (facing == EnumFacing.UP && player.canPlayerEdit(pos.offset(facing), facing, itemstack) && state.getBlock().canSustainPlant(state, worldIn, pos, EnumFacing.UP, this) && worldIn.isAirBlock(pos.up())) {
 
-            IBlockState cropState = UBlocks.tomato_plant.getDefaultState();
-
-            if (state.getBlock() instanceof BlockCloudFarm) {
-                cropState = cropState.withProperty(BlockTomatoPlant.TYPE, Type.CLOUDSDALE);
-            }
-
-            worldIn.setBlockState(pos.up(), cropState);
+            worldIn.setBlockState(pos.up(), UBlocks.tomato_plant.getPlacedState(state));
 
             SoundType sound = state.getBlock().getSoundType(state, worldIn, pos, player);
 

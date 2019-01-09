@@ -39,7 +39,7 @@ public class BlockTomatoPlant extends BlockCrops {
         setTranslationKey(name);
 
         setDefaultState(getDefaultState().withProperty(TYPE, Type.NORMAL));
-        setHardness(3);
+        setHardness(0.2F);
         setSoundType(SoundType.WOOD);
     }
 
@@ -192,6 +192,18 @@ public class BlockTomatoPlant extends BlockCrops {
         int half = meta >> 3;;
 
         return withAge(age).withProperty(TYPE, Type.values()[half]);
+    }
+
+    public IBlockState getPlacedState(IBlockState state) {
+        if (state.getBlock() instanceof BlockCloudFarm) {
+            return getDefaultState().withProperty(TYPE, Type.CLOUDSDALE);
+        }
+
+        if (state.getBlock() instanceof BlockTomatoPlant) {
+            return getDefaultState().withProperty(TYPE, state.getValue(TYPE));
+        }
+
+        return getDefaultState();
     }
 
     @Override
