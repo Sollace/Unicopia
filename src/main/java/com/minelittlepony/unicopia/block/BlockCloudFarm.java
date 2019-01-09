@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.UBlocks;
 
+import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +22,8 @@ public class BlockCloudFarm extends UFarmland implements ICloudBlock {
 
     public BlockCloudFarm(String domain, String name) {
         super(domain, name);
+
+        setSoundType(SoundType.CLOTH);
     }
 
     @Override
