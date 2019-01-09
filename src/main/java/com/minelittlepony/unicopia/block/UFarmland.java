@@ -6,10 +6,12 @@ import com.minelittlepony.util.PosHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFarmland;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -23,6 +25,8 @@ public abstract class UFarmland extends BlockFarmland {
     public UFarmland(String domain, String name) {
         setTranslationKey(name);
         setRegistryName(domain, name);
+        setHardness(0.6F);
+        setSoundType(SoundType.GROUND);
     }
 
     @Override
@@ -81,6 +85,13 @@ public abstract class UFarmland extends BlockFarmland {
                 || plantable.getPlantType(world, pos.offset(direction)) == EnumPlantType.Crop;
     }
 
+    @Override
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+        IBlockState dirtState = getDroppedState(state);
+
+        return dirtState.getBlock().getItemDropped(dirtState, rand, fortune);
+    }
+
     /**
      * Determines if this farmland should be trampled when an entity walks on it.
      */
@@ -118,10 +129,14 @@ public abstract class UFarmland extends BlockFarmland {
         return field_194405_c.offset(pos);
     }
 
+    protected IBlockState getDroppedState(IBlockState state) {
+        return Blocks.DIRT.getDefaultState();
+    }
+
     /**
      * Gets the state used to represent this block as a piece of dirt.
      */
     protected IBlockState getDirtState(World world, BlockPos pos, IBlockState state) {
-        return Blocks.DIRT.getDefaultState();
+        return getDroppedState(state);
     }
 }
