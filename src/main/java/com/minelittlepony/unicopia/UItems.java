@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia;
 
 import com.minelittlepony.unicopia.item.ItemApple;
+import com.minelittlepony.unicopia.item.ItemCereal;
 import com.minelittlepony.unicopia.item.ItemCloud;
 import com.minelittlepony.unicopia.item.ItemCurse;
 import com.minelittlepony.unicopia.item.ItemOfHolding;
@@ -24,7 +25,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemDoor;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemSeedFood;
-import net.minecraft.item.ItemSoup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.IRecipe;
@@ -96,13 +96,8 @@ public class UItems {
             .setTranslationKey("alfalfa_leaves")
             .setRegistryName(Unicopia.MODID, "alfalfa_leaves");
 
-    public static final Item cereal = new ItemSoup(15)
-            .setTranslationKey("cereal")
-            .setRegistryName(Unicopia.MODID, "cereal");
-
-    public static final Item sugar_cereal = new ItemSoup(15)
-            .setTranslationKey("sugar_cereal")
-            .setRegistryName(Unicopia.MODID, "sugar_cereal");
+    public static final Item cereal = new ItemCereal(Unicopia.MODID, "cereal", 9, 0.8F);
+    public static final Item sugar_cereal = new ItemCereal(Unicopia.MODID, "sugar_cereal", 20, -2).setAlwaysEdible();
 
     public static final ItemTomato tomato = new ItemTomato(Unicopia.MODID, "tomato", 4, 34);
     public static final ItemTomato cloudsdale_tomato = new ItemTomato(Unicopia.MODID, "cloudsdale_tomato", 16, 4);
@@ -120,7 +115,8 @@ public class UItems {
                              cloud_stairs, cloud_slab, cloud_farmland,
                              mist_door, anvil,
                              bag_of_holding, spell, curse,
-                             alfalfa_seeds, alfalfa_leaves, cereal,
+                             alfalfa_seeds, alfalfa_leaves,
+                             cereal, sugar_cereal,
 
                              cloudsdale_tomato, tomato_seeds, tomato);
 
