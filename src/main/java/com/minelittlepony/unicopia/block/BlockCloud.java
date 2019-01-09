@@ -74,6 +74,16 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
         return BlockRenderLayer.TRANSLUCENT;
     }
 
+    @Deprecated
+    @Override
+    public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+        if (side == EnumFacing.UP && world.getBlockState(pos.up()).getBlock() instanceof ICloudBlock) {
+            return true;
+        }
+
+        return super.isSideSolid(base_state, world, pos, side);
+    }
+
     @Override
     public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
 
@@ -140,7 +150,7 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
     @Deprecated
     @Override
     public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos) {
-        if (!CloudType.NORMAL.canInteract(player)) {
+        if (CloudType.NORMAL.canInteract(player)) {
             return super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
         }
         return -1;
