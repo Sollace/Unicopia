@@ -64,6 +64,9 @@ public class UItems {
             .setTranslationKey("cloud_stairs")
             .setRegistryName(Unicopia.MODID, "cloud_stairs");
 
+    public static final Item cloud_farmland = new UItemBlock(UBlocks.cloud_farmland, INTERACT_WITH_CLOUDS)
+            .setTranslationKey("cloud_farmland")
+            .setRegistryName(Unicopia.MODID, "cloud_farmland");
 
     public static final Item anvil = new UItemBlock(UBlocks.anvil, INTERACT_WITH_CLOUDS)
             .setTranslationKey("cloud_anvil")
@@ -114,7 +117,8 @@ public class UItems {
         RegistryLockSpinner.lock(Item.REGISTRY);
 
         registry.registerAll(cloud_spawner, dew_drop, cloud_matter, cloud_block,
-                             cloud_stairs, cloud_slab, mist_door, anvil,
+                             cloud_stairs, cloud_slab, cloud_farmland,
+                             mist_door, anvil,
                              bag_of_holding, spell, curse,
                              alfalfa_seeds, alfalfa_leaves, cereal,
 
@@ -126,6 +130,7 @@ public class UItems {
             registerAllVariants(dew_drop, "dew_drop");
             registerAllVariants(cloud_matter, "cloud_matter");
             registerAllVariants(cloud_stairs, "cloud_stairs");
+            registerAllVariants(cloud_farmland, "cloud_farmland");
             registerAllVariants(cloud_slab, CloudType.getVariants("_cloud_slab"));
             registerAllVariants(cloud_block, CloudType.getVariants("_cloud_block"));
             registerAllVariants(mist_door, "mist_door");
