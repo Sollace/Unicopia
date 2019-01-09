@@ -5,19 +5,15 @@
         "age=2,half=top": { "model": "unicopia:alfalfa/stage2" },
         "age=3,half=top": { "model": "unicopia:alfalfa/stage3" },
         "age=4,half=top": { "model": "unicopia:alfalfa/stage4" },
-        "age=5,half=top": { "model": "unicopia:alfalfa/stage5" },
         "age=0,half=middle": { "model": "unicopia:alfalfa/shaft" },
         "age=1,half=middle": { "model": "unicopia:alfalfa/shaft" },
         "age=2,half=middle": { "model": "unicopia:alfalfa/shaft" },
         "age=3,half=middle": { "model": "unicopia:alfalfa/shaft" },
         "age=4,half=middle": { "model": "unicopia:alfalfa/shaft" },
-        "age=5,half=middle": { "model": "unicopia:alfalfa/shaft" },
         "age=0,half=bottom": { "model": "unicopia:alfalfa/stage0" },
         "age=1,half=bottom": { "model": "unicopia:alfalfa/stage1" },
         "age=2,half=bottom": { "model": "unicopia:alfalfa/stage2" },
         "age=3,half=bottom": { "model": "unicopia:alfalfa/stage3" },
-        "age=4,half=bottom": { "model": "unicopia:alfalfa/stage4" },
-        "age=5,half=bottom": { "model": "unicopia:alfalfa/stage5" },
-        "age=5,half=bottom": { "model": "unicopia:alfalfa/shaft" }
+        "age=4,half=bottom": { "model": "unicopia:alfalfa/shaft" }
     }
 }

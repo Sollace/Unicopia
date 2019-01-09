@@ -1,6 +1,0 @@
-{
-    "parent": "block/crop",
-    "textures": {
-        "crop": "unicopia:blocks/alfalfa/stage_5"
-    }
-}

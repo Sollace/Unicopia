@@ -24,7 +24,7 @@ import net.minecraftforge.common.ForgeHooks;
 
 public class BlockAlfalfa extends BlockCrops {
 
-    public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 5);
+    public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 4);
     public static final PropertyEnum<Half> HALF = PropertyEnum.create("half", Half.class);
 
     private static final AxisAlignedBB[] BOUNDS = new AxisAlignedBB[] {
@@ -65,7 +65,7 @@ public class BlockAlfalfa extends BlockCrops {
 
     @Override
     public int getMaxAge() {
-        return 5;
+        return 4;
     }
 
     @Override
@@ -274,6 +274,38 @@ public class BlockAlfalfa extends BlockCrops {
     @Override
     public EnumPlantType getPlantType(IBlockAccess world, BlockPos pos) {
         return EnumPlantType.Crop;
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        int age = meta % (getMaxAge() + 1);
+        int half = (int)Math.floor(meta / (getMaxAge() + 1)) % Half.values().length;
+
+        return withAge(age).withProperty(HALF, Half.values()[half]);
+    }
+
+    // 0: age:0, half:0
+    // 1: age:1, half:0
+    // 2: age:2, half:0
+    // 3: age:3, half:0
+    // 4: age:4, half:0
+    // 5: age:0, half:1
+    // 6: age:1, half:1
+    // 7: age:2, half:1
+    // 8: age:3, half:1
+    // 9: age:4, half:1
+    //10: age:0, half:2
+    //11: age:1, half:2
+    //12: age:2, half:2
+    //13: age:3, half:2
+    //14: age:4, half:2
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        int age = getAge(state);
+        int half = getHalf(state).ordinal();
+
+        return (half * (getMaxAge() + 1)) + age;
     }
 
     public static enum Half implements IStringSerializable {
