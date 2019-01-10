@@ -17,6 +17,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -128,7 +129,7 @@ public class BlockTomatoPlant extends BlockCrops {
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         if (getAge(state) == 0) {
-            return UItems.stick;
+            return Items.AIR;
         }
 
         if (isMaxAge(state)) {
@@ -142,13 +143,11 @@ public class BlockTomatoPlant extends BlockCrops {
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         Random rand = world instanceof World ? ((World)world).rand : RANDOM;
 
+        drops.add(new ItemStack(UItems.stick, 1, 0));
+
         Item item = getItemDropped(state, rand, fortune);
         if (item != Items.AIR) {
             drops.add(new ItemStack(item, 1, damageDropped(state)));
-
-            if (getAge(state) > 0) {
-                drops.add(new ItemStack(item, rand.nextInt(2), 1));
-            }
         }
     }
 
@@ -160,7 +159,19 @@ public class BlockTomatoPlant extends BlockCrops {
                 Type type = state.getValue(TYPE);
 
                 Item crop = type == Type.CLOUDSDALE ? UItems.cloudsdale_tomato : UItems.tomato;
-                spawnAsEntity(world, pos, new ItemStack(crop, getAge(state), 0));
+
+                int good = getAge(state);
+                int rotten = world.rand.nextInt(good);
+
+                good -= rotten;
+
+                if (good > 0) {
+                    spawnAsEntity(world, pos, new ItemStack(crop, good, 0));
+                }
+                if (rotten > 0) {
+                    spawnAsEntity(world, pos, new ItemStack(crop, rotten, 1));
+                }
+
                 world.setBlockState(pos, state.withProperty(getAgeProperty(), 0));
 
                 return true;
@@ -179,7 +190,13 @@ public class BlockTomatoPlant extends BlockCrops {
 
     public boolean plant(World world, BlockPos pos, IBlockState state) {
         if (getAge(state) == 0) {
+
             world.setBlockState(pos, state.withProperty(getAgeProperty(), 1));
+
+            SoundType sound = getSoundType(state, world, pos, null);
+
+            world.playSound(null, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, sound.getVolume(), sound.getPitch() * 2);
+
             return true;
         }
 

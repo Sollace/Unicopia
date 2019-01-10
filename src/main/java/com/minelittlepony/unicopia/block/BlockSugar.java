@@ -18,12 +18,13 @@ public class BlockSugar extends BlockFalling {
         setRegistryName(domain, name);
 
         setSoundType(SoundType.SAND);
-        setCreativeTab(CreativeTabs.MATERIALS);
+        setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
         setHardness(0.7F);
     }
 
     @Override
     public int quantityDropped(Random random) {
+        setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
         return 9;
     }
 

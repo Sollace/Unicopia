@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.block.BlockTomatoPlant;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,8 +26,12 @@ public class ItemTomatoSeeds extends Item {
 
         IBlockState state = world.getBlockState(pos);
 
-        if (state.getBlock() instanceof BlockTomatoPlant) {
-            if (((BlockTomatoPlant)state.getBlock()).plant(world, pos, state)) {
+        Block block = state.getBlock();
+
+        if (block instanceof BlockTomatoPlant) {
+            if (((BlockTomatoPlant)block).plant(world, pos, state)) {
+                player.getHeldItem(hand).shrink(1);
+
                 return EnumActionResult.SUCCESS;
             }
         }
