@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -82,6 +84,21 @@ public class SpellRegistry {
         }
     }
 
+    public ItemStack disenchantStack(ItemStack stack) {
+        if (stackHasEnchantment(stack)) {
+            stack.getTagCompound().removeTag("spell");
+        }
+
+        return stack;
+    }
+
+    public ItemStack enchantStack(ItemStack stack, ItemStack from) {
+        stack.setTagCompound(new NBTTagCompound());
+        stack.getTagCompound().setString("spell", getKeyFromStack(from));
+
+        return stack;
+    }
+
     public ItemStack enchantStack(ItemStack stack, String name) {
         stack.setTagCompound(new NBTTagCompound());
         stack.getTagCompound().setString("spell", name);
@@ -89,6 +106,7 @@ public class SpellRegistry {
         return stack;
     }
 
+    @Nonnull
     public static String getKeyFromStack(ItemStack stack) {
         if (stack.isEmpty() || !stack.hasTagCompound() || !stack.getTagCompound().hasKey("spell")) {
             return "";

@@ -29,16 +29,23 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.network.IGuiHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.Map;
+import java.util.function.Function;
+
+import com.google.gson.JsonObject;
 import com.minelittlepony.jumpingcastle.api.IChannel;
 import com.minelittlepony.jumpingcastle.api.JumpingCastle;
 import com.minelittlepony.jumpingcastle.api.Target;
@@ -48,15 +55,19 @@ import com.minelittlepony.unicopia.client.particle.EntityMagicFX;
 import com.minelittlepony.unicopia.client.particle.EntityRaindropFX;
 import com.minelittlepony.unicopia.client.particle.Particles;
 import com.minelittlepony.unicopia.command.Commands;
+import com.minelittlepony.unicopia.enchanting.SpellRecipe;
 import com.minelittlepony.unicopia.forgebullshit.FBS;
 import com.minelittlepony.unicopia.hud.UHud;
 import com.minelittlepony.unicopia.input.Keyboard;
+import com.minelittlepony.unicopia.inventory.gui.ContainerSpellBook;
+import com.minelittlepony.unicopia.inventory.gui.GuiSpellBook;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.PowersRegistry;
+import com.minelittlepony.unicopia.util.crafting.CraftingManager;
 import com.minelittlepony.pony.data.IPony;
 
 @Mod(
@@ -66,7 +77,7 @@ import com.minelittlepony.pony.data.IPony;
     dependencies = "required-after:jumpingcastle"
 )
 @EventBusSubscriber
-public class Unicopia {
+public class Unicopia implements IGuiHandler {
     public static final String MODID = "unicopia";
     public static final String NAME = "@NAME@";
     public static final String VERSION = "@VERSION@";
@@ -85,6 +96,8 @@ public class Unicopia {
      * this option in-game themselves.
      */
     private static Race clientPlayerRace = getclientPlayerRace();
+
+    private static CraftingManager craftingManager;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -117,6 +130,24 @@ public class Unicopia {
         UAdvancements.init();
 
         FBS.init();
+
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, this);
+    }
+
+    @EventHandler
+    public void posInit(FMLPostInitializationEvent event) {
+        craftingManager = new CraftingManager(MODID, "enchanting") {
+            @Override
+            protected void registerRecipeTypes(Map<String, Function<JsonObject, IRecipe>> types) {
+                super.registerRecipeTypes(types);
+
+                types.put("unicopia:crafting_spell", SpellRecipe::deserialize);
+            }
+        };
+    }
+
+    public static CraftingManager getCraftingManager() {
+        return craftingManager;
     }
 
     @SubscribeEvent
@@ -294,5 +325,21 @@ public class Unicopia {
         fov += PlayerSpeciesList.instance().getPlayer(event.getEntity()).getExertion() / 5;
 
         event.setNewfov(fov);
+    }
+
+    @Override
+    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+        switch (ID) {
+            case 0: return new ContainerSpellBook(player.inventory, world, new BlockPos(x, y, z));
+            default: return null;
+        }
+    }
+
+    @Override
+    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+        switch (ID) {
+            case 0: return new GuiSpellBook(player);
+            default: return null;
+        }
     }
 }

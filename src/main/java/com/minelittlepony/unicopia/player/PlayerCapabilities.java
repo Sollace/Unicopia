@@ -1,5 +1,10 @@
 package com.minelittlepony.unicopia.player;
 
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
+import com.google.common.collect.Lists;
 import com.minelittlepony.model.anim.BasicEasingInterpolator;
 import com.minelittlepony.model.anim.IInterpolator;
 import com.minelittlepony.unicopia.Race;
@@ -17,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -29,11 +35,16 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
     private static final DataParameter<Integer> PLAYER_RACE = EntityDataManager
             .createKey(EntityPlayer.class, DataSerializers.VARINT);
 
+    private static final DataParameter<Integer> ENERGY = EntityDataManager
+            .createKey(EntityPlayer.class, DataSerializers.VARINT);
+
     private static final DataParameter<Float> EXERTION = EntityDataManager
             .createKey(EntityPlayer.class, DataSerializers.FLOAT);
 
     private static final DataParameter<NBTTagCompound> EFFECT = EntityDataManager
             .createKey(EntityPlayer.class, DataSerializers.COMPOUND_TAG);
+
+    private final List<Integer> pages = Lists.newArrayList();
 
     private final PlayerAbilityDelegate powers = new PlayerAbilityDelegate(this);
 
@@ -57,6 +68,7 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
         player.getDataManager().register(PLAYER_RACE, Race.HUMAN.ordinal());
         player.getDataManager().register(EXERTION, 0F);
         player.getDataManager().register(EFFECT, new NBTTagCompound());
+        player.getDataManager().register(ENERGY, 0);
     }
 
     @Override
@@ -159,7 +171,7 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
             if (!getPlayerSpecies().canCast()) {
                 setEffect(null);
             } else {
-                if (entity.getEntityWorld().isRemote) { //  && entity.getEntityWorld().getWorldTime() % 10 == 0
+                if (entity.getEntityWorld().isRemote) {
                     getEffect().renderOnPerson(this);
                 }
 
@@ -219,6 +231,10 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
         compound.setTag("powers", powers.toNBT());
         compound.setTag("gravity", gravity.toNBT());
 
+        if (hasUnlockedPages()) {
+            compound.setTag("pages", new NBTTagIntArray(pages));
+        }
+
         IMagicEffect effect = getEffect();
 
         if (effect != null) {
@@ -235,6 +251,13 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
         if (compound.hasKey("effect")) {
             setEffect(SpellRegistry.instance().createEffectFromNBT(compound.getCompoundTag("effect")));
+        }
+
+        if (compound.hasKey("pages")) {
+            pages.clear();
+            for (int i : compound.getIntArray("pages")) {
+                pages.add(i);
+            }
         }
     }
 
@@ -274,4 +297,10 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
     @Override
     public void setCurrentLevel(int level) {
     }
+
+    @Nonnull
+    public List<Integer> getUnlockedPages() {
+        return pages;
+    }
+
 }

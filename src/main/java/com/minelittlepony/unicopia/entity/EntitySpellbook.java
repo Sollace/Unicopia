@@ -2,10 +2,12 @@ package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.UItems;
+import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -130,7 +132,10 @@ public class EntitySpellbook extends EntityLiving implements IMagicals {
 		}
 
 		if (Predicates.MAGI.test(player)) {
-			//ApiGui.openContainer((EntityPlayerMP)player, new InterfaceBook());
+
+		    player.playSound(SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, 2, 1);
+
+		    player.openGui(Unicopia.MODID, 0, world, (int)posX, (int)posY, (int)posZ);
 
 			return EnumActionResult.SUCCESS;
 		}

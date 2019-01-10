@@ -1,0 +1,12 @@
+{
+	"type": "unicopia:crafting_spell",
+	"ingredients": [
+        {
+        	"item": "minecraft:apple",
+        	"data": 0
+        }
+    ],
+	"result": {
+		"spell": "shield"
+	}
+}

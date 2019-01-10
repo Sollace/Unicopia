@@ -33,11 +33,13 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import static com.minelittlepony.unicopia.Predicates.*;
 
+import com.minelittlepony.unicopia.forgebullshit.BuildInTexturesBakery;
 import com.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
 
 public class UItems {
@@ -153,6 +155,8 @@ public class UItems {
             registerAllVariants(tomato, "tomato", "rotten_tomato");
             registerAllVariants(cloudsdale_tomato, "cloudsdale_tomato", "rotten_cloudsdale_tomato");
             registerAllVariants(tomato_seeds, "tomato_seeds");
+
+            BuildInTexturesBakery.getBuiltInTextures().add(new ResourceLocation("unicopia", "items/empty_slot_gem"));
         }
 
         registerFuels();

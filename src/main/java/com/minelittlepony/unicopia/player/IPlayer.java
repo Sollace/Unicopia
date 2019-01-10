@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.player;
 import java.util.UUID;
 
 import com.minelittlepony.model.anim.IInterpolator;
+import com.minelittlepony.unicopia.enchanting.IPageOwner;
+import com.minelittlepony.unicopia.network.ITransmittable;
 import com.minelittlepony.unicopia.spell.ICaster;
 
 import net.minecraft.client.Minecraft;
@@ -10,9 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPlayer> {
-
-    void sendCapabilities(boolean full);
+public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPlayer>, ITransmittable, IPageOwner {
 
     IAbilityReceiver getAbilities();
 
