@@ -214,9 +214,10 @@ public class BlockAlfalfa extends BlockCrops {
         return getHalf(state) != Half.MIDDLE;
     }
 
+    @Deprecated
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return BOUNDS[Math.min(BOUNDS.length - 1, getFullAge(source, pos))];
+        return BOUNDS[Math.min(BOUNDS.length - 1, getFullAge(source, pos))].offset(getOffset(state, source, pos));
     }
 
     @Override
