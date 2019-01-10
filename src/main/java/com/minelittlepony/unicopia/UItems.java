@@ -22,6 +22,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemDoor;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemSeedFood;
@@ -76,6 +77,10 @@ public class UItems {
             .setTranslationKey("mist_door")
             .setRegistryName(Unicopia.MODID, "mist_door");
 
+    public static final Item sugar_block = new ItemBlock(UBlocks.sugar_block)
+            .setTranslationKey("sugar_block")
+            .setRegistryName(Unicopia.MODID, "sugar_block");
+
     public static final Item cloud_slab = new UItemSlab(UBlocks.cloud_slab, UBlocks.cloud_slab, UBlocks.double_cloud_slab, INTERACT_WITH_CLOUDS)
             .setTranslationKey("cloud_slab")
             .setRegistryName(Unicopia.MODID, "cloud_slab");
@@ -116,7 +121,7 @@ public class UItems {
                              mist_door, anvil,
                              bag_of_holding, spell, curse,
                              alfalfa_seeds, alfalfa_leaves,
-                             cereal, sugar_cereal,
+                             cereal, sugar_cereal, sugar_block,
 
                              cloudsdale_tomato, tomato_seeds, tomato);
 
@@ -138,6 +143,7 @@ public class UItems {
             registerAllVariants(alfalfa_leaves, "alfalfa_leaves");
             registerAllVariants(cereal, "cereal");
             registerAllVariants(sugar_cereal, "sugar_cereal");
+            registerAllVariants(sugar_block, "sugar_block");
             registerAllVariants(tomato, "tomato", "rotten_tomato");
             registerAllVariants(cloudsdale_tomato, "cloudsdale_tomato", "rotten_cloudsdale_tomato");
             registerAllVariants(tomato_seeds, "tomato_seeds");

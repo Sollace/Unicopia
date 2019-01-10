@@ -9,6 +9,8 @@ tile.cloud_slab.enchanted.name=Enchanted Cloud Slab
 tile.cloud_stairs.name=Cloud Stairs
 tile.cloud_farmland.name=Tilled Clouds
 
+tile.sugar_block.name=Block of Sugar
+
 item.cloud_matter.name=Lump of Cloud
 item.cloud.small.name=Bucking Bronco
 item.cloud.medium.name=Construction Cloud

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "#*#",
+    "###"
+  ],
+  "key": {
+    "#": [
+      {
+        "item": "unicopia:sugar_block",
+        "data": 0
+      }
+    ],
+    "*": [
+      {
+        "item": "unicopia:cereal",
+        "data": 0
+      }
+    ]
+  },
+  "result": {
+    "item": "unicopia:sugar_cereal",
+    "data": 0,
+    "count": 1
+  }
+}
