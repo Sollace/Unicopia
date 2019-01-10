@@ -50,6 +50,12 @@ public class BlockTomatoPlant extends BlockCrops {
         return BOUNDING_BOX.offset(getOffset(state, source, pos));
     }
 
+    @Deprecated
+    @Override
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return getBoundingBox(state, world, pos);
+    }
+
     @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, TYPE, AGE);
