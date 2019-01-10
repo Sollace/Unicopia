@@ -9,12 +9,15 @@ import com.minelittlepony.unicopia.UBlocks;
 
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -97,6 +100,17 @@ public class BlockCloudFarm extends UFarmland implements ICloudBlock {
     @Override
     public boolean canEntityDestroy(IBlockState state, IBlockAccess world, BlockPos pos, Entity entity) {
         return getCanInteract(state, entity) && super.canEntityDestroy(state, world, pos, entity);
+    }
+
+    @Deprecated
+    @Override
+    public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
+        if (worldIn.isRemote) {
+            if (!getCanInteract(blockState, Minecraft.getMinecraft().player)) {
+                return null;
+            }
+        }
+        return super.collisionRayTrace(blockState, worldIn, pos, start, end);
     }
 
     @Deprecated
