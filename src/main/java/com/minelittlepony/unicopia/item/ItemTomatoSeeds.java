@@ -30,7 +30,9 @@ public class ItemTomatoSeeds extends Item {
 
         if (block instanceof BlockTomatoPlant) {
             if (((BlockTomatoPlant)block).plant(world, pos, state)) {
-                player.getHeldItem(hand).shrink(1);
+                if (!player.capabilities.isCreativeMode) {
+                    player.getHeldItem(hand).shrink(1);
+                }
 
                 return EnumActionResult.SUCCESS;
             }
