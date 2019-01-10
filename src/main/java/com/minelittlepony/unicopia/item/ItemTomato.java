@@ -25,6 +25,7 @@ public class ItemTomato extends ItemFood implements ITossable {
         setRegistryName(domain, name);
 
         setDispenseable();
+        setHasSubtypes(true);
     }
 
     @Override
