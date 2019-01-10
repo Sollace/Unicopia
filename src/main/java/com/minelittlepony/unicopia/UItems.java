@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.item.ItemCloud;
 import com.minelittlepony.unicopia.item.ItemCurse;
 import com.minelittlepony.unicopia.item.ItemOfHolding;
 import com.minelittlepony.unicopia.item.ItemSpell;
+import com.minelittlepony.unicopia.item.ItemSpellbook;
 import com.minelittlepony.unicopia.item.ItemStick;
 import com.minelittlepony.unicopia.item.ItemTomato;
 import com.minelittlepony.unicopia.item.ItemTomatoSeeds;
@@ -90,6 +91,8 @@ public class UItems {
 
     public static final ItemOfHolding bag_of_holding = new ItemOfHolding(Unicopia.MODID, "bag_of_holding");
 
+    public static final ItemSpellbook spellbook = new ItemSpellbook(Unicopia.MODID, "spellbook");
+
     public static final Item alfalfa_seeds = new ItemSeedFood(1, 4, UBlocks.alfalfa, Blocks.FARMLAND)
             .setTranslationKey("alfalfa_seeds")
             .setRegistryName(Unicopia.MODID, "alfalfa_seeds")
@@ -119,7 +122,9 @@ public class UItems {
         registry.registerAll(cloud_spawner, dew_drop, cloud_matter, cloud_block,
                              cloud_stairs, cloud_slab, cloud_farmland,
                              mist_door, anvil,
-                             bag_of_holding, spell, curse,
+
+                             bag_of_holding, spell, curse, spellbook,
+
                              alfalfa_seeds, alfalfa_leaves,
                              cereal, sugar_cereal, sugar_block,
 
@@ -139,6 +144,7 @@ public class UItems {
             registerAllVariants(bag_of_holding, "bag_of_holding");
             registerAllVariants(spell, "gem");
             registerAllVariants(curse, "corrupted_gem");
+            registerAllVariants(spellbook, "spellbook");
             registerAllVariants(alfalfa_seeds, "alfalfa_seeds");
             registerAllVariants(alfalfa_leaves, "alfalfa_leaves");
             registerAllVariants(cereal, "cereal");

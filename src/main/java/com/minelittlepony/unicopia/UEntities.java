@@ -4,11 +4,13 @@ import com.minelittlepony.unicopia.entity.EntityCloud;
 import com.minelittlepony.unicopia.entity.EntityConstructionCloud;
 import com.minelittlepony.unicopia.entity.EntityRacingCloud;
 import com.minelittlepony.unicopia.entity.EntitySpell;
+import com.minelittlepony.unicopia.entity.EntitySpellbook;
 import com.minelittlepony.unicopia.entity.EntityProjectile;
 import com.minelittlepony.unicopia.entity.EntityWildCloud;
 import com.minelittlepony.unicopia.render.RenderCloud;
 import com.minelittlepony.unicopia.render.RenderGem;
 import com.minelittlepony.unicopia.render.RenderProjectile;
+import com.minelittlepony.unicopia.render.RenderSpellbook;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList.EntityEggInfo;
@@ -29,6 +31,7 @@ public class UEntities {
             new Entry(EntityRacingCloud.class, "racing_cloud"),
             new Entry(EntityConstructionCloud.class, "construction_cloud"),
             new Entry(EntitySpell.class, "magic_spell"),
+            new Entry(EntitySpellbook.class, "spellbook"),
             EntityEntryBuilder.<EntityProjectile>create().entity(EntityProjectile.class).name("thrown_item").id(new ResourceLocation(Unicopia.MODID, "thrown_item"), 0).tracker(10, 5, true).build()
         );
     }
@@ -37,6 +40,7 @@ public class UEntities {
         RenderingRegistry.registerEntityRenderingHandler(EntityCloud.class, RenderCloud::new);
         RenderingRegistry.registerEntityRenderingHandler(EntitySpell.class, RenderGem::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityProjectile.class, RenderProjectile::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntitySpellbook.class, RenderSpellbook::new);
     }
 
     static class Entry extends EntityEntry {

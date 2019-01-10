@@ -64,7 +64,7 @@ entity.racing_cloud.name=Bucking Bronco
 entity.construction_cloud.name=Construction Cloud
 entity.cloud.name=Cloud
 entity.spell.name=Magic
-
+entity.spellbook.name=Spellbook
 
 commands.race.success.self=Your race has been updated
 commands.race.success.otherself=%s changed race to %s
