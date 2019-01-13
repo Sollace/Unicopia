@@ -22,6 +22,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -144,6 +146,15 @@ public class BlockCloudAnvil extends BlockAnvil implements ICloudBlock {
         if (getCanInteract(state, entity)) {
             super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, p_185477_7_);
         }
+    }
+
+    @Deprecated
+    @Override
+    public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
+        if (handleRayTraceSpecialCases(worldIn, pos, blockState)) {
+            return null;
+        }
+        return super.collisionRayTrace(blockState, worldIn, pos, start, end);
     }
 
     @Deprecated
