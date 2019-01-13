@@ -101,6 +101,8 @@ public class Unicopia implements IGuiHandler {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        UConfig.init(event.getModConfigurationDirectory());
+
         if (UClient.isClientSide()) {
             UEntities.preInit();
         }

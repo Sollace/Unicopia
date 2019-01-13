@@ -158,7 +158,7 @@ class CommandSpecies extends CommandBase {
     			}
     		}
 
-			return getListOfStringsMatchingLastWord(args, names.toArray(new String[names.size()]));
+			return getListOfStringsMatchingLastWord(args, names.stream().toArray(String[]::new));
     	}
 
     	if ((args.length == 3 && args[0].contentEquals("set")) || (args[0].contentEquals("get") && args.length == 2)) {

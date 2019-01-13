@@ -1,10 +1,9 @@
 package com.minelittlepony.unicopia.player;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.UConfig;
 import com.minelittlepony.unicopia.forgebullshit.FBS;
 
 import net.minecraft.entity.Entity;
@@ -19,14 +18,28 @@ public class PlayerSpeciesList {
         return instance;
     }
 
-    private List<Race> serverPermittedRaces = new ArrayList<>();
+    public boolean whiteListRace(Race race) {
+        boolean result = UConfig.getInstance().getSpeciesWhiteList().add(race);
+
+        UConfig.getInstance().save();
+
+        return result;
+    }
+
+    public boolean unwhiteListRace(Race race) {
+        boolean result = UConfig.getInstance().getSpeciesWhiteList().remove(race);
+
+        UConfig.getInstance().save();
+
+        return result;
+    }
 
     public boolean speciesPermitted(Race race, EntityPlayer sender) {
         if (race == Race.ALICORN && (sender == null || !sender.capabilities.isCreativeMode)) {
             return false;
         }
 
-        return race.isDefault() || serverPermittedRaces.isEmpty() || serverPermittedRaces.contains(race);
+        return race.isDefault() || UConfig.getInstance().getSpeciesWhiteList().isEmpty() || UConfig.getInstance().getSpeciesWhiteList().contains(race);
     }
 
     public IRaceContainer<?> emptyContainer(Entity entity) {
