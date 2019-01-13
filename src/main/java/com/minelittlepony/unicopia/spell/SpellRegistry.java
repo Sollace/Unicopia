@@ -87,6 +87,10 @@ public class SpellRegistry {
     public ItemStack disenchantStack(ItemStack stack) {
         if (stackHasEnchantment(stack)) {
             stack.getTagCompound().removeTag("spell");
+
+            if (stack.getTagCompound().isEmpty()) {
+                stack.setTagCompound(null);
+            }
         }
 
         return stack;
