@@ -48,7 +48,7 @@ item.apple.sour.name=Sour Apple
 
 item.rotten_apple.name=Rotten Apple
 
-item.cooked_zap_zap.name=Cooked Zap Apple
+item.cooked_zap_apple.name=Cooked Zap Apple
 
 item.zap_apple.name=Zap Apple
 item.zap_apple.red.name=Apple
@@ -61,6 +61,7 @@ item.tomato.rotten.name=Rotten Tomato
 item.tomato_seeds.name=Tomato Seeds
 
 item.cloudsdale_tomato.name=Cloudsdale Tomato
+item.cloudsdale_tomato.rotten.name=Rotten Cloudsdale Tomato
 
 item.alfalfa_leaves.name=Alfalfa
 item.alfalfa_seeds.name=Grain
