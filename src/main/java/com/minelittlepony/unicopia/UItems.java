@@ -5,11 +5,13 @@ import com.minelittlepony.unicopia.item.ItemCereal;
 import com.minelittlepony.unicopia.item.ItemCloud;
 import com.minelittlepony.unicopia.item.ItemCurse;
 import com.minelittlepony.unicopia.item.ItemOfHolding;
+import com.minelittlepony.unicopia.item.ItemRottenApple;
 import com.minelittlepony.unicopia.item.ItemSpell;
 import com.minelittlepony.unicopia.item.ItemSpellbook;
 import com.minelittlepony.unicopia.item.ItemStick;
 import com.minelittlepony.unicopia.item.ItemTomato;
 import com.minelittlepony.unicopia.item.ItemTomatoSeeds;
+import com.minelittlepony.unicopia.item.ItemZapApple;
 import com.minelittlepony.unicopia.item.UItemBlock;
 import com.minelittlepony.unicopia.item.UItemMultiTexture;
 import com.minelittlepony.unicopia.item.UItemSlab;
@@ -43,9 +45,16 @@ import com.minelittlepony.unicopia.forgebullshit.BuildInTexturesBakery;
 import com.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
 
 public class UItems {
-    public static final ItemApple apple = new ItemApple()
-            .setSubTypes("apple", "green", "sweet", "rotten", "zap", "zap_cooked")
+    public static final ItemApple apple = new ItemApple("minecraft", "apple")
+            .setSubTypes("apple", "green", "sweet", "sour")
             .setTypeRarities(10, 20, 10, 30);
+
+    public static final ItemApple zap_apple = new ItemZapApple(Unicopia.MODID, "zap_apple")
+            .setSubTypes("zap_apple", "red", "green", "sweet", "sour");
+
+    public static final ItemApple rotten_apple = new ItemRottenApple(Unicopia.MODID, "rotten_apple");
+
+    public static final ItemApple cooked_zap_apple = new ItemApple(Unicopia.MODID, "cooked_zap_apple");
 
     public static final Item cloud_matter = new Item()
             .setCreativeTab(CreativeTabs.MATERIALS)
@@ -129,11 +138,15 @@ public class UItems {
 
                              alfalfa_seeds, alfalfa_leaves,
                              cereal, sugar_cereal, sugar_block,
+                             rotten_apple, zap_apple, cooked_zap_apple,
 
                              cloudsdale_tomato, tomato_seeds, tomato);
 
         if (UClient.isClientSide()) {
             registerAllVariants(apple, apple.getVariants());
+            registerAllVariants(zap_apple, zap_apple.getVariants());
+            registerAllVariants(rotten_apple, "rotten_apple");
+            registerAllVariants(cooked_zap_apple, "cooked_zap_apple");
             registerAllVariants(cloud_spawner, "cloud_small", "cloud_medium", "cloud_large");
             registerAllVariants(dew_drop, "dew_drop");
             registerAllVariants(cloud_matter, "cloud_matter");
@@ -169,10 +182,9 @@ public class UItems {
     }
 
     static void registerFuels() {
-        int zap = apple.getZapAppleMetadata();
         FurnaceRecipes.instance().addSmeltingRecipe(
-                new ItemStack(UItems.apple, 1, zap),
-                new ItemStack(UItems.apple, 1, zap + 1), 0.1F);
+                new ItemStack(UItems.zap_apple, 1),
+                new ItemStack(UItems.cooked_zap_apple, 1), 0.1F);
     }
 
     static void registerRecipes(IForgeRegistry<IRecipe> registry) {

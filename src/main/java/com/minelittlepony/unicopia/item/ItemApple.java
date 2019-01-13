@@ -2,106 +2,77 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.Random;
 
-import com.minelittlepony.util.MagicalDamageSource;
-import com.minelittlepony.util.vector.VecHelper;
+import com.minelittlepony.unicopia.UItems;
 
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.passive.EntityPig;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.World;
 
 public class ItemApple extends ItemFood {
 
 	private int[] typeRarities = new int[0];
+
 	private String[] subTypes = new String[0];
+
 	private String[] variants = subTypes;
 
-	public int getRandomAppleMetadata(Random rand, Object variant) {
+	public ItemStack getRandomApple(Random rand, Object variant) {
+
 		int[] rarity = typeRarities;
+
 		int result = 0;
+
 		for (int i = 0; i < rarity.length && i < subTypes.length; i++) {
 			if (rand.nextInt(rarity[i]) == 0) {
 				result++;
 			}
 		}
+
 		if (variant == BlockPlanks.EnumType.JUNGLE) {
-			result = result == 0 ? 1 : result == 1 ? 0 : result;
+		    result = oneOr(result, 0, 1);
 		}
-		if (variant == BlockPlanks.EnumType.SPRUCE) {
-			result = result == 0 ? 3 : result == 3 ? 0 : result;
-		}
+
 		if (variant == BlockPlanks.EnumType.BIRCH) {
-			result = result == 0 ? 2 : result == 2 ? 0 : result;
+            result = oneOr(result, 0, 2);
+        }
+
+		if (variant == BlockPlanks.EnumType.SPRUCE) {
+		    if (result == 0) {
+		        return new ItemStack(UItems.rotten_apple, 1);
+		    }
 		}
+
 		if (variant == BlockPlanks.EnumType.DARK_OAK) {
-			result = result == 1 ? getZapAppleMetadata() : result == getZapAppleMetadata() ? 1 : result;
+		    if (result == 1) {
+		        return new ItemStack(UItems.zap_apple, 1);
+		    }
 		}
-		return result;
+
+		if (variant == BlockPlanks.EnumType.ACACIA) {
+            result = oneOr(result, 0, 4);
+        }
+
+		return new ItemStack(this, 1, result);
 	}
 
-	public ItemApple() {
+	int oneOr(int initial, int a, int b) {
+	    if (initial == a) {
+	        return b;
+	    }
+
+	    if (initial == b) {
+	        return a;
+	    }
+
+	     return initial;
+	}
+
+	public ItemApple(String domain, String name) {
 		super(4, 3, false);
-		setHasSubtypes(true);
-		setMaxDamage(0);
-		setTranslationKey("apple");
-	}
-
-	@Override
-	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-		RayTraceResult mop = VecHelper.getObjectMouseOver(player, 5, 0);
-
-		if (mop != null && mop.typeOfHit == RayTraceResult.Type.ENTITY) {
-			ItemStack stack = player.getHeldItem(hand);
-
-			if (canFeedTo(stack, mop.entityHit)) {
-				return onFedTo(stack, player, mop.entityHit);
-			}
-		}
-
-		return super.onItemRightClick(world, player, hand);
-	}
-
-	@Override
-	protected void onFoodEaten(ItemStack stack, World w, EntityPlayer player) {
-		super.onFoodEaten(stack, w, player);
-
-		if (isZapApple(stack)) {
-			player.attackEntityFrom(MagicalDamageSource.create("zap"), 120);
-
-			w.addWeatherEffect(new EntityLightningBolt(w, player.posX, player.posY, player.posZ, false));
-		}
-	}
-
-	public boolean canFeedTo(ItemStack stack, Entity e) {
-		return isZapApple(stack) && (e instanceof EntityVillager || e instanceof EntityCreeper || e instanceof EntityPig);
-	}
-
-	public boolean isZapApple(ItemStack stack) {
-		int meta = stack.getMetadata();
-		return meta == getZapAppleMetadata() || meta >= subTypes.length;
-	}
-
-	public ActionResult<ItemStack> onFedTo(ItemStack stack, EntityPlayer player, Entity e) {
-		e.onStruckByLightning(new EntityLightningBolt(e.world, e.posX, e.posY, e.posZ, false));
-
-		if (!player.capabilities.isCreativeMode) {
-		    stack.shrink(1);
-		}
-
-		return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+		setTranslationKey(name);
+		setRegistryName(domain, name);
 	}
 
 	public int getZapAppleMetadata() {
@@ -109,13 +80,16 @@ public class ItemApple extends ItemFood {
 	}
 
 	public ItemApple setSubTypes(String... types) {
+	    setHasSubtypes(true);
+        setMaxDamage(0);
+
 		subTypes = types;
-		variants = new String[subTypes.length * 2];
+		variants = new String[subTypes.length];
 
 		setTranslationKey(variants[0] = types[0]);
 
 		for (int i = 1; i < variants.length; i++) {
-			variants[i] = variants[0] + (i % subTypes.length != 0 ? "_" + subTypes[i % subTypes.length] : "");
+			variants[i] = variants[0] + "_" + subTypes[i % subTypes.length];
 		}
 		return this;
 	}
@@ -132,36 +106,22 @@ public class ItemApple extends ItemFood {
 	@Override
 	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
 	    if (isInCreativeTab(tab)) {
-    		for (int i = 0; i < subTypes.length; i++) {
+	        items.add(new ItemStack(this, 1, 0));
+
+    		for (int i = 1; i < subTypes.length; i++) {
     			items.add(new ItemStack(this, 1, i));
     		}
 	    }
 	}
 
 	@Override
-	public EnumRarity getRarity(ItemStack stack) {
-		int meta = stack.getMetadata();
-
-		if (meta == getZapAppleMetadata()) {
-		    return EnumRarity.EPIC;
-		}
-
-        if (meta >= subTypes.length) {
-            return EnumRarity.RARE;
-        }
-
-        return EnumRarity.COMMON;
-    }
-
-	@Override
 	public String getTranslationKey(ItemStack stack) {
-	    int meta = Math.max(0, stack.getMetadata() % subTypes.length);
+	    if (subTypes.length > 0) {
+    	    int meta = Math.max(0, stack.getMetadata() % subTypes.length);
 
-		return super.getTranslationKey(stack) + (meta > 0 ? "." + subTypes[meta] : "");
-	}
+    		return super.getTranslationKey(stack) + (meta > 0 ? "." + subTypes[meta] : "");
+	    }
 
-	@Override
-	public int getItemBurnTime(ItemStack stack) {
-		return stack.getMetadata() == 2 ? 150 : 0;
+	    return super.getTranslationKey(stack);
 	}
 }

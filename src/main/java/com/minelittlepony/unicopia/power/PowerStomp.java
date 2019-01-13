@@ -30,7 +30,6 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
@@ -323,7 +322,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
                     w.playEvent(2001, pos, Block.getStateId(state));
                     EntityItem item = new EntityItem(w);
                     item.setPosition(pos.getX() + 0.5, pos.getY() - 0.5, pos.getZ() + 0.5);
-                    item.setItem(new ItemStack(Items.APPLE, 1, getAppleMeta(w, log)));
+                    item.setItem(getApple(w, log));
                     w.spawnEntity(item);
                 }
 
@@ -334,8 +333,8 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
         }
     }
 
-    private int getAppleMeta(World w, IBlockState log) {
-        return UItems.apple.getRandomAppleMetadata(w.rand, getVariant(log));
+    private ItemStack getApple(World w, IBlockState log) {
+        return UItems.apple.getRandomApple(w.rand, getVariant(log));
     }
 
     private int measureTree(World w, IBlockState log, BlockPos pos) {
