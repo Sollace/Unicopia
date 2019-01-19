@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.spell;
 
-import java.util.Random;
-
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
@@ -9,7 +7,6 @@ import com.minelittlepony.unicopia.client.particle.Particles;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.IPower;
 import com.minelittlepony.util.ProjectileUtil;
-import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
@@ -17,7 +14,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -51,20 +47,10 @@ public class SpellShield extends AbstractSpell {
 	}
 
 	protected void spawnParticles(ICaster<?> source, int strength) {
-	    IShape sphere = new Sphere(true, strength);
 
-	    Random rand = source.getWorld().rand;
-
-	    int x = source.getOrigin().getX();
-	    int y = source.getOrigin().getY();
-	    int z = source.getOrigin().getZ();
-
-	    for (int i = 0; i < strength * 6; i++) {
-    	    Vec3d pos = sphere.computePoint(rand);
-    	    Particles.instance().spawnParticle(Unicopia.MAGIC_PARTICLE, false,
-    	            pos.x + x, pos.y + y, pos.z + z,
-    	            0, 0, 0);
-	    }
+	    source.spawnParticles(new Sphere(true, strength), strength * 6, pos -> {
+	        Particles.instance().spawnParticle(Unicopia.MAGIC_PARTICLE, false, pos.x, pos.y, pos.z, 0, 0, 0);
+	    });
 	}
 
 	@Override
@@ -90,20 +76,10 @@ public class SpellShield extends AbstractSpell {
 
 		int x = pos.getX(), y = pos.getY(), z = pos.getZ();
 
-		BlockPos begin = pos.add(-radius, -radius, -radius);
-		BlockPos end = pos.add(radius, radius, radius);
-
-		AxisAlignedBB bb = new AxisAlignedBB(begin, end);
-
 		boolean ownerIsValid = Predicates.MAGI.test(owner);
 
-		for (Entity i : source.getWorld().getEntitiesInAABBexcluding(source.getEntity(), bb, entity -> !(ownerIsValid && entity.equals(owner)))) {
+		source.findAllEntitiesInRange(radius).filter(entity -> !(ownerIsValid && entity.equals(owner))).forEach(i -> {
 		    double dist = i.getDistance(x, y, z);
-            double dist2 = i.getDistance(x, y - i.getEyeHeight(), z);
-
-            if (dist > radius && dist2 > radius) {
-                continue;
-            }
 
             if (ProjectileUtil.isProjectile(i)) {
                 if (!ProjectileUtil.isProjectileThrownBy(i, owner)) {
@@ -126,7 +102,7 @@ public class SpellShield extends AbstractSpell {
                         -(y - i.posY) / force + (dist < 1 ? dist : 0),
                         -(z - i.posZ) / force);
             }
-		}
+		});
 
 		return true;
 	}

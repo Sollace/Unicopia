@@ -146,6 +146,20 @@ public class ItemSpell extends Item implements ICastable {
 	        return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
 	    }
 
+        IMagicEffect effect = SpellRegistry.instance().getSpellFromItemStack(stack);
+
+        if (effect instanceof IUseAction) {
+            SpellCastResult result = ((IUseAction)effect).onUse(stack, player, world, target);
+
+            if (result != SpellCastResult.NONE) {
+                if (result == SpellCastResult.PLACE && !player.capabilities.isCreativeMode) {
+                    stack.shrink(1);
+                }
+
+                return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+            }
+        }
+
         return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
     }
 

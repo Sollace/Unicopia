@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.IParticleFactory;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.Vec3d;
 
 public class Particles {
 
@@ -30,6 +31,10 @@ public class Particles {
         int id = registeredParticles.size();
         registeredParticles.add(factory);
         return -id - 1;
+    }
+
+    public Particle spawnParticle(int particleId, boolean ignoreDistance, Vec3d pos, double speedX, double speedY, double speedZ, int ...pars) {
+        return spawnParticle(particleId, ignoreDistance, pos, speedX, speedY, speedZ, pars);
     }
 
     public Particle spawnParticle(int particleId, boolean ignoreDistance, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, int ...pars) {

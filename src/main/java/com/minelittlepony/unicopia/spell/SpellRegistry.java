@@ -25,8 +25,10 @@ public class SpellRegistry {
     private final Map<String, Entry> entries = new HashMap<>();
 
     private SpellRegistry() {
-        registerSpell("shield", 0xffff00, SpellShield::new);
-        registerSpell("charge", 0x0000ff, SpellCharge::new);
+        registerSpell("shield", 0x66CDAA, SpellShield::new);
+        registerSpell("charge", 0x0000AA, SpellCharge::new);
+        registerSpell("fire",   0xFF0000, SpellFire::new);
+        registerSpell("ice",    0xADD8E6, SpellIce::new);
     }
 
     public IMagicEffect getSpellFromName(String name) {

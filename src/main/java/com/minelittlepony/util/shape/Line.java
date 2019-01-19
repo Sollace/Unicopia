@@ -78,7 +78,7 @@ public class Line implements IShape {
 
 	public Vec3d computePoint(Random rand) {
 		double distance = MathHelper.nextDouble(rand, 0, len);
-		return (new Vec3d(distance * dX, distance * dY, distance * dZ)).rotateYaw(yaw).rotatePitch(pitch);
+		return new Vec3d(dX, dY, dZ).scale(distance).add(sX, sY, sZ).rotateYaw(yaw).rotatePitch(pitch);
 	}
 
 	public Line setRotation(float u, float v) {
@@ -89,6 +89,17 @@ public class Line implements IShape {
 
 	public boolean isPointInside(Vec3d point) {
 		point = point.rotateYaw(-yaw).rotatePitch(-pitch);
+
 		return point.x/dX == point.y/dY && point.x/dX == point.z/dZ;
 	}
+
+    @Override
+    public Vec3d getLowerBound() {
+        return new Vec3d(sX, sY, sZ).rotateYaw(yaw).rotatePitch(pitch);
+    }
+
+    @Override
+    public Vec3d getUpperBound() {
+        return new Vec3d(sX + dX, sY + dY, sZ + dZ).scale(len).rotateYaw(yaw).rotatePitch(pitch);
+    }
 }

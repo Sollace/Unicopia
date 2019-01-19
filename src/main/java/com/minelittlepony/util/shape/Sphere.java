@@ -117,7 +117,19 @@ public class Sphere implements IShape {
 	public boolean isPointInside(Vec3d point) {
 		point = point.rotateYaw(-yaw).rotatePitch(-pitch);
 		point = new Vec3d(point.x / stretch.x, point.y / stretch.y, point.z / stretch.z);
+
 		double dist = point.length();
+
 		return hollow ? dist == rad : dist <= rad;
 	}
+
+    @Override
+    public Vec3d getLowerBound() {
+        return new Vec3d(-rad * stretch.x, -rad * stretch.y, -rad * stretch.z).rotateYaw(yaw).rotatePitch(pitch);
+    }
+
+    @Override
+    public Vec3d getUpperBound() {
+        return new Vec3d(rad * stretch.x, rad * stretch.y, rad * stretch.z).rotateYaw(yaw).rotatePitch(pitch);
+    }
 }

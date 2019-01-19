@@ -1,6 +1,7 @@
 package com.minelittlepony.util.vector;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -11,8 +12,10 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 public class VecHelper {
 
@@ -45,10 +48,25 @@ public class VecHelper {
         return null;
     }
 
+    public static Stream<Entity> findAllEntitiesInRange(@Nullable Entity origin, World w, BlockPos pos, double radius) {
+
+        BlockPos begin = pos.add(-radius, -radius, -radius);
+        BlockPos end = pos.add(radius, radius, radius);
+
+        AxisAlignedBB bb = new AxisAlignedBB(begin, end);
+
+        return w.getEntitiesInAABBexcluding(origin, bb, null).stream().filter(e -> {
+            double dist = e.getDistance(pos.getX(), pos.getY(), pos.getZ());
+            double dist2 = e.getDistance(pos.getX(), pos.getY() - e.getEyeHeight(), pos.getZ());
+
+            return dist <= radius || dist2 <= radius;
+        });
+    }
+
     /**
      * Gets all entities within a given range from the player.
      */
-    public static List<Entity> getWithinRange(EntityPlayer player, double reach, @Nullable Predicate <? super Entity > predicate) {
+    public static List<Entity> getWithinRange(EntityPlayer player, double reach, @Nullable Predicate<? super Entity> predicate) {
         Vec3d look = player.getLook(0).scale(reach);
 
         return player.world.getEntitiesInAABBexcluding(player, player
