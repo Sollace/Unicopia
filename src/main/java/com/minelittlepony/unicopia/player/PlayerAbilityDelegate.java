@@ -1,12 +1,12 @@
 package com.minelittlepony.unicopia.player;
 
 import com.minelittlepony.jumpingcastle.api.Target;
-import com.minelittlepony.unicopia.InbtSerialisable;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.power.IData;
 import com.minelittlepony.unicopia.power.IPower;
 import com.minelittlepony.unicopia.power.PowersRegistry;
+import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;

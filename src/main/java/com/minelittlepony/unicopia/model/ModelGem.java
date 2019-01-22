@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.model;
 
 import com.minelittlepony.render.model.ModelQuads;
 import com.minelittlepony.unicopia.entity.EntitySpell;
-import com.minelittlepony.unicopia.spell.SpellRegistry;
 import com.minelittlepony.util.render.Color;
 import com.minelittlepony.util.render.Vertex;
 
@@ -105,8 +104,7 @@ public class ModelGem extends ModelBase {
 
         setLightingConditionsBrightness(0xF0F0);
 
-        Color.glColor(SpellRegistry.instance().getSpellTint(spell.getEffect().getName()), 1);
-
+        Color.glColor(spell.getEffect().getTint(), 1);
 
         int tiers = Math.min(spell.getCurrentLevel(), 5);
 

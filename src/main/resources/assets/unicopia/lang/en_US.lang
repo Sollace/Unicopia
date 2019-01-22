@@ -21,23 +21,27 @@ item.dew_drop.name=Dew Drop
 item.cloud_anvil.name=Anvilhead Anvil
 
 item.gem.name=Gem
+item.gem.enchanted.name=Gem of %s
 item.corrupted_gem.name=Fractured Gem
-item.gem.shield.name=Gem of Repulsion
-item.corrupted_gem.shield.name=Corrupt Gem of Repulsion
-item.gem.charge.name=Channeling Gem
-item.corrupted_gem.charge.name=Gem of Draining
-item.gem.fire.name=Gem of Flame
-item.corrupted_gem.fire.name=Corrupt Gem of Burning
-item.gem.inferno.name=Gem of Inferno
-item.corrupted_gem.inferno.name=Corrupt Gem of Inferno
-item.gem.ice.name=Gem of Freezing
-item.corrupted_gem.ice.name=Corrupt Gem of Freezing
-item.gem.portal.name=Gem of Transportation
-item.corrupted_gem.portal.name=Corrupt Gem of Transportation
-item.gem.attract.name=Gem of Retention
-item.corrupted_gem.attract.name=Gem of Entrapment
-item.gem.minion.name=Gem of Obedience
-item.corrupted_gem.minion.name=Corrupt Gem of Obedience
+item.corrupted_gem.enchanted.name=Fractured Gem of %s
+
+spell.shield.name=Defense
+spell.charge.name=Chanelling
+spell.fire.name=Flame
+spell.infero.name=Burning
+spell.ice.name=Frost
+spell.portal.name=Transportation
+spell.attract.name=Retention
+spell.minion.name=Obedience
+
+curse.shield.name=Repulsion
+curse.charge.name=Draining
+curse.fire.name=Hades
+curse.inferno.name=Inferno
+curse.ice.name=Freezing
+curse.portal.name=Summoning
+curse.attract.name=Entrapment
+curse.minion.name=Slavery
 
 item.spellbook.name=Spellbook
 item.bag_of_holding.name=Bag of Holding

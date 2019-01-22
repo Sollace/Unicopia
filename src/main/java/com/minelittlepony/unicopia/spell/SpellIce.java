@@ -5,6 +5,7 @@ import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.PosHelper;
 import com.minelittlepony.util.blockstate.IStateMapping;
 import com.minelittlepony.util.blockstate.StateMapList;
+import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.shape.Sphere;
 import com.minelittlepony.util.vector.VecHelper;
 
@@ -29,9 +30,9 @@ import net.minecraft.world.World;
 
 public class SpellIce extends AbstractSpell implements IUseAction, IDispenceable {
 
-	public static final StateMapList affected = new StateMapList();
+	public final StateMapList affected = new StateMapList();
 
-	static {
+	public SpellIce() {
 		affected.add(IStateMapping.build(
 		        s -> s.getMaterial() == Material.WATER,
 		        s -> Blocks.ICE.getDefaultState()));
@@ -40,25 +41,29 @@ public class SpellIce extends AbstractSpell implements IUseAction, IDispenceable
                 s -> Blocks.OBSIDIAN.getDefaultState()));
         affected.add(IStateMapping.build(
                 s -> s.getBlock() == Blocks.SNOW_LAYER,
-                s -> s.cycleProperty(BlockSnow.LAYERS)));
+                s -> {
+                    s = s.cycleProperty(BlockSnow.LAYERS);
+                    if (s.getValue(BlockSnow.LAYERS) >= 7) {
+                        return Blocks.SNOW.getDefaultState();
+                    }
+
+                    return s;
+                }));
 		affected.replaceBlock(Blocks.FIRE, Blocks.AIR);
 		affected.setProperty(Blocks.REDSTONE_WIRE, BlockRedstoneWire.POWER, 0);
 	}
 
-	protected int rad = 3;
-
-    @Override
-    public int getCurrentLevel() {
-        return 0;
-    }
-
-    @Override
-    public void setCurrentLevel(int level) {
-    }
+	private final int rad = 3;
+	private final IShape effect_range = new Sphere(false, rad);
 
     @Override
     public String getName() {
         return "ice";
+    }
+
+    @Override
+    public int getTint() {
+        return 0xADD8E6;
     }
 
     @Override
@@ -71,12 +76,12 @@ public class SpellIce extends AbstractSpell implements IUseAction, IDispenceable
     }
 
 	@Override
-	public SpellCastResult onDispenced(BlockPos pos, EnumFacing facing, IBlockSource source) {
+	public SpellCastResult onDispenced(BlockPos pos, EnumFacing facing, IBlockSource source, SpellAffinity affinity) {
 		return applyBlocks(null, source.getWorld(), pos.offset(facing, rad)) ? SpellCastResult.NONE : SpellCastResult.DEFAULT;
 	}
 
 	@Override
-	public SpellCastResult onUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (player != null && player.isSneaking()) {
 			applyBlockSingle(world, pos);
 		} else {
@@ -87,9 +92,8 @@ public class SpellIce extends AbstractSpell implements IUseAction, IDispenceable
 	}
 
 	@Override
-	public SpellCastResult onUse(ItemStack stack, EntityPlayer player, World world, Entity hitEntity) {
-		if (hitEntity != null) {
-			applyEntitySingle(player, hitEntity);
+	public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, Entity hitEntity) {
+		if (hitEntity != null && applyEntitySingle(player, hitEntity)) {
 			return SpellCastResult.DEFAULT;
 		}
 
@@ -98,7 +102,7 @@ public class SpellIce extends AbstractSpell implements IUseAction, IDispenceable
 
 	private boolean applyBlocks(EntityPlayer owner, World world, BlockPos pos) {
 
-		for (BlockPos i : PosHelper.getAllInRegionMutable(pos, new Sphere(false, rad))) {
+		for (BlockPos i : PosHelper.getAllInRegionMutable(pos, effect_range)) {
 		    applyBlockSingle(world, i);
 		}
 
@@ -106,24 +110,23 @@ public class SpellIce extends AbstractSpell implements IUseAction, IDispenceable
 	}
 
 	protected boolean applyEntities(EntityPlayer owner, World world, BlockPos pos) {
-	    return VecHelper.findAllEntitiesInRange(owner, world, pos, 3).filter(i -> {
-	        applyEntitySingle(owner, i);
-	        return true;
-	    }).count() > 0;
+	    return VecHelper.findAllEntitiesInRange(owner, world, pos, 3).filter(i ->
+	        applyEntitySingle(owner, i)
+	    ).count() > 0;
 	}
 
-	protected void applyEntitySingle(EntityPlayer owner, Entity e) {
+	protected boolean applyEntitySingle(EntityPlayer owner, Entity e) {
 		if (e instanceof EntityTNTPrimed) {
 			e.setDead();
 			e.getEntityWorld().setBlockState(e.getPosition(), Blocks.TNT.getDefaultState());
+		} else if (e.isBurning()) {
+			e.extinguish();
 		} else {
-			if (e.isBurning()) {
-				e.extinguish();
-			} else {
-				DamageSource d = MagicalDamageSource.causePlayerDamage("cold", owner);
-				e.attackEntityFrom(d, 2);
-			}
+			DamageSource d = MagicalDamageSource.causePlayerDamage("cold", owner);
+			e.attackEntityFrom(d, 2);
 		}
+
+		return true;
 	}
 
 	private void applyBlockSingle(World world, BlockPos pos) {
@@ -138,7 +141,7 @@ public class SpellIce extends AbstractSpell implements IUseAction, IDispenceable
 		        || (id == Blocks.SNOW)
 		        || (id instanceof BlockLeaves)) {
 			incrementIce(world, pos.up());
-		} else if (id == Blocks.ICE && world.rand.nextInt(10) == 0) {
+		} else if (state.getMaterial() == Material.ICE && world.rand.nextInt(10) == 0) {
 			if (isSurroundedByIce(world, pos)) {
 				world.setBlockState(pos, Blocks.PACKED_ICE.getDefaultState());
 			}
@@ -148,13 +151,9 @@ public class SpellIce extends AbstractSpell implements IUseAction, IDispenceable
 	}
 
 	public static boolean isSurroundedByIce(World w, BlockPos pos) {
-		return isIce(w, pos.up()) && isIce(w, pos.down()) &&
-				isIce(w, pos.north()) && isIce(w, pos.south()) &&
-				isIce(w, pos.east()) && isIce(w, pos.west());
-	}
-
-	public static boolean isIce(World world, BlockPos pos) {
-		return world.getBlockState(pos).getMaterial() == Material.ICE;
+	    return !PosHelper.adjacentNeighbours(pos).stream().anyMatch(i ->
+	        w.getBlockState(i).getMaterial() == Material.ICE
+	    );
 	}
 
 	private void incrementIce(World world, BlockPos pos) {

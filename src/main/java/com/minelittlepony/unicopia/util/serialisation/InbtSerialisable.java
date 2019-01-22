@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.util.serialisation;
 
 import net.minecraft.nbt.NBTTagCompound;
 

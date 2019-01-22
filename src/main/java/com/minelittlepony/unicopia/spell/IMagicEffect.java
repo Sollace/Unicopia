@@ -1,13 +1,21 @@
 package com.minelittlepony.unicopia.spell;
 
-import com.minelittlepony.unicopia.InbtSerialisable;
+import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
 
 /**
  * Interface for a magic spells
  */
 public interface IMagicEffect extends InbtSerialisable, ILevelled {
 
+    /**
+     * Gets the name used to identify this effect.
+     */
 	String getName();
+
+	/**
+	 * Gets the tint for this spell when applied to a gem.
+	 */
+	int getTint();
 
 	/**
 	 * Sets this effect as dead.
@@ -30,7 +38,8 @@ public interface IMagicEffect extends InbtSerialisable, ILevelled {
     }
 
 	/**
-	 * Called every tick when attached to a gem.
+	 * Called every tick when attached to an entity.
+	 * Called on both sides.
 	 *
 	 * @param source   The entity we are currently attached to.
 	 * @param level		Current active spell level

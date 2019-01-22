@@ -69,18 +69,13 @@ public class SpellFire extends AbstractSpell implements IUseAction, IDispenceabl
 	}
 
     @Override
-    public int getCurrentLevel() {
-        return 0;
-    }
-
-
-    @Override
-    public void setCurrentLevel(int level) {
-    }
-
-    @Override
     public String getName() {
         return "fire";
+    }
+
+    @Override
+    public int getTint() {
+        return 0xFF0000;
     }
 
     @Override
@@ -90,14 +85,13 @@ public class SpellFire extends AbstractSpell implements IUseAction, IDispenceabl
 
 	@Override
 	public void render(ICaster<?> source, int level) {
-
 	    source.spawnParticles(visual_effect_region, level * 6, pos -> {
 	        source.getWorld().spawnParticle(EnumParticleTypes.SMOKE_LARGE, pos.x, pos.y, pos.z, 0, 0, 0);
         });
 	}
 
 	@Override
-	public SpellCastResult onUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
 		boolean result = false;
 
 		if (player == null || player.isSneaking()) {
@@ -117,12 +111,12 @@ public class SpellFire extends AbstractSpell implements IUseAction, IDispenceabl
 	}
 
 	@Override
-	public SpellCastResult onUse(ItemStack stack, EntityPlayer player, World world, @Nonnull Entity hitEntity) {
+	public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, @Nonnull Entity hitEntity) {
 		return applyEntitySingle(player, world, hitEntity) ? SpellCastResult.DEFAULT : SpellCastResult.NONE;
 	}
 
 	@Override
-	public SpellCastResult onDispenced(BlockPos pos, EnumFacing facing, IBlockSource source) {
+	public SpellCastResult onDispenced(BlockPos pos, EnumFacing facing, IBlockSource source, SpellAffinity affinity) {
 		pos = pos.offset(facing, 4);
 
 		boolean result = false;

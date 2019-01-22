@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import com.google.common.collect.AbstractIterator;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import com.minelittlepony.util.shape.IShape;
 
@@ -31,29 +31,39 @@ public class PosHelper {
         return false;
     }
 
-    public static Iterable<MutableBlockPos> getAllInRegionMutable(BlockPos origin, IShape shape) {
+    public static Iterators<MutableBlockPos> adjacentNeighbours(BlockPos origin) {
+        MutableBlockPos pos = new MutableBlockPos(origin);
+        Iterator<EnumFacing> directions = Lists.newArrayList(EnumFacing.values()).iterator();
 
+        return Iterators.iterate(() -> {
+            if (directions.hasNext()) {
+                EnumFacing next = directions.next();
+
+                pos.setPos(origin.getX() + next.getXOffset(), origin.getY() + next.getYOffset(), origin.getZ() + next.getZOffset());
+                return pos;
+            }
+
+            return null;
+        });
+    }
+
+    public static Iterators<MutableBlockPos> getAllInRegionMutable(BlockPos origin, IShape shape) {
         Iterator<MutableBlockPos> iter = BlockPos.getAllInBoxMutable(
                 origin.add(new BlockPos(shape.getLowerBound())),
                 origin.add(new BlockPos(shape.getUpperBound()))
             ).iterator();
 
-        return () -> new AbstractIterator<MutableBlockPos>() {
-            @Override
-            protected MutableBlockPos computeNext() {
-                while (iter.hasNext()) {
-                    MutableBlockPos pos = iter.next();
+        return Iterators.iterate(() -> {
+            while (iter.hasNext()) {
+                MutableBlockPos pos = iter.next();
 
-                    if (shape.isPointInside(new Vec3d(pos.subtract(origin)))) {
-                        return pos;
-                    }
+                if (shape.isPointInside(new Vec3d(pos.subtract(origin)))) {
+                    return pos;
                 }
-
-                endOfData();
-
-                return null;
             }
-        };
+
+            return null;
+        });
     }
 
     /**

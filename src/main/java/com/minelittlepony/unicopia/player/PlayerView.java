@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.player;
 
 import com.minelittlepony.transform.MotionCompositor;
 
-import net.minecraft.entity.player.EntityPlayer;
-
 class PlayerView extends MotionCompositor implements IView {
 
     private final IPlayer player;
@@ -15,15 +13,49 @@ class PlayerView extends MotionCompositor implements IView {
     }
 
     @Override
-    public double calculateRoll(EntityPlayer entity) {
+    public float calculateRoll() {
 
         double roll = baseRoll;
 
         if (player.getGravity().isFlying()) {
-            roll -= super.calculateRoll(entity, entity.motionX, entity.motionY, entity.motionZ);
+            roll -= super.calculateRoll(player.getOwner(), player.getOwner().motionX, player.getOwner().motionY, player.getOwner().motionZ);
         }
 
-        return player.getInterpolator().interpolate("roll", (float)roll, 100);
+        return (float)player.getInterpolator().interpolate("roll", (float)roll, 100);
+    }
+
+    @Override
+    public float calculatePitch(float pitch) {
+        return pitch + getEnergyAddition();
+    }
+
+    @Override
+    public float calculateYaw(float yaw) {
+        return yaw + getEnergyAddition();
+    }
+
+    @Override
+    public float calculateFieldOfView(float fov) {
+        fov += player.getExertion() / 5;
+        fov += getEnergyAddition();
+
+        return fov;
+    }
+
+    protected float getEnergyAddition() {
+        int maxE = (int)Math.floor(player.getEnergy() * 100);
+
+        if (maxE <= 0) {
+            return 0;
+        }
+
+        float energyAddition = (player.getWorld().rand.nextInt(maxE) - maxE/2) / 100F;
+
+        if (Math.abs(energyAddition) <= 0.001) {
+            return 0;
+        }
+
+        return energyAddition;
     }
 
     @Override

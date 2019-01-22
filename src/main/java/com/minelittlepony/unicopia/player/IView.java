@@ -1,9 +1,13 @@
 package com.minelittlepony.unicopia.player;
 
-import net.minecraft.entity.player.EntityPlayer;
-
 public interface IView {
-    double calculateRoll(EntityPlayer player);
+    float calculateRoll();
+
+    float calculatePitch(float pitch);
+
+    float calculateYaw(float yaw);
+
+    float calculateFieldOfView(float initialfow);
 
     double getBaseRoll();
 

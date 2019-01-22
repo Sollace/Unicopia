@@ -37,6 +37,11 @@ public class SpellShield extends AbstractSpell {
     }
 
 	@Override
+	public int getTint() {
+	    return 0x66CDAA;
+	}
+
+	@Override
 	public int getMaxLevel() {
 		return 17;
 	}

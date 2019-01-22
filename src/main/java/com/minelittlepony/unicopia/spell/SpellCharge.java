@@ -34,6 +34,11 @@ public class SpellCharge extends AbstractSpell {
     }
 
     @Override
+    public int getTint() {
+        return 0x0000AA;
+    }
+
+    @Override
     public void render(ICaster<?> source, int level) {
         if (source.getWorld().rand.nextInt(4 + level * 4) == 0) {
             EntitySpell target = getTarget(source);

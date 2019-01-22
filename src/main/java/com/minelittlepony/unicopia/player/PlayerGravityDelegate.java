@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.player;
 
-import com.minelittlepony.unicopia.InbtSerialisable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.mixin.MixinEntity;
+import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;

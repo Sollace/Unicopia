@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.item.ICastable;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.spell.ICaster;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
+import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
 import net.minecraft.block.SoundType;
@@ -45,6 +46,9 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 	private static final DataParameter<NBTTagCompound> EFFECT = EntityDataManager
 	        .createKey(EntitySpell.class, DataSerializers.COMPOUND_TAG);
 
+	private static final DataParameter<Integer> AFFINITY = EntityDataManager
+	        .createKey(EntitySpell.class, DataSerializers.VARINT);
+
 	private final EffectSync<EntityLivingBase> effectDelegate = new EffectSync<>(this, EFFECT);
 
 	public EntitySpell(World w) {
@@ -64,6 +68,15 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 		return super.isInRangeToRenderDist(distance);
     }
 
+    @Override
+    public SpellAffinity getAffinity() {
+        return SpellAffinity.values()[dataManager.get(AFFINITY)];
+    }
+
+    public void setAffinity(SpellAffinity affinity) {
+        dataManager.set(AFFINITY, affinity.ordinal());
+    }
+
 	@Override
 	public void setEffect(IMagicEffect effect) {
 	    effectDelegate.set(effect);
@@ -80,6 +93,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 		dataManager.register(LEVEL, 0);
 		dataManager.register(EFFECT, new NBTTagCompound());
 		dataManager.register(OWNER, "");
+		dataManager.register(AFFINITY, SpellAffinity.NEUTRAL.ordinal());
 	}
 
 	public ItemStack onPlayerMiddleClick(EntityPlayer player) {

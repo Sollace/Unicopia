@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,10 +26,10 @@ public class SpellRegistry {
     private final Map<String, Entry> entries = new HashMap<>();
 
     private SpellRegistry() {
-        registerSpell("shield", 0x66CDAA, SpellShield::new);
-        registerSpell("charge", 0x0000AA, SpellCharge::new);
-        registerSpell("fire",   0xFF0000, SpellFire::new);
-        registerSpell("ice",    0xADD8E6, SpellIce::new);
+        registerSpell(SpellShield::new);
+        registerSpell(SpellCharge::new);
+        registerSpell(SpellFire::new);
+        registerSpell(SpellIce::new);
     }
 
     public IMagicEffect getSpellFromName(String name) {
@@ -61,6 +62,7 @@ public class SpellRegistry {
         return compound;
     }
 
+    @Nullable
     public IDispenceable getDispenseActionFrom(ItemStack stack) {
         String key = getKeyFromStack(stack);
 
@@ -74,13 +76,27 @@ public class SpellRegistry {
         return null;
     }
 
+    @Nullable
+    public IUseAction getUseActionFrom(ItemStack stack) {
+        String key = getKeyFromStack(stack);
+
+        if (entries.containsKey(key)) {
+            Entry entry = entries.get(key);
+            if (entry.canUse) {
+                return entry.create();
+            }
+        }
+
+        return null;
+    }
+
     public IMagicEffect getSpellFromItemStack(ItemStack stack) {
         return getSpellFromName(getKeyFromStack(stack));
     }
 
-    public void registerSpell(String key, int tint, Callable<IMagicEffect> factory) {
+    public void registerSpell(Callable<IMagicEffect> factory) {
         try {
-            entries.put(key, new Entry(factory, tint));
+            new Entry(factory);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -143,11 +159,17 @@ public class SpellRegistry {
         int color;
 
         boolean canDispense;
+        boolean canUse;
 
-        Entry(Callable<IMagicEffect> factory, int color) throws Exception {
+        Entry(Callable<IMagicEffect> factory) throws Exception {
+            IMagicEffect inst = factory.call();
+
             this.factory = factory;
-            this.color = color;
-            this.canDispense = factory.call() instanceof IDispenceable;
+            this.color = inst.getTint();
+            this.canDispense = inst instanceof IDispenceable;
+            this.canUse = inst instanceof IUseAction;
+
+            entries.put(inst.getName(), this);
         }
 
         @SuppressWarnings("unchecked")

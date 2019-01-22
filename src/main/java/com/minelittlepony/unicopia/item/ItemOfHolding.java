@@ -125,6 +125,11 @@ public class ItemOfHolding extends Item implements IMagicalItem {
         return new ActionResult<>(EnumActionResult.SUCCESS, stack);
     }
 
+    @Override
+    public boolean hasInnerSpace() {
+        return true;
+    }
+
     public class Inventory implements IInteractionObject {
 
         private String customname = null;
@@ -162,10 +167,5 @@ public class ItemOfHolding extends Item implements IMagicalItem {
         public String getGuiID() {
             return "unicopia:itemofholding";
         }
-    }
-
-    @Override
-    public boolean hasInnerSpace() {
-        return true;
     }
 }

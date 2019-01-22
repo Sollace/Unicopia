@@ -12,8 +12,8 @@ import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
-import com.minelittlepony.unicopia.spell.ICaster;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
+import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
 import net.minecraft.client.Minecraft;
@@ -30,13 +30,13 @@ import net.minecraft.network.play.server.SPacketSetPassengers;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.StatList;
 
-class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
+class PlayerCapabilities implements IPlayer {
 
     private static final DataParameter<Integer> PLAYER_RACE = EntityDataManager
             .createKey(EntityPlayer.class, DataSerializers.VARINT);
 
-    private static final DataParameter<Integer> ENERGY = EntityDataManager
-            .createKey(EntityPlayer.class, DataSerializers.VARINT);
+    private static final DataParameter<Float> ENERGY = EntityDataManager
+            .createKey(EntityPlayer.class, DataSerializers.FLOAT);
 
     private static final DataParameter<Float> EXERTION = EntityDataManager
             .createKey(EntityPlayer.class, DataSerializers.FLOAT);
@@ -67,8 +67,8 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
 
         player.getDataManager().register(PLAYER_RACE, Race.HUMAN.ordinal());
         player.getDataManager().register(EXERTION, 0F);
+        player.getDataManager().register(ENERGY, 0F);
         player.getDataManager().register(EFFECT, new NBTTagCompound());
-        player.getDataManager().register(ENERGY, 0);
     }
 
     @Override
@@ -105,6 +105,21 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
     @Override
     public void setExertion(float exertion) {
         getOwner().getDataManager().set(EXERTION, Math.max(0, exertion));
+    }
+
+    @Override
+    public float getEnergy() {
+        return getOwner().getDataManager().get(ENERGY);
+    }
+
+    @Override
+    public void setEnergy(float energy) {
+        getOwner().getDataManager().set(ENERGY, Math.max(0, energy));
+    }
+
+    @Override
+    public SpellAffinity getAffinity() {
+        return SpellAffinity.NEUTRAL;
     }
 
     @Override
@@ -182,6 +197,7 @@ class PlayerCapabilities implements IPlayer, ICaster<EntityPlayer> {
         }
 
         addExertion(-1);
+        addEnergy(-1);
 
         attributes.applyAttributes(entity, getPlayerSpecies());
     }

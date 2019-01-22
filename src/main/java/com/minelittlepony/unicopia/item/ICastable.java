@@ -20,4 +20,17 @@ public interface ICastable extends IMagicalItem {
 
     boolean canFeed(EntitySpell spell, ItemStack stack);
 
+    /**
+     * Called to cast a spell. The result is an entity spawned with the spell attached.
+     */
+    default EntitySpell castContainedSpell(World world, BlockPos pos, ItemStack stack, IMagicEffect effect) {
+        EntitySpell spell = new EntitySpell(world);
+
+        spell.setAffinity(getAffinity(stack));
+        spell.setEffect(effect);
+        spell.setLocationAndAngles(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0);
+        world.spawnEntity(spell);
+
+        return spell;
+    }
 }

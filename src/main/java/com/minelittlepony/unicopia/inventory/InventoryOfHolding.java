@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import com.minelittlepony.unicopia.InbtSerialisable;
 import com.minelittlepony.unicopia.advancements.UAdvancements;
 import com.minelittlepony.unicopia.item.IMagicalItem;
+import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
 import com.minelittlepony.util.MagicalDamageSource;
 
 import net.minecraft.block.Block;

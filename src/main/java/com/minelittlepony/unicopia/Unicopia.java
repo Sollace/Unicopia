@@ -65,6 +65,7 @@ import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.player.IPlayer;
+import com.minelittlepony.unicopia.player.IView;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.PowersRegistry;
 import com.minelittlepony.unicopia.util.crafting.CraftingManager;
@@ -205,7 +206,11 @@ public class Unicopia implements IGuiHandler {
         EntityPlayer player = Minecraft.getMinecraft().player;
 
         if (player != null) {
-            event.setRoll((float)PlayerSpeciesList.instance().getPlayer(player).getCamera().calculateRoll(player));
+            IView view = PlayerSpeciesList.instance().getPlayer(player).getCamera();
+
+            event.setRoll(view.calculateRoll());
+            event.setPitch(view.calculatePitch(event.getPitch()));
+            event.setYaw(view.calculateYaw(event.getYaw()));
         }
     }
 
@@ -322,11 +327,7 @@ public class Unicopia implements IGuiHandler {
 
     @SubscribeEvent
     public static void modifyFOV(FOVUpdateEvent event) {
-        float fov = event.getFov();
-
-        fov += PlayerSpeciesList.instance().getPlayer(event.getEntity()).getExertion() / 5;
-
-        event.setNewfov(fov);
+        event.setNewfov(PlayerSpeciesList.instance().getPlayer(event.getEntity()).getCamera().calculateFieldOfView(event.getFov()));
     }
 
     @Override

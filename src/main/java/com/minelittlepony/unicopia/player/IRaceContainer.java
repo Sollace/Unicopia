@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.player;
 
-import com.minelittlepony.unicopia.InbtSerialisable;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
 
 import net.minecraft.entity.Entity;
 

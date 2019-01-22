@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.forgebullshit;
 
-import com.minelittlepony.unicopia.InbtSerialisable;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.IRaceContainer;
+import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
 
 import net.minecraft.entity.Entity;
 

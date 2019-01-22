@@ -4,6 +4,16 @@ public abstract class AbstractSpell implements IMagicEffect {
 
 	protected boolean isDead = false;
 
+    @Override
+    public int getCurrentLevel() {
+        return 0;
+    }
+
+    @Override
+    public void setCurrentLevel(int level) {
+
+    }
+
 	@Override
 	public void setDead() {
 		isDead = true;

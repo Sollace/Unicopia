@@ -115,8 +115,8 @@ public class UItems {
             .setTranslationKey("alfalfa_leaves")
             .setRegistryName(Unicopia.MODID, "alfalfa_leaves");
 
-    public static final Item cereal = new ItemCereal(Unicopia.MODID, "cereal", 9, 0.8F);
-    public static final Item sugar_cereal = new ItemCereal(Unicopia.MODID, "sugar_cereal", 20, -2).setAlwaysEdible();
+    public static final Item cereal = new ItemCereal(Unicopia.MODID, "cereal", 9, 0.8F).setSugarAmount(1);
+    public static final Item sugar_cereal = new ItemCereal(Unicopia.MODID, "sugar_cereal", 20, -2).setSugarAmount(110).setAlwaysEdible();
 
     public static final ItemTomato tomato = new ItemTomato(Unicopia.MODID, "tomato", 4, 34);
     public static final ItemTomato cloudsdale_tomato = new ItemTomato(Unicopia.MODID, "cloudsdale_tomato", 16, 4);

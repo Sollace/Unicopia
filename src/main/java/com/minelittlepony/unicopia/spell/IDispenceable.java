@@ -16,7 +16,8 @@ public interface IDispenceable extends IMagicEffect {
 	 * @param pos		Block position in front of the dispenser
 	 * @param facing	Direction of the dispenser
 	 * @param source	The dispenser currently dispensing
+	 * @param affinity  The affinity of the casting artifact
 	 * @return	an ActionResult for the type of action to perform.
 	 */
-	public SpellCastResult onDispenced(BlockPos pos, EnumFacing facing, IBlockSource source);
+	public SpellCastResult onDispenced(BlockPos pos, EnumFacing facing, IBlockSource source, SpellAffinity affinity);
 }

@@ -1,21 +1,29 @@
 package com.minelittlepony.unicopia.item;
 
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.entity.EntitySpell;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.IUseAction;
+import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.unicopia.spell.SpellCastResult;
 import com.minelittlepony.unicopia.spell.IDispenceable;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 import com.minelittlepony.util.vector.VecHelper;
 
 import net.minecraft.block.BlockDispenser;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -37,23 +45,27 @@ public class ItemSpell extends Item implements ICastable {
                 return super.dispenseStack(source, stack);
             }
 
-            SpellCastResult dispenceResult = ((ICastable)stack.getItem()).onDispenseSpell(source, stack, effect);
+            if (stack.getItem() instanceof ICastable) {
+                ICastable castable = (ICastable)stack.getItem();
 
-            if (dispenceResult == SpellCastResult.DEFAULT) {
-                return super.dispenseStack(source, stack);
-            }
+                SpellCastResult dispenceResult = castable.onDispenseSpell(source, stack, effect);
 
-            if (dispenceResult == SpellCastResult.PLACE) {
-                BlockPos pos = source.getBlockPos();
+                if (dispenceResult == SpellCastResult.DEFAULT) {
+                    return super.dispenseStack(source, stack);
+                }
 
-                castContainedSpell(source.getWorld(), pos, stack, effect);
+                if (dispenceResult == SpellCastResult.PLACE) {
+                    castable.castContainedSpell(source.getWorld(), source.getBlockPos(), stack, effect);
 
-                stack.shrink(1);
+                    stack.shrink(1);
+                }
             }
 
             return stack;
         }
     };
+
+    protected String translationKey;
 
     public ItemSpell(String domain, String name) {
         super();
@@ -69,6 +81,11 @@ public class ItemSpell extends Item implements ICastable {
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, dispenserBehavior);
     }
 
+    public Item setTranslationKey(String key) {
+        translationKey = key;
+        return super.setTranslationKey(key);
+    }
+
     @Override
     public boolean hasEffect(ItemStack stack) {
         return SpellRegistry.stackHasEnchantment(stack);
@@ -79,13 +96,13 @@ public class ItemSpell extends Item implements ICastable {
         EnumFacing facing = source.getBlockState().getValue(BlockDispenser.FACING);
         BlockPos pos = source.getBlockPos().offset(facing);
 
-        return effect.onDispenced(pos, facing, source);
+        return effect.onDispenced(pos, facing, source, getAffinity(stack));
     }
 
     @Override
     public SpellCastResult onCastSpell(EntityPlayer player, World world, BlockPos pos, ItemStack stack, IMagicEffect effect, EnumFacing side, float hitX, float hitY, float hitZ) {
         if (effect instanceof IUseAction) {
-            return ((IUseAction)effect).onUse(stack, player, world, pos, side, hitX, hitY, hitZ);
+            return ((IUseAction)effect).onUse(stack, getAffinity(stack), player, world, pos, side, hitX, hitY, hitZ);
         }
 
         return SpellCastResult.PLACE;
@@ -110,7 +127,7 @@ public class ItemSpell extends Item implements ICastable {
             return EnumActionResult.FAIL;
         }
 
-        SpellCastResult result = ((ICastable)stack.getItem()).onCastSpell(player, world, pos, stack, effect, side, hitX, hitY, hitZ);
+        SpellCastResult result = onCastSpell(player, world, pos, stack, effect, side, hitX, hitY, hitZ);
 
         if (!world.isRemote) {
             pos = pos.offset(side);
@@ -146,10 +163,10 @@ public class ItemSpell extends Item implements ICastable {
             return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
         }
 
-        IMagicEffect effect = SpellRegistry.instance().getSpellFromItemStack(stack);
+        IUseAction effect = SpellRegistry.instance().getUseActionFrom(stack);
 
-        if (effect instanceof IUseAction) {
-            SpellCastResult result = ((IUseAction)effect).onUse(stack, player, world, target);
+        if (effect != null) {
+            SpellCastResult result = effect.onUse(stack, getAffinity(stack), player, world, target);
 
             if (result != SpellCastResult.NONE) {
                 if (result == SpellCastResult.PLACE && !player.capabilities.isCreativeMode) {
@@ -164,6 +181,35 @@ public class ItemSpell extends Item implements ICastable {
     }
 
     @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        if (SpellRegistry.stackHasEnchantment(stack)) {
+            SpellAffinity affinity = getAffinity(stack);
+
+            tooltip.add(affinity.getColourCode() + I18n.format(String.format("%s.%s.name",
+                    affinity.getTranslationKey(),
+                    SpellRegistry.getKeyFromStack(stack)
+            )));
+        }
+    }
+
+    @Override
+    public String getTranslationKey(ItemStack stack) {
+        return super.getTranslationKey();
+    }
+
+    @Override
+    public String getItemStackDisplayName(ItemStack stack) {
+        if (SpellRegistry.stackHasEnchantment(stack)) {
+            return I18n.format(getTranslationKey(stack) + ".enchanted.name", I18n.format(String.format("%s.%s.name",
+                    getAffinity(stack).getTranslationKey(),
+                    SpellRegistry.getKeyFromStack(stack)
+            )));
+        }
+
+        return super.getItemStackDisplayName(stack);
+    }
+
+    @Override
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subItems) {
         super.getSubItems(tab, subItems);
 
@@ -175,31 +221,23 @@ public class ItemSpell extends Item implements ICastable {
     }
 
     @Override
-    public String getTranslationKey(ItemStack stack) {
-        String result = super.getTranslationKey(stack);
-
+    public EnumRarity getRarity(ItemStack stack) {
         if (SpellRegistry.stackHasEnchantment(stack)) {
-            result += "." + stack.getTagCompound().getString("spell");
+            return EnumRarity.UNCOMMON;
         }
 
-        return result;
-    }
-
-    protected static EntitySpell castContainedSpell(World world, BlockPos pos, ItemStack stack, IMagicEffect effect) {
-        EntitySpell spell = new EntitySpell(world);
-
-        spell.setEffect(effect);
-        spell.setLocationAndAngles(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0);
-        world.spawnEntity(spell);
-
-        return spell;
+        return super.getRarity(stack);
     }
 
     @Override
     public boolean canFeed(EntitySpell entity, ItemStack stack) {
-
         IMagicEffect effect = entity.getEffect();
 
         return effect != null && effect.getName().equals(SpellRegistry.getKeyFromStack(stack));
+    }
+
+    @Override
+    public SpellAffinity getAffinity(ItemStack stack) {
+        return SpellAffinity.GOOD;
     }
 }

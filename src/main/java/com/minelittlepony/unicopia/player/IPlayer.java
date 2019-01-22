@@ -30,6 +30,14 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
         setExertion(getExertion() + exertion/100F);
     }
 
+    float getEnergy();
+
+    void setEnergy(float energy);
+
+    default void addEnergy(int energy) {
+        setEnergy(getEnergy() + energy / 100F);
+    }
+
     boolean isClientPlayer();
 
     void copyFrom(IPlayer oldPlayer);

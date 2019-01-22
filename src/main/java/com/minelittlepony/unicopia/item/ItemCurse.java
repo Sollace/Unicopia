@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.spell.IDispenceable;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
+import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.unicopia.spell.SpellCastResult;
 import com.minelittlepony.util.MagicalDamageSource;
 
@@ -48,5 +49,10 @@ public class ItemCurse extends ItemSpell {
         }
 
         return result;
+    }
+
+    @Override
+    public SpellAffinity getAffinity(ItemStack stack) {
+        return SpellAffinity.BAD;
     }
 }
