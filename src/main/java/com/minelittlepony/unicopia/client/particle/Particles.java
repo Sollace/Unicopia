@@ -34,7 +34,7 @@ public class Particles {
     }
 
     public Particle spawnParticle(int particleId, boolean ignoreDistance, Vec3d pos, double speedX, double speedY, double speedZ, int ...pars) {
-        return spawnParticle(particleId, ignoreDistance, pos, speedX, speedY, speedZ, pars);
+        return spawnParticle(particleId, ignoreDistance, pos.x, pos.y, pos.z, speedX, speedY, speedZ, pars);
     }
 
     public Particle spawnParticle(int particleId, boolean ignoreDistance, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, int ...pars) {
