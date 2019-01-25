@@ -9,6 +9,9 @@ tile.cloud_slab.enchanted.name=Enchanted Cloud Slab
 tile.cloud_stairs.name=Cloud Stairs
 tile.cloud_farmland.name=Tilled Clouds
 
+tile.apple_leaves.name=Apple Leaves
+tile.apple_sapling.name=Apple Seeds
+
 tile.sugar_block.name=Block of Sugar
 
 item.cloud_matter.name=Lump of Cloud
@@ -59,6 +62,8 @@ item.zap_apple.red.name=Apple
 item.zap_apple.green.name=Granny Smith Apple
 item.zap_apple.sweet.name=Sweet Apple Acres Apple
 item.zap_apple.sour.name=Sour Apple
+
+item.apple_seeds.name=Apple Seeds
 
 item.tomato.name=Tomato
 item.tomato.rotten.name=Rotten Tomato

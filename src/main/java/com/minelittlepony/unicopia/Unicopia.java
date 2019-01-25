@@ -161,6 +161,7 @@ public class Unicopia implements IGuiHandler {
     @SubscribeEvent
     public static void registerItemColoursStatic(ColorHandlerEvent.Item event) {
         UItems.registerColors(event.getItemColors());
+        UBlocks.registerColors(event.getItemColors(), event.getBlockColors());
     }
 
     @SubscribeEvent

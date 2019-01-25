@@ -75,10 +75,6 @@ public class ItemApple extends ItemFood {
 		setRegistryName(domain, name);
 	}
 
-	public int getZapAppleMetadata() {
-		return 4;
-	}
-
 	public ItemApple setSubTypes(String... types) {
 	    setHasSubtypes(true);
         setMaxDamage(0);

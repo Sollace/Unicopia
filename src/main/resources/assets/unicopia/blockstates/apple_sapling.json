@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "stage=0": { "model": "unicopia:apple_sapling" },
+        "stage=1": { "model": "unicopia:apple_sapling" }
+    }
+}

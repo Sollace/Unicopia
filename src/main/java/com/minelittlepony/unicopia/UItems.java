@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.item.ItemApple;
 import com.minelittlepony.unicopia.item.ItemCereal;
 import com.minelittlepony.unicopia.item.ItemCloud;
 import com.minelittlepony.unicopia.item.ItemCurse;
+import com.minelittlepony.unicopia.item.ItemFruitLeaves;
 import com.minelittlepony.unicopia.item.ItemOfHolding;
 import com.minelittlepony.unicopia.item.ItemRottenApple;
 import com.minelittlepony.unicopia.item.ItemSpell;
@@ -14,6 +15,7 @@ import com.minelittlepony.unicopia.item.ItemTomatoSeeds;
 import com.minelittlepony.unicopia.item.ItemZapApple;
 import com.minelittlepony.unicopia.item.UItemBlock;
 import com.minelittlepony.unicopia.item.UItemMultiTexture;
+import com.minelittlepony.unicopia.item.UItemDecoration;
 import com.minelittlepony.unicopia.item.UItemSlab;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
@@ -25,7 +27,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemDoor;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemSeedFood;
@@ -53,7 +54,6 @@ public class UItems {
             .setSubTypes("zap_apple", "red", "green", "sweet", "sour");
 
     public static final ItemApple rotten_apple = new ItemRottenApple(Unicopia.MODID, "rotten_apple");
-
     public static final ItemApple cooked_zap_apple = new ItemApple(Unicopia.MODID, "cooked_zap_apple");
 
     public static final Item cloud_matter = new Item()
@@ -73,25 +73,18 @@ public class UItems {
     }, INTERACT_WITH_CLOUDS)
             .setRegistryName(Unicopia.MODID, "cloud_block");
 
-    public static final Item cloud_stairs = new UItemBlock(UBlocks.cloud_stairs, INTERACT_WITH_CLOUDS)
-            .setTranslationKey("cloud_stairs")
-            .setRegistryName(Unicopia.MODID, "cloud_stairs");
+    public static final Item cloud_stairs = new UItemBlock(UBlocks.cloud_stairs, Unicopia.MODID, "cloud_stairs", INTERACT_WITH_CLOUDS);
 
-    public static final Item cloud_farmland = new UItemBlock(UBlocks.cloud_farmland, INTERACT_WITH_CLOUDS)
-            .setTranslationKey("cloud_farmland")
-            .setRegistryName(Unicopia.MODID, "cloud_farmland");
+    public static final Item cloud_farmland = new UItemBlock(UBlocks.cloud_farmland, Unicopia.MODID, "cloud_farmland", INTERACT_WITH_CLOUDS);
 
-    public static final Item anvil = new UItemBlock(UBlocks.anvil, INTERACT_WITH_CLOUDS)
-            .setTranslationKey("cloud_anvil")
-            .setRegistryName(Unicopia.MODID, "anvil");
+    public static final Item anvil = new UItemBlock(UBlocks.anvil, Unicopia.MODID, "anvil", INTERACT_WITH_CLOUDS)
+            .setTranslationKey("cloud_anvil");
 
     public static final Item mist_door = new ItemDoor(UBlocks.mist_door)
             .setTranslationKey("mist_door")
             .setRegistryName(Unicopia.MODID, "mist_door");
 
-    public static final Item sugar_block = new ItemBlock(UBlocks.sugar_block)
-            .setTranslationKey("sugar_block")
-            .setRegistryName(Unicopia.MODID, "sugar_block");
+    public static final Item sugar_block = new UItemDecoration(UBlocks.sugar_block, Unicopia.MODID, "sugar_block");
 
     public static final Item cloud_slab = new UItemSlab(UBlocks.cloud_slab, UBlocks.cloud_slab, UBlocks.double_cloud_slab, INTERACT_WITH_CLOUDS)
             .setTranslationKey("cloud_slab")
@@ -122,6 +115,10 @@ public class UItems {
     public static final ItemTomato cloudsdale_tomato = new ItemTomato(Unicopia.MODID, "cloudsdale_tomato", 16, 4);
     public static final ItemTomatoSeeds tomato_seeds = new ItemTomatoSeeds(Unicopia.MODID, "tomato_seeds");
 
+    public static final Item apple_seeds = new UItemDecoration(UBlocks.apple_tree, Unicopia.MODID, "apple_seeds");
+
+    public static final Item apple_leaves = new ItemFruitLeaves(UBlocks.apple_leaves, Unicopia.MODID, "apple_leaves");
+
     static void registerItems(IForgeRegistry<Item> registry) {
         RegistryLockSpinner.unlock(Item.REGISTRY);
 
@@ -140,7 +137,9 @@ public class UItems {
                              cereal, sugar_cereal, sugar_block,
                              rotten_apple, zap_apple, cooked_zap_apple,
 
-                             cloudsdale_tomato, tomato_seeds, tomato);
+                             cloudsdale_tomato, tomato_seeds, tomato,
+
+                             apple_seeds, apple_leaves);
 
         if (UClient.isClientSide()) {
             registerAllVariants(apple, apple.getVariants());
@@ -168,6 +167,8 @@ public class UItems {
             registerAllVariants(tomato, "tomato", "rotten_tomato");
             registerAllVariants(cloudsdale_tomato, "cloudsdale_tomato", "rotten_cloudsdale_tomato");
             registerAllVariants(tomato_seeds, "tomato_seeds");
+            registerAllVariants(apple_seeds, "apple_seeds");
+            registerAllVariants(apple_leaves, "apple_leaves");
 
             BuildInTexturesBakery.getBuiltInTextures().add(new ResourceLocation("unicopia", "items/empty_slot_gem"));
         }

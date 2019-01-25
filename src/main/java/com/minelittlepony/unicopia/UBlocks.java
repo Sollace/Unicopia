@@ -1,16 +1,28 @@
 package com.minelittlepony.unicopia;
 
 import com.minelittlepony.unicopia.block.BlockAlfalfa;
+import com.minelittlepony.unicopia.block.BlockFruitLeaves;
 import com.minelittlepony.unicopia.block.BlockCloud;
 import com.minelittlepony.unicopia.block.BlockCloudAnvil;
 import com.minelittlepony.unicopia.block.BlockCloudSlab;
 import com.minelittlepony.unicopia.block.BlockCloudStairs;
 import com.minelittlepony.unicopia.block.BlockSugar;
 import com.minelittlepony.unicopia.block.BlockTomatoPlant;
+import com.minelittlepony.unicopia.block.IColourful;
+import com.minelittlepony.unicopia.block.USapling;
 import com.minelittlepony.unicopia.block.BlockCloudDoor;
 import com.minelittlepony.unicopia.block.BlockCloudFarm;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.color.BlockColors;
+import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.ColorizerFoliage;
+import net.minecraft.world.biome.BiomeColorHelper;
+import net.minecraft.world.gen.feature.WorldGenTrees;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class UBlocks {
@@ -33,10 +45,41 @@ public class UBlocks {
 
     public static final Block sugar_block = new BlockSugar(Unicopia.MODID, "sugar_block");
 
+    public static final USapling apple_tree = new USapling(Unicopia.MODID, "apple_sapling")
+            .setTreeGen((w, s, m) -> new WorldGenTrees(true, 5, Blocks.LOG.getDefaultState(), UBlocks.apple_leaves.getDefaultState(), false));
+    public static final Block apple_leaves = new BlockFruitLeaves(Unicopia.MODID, "apple_leaves", apple_tree)
+            .setBaseGrowthChance(1200)
+            .setTint(0xFFEE81)
+            .setHarvestFruit(w -> UItems.apple.getRandomApple(w.rand, null))
+            .setUnharvestFruit(w -> new ItemStack(UItems.rotten_apple));
+
     static void registerBlocks(IForgeRegistry<Block> registry) {
         registry.registerAll(cloud, cloud_stairs, double_cloud_slab, cloud_slab, mist_door, anvil, cloud_farmland,
                              sugar_block,
                              alfalfa,
-                             tomato_plant);
+                             tomato_plant,
+                             apple_tree, apple_leaves);
+    }
+
+    static void registerColors(ItemColors items, BlockColors blocks) {
+        items.registerItemColorHandler((stack, tint) -> {
+            @SuppressWarnings("deprecation")
+            IBlockState state = ((ItemBlock)stack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
+
+            return blocks.colorMultiplier(state, null, null, tint);
+        }, apple_leaves);
+        blocks.registerBlockColorHandler((state, world, pos, tint) -> {
+            Block block = state.getBlock();
+
+            if (block instanceof IColourful) {
+                return ((IColourful)block).getCustomTint(state, tint);
+            }
+
+            if (world != null && pos != null) {
+                return BiomeColorHelper.getFoliageColorAtPos(world, pos);
+            }
+
+            return ColorizerFoliage.getFoliageColorBasic();
+        }, apple_leaves);
     }
 }

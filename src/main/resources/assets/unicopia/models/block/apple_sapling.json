@@ -1,0 +1,6 @@
+{
+    "parent": "block/cross",
+    "textures": {
+        "cross": "unicopia:blocks/sapling_apple"
+    }
+}
