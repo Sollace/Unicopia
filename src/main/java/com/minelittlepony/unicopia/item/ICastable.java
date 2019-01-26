@@ -27,8 +27,9 @@ public interface ICastable extends IMagicalItem {
         EntitySpell spell = new EntitySpell(world);
 
         spell.setAffinity(getAffinity(stack));
-        spell.setEffect(effect);
         spell.setLocationAndAngles(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0);
+        spell.setEffect(effect);
+
         world.spawnEntity(spell);
 
         return spell;

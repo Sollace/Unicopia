@@ -80,6 +80,8 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 	@Override
 	public void setEffect(IMagicEffect effect) {
 	    effectDelegate.set(effect);
+
+	    effect.onPlaced(this);
 	}
 
 	@Override

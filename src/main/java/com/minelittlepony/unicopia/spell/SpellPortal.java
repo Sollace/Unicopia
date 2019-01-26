@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.spell;
 
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,6 +13,7 @@ import com.minelittlepony.unicopia.entity.EntitySpell;
 import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
 import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.shape.Sphere;
 
@@ -25,6 +27,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
 public class SpellPortal extends AbstractSpell implements IUseAction {
 
@@ -34,10 +37,6 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
 
     private static final AxisAlignedBB TELEPORT_BOUNDS_VERT = new AxisAlignedBB(-1, -0.5, -1, 1, 0.5, 1);
     private static final AxisAlignedBB TELEPORT_BOUNDS = new AxisAlignedBB(-0.5, -0.5, -0.5, 0.5, 3, 0.5);
-
-    private static final AxisAlignedBB DESTINATION_BOUNDS = new AxisAlignedBB(0, 0, 0, 1.5F, 1.5F, 1.5F);
-
-    private int cooldown = 0;
 
     @Nullable
     private SpellPortal sibling = null;
@@ -49,6 +48,14 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
     private BlockPos destinationPos = null;
 
     private EnumFacing.Axis axis = EnumFacing.Axis.Y;
+
+    @Nullable
+    private UUID casterId;
+
+    private World world;
+
+    @Nullable
+    private UUID destinationId;
 
     @Override
     public String getName() {
@@ -64,8 +71,22 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
     public void setDead() {
         super.setDead();
 
-        if (sibling != null && !sibling.getDead()) {
-            sibling.setDead();
+        sibling = null;
+        destinationId = null;
+        destinationPos = null;
+
+        getDestinationPortal().ifPresent(IMagicEffect::setDead);
+    }
+
+    @Override
+    public void onPlaced(ICaster<?> caster) {
+        world = caster.getWorld();
+        casterId = caster.getUniqueId();
+        position = caster.getOrigin();
+
+        if (sibling != null) {
+            sibling.destinationId = casterId;
+            sibling.destinationPos = position;
         }
     }
 
@@ -78,7 +99,7 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
 
         IMagicEffect other = prop.getEffect();
         if (other instanceof SpellPortal && other != this && !other.getDead()) {
-            ((SpellPortal)other).notifyMatched(this);
+            ((SpellPortal)other).getActualInstance().setDestinationPortal(this);
 
             if (!world.isRemote) {
                 prop.setEffect(null);
@@ -97,10 +118,13 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
         return SpellCastResult.NONE;
     }
 
-    public void notifyMatched(SpellPortal other) {
-        if (sibling == null) {
+    public void setDestinationPortal(SpellPortal other) {
+        if (!getDestinationPortal().isPresent()) {
             sibling = other;
             other.sibling = this;
+
+            destinationId = other.casterId;
+            other.destinationId = casterId;
 
             sibling.destinationPos = position;
             destinationPos = sibling.position;
@@ -115,11 +139,10 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
     @Override
     public boolean update(ICaster<?> source, int level) {
         if (!source.getWorld().isRemote) {
-            getDestinationPortal(source.getWorld()).ifPresent(dest -> {
-                if (!dest.getDead()) {
-                    teleportNear(source, level);
-                }
-            });
+            getDestinationPortal().ifPresent(dest ->
+                source.getWorld().getEntitiesWithinAABB(Entity.class, getTeleportBounds().offset(source.getOrigin())).stream()
+                    .filter(this::canTeleport)
+                    .forEach(i -> teleportEntity(source, dest, i)));
         }
 
         return true;
@@ -154,58 +177,107 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
         return TELEPORT_BOUNDS;
     }
 
-    private boolean teleportNear(ICaster<?> source, int level) {
-        return source.getWorld().getEntitiesWithinAABB(Entity.class, getTeleportBounds().offset(source.getOrigin())).stream().filter(i -> {
-            if (!(i instanceof IMagicals) && i.timeUntilPortal == 0) {
-                EnumFacing.Axis xi = i.getHorizontalFacing().getAxis();
-
-                if (axis != EnumFacing.Axis.Y && xi != axis) {
-                    return false;
-                }
-
-                EnumFacing offset = i.getHorizontalFacing();
-
-                double destX = destinationPos.getX() + (i.posX - source.getOrigin().getX());
-                double destY = destinationPos.getY() + (i.posY - source.getOrigin().getY());
-                double destZ = destinationPos.getZ() + (i.posZ - source.getOrigin().getZ());
-
-                if (axis != EnumFacing.Axis.Y) {
-                    destX += offset.getXOffset();
-                    destY++;
-                    destZ += offset.getZOffset();
-                }
-
-                i.timeUntilPortal = i.getPortalCooldown();
-
-                i.getEntityWorld().playSound(null, i.getPosition(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1, 1);
-
-
-
-                if (sibling.axis != axis) {
-
-                    if (xi != sibling.axis) {
-                        i.setPositionAndRotation(i.posX, i.posY, i.posZ, i.rotationYaw + 90, i.rotationPitch);
-                    }
-                }
-
-                i.setPositionAndUpdate(destX, destY, destZ);
-                i.getEntityWorld().playSound(null, i.getPosition(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1, 1);
-
-                return true;
-            }
-
-            return false;
-        }).count() > 0;
+    protected boolean canTeleport(Entity i) {
+        return !(i instanceof IMagicals) && i.timeUntilPortal == 0;
     }
 
-    public Optional<SpellPortal> getDestinationPortal(World w) {
-        if (sibling == null && destinationPos != null) {
-            w.getBlockLightOpacity(destinationPos);
-            w.getEntitiesWithinAABB(EntitySpell.class, DESTINATION_BOUNDS.offset(destinationPos)).stream()
-                .filter(i -> i.getEffect() instanceof SpellPortal)
-                .map(i -> (SpellPortal)i.getEffect())
-                .findFirst()
-                .ifPresent(s -> sibling = s);
+    protected void teleportEntity(ICaster<?> source, SpellPortal dest, Entity i) {
+        EnumFacing.Axis xi = i.getHorizontalFacing().getAxis();
+
+        if (axis != EnumFacing.Axis.Y && xi != axis) {
+            return;
+        }
+
+        EnumFacing offset = i.getHorizontalFacing();
+
+        double destX = dest.position.getX() + (i.posX - source.getOrigin().getX());
+        double destY = dest.position.getY() + (i.posY - source.getOrigin().getY());
+        double destZ = dest.position.getZ() + (i.posZ - source.getOrigin().getZ());
+
+        if (axis != EnumFacing.Axis.Y) {
+            destX += offset.getXOffset();
+            destY++;
+            destZ += offset.getZOffset();
+        }
+
+        i.timeUntilPortal = i.getPortalCooldown();
+
+        i.getEntityWorld().playSound(null, i.getPosition(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1, 1);
+
+        if (dest.axis != axis) {
+            if (xi != dest.axis) {
+                i.setPositionAndRotation(i.posX, i.posY, i.posZ, i.rotationYaw + 90, i.rotationPitch);
+            }
+        }
+
+        i.setPositionAndUpdate(destX, destY, destZ);
+        i.getEntityWorld().playSound(null, i.getPosition(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1, 1);
+    }
+
+    /**
+     * Converts a possibly dead portal effect into a live one by forcing the owner entity to load.
+     */
+    protected SpellPortal getActualInstance() {
+        if (world instanceof WorldServer) {
+            Entity i = ((WorldServer)world).getEntityFromUuid(casterId);
+
+            if (i == null) {
+                world.getChunk(position);
+                i = ((WorldServer)world).getEntityFromUuid(casterId);
+            }
+
+            if (i instanceof EntitySpell) {
+                IMagicEffect effect = ((EntitySpell) i).getEffect();
+
+                if (effect instanceof SpellPortal) {
+                    return (SpellPortal)effect;
+                }
+            }
+        }
+
+        return this;
+    }
+
+    /**
+     * Gets or loads the destination portal.
+     */
+    public Optional<SpellPortal> getDestinationPortal() {
+
+        if (getDead()) {
+            return Optional.empty();
+        }
+
+        Entity i = null;
+
+        if (destinationId != null) {
+            i = ((WorldServer)world).getEntityFromUuid(destinationId);
+
+            if (i == null && destinationPos != null) {
+                world.getChunk(destinationPos);
+                i = ((WorldServer)world).getEntityFromUuid(destinationId);
+
+                if (i == null) {
+                    setDead();
+
+                    return Optional.empty();
+                }
+            }
+        }
+
+        if (i instanceof EntitySpell) {
+            IMagicEffect effect = ((EntitySpell) i).getEffect();
+
+            if (effect instanceof SpellPortal) {
+                sibling = (SpellPortal)effect;
+            }
+        }
+
+        if (sibling != null && sibling.getDead()) {
+            setDead();
+        }
+
+        if (sibling != null && destinationPos == null) {
+            destinationPos = sibling.position;
         }
 
         return Optional.ofNullable(sibling);
@@ -214,13 +286,15 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
     @Override
     public void writeToNBT(NBTTagCompound compound) {
         if (destinationPos != null) {
-            NBTTagCompound dest = new NBTTagCompound();
+            compound.setTag("destination", InbtSerialisable.writeBlockPos(destinationPos));
+        }
 
-            dest.setInteger("X", destinationPos.getX());
-            dest.setInteger("Y", destinationPos.getY());
-            dest.setInteger("Z", destinationPos.getZ());
+        if (casterId != null) {
+            compound.setUniqueId("casterId", casterId);
+        }
 
-            compound.setTag("destination", dest);
+        if (destinationId != null) {
+            compound.setUniqueId("destinationId", destinationId);
         }
 
         compound.setString("axis", axis.getName2());
@@ -229,13 +303,15 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         if (compound.hasKey("destination")) {
-            NBTTagCompound dest = compound.getCompoundTag("destination");
+            destinationPos = InbtSerialisable.readBlockPos(compound.getCompoundTag("destination"));
+        }
 
-            destinationPos = new BlockPos(
-                    dest.getInteger("X"),
-                    dest.getInteger("Y"),
-                    dest.getInteger("Z")
-            );
+        if (compound.hasUniqueId("casterId")) {
+            casterId = compound.getUniqueId("casterId");
+        }
+
+        if (compound.hasUniqueId("destinationId")) {
+            destinationId = compound.getUniqueId("destinationId");
         }
 
         if (compound.hasKey("axis")) {

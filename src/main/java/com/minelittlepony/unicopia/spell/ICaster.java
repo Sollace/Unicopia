@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.spell;
 
 import java.util.Random;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -31,6 +32,10 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelle
      */
     default Entity getEntity() {
         return getOwner();
+    }
+
+    default UUID getUniqueId() {
+        return getEntity().getUniqueID();
     }
 
     default World getWorld() {

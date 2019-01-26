@@ -28,6 +28,13 @@ public interface IMagicEffect extends InbtSerialisable, ILevelled {
 	boolean getDead();
 
 	/**
+	 * Called when first attached to a gem.
+	 */
+	default void onPlaced(ICaster<?> caster) {
+
+	}
+
+	/**
 	 * Called every tick when attached to a player.
 	 *
 	 * @param source	The entity we are currently attached to.
