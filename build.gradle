@@ -1,23 +1,23 @@
 buildscript {
-    repositories {
-        jcenter()
-        maven {
-            name 'forge'
-            url 'http://files.minecraftforge.net/maven/'
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
-        maven {
-            name = 'sponge'
-            url = 'http://repo.spongepowered.org/maven'
-        }
+  repositories {
+    jcenter()
+    maven {
+      name 'forge'
+      url 'http://files.minecraftforge.net/maven/'
     }
-    dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:' + project.forgeGradleVersion
-        classpath 'org.spongepowered:mixingradle:' + project.mixinGradleVersion
+    maven {
+      name = "sonatype"
+      url = "https://oss.sonatype.org/content/repositories/snapshots/"
     }
+    maven {
+      name = 'sponge'
+      url = 'http://repo.spongepowered.org/maven'
+    }
+  }
+  dependencies {
+    classpath 'net.minecraftforge.gradle:ForgeGradle:' + project.forgeGradleVersion
+    classpath 'org.spongepowered:mixingradle:' + project.mixinGradleVersion
+  }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
@@ -29,63 +29,63 @@ group = project.group
 description = project.description
 
 minecraft {
-    version = project.mcVersion + '-' + project.mcfVersion
-    mappings = project.mcMappings
-    runDir = 'run'
-    replace '@MODID@', project.modid
-    replace '@NAME@', project.name
-    replace '@AUTHOR@', project.author
-		replace '@VERSION@', ver
-		replace '@DESCRIPTION@', project.description
+  version = project.mcVersion + '-' + project.mcfVersion
+  mappings = project.mcMappings
+  runDir = 'run'
+  replace '@MODID@', project.modid
+  replace '@NAME@', project.name
+  replace '@AUTHOR@', project.author
+  replace '@VERSION@', ver
+  replace '@DESCRIPTION@', project.description
 }
 
 mixin {
-    defaultObfuscationEnv notch
+  defaultObfuscationEnv notch
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 sourceSets {
-    external {
-				compileClasspath += main.compileClasspath
-    }
-    main {
-        compileClasspath += external.output
-        ext.refMap = project.refCore
-    }
+  external {
+    compileClasspath += main.compileClasspath
+  }
+  main {
+    compileClasspath += external.output
+    ext.refMap = project.refCore
+  }
 }
 
 repositories {
-    flatDir {
-        dir 'lib'
-    }
+  flatDir {
+    dir 'lib'
+  }
 }
 dependencies {
-    deobfCompile('com.minelittlepony:jumpingcastle:1.12.2.1.0.0:universal')
+  deobfCompile('com.minelittlepony:jumpingcastle:1.12.2.1.0.0:universal')
 }
 
 processResources {
-		def props = [
-				modid: project.modid,
-				name: project.title,
-				description: project.description,
-        version: ver,
-        revision: project.buildRevision,
-        mcversion: project.mcVersion,
-        author: project.author
-    ]
-    
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-        expand props
-    }
+  def props = [
+    modid: project.modid,
+    name: project.title,
+    description: project.description,
+    version: ver,
+    revision: project.buildRevision,
+    mcversion: project.mcVersion,
+    author: project.author
+  ]
 
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
+  from(sourceSets.main.resources.srcDirs) {
+    include 'mcmod.info'
+    expand props
+  }
+
+  from(sourceSets.main.resources.srcDirs) {
+    exclude 'mcmod.info'
+  }
 }
 
 jar {
-    baseName = "Unicopia-mc${project.mcVersion}"
+  baseName = "Unicopia-mc${project.mcVersion}"
 }
