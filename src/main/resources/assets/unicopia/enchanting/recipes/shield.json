@@ -1,10 +1,9 @@
 {
 	"type": "unicopia:crafting_spell",
 	"ingredients": [
-        {
-        	"item": "minecraft:apple",
-        	"data": 0
-        }
+        { "item": "minecraft:egg" },
+        { "item": "minecraft:coal" },
+        { "item": "minecraft:blaze_powder" }
     ],
 	"result": {
 		"spell": "shield"

@@ -31,13 +31,22 @@ public class SpellRecipe extends Impl<IRecipe> implements IRecipe {
 	    for (JsonElement i : json.get("ingredients").getAsJsonArray()) {
 	        JsonObject o = i.getAsJsonObject();
 
-            Item item = Item.getByNameOrId(o.get("item").getAsString());
+            Item item = o.has("item") ? Item.getByNameOrId(o.get("item").getAsString()) : null;
+
+
 
             if (item != null) {
                 int metadata = Math.max(0, o.has("data") ? o.get("data").getAsInt() : 0);
                 int size = Math.max(1, o.has("count") ? o.get("count").getAsInt() : 1);
+                String spell = o.has("spell") ? o.get("spell").getAsString() : null;
 
-                ingredients.add(new RecipeItem(new ItemStack(item, size, metadata), !o.has("data")));
+                ItemStack stack = new ItemStack(item, size, metadata);
+
+                if (spell != null) {
+                    stack = SpellRegistry.instance().enchantStack(stack, spell);
+                }
+
+                ingredients.add(new RecipeItem(stack, !o.has("data")));
             }
 	    }
 
@@ -131,8 +140,8 @@ public class SpellRecipe extends Impl<IRecipe> implements IRecipe {
 			}
 
 			if (contained.getItem() == other.getItem()
-			        && (ignoreMeta || other.getMetadata() == contained.getMetadata())) {
-
+			        && (ignoreMeta || other.getMetadata() == contained.getMetadata())
+			        && ItemStack.areItemStackTagsEqual(contained, other)) {
 				return other.getCount() >= (materialMult * contained.getCount());
 			}
 

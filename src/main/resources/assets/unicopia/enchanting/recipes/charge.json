@@ -1,0 +1,11 @@
+{
+	"type": "unicopia:crafting_spell",
+	"ingredients": [
+        { "item": "unicopia:zap_apple" },
+        { "item": "unicopia:gem", "spell": "fire" },
+        { "item": "minecraft:redstone" }
+    ],
+	"result": {
+		"spell": "charge"
+	}
+}
