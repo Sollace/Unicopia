@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.forgebullshit;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.player.IOwned;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.IRaceContainer;
@@ -12,8 +14,35 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 
 class DefaultEntityCapabilitiesProxyContainer<T extends Entity> implements ICapabilitiesProxyContainer<T> {
 
+    @Nullable
     @CapabilityInject(ICapabilitiesProxyContainer.class)
-    public static final Capability<ICapabilitiesProxyContainer<?>> CAPABILITY = null;
+    public static Capability<ICapabilitiesProxyContainer<?>> CAPABILITY = null;
+
+    @SuppressWarnings("unchecked")
+    static boolean updateAndCompare(Capability<?> capability) {
+        if (CAPABILITY == null && capability != null) {
+            if (capability.getDefaultInstance() instanceof ICapabilitiesProxyContainer) {
+                CAPABILITY = (Capability<ICapabilitiesProxyContainer<?>>)capability;
+            }
+        }
+
+        return capability() == capability;
+    }
+
+    static <T extends Entity> ICapabilitiesProxyContainer<T> newInstance() {
+        if (capability() == null) {
+            return null;
+        }
+        return capability().cast(capability().getDefaultInstance());
+    }
+
+    @Nullable
+    static Capability<ICapabilitiesProxyContainer<?>> capability() {
+        if (CAPABILITY == null) {
+            new RuntimeException("Warning: Capability is null").printStackTrace();
+        }
+        return CAPABILITY;
+    }
 
     private IRaceContainer<T> container;
 
