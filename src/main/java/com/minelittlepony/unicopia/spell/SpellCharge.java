@@ -109,7 +109,7 @@ public class SpellCharge extends AbstractSpell {
             }
         }
 
-        return !isDead;
+        return !getDead();
     }
 
     @Override

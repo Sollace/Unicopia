@@ -69,7 +69,7 @@ public class SpellShield extends AbstractSpell {
 			}
 		}
 
-		return !isDead;
+		return !getDead();
 	}
 
 	@Override

@@ -30,7 +30,7 @@ public interface IUseAction {
 	 *
 	 * @return	ActionResult for the type of action to perform
 	 */
-	public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ);
+	SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ);
 
 	/**
 	 * Triggered when the player right clicks
@@ -43,5 +43,5 @@ public interface IUseAction {
 	 *
 	 * @return	ActionResult for the type of action to perform
 	 */
-	public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, @Nonnull Entity hitEntity);
+	SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, @Nonnull Entity hitEntity);
 }

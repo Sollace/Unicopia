@@ -30,6 +30,7 @@ public class SpellRegistry {
         registerSpell(SpellCharge::new);
         registerSpell(SpellFire::new);
         registerSpell(SpellIce::new);
+        registerSpell(SpellPortal::new);
     }
 
     public IMagicEffect getSpellFromName(String name) {
