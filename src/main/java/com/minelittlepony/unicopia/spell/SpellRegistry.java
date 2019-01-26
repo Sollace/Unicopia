@@ -45,7 +45,7 @@ public class SpellRegistry {
             IMagicEffect effect = getSpellFromName(compound.getString("effect_id"));
 
             if (effect != null) {
-                effect.readFromNBT(compound.getCompoundTag("effect"));
+                effect.readFromNBT(compound);
             }
 
             return effect;
