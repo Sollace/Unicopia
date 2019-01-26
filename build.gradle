@@ -22,7 +22,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 
-def ver = "${project.mcVersion}.${project.buildVersion}-${project.buildType}"
+def ver = "${project.buildType}${project.buildVersion}.${project.buildRevision}"
 
 version = ver
 group = project.group
@@ -32,7 +32,6 @@ minecraft {
     version = project.mcVersion + '-' + project.mcfVersion
     mappings = project.mcMappings
     runDir = 'run'
-		makeObfSourceJar = false
     replace '@MODID@', project.modid
     replace '@NAME@', project.name
     replace '@AUTHOR@', project.author
@@ -85,4 +84,8 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+}
+
+jar {
+    baseName = "Unicopia-mc${project.mcVersion}"
 }
