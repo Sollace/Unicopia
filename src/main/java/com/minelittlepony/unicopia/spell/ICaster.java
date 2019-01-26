@@ -44,9 +44,9 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelle
     default void spawnParticles(IShape area, int count, Consumer<Vec3d> particleSpawner) {
         Random rand = getWorld().rand;
 
-        int x = getOrigin().getX();
-        int y = getOrigin().getY();
-        int z = getOrigin().getZ();
+        double x = getEntity().posX;
+        double y = getEntity().posY;
+        double z = getEntity().posZ;
 
         for (int i = 0; i < count; i++) {
             particleSpawner.accept(area.computePoint(rand).add(x, y, z));
