@@ -282,9 +282,9 @@ public class Unicopia implements IGuiHandler {
 
         Race race = PlayerSpeciesList.instance().getPlayer(event.getEntityPlayer()).getPlayerSpecies();
 
-        event.getDrops().stream().map(PlayerSpeciesList.instance()::getEntity).forEach(item -> {
-            item.setPlayerSpecies(race);
-        });
+        event.getDrops().stream()
+            .map(PlayerSpeciesList.instance()::getEntity)
+            .forEach(item -> item.setPlayerSpecies(race));
     }
 
     @SubscribeEvent

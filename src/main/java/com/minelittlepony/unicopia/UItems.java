@@ -86,7 +86,7 @@ public class UItems {
 
     public static final Item sugar_block = new UItemDecoration(UBlocks.sugar_block, Unicopia.MODID, "sugar_block");
 
-    public static final Item cloud_slab = new UItemSlab(UBlocks.cloud_slab, UBlocks.cloud_slab, UBlocks.double_cloud_slab, INTERACT_WITH_CLOUDS)
+    public static final Item cloud_slab = new UItemSlab(UBlocks.cloud_slab, UBlocks.cloud_slab, UBlocks.cloud_double_slab, INTERACT_WITH_CLOUDS)
             .setTranslationKey("cloud_slab")
             .setRegistryName(Unicopia.MODID, "cloud_slab");
 
