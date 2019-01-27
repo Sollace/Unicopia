@@ -76,7 +76,7 @@ public class ItemApple extends ItemFood {
 	}
 
 	public ItemApple setSubTypes(String... types) {
-	    setHasSubtypes(true);
+	    setHasSubtypes(types.length > 0);
         setMaxDamage(0);
 
 		subTypes = types;
@@ -111,11 +111,27 @@ public class ItemApple extends ItemFood {
 	}
 
 	@Override
+    public int getDamage(ItemStack stack) {
+        return super.getDamage(stack);// % subTypes.length;
+    }
+
+	@Override
+	public int getMetadata(ItemStack stack) {
+	    if (getHasSubtypes()) {
+	        return super.getMetadata(stack) % subTypes.length;
+	    }
+
+	    return super.getMetadata(stack);
+	}
+
+	@Override
 	public String getTranslationKey(ItemStack stack) {
-	    if (subTypes.length > 0) {
+	    if (getHasSubtypes()) {
     	    int meta = Math.max(0, stack.getMetadata() % subTypes.length);
 
-    		return super.getTranslationKey(stack) + (meta > 0 ? "." + subTypes[meta] : "");
+    	    if (meta > 0) {
+    	        return super.getTranslationKey(stack) + "." + subTypes[meta];
+    	    }
 	    }
 
 	    return super.getTranslationKey(stack);
