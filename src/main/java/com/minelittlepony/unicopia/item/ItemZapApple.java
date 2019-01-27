@@ -23,6 +23,7 @@ public class ItemZapApple extends ItemApple {
 
     public ItemZapApple(String domain, String name) {
         super(domain, name);
+        setAlwaysEdible();
     }
 
     @Override
