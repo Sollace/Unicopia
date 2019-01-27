@@ -121,6 +121,17 @@ commands.race.describe.changeling.1=Beware the changeling, for they can appear w
 commands.race.describe.changeling.2=Changelings can fly but but do not interact with clouds.
 commands.race.describe.changeling.3=They have to feed on mobs and other players to eat.
 
+commands.racelist.usage=/racelist <allow|disallow> <species>
+commands.racelist.illegal=The default race %s cannot be used with this command.
+commands.racelist.allowed=Added %1$s to the whitelist.
+commands.racelist.allowed.failed=%1$s is already whitelisted.
+commands.race.success.other=%1$s was added to the whitelist by %2$s.
+commands.racelist.allowed.failed.other=%2$s tried to whitelist %1$s but it was already whitelisted.
+commands.racelist.disallowed=Removed %1$s from the whitelist.
+commands.racelist.disallowed.failed=%1$s is not on the whitelist.
+commands.racelist.disallowed.other=%1$s was removed from the whitelist by %2$s.
+commands.racelist.disallowed.failed.other=%2$s tried to remove %1$s from the whitelist but it has not been added yet.
+
 commands.decloud.success=%s clouds removed
 commands.decloud.usage=/decloud <all>
 

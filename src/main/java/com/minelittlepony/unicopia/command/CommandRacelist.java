@@ -13,7 +13,9 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 
 class CommandRacelist extends CommandBase {
 
@@ -39,17 +41,37 @@ class CommandRacelist extends CommandBase {
         Race race = Race.fromName(args[1], Race.HUMAN);
 
         TextComponentTranslation formattedName = new TextComponentTranslation(race.name().toLowerCase());
+        formattedName.getStyle().setColor(TextFormatting.GOLD);
 
-        if (race == Race.HUMAN) {
+        if (race.isDefault()) {
             player.sendMessage(new TextComponentTranslation("commands.racelist.illegal", formattedName));
         } else if (args[0].contentEquals("allow")) {
-            PlayerSpeciesList.instance().whiteListRace(race);
+            String translationKey = "commands.racelist.allowed";
 
-            player.sendMessage(new TextComponentTranslation("commands.racelist.allowed", formattedName));
+            if (!PlayerSpeciesList.instance().whiteListRace(race)) {
+                translationKey += ".failed";
+            }
+
+            if (sender == player) {
+                ITextComponent comp = new TextComponentTranslation(translationKey, formattedName);
+                comp.getStyle().setColor(TextFormatting.GREEN);
+                player.sendMessage(comp);
+            }
+            notifyCommandListener(sender, this, 1, translationKey + ".other", player.getName(), formattedName);
+
         } else if (args[0].contentEquals("disallow")) {
-            PlayerSpeciesList.instance().unwhiteListRace(race);
+            String translationKey = "commands.racelist.disallowed";
 
-            player.sendMessage(new TextComponentTranslation("commands.racelist.disallowed", formattedName));
+            if (!PlayerSpeciesList.instance().unwhiteListRace(race)) {
+                translationKey += ".failed";
+            }
+
+            if (sender == player) {
+                ITextComponent comp = new TextComponentTranslation(translationKey, formattedName);
+                comp.getStyle().setColor(TextFormatting.GREEN);
+                player.sendMessage(comp);
+            }
+            notifyCommandListener(sender, this, 1, translationKey + ".other", player.getName(), formattedName);
         } else {
             throw new WrongUsageException(getUsage(sender));
         }

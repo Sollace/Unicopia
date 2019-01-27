@@ -73,10 +73,10 @@ class CommandSpecies extends CommandBase {
 					TextComponentTranslation formattedName = new TextComponentTranslation(species.name().toLowerCase());
 
 					if (player != sender) {
-						notifyCommandListener(sender, this, 1, "commands.race.success.other", player.getName(), formattedName);
+						notifyCommandListener(sender, this, 1, "commands.race.success.other", formattedName, player.getName());
 		            } else {
 		            	player.sendMessage(new TextComponentTranslation("commands.race.success.self"));
-		            	notifyCommandListener(sender, this, 1, "commands.race.success.otherself", player.getName(), formattedName);
+		            	notifyCommandListener(sender, this, 1, "commands.race.success.otherself", formattedName, player.getName());
 		            }
 				} else {
 					player.sendMessage(new TextComponentTranslation("commands.race.permission"));
