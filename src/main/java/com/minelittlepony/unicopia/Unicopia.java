@@ -111,11 +111,17 @@ public class Unicopia implements IGuiHandler {
 
     @SideOnly(Side.CLIENT)
     private static Race getclientPlayerRace() {
-        if (Minecraft.getMinecraft().player != null && MineLP.modIsActive()) {
-            return Race.fromPonyRace(IPony.forPlayer(Minecraft.getMinecraft().player).getRace(false));
+        if (!UConfig.getInstance().ignoresMineLittlePony()
+                && Minecraft.getMinecraft().player != null
+                && MineLP.modIsActive()) {
+            Race race = Race.fromPonyRace(IPony.forPlayer(Minecraft.getMinecraft().player).getRace(false));
+
+            if (!race.isDefault()) {
+                return race;
+            }
         }
 
-        return Race.HUMAN;
+        return UConfig.getInstance().getPrefferedRace();
     }
 
     @EventHandler
@@ -137,6 +143,7 @@ public class Unicopia implements IGuiHandler {
         FBS.init();
 
         NetworkRegistry.INSTANCE.registerGuiHandler(this, this);
+        clientPlayerRace = getclientPlayerRace();
     }
 
     @EventHandler
@@ -189,15 +196,17 @@ public class Unicopia implements IGuiHandler {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public static void onGameTick(TickEvent.ClientTickEvent event) {
-        Race newRace = getclientPlayerRace();
-
-        if (newRace != clientPlayerRace && Minecraft.getMinecraft().player != null) {
-            clientPlayerRace = newRace;
-
-            channel.send(new MsgRequestCapabilities(Minecraft.getMinecraft().player, clientPlayerRace), Target.SERVER);
-        }
-
         if (event.phase == Phase.END) {
+            if (Minecraft.getMinecraft().player != null) {
+                Race newRace = getclientPlayerRace();
+
+                if (newRace != clientPlayerRace) {
+                    clientPlayerRace = newRace;
+
+                    channel.send(new MsgRequestCapabilities(Minecraft.getMinecraft().player, clientPlayerRace), Target.SERVER);
+                }
+            }
+
             Keyboard.getKeyHandler().onKeyInput();
         }
     }
