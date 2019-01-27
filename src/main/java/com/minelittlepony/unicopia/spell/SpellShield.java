@@ -52,7 +52,6 @@ public class SpellShield extends AbstractSpell {
 	}
 
 	protected void spawnParticles(ICaster<?> source, int strength) {
-
 	    source.spawnParticles(new Sphere(true, strength), strength * 6, pos -> {
 	        Particles.instance().spawnParticle(Unicopia.MAGIC_PARTICLE, false, pos.x, pos.y, pos.z, 0, 0, 0);
 	    });

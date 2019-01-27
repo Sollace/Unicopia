@@ -125,8 +125,10 @@ public class Unicopia implements IGuiHandler {
             .listenFor(MsgPlayerCapabilities.class)
             .listenFor(MsgPlayerAbility.class);
 
-        MAGIC_PARTICLE = Particles.instance().registerParticle(new EntityMagicFX.Factory());
-        RAIN_PARTICLE = Particles.instance().registerParticle(new EntityRaindropFX.Factory());
+        if (event.getSide().isClient()) {
+            MAGIC_PARTICLE = Particles.instance().registerParticle(new EntityMagicFX.Factory());
+            RAIN_PARTICLE = Particles.instance().registerParticle(new EntityRaindropFX.Factory());
+        }
 
         PowersRegistry.instance().init();
 

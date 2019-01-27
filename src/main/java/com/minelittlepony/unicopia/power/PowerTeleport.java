@@ -157,11 +157,15 @@ public class PowerTeleport implements IPower<Location> {
     public void preApply(IPlayer player) {
         player.addExertion(3);
 
-        IPower.spawnParticles(Unicopia.MAGIC_PARTICLE, player, 5);
+        if (player.getWorld().isRemote) {
+            IPower.spawnParticles(Unicopia.MAGIC_PARTICLE, player, 5);
+        }
     }
 
     @Override
     public void postApply(IPlayer player) {
-        IPower.spawnParticles(Unicopia.MAGIC_PARTICLE, player, 5);
+        if (player.getWorld().isRemote) {
+            IPower.spawnParticles(Unicopia.MAGIC_PARTICLE, player, 5);
+        }
     }
 }
