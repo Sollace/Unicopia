@@ -29,8 +29,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -41,7 +39,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-public class CraftingManager implements IResourceManagerReloadListener {
+public class CraftingManager {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -70,11 +68,6 @@ public class CraftingManager implements IResourceManagerReloadListener {
     protected void registerRecipeTypes(Map<String, Function<JsonObject, IRecipe>> types) {
         types.put("crafting_shaped", ShapedRecipes::deserialize);
         types.put("crafting_shapeless", ShapelessRecipes::deserialize);
-    }
-
-    @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {
-        load();
     }
 
     public void load() {
