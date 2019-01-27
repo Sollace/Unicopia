@@ -1,7 +1,7 @@
 {
     "parent": "block/half_slab",
     "textures": {
-        "bottom": "unicopia:blocks/cloud_packed",
+        "bottom": "unicopia:blocks/cloud_packed_top",
         "top": "unicopia:blocks/cloud_packed",
         "side": "unicopia:blocks/cloud_packed"
     }
