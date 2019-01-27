@@ -66,6 +66,10 @@ public enum CloudType implements IStringSerializable {
     }
 
     public boolean canInteract(Entity e) {
+        if (e == null) {
+            return false;
+        }
+
         if (this == ENCHANTED) {
             return true;
         }

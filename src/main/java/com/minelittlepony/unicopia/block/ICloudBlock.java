@@ -8,6 +8,7 @@ import net.minecraft.block.BlockTorch;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
@@ -54,7 +55,14 @@ public interface ICloudBlock {
     }
 
     default boolean getCanInteract(IBlockState state, Entity e) {
-        return getCloudMaterialType(state).canInteract(e);
+        if (getCloudMaterialType(state).canInteract(e)) {
+            if (e instanceof EntityItem) {
+                e.setNoGravity(true);
+            }
+            return true;
+        }
+
+        return false;
     }
 
     default boolean isDense(IBlockState blockState) {
