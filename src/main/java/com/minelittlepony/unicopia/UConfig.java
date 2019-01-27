@@ -32,12 +32,10 @@ public class UConfig {
         File file = new File(directory, "unicopia.json");
 
         try {
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-
-            try(JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(file)));) {
-                instance = gson.fromJson(reader, UConfig.class);
+            if (file.exists()) {
+                try(JsonReader reader = new JsonReader(new InputStreamReader(new FileInputStream(file)));) {
+                    instance = gson.fromJson(reader, UConfig.class);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -48,7 +46,7 @@ public class UConfig {
         }
 
         instance.file = file;
-
+        instance.save();
     }
 
     private File file;
@@ -66,6 +64,8 @@ public class UConfig {
         }
 
         try (JsonWriter writer = new JsonWriter(new OutputStreamWriter(new FileOutputStream(file)))) {
+            writer.setIndent("    ");
+
             gson.toJson(this, UConfig.class, writer);
         } catch (IOException e) {
             e.printStackTrace();
