@@ -1,8 +1,7 @@
-package com.minelittlepony.unicopia.client.particle;
+package com.minelittlepony.unicopia.particle.client;
 
 import net.minecraft.client.particle.Particle;
 
-import net.minecraft.client.particle.IParticleFactory;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
@@ -12,6 +11,10 @@ public class EntityMagicFX extends Particle {
     private double portalPosX;
     private double portalPosY;
     private double portalPosZ;
+
+    public EntityMagicFX(int id, World w, double x, double y, double z, double vX, double vY, double vZ, int... args) {
+        this(w, x, y, z, vX, vY, vZ);
+    }
 
 	public EntityMagicFX(World w, double x, double y, double z, double vX, double vY, double vZ) {
 		super(w, x, y, z, vX, vY, vZ);
@@ -69,12 +72,5 @@ public class EntityMagicFX extends Particle {
         posY = portalPosY + motionY;
         posZ = portalPosZ + motionZ * var1;
         if (particleAge++ >= particleMaxAge) setExpired();
-    }
-
-    public static class Factory implements IParticleFactory {
-		@Override
-		public Particle createParticle(int id, World w, double x, double y, double z, double vX, double vY, double vZ, int... args) {
-			return new EntityMagicFX(w, x, y, z, vX, vY, vZ);
-		}
     }
 }

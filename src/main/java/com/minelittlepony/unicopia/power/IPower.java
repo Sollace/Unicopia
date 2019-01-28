@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.power;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.client.particle.Particles;
 import com.minelittlepony.unicopia.input.IKeyBind;
+import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.shape.Sphere;

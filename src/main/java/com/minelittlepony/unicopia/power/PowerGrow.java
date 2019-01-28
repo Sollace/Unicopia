@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.power;
 import org.lwjgl.input.Keyboard;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.power.data.Location;
 import com.minelittlepony.util.vector.VecHelper;
@@ -104,7 +104,7 @@ public class PowerGrow implements IPower<Location> {
         player.addExertion(3);
 
         if (player.getWorld().isRemote) {
-            IPower.spawnParticles(Unicopia.MAGIC_PARTICLE, player, 1);
+            IPower.spawnParticles(UParticles.MAGIC_PARTICLE, player, 1);
         }
     }
 

@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.client.particle;
+package com.minelittlepony.unicopia.particle;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -17,7 +17,7 @@ public class EntityParticleEmitter {
             double x = MathHelper.nextDouble(e.getEntityWorld().rand, e.posX - e.width/2 - f, e.posX + e.width/2 + f);
             double y = MathHelper.nextDouble(e.getEntityWorld().rand, e.posY - f, e.posY + e.height + f);
             double z = MathHelper.nextDouble(e.getEntityWorld().rand, e.posZ - e.width/2 - f, e.posZ + e.width/2 + f);
-            spawnDigginFX(e.getEntityWorld(), x, y, z, x - (int)x - 0.5, y - (int)y - 0.5, z - (int)z - 0.5, blockState, 1, 1);
+            spawnDiggingFX(e.getEntityWorld(), x, y, z, x - (int)x - 0.5, y - (int)y - 0.5, z - (int)z - 0.5, blockState, 1, 1);
         }
     }
 
@@ -60,10 +60,10 @@ public class EntityParticleEmitter {
             vX += 0.5;
         }
 
-        spawnDigginFX(e.getEntityWorld(), x, y, z, vX, vY, vZ, blockState, 0.2F, 0.6F);
+        spawnDiggingFX(e.getEntityWorld(), x, y, z, vX, vY, vZ, blockState, 0.2F, 0.6F);
     }
 
-    protected void spawnDigginFX(World w, double x, double y, double z, double vX, double vY, double vZ, IBlockState blockState, float multScale, float multVel) {
+    protected void spawnDiggingFX(World w, double x, double y, double z, double vX, double vY, double vZ, IBlockState blockState, float multScale, float multVel) {
         if (w instanceof WorldServer) {
             ((WorldServer)w).spawnParticle(EnumParticleTypes.BLOCK_CRACK, false, x, y, z, 1, 0, 0, 0, Math.sqrt(vX * vX + vY * vY + vZ * vZ) * multVel, Block.getStateId(blockState));
         }

@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.client.particle;
+package com.minelittlepony.unicopia.particle.client;
 
 import net.minecraft.client.particle.IParticleFactory;
 import net.minecraft.client.particle.Particle;
@@ -6,6 +6,10 @@ import net.minecraft.client.particle.ParticleRain;
 import net.minecraft.world.World;
 
 public class EntityRaindropFX extends ParticleRain {
+
+    public EntityRaindropFX(int id, World w, double x, double y, double z, double vX, double vY, double vZ, int... args) {
+        this(w, x, y, z);
+    }
 
 	public EntityRaindropFX(World w, double x, double y, double z) {
 		super(w, x, y, z);

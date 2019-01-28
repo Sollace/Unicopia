@@ -51,9 +51,6 @@ import com.minelittlepony.jumpingcastle.api.JumpingCastle;
 import com.minelittlepony.jumpingcastle.api.Target;
 import com.minelittlepony.unicopia.advancements.UAdvancements;
 import com.minelittlepony.unicopia.block.ITillable;
-import com.minelittlepony.unicopia.client.particle.EntityMagicFX;
-import com.minelittlepony.unicopia.client.particle.EntityRaindropFX;
-import com.minelittlepony.unicopia.client.particle.Particles;
 import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.enchanting.SpellRecipe;
 import com.minelittlepony.unicopia.forgebullshit.FBS;
@@ -85,9 +82,6 @@ public class Unicopia implements IGuiHandler {
 
     public static IChannel channel;
 
-    public static int MAGIC_PARTICLE;
-    public static int RAIN_PARTICLE;
-
     /**
      * The race preferred by the client - as determined by mine little pony.
      * Human if minelp was not installed.
@@ -106,6 +100,7 @@ public class Unicopia implements IGuiHandler {
 
         if (UClient.isClientSide()) {
             UEntities.preInit();
+            UParticles.init();
         }
     }
 
@@ -130,11 +125,6 @@ public class Unicopia implements IGuiHandler {
             .listenFor(MsgRequestCapabilities.class)
             .listenFor(MsgPlayerCapabilities.class)
             .listenFor(MsgPlayerAbility.class);
-
-        if (event.getSide().isClient()) {
-            MAGIC_PARTICLE = Particles.instance().registerParticle(new EntityMagicFX.Factory());
-            RAIN_PARTICLE = Particles.instance().registerParticle(new EntityRaindropFX.Factory());
-        }
 
         PowersRegistry.instance().init();
 

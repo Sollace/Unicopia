@@ -6,8 +6,8 @@ import java.util.Random;
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.UItems;
-import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.client.particle.Particles;
+import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockFarmland;
@@ -185,7 +185,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
                     double y = getEntityBoundingBox().minY + height/2;
                     double z = posZ + randomIn(rand, boundingbox.minX, boundingbox.maxX) - width / 2;
 
-    			    int particleId = canSnowHere(new BlockPos(x, y, z)) ? EnumParticleTypes.SNOW_SHOVEL.getParticleID() : Unicopia.RAIN_PARTICLE;
+    			    int particleId = canSnowHere(new BlockPos(x, y, z)) ? EnumParticleTypes.SNOW_SHOVEL.getParticleID() : UParticles.RAIN_PARTICLE;
 
 	    		    Particles.instance().spawnParticle(particleId, false, x, y, z, 0, 0, 0);
 	    		}

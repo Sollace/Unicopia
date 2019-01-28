@@ -9,7 +9,7 @@ import org.lwjgl.input.Keyboard;
 import com.google.gson.annotations.Expose;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UItems;
-import com.minelittlepony.unicopia.client.particle.Particles;
+import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.data.Location;

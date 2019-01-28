@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia.spell;
 
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.client.particle.Particles;
+import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.IPower;
 import com.minelittlepony.util.ProjectileUtil;
@@ -53,7 +53,7 @@ public class SpellShield extends AbstractSpell {
 
 	protected void spawnParticles(ICaster<?> source, int strength) {
 	    source.spawnParticles(new Sphere(true, strength), strength * 6, pos -> {
-	        Particles.instance().spawnParticle(Unicopia.MAGIC_PARTICLE, false, pos.x, pos.y, pos.z, 0, 0, 0);
+	        Particles.instance().spawnParticle(UParticles.MAGIC_PARTICLE, false, pos, 0, 0, 0);
 	    });
 	}
 

@@ -1,13 +1,12 @@
 package com.minelittlepony.unicopia.spell;
 
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.client.particle.Particles;
+import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.entity.EntitySpell;
+import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.shape.Line;
 
@@ -45,18 +44,12 @@ public class SpellCharge extends AbstractSpell {
 
             if (target != null) {
                 Vec3d start = source.getEntity().getPositionVector();
-                Vec3d end = target.getPositionVector();
 
-                IShape line = new Line(start, end);
+                IShape line = new Line(start, target.getPositionVector());
 
-                Random rand = source.getWorld().rand;
-
-                for (int i = 0; i < line.getVolumeOfSpawnableSpace(); i++) {
-                    Vec3d pos = line.computePoint(rand);
-                    Particles.instance().spawnParticle(Unicopia.MAGIC_PARTICLE, false,
-                            pos.x + start.x, pos.y + start.y, pos.z + start.z,
-                            0, 0, 0);
-                }
+                source.spawnParticles(line, (int)line.getVolumeOfSpawnableSpace(), pos -> {
+                    Particles.instance().spawnParticle(UParticles.MAGIC_PARTICLE, false, pos.add(start), 0, 0, 0);
+                });
             }
 
         }

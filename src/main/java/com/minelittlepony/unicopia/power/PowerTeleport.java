@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.power;
 import org.lwjgl.input.Keyboard;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.power.data.Location;
 import com.minelittlepony.util.vector.VecHelper;
@@ -157,15 +157,11 @@ public class PowerTeleport implements IPower<Location> {
     public void preApply(IPlayer player) {
         player.addExertion(3);
 
-        if (player.getWorld().isRemote) {
-            IPower.spawnParticles(Unicopia.MAGIC_PARTICLE, player, 5);
-        }
+        IPower.spawnParticles(UParticles.MAGIC_PARTICLE, player, 5);
     }
 
     @Override
     public void postApply(IPlayer player) {
-        if (player.getWorld().isRemote) {
-            IPower.spawnParticles(Unicopia.MAGIC_PARTICLE, player, 5);
-        }
+        IPower.spawnParticles(UParticles.MAGIC_PARTICLE, player, 5);
     }
 }

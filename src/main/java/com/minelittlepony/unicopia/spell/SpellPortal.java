@@ -7,10 +7,10 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.client.particle.Particles;
+import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.entity.EntitySpell;
 import com.minelittlepony.unicopia.entity.IMagicals;
+import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
@@ -156,7 +156,7 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
     @Override
     public void render(ICaster<?> source, int level) {
         source.spawnParticles(getPortalZone(), 10, pos -> {
-            Particles.instance().spawnParticle(Unicopia.MAGIC_PARTICLE, false, pos, 0, 0, 0);
+            Particles.instance().spawnParticle(UParticles.MAGIC_PARTICLE, false, pos, 0, 0, 0);
         });
     }
 

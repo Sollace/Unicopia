@@ -5,7 +5,7 @@ import java.util.List;
 import org.lwjgl.input.Keyboard;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.client.particle.Particles;
+import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.power.data.Hit;
 import com.minelittlepony.util.MagicalDamageSource;
