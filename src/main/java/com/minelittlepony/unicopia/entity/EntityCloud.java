@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.BlockFire;
@@ -22,6 +23,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.IAnimals;
@@ -51,35 +53,26 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 
 public class EntityCloud extends EntityFlying implements IAnimals {
-
-	private double altitude;
-
-	private final double baseWidth = 3f;
-	private final double baseHeight = 0.8f;
-
-	public EntityCloud(World world) {
-		super(world);
-		preventEntitySpawning = false;
-		ignoreFrustumCheck = true;
-
-		if (world.rand.nextInt(20) == 0 && canRainHere()) {
-			setRaining();
-			if (world.rand.nextInt(20) == 0) {
-				setIsThundering(true);
-			}
-		}
-
-		setCloudSize(1 + rand.nextInt(3));
-	}
 
 	private static final DataParameter<Integer> RAINTIMER = EntityDataManager.createKey(EntityCloud.class, DataSerializers.VARINT);
 	private static final DataParameter<Boolean> THUNDERING = EntityDataManager.createKey(EntityCloud.class, DataSerializers.BOOLEAN);
 	private static final DataParameter<Integer> SCALE = EntityDataManager.createKey(EntityCloud.class, DataSerializers.VARINT);
 
 	private static final DataParameter<Boolean> STATIONARY = EntityDataManager.createKey(EntityCloud.class, DataSerializers.BOOLEAN);
+
+    protected double altitude;
+
+    private final double baseWidth = 3f;
+    private final double baseHeight = 0.8f;
+
+	public EntityCloud(World world) {
+        super(world);
+        ignoreFrustumCheck = true;
+    }
 
 	@Override
 	protected void entityInit() {
@@ -122,7 +115,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
 
     @Override
     public int getBrightnessForRender() {
-    	return 15728640;
+    	return 0xF00000;
 	}
 
     @Override
@@ -138,6 +131,20 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     @Override
     public void onStruckByLightning(EntityLightningBolt lightningBolt) {
 
+    }
+
+    @Override
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata) {
+        if (world.rand.nextInt(20) == 0 && canRainHere()) {
+            setRaining();
+            if (world.rand.nextInt(20) == 0) {
+                setIsThundering(true);
+            }
+        }
+
+        setCloudSize(1 + rand.nextInt(4));
+
+        return super.onInitialSpawn(difficulty, livingdata);
     }
 
     @Override
@@ -322,24 +329,48 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     protected void updateAITasks() {
     	if (!getStationary()) {
     		super.updateAITasks();
+
 	        if (!isBeingRidden()) {
-		        double diffY = altitude - posZ;
+		        double distance = altitude - posY;
 
-		        if (rand.nextInt(700) == 0 || diffY*diffY < 3f) {
-		            altitude += rand.nextInt(10) - 5;
+		        if (Math.abs(distance) < 1 && rand.nextInt(7000) == 0) {
+		            altitude = getRandomFlyingHeight();
+		            distance = altitude - posY;
 		        }
 
-		        if (altitude > world.provider.getCloudHeight() - 8) {
-		        	altitude = world.provider.getCloudHeight() - 18;
-		        } else if (altitude < 70) {
-		        	altitude = posY + 10;
+		        if (distance < 1) {
+		            distance = 0;
 		        }
 
-		        double var3 = altitude + 0.1D - posY;
-		        motionX -= 0.001;
-		        motionY += (Math.signum(var3) * 0.699999988079071D - motionY) * 0.10000000149011612D;
+		        motionX -= 0.01;
+		        motionZ -= (Math.signum(distance) * 0.699999988079071D - motionZ) * 0.10000000149011612D;
+		        motionY += (Math.signum(distance) * 0.699999988079071D - motionY) * 0.10000000149011612D;
 	        }
     	}
+    }
+
+    protected float getRandomFlyingHeight() {
+        float a = getMaximumFlyingHeight();
+        float b = getMinimumFlyingHeight();
+
+        float min = Math.min(a, b);
+        float max = Math.max(a, b);
+
+        return min + world.rand.nextFloat() * (max - min);
+    }
+
+    protected float getMinimumFlyingHeight() {
+        float ground = world.provider.getAverageGroundLevel();
+        float cloud = world.provider.getCloudHeight();
+
+        float min = Math.min(ground, cloud);
+        float max = Math.max(ground, cloud);
+
+        return min + (max - min)/2;
+    }
+
+    protected float getMaximumFlyingHeight() {
+        return world.provider.getActualHeight() - 5;
     }
 
     @Override

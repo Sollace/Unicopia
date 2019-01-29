@@ -1,18 +1,17 @@
 package com.minelittlepony.unicopia.entity;
 
-import java.util.List;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome.SpawnListEntry;
 
 public class EntityWildCloud extends EntityCloud {
 
-    public static final SpawnListEntry SPAWN_ENTRY_LAND = new SpawnListEntry(EntityWildCloud.class, 3, 2, 5);
-    public static final SpawnListEntry SPAWN_ENTRY_OCEAN = new SpawnListEntry(EntityWildCloud.class, 3, 1, 2);
+    public static final SpawnListEntry SPAWN_ENTRY_LAND = new SpawnListEntry(EntityWildCloud.class, 1, 1, 3);
+    public static final SpawnListEntry SPAWN_ENTRY_OCEAN = new SpawnListEntry(EntityWildCloud.class, 1, 1, 2);
 
     public EntityWildCloud(World world) {
 		super(world);
@@ -30,9 +29,9 @@ public class EntityWildCloud extends EntityCloud {
      * @ref World.checkNoEntityCollision(AxisAlignedBB area, Entity entity)
      */
     public boolean checkNoEntityCollision(AxisAlignedBB area, Entity entity) {
-        List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(null, area);
-        for (Entity i : list) {
-            if (!i.isDead && (i.preventEntitySpawning || i instanceof EntityCloud) && i != entity && (!entity.isRiding() || !entity.isRidingOrBeingRiddenBy(i))) {
+
+        for (Entity i : world.getEntitiesWithinAABBExcludingEntity(entity, area)) {
+            if (!i.isDead && (i.preventEntitySpawning || i instanceof EntityCloud) && (!entity.isRiding() || !entity.isRidingOrBeingRiddenBy(i))) {
                 return false;
             }
         }
@@ -40,11 +39,20 @@ public class EntityWildCloud extends EntityCloud {
     }
 
     @Override
+    public boolean getCanSpawnHere() {
+        BlockPos pos = new BlockPos(this).down();
+
+        return world.getBlockState(pos).canEntitySpawn(this);
+    }
+
+    @Override
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata) {
-        float minSpawnHeight = world.provider.getAverageGroundLevel() + 18;
+        float minSpawnHeight = getMinimumFlyingHeight();
+
+        altitude = getRandomFlyingHeight();
 
         if (posY < minSpawnHeight) {
-            minSpawnHeight += world.rand.nextInt(Math.max(1,  world.provider.getActualHeight() - (int)minSpawnHeight));
+            minSpawnHeight += world.rand.nextInt(Math.max(1,  (int)getMaximumFlyingHeight() - (int)minSpawnHeight));
 
             setLocationAndAngles(posX, minSpawnHeight - 1, posZ, rotationYaw, rotationPitch);
             collideWithNearbyEntities();
