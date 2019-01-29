@@ -33,8 +33,6 @@ public class SpellRecipe extends Impl<IRecipe> implements IRecipe {
 
             Item item = o.has("item") ? Item.getByNameOrId(o.get("item").getAsString()) : null;
 
-
-
             if (item != null) {
                 int metadata = Math.max(0, o.has("data") ? o.get("data").getAsInt() : 0);
                 int size = Math.max(1, o.has("count") ? o.get("count").getAsInt() : 1);
@@ -78,16 +76,20 @@ public class SpellRecipe extends Impl<IRecipe> implements IRecipe {
 			ItemStack stack = inv.getStackInSlot(i);
 
 			if (!stack.isEmpty()) {
-    			if (toMatch.isEmpty() && !stack.isEmpty()) {
-    				return false;
-    			}
-
-    			if (!toMatch.isEmpty() && !toMatch.removeIf(s -> s.matches(stack, materialMult))) {
+    			if (toMatch.isEmpty() || !removeMatch(toMatch, stack, materialMult)) {
     			    return false;
     			}
 			}
 		}
 		return toMatch.isEmpty();
+	}
+
+	private boolean removeMatch(ArrayList<RecipeItem> toMatch, ItemStack stack, int materialMult) {
+	    return toMatch.stream()
+	            .filter(s -> s.matches(stack, materialMult))
+	            .findFirst()
+	            .filter(toMatch::remove)
+	            .isPresent();
 	}
 
 	@Override
