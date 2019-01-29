@@ -134,7 +134,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     }
 
     @Override
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata) {
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData pack) {
         if (world.rand.nextInt(20) == 0 && canRainHere()) {
             setRaining();
             if (world.rand.nextInt(20) == 0) {
@@ -144,7 +144,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
 
         setCloudSize(1 + rand.nextInt(4));
 
-        return super.onInitialSpawn(difficulty, livingdata);
+        return super.onInitialSpawn(difficulty, pack);
     }
 
     @Override
