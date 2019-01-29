@@ -712,7 +712,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     }
 
     public void setCloudSize(int val) {
-        val = Math.min(1, val);
+        val = Math.max(1, val);
     	updateSize(val);
     	dataManager.set(SCALE, val);
     }
