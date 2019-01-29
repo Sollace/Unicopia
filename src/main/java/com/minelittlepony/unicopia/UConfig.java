@@ -65,7 +65,7 @@ public class UConfig {
             "This is the race a client requests when first joining a game. " +
             "It is the default used both when Mine Little Pony is not installed and when they respond with a human race.";
     @Expose
-    private Race preferredRace = Race.HUMAN;
+    private Race preferredRace = Race.EARTH;
 
     @Expose(deserialize = false)
     private final String ignoreMineLPComment =
@@ -98,7 +98,7 @@ public class UConfig {
 
     public Race getPrefferedRace() {
         if (preferredRace == null) {
-            setPreferredRace(Race.HUMAN);
+            setPreferredRace(Race.EARTH);
         }
 
         return preferredRace;

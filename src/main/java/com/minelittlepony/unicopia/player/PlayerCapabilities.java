@@ -65,7 +65,7 @@ class PlayerCapabilities implements IPlayer {
     PlayerCapabilities(EntityPlayer player) {
         setOwner(player);
 
-        player.getDataManager().register(PLAYER_RACE, Race.HUMAN.ordinal());
+        player.getDataManager().register(PLAYER_RACE, Race.EARTH.ordinal());
         player.getDataManager().register(EXERTION, 0F);
         player.getDataManager().register(ENERGY, 0F);
         player.getDataManager().register(EFFECT, new NBTTagCompound());
@@ -85,7 +85,11 @@ class PlayerCapabilities implements IPlayer {
         EntityPlayer player = getOwner();
 
         if (!PlayerSpeciesList.instance().speciesPermitted(race, player)) {
-            race = Race.HUMAN;
+            race = Race.EARTH;
+
+            if (!PlayerSpeciesList.instance().speciesPermitted(race, player)) {
+                race = Race.HUMAN;
+            }
         }
 
         player.getDataManager().set(PLAYER_RACE, race.ordinal());
@@ -260,7 +264,7 @@ class PlayerCapabilities implements IPlayer {
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        setPlayerSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
+        setPlayerSpecies(Race.fromName(compound.getString("playerSpecies")));
 
         powers.readFromNBT(compound.getCompoundTag("powers"));
         gravity.readFromNBT(compound.getCompoundTag("gravity"));

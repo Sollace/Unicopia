@@ -38,7 +38,7 @@ class CommandRacelist extends CommandBase {
 
         EntityPlayer player = getCommandSenderAsPlayer(sender);
 
-        Race race = Race.fromName(args[1], Race.HUMAN);
+        Race race = Race.fromName(args[1], Race.EARTH);
 
         TextComponentTranslation formattedName = new TextComponentTranslation(race.name().toLowerCase());
         formattedName.getStyle().setColor(TextFormatting.GOLD);

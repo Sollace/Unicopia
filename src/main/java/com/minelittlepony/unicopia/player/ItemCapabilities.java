@@ -34,7 +34,7 @@ class ItemCapabilities implements IRaceContainer<EntityItem>, IOwned<EntityItem>
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        race = Race.fromName(compound.getString("owner_species"), Race.HUMAN);
+        race = Race.fromName(compound.getString("owner_species"));
     }
 
     @Override

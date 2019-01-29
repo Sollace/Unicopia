@@ -98,8 +98,9 @@ commands.race.tell.other=%s is a
 commands.race.tell.other.alt=%s is an 
 
 commands.race.describe.title=%s
-commands.race.describe.human.1=This is the default race for new players.
-commands.race.describe.human.2=It has no special abilities.
+commands.race.describe.human.1=This is a default race with no abilities.
+commands.race.describe.human.2=If you have this, it means there are no other races available.
+commands.race.describe.human.3=It has no special abilities.
 
 commands.race.describe.earth.1=Earth Ponies can grow crops using mana and punch trees for apples (yeeeeeeehaaaaawwwwwwwwwww)
 commands.race.describe.earth.2=Their offensive ability is to kick down whilst jumping for a deafening ground smash.

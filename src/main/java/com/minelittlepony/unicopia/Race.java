@@ -11,6 +11,10 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public enum Race {
+    /**
+     * The default, unset race.
+     * This is used if there are no other races.
+     */
     HUMAN(false, false, false),
     EARTH(false, false, true),
     UNICORN(true, false, false),
@@ -103,12 +107,16 @@ public enum Race {
             case UNICORN:
                 return UNICORN;
             default:
-                return HUMAN;
+                return EARTH;
 
         }
     }
 
+    public static Race fromName(String name) {
+        return fromName(name, EARTH);
+    }
+
     public static Race fromId(int id) {
-        return raceIdMap.getOrDefault(id, HUMAN);
+        return raceIdMap.getOrDefault(id, EARTH);
     }
 }

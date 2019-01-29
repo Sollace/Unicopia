@@ -62,15 +62,18 @@ class CommandSpecies extends CommandBase {
 		}
 
 		if (args[0].contentEquals("set") && args.length >= 2) {
-			Race species = Race.fromName(args[1], null);
+			Race species = Race.fromName(args[1], Race.HUMAN);
 
-			if (species == null) {
-				player.sendMessage(new TextComponentTranslation("commands.race.fail", args[1].toUpperCase()));
+			if (species.isDefault()) {
+			    ITextComponent message = new TextComponentTranslation("commands.race.fail", args[1].toUpperCase());
+		        message.getStyle().setColor(TextFormatting.RED);
+
+				player.sendMessage(message);
 			} else {
 				if (PlayerSpeciesList.instance().speciesPermitted(species, player)) {
 				    PlayerSpeciesList.instance().getPlayer(player).setPlayerSpecies(species);
 
-					TextComponentTranslation formattedName = new TextComponentTranslation(species.name().toLowerCase());
+				    ITextComponent formattedName = new TextComponentTranslation(species.name().toLowerCase());
 
 					if (player != sender) {
 						notifyCommandListener(sender, this, 1, "commands.race.success.other", formattedName, player.getName());
@@ -89,8 +92,7 @@ class CommandSpecies extends CommandBase {
 			name += player == sender ? "self" : "other";
 
 			ITextComponent race = new TextComponentTranslation(spec.getTranslationString());
-
-			TextComponentTranslation message = new TextComponentTranslation(name);
+			ITextComponent message = new TextComponentTranslation(name);
 
 			race.getStyle().setColor(TextFormatting.GOLD);
 
@@ -104,7 +106,7 @@ class CommandSpecies extends CommandBase {
 
 			boolean first = true;
 			for (Race i : Race.values()) {
-	            if (PlayerSpeciesList.instance().speciesPermitted(i, player)) {
+	            if (!i.isDefault() && PlayerSpeciesList.instance().speciesPermitted(i, player)) {
 	                message.appendSibling(new TextComponentString((!first ? "\n" : "") + " - " + i.name().toLowerCase()));
 	                first = false;
 	            }
@@ -153,7 +155,7 @@ class CommandSpecies extends CommandBase {
     		EntityPlayer player = sender instanceof EntityPlayer ? (EntityPlayer)sender : null;
 
     		for (Race i : Race.values()) {
-    			if (args[0].contentEquals("describe") || PlayerSpeciesList.instance().speciesPermitted(i, player)) {
+    			if (args[0].contentEquals("describe") || !(i.isDefault() && PlayerSpeciesList.instance().speciesPermitted(i, player))) {
     				names.add(i.name().toLowerCase());
     			}
     		}
