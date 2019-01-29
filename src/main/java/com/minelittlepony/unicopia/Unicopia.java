@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumAction;
@@ -20,6 +21,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerFlyableFallEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -323,12 +325,11 @@ public class Unicopia implements IGuiHandler {
     }
 
     @SubscribeEvent
-    public static void onPlayerRightClick(PlayerInteractEvent.RightClickItem event) {
-        // Why won't you run!?
-        if (!event.isCanceled() && event.getItemStack().getItemUseAction() == EnumAction.EAT) {
-            PlayerSpeciesList.instance()
-                .getPlayer(event.getEntityPlayer())
-                .onEntityEat();
+    public static void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
+        Entity e = event.getEntity();
+
+        if (!event.isCanceled() && e instanceof EntityPlayer && event.getItem().getItemUseAction() == EnumAction.EAT) {
+            PlayerSpeciesList.instance().getPlayer((EntityPlayer)e).onEntityEat();
         }
     }
 
