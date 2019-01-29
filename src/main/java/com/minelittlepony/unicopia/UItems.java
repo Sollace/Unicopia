@@ -19,6 +19,8 @@ import com.minelittlepony.unicopia.item.UItemDecoration;
 import com.minelittlepony.unicopia.item.UItemSlab;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
+import net.minecraft.block.BlockDoublePlant;
+import net.minecraft.block.BlockFlower;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.ItemColors;
@@ -42,6 +44,10 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 import static com.minelittlepony.unicopia.Predicates.*;
 
+import com.minelittlepony.unicopia.edibles.BushToxicityDeterminent;
+import com.minelittlepony.unicopia.edibles.FlowerToxicityDeterminent;
+import com.minelittlepony.unicopia.edibles.ItemEdible;
+import com.minelittlepony.unicopia.edibles.UItemFoodDelegate;
 import com.minelittlepony.unicopia.forgebullshit.BuildInTexturesBakery;
 import com.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
 
@@ -119,11 +125,29 @@ public class UItems {
 
     public static final Item apple_leaves = new ItemFruitLeaves(UBlocks.apple_leaves, Unicopia.MODID, "apple_leaves");
 
+    public static final Item double_plant = new UItemFoodDelegate(Blocks.DOUBLE_PLANT, stack ->
+                BlockDoublePlant.EnumPlantType.byMetadata(stack.getMetadata()).getTranslationKey()
+            ).setFoodDelegate(new ItemEdible(new BushToxicityDeterminent()))
+            .setTranslationKey("doublePlant");
+
+    public static final Item yellow_flower = new UItemFoodDelegate(Blocks.YELLOW_FLOWER, stack ->
+                BlockFlower.EnumFlowerType.getType(BlockFlower.EnumFlowerColor.YELLOW, stack.getMetadata()).getTranslationKey()
+            ).setFoodDelegate(new ItemEdible(new FlowerToxicityDeterminent(BlockFlower.EnumFlowerColor.YELLOW)))
+            .setTranslationKey("flower");
+
+    public static final Item red_flower = new UItemFoodDelegate(Blocks.RED_FLOWER, stack ->
+                BlockFlower.EnumFlowerType.getType(BlockFlower.EnumFlowerColor.RED, stack.getMetadata()).getTranslationKey()
+            ).setFoodDelegate(new ItemEdible(new FlowerToxicityDeterminent(BlockFlower.EnumFlowerColor.RED)))
+            .setTranslationKey("rose");
+
     static void registerItems(IForgeRegistry<Item> registry) {
         RegistryLockSpinner.unlock(Item.REGISTRY);
 
         RegistryLockSpinner.commit(Item.REGISTRY, Items.APPLE, apple, Items.class);
         RegistryLockSpinner.commit(Item.REGISTRY, Items.STICK, stick, Items.class);
+        RegistryLockSpinner.commit(Item.REGISTRY, Item.getItemFromBlock(Blocks.DOUBLE_PLANT), double_plant, Items.class);
+        RegistryLockSpinner.commit(Item.REGISTRY, Item.getItemFromBlock(Blocks.YELLOW_FLOWER), yellow_flower, Items.class);
+        RegistryLockSpinner.commit(Item.REGISTRY, Item.getItemFromBlock(Blocks.RED_FLOWER), red_flower, Items.class);
 
         RegistryLockSpinner.lock(Item.REGISTRY);
 
