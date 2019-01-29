@@ -31,13 +31,13 @@ public class RenderCloud extends RenderLiving<EntityCloud> {
 
         if (!entity.isDead) {
             GlStateManager.pushMatrix();
-            GlStateManager.translate(0, -entity.height/2, 0);
+            GlStateManager.translate(0, -entity.height/entity.getCloudSize() + 0.3F, 0);
 
 	    	GL11.glEnable(GL11.GL_BLEND);
 
 	    	Vec3d cloudColour = entity.world.getCloudColour(Minecraft.getMinecraft().getRenderPartialTicks());
 
-    		GL11.glColor4f((float)cloudColour.x, (float)cloudColour.y, (float)cloudColour.z, ((EntityCloud)entity).getOpaque() ? 1 : 0.8F);
+    		GL11.glColor4f((float)cloudColour.x, (float)cloudColour.y, (float)cloudColour.z, entity.getOpaque() ? 1 : 0.8F);
 	        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
 	    	super.renderModel(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
