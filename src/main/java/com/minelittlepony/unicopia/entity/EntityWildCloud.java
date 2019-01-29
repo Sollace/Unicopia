@@ -1,8 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.IEntityLivingData;
@@ -18,38 +16,20 @@ import net.minecraft.world.chunk.Chunk;
 public class EntityWildCloud extends EntityCloud {
 
     public static final SpawnListEntry SPAWN_ENTRY_LAND = new SpawnListEntry(EntityWildCloud.class, 1, 1, 15);
-    public static final SpawnListEntry SPAWN_ENTRY_OCEAN = new SpawnListEntry(EntityWildCloud.class, 1, 1, 2);
+    public static final SpawnListEntry SPAWN_ENTRY_OCEAN = new SpawnListEntry(EntityWildCloud.class, 1, 1, 7);
 
     public EntityWildCloud(World world) {
 		super(world);
 
-		this.preventEntitySpawning = true;
+		preventEntitySpawning = true;
 	}
 
     @Override
     public boolean isNotColliding() {
-    	int count = 0;
-
-
-    	BlockPos pos = new BlockPos(this);
-
-    	Chunk chunk = world.getChunk(pos);
-    	for (ClassInheritanceMultiMap<Entity> i : chunk.getEntityLists()) {
-    	    Iterator<EntityCloud> iter = i.getByClass(EntityCloud.class).iterator();
-    	    while (iter.hasNext()) {
-    	        iter.next();
-    	        count++;
-
-    	        if (count > 2) {
-    	            return false;
-    	        }
-    	    }
-    	}
-
         AxisAlignedBB boundingbox = getEntityBoundingBox();
 
     	return checkNoEntityCollision(boundingbox, this)
-    	        && world.canBlockSeeSky(pos)
+	            && world.canBlockSeeSky(new BlockPos(this))
     	        && world.getCollisionBoxes(this, boundingbox).isEmpty()
     	        && !world.containsAnyLiquid(boundingbox);
     }
@@ -71,9 +51,23 @@ public class EntityWildCloud extends EntityCloud {
 
     @Override
     public boolean getCanSpawnHere() {
-        BlockPos pos = new BlockPos(this).down();
+        int count = 0;
 
-        return world.getBlockState(pos).canEntitySpawn(this);
+        BlockPos pos = new BlockPos(this);
+
+        Chunk chunk = world.getChunk(pos);
+        for (ClassInheritanceMultiMap<Entity> i : chunk.getEntityLists()) {
+            Iterator<EntityCloud> iter = i.getByClass(EntityCloud.class).iterator();
+            while (iter.hasNext()) {
+                iter.next();
+
+                if (count++ > 2) {
+                    return false;
+                }
+            }
+        }
+
+        return world.getBlockState(pos.down()).canEntitySpawn(this);
     }
 
     @Override
