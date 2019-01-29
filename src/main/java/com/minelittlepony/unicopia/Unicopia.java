@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockCrops;
+import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -220,9 +220,9 @@ public class Unicopia implements IGuiHandler {
     public static void onBlockHarvested(BlockEvent.HarvestDropsEvent event) {
         Block block = event.getState().getBlock();
 
-        if (block == Blocks.STONE) {
-            int fortuneFactor = 1 + event.getFortuneLevel() * 15;
+        int fortuneFactor = 1 + event.getFortuneLevel() * 15;
 
+        if (block == Blocks.STONE) {
             if (event.getWorld().rand.nextInt(500 / fortuneFactor) == 0) {
                 for (int i = 0; i < 1 + event.getFortuneLevel(); i++) {
                     if (event.getWorld().rand.nextInt(10) > 3) {
@@ -232,12 +232,17 @@ public class Unicopia implements IGuiHandler {
                     }
                 }
             }
-        } else if (block instanceof BlockCrops) {
-            int fortuneFactor = 1 + event.getFortuneLevel() * 15;
-
-            if (event.getWorld().rand.nextInt(500 / fortuneFactor) == 0) {
+        } else if (block instanceof BlockTallGrass) {
+            if (event.getWorld().rand.nextInt(25 / fortuneFactor) == 0) {
                 for (int i = 0; i < 1 + event.getFortuneLevel(); i++) {
-                    event.getDrops().add(new ItemStack(UItems.alfalfa_seeds, 1));
+                    int chance = event.getWorld().rand.nextInt(3);
+                    if (chance == 0) {
+                        event.getDrops().add(new ItemStack(UItems.alfalfa_seeds, 1));
+                    } else if (chance == 1) {
+                        event.getDrops().add(new ItemStack(UItems.apple_seeds, 1));
+                    } else {
+                        event.getDrops().add(new ItemStack(UItems.tomato_seeds, 1));
+                    }
                 }
             }
         }
