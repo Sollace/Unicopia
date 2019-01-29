@@ -1,9 +1,11 @@
 package com.minelittlepony.unicopia.render;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.Vec3d;
 
 import org.lwjgl.opengl.GL11;
 
@@ -33,10 +35,9 @@ public class RenderCloud extends RenderLiving<EntityCloud> {
 
 	    	GL11.glEnable(GL11.GL_BLEND);
 
-	    	if (!((EntityCloud)entity).getOpaque()) {
-	    		GL11.glColor4f(1, 1, 1, 0.8F);
-	    	}
+	    	Vec3d cloudColour = entity.world.getCloudColour(Minecraft.getMinecraft().getRenderPartialTicks());
 
+    		GL11.glColor4f((float)cloudColour.x, (float)cloudColour.y, (float)cloudColour.z, ((EntityCloud)entity).getOpaque() ? 1 : 0.8F);
 	        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
 	    	super.renderModel(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
