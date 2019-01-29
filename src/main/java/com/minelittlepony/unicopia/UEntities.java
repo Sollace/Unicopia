@@ -54,7 +54,7 @@ public class UEntities {
     static void registerSpawnEntries(Biome biome) {
 
         if (!(biome instanceof BiomeHell || biome instanceof BiomeEnd)) {
-            List<SpawnListEntry> entries = biome.getSpawnableList(EnumCreatureType.AMBIENT);
+            List<SpawnListEntry> entries = biome.getSpawnableList(EnumCreatureType.CREATURE);
             entries.stream().filter(p -> p.entityClass == EntityWildCloud.class).findFirst().orElseGet(() -> {
                 entries.add(
                         BiomeManager.oceanBiomes.contains(biome) ?
