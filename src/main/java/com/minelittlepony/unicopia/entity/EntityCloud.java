@@ -148,18 +148,6 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     }
 
     @Override
-    protected void collideWithNearbyEntities() {
-
-    }
-
-    protected void checkLocation() {
-    	if (posY < world.provider.getCloudHeight() - 18) {
-    		setLocationAndAngles(posX, world.provider.getCloudHeight() - 18, posZ, rotationYaw, rotationPitch);
-        }
-    	super.collideWithNearbyEntities();
-    }
-
-    @Override
     public void applyEntityCollision(Entity other) {
     	if (other instanceof EntityPlayer) {
     		if (Predicates.INTERACT_WITH_CLOUDS.test((EntityPlayer)other)) {
@@ -234,9 +222,13 @@ public class EntityCloud extends EntityFlying implements IAnimals {
 
 		    		if (state.getBlock() instanceof BlockFarmland) {
 		    			int moisture = state.getValue(BlockFarmland.MOISTURE);
-		    			world.setBlockState(below, state.withProperty(BlockFarmland.MOISTURE, moisture + 1));
+
+		    			if (moisture < 7) {
+		    			    world.setBlockState(below, state.withProperty(BlockFarmland.MOISTURE, moisture + 1));
+		    			}
 		    		} else if (state.getBlock() instanceof BlockCrops) {
 		    			int age = state.getValue(BlockCrops.AGE);
+
 		    			if (age < 7) {
 		    				world.setBlockState(below, state.withProperty(BlockCrops.AGE, age + 1), 2);
 		    			}

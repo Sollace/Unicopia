@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia;
 
+import java.util.List;
+
 import com.minelittlepony.unicopia.entity.EntityCloud;
 import com.minelittlepony.unicopia.entity.EntityConstructionCloud;
 import com.minelittlepony.unicopia.entity.EntityRacingCloud;
@@ -14,7 +16,13 @@ import com.minelittlepony.unicopia.render.RenderSpellbook;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList.EntityEggInfo;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biome.SpawnListEntry;
+import net.minecraft.world.biome.BiomeEnd;
+import net.minecraft.world.biome.BiomeHell;
+import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
@@ -41,6 +49,20 @@ public class UEntities {
         RenderingRegistry.registerEntityRenderingHandler(EntitySpell.class, RenderGem::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityProjectile.class, RenderProjectile::new);
         RenderingRegistry.registerEntityRenderingHandler(EntitySpellbook.class, RenderSpellbook::new);
+    }
+
+    static void registerSpawnEntries(Biome biome) {
+
+        if (!(biome instanceof BiomeHell || biome instanceof BiomeEnd)) {
+            List<SpawnListEntry> entries = biome.getSpawnableList(EnumCreatureType.AMBIENT);
+            entries.stream().filter(p -> p.entityClass == EntityWildCloud.class).findFirst().orElseGet(() -> {
+                entries.add(
+                        BiomeManager.oceanBiomes.contains(biome) ?
+                                EntityWildCloud.SPAWN_ENTRY_LAND : EntityWildCloud.SPAWN_ENTRY_OCEAN
+                );
+                return null;
+            });
+        }
     }
 
     static class Entry extends EntityEntry {

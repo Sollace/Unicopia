@@ -14,6 +14,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.FOVUpdateEvent;
@@ -147,6 +148,8 @@ public class Unicopia implements IGuiHandler {
                 types.put("unicopia:crafting_spell", SpellRecipe::deserialize);
             }
         };
+
+        Biome.REGISTRY.forEach(UEntities::registerSpawnEntries);
     }
 
     public static CraftingManager getCraftingManager() {
@@ -154,33 +157,33 @@ public class Unicopia implements IGuiHandler {
     }
 
     @SubscribeEvent
-    public static void registerItemsStatic(RegistryEvent.Register<Item> event) {
+    public static void registerItems(RegistryEvent.Register<Item> event) {
         UItems.registerItems(event.getRegistry());
     }
 
     @SubscribeEvent
-    public static void registerItemColoursStatic(ColorHandlerEvent.Item event) {
+    public static void registerItemColours(ColorHandlerEvent.Item event) {
         UItems.registerColors(event.getItemColors());
         UBlocks.registerColors(event.getItemColors(), event.getBlockColors());
     }
 
     @SubscribeEvent
-    public static void registerBlocksStatic(RegistryEvent.Register<Block> event) {
+    public static void registerBlocks(RegistryEvent.Register<Block> event) {
         UBlocks.registerBlocks(event.getRegistry());
     }
 
     @SubscribeEvent
-    public static void registerSounds(RegistryEvent.Register<IRecipe> event) {
+    public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
         UItems.registerRecipes(event.getRegistry());
     }
 
     @SubscribeEvent
-    public static void registerRecipesStatic(RegistryEvent.Register<SoundEvent> event) {
+    public static void registerSounds(RegistryEvent.Register<SoundEvent> event) {
         USounds.init(event.getRegistry());
     }
 
     @SubscribeEvent
-    public static void registerEntitiesStatic(RegistryEvent.Register<EntityEntry> event) {
+    public static void registerEntities(RegistryEvent.Register<EntityEntry> event) {
         UEntities.init(event.getRegistry());
     }
 
