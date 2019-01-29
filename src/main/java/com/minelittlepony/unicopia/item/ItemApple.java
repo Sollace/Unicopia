@@ -72,7 +72,10 @@ public class ItemApple extends ItemFood {
 	public ItemApple(String domain, String name) {
 		super(4, 3, false);
 		setTranslationKey(name);
-		setRegistryName(domain, name);
+
+		if (!"minecraft".contentEquals(domain)) {
+		    setRegistryName(domain, name);
+		}
 	}
 
 	public ItemApple setSubTypes(String... types) {
