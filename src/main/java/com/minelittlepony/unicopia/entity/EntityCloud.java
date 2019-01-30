@@ -576,6 +576,9 @@ public class EntityCloud extends EntityFlying implements IAnimals {
 
     		entity.onGround = true;
 			entity.motionY += (((floatStrength > 2 ? 1 : floatStrength/2) * 0.699999998079071D) - entity.motionY + boundModifier * 0.7) * 0.10000000149011612D;
+            if (!getStationary()) {
+                entity.motionX -= 0.005;
+            }
 
 			if (!getStationary() && entity.motionY > 0.4 && world.rand.nextInt(900) == 0) {
 				spawnThunderbolt(getPosition());
@@ -655,7 +658,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     }
 
     public int setRainTimer(int val) {
-    	if (val < 0) val = 0;
+        val = Math.max(0, val);
     	dataManager.set(RAINTIMER, val);
     	return val;
     }
