@@ -114,10 +114,21 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     	return false;
 	}
 
+    /**
+     * Gets the render brightness of this entity based on the surrounding world light values.
+     */
     @Override
     public int getBrightnessForRender() {
     	return 0xF00000;
 	}
+
+    /**
+     * Gets the brightness percentage for this entity based on the surrounding world light values.
+     */
+    @Override
+    public float getBrightness() {
+        return 1;
+    }
 
     @Override
 	protected boolean canDespawn() {

@@ -33,17 +33,18 @@ public class RenderCloud extends RenderLiving<EntityCloud> {
             GlStateManager.pushMatrix();
             GlStateManager.translate(0, -entity.height/entity.getCloudSize() + 0.3F, 0);
 
-	    	GL11.glEnable(GL11.GL_BLEND);
+            GlStateManager.disableLighting();
+            GlStateManager.enableBlend();
 
-	    	Vec3d cloudColour = entity.world.getCloudColour(Minecraft.getMinecraft().getRenderPartialTicks());
+    		GlStateManager.color(1, 1, 1, entity.getOpaque() ? 1 : 0.8F);
 
-    		GL11.glColor4f((float)cloudColour.x, (float)cloudColour.y, (float)cloudColour.z, entity.getOpaque() ? 1 : 0.8F);
 	        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
 	    	super.renderModel(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
 
-	        GL11.glDisable(GL11.GL_BLEND);
-	        GL11.glColor4f(1, 1, 1, 1);
+	    	GlStateManager.disableBlend();
+	    	GlStateManager.enableLighting();
+	    	GlStateManager.color(1, 1, 1, 1);
 
 	        GlStateManager.popMatrix();
         }
@@ -57,10 +58,20 @@ public class RenderCloud extends RenderLiving<EntityCloud> {
     }
 
     protected int getColorMultiplier(EntityCloud par1EntityLivingBase, float yaw, float pitch) {
-        return 25;
+        return 0;
     }
 
     protected float getDeathMaxRotation(EntityCloud par1EntityLivingBase) {
         return 0;
     }
 }
+
+
+
+
+
+
+
+
+
+
