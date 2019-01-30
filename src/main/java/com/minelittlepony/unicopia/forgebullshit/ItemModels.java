@@ -23,9 +23,12 @@ public class ItemModels {
      * Registers a model for the given item and all associated variants.
      */
     public static void registerAllVariants(Item item, String... variants) {
-        for (int i = 0; i < variants.length; i++) {
-            ModelLoader.setCustomModelResourceLocation(item, i, new ModelResourceLocation(item.getRegistryName().getNamespace() + ":" + variants[i]));
-        }
+        registerAllVariants(item, item.getRegistryName().getNamespace(), variants);
     }
 
+    public static void registerAllVariants(Item item, String domain, String... variants) {
+        for (int i = 0; i < variants.length; i++) {
+            ModelLoader.setCustomModelResourceLocation(item, i, new ModelResourceLocation(domain + ":" + variants[i]));
+        }
+    }
 }

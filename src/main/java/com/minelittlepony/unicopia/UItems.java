@@ -186,10 +186,11 @@ public class UItems {
         if (UClient.isClientSide()) {
             ItemModels.registerAllVariants(cloud_slab, CloudType.getVariants("_cloud_slab"));
             ItemModels.registerAllVariants(cloud_block, CloudType.getVariants("_cloud_block"));
+            ItemModels.registerAllVariants(apple, Unicopia.MODID, apple.getVariants());
             ItemModels.registerAll(
                     cloud_spawner,
 
-                    apple, zap_apple,
+                    zap_apple,
                     rotten_apple, cooked_zap_apple, dew_drop,
 
                     tomato, cloudsdale_tomato,
