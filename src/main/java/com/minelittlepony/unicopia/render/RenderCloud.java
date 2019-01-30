@@ -20,10 +20,10 @@ public class RenderCloud extends RenderLiving<EntityCloud> {
 
     @Override
     public float prepareScale(EntityCloud entity, float par2) {
-    	float scale = entity.getCloudSize();
+        float scale = entity.getCloudSize();
 
-    	GL11.glScalef(scale, scale, scale);
-    	return 0.0625F;
+        GL11.glScalef(scale, scale, scale);
+        return 0.0625F;
     }
 
     @Override
@@ -36,25 +36,25 @@ public class RenderCloud extends RenderLiving<EntityCloud> {
             GlStateManager.disableLighting();
             GlStateManager.enableBlend();
 
-    		GlStateManager.color(1, 1, 1, entity.getOpaque() ? 1 : 0.8F);
+            GlStateManager.color(1, 1, 1, entity.getOpaque() ? 1 : 0.8F);
 
-	        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-	    	super.renderModel(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
+            super.renderModel(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
 
-	    	GlStateManager.disableBlend();
-	    	GlStateManager.enableLighting();
-	    	GlStateManager.color(1, 1, 1, 1);
+            GlStateManager.disableBlend();
+            GlStateManager.enableLighting();
+            GlStateManager.color(1, 1, 1, 1);
 
-	        GlStateManager.popMatrix();
+            GlStateManager.popMatrix();
         }
     }
 
     @Override
     protected ResourceLocation getEntityTexture(EntityCloud entity) {
-    	if (entity.getIsRaining() && entity.getIsThundering()) {
-    		return rainCloud;
-    	}
+        if (entity.getIsRaining() && entity.getIsThundering()) {
+            return rainCloud;
+        }
         return cloud;
     }
 
