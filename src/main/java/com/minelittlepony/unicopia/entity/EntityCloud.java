@@ -373,7 +373,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
 
     protected float getMinimumFlyingHeight() {
         float ground = world.provider.getAverageGroundLevel();
-        float cloud = world.provider.getCloudHeight();
+        float cloud = world.getWorldType().getCloudHeight();
 
         float min = Math.min(ground, cloud);
         float max = Math.max(ground, cloud);
