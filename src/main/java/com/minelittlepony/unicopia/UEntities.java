@@ -9,15 +9,13 @@ import com.minelittlepony.unicopia.entity.EntitySpell;
 import com.minelittlepony.unicopia.entity.EntitySpellbook;
 import com.minelittlepony.unicopia.entity.EntityProjectile;
 import com.minelittlepony.unicopia.entity.EntityWildCloud;
+import com.minelittlepony.unicopia.forgebullshit.EntityType;
 import com.minelittlepony.unicopia.render.RenderCloud;
 import com.minelittlepony.unicopia.render.RenderGem;
 import com.minelittlepony.unicopia.render.RenderProjectile;
 import com.minelittlepony.unicopia.render.RenderSpellbook;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList.EntityEggInfo;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.SpawnListEntry;
 import net.minecraft.world.biome.BiomeEnd;
@@ -25,7 +23,6 @@ import net.minecraft.world.biome.BiomeHell;
 import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class UEntities {
@@ -33,14 +30,15 @@ public class UEntities {
     private static final int BRUSHES_CHARTREUSE = 0x7FFF00;
 
     static void init(IForgeRegistry<EntityEntry> registry) {
+        EntityType builder = EntityType.builder(Unicopia.MODID);
         registry.registerAll(
-            new Entry(EntityCloud.class, "cloud").withEgg(BRUSHES_ROYALBLUE, BRUSHES_CHARTREUSE),
-            new Entry(EntityWildCloud.class, "wild_cloud"),
-            new Entry(EntityRacingCloud.class, "racing_cloud"),
-            new Entry(EntityConstructionCloud.class, "construction_cloud"),
-            new Entry(EntitySpell.class, "magic_spell"),
-            new Entry(EntitySpellbook.class, "spellbook"),
-            EntityEntryBuilder.<EntityProjectile>create().entity(EntityProjectile.class).name("thrown_item").id(new ResourceLocation(Unicopia.MODID, "thrown_item"), 0).tracker(10, 5, true).build()
+                builder.creature(EntityCloud.class, "cloud").withEgg(BRUSHES_ROYALBLUE, BRUSHES_CHARTREUSE),
+                builder.creature(EntityWildCloud.class, "wild_cloud"),
+                builder.creature(EntityRacingCloud.class, "racing_cloud"),
+                builder.creature(EntityConstructionCloud.class, "construction_cloud"),
+                builder.creature(EntitySpell.class, "magic_spell"),
+                builder.creature(EntitySpellbook.class, "spellbook"),
+                builder.projectile(EntityProjectile.class, "thrown_item", 10, 5)
         );
     }
 
@@ -62,20 +60,6 @@ public class UEntities {
                 );
                 return null;
             });
-        }
-    }
-
-    static class Entry extends EntityEntry {
-
-        public Entry(Class<? extends Entity> cls, String name) {
-            super(cls, name);
-            setRegistryName(Unicopia.MODID, name);
-        }
-
-        Entry withEgg(int a, int b) {
-            setEgg(new EntityEggInfo(getRegistryName(), a, b));
-
-            return this;
         }
     }
 }

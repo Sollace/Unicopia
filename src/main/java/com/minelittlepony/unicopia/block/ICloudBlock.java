@@ -1,12 +1,13 @@
 package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.CloudType;
+import com.minelittlepony.unicopia.UClient;
+import com.minelittlepony.unicopia.forgebullshit.FUF;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,7 +24,7 @@ public interface ICloudBlock {
 
     default boolean handleRayTraceSpecialCases(World world, BlockPos pos, IBlockState state) {
         if (world.isRemote) {
-            EntityPlayer player = Minecraft.getMinecraft().player;
+            EntityPlayer player = UClient.instance().getPlayer();
 
             if (!getCanInteract(state, player)) {
                 return true;
@@ -57,6 +58,7 @@ public interface ICloudBlock {
     default boolean getCanInteract(IBlockState state, Entity e) {
         if (getCloudMaterialType(state).canInteract(e)) {
             if (e instanceof EntityItem) {
+                // @FUF(reason = "There is no TickEvents.EntityTickEvent. Waiting on mixins...")
                 e.setNoGravity(true);
             }
             return true;
@@ -69,6 +71,15 @@ public interface ICloudBlock {
         return getCloudMaterialType(blockState) != CloudType.NORMAL;
     }
 
+    /**
+     * Determines whether falling sand entities should fall through this block.
+     * @param state Our block state
+     * @param world The current world
+     * @param pos   The current position
+     *
+     * @return True to allow blocks to pass.
+     */
+    @FUF(reason = "Hacked until we can get mixins to implement a proper hook")
     default boolean allowsFallingBlockToPass(IBlockState state, IBlockAccess world, BlockPos pos) {
         if (isDense(state)) {
             return false;

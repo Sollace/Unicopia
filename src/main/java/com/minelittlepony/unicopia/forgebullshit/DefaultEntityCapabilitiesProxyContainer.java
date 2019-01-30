@@ -18,6 +18,7 @@ class DefaultEntityCapabilitiesProxyContainer<T extends Entity> implements ICapa
     @CapabilityInject(ICapabilitiesProxyContainer.class)
     public static Capability<ICapabilitiesProxyContainer<?>> CAPABILITY = null;
 
+    @FUF(reason = "We can't guarantee {CABILITY} won't be null. Whoever thought @CapabilityInject annotations were ever a good idea?")
     @SuppressWarnings("unchecked")
     static boolean updateAndCompare(Capability<?> capability) {
         if (CAPABILITY == null && capability != null) {

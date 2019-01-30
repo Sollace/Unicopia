@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.forgebullshit.FUF;
 import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
@@ -517,6 +518,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
         clearItemFloatingState();
     }
 
+    @FUF(reason = "There is no TickEvent.EntityTickEvent. Waiting on mixins...")
     protected void clearItemFloatingState() {
         AxisAlignedBB bounds = getEntityBoundingBox().grow(1 / (1 + getCloudSize())).grow(5);
 
@@ -579,6 +581,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
 				spawnThunderbolt(getPosition());
 			}
 
+			// @FUF(reason = "There is no TickEvents.EntityTickEvent. Waiting on mixins...")
 			if (getStationary() && entity instanceof EntityItem) {
 			    entity.motionX /= 8;
 			    entity.motionZ /= 8;

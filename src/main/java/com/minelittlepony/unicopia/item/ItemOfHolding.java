@@ -10,12 +10,10 @@ import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.inventory.ContainerOfHolding;
 import com.minelittlepony.unicopia.inventory.InventoryOfHolding;
-import com.minelittlepony.unicopia.inventory.gui.GuiOfHolding;
 import com.minelittlepony.util.vector.VecHelper;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.util.ITooltipFlag;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -38,6 +36,8 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemOfHolding extends Item implements IMagicalItem {
 
@@ -48,6 +48,7 @@ public class ItemOfHolding extends Item implements IMagicalItem {
         setMaxStackSize(1);
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
@@ -113,14 +114,9 @@ public class ItemOfHolding extends Item implements IMagicalItem {
             return new ActionResult<>(EnumActionResult.FAIL, stack);
         }
 
-        IInteractionObject inventory = new Inventory(stack);
+        UClient.instance().displayGuiToPlayer(player, new Inventory(stack));
 
-        if (UClient.isClientSide() && player instanceof EntityPlayerSP) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiOfHolding(inventory));
-            player.playSound(SoundEvents.BLOCK_ENDERCHEST_OPEN, 0.5F, 1);
-        } else {
-            player.displayGui(inventory);
-        }
+        player.playSound(SoundEvents.BLOCK_ENDERCHEST_OPEN, 0.5F, 1);
 
         return new ActionResult<>(EnumActionResult.SUCCESS, stack);
     }

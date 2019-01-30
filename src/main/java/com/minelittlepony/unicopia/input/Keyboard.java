@@ -9,10 +9,10 @@ public final class Keyboard {
 
         if (keyHandler == null) {
             if (UClient.isClientSide()) {
+                keyHandler = new UKeyHandler();
+            } else {
                 keyHandler = bind -> {};
             }
-
-            keyHandler = new UKeyHandler();
         }
 
         return keyHandler;

@@ -8,6 +8,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
+@FUF(reason = "Required to provide capability containers. Why can't forge implement this themselves!?")
 class Provider implements ICapabilitySerializable<NBTTagCompound> {
 
     private final Entity entity;

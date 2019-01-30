@@ -13,6 +13,10 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+/**
+ * Wraps the forge Capabilities API into an easier to manage, simple interface.
+ */
+@FUF(reason = "Capabilities API is such a mess. I'm not going to rewrite it all just to add capabilities to more stuff.")
 @EventBusSubscriber(modid = Unicopia.MODID)
 public class FBS {
     @SuppressWarnings({ "unchecked", "rawtypes" })

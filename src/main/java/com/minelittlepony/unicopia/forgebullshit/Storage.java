@@ -7,6 +7,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 
+@FUF(reason = "Required to persist capabilities. Why can't forge implement this themselves!?")
 class Storage<T extends Entity> implements IStorage<ICapabilitiesProxyContainer<T>> {
 
     @Override

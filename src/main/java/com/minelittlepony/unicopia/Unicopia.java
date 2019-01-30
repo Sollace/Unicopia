@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -15,11 +14,6 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.client.event.FOVUpdateEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
@@ -41,34 +35,28 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 import java.util.Map;
 import java.util.function.Function;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.google.gson.JsonObject;
 import com.minelittlepony.jumpingcastle.api.IChannel;
 import com.minelittlepony.jumpingcastle.api.JumpingCastle;
-import com.minelittlepony.jumpingcastle.api.Target;
 import com.minelittlepony.unicopia.advancements.UAdvancements;
 import com.minelittlepony.unicopia.block.ITillable;
 import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.enchanting.SpellRecipe;
 import com.minelittlepony.unicopia.forgebullshit.FBS;
-import com.minelittlepony.unicopia.hud.UHud;
-import com.minelittlepony.unicopia.input.Keyboard;
 import com.minelittlepony.unicopia.inventory.gui.ContainerSpellBook;
 import com.minelittlepony.unicopia.inventory.gui.GuiSpellBook;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
-import com.minelittlepony.unicopia.player.IPlayer;
-import com.minelittlepony.unicopia.player.IView;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.PowersRegistry;
 import com.minelittlepony.unicopia.util.crafting.CraftingManager;
-import com.minelittlepony.pony.data.IPony;
 
 @Mod(
     modid = Unicopia.MODID,
@@ -82,43 +70,16 @@ public class Unicopia implements IGuiHandler {
     public static final String NAME = "@NAME@";
     public static final String VERSION = "@VERSION@";
 
-    public static IChannel channel;
+    public static final Logger log = LogManager.getLogger();
 
-    /**
-     * The race preferred by the client - as determined by mine little pony.
-     * Human if minelp was not installed.
-     *
-     * This is not neccessarily the _actual_ race used for the player,
-     * as the server may not allow certain race types, or the player may override
-     * this option in-game themselves.
-     */
-    private static Race clientPlayerRace = getclientPlayerRace();
+    public static IChannel channel;
 
     private static CraftingManager craftingManager;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         UConfig.init(event.getModConfigurationDirectory());
-
-        if (UClient.isClientSide()) {
-            UEntities.preInit();
-            UParticles.init();
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    private static Race getclientPlayerRace() {
-        if (!UConfig.getInstance().ignoresMineLittlePony()
-                && Minecraft.getMinecraft().player != null
-                && MineLP.modIsActive()) {
-            Race race = Race.fromPonyRace(IPony.forPlayer(Minecraft.getMinecraft().player).getRace(false));
-
-            if (!race.isDefault()) {
-                return race;
-            }
-        }
-
-        return UConfig.getInstance().getPrefferedRace();
+        UClient.instance().preInit(event);
     }
 
     @EventHandler
@@ -135,7 +96,8 @@ public class Unicopia implements IGuiHandler {
         FBS.init();
 
         NetworkRegistry.INSTANCE.registerGuiHandler(this, this);
-        clientPlayerRace = getclientPlayerRace();
+
+        UClient.instance().init(event);
     }
 
     @EventHandler
@@ -150,6 +112,7 @@ public class Unicopia implements IGuiHandler {
         };
 
         Biome.REGISTRY.forEach(UEntities::registerSpawnEntries);
+        UClient.instance().posInit(event);
     }
 
     public static CraftingManager getCraftingManager() {
@@ -159,12 +122,6 @@ public class Unicopia implements IGuiHandler {
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
         UItems.registerItems(event.getRegistry());
-    }
-
-    @SubscribeEvent
-    public static void registerItemColours(ColorHandlerEvent.Item event) {
-        UItems.registerColors(event.getItemColors());
-        UBlocks.registerColors(event.getItemColors(), event.getBlockColors());
     }
 
     @SubscribeEvent
@@ -185,39 +142,6 @@ public class Unicopia implements IGuiHandler {
     @SubscribeEvent
     public static void registerEntities(RegistryEvent.Register<EntityEntry> event) {
         UEntities.init(event.getRegistry());
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void onGameTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == Phase.END) {
-            if (Minecraft.getMinecraft().player != null) {
-                Race newRace = getclientPlayerRace();
-
-                if (newRace != clientPlayerRace) {
-                    clientPlayerRace = newRace;
-
-                    channel.send(new MsgRequestCapabilities(Minecraft.getMinecraft().player, clientPlayerRace), Target.SERVER);
-                }
-            }
-
-            Keyboard.getKeyHandler().onKeyInput();
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void setupPlayerCamera(EntityViewRenderEvent.CameraSetup event) {
-
-        EntityPlayer player = Minecraft.getMinecraft().player;
-
-        if (player != null) {
-            IView view = PlayerSpeciesList.instance().getPlayer(player).getCamera();
-
-            event.setRoll(view.calculateRoll());
-            event.setPitch(view.calculatePitch(event.getPitch()));
-            event.setYaw(view.calculateYaw(event.getYaw()));
-        }
     }
 
     @SubscribeEvent
@@ -305,25 +229,8 @@ public class Unicopia implements IGuiHandler {
     }
 
     @EventHandler
-    public void onServerStarted(FMLServerStartingEvent event) {
+    public void onServerStart(FMLServerStartingEvent event) {
         Commands.init(event);
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void onRenderHud(RenderGameOverlayEvent.Post event) {
-        if (event.getType() != ElementType.ALL) {
-            return;
-        }
-
-        if (UClient.isClientSide()) {
-            Minecraft mc = Minecraft.getMinecraft();
-            if (mc.player != null && mc.world != null) {
-                IPlayer player = PlayerSpeciesList.instance().getPlayer(mc.player);
-
-                UHud.instance.renderHud(player, event.getResolution());
-            }
-        }
     }
 
     @SubscribeEvent
@@ -333,11 +240,6 @@ public class Unicopia implements IGuiHandler {
         if (!event.isCanceled() && e instanceof EntityPlayer && event.getItem().getItemUseAction() == EnumAction.EAT) {
             PlayerSpeciesList.instance().getPlayer((EntityPlayer)e).onEntityEat();
         }
-    }
-
-    @SubscribeEvent
-    public static void modifyFOV(FOVUpdateEvent event) {
-        event.setNewfov(PlayerSpeciesList.instance().getPlayer(event.getEntity()).getCamera().calculateFieldOfView(event.getFov()));
     }
 
     @Override

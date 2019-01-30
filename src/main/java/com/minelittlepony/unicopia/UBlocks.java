@@ -23,6 +23,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.ColorizerFoliage;
 import net.minecraft.world.biome.BiomeColorHelper;
 import net.minecraft.world.gen.feature.WorldGenTrees;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class UBlocks {
@@ -61,6 +63,7 @@ public class UBlocks {
                              apple_tree, apple_leaves);
     }
 
+    @SideOnly(Side.CLIENT)
     static void registerColors(ItemColors items, BlockColors blocks) {
         items.registerItemColorHandler((stack, tint) -> {
             @SuppressWarnings("deprecation")

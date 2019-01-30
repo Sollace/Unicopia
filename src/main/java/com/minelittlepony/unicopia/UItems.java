@@ -40,6 +40,8 @@ import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import static com.minelittlepony.unicopia.Predicates.*;
@@ -228,6 +230,7 @@ public class UItems {
         ), new ItemStack(cloud_block, 1, 2)).setRegistryName(Unicopia.MODID, "id_dont_care_just_use_it"));
     }
 
+    @SideOnly(Side.CLIENT)
     static void registerColors(ItemColors registry) {
         registry.registerItemColorHandler((stack, tint) -> {
             if (Predicates.MAGI.test(Minecraft.getMinecraft().player)) {
