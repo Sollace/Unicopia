@@ -5,25 +5,32 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 
 public class ModelCloud extends ModelBase {
-	ModelRenderer body;
 
-	public ModelCloud() {
-		init();
-	}
+    ModelRenderer body;
 
-	private void init() {
-		body = new ModelRenderer(this, 0, 0);
+    public ModelCloud() {
+        init();
+    }
 
-		body.addBox(-24, 5, -24, 48, 10, 48);
+    private void init() {
+        boxList.clear();
 
-		body.addBox(-10, 14.999F, -10, 30, 2, 30);
-		body.addBox(-19.999F, 14.999F, -15, 15, 3, 25);
+        body = new ModelRenderer(this, 0, 0);
+        body.setTextureSize(250, 90);
 
-		body.addBox(-10, 3.001F, -10, 30, 2, 30);
-		body.rotationPointY += 4.2;
-	}
+        body.setTextureOffset(0, 0);
+        body.addBox(-24, 5, -24, 48, 10, 48);
 
-	public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+        body.setTextureOffset(0, 58);
+        body.addBox(-10, 14.999F, -10, 30, 2, 30);
+
+        body.setTextureOffset(120, 58);
+        body.addBox(-10, 3.001F, -10, 30, 2, 30);
+
+        body.rotationPointY += 4.2;
+    }
+
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         body.render(scale);
     }
 }

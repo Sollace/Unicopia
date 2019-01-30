@@ -18,6 +18,7 @@ public class RenderCloud extends RenderLiving<EntityCloud> {
         super(rendermanagerIn, new ModelCloud(), 1f);
     }
 
+    @Override
     public float prepareScale(EntityCloud entity, float par2) {
     	float scale = entity.getCloudSize();
 
@@ -25,6 +26,7 @@ public class RenderCloud extends RenderLiving<EntityCloud> {
     	return 0.0625F;
     }
 
+    @Override
     protected void renderModel(EntityCloud entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
 
         if (!entity.isDead) {
@@ -48,6 +50,7 @@ public class RenderCloud extends RenderLiving<EntityCloud> {
         }
     }
 
+    @Override
     protected ResourceLocation getEntityTexture(EntityCloud entity) {
     	if (entity.getIsRaining() && entity.getIsThundering()) {
     		return rainCloud;
@@ -55,10 +58,12 @@ public class RenderCloud extends RenderLiving<EntityCloud> {
         return cloud;
     }
 
+    @Override
     protected int getColorMultiplier(EntityCloud par1EntityLivingBase, float yaw, float pitch) {
         return 0;
     }
 
+    @Override
     protected float getDeathMaxRotation(EntityCloud par1EntityLivingBase) {
         return 0;
     }
