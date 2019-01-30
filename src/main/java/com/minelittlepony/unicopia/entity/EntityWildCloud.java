@@ -75,7 +75,7 @@ public class EntityWildCloud extends EntityCloud {
         if (!(pack instanceof PackData)) {
             float minSpawnHeight = getMinimumFlyingHeight();
 
-            altitude = getRandomFlyingHeight();
+            targetAltitude = getRandomFlyingHeight();
 
             if (posY < minSpawnHeight) {
                 minSpawnHeight += world.rand.nextInt(Math.max(1,  (int)getMaximumFlyingHeight() - (int)minSpawnHeight));
@@ -87,7 +87,7 @@ public class EntityWildCloud extends EntityCloud {
             pack = new PackData(this);
         } else {
             PackData packData = (PackData)pack;
-            altitude = packData.leader.altitude;
+            targetAltitude = packData.leader.targetAltitude;
 
             Vec3d position = packData.getUnOccupiedPosition(getCloudSize());
 

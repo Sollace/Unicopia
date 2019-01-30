@@ -25,6 +25,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.passive.IAnimals;
@@ -65,7 +66,10 @@ public class EntityCloud extends EntityFlying implements IAnimals {
 
 	private static final DataParameter<Boolean> STATIONARY = EntityDataManager.createKey(EntityCloud.class, DataSerializers.BOOLEAN);
 
-    protected double altitude;
+    protected double targetAltitude;
+
+    protected int directionX;
+    protected int directionZ;
 
     private final double baseWidth = 3f;
     private final double baseHeight = 0.8f;
@@ -343,20 +347,29 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     		super.updateAITasks();
 
 	        if (!isBeingRidden()) {
-		        double distance = altitude - posY;
+		        double distance = targetAltitude - posY;
 
 		        if (Math.abs(distance) < 1 && rand.nextInt(7000) == 0) {
-		            altitude = getRandomFlyingHeight();
-		            distance = altitude - posY;
+		            targetAltitude = getRandomFlyingHeight();
+		            distance = targetAltitude - posY;
 		        }
 
-		        if (distance < 1) {
+		        if (rand.nextInt(7000) == 0) {
+		            directionX = directionX == 0 ? rand.nextInt(3) - 1 : 0;
+		        }
+
+		        if (rand.nextInt(7000) == 0) {
+                    directionZ = directionZ == 0 ? rand.nextInt(3) - 1 : 0;
+                }
+
+		        if (Math.abs(distance) < 1) {
 		            distance = 0;
 		        }
 
-		        motionX -= 0.01;
-		        motionZ -= (Math.signum(distance) * 0.699999988079071D - motionZ) * 0.10000000149011612D;
+		        motionX -= 0.02;
+		        motionX -= (Math.signum(directionX) * 0.699999988079071D - motionX) * 0.10000000149011612D;
 		        motionY += (Math.signum(distance) * 0.699999988079071D - motionY) * 0.10000000149011612D;
+		        motionZ -= (Math.signum(directionZ) * 0.699999988079071D - motionZ) * 0.10000000149011612D;
 	        }
     	}
     }
@@ -501,9 +514,9 @@ public class EntityCloud extends EntityFlying implements IAnimals {
 				return super.attackEntityFrom(source, amount * 1.5f);
 			} else if (canFly) {
 				if (player.posY < posY) {
-	    			altitude += 5;
+	    			targetAltitude = posY + 5;
 	    		} else if (player.posY > posY) {
-	    			altitude -= 5;
+	    			targetAltitude = posY - 5;
 	    		}
 			}
     	}
@@ -588,7 +601,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     		entity.onGround = true;
 			entity.motionY += (((floatStrength > 2 ? 1 : floatStrength/2) * 0.699999998079071D) - entity.motionY + boundModifier * 0.7) * 0.10000000149011612D;
             if (!getStationary()) {
-                entity.motionX -= 0.005;
+                entity.motionX -= 0.013;
             }
 
 			if (!getStationary() && entity.motionY > 0.4 && world.rand.nextInt(900) == 0) {
@@ -607,6 +620,17 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     	}
 
     	return false;
+    }
+
+    @Override
+    protected void doBlockCollisions() {
+        super.doBlockCollisions();
+    }
+
+    @Override
+    public void move(MoverType type, double x, double y, double z) {
+        this.setEntityBoundingBox(this.getEntityBoundingBox().offset(x, y, z));
+        this.resetPositionToBB();
     }
 
 	public int getFloatStrength(Entity entity) {
