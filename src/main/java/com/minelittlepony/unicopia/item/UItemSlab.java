@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.function.Predicate;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemSlab;
@@ -15,8 +14,8 @@ public class UItemSlab extends ItemSlab {
 
     private final Predicate<EntityPlayer> abilityTest;
 
-    public UItemSlab(Block block, BlockSlab singleSlab, BlockSlab doubleSlab, Predicate<EntityPlayer> abilityTest) {
-        super(block, singleSlab, doubleSlab);
+    public UItemSlab(BlockSlab singleSlab, BlockSlab doubleSlab, Predicate<EntityPlayer> abilityTest) {
+        super(singleSlab, singleSlab, doubleSlab);
 
         this.abilityTest = abilityTest;
     }
@@ -29,5 +28,4 @@ public class UItemSlab extends ItemSlab {
 
         return super.canPlaceBlockOnSide(worldIn, pos, side, player, stack);
     }
-
 }

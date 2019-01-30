@@ -82,11 +82,11 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
                 entity.motionZ += forward * MathHelper.cos(entity.rotationYaw * 0.017453292F);
 
                 if (ticksInAir > 0 && ticksInAir % 12 == 0) {
-                    entity.playSound(USounds.WING_FLAP, 0.1F, 1);
+                    entity.playSound(USounds.WING_FLAP, 0.5F, 1);
                 }
             } else {
                 if (ticksInAir != 0) {
-                    entity.playSound(USounds.WING_FLAP, 0.04F, 1);
+                    entity.playSound(USounds.WING_FLAP, 0.4F, 1);
                 }
 
                 ticksInAir = 0;

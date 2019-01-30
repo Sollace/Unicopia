@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.CloudSize;
 import com.minelittlepony.unicopia.entity.EntityCloud;
+import com.minelittlepony.unicopia.forgebullshit.IMultiItem;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,7 +16,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class ItemCloud extends Item {
+public class ItemCloud extends Item implements IMultiItem {
+
+    private static final String[] variants = new String[] {"cloud_small", "cloud_medium", "cloud_large"};
 
 	public ItemCloud(String domain, String name) {
 		super();
@@ -26,6 +29,11 @@ public class ItemCloud extends Item {
         setCreativeTab(CreativeTabs.MATERIALS);
 
         maxStackSize = 16;
+	}
+
+	@Override
+	public String[] getVariants() {
+	    return variants;
 	}
 
 	@Override

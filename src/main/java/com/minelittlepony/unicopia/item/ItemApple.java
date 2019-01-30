@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.item;
 import java.util.Random;
 
 import com.minelittlepony.unicopia.UItems;
+import com.minelittlepony.unicopia.forgebullshit.IMultiItem;
 
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.creativetab.CreativeTabs;
@@ -10,7 +11,7 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-public class ItemApple extends ItemFood {
+public class ItemApple extends ItemFood implements IMultiItem {
 
 	private int[] typeRarities = new int[0];
 
@@ -98,6 +99,7 @@ public class ItemApple extends ItemFood {
 		return this;
 	}
 
+	@Override
 	public String[] getVariants() {
 		return variants;
 	}

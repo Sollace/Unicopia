@@ -12,6 +12,8 @@ public enum Toxicity {
     private final int level;
     private final int duration;
 
+    private static final Toxicity[] values = values();
+
     Toxicity(int level, int duration) {
         this.level = level;
         this.duration = duration;
@@ -31,5 +33,13 @@ public enum Toxicity {
 
     public PotionEffect getPoisonEffect() {
         return new PotionEffect(MobEffects.POISON, duration, level);
+    }
+
+    public String getTranslationKey() {
+        return String.format("toxicity.%s.name", name().toLowerCase());
+    }
+
+    public static Toxicity byMetadata(int metadata) {
+        return values[metadata % values.length];
     }
 }

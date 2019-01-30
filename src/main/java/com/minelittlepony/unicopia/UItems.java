@@ -22,7 +22,6 @@ import com.minelittlepony.unicopia.spell.SpellRegistry;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
@@ -39,7 +38,6 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -47,10 +45,14 @@ import net.minecraftforge.registries.IForgeRegistry;
 import static com.minelittlepony.unicopia.Predicates.*;
 
 import com.minelittlepony.unicopia.edibles.BushToxicityDeterminent;
+import com.minelittlepony.unicopia.edibles.CookedToxicityDeterminent;
 import com.minelittlepony.unicopia.edibles.FlowerToxicityDeterminent;
 import com.minelittlepony.unicopia.edibles.ItemEdible;
+import com.minelittlepony.unicopia.edibles.Toxicity;
 import com.minelittlepony.unicopia.edibles.UItemFoodDelegate;
 import com.minelittlepony.unicopia.forgebullshit.BuildInTexturesBakery;
+import com.minelittlepony.unicopia.forgebullshit.FUF;
+import com.minelittlepony.unicopia.forgebullshit.ItemModels;
 import com.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
 
 public class UItems {
@@ -76,9 +78,8 @@ public class UItems {
 
     public static final ItemCloud cloud_spawner = new ItemCloud(Unicopia.MODID, "cloud");
 
-    public static final Item cloud_block = new UItemMultiTexture(UBlocks.cloud, stack -> {
-        return CloudType.byMetadata(stack.getMetadata()).getTranslationKey();
-    }, INTERACT_WITH_CLOUDS)
+    public static final Item cloud_block = new UItemMultiTexture(UBlocks.cloud, stack ->
+        CloudType.byMetadata(stack.getMetadata()).getTranslationKey(), INTERACT_WITH_CLOUDS)
             .setRegistryName(Unicopia.MODID, "cloud_block");
 
     public static final Item cloud_stairs = new UItemBlock(UBlocks.cloud_stairs, Unicopia.MODID, "cloud_stairs", INTERACT_WITH_CLOUDS);
@@ -94,7 +95,7 @@ public class UItems {
 
     public static final Item sugar_block = new UItemDecoration(UBlocks.sugar_block, Unicopia.MODID, "sugar_block");
 
-    public static final Item cloud_slab = new UItemSlab(UBlocks.cloud_slab, UBlocks.cloud_slab, UBlocks.cloud_double_slab, INTERACT_WITH_CLOUDS)
+    public static final Item cloud_slab = new UItemSlab(UBlocks.cloud_slab, UBlocks.cloud_double_slab, INTERACT_WITH_CLOUDS)
             .setTranslationKey("cloud_slab")
             .setRegistryName(Unicopia.MODID, "cloud_slab");
 
@@ -142,6 +143,17 @@ public class UItems {
             ).setFoodDelegate(new ItemEdible(new FlowerToxicityDeterminent(BlockFlower.EnumFlowerColor.RED)))
             .setTranslationKey("rose");
 
+    public static final Item daffodil_daisy_sandwich = new ItemEdible(Unicopia.MODID, "daffodil_daisy_sandwich", 3, 2, CookedToxicityDeterminent.instance);
+    public static final Item hay_burger = new ItemEdible(Unicopia.MODID, "hay_burger", 3, 4, CookedToxicityDeterminent.instance);
+    public static final Item hay_fries = new ItemEdible(Unicopia.MODID, "hay_fries", 1, 5, CookedToxicityDeterminent.instance);
+    public static final Item salad = new ItemEdible(Unicopia.MODID, "salad", 4, 2, CookedToxicityDeterminent.instance);
+
+    public static final Item wheat_worms = new ItemEdible(Unicopia.MODID, "wheat_worms", 1, 0, stack -> Toxicity.SEVERE);
+
+    public static final Item apple_cider = new ItemEdible(Unicopia.MODID, "apple_cider", 4, 2, stack -> Toxicity.FAIR);
+    public static final Item juice = new ItemEdible(Unicopia.MODID, "juice", 2, 2, stack -> Toxicity.SAFE);
+    public static final Item burned_juice = new ItemEdible(Unicopia.MODID, "burned_juice", 3, 1, stack -> Toxicity.FAIR);
+
     static void registerItems(IForgeRegistry<Item> registry) {
         RegistryLockSpinner.unlock(Item.REGISTRY);
 
@@ -153,67 +165,64 @@ public class UItems {
 
         RegistryLockSpinner.lock(Item.REGISTRY);
 
-        registry.registerAll(cloud_spawner, dew_drop, cloud_matter, cloud_block,
-                             cloud_stairs, cloud_slab, cloud_farmland,
-                             mist_door, anvil,
+        registry.registerAll(
+                cloud_spawner, dew_drop, cloud_matter, cloud_block,
+                cloud_stairs, cloud_slab, cloud_farmland,
+                mist_door, anvil,
 
-                             bag_of_holding, spell, curse, spellbook,
+                bag_of_holding, spell, curse, spellbook,
 
-                             alfalfa_seeds, alfalfa_leaves,
-                             cereal, sugar_cereal, sugar_block,
-                             rotten_apple, zap_apple, cooked_zap_apple,
+                alfalfa_seeds, alfalfa_leaves,
+                cereal, sugar_cereal, sugar_block,
+                rotten_apple, zap_apple, cooked_zap_apple,
 
-                             cloudsdale_tomato, tomato_seeds, tomato,
+                cloudsdale_tomato, tomato_seeds, tomato,
 
-                             apple_seeds, apple_leaves);
+                apple_seeds, apple_leaves,
+
+                daffodil_daisy_sandwich, hay_burger, hay_fries, salad, wheat_worms,
+                apple_cider, juice, burned_juice);
 
         if (UClient.isClientSide()) {
-            registerAllVariants(apple, apple.getVariants());
-            registerAllVariants(zap_apple, zap_apple.getVariants());
-            registerAllVariants(rotten_apple, "rotten_apple");
-            registerAllVariants(cooked_zap_apple, "cooked_zap_apple");
-            registerAllVariants(cloud_spawner, "cloud_small", "cloud_medium", "cloud_large");
-            registerAllVariants(dew_drop, "dew_drop");
-            registerAllVariants(cloud_matter, "cloud_matter");
-            registerAllVariants(cloud_stairs, "cloud_stairs");
-            registerAllVariants(cloud_farmland, "cloud_farmland");
-            registerAllVariants(cloud_slab, CloudType.getVariants("_cloud_slab"));
-            registerAllVariants(cloud_block, CloudType.getVariants("_cloud_block"));
-            registerAllVariants(mist_door, "mist_door");
-            registerAllVariants(anvil, "anvil");
-            registerAllVariants(bag_of_holding, "bag_of_holding");
-            registerAllVariants(spell, "gem");
-            registerAllVariants(curse, "corrupted_gem");
-            registerAllVariants(spellbook, "spellbook");
-            registerAllVariants(alfalfa_seeds, "alfalfa_seeds");
-            registerAllVariants(alfalfa_leaves, "alfalfa_leaves");
-            registerAllVariants(cereal, "cereal");
-            registerAllVariants(sugar_cereal, "sugar_cereal");
-            registerAllVariants(sugar_block, "sugar_block");
-            registerAllVariants(tomato, "tomato", "rotten_tomato");
-            registerAllVariants(cloudsdale_tomato, "cloudsdale_tomato", "rotten_cloudsdale_tomato");
-            registerAllVariants(tomato_seeds, "tomato_seeds");
-            registerAllVariants(apple_seeds, "apple_seeds");
-            registerAllVariants(apple_leaves, "apple_leaves");
+            ItemModels.registerAllVariants(cloud_slab, CloudType.getVariants("_cloud_slab"));
+            ItemModels.registerAllVariants(cloud_block, CloudType.getVariants("_cloud_block"));
+            ItemModels.registerAll(
+                    cloud_spawner,
 
-            BuildInTexturesBakery.getBuiltInTextures().add(new ResourceLocation("unicopia", "items/empty_slot_gem"));
+                    apple, zap_apple,
+                    rotten_apple, cooked_zap_apple, dew_drop,
+
+                    tomato, cloudsdale_tomato,
+
+                    cloud_spawner, cloud_matter, cloud_stairs, cloud_farmland, mist_door, anvil,
+                    bag_of_holding, spell, curse, spellbook,
+
+                    alfalfa_seeds, alfalfa_leaves,
+                    cereal, sugar_cereal, sugar_block,
+                    tomato_seeds,
+
+                    apple_seeds, apple_leaves,
+
+                    daffodil_daisy_sandwich, hay_burger, hay_fries, salad, wheat_worms,
+
+                    apple_cider, juice, burned_juice);
+
+            BuildInTexturesBakery.getBuiltInTextures().add(new ResourceLocation(Unicopia.MODID, "items/empty_slot_gem"));
         }
 
         registerFuels();
     }
 
-    private static void registerAllVariants(Item item, String... variants) {
-        for (int i = 0; i < variants.length; i++) {
-            ModelLoader.setCustomModelResourceLocation(item, i, new ModelResourceLocation("unicopia:" + variants[i]));
-        }
-    }
-
     static void registerFuels() {
         FurnaceRecipes.instance().addSmeltingRecipe(
-                new ItemStack(UItems.zap_apple, 1),
-                new ItemStack(UItems.cooked_zap_apple, 1), 0.1F);
+                new ItemStack(zap_apple, 1),
+                new ItemStack(cooked_zap_apple, 1), 0.1F);
+        FurnaceRecipes.instance().addSmeltingRecipe(
+                new ItemStack(juice),
+                new ItemStack(burned_juice), 0);
     }
 
+    @FUF(reason = "There is no way to register custom recipe types that support nbt data. Waiting for mixins...")
     static void registerRecipes(IForgeRegistry<IRecipe> registry) {
         Ingredient dewdrop = Ingredient.fromItem(dew_drop);
         Ingredient cloud = Ingredient.fromStacks(new ItemStack(cloud_block, 1, 0));
@@ -233,7 +242,7 @@ public class UItems {
     @SideOnly(Side.CLIENT)
     static void registerColors(ItemColors registry) {
         registry.registerItemColorHandler((stack, tint) -> {
-            if (Predicates.MAGI.test(Minecraft.getMinecraft().player)) {
+            if (MAGI.test(Minecraft.getMinecraft().player)) {
                 return SpellRegistry.instance().getSpellTintFromStack(stack);
             }
 

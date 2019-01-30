@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
+import com.minelittlepony.unicopia.forgebullshit.IMultiItem;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -16,16 +17,25 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ItemTomato extends ItemFood implements ITossable {
+public class ItemTomato extends ItemFood implements ITossable, IMultiItem {
+
+    private final String name;
 
     public ItemTomato(String domain, String name, int heal, int sat) {
         super(heal, sat, false);
+
+        this.name = name;
 
         setTranslationKey(name);
         setRegistryName(domain, name);
 
         setDispenseable();
         setHasSubtypes(true);
+    }
+
+    @Override
+    public String[] getVariants() {
+        return new String[] {name, "rotten_" + name};
     }
 
     @Override

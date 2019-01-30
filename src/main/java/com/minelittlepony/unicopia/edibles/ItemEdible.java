@@ -1,11 +1,16 @@
 package com.minelittlepony.unicopia.edibles;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -19,6 +24,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 public class ItemEdible extends ItemFood implements IEdible {
@@ -26,7 +32,16 @@ public class ItemEdible extends ItemFood implements IEdible {
     private final IEdible toxicityDeterminant;
 
     public ItemEdible(@Nonnull IEdible mapper) {
-        super(0, 0, false);
+        super(1, 0, false);
+
+        toxicityDeterminant = mapper;
+    }
+
+    public ItemEdible(String domain, String name, int amount, int saturation, @Nonnull IEdible mapper) {
+        super(amount, saturation, false);
+
+        setTranslationKey(name);
+        setRegistryName(domain, name);
 
         toxicityDeterminant = mapper;
     }
@@ -36,6 +51,15 @@ public class ItemEdible extends ItemFood implements IEdible {
         Toxicity toxicity = (race.isDefault() || race == Race.CHANGELING) ? Toxicity.LETHAL : getToxicityLevel(stack);
 
         addSecondaryEffects(player, toxicity, stack);
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        Toxicity toxicity = getToxicityLevel(stack);
+
+        TextFormatting color = toxicity.toxicWhenCooked() ? TextFormatting.RED : toxicity.toxicWhenRaw() ? TextFormatting.DARK_PURPLE : TextFormatting.GRAY;
+
+        tooltip.add(color + I18n.format(toxicity.getTranslationKey()));
     }
 
     @Override

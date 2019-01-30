@@ -77,12 +77,23 @@ item.alfalfa_seeds.name=Grain
 
 item.cereal.name=Breakfast Cereal
 item.sugar_cereal.name=Boop 'o Roops
+item.daffodil_daisy_sandwich.name=Daffodil Daisy Sandwich
+item.hay_burger.name=Hay Burger
+item.hay_fries.name=Hay Fries
+item.salad.name=Salad
+item.wheat_worms.name=Wheat Worms
+item.apple_cider.name=Apple Cider
 
 entity.racing_cloud.name=Bucking Bronco
 entity.construction_cloud.name=Construction Cloud
 entity.cloud.name=Cloud
 entity.spell.name=Magic
 entity.spellbook.name=Spellbook
+
+toxicity.safe.name=Safe
+toxicity.fair.name=Fair
+toxicity.severe.name=Toxic
+toxicity.lethal.name=Lethal
 
 commands.race.success.self=Your race has been updated
 commands.race.success.otherself=%s changed race to %s

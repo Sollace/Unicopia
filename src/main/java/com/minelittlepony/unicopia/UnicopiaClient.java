@@ -74,6 +74,19 @@ public class UnicopiaClient extends UClient {
         return Minecraft.getMinecraft().player;
     }
 
+    @Override
+    public boolean isClientPlayer(@Nullable EntityPlayer player) {
+        if (getPlayer() == player) {
+            return true;
+        }
+
+        if (getPlayer() == null || player == null) {
+            return false;
+        }
+
+        return getPlayer().getGameProfile().getId().equals(player.getGameProfile().getId());
+    }
+
     @SideOnly(Side.CLIENT)
     @Override
     public void preInit(FMLPreInitializationEvent event) {
@@ -101,13 +114,11 @@ public class UnicopiaClient extends UClient {
             return;
         }
 
-        if (UClient.isClientSide()) {
-            Minecraft mc = Minecraft.getMinecraft();
-            if (mc.player != null && mc.world != null) {
-                IPlayer player = PlayerSpeciesList.instance().getPlayer(mc.player);
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.player != null && mc.world != null) {
+            IPlayer player = PlayerSpeciesList.instance().getPlayer(mc.player);
 
-                UHud.instance.renderHud(player, event.getResolution());
-            }
+            UHud.instance.renderHud(player, event.getResolution());
         }
     }
 
@@ -121,13 +132,15 @@ public class UnicopiaClient extends UClient {
     @SubscribeEvent
     public static void onGameTick(TickEvent.ClientTickEvent event) {
         if (event.phase == Phase.END) {
-            if (Minecraft.getMinecraft().player != null) {
+            EntityPlayer player = UClient.instance().getPlayer();
+
+            if (player != null) {
                 Race newRace = getclientPlayerRace();
 
                 if (newRace != clientPlayerRace) {
                     clientPlayerRace = newRace;
 
-                    Unicopia.channel.send(new MsgRequestCapabilities(Minecraft.getMinecraft().player, clientPlayerRace), Target.SERVER);
+                    Unicopia.channel.send(new MsgRequestCapabilities(player, clientPlayerRace), Target.SERVER);
                 }
             }
 
@@ -139,7 +152,7 @@ public class UnicopiaClient extends UClient {
     @SubscribeEvent
     public static void setupPlayerCamera(EntityViewRenderEvent.CameraSetup event) {
 
-        EntityPlayer player = Minecraft.getMinecraft().player;
+        EntityPlayer player = UClient.instance().getPlayer();
 
         if (player != null) {
             IView view = PlayerSpeciesList.instance().getPlayer(player).getCamera();
