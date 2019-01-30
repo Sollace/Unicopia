@@ -43,6 +43,11 @@ public class UClient {
         return null;
     }
 
+    @FUF(reason = "Forced client Separation")
+    public boolean isClientPlayer(@Nullable EntityPlayer player) {
+        return false;
+    }
+
     public void preInit(FMLPreInitializationEvent event) {}
 
     public void init(FMLInitializationEvent event) {}

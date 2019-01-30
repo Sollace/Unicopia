@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.player;
 import java.util.UUID;
 
 import com.minelittlepony.model.anim.IInterpolator;
+import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.enchanting.IPageOwner;
 import com.minelittlepony.unicopia.network.ITransmittable;
 import com.minelittlepony.unicopia.spell.ICaster;
@@ -38,7 +39,9 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
         setEnergy(getEnergy() + energy / 100F);
     }
 
-    boolean isClientPlayer();
+    default boolean isClientPlayer() {
+        return UClient.instance().isClientPlayer(getOwner());
+    }
 
     void copyFrom(IPlayer oldPlayer);
 

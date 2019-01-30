@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import com.minelittlepony.model.anim.BasicEasingInterpolator;
 import com.minelittlepony.model.anim.IInterpolator;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
@@ -16,7 +15,6 @@ import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -157,12 +155,6 @@ class PlayerCapabilities implements IPlayer {
     @Override
     public IInterpolator getInterpolator() {
         return interpolator;
-    }
-
-    @Override
-    public boolean isClientPlayer() {
-        return UClient.isClientSide() &&
-                Minecraft.getMinecraft().player.getGameProfile().getId().equals(getOwner().getGameProfile().getId());
     }
 
     @Override
