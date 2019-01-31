@@ -1,0 +1,39 @@
+{
+  "type": "minecraft:crafting_shaped",
+  
+  "pattern": [
+    "AAA",
+    "AAA",
+    " B "
+  ],
+  "key": {
+    "B": [
+      {
+        "item": "minecraft:glass_bottle"
+      }
+    ],
+    "A": [
+      {
+	    "item": "minecraft:apple",
+	    "data": 0
+      },
+      {
+  	    "item": "minecraft:apple",
+  	    "data": 1
+      },
+      {
+	    "item": "minecraft:apple",
+	    "data": 2
+      },
+      {
+	    "item": "minecraft:apple",
+	    "data": 3
+      }
+    ]
+  },
+  "result": {
+    "item": "unicopia:juice",
+    "data": 0,
+    "count": 1
+  }
+}

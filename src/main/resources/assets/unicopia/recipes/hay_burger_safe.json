@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "AAA",
+    "FTF",
+    "AAA"
+  ],
+  "key": {
+    "A": [
+      {
+	    "item": "unicopia:alfalfa_leaves"
+      }
+    ],
+    "T": [
+	  { "item": "unicopia:tomato", "data": 0 },
+	  { "item": "unicopia:cloudsdale_tomato", "data": 0 }
+    ],
+    "F": [
+      { "item": "minecraft:red_flower", "data": 1 },
+      { "item": "minecraft:red_flower", "data": 2 },
+      { "item": "minecraft:red_flower", "data": 3 },
+      { "item": "minecraft:red_flower", "data": 4 },
+      { "item": "minecraft:red_flower", "data": 5 },
+      { "item": "minecraft:red_flower", "data": 6 },
+      { "item": "minecraft:red_flower", "data": 7 },
+      { "item": "minecraft:yellow_flower", "data": 0 }
+    ]
+  },
+  "result": {
+    "item": "unicopia:hay_burger",
+    "data": 0,
+    "count": 1
+  }
+}

@@ -143,10 +143,13 @@ public class UItems {
             ).setFoodDelegate(new ItemEdible(new FlowerToxicityDeterminent(BlockFlower.EnumFlowerColor.RED)))
             .setTranslationKey("rose");
 
-    public static final Item daffodil_daisy_sandwich = new ItemEdible(Unicopia.MODID, "daffodil_daisy_sandwich", 3, 2, CookedToxicityDeterminent.instance);
-    public static final Item hay_burger = new ItemEdible(Unicopia.MODID, "hay_burger", 3, 4, CookedToxicityDeterminent.instance);
-    public static final Item hay_fries = new ItemEdible(Unicopia.MODID, "hay_fries", 1, 5, CookedToxicityDeterminent.instance);
+    public static final Item daffodil_daisy_sandwich = new ItemEdible(Unicopia.MODID, "daffodil_daisy_sandwich", 3, 2, CookedToxicityDeterminent.instance)
+            .setHasSubtypes(true);
+    public static final Item hay_burger = new ItemEdible(Unicopia.MODID, "hay_burger", 3, 4, CookedToxicityDeterminent.instance)
+            .setHasSubtypes(true);
+    public static final Item hay_fries = new ItemEdible(Unicopia.MODID, "hay_fries", 1, 5, stack -> Toxicity.SAFE);
     public static final Item salad = new ItemEdible(Unicopia.MODID, "salad", 4, 2, CookedToxicityDeterminent.instance)
+            .setHasSubtypes(true)
             .setContainerItem(Items.BOWL);
 
     public static final Item wheat_worms = new ItemEdible(Unicopia.MODID, "wheat_worms", 1, 0, stack -> Toxicity.SEVERE);

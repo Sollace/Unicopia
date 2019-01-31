@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "# #",
+    "* *",
+    " # "
+  ],
+  "key": {
+    "#": [
+      {
+        "item": "minecraft:stick"
+      }
+    ],
+    "*": [
+      {
+	    "item": "minecraft:iron_nugget"
+      }
+    ]
+  },
+  "result": {
+    "item": "unicopia:mug",
+    "data": 0,
+    "count": 1
+  }
+}
