@@ -83,6 +83,7 @@ item.hay_fries.name=Hay Fries
 item.salad.name=Salad
 item.wheat_worms.name=Wheat Worms
 item.apple_cider.name=Apple Cider
+item.mug.name=Mug
 
 entity.racing_cloud.name=Bucking Bronco
 entity.construction_cloud.name=Construction Cloud
@@ -91,7 +92,8 @@ entity.spell.name=Magic
 entity.spellbook.name=Spellbook
 
 toxicity.safe.name=Safe
-toxicity.fair.name=Fair
+toxicity.mild.name=Mildly Toxic
+toxicity.fair.name=Fairly Toxic
 toxicity.severe.name=Toxic
 toxicity.lethal.name=Lethal
 

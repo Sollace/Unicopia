@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.forgebullshit;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.function.Consumer;
 
 import net.minecraft.util.registry.RegistryNamespaced;
 import net.minecraftforge.registries.ILockableRegistry;
@@ -9,7 +10,24 @@ import net.minecraftforge.registries.ILockableRegistry;
 @FUF(reason = "Forge locks the registries. We need a way to unlock them.")
 public final class RegistryLockSpinner {
 
-    public static void unlock(RegistryNamespaced<?, ?> registry) {
+    public static <K, V> void open(RegistryNamespaced<K, V> registry, Class<?> containersClazz, Consumer<UnlockedRegistry<K, V>> action) {
+        unlock(registry);
+
+        try {
+            action.accept(new UnlockedRegistry<K, V>() {
+                @Override
+                public UnlockedRegistry<K, V> replace(V from, V to) {
+                    commit(registry, from, to, containersClazz);
+                    return this;
+                }
+
+            });
+        } finally {
+            lock(registry);
+        }
+    }
+
+    private static void unlock(RegistryNamespaced<?, ?> registry) {
         if (registry instanceof ILockableRegistry) {
             try {
                 Field f = registry.getClass().getDeclaredField("locked");
@@ -22,10 +40,8 @@ public final class RegistryLockSpinner {
         }
     }
 
-    public static <K, V> void commit(RegistryNamespaced<K, V> registry, V from, V to, Class<?> inClass) {
+    private static <K, V> void commit(RegistryNamespaced<K, V> registry, V from, V to, Class<?> inClass) {
         registry.register(registry.getIDForObject(from), registry.getNameForObject(from), to);
-
-
 
         for (Field i : inClass.getDeclaredFields()) {
             try {
@@ -42,7 +58,7 @@ public final class RegistryLockSpinner {
     private static boolean init = false;
     private static Field modifieres = null;
 
-    protected static void initModifiersField(Field f) {
+    private static void initModifiersField() {
         if (!init) {
             init = true;
             try {
@@ -55,8 +71,8 @@ public final class RegistryLockSpinner {
     }
 
     @FUF(reason = "Not exactly forge's fault, but it was would be nice of them to not leave these as final")
-    protected static Field makeNonFinal(Field f) throws IllegalArgumentException, IllegalAccessException {
-        initModifiersField(f);
+    private static Field makeNonFinal(Field f) throws IllegalArgumentException, IllegalAccessException {
+        initModifiersField();
         if (Modifier.isFinal(f.getModifiers()) && modifieres != null) {
             modifieres.setInt(f, f.getModifiers() & ~Modifier.FINAL);
         }
@@ -64,9 +80,14 @@ public final class RegistryLockSpinner {
         return f;
     }
 
-    public static void lock(RegistryNamespaced<?, ?> registry) {
+    private static void lock(RegistryNamespaced<?, ?> registry) {
         if (registry instanceof ILockableRegistry) {
             ((ILockableRegistry) registry).lock();
         }
+    }
+
+    @FunctionalInterface
+    public interface UnlockedRegistry<K, V> {
+        UnlockedRegistry<K, V> replace(V from, V to);
     }
 }

@@ -5,6 +5,7 @@ import net.minecraft.potion.PotionEffect;
 
 public enum Toxicity {
     SAFE(0, 0),
+    MILD(1, 160),
     FAIR(1, 30),
     SEVERE(5, 160),
     LETHAL(10, 900);
@@ -17,6 +18,10 @@ public enum Toxicity {
     Toxicity(int level, int duration) {
         this.level = level;
         this.duration = duration;
+    }
+
+    public boolean isMild() {
+        return this == MILD;
     }
 
     public boolean toxicWhenRaw() {
@@ -32,7 +37,7 @@ public enum Toxicity {
     }
 
     public PotionEffect getPoisonEffect() {
-        return new PotionEffect(MobEffects.POISON, duration, level);
+        return new PotionEffect(isMild() ? MobEffects.NAUSEA : MobEffects.POISON, duration, level);
     }
 
     public String getTranslationKey() {

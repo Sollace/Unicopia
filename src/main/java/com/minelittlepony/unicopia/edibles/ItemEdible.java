@@ -57,6 +57,8 @@ public class ItemEdible extends ItemFood implements IEdible {
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         Toxicity toxicity = getToxicityLevel(stack);
 
+        setAlwaysEdible();
+
         TextFormatting color = toxicity.toxicWhenCooked() ? TextFormatting.RED : toxicity.toxicWhenRaw() ? TextFormatting.DARK_PURPLE : TextFormatting.GRAY;
 
         tooltip.add(color + I18n.format(toxicity.getTranslationKey()));
@@ -80,7 +82,14 @@ public class ItemEdible extends ItemFood implements IEdible {
             }
         }
 
+        ItemStack container = getContainerItem(stack);
+
+        if (!container.isEmpty()) {
+            return container;
+        }
+
         stack.shrink(1);
+
         return stack;
     }
 

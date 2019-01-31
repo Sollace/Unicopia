@@ -44,7 +44,6 @@ public class UItemFoodDelegate extends ItemMultiTexture implements IEdible {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-        foodItem.setAlwaysEdible();
         return foodItem.onItemRightClick(worldIn, playerIn, handIn);
     }
 

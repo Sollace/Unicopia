@@ -146,31 +146,38 @@ public class UItems {
     public static final Item daffodil_daisy_sandwich = new ItemEdible(Unicopia.MODID, "daffodil_daisy_sandwich", 3, 2, CookedToxicityDeterminent.instance);
     public static final Item hay_burger = new ItemEdible(Unicopia.MODID, "hay_burger", 3, 4, CookedToxicityDeterminent.instance);
     public static final Item hay_fries = new ItemEdible(Unicopia.MODID, "hay_fries", 1, 5, CookedToxicityDeterminent.instance);
-    public static final Item salad = new ItemEdible(Unicopia.MODID, "salad", 4, 2, CookedToxicityDeterminent.instance);
+    public static final Item salad = new ItemEdible(Unicopia.MODID, "salad", 4, 2, CookedToxicityDeterminent.instance)
+            .setContainerItem(Items.BOWL);
 
     public static final Item wheat_worms = new ItemEdible(Unicopia.MODID, "wheat_worms", 1, 0, stack -> Toxicity.SEVERE);
 
-    public static final Item apple_cider = new ItemEdible(Unicopia.MODID, "apple_cider", 4, 2, stack -> Toxicity.FAIR);
-    public static final Item juice = new ItemEdible(Unicopia.MODID, "juice", 2, 2, stack -> Toxicity.SAFE);
-    public static final Item burned_juice = new ItemEdible(Unicopia.MODID, "burned_juice", 3, 1, stack -> Toxicity.FAIR);
+    public static final Item mug = new Item()
+            .setTranslationKey("mug")
+            .setRegistryName(Unicopia.MODID, "mug")
+            .setCreativeTab(CreativeTabs.MATERIALS)
+            .setFull3D();
+    public static final Item apple_cider = new ItemEdible(Unicopia.MODID, "apple_cider", 4, 2, stack -> Toxicity.MILD)
+            .setContainerItem(mug)
+            .setFull3D();
+    public static final Item juice = new ItemEdible(Unicopia.MODID, "juice", 2, 2, stack -> Toxicity.SAFE)
+            .setContainerItem(Items.GLASS_BOTTLE);
+    public static final Item burned_juice = new ItemEdible(Unicopia.MODID, "burned_juice", 3, 1, stack -> Toxicity.FAIR)
+            .setContainerItem(Items.GLASS_BOTTLE);
 
     static void registerItems(IForgeRegistry<Item> registry) {
-        RegistryLockSpinner.unlock(Item.REGISTRY);
-
-        RegistryLockSpinner.commit(Item.REGISTRY, Items.APPLE, apple, Items.class);
-        RegistryLockSpinner.commit(Item.REGISTRY, Items.STICK, stick, Items.class);
-        RegistryLockSpinner.commit(Item.REGISTRY, Item.getItemFromBlock(Blocks.DOUBLE_PLANT), double_plant, Items.class);
-        RegistryLockSpinner.commit(Item.REGISTRY, Item.getItemFromBlock(Blocks.YELLOW_FLOWER), yellow_flower, Items.class);
-        RegistryLockSpinner.commit(Item.REGISTRY, Item.getItemFromBlock(Blocks.RED_FLOWER), red_flower, Items.class);
-
-        RegistryLockSpinner.lock(Item.REGISTRY);
+        RegistryLockSpinner.open(Item.REGISTRY, Items.class, r -> r
+                .replace(Items.APPLE, apple)
+                .replace(Items.STICK, stick)
+                .replace(Item.getItemFromBlock(Blocks.DOUBLE_PLANT), double_plant)
+                .replace(Item.getItemFromBlock(Blocks.YELLOW_FLOWER), yellow_flower)
+                .replace(Item.getItemFromBlock(Blocks.RED_FLOWER), red_flower));
 
         registry.registerAll(
                 cloud_spawner, dew_drop, cloud_matter, cloud_block,
                 cloud_stairs, cloud_slab, cloud_farmland,
                 mist_door, anvil,
 
-                bag_of_holding, spell, curse, spellbook,
+                bag_of_holding, spell, curse, spellbook, mug,
 
                 alfalfa_seeds, alfalfa_leaves,
                 cereal, sugar_cereal, sugar_block,
@@ -196,7 +203,7 @@ public class UItems {
                     tomato, cloudsdale_tomato,
 
                     cloud_spawner, cloud_matter, cloud_stairs, cloud_farmland, mist_door, anvil,
-                    bag_of_holding, spell, curse, spellbook,
+                    bag_of_holding, spell, curse, spellbook, mug,
 
                     alfalfa_seeds, alfalfa_leaves,
                     cereal, sugar_cereal, sugar_block,
