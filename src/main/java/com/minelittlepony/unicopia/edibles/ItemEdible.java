@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.forgebullshit.IMultiItem;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.advancements.CriteriaTriggers;
@@ -16,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
@@ -27,7 +29,9 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
-public class ItemEdible extends ItemFood implements IEdible {
+public class ItemEdible extends ItemFood implements IEdible, IMultiItem {
+
+    private String translationKey;
 
     private final IEdible toxicityDeterminant;
 
@@ -46,6 +50,11 @@ public class ItemEdible extends ItemFood implements IEdible {
         toxicityDeterminant = mapper;
     }
 
+    public Item setTranslationKey(String key) {
+        translationKey = key;
+        return super.setTranslationKey(key);
+    }
+
     protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
         Race race = PlayerSpeciesList.instance().getPlayer(player).getPlayerSpecies();
         Toxicity toxicity = (race.isDefault() || race == Race.CHANGELING) ? Toxicity.LETHAL : getToxicityLevel(stack);
@@ -56,8 +65,6 @@ public class ItemEdible extends ItemFood implements IEdible {
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         Toxicity toxicity = getToxicityLevel(stack);
-
-        setAlwaysEdible();
 
         TextFormatting color = toxicity.toxicWhenCooked() ? TextFormatting.RED : toxicity.toxicWhenRaw() ? TextFormatting.DARK_PURPLE : TextFormatting.GRAY;
 
@@ -134,5 +141,15 @@ public class ItemEdible extends ItemFood implements IEdible {
     @Override
     public Toxicity getToxicityLevel(ItemStack stack) {
         return toxicityDeterminant.getToxicityLevel(stack);
+    }
+
+    @Override
+    public String[] getVariants() {
+        return Toxicity.getVariants(translationKey);
+    }
+
+    @Override
+    public boolean variantsAreHidden() {
+        return true;
     }
 }

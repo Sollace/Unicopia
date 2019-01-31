@@ -47,4 +47,14 @@ public enum Toxicity {
     public static Toxicity byMetadata(int metadata) {
         return values[metadata % values.length];
     }
+
+    public static String[] getVariants(String key) {
+        String[] result = new String[values.length];
+
+        for (int i = 0; i < result.length; i++) {
+            result[i] = values[i].name() + key;
+        }
+
+        return result;
+    }
 }

@@ -9,4 +9,12 @@ public interface IMultiItem {
      * Used to register models and textures on the client.
      */
     String[] getVariants();
+
+    default boolean variantsAreHidden() {
+        return false;
+    }
+
+    default int getMaxMetadata() {
+        return getVariants().length;
+    }
 }

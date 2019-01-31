@@ -12,10 +12,22 @@ public class ItemModels {
     public static void registerAll(Item...items) {
         for (Item i : items) {
             if (i instanceof IMultiItem && i.getHasSubtypes()) {
-                registerAllVariants(i, ((IMultiItem)i).getVariants());
+                IMultiItem multi = (IMultiItem)i;
+
+                if (multi.variantsAreHidden()) {
+                    registerAll(i, multi.getMaxMetadata(), new ModelResourceLocation(i.getRegistryName().toString()));
+                } else {
+                    registerAllVariants(i, multi.getVariants());
+                }
             } else {
-                ModelLoader.setCustomModelResourceLocation(i, 0, new ModelResourceLocation(i.getRegistryName().toString()));
+                registerAll(i, 1, new ModelResourceLocation(i.getRegistryName().toString()));
             }
+        }
+    }
+
+    private static void registerAll(Item item, int maxMeta, ModelResourceLocation resource) {
+        for (int i = 0; i < maxMeta; i++) {
+            ModelLoader.setCustomModelResourceLocation(item, i, resource);
         }
     }
 
