@@ -62,7 +62,7 @@ public class UItems {
             .setTypeRarities(10, 20, 10, 30);
 
     public static final ItemApple zap_apple = new ItemZapApple(Unicopia.MODID, "zap_apple")
-            .setSubTypes("zap_apple", "red", "green", "sweet", "sour");
+            .setSubTypes("zap_apple", "red", "green", "sweet", "sour", "zap");
 
     public static final ItemApple rotten_apple = new ItemRottenApple(Unicopia.MODID, "rotten_apple");
     public static final ItemApple cooked_zap_apple = new ItemApple(Unicopia.MODID, "cooked_zap_apple");
