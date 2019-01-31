@@ -10,7 +10,6 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 
 class PlayerAttributes {
     public static final int ADD = 0;
@@ -31,14 +30,7 @@ class PlayerAttributes {
     private final WalkSpeed walker = new WalkSpeed();
 
     public void applyAttributes(EntityPlayer entity, Race race) {
-        loadStrength = 0;
-
-        for (ItemStack item : entity.inventory.mainInventory) {
-            loadStrength += InventoryOfHolding.decodeStackWeight(item);
-        }
-        for (ItemStack item : entity.inventory.armorInventory) {
-            loadStrength += InventoryOfHolding.decodeStackWeight(item);
-        }
+        loadStrength = InventoryOfHolding.getContentsTotalWorth(entity.inventory, false);
 
         walker.setPlayerWalkSpeed(entity.capabilities, 0.1F - (float)(loadStrength / 100000));
 

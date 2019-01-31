@@ -96,7 +96,7 @@ public class InventoryOfHolding extends InventoryBasic implements InbtSerialisab
             }
         }
 
-        encodeStackWeight(blockStack, getContentsTotalWorth(blockInventory));
+        encodeStackWeight(blockStack, getContentsTotalWorth(blockInventory, true), true);
 
         world.removeTileEntity(pos);
         world.setBlockState(pos, Blocks.AIR.getDefaultState());
@@ -165,30 +165,36 @@ public class InventoryOfHolding extends InventoryBasic implements InbtSerialisab
     }
 
     public double getContentsTotalWorth() {
-        return getContentsTotalWorth(this);
+        return getContentsTotalWorth(this, true);
     }
 
     public void writeTostack(ItemStack stack) {
         writeToNBT(stack.getOrCreateSubCompound("inventory"));
     }
 
-    public static double getContentsTotalWorth(IInventory inventory) {
+    public static double getContentsTotalWorth(IInventory inventory, boolean deep) {
         double total = 0;
 
         for (int i = 0; i < inventory.getSizeInventory(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
 
-            total += stack.getCount();
-            total += decodeStackWeight(stack);
+            double weightOfOne = decodeStackWeight(stack, deep);
+
+            if (weightOfOne == 0) {
+                total += stack.getCount();
+            } else {
+                total += weightOfOne * stack.getCount();
+            }
         }
 
         return total;
     }
 
-    public static void encodeStackWeight(ItemStack stack, double weight) {
+    public static void encodeStackWeight(ItemStack stack, double weight, boolean deep) {
         NBTTagCompound compound = stack.getSubCompound("inventory");
         if (weight == 0 && compound != null) {
             compound.removeTag("weight");
+            compound.removeTag("deep");
             if (compound.isEmpty()) {
                 stack.removeSubCompound("inventory");
             }
@@ -199,14 +205,40 @@ public class InventoryOfHolding extends InventoryBasic implements InbtSerialisab
                 }
 
                 compound.setDouble("weight", weight);
+                if (deep) {
+                    compound.setBoolean("deep", deep);
+                }
             }
         }
     }
 
-    public static double decodeStackWeight(ItemStack stack) {
-        if (!stack.isEmpty()) {
+    public static double decodeStackWeight(ItemStack stack, boolean deep) {
+        if (!stack.isEmpty() && stack.hasTagCompound()) {
+            NBTTagCompound bet = stack.getSubCompound("BlockEntityTag");
             NBTTagCompound compound = stack.getSubCompound("inventory");
-            if (compound != null && compound.hasKey("weight")) {
+
+            boolean hasWeight = compound != null && compound.hasKey("weight");
+
+            if (deep) {
+                if (!hasWeight && bet != null) {
+                    Block b = Block.getBlockFromItem(stack.getItem());
+                    TileEntity te = b.createTileEntity(null, b.getDefaultState());
+
+                    double weight = 0;
+
+                    if (te instanceof IInventory) {
+                        te.readFromNBT(bet);
+
+                        weight = getContentsTotalWorth((IInventory)te, deep);
+                    }
+
+                    encodeStackWeight(stack, weight, deep);
+
+                    return weight;
+                }
+            }
+
+            if (hasWeight && (deep || !compound.hasKey("deep"))) {
                 return compound.getDouble("weight");
             }
         }

@@ -55,7 +55,6 @@ public class ContainerOfHolding extends Container implements IWorldNameable {
         inventory.writeTostack(sourceStack);
         inventory.closeInventory(player);
 
-
         super.onContainerClosed(player);
     }
 
