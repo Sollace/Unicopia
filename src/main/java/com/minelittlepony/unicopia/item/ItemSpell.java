@@ -70,7 +70,6 @@ public class ItemSpell extends Item implements ICastable {
     public ItemSpell(String domain, String name) {
         super();
 
-        setHasSubtypes(true);
         setMaxDamage(0);
         setTranslationKey(name);
         setRegistryName(domain, name);
