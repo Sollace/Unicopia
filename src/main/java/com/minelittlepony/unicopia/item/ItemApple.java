@@ -1,17 +1,24 @@
 package com.minelittlepony.unicopia.item;
 
+import java.util.List;
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.UItems;
+import com.minelittlepony.unicopia.edibles.IEdible;
+import com.minelittlepony.unicopia.edibles.Toxicity;
 import com.minelittlepony.unicopia.forgebullshit.IMultiItem;
 
 import net.minecraft.block.BlockPlanks;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraft.world.World;
 
-public class ItemApple extends ItemFood implements IMultiItem {
+public class ItemApple extends ItemFood implements IMultiItem, IEdible {
 
 	private int[] typeRarities = new int[0];
 
@@ -115,9 +122,9 @@ public class ItemApple extends ItemFood implements IMultiItem {
 	    }
 	}
 
-	@Override
-    public int getDamage(ItemStack stack) {
-        return super.getDamage(stack);// % subTypes.length;
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        tooltip.add(getToxicityLevel(stack).getTooltip());
     }
 
 	@Override
@@ -141,4 +148,9 @@ public class ItemApple extends ItemFood implements IMultiItem {
 
 	    return super.getTranslationKey(stack);
 	}
+
+    @Override
+    public Toxicity getToxicityLevel(ItemStack stack) {
+        return Toxicity.SAFE;
+    }
 }

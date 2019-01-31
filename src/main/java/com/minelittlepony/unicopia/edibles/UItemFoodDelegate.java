@@ -1,8 +1,12 @@
 package com.minelittlepony.unicopia.edibles;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
@@ -25,6 +29,11 @@ public class UItemFoodDelegate extends ItemMultiTexture implements IEdible {
     public UItemFoodDelegate setFoodDelegate(@Nonnull ItemFood foodItem) {
         this.foodItem = foodItem;
         return this;
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        foodItem.addInformation(stack, worldIn, tooltip, flagIn);
     }
 
     @Override

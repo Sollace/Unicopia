@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
+
+import com.minelittlepony.unicopia.edibles.Toxicity;
 import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.vector.VecHelper;
 
@@ -71,6 +73,11 @@ public class ItemZapApple extends ItemApple {
         if (isInCreativeTab(tab)) {
             items.add(new ItemStack(this, 1, 0));
         }
+    }
+
+    @Override
+    public Toxicity getToxicityLevel(ItemStack stack) {
+        return stack.getMetadata() == 0 ? Toxicity.SEVERE : Toxicity.SAFE;
     }
 
     @Override
