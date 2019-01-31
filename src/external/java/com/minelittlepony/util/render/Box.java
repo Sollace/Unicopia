@@ -3,6 +3,7 @@ package com.minelittlepony.util.render;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 
+//#MineLittlePony#
 public abstract class Box<T extends ModelRenderer> extends ModelBox {
 
     protected final T parent;

@@ -87,5 +87,7 @@ processResources {
 }
 
 jar {
+  from sourceSets.main.output
+  from sourceSets.external.output
   baseName = "Unicopia-mc${project.mcVersion}"
 }

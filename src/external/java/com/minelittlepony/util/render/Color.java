@@ -2,6 +2,7 @@ package com.minelittlepony.util.render;
 
 import net.minecraft.client.renderer.GlStateManager;
 
+//#MineLittlePony#
 public interface Color {
     static float r(int color) {
         return (color >> 16 & 255) / 255F;
