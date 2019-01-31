@@ -46,6 +46,10 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelle
         return getEntity().getPosition();
     }
 
+    default Vec3d getOriginVector() {
+        return getEntity().getPositionVector();
+    }
+
     default void spawnParticles(IShape area, int count, Consumer<Vec3d> particleSpawner) {
         Random rand = getWorld().rand;
 

@@ -1,11 +1,14 @@
 package com.minelittlepony.util;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.IProjectile;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityLlamaSpit;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.util.math.Vec3d;
 
 public class ProjectileUtil {
 
@@ -30,8 +33,8 @@ public class ProjectileUtil {
 	 * Checks if the given projectile was thrown by the given entity
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends Entity> boolean isProjectileThrownBy(Entity throwable, T e) {
-		if (e == null || !isProjectile(throwable)) {
+	public static <T extends Entity> boolean isProjectileThrownBy(Entity throwable, @Nullable T e) {
+		if (e == null || !isThrowable(throwable)) {
 		    return false;
 		}
 
@@ -41,6 +44,7 @@ public class ProjectileUtil {
 	/**
 	 * Gets the thrower for a projectile or null
 	 */
+	@Nullable
 	@SuppressWarnings("unchecked")
 	public static <T extends Entity> T getThrowingEntity(Entity throwable) {
 
@@ -63,22 +67,23 @@ public class ProjectileUtil {
 		return null;
 	}
 
-	/**
-	 * Sets the velocity and heading for a projectile.
-	 *
-	 * @param throwable		The projectile
-	 * @param x				X Direction component
-	 * @param y				Y Direction component
-	 * @param z				Z Direction component
-	 * @param velocity		Velocity
-	 * @param inaccuracy	Inaccuracy
-	 * @return				True the projectile's heading was set, false otherwise
-	 */
-	public static void setThrowableHeading(Entity throwable, double x, double y, double z, float velocity, float inaccuracy) {
+	   /**
+     * Sets the velocity and heading for a projectile.
+     *
+     * @param throwable     The projectile
+     * @param heading       The directional heaving vector
+     * @param velocity      Velocity
+     * @param inaccuracy    Inaccuracy
+     * @return              True the projectile's heading was set, false otherwise
+     */
+	public static void setThrowableHeading(Entity throwable, Vec3d heading, float velocity, float inaccuracy) {
+
 		if (throwable instanceof IProjectile) {
-			((IProjectile)throwable).shoot(x, y, z, velocity, inaccuracy);
+			((IProjectile)throwable).shoot(heading.x, heading.y, heading.z, velocity, inaccuracy);
 		} else {
-		    ((Entity)throwable).setVelocity(x, y, z);
+		    heading = heading.normalize().scale(velocity);
+
+	        throwable.addVelocity(heading.x - throwable.motionX, heading.y - throwable.motionY, heading.z - throwable.motionZ);
 		}
 	}
 }

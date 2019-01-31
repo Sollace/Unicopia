@@ -43,6 +43,11 @@ public class Particles<Particle> {
     }
 
     @Nullable
+    public void spawnParticle(int particleId, boolean ignoreDistance, Vec3d pos, Vec3d vel, int ...pars) {
+        spawnParticle(particleId, ignoreDistance, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z, pars);
+    }
+
+    @Nullable
     public void spawnParticle(int particleId, boolean ignoreDistance, Vec3d pos, double speedX, double speedY, double speedZ, int ...pars) {
         spawnParticle(particleId, ignoreDistance, pos.x, pos.y, pos.z, speedX, speedY, speedZ, pars);
     }

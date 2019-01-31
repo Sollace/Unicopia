@@ -1,9 +1,9 @@
 package com.minelittlepony.unicopia.spell;
 
 import com.minelittlepony.unicopia.Predicates;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.particle.Particles;
+import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.IPower;
 import com.minelittlepony.util.ProjectileUtil;
@@ -14,7 +14,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class SpellShield extends AbstractSpell {
@@ -76,66 +75,87 @@ public class SpellShield extends AbstractSpell {
 		double radius = 4 + (level * 2);
 
 		Entity owner = source.getOwner();
-		BlockPos pos = source.getOrigin();
 
-		int x = pos.getX(), y = pos.getY(), z = pos.getZ();
+		boolean ownerIsValid = source.getAffinity() != SpellAffinity.BAD && Predicates.MAGI.test(owner);
 
-		boolean ownerIsValid = Predicates.MAGI.test(owner);
+		source.findAllEntitiesInRange(radius)
+	        .filter(entity -> !(ownerIsValid && entity.equals(owner)))
+	        .forEach(i -> {
+    		    double dist = Math.sqrt(i.getDistanceSq(source.getOrigin()));
 
-		source.findAllEntitiesInRange(radius).filter(entity -> !(ownerIsValid && entity.equals(owner))).forEach(i -> {
-		    double dist = i.getDistance(x, y, z);
-
-            if (ProjectileUtil.isProjectile(i)) {
-                if (!ProjectileUtil.isProjectileThrownBy(i, owner)) {
-                    if (dist < radius/2) {
-                        i.playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 0.1F, 1);
-                        i.setDead();
-                    } else {
-                        ricochet(i, pos);
-                    }
-                }
-            } else if (i instanceof EntityLivingBase) {
-                double force = Math.min(0.25F, dist);
-
-                if (i instanceof EntityPlayer) {
-                    force = calculateForce((EntityPlayer)i);
-                }
-
-                i.addVelocity(
-                        -(x - i.posX) / force,
-                        -(y - i.posY) / force + (dist < 1 ? dist : 0),
-                        -(z - i.posZ) / force);
-            }
-		});
+    		    applyRadialEffect(source, i, dist, radius);
+    	    });
 
 		return true;
 	}
 
-	protected double calculateForce(EntityPlayer player) {
-		Race race = PlayerSpeciesList.instance().getPlayer(player).getPlayerSpecies();
+	protected void applyRadialEffect(ICaster<?> source, Entity target, double distance, double radius) {
+	    Vec3d pos = source.getOriginVector();
 
-		double force = 4 * 8;
+        if (ProjectileUtil.isProjectile(target)) {
+            if (!ProjectileUtil.isProjectileThrownBy(target, source.getOwner())) {
+                if (distance < radius/2) {
+                    target.playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 0.1F, 1);
+                    target.setDead();
+                } else {
+                    ricochet(target, pos);
+                }
+            }
+        } else if (target instanceof EntityLivingBase) {
+            double force = Math.min(0.25F, distance);
 
-		if (race.canUseEarth()) {
-			if (player.isSneaking()) {
-				force *= 16;
+            if (source.getAffinity() != SpellAffinity.BAD && target instanceof EntityPlayer) {
+                force *= calculateAdjustedForce(PlayerSpeciesList.instance().getPlayer((EntityPlayer)target));
+            }
+
+            applyForce(pos, target, force, distance);
+        }
+	}
+
+	/**
+	 * Applies a force to the given entity based on distance from the source.
+	 */
+	protected void applyForce(Vec3d pos, Entity target, double force, double distance) {
+	    pos = target.getPositionVector().subtract(pos);
+
+        target.addVelocity(
+                force / pos.x,
+                force / pos.y + (distance < 1 ? distance : 0),
+                force / pos.z
+        );
+	}
+
+	/**
+	 * Returns a force to apply based on the given player's given race.
+	 */
+	protected double calculateAdjustedForce(IPlayer player) {
+		double force = 0.75;
+
+		if (player.getPlayerSpecies().canUseEarth()) {
+		    force /= 2;
+
+			if (player.getOwner().isSneaking()) {
+				force /= 6;
 			}
-		} else if (race.canFly()) {
-			force /= 2;
+		} else if (player.getPlayerSpecies().canFly()) {
+			force *= 2;
 		}
 
 		return force;
 	}
 
-	private void ricochet(Entity projectile, BlockPos pos) {
-		Vec3d position = new Vec3d(projectile.posX, projectile.posY, projectile.posZ);
+	/**
+	 * Reverses a projectiles direction to deflect it off the shield's surface.
+	 */
+	protected void ricochet(Entity projectile, Vec3d pos) {
+		Vec3d position = projectile.getPositionVector();
 		Vec3d motion = new Vec3d(projectile.motionX, projectile.motionY, projectile.motionZ);
 
-		Vec3d normal = position.subtract(pos.getX(), pos.getY(), pos.getZ()).normalize();
+		Vec3d normal = position.subtract(pos).normalize();
 		Vec3d approach = motion.subtract(normal);
 
 		if (approach.length() >= motion.length()) {
-			ProjectileUtil.setThrowableHeading(projectile, normal.x, normal.y, normal.z, (float)motion.length(), 0);
+			ProjectileUtil.setThrowableHeading(projectile, normal, (float)motion.length(), 0);
 		}
 	}
 
