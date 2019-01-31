@@ -13,6 +13,7 @@
     ],
     "F": [
       { "item": "minecraft:double_plant", "data": 0 },
+      { "item": "minecraft:tallgrass", "data": 1 },
       { "item": "unicopia:alfalfa_leaves" },
       { "item": "minecraft:red_flower", "data": 3 },
       { "item": "minecraft:red_flower", "data": 4 },

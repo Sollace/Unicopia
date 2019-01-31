@@ -134,6 +134,22 @@ public class UItems {
             ).setFoodDelegate(new ItemEdible(new BushToxicityDeterminent()))
             .setTranslationKey("doublePlant");
 
+    public static final Item tall_grass = new UItemFoodDelegate(Blocks.TALLGRASS, stack -> {
+        switch (stack.getMetadata()) {
+            case 0: return "shrub";
+            case 1: return "grass";
+            case 2: return "fern";
+            default: return "";
+        }
+    }).setFoodDelegate(new ItemEdible(stack -> {
+        switch (stack.getMetadata()) {
+            default:
+            case 0: return Toxicity.SAFE;
+            case 1: return Toxicity.SAFE;
+            case 2: return Toxicity.SEVERE;
+        }
+    }));
+
     public static final Item yellow_flower = new UItemFoodDelegate(Blocks.YELLOW_FLOWER, stack ->
                 BlockFlower.EnumFlowerType.getType(BlockFlower.EnumFlowerColor.YELLOW, stack.getMetadata()).getTranslationKey()
             ).setFoodDelegate(new ItemEdible(new FlowerToxicityDeterminent(BlockFlower.EnumFlowerColor.YELLOW)))
@@ -174,6 +190,7 @@ public class UItems {
         RegistryLockSpinner.open(Item.REGISTRY, Items.class, r -> r
                 .replace(Items.APPLE, apple)
                 .replace(Items.STICK, stick)
+                .replace(Item.getItemFromBlock(Blocks.TALLGRASS), tall_grass)
                 .replace(Item.getItemFromBlock(Blocks.DOUBLE_PLANT), double_plant)
                 .replace(Item.getItemFromBlock(Blocks.YELLOW_FLOWER), yellow_flower)
                 .replace(Item.getItemFromBlock(Blocks.RED_FLOWER), red_flower));
