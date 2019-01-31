@@ -6,11 +6,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.UEffects;
 import com.minelittlepony.unicopia.forgebullshit.IMultiItem;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,7 +27,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 public class ItemEdible extends ItemFood implements IEdible, IMultiItem {
@@ -78,11 +77,7 @@ public class ItemEdible extends ItemFood implements IEdible, IMultiItem {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        Toxicity toxicity = getToxicityLevel(stack);
-
-        TextFormatting color = toxicity.toxicWhenCooked() ? TextFormatting.RED : toxicity.toxicWhenRaw() ? TextFormatting.DARK_PURPLE : TextFormatting.GRAY;
-
-        tooltip.add(color + I18n.format(toxicity.getTranslationKey()));
+        tooltip.add(getToxicityLevel(stack).getTooltip());
     }
 
     @Override
@@ -103,8 +98,6 @@ public class ItemEdible extends ItemFood implements IEdible, IMultiItem {
             if (entityplayer instanceof EntityPlayerMP) {
                 CriteriaTriggers.CONSUME_ITEM.trigger((EntityPlayerMP)entityplayer, stack);
             }
-
-
         }
 
         if (entityplayer == null || !entityplayer.capabilities.isCreativeMode) {
@@ -143,10 +136,9 @@ public class ItemEdible extends ItemFood implements IEdible, IMultiItem {
         }
 
         if (toxicity.isLethal()) {
-            player.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 300, 7));
-            player.addPotionEffect(new PotionEffect(MobEffects.WITHER, 300, 7));
+            player.addPotionEffect(new PotionEffect(UEffects.FOOD_POISONING, 300, 7, false, false));
         } else if (toxicity.toxicWhenCooked()) {
-            player.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 3, 1));
+            player.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 3, 1, false, false));
         }
 
         toxicityDeterminant.addSecondaryEffects(player, toxicity, stack);

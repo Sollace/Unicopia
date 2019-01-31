@@ -10,6 +10,7 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -121,17 +122,22 @@ public class Unicopia implements IGuiHandler {
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
-        UItems.registerItems(event.getRegistry());
+        UItems.init(event.getRegistry());
     }
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
-        UBlocks.registerBlocks(event.getRegistry());
+        UBlocks.init(event.getRegistry());
     }
 
     @SubscribeEvent
     public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-        UItems.registerRecipes(event.getRegistry());
+        UItems.initRecipes(event.getRegistry());
+    }
+
+    @SubscribeEvent
+    public static void registerPotions(RegistryEvent.Register<Potion> event) {
+        UEffects.init(event.getRegistry());
     }
 
     @SubscribeEvent

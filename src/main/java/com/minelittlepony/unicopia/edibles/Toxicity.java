@@ -1,7 +1,9 @@
 package com.minelittlepony.unicopia.edibles;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.text.TextFormatting;
 
 public enum Toxicity {
     SAFE(0, 0),
@@ -42,6 +44,12 @@ public enum Toxicity {
 
     public String getTranslationKey() {
         return String.format("toxicity.%s.name", name().toLowerCase());
+    }
+
+    public String getTooltip() {
+        TextFormatting color = toxicWhenCooked() ? TextFormatting.RED : toxicWhenRaw() ? TextFormatting.DARK_PURPLE : TextFormatting.GRAY;
+
+        return color + I18n.format(getTranslationKey());
     }
 
     public static Toxicity byMetadata(int metadata) {

@@ -33,15 +33,15 @@ public class BushToxicityDeterminent implements IEdible {
 
         if ((type == ROSE || type == FERN)
                 && player.world.rand.nextInt(30) == 0) {
-            player.addPotionEffect(new PotionEffect(MobEffects.INSTANT_DAMAGE, 1, 1));
+            player.addPotionEffect(new PotionEffect(MobEffects.INSTANT_DAMAGE, 1, 1, false, false));
         }
 
         if (type == GRASS) {
-            player.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 30, 1));
+            player.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 30, 1, false, false));
         }
 
         if (type == FERN) {
-            player.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 30, 1));
+            player.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, 30, 1, false, false));
         }
     }
 }

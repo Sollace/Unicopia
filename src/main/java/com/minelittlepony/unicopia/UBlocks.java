@@ -55,7 +55,7 @@ public class UBlocks {
             .setHarvestFruit(w -> UItems.apple.getRandomApple(w.rand, null))
             .setUnharvestFruit(w -> new ItemStack(UItems.rotten_apple));
 
-    static void registerBlocks(IForgeRegistry<Block> registry) {
+    static void init(IForgeRegistry<Block> registry) {
         registry.registerAll(cloud, cloud_stairs, cloud_double_slab, cloud_slab, mist_door, anvil, cloud_farmland,
                              sugar_block,
                              alfalfa,

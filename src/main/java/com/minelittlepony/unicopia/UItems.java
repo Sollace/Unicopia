@@ -170,7 +170,7 @@ public class UItems {
             .setUseAction(EnumAction.DRINK)
             .setContainerItem(Items.GLASS_BOTTLE);
 
-    static void registerItems(IForgeRegistry<Item> registry) {
+    static void init(IForgeRegistry<Item> registry) {
         RegistryLockSpinner.open(Item.REGISTRY, Items.class, r -> r
                 .replace(Items.APPLE, apple)
                 .replace(Items.STICK, stick)
@@ -237,7 +237,7 @@ public class UItems {
     }
 
     @FUF(reason = "There is no way to register custom recipe types that support nbt data. Waiting for mixins...")
-    static void registerRecipes(IForgeRegistry<IRecipe> registry) {
+    static void initRecipes(IForgeRegistry<IRecipe> registry) {
         Ingredient dewdrop = Ingredient.fromItem(dew_drop);
         Ingredient cloud = Ingredient.fromStacks(new ItemStack(cloud_block, 1, 0));
 

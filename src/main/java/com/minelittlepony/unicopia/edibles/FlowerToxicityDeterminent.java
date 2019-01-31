@@ -42,11 +42,11 @@ public class FlowerToxicityDeterminent implements IEdible {
         BlockFlower.EnumFlowerType type = getType(stack);
 
         if (type == HOUSTONIA && player.world.rand.nextInt(30) == 0) {
-            player.addPotionEffect(new PotionEffect(MobEffects.GLOWING, 10, 1));
+            player.addPotionEffect(new PotionEffect(MobEffects.GLOWING, 10, 1, false, false));
         }
 
         if (type == OXEYE_DAISY) {
-            player.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 30, 1));
+            player.addPotionEffect(new PotionEffect(MobEffects.BLINDNESS, 30, 1, false, false));
         }
     }
 }

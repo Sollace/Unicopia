@@ -194,6 +194,7 @@ death.attack.fire.player=%1$s was burnt to a crisp by %2$s
 death.attack.fire.own=%1$s was burnt to a crisp by their own spell
 death.attack.zap=%1$s ate a Zap Apple
 death.attack.paradox=%1$s imploded
+death.attack.food_poisoning=%1%s died of food poisoning
 
 advancements.adventure.bag_of_holding.title=Read the Manual
 advancements.adventure.bag_of_holding.description=Successfuly die using the Bag of Holding
