@@ -6,7 +6,6 @@ import java.util.Map;
 import com.google.common.base.Strings;
 import com.minelittlepony.pony.data.PonyRace;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -59,18 +58,13 @@ public enum Race {
         return canFly() && this != CHANGELING;
     }
 
-    public String getDisplayString() {
-        return I18n.format(getTranslationString());
-    }
-
-    public String getTranslationString() {
+    public String getTranslationKey() {
         return String.format("unicopia.race.%s", name().toLowerCase());
     }
 
     public boolean isSameAs(String s) {
         return name().equalsIgnoreCase(s)
-                || getTranslationString().equalsIgnoreCase(s)
-                || getDisplayString().equalsIgnoreCase(s);
+                || getTranslationKey().equalsIgnoreCase(s);
     }
 
     public static Race fromName(String s, Race def) {

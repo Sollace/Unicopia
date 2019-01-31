@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia;
 
+import java.util.UUID;
+
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.forgebullshit.FUF;
@@ -40,6 +42,12 @@ public class UClient {
     @FUF(reason = "Forced client Separation")
     @Nullable
     public EntityPlayer getPlayer() {
+        return null;
+    }
+
+    @FUF(reason = "Forced client Separation")
+    @Nullable
+    public EntityPlayer getPlayerByUUID(UUID playerId) {
         return null;
     }
 

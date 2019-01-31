@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia;
 
+import java.util.UUID;
+
 import javax.annotation.Nullable;
 
 import com.minelittlepony.jumpingcastle.api.Target;
@@ -69,9 +71,22 @@ public class UnicopiaClient extends UClient {
         }
     }
 
+    @Override
     @Nullable
     public EntityPlayer getPlayer() {
         return Minecraft.getMinecraft().player;
+    }
+
+    @Override
+    @Nullable
+    public EntityPlayer getPlayerByUUID(UUID playerId) {
+        Minecraft mc = Minecraft.getMinecraft();
+
+        if (mc.player.getUniqueID().equals(playerId)) {
+            return mc.player;
+        }
+
+        return mc.world.getPlayerEntityByUUID(playerId);
     }
 
     @Override

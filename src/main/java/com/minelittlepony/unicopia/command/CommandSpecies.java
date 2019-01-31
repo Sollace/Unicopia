@@ -91,7 +91,7 @@ class CommandSpecies extends CommandBase {
 			String name = "commands.race.tell.";
 			name += player == sender ? "self" : "other";
 
-			ITextComponent race = new TextComponentTranslation(spec.getTranslationString());
+			ITextComponent race = new TextComponentTranslation(spec.getTranslationKey());
 			ITextComponent message = new TextComponentTranslation(name);
 
 			race.getStyle().setColor(TextFormatting.GOLD);

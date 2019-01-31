@@ -38,7 +38,9 @@ class PlayerAttributes {
             loadStrength += InventoryOfHolding.decodeStackWeight(item);
         }
 
-        entity.capabilities.setPlayerWalkSpeed(0.1F - (float)(loadStrength / 100000));
+        if (entity.world.isRemote) {
+            entity.capabilities.setPlayerWalkSpeed(0.1F - (float)(loadStrength / 100000));
+        }
 
         applyAttribute(entity, SharedMonsterAttributes.ATTACK_DAMAGE, EARTH_PONY_STRENGTH, race.canUseEarth());
         applyAttribute(entity, SharedMonsterAttributes.KNOCKBACK_RESISTANCE, EARTH_PONY_STRENGTH, race.canUseEarth());

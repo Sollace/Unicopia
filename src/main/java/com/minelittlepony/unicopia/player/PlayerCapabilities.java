@@ -127,8 +127,6 @@ class PlayerCapabilities implements IPlayer {
     @Override
     public void sendCapabilities(boolean full) {
         if (!getOwner().getEntityWorld().isRemote) {
-            System.out.println("[SERVER] Sending player capabilities.");
-
             if (full) {
                 Unicopia.channel.broadcast(new MsgPlayerCapabilities(this));
             } else {
@@ -211,12 +209,11 @@ class PlayerCapabilities implements IPlayer {
         }
     }
 
-
     @Override
     public boolean stepOnCloud() {
         EntityPlayer player = getOwner();
 
-        if ((player.fallDistance > 1) || player.distanceWalkedOnStepModified > nextStepDistance) {
+        if (player.fallDistance > 1 || player.distanceWalkedOnStepModified > nextStepDistance) {
             nextStepDistance = player.distanceWalkedOnStepModified + 2;
             player.fallDistance = 0;
 

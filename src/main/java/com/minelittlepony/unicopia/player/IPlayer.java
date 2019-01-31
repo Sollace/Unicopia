@@ -8,7 +8,6 @@ import com.minelittlepony.unicopia.enchanting.IPageOwner;
 import com.minelittlepony.unicopia.network.ITransmittable;
 import com.minelittlepony.unicopia.spell.ICaster;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -61,15 +60,5 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
         }
 
         return null;
-    }
-
-    static EntityPlayer getPlayerFromClient(UUID playerId) {
-        Minecraft mc = Minecraft.getMinecraft();
-
-        if (mc.player.getUniqueID().equals(playerId)) {
-            return mc.player;
-        }
-
-        return mc.world.getPlayerEntityByUUID(playerId);
     }
 }
