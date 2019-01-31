@@ -66,8 +66,10 @@ public class ItemEdible extends ItemFood implements IEdible {
 
     @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
-        if (entityLiving instanceof EntityPlayer) {
-            EntityPlayer entityplayer = (EntityPlayer)entityLiving;
+
+        EntityPlayer entityplayer = entityLiving instanceof EntityPlayer ? (EntityPlayer)entityLiving : null;
+
+        if (entityplayer != null) {
             entityplayer.getFoodStats().addStats(this, stack);
 
             worldIn.playSound(null, entityplayer.posX, entityplayer.posY, entityplayer.posZ, SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 0.5F, worldIn.rand.nextFloat() * 0.1F + 0.9F);
@@ -80,15 +82,23 @@ public class ItemEdible extends ItemFood implements IEdible {
             if (entityplayer instanceof EntityPlayerMP) {
                 CriteriaTriggers.CONSUME_ITEM.trigger((EntityPlayerMP)entityplayer, stack);
             }
+
+
+        }
+
+        if (entityplayer == null || !entityplayer.capabilities.isCreativeMode) {
+            stack.shrink(1);
         }
 
         ItemStack container = getContainerItem(stack);
 
-        if (!container.isEmpty()) {
-            return container;
-        }
+        if (!container.isEmpty() && entityplayer != null && !entityplayer.capabilities.isCreativeMode) {
+            if (stack.isEmpty()) {
+                return getContainerItem(stack);
+            }
 
-        stack.shrink(1);
+            entityplayer.inventory.addItemStackToInventory(getContainerItem(stack));
+        }
 
         return stack;
     }
