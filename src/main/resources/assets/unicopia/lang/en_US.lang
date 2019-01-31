@@ -85,6 +85,9 @@ item.wheat_worms.name=Wheat Worms
 item.apple_cider.name=Apple Cider
 item.mug.name=Mug
 
+item.juice.name=Juice
+item.burned_juice.name=Burned Juice
+
 entity.racing_cloud.name=Bucking Bronco
 entity.construction_cloud.name=Construction Cloud
 entity.cloud.name=Cloud
