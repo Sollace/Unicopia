@@ -27,6 +27,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemDoor;
 import net.minecraft.item.ItemFood;
@@ -163,8 +164,10 @@ public class UItems {
             .setContainerItem(mug)
             .setFull3D();
     public static final Item juice = new ItemEdible(Unicopia.MODID, "juice", 2, 2, stack -> Toxicity.SAFE)
+            .setUseAction(EnumAction.DRINK)
             .setContainerItem(Items.GLASS_BOTTLE);
     public static final Item burned_juice = new ItemEdible(Unicopia.MODID, "burned_juice", 3, 1, stack -> Toxicity.FAIR)
+            .setUseAction(EnumAction.DRINK)
             .setContainerItem(Items.GLASS_BOTTLE);
 
     static void registerItems(IForgeRegistry<Item> registry) {

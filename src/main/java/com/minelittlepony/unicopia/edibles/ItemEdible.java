@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -35,6 +36,8 @@ public class ItemEdible extends ItemFood implements IEdible, IMultiItem {
 
     private final IEdible toxicityDeterminant;
 
+    private EnumAction useAction = EnumAction.EAT;
+
     public ItemEdible(@Nonnull IEdible mapper) {
         super(1, 0, false);
 
@@ -52,7 +55,18 @@ public class ItemEdible extends ItemFood implements IEdible, IMultiItem {
 
     public Item setTranslationKey(String key) {
         translationKey = key;
+
         return super.setTranslationKey(key);
+    }
+
+    public Item setUseAction(EnumAction action) {
+        useAction = action;
+
+        return this;
+    }
+
+    public EnumAction getItemUseAction(ItemStack stack) {
+        return useAction;
     }
 
     protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
