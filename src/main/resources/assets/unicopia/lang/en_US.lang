@@ -34,7 +34,7 @@ spell.fire.name=Flame
 spell.infero.name=Burning
 spell.ice.name=Frost
 spell.portal.name=Transportation
-spell.attract.name=Retention
+spell.vortex.name=Retention
 spell.minion.name=Obedience
 
 curse.shield.name=Repulsion
