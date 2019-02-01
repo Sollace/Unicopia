@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "***",
+    " * ",
+    " # "
+  ],
+  "key": {
+    "#": [
+      {
+        "item": "minecraft:glass_bottle"
+      }
+    ],
+    "*": [
+      {
+	    "item": "unicopia:dew_drop"
+      }
+    ]
+  },
+  "result": {
+    "item": "minecraft:potion",
+    "data": 0,
+    "count": 1,
+    "nbt": { "Potion": "minecraft:water" }
+  }
+}
