@@ -55,17 +55,17 @@ public class UPotion extends Potion {
 
     @Override
     public boolean shouldRender(PotionEffect effect) {
-        return isSilent;
+        return !isSilent;
     }
 
     @Override
     public boolean shouldRenderInvText(PotionEffect effect) {
-        return isSilent;
+        return !isSilent;
     }
 
     @Override
     public boolean shouldRenderHUD(PotionEffect effect) {
-        return isSilent;
+        return !isSilent;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class UPotion extends Potion {
             }
         }
 
-        return true;
+        return duration > 0;
     }
 
     @FunctionalInterface
