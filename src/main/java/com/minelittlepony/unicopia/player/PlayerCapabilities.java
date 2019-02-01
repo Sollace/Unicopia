@@ -252,7 +252,7 @@ class PlayerCapabilities implements IPlayer {
             }
 
             if (player.world.getDifficulty() != EnumDifficulty.PEACEFUL && player.world.rand.nextInt(20) == 0) {
-                player.addPotionEffect(new PotionEffect(UEffects.FOOD_POISONING, 300, 2, true, true));
+                player.addPotionEffect(new PotionEffect(UEffects.FOOD_POISONING, 3, 2, true, true));
             }
 
             player.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 2000, 2, true, true));
