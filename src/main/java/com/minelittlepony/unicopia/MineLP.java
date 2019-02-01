@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia;
 
 import com.minelittlepony.MineLittlePony;
+import com.minelittlepony.pony.data.PonyRace;
 
 public final class MineLP {
     private static boolean checkComplete;
@@ -13,7 +14,9 @@ public final class MineLP {
         if (!checkComplete) {
             try {
                 MineLittlePony.getInstance();
-                modIsActive = true;
+
+                // always true, but this will throw if we don't have what we need.
+                modIsActive = PonyRace.HUMAN.isHuman();
             } catch (Exception e) {
                 modIsActive = false;
             }

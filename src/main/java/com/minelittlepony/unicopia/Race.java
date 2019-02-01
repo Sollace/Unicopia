@@ -5,9 +5,7 @@ import java.util.Map;
 
 import com.google.common.base.Strings;
 import com.minelittlepony.pony.data.PonyRace;
-
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import com.minelittlepony.unicopia.forgebullshit.FUF;
 
 public enum Race {
     /**
@@ -81,7 +79,8 @@ public enum Race {
         return def;
     }
 
-    @SideOnly(Side.CLIENT)
+    // Commented so we don't alert overlord forge
+    @FUF(reason = "@SideOnly(Side.CLIENT)")
     public static Race fromPonyRace(PonyRace ponyRace) {
         switch (ponyRace) {
             case ALICORN:
