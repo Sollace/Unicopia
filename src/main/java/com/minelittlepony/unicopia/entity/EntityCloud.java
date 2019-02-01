@@ -123,7 +123,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
      */
     @Override
     public int getBrightnessForRender() {
-        return 0xF00000;
+        return 0xF000F0;
     }
 
     /**
