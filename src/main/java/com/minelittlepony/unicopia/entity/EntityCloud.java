@@ -77,6 +77,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     public EntityCloud(World world) {
         super(world);
         ignoreFrustumCheck = true;
+        targetAltitude = getRandomFlyingHeight();
     }
 
     @Override
