@@ -37,7 +37,7 @@ public class SpellVortex extends SpellShield {
 
         applyForce(pos, target, -force, 0);
 
-        float maxVel = source.getAffinity() != SpellAffinity.BAD ? 1.6f : 1;
+        float maxVel = source.getAffinity() == SpellAffinity.BAD ? 1 : 1.6f;
 
         if (target.motionX > maxVel) target.motionX = maxVel;
         if (target.motionX < -maxVel) target.motionX = -maxVel;
@@ -45,5 +45,9 @@ public class SpellVortex extends SpellShield {
         if (target.motionY < -maxVel) target.motionY = -maxVel;
         if (target.motionZ > maxVel) target.motionZ = maxVel;
         if (target.motionZ < -maxVel) target.motionZ = -maxVel;
+
+        if (distance < 0.5) {
+            target.motionZ += maxVel * 2;
+        }
     }
 }
