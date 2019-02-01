@@ -113,6 +113,8 @@ public class Unicopia implements IGuiHandler {
 
         Biome.REGISTRY.forEach(UEntities::registerSpawnEntries);
         UClient.instance().posInit(event);
+
+        UItems.fixRecipes();
     }
 
     public static CraftingManager getCraftingManager() {

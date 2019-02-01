@@ -16,10 +16,7 @@
       { "item": "minecraft:iron_nugget" }
     ],
     "A": [
-      { "item": "minecraft:apple", "data": 0 },
-      { "item": "minecraft:apple", "data": 1 },
-      { "item": "minecraft:apple", "data": 2 },
-      { "item": "minecraft:apple", "data": 3 }
+      { "item": "minecraft:apple", "data": 0 }
     ]
   },
   "result": { "item": "unicopia:apple_cider", "data": 0, "count": 1 }

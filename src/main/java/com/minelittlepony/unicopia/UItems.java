@@ -48,6 +48,7 @@ import com.minelittlepony.unicopia.edibles.Toxicity;
 import com.minelittlepony.unicopia.edibles.UItemFoodDelegate;
 import com.minelittlepony.unicopia.forgebullshit.BuildInTexturesBakery;
 import com.minelittlepony.unicopia.forgebullshit.ItemModels;
+import com.minelittlepony.unicopia.forgebullshit.OreReplacer;
 import com.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
 
 public class UItems {
@@ -241,6 +242,12 @@ public class UItems {
     static void registerFuels() {
         FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(zap_apple), new ItemStack(cooked_zap_apple), 0.1F);
         FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(juice), new ItemStack(burned_juice), 0);
+    }
+
+    static void fixRecipes() {
+        new OreReplacer()
+            .registerAll(stack -> stack.getItem().getRegistryName().equals(apple.getRegistryName()))
+            .done();
     }
 
     @SideOnly(Side.CLIENT)
