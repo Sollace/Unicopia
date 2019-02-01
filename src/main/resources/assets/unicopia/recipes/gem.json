@@ -7,15 +7,8 @@
   ],
   "key": {
     "#": [
-      {
-        "item": "unicopia:corrupted_gem",
-        "data": 0
-      }
+      { "item": "unicopia:corrupted_gem" }
     ]
   },
-  "result": {
-    "item": "unicopia:gem",
-    "data": 0,
-    "count": 1
-  }
+  "result": { "item": "unicopia:gem", "count": 1 }
 }

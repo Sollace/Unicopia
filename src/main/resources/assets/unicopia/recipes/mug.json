@@ -7,19 +7,11 @@
   ],
   "key": {
     "#": [
-      {
-        "item": "minecraft:stick"
-      }
+      { "item": "minecraft:stick" }
     ],
     "*": [
-      {
-	    "item": "minecraft:iron_nugget"
-      }
+      { "item": "minecraft:iron_nugget" }
     ]
   },
-  "result": {
-    "item": "unicopia:mug",
-    "data": 0,
-    "count": 1
-  }
+  "result": { "item": "unicopia:mug", "count": 1 }
 }

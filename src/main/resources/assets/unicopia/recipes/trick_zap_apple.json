@@ -1,17 +1,8 @@
 {
 	"type": "minecraft:crafting_shapeless",
 	"ingredients": [
-        {
-        	"item": "unicopia:zap_apple",
-        	"data": 0
-        },
-        {
-        	"item": "minecraft:rotten_flesh"
-        }
+        { "item": "unicopia:zap_apple", "data": 0 },
+        { "item": "minecraft:rotten_flesh" }
     ],
-	"result": {
-		"item": "unicopia:zap_apple",
-		"count": 1,
-		"data": 5
-	}
+	"result": { "item": "unicopia:zap_apple", "count": 1, "data": 5 }
 }

@@ -5,16 +5,8 @@
   ],
   "key": {
     "#": [
-      {
-        "item": "unicopia:cloud_block",
-        "data": 0,
-        "data": 1
-      }
+      { "item": "unicopia:cloud_block", "data": 1 }
     ]
   },
-  "result": {
-    "item": "unicopia:cloud_slab",
-    "data": 1,
-    "count": 6
-  }
+  "result": { "item": "unicopia:cloud_slab", "data": 1, "count": 6 }
 }

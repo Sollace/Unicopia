@@ -7,18 +7,11 @@
   ],
   "key": {
     "#": [
-      {
-        "item": "minecraft:bucket"
-      }
+      { "item": "minecraft:bucket" }
     ],
     "*": [
-      {
-	    "item": "unicopia:dew_drop"
-      }
+      { "item": "unicopia:dew_drop" }
     ]
   },
-  "result": {
-    "item": "minecraft:water_bucket",
-    "count": 1
-  }
+  "result": { "item": "minecraft:water_bucket", "count": 1 }
 }

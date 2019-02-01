@@ -7,9 +7,7 @@
   ],
   "key": {
     "A": [
-      {
-	    "item": "unicopia:alfalfa_leaves"
-      }
+      { "item": "unicopia:alfalfa_leaves" }
     ],
     "T": [
 	  { "item": "unicopia:tomato", "data": 0 },
@@ -26,9 +24,5 @@
       { "item": "minecraft:yellow_flower", "data": 0 }
     ]
   },
-  "result": {
-    "item": "unicopia:hay_burger",
-    "data": 0,
-    "count": 1
-  }
+  "result": { "item": "unicopia:hay_burger", "data": 0, "count": 1 }
 }

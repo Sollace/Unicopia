@@ -1,14 +1,7 @@
 {
 	"type": "minecraft:crafting_shapeless",
 	"ingredients": [
-        {
-        	"item": "unicopia:cloudsdale_tomato",
-        	"data": 0
-        }
+        { "item": "unicopia:tomato", "data": 0 }
     ],
-	"result": {
-		"item": "unicopia:tomato_seeds",
-		"count": 3,
-		"data": 0
-	}
+	"result": { "item": "unicopia:tomato_seeds", "count": 3, "data": 0 }
 }

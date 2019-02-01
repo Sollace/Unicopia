@@ -1,18 +1,8 @@
 {
 	"type": "minecraft:crafting_shapeless",
 	"ingredients": [
-        {
-        	"item": "unicopia:zap_apple",
-        	"data": 0
-        },
-        {
-        	"item": "minecraft:dye",
-        	"data": 14
-        }
+        { "item": "unicopia:zap_apple", "data": 0 },
+        { "item": "minecraft:dye", "data": 14 }
     ],
-	"result": {
-		"item": "unicopia:zap_apple",
-		"count": 1,
-		"data": 3
-	}
+	"result": { "item": "unicopia:zap_apple", "count": 1, "data": 3 }
 }

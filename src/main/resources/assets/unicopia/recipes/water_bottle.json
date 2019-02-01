@@ -7,14 +7,10 @@
   ],
   "key": {
     "#": [
-      {
-        "item": "minecraft:glass_bottle"
-      }
+      { "item": "minecraft:glass_bottle" }
     ],
     "*": [
-      {
-	    "item": "unicopia:dew_drop"
-      }
+      { "item": "unicopia:dew_drop" }
     ]
   },
   "result": {

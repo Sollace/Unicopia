@@ -7,21 +7,11 @@
   ],
   "key": {
     "#": [
-      {
-        "item": "unicopia:sugar_block",
-        "data": 0
-      }
+      { "item": "unicopia:sugar_block" }
     ],
     "*": [
-      {
-        "item": "unicopia:cereal",
-        "data": 0
-      }
+      { "item": "unicopia:cereal" }
     ]
   },
-  "result": {
-    "item": "unicopia:sugar_cereal",
-    "data": 0,
-    "count": 1
-  }
+  "result": { "item": "unicopia:sugar_cereal", "data": 0, "count": 1 }
 }

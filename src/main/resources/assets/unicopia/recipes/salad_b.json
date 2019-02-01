@@ -7,9 +7,7 @@
   ],
   "key": {
     "B": [
-      {
-        "item": "minecraft:bowl"
-      }
+      { "item": "minecraft:bowl" }
     ],
     "F": [
       { "item": "minecraft:double_plant", "data": 0 },
@@ -27,9 +25,5 @@
       { "item": "minecraft:yellow_flower", "data": 0 }
     ]
   },
-  "result": {
-    "item": "unicopia:salad",
-    "data": 2,
-    "count": 1
-  }
+  "result": { "item": "unicopia:salad", "data": 2, "count": 1 }
 }

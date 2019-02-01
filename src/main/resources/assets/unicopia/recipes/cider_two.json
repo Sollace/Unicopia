@@ -2,13 +2,19 @@
   "type": "minecraft:crafting_shaped",
   
   "pattern": [
-    "AAA",
-    "AAA",
-    " B "
+    "A B",
+    " J ",
+    " M "
   ],
   "key": {
+    "M": [
+      { "item": "unicopia:mug" }
+    ],
+    "J": [
+      { "item": "unicopia:juice", "data": 0 }
+    ],
     "B": [
-      { "item": "minecraft:glass_bottle" }
+      { "item": "unicopia:burned_juice", "data": 0 }
     ],
     "A": [
       { "item": "minecraft:apple", "data": 0 },
@@ -17,5 +23,5 @@
       { "item": "minecraft:apple", "data": 3 }
     ]
   },
-  "result": { "item": "unicopia:juice", "data": 0, "count": 1 }
+  "result": { "item": "unicopia:apple_cider", "data": 0, "count": 1 }
 }

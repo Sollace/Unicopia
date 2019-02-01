@@ -47,9 +47,5 @@
       }
     ]
   },
-  "result": {
-    "item": "unicopia:cloud_block",
-    "data": 2,
-    "count": 5
-  }
+  "result": { "item": "unicopia:cloud_block", "data": 2, "count": 5 }
 }

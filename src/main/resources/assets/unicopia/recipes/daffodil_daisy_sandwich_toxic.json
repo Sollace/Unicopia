@@ -7,9 +7,7 @@
   ],
   "key": {
     "B": [
-      {
-        "item": "minecraft:bread"
-      }
+      { "item": "minecraft:bread" }
     ],
     "F": [
       { "item": "minecraft:red_flower", "data": 0 },
@@ -24,9 +22,5 @@
       { "item": "minecraft:yellow_flower", "data": 0 }
     ]
   },
-  "result": {
-    "item": "unicopia:daffodil_daisy_sandwich",
-    "data": 2,
-    "count": 2
-  }
+  "result": { "item": "unicopia:daffodil_daisy_sandwich", "data": 2, "count": 2 }
 }
