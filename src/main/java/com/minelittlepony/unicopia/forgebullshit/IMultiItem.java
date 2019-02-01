@@ -10,10 +10,16 @@ public interface IMultiItem {
      */
     String[] getVariants();
 
+    /**
+     * Returns true if variants should all share the same model as the {0} data value
+     */
     default boolean variantsAreHidden() {
         return false;
     }
 
+    /**
+     * Gets the highest metadata value allowed for this item.
+     */
     default int getMaxMetadata() {
         return getVariants().length;
     }
