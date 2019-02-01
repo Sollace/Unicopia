@@ -6,7 +6,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -240,11 +239,29 @@ public class Unicopia implements IGuiHandler {
     }
 
     @SubscribeEvent
+    public static void onItemUseBegin(LivingEntityUseItemEvent.Start event) {
+        Entity e = event.getEntity();
+
+        if (!event.isCanceled() && e instanceof EntityPlayer) {
+            PlayerSpeciesList.instance().getPlayer((EntityPlayer)e).getFood().begin(event.getItem());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onItemUseCancel(LivingEntityUseItemEvent.Stop event) {
+        Entity e = event.getEntity();
+
+        if (!event.isCanceled() && e instanceof EntityPlayer) {
+            PlayerSpeciesList.instance().getPlayer((EntityPlayer)e).getFood().end();
+        }
+    }
+
+    @SubscribeEvent
     public static void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
         Entity e = event.getEntity();
 
-        if (!event.isCanceled() && e instanceof EntityPlayer && event.getItem().getItemUseAction() == EnumAction.EAT) {
-            PlayerSpeciesList.instance().getPlayer((EntityPlayer)e).onEntityEat();
+        if (!event.isCanceled() && e instanceof EntityPlayer) {
+            PlayerSpeciesList.instance().getPlayer((EntityPlayer)e).getFood().finish();
         }
     }
 

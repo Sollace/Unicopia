@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.player;
 
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.model.anim.IInterpolator;
 import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.enchanting.IPageOwner;
@@ -10,6 +12,8 @@ import com.minelittlepony.unicopia.spell.ICaster;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPlayer>, ITransmittable, IPageOwner {
@@ -19,6 +23,8 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
     IGravity getGravity();
 
     IView getCamera();
+
+    IFood getFood();
 
     IInterpolator getInterpolator();
 
@@ -44,7 +50,7 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
 
     void copyFrom(IPlayer oldPlayer);
 
-    void onEntityEat();
+    void onEntityEat(ItemStack stack, @Nullable ItemFood food);
 
     boolean stepOnCloud();
 

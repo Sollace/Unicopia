@@ -3,11 +3,13 @@ package com.minelittlepony.unicopia.player;
 import java.util.List;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 import com.minelittlepony.model.anim.BasicEasingInterpolator;
 import com.minelittlepony.model.anim.IInterpolator;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.UEffects;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
@@ -19,6 +21,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.MobEffects;
+import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.network.datasync.DataParameter;
@@ -27,6 +31,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketSetPassengers;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.StatList;
+import net.minecraft.world.EnumDifficulty;
 
 class PlayerCapabilities implements IPlayer {
 
@@ -51,6 +56,8 @@ class PlayerCapabilities implements IPlayer {
     private final PlayerAttributes attributes = new PlayerAttributes();
 
     private final PlayerView view = new PlayerView(this);
+
+    private final PlayerFood food = new PlayerFood(this);
 
     private final EffectSync<EntityPlayer> effectDelegate = new EffectSync<>(this, EFFECT);
 
@@ -224,12 +231,31 @@ class PlayerCapabilities implements IPlayer {
     }
 
     @Override
-    public void onEntityEat() {
+    public IFood getFood() {
+        return food;
+    }
+
+    @Override
+    public void onEntityEat(ItemStack stack, @Nullable ItemFood food) {
         if (getPlayerSpecies() == Race.CHANGELING) {
             EntityPlayer player = getOwner();
 
-            player.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 2000, 2));
-            player.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 2000, 2));
+            if (food != null) {
+                int health = food.getHealAmount(stack);
+                float saturation = food.getSaturationModifier(stack);
+
+                player.getFoodStats().addStats(-health/2, -saturation/2);
+
+                player.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 100, 3, true, true));
+            } else {
+                player.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 200, 3, true, true));
+            }
+
+            if (player.world.getDifficulty() != EnumDifficulty.PEACEFUL && player.world.rand.nextInt(20) == 0) {
+                player.addPotionEffect(new PotionEffect(UEffects.FOOD_POISONING, 300, 2, true, true));
+            }
+
+            player.addPotionEffect(new PotionEffect(MobEffects.WEAKNESS, 2000, 2, true, true));
         }
     }
 
