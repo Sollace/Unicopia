@@ -571,6 +571,17 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     }
 
     @Override
+    public EntityItem entityDropItem(ItemStack stack, float offsetY) {
+        EntityItem item = super.entityDropItem(stack, offsetY);
+
+        PlayerSpeciesList.instance().getEntity(item).setPlayerSpecies(Race.PEGASUS);
+        item.setNoGravity(true);
+        item.motionY = 0;
+
+        return item;
+    }
+
+    @Override
     public void readEntityFromNBT(NBTTagCompound tag) {
         super.readEntityFromNBT(tag);
 

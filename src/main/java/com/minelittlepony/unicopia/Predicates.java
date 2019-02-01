@@ -17,7 +17,7 @@ public final class Predicates {
     };
 
     public static final Predicate<Entity> ITEMS = entity -> {
-        return entity instanceof EntityItem && entity.isEntityAlive();
+        return entity instanceof EntityItem && entity.isEntityAlive() && entity.ticksExisted > 1;
     };
 
     public static final Predicate<EntityItem> ITEM_INTERACT_WITH_CLOUDS = item -> {
