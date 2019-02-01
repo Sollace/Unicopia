@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Random;
 
 import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.UParticles;
@@ -527,12 +528,9 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     @Override
     public void onDeath(DamageSource s) {
         if (s == DamageSource.GENERIC || (s.getTrueSource() != null && s.getTrueSource() instanceof EntityPlayer)) {
-            if (!isBurning()) {
-                Particles.instance().getEntityEmitter().emitDestructionParticles(this, UBlocks.cloud.getDefaultState());
-            }
-
             setDead();
         }
+
         super.onDeath(s);
         clearItemFloatingState();
     }
