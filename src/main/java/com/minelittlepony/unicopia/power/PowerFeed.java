@@ -14,6 +14,7 @@ import com.minelittlepony.util.vector.VecHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.passive.EntityCow;
+import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -53,7 +54,7 @@ public class PowerFeed implements IPower<Hit> {
     @Override
     public Hit tryActivate(EntityPlayer player, World w) {
         if (player.getHealth() < player.getMaxHealth() || player.canEat(false)) {
-            Entity i = VecHelper.getLookedAtEntity(player, 10);
+            Entity i = VecHelper.getLookedAtEntity(player, 15);
             if (i != null && canDrain(i)) {
                 return new Hit();
             }
@@ -67,6 +68,7 @@ public class PowerFeed implements IPower<Hit> {
             || e instanceof EntityVillager
             || e instanceof EntityPlayer
             || e instanceof EntitySheep
+            || e instanceof EntityPig
             || EnumCreatureType.MONSTER.getCreatureClass().isAssignableFrom(e.getClass());
     }
 
@@ -79,7 +81,7 @@ public class PowerFeed implements IPower<Hit> {
     public void apply(EntityPlayer player, Hit data) {
         List<Entity> list = VecHelper.getWithinRange(player, 3, this::canDrain);
 
-        Entity looked = VecHelper.getLookedAtEntity(player, 10);
+        Entity looked = VecHelper.getLookedAtEntity(player, 17);
         if (looked != null && !list.contains(looked)) {
             list.add(looked);
         }
@@ -93,7 +95,7 @@ public class PowerFeed implements IPower<Hit> {
             for (Entity i : list) {
                 DamageSource d = MagicalDamageSource.causePlayerDamage("feed", player);
 
-                if (EnumCreatureType.CREATURE.getCreatureClass().isAssignableFrom(i.getClass()) || player.world.rand.nextFloat() > 0.95f) {
+                if (player.world.rand.nextFloat() > 0.95f) {
                     i.attackEntityFrom(d, Integer.MAX_VALUE);
                 } else {
                     i.attackEntityFrom(d, drained);
@@ -111,9 +113,7 @@ public class PowerFeed implements IPower<Hit> {
                 player.addPotionEffect(new PotionEffect(MobEffects.WITHER, 20, 1));
             }
 
-            if (player.world.rand.nextFloat() > 0.4f) {
-                player.removePotionEffect(MobEffects.NAUSEA);
-            }
+            player.removePotionEffect(MobEffects.NAUSEA);
         }
     }
 
