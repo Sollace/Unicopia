@@ -50,7 +50,7 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
 
     void copyFrom(IPlayer oldPlayer);
 
-    void onEntityEat(ItemStack stack, @Nullable ItemFood food);
+    void onEat(ItemStack stack, @Nullable ItemFood food);
 
     boolean stepOnCloud();
 

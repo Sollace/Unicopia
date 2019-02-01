@@ -35,7 +35,7 @@ class PlayerFood implements IFood {
     @Override
     public void finish() {
         if (!eatingStack.isEmpty()) {
-            player.onEntityEat(eatingStack, (ItemFood)eatingStack.getItem());
+            player.onEat(eatingStack, (ItemFood)eatingStack.getItem());
         }
     }
 

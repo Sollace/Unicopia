@@ -236,7 +236,7 @@ class PlayerCapabilities implements IPlayer {
     }
 
     @Override
-    public void onEntityEat(ItemStack stack, @Nullable ItemFood food) {
+    public void onEat(ItemStack stack, @Nullable ItemFood food) {
         if (getPlayerSpecies() == Race.CHANGELING) {
             EntityPlayer player = getOwner();
 
