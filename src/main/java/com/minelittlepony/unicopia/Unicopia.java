@@ -130,11 +130,6 @@ public class Unicopia implements IGuiHandler {
     }
 
     @SubscribeEvent
-    public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-        UItems.initRecipes(event.getRegistry());
-    }
-
-    @SubscribeEvent
     public static void registerPotions(RegistryEvent.Register<Potion> event) {
         UEffects.init(event.getRegistry());
     }

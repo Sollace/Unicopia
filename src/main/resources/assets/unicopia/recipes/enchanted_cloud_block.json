@@ -7,50 +7,41 @@
   ],
   "key": {
     "#": [
-      {
-        "item": "unicopia:cloud_block",
-        "data": 0
-      }
+      { "item": "unicopia:cloud_block", "data": 0 }
     ],
     "$": [
-      {
-    	"item": "unicopia:dew_drop"
-      }
+      { "item": "unicopia:dew_drop" }
     ],
     "*": [
       {
     	"item": "minecraft:enchanted_book",
-    	"data": 2,
     	"nbt": {
-    	  "StoredEnchantments": [
-             { "id": 2, "level": 1 }
+    	  "ench": [
+             { "id": 2, "lvl": 1 }
           ]
       	}
       },
       {
       	"item": "minecraft:enchanted_book",
-      	"data": 2,
       	"nbt": {
-      	  "StoredEnchantments": [
-               { "id": 2, "level": 2 }
+      	  "ench": [
+               { "id": 2, "lvl": 2 }
             ]
           }
       },
       {
     	"item": "minecraft:enchanted_book",
-    	"data": 2,
     	"nbt": {
-    	  "StoredEnchantments": [
-             { "id": 2, "level": 3 }
+    	  "ench": [
+             { "id": 2, "lvl": 3 }
           ]
         }
       },
       {
     	"item": "minecraft:enchanted_book",
-    	"data": 2,
     	"nbt": {
-    	  "StoredEnchantments": [
-             { "id": 2, "level": 4 }
+    	  "ench": [
+             { "id": 2, "lvl": 4 }
           ]
         }
       }
@@ -59,6 +50,6 @@
   "result": {
     "item": "unicopia:cloud_block",
     "data": 2,
-    "count": 4
+    "count": 5
   }
 }

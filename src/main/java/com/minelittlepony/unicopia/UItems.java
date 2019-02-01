@@ -25,7 +25,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.color.ItemColors;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
@@ -34,10 +33,6 @@ import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemSeedFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -52,7 +47,6 @@ import com.minelittlepony.unicopia.edibles.ItemEdible;
 import com.minelittlepony.unicopia.edibles.Toxicity;
 import com.minelittlepony.unicopia.edibles.UItemFoodDelegate;
 import com.minelittlepony.unicopia.forgebullshit.BuildInTexturesBakery;
-import com.minelittlepony.unicopia.forgebullshit.FUF;
 import com.minelittlepony.unicopia.forgebullshit.ItemModels;
 import com.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
 
@@ -245,29 +239,8 @@ public class UItems {
     }
 
     static void registerFuels() {
-        FurnaceRecipes.instance().addSmeltingRecipe(
-                new ItemStack(zap_apple, 1),
-                new ItemStack(cooked_zap_apple, 1), 0.1F);
-        FurnaceRecipes.instance().addSmeltingRecipe(
-                new ItemStack(juice),
-                new ItemStack(burned_juice), 0);
-    }
-
-    @FUF(reason = "There is no way to register custom recipe types that support nbt data. Waiting for mixins...")
-    static void initRecipes(IForgeRegistry<IRecipe> registry) {
-        Ingredient dewdrop = Ingredient.fromItem(dew_drop);
-        Ingredient cloud = Ingredient.fromStacks(new ItemStack(cloud_block, 1, 0));
-
-        ItemStack bookStack = new ItemStack(Items.ENCHANTED_BOOK, 1);
-        bookStack.addEnchantment(Enchantments.FEATHER_FALLING, 1);
-
-        Ingredient book = Ingredient.fromStacks(bookStack);
-
-        registry.register(new ShapedRecipes("", 3, 3, NonNullList.from(Ingredient.EMPTY,
-                dewdrop, dewdrop, dewdrop,
-                cloud, book, cloud,
-                cloud, cloud, cloud
-        ), new ItemStack(cloud_block, 1, 2)).setRegistryName(Unicopia.MODID, "id_dont_care_just_use_it"));
+        FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(zap_apple), new ItemStack(cooked_zap_apple), 0.1F);
+        FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(juice), new ItemStack(burned_juice), 0);
     }
 
     @SideOnly(Side.CLIENT)
