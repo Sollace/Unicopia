@@ -561,12 +561,12 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     protected void dropFewItems(boolean hitByPlayer, int looting) {
         if (hitByPlayer) {
             Item item = getDropItem();
-            int amount = 2 + world.rand.nextInt(3);
+            int amount = 13 + world.rand.nextInt(3);
 
             dropItem(item, amount * (1 + looting));
 
             if (world.rand.nextBoolean()) {
-                dropItem(UItems.dew_drop, 2 + looting);
+                dropItem(UItems.dew_drop, 3 + looting);
             }
         }
     }
