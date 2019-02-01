@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.player;
 
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.mixin.MixinEntity;
 import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
@@ -60,16 +61,18 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
 
                 entity.fallDistance = 0;
 
-                float exhaustion = (0.5F * ticksInAir++) / 70;
-                if (entity.isSprinting()) {
-                    exhaustion *= 3.11F;
+                if (player.getPlayerSpecies() != Race.CHANGELING && entity.world.rand.nextInt(100) == 0) {
+                    float exhaustion = (0.3F * ticksInAir) / 70;
+                    if (entity.isSprinting()) {
+                        exhaustion *= 3.11F;
+                    }
+
+                    exhaustion *= (1 - flightExperience/MAXIMUM_FLIGHT_EXPERIENCE);
+
+                    entity.addExhaustion(exhaustion);
                 }
 
-                exhaustion *= (1 - flightExperience/MAXIMUM_FLIGHT_EXPERIENCE);
-
-                entity.addExhaustion(exhaustion);
-
-                if (ticksInAir >= MAXIMUM_FLIGHT_EXPERIENCE) {
+                if (ticksInAir++ >= MAXIMUM_FLIGHT_EXPERIENCE) {
                     ticksInAir = 0;
                     addFlightExperience(entity);
                     entity.playSound(SoundEvents.ENTITY_GUARDIAN_FLOP, 1, 1);
