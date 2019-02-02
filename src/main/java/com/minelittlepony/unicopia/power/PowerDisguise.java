@@ -22,7 +22,7 @@ public class PowerDisguise extends PowerFeed {
 
     @Override
     public String getKeyName() {
-        return "unicopia.power.diguise";
+        return "unicopia.power.disguise";
     }
 
     @Override
