@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -12,14 +13,23 @@ import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.IView;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.util.gui.ButtonGridLayout;
+import com.minelittlepony.util.gui.UButton;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiOptions;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.world.IInteractionObject;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.FOVUpdateEvent;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -31,6 +41,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import static com.minelittlepony.util.gui.ButtonGridLayout.*;
 
 @EventBusSubscriber(Side.CLIENT)
 public class UnicopiaClient extends UClient {
@@ -54,6 +66,7 @@ public class UnicopiaClient extends UClient {
                 return race;
             }
         }
+
 
         return UConfig.getInstance().getPrefferedRace();
     }
@@ -104,6 +117,44 @@ public class UnicopiaClient extends UClient {
     @Override
     public int getViewMode() {
         return Minecraft.getMinecraft().gameSettings.thirdPersonView;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public static void onDisplayGui(GuiScreenEvent.InitGuiEvent.Post event) {
+        if (event.getGui() instanceof GuiOptions) {
+            addUniButton(event);
+        }
+    }
+
+    static void addUniButton(GuiScreenEvent.InitGuiEvent.Post event) {
+        ButtonGridLayout layout = new ButtonGridLayout(event.getButtonList());
+
+        GuiButton uni = new UButton(layout.getNextButtonId(), 0, 0, 150, 20, I18n.format("gui.unicopia"), b -> {
+            Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.BLOCK_ANVIL_USE, 1));
+            b.displayString = "<< WIP >>";
+
+            return false;
+        });
+
+        List<Integer> possibleXCandidates = list(layout.getColumns());
+        List<Integer> possibleYCandidates = list(layout.getRows());
+
+        uni.y = last(possibleYCandidates, 1);
+
+        if (layout.getRows()
+                .filter(y -> layout.getRow(y).size() == 1).count() < 2) {
+            uni.y += 25;
+            uni.x = first(possibleXCandidates, 0);
+
+            layout.getRow(last(possibleYCandidates, 0)).forEach(button -> {
+                button.y = Math.max(button.y, uni.y + uni.height + 13);
+            });
+        } else {
+            uni.x = first(possibleXCandidates, 2);
+        }
+
+        layout.getElements().add(uni);
     }
 
     @SideOnly(Side.CLIENT)

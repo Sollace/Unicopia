@@ -101,6 +101,8 @@ toxicity.fair.name=Fairly Toxic
 toxicity.severe.name=Toxic
 toxicity.lethal.name=Lethal
 
+gui.unicopia=Unicopia...
+
 commands.race.success.self=Your race has been updated
 commands.race.success.otherself=%s changed race to %s
 commands.race.success.other=Changed %s's race to %s
