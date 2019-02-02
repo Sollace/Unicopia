@@ -5,7 +5,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.jumpingcastle.api.Target;
-import com.minelittlepony.pony.data.IPony;
 import com.minelittlepony.unicopia.hud.UHud;
 import com.minelittlepony.unicopia.input.Keyboard;
 import com.minelittlepony.unicopia.inventory.gui.GuiOfHolding;
@@ -47,9 +46,8 @@ public class UnicopiaClient extends UClient {
 
     private static Race getclientPlayerRace() {
         if (!UConfig.getInstance().ignoresMineLittlePony()
-                && Minecraft.getMinecraft().player != null
-                && MineLP.modIsActive()) {
-            Race race = Race.fromPonyRace(IPony.forPlayer(Minecraft.getMinecraft().player).getRace(false));
+                && Minecraft.getMinecraft().player != null) {
+            Race race = MineLP.getPlayerPonyRace();
 
             if (!race.isDefault()) {
                 return race;

@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.base.Strings;
-import com.minelittlepony.pony.data.PonyRace;
-import com.minelittlepony.unicopia.forgebullshit.FUF;
 
 public enum Race {
     /**
@@ -77,32 +75,6 @@ public enum Race {
         } catch (NumberFormatException e) { }
 
         return def;
-    }
-
-    // Commented so we don't alert overlord forge
-    @FUF(reason = "@SideOnly(Side.CLIENT)")
-    public static Race fromPonyRace(PonyRace ponyRace) {
-        switch (ponyRace) {
-            case ALICORN:
-                return ALICORN;
-            case CHANGELING:
-            case REFORMED_CHANGELING:
-                return CHANGELING;
-            case ZEBRA:
-            case EARTH:
-                return EARTH;
-            case GRIFFIN:
-            case HIPPOGRIFF:
-            case PEGASUS:
-            case BATPONY:
-                return PEGASUS;
-            case SEAPONY:
-            case UNICORN:
-                return UNICORN;
-            default:
-                return EARTH;
-
-        }
     }
 
     public static Race fromName(String name) {
