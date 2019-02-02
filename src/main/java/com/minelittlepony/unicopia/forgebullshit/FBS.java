@@ -9,6 +9,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -44,6 +45,17 @@ public class FBS {
         final ICapabilitiesProxyContainer<EntityPlayer> clone = of((EntityPlayer)event.getEntity());
 
         clone.getPlayer().copyFrom(original.getPlayer());
+    }
+
+    @SubscribeEvent
+    public static void onDimensionalTravel(EntityTravelToDimensionEvent event) {
+        final ICapabilitiesProxyContainer<?> original = of(event.getEntity());
+
+        if (original == null) {
+            return;
+        }
+
+        original.getRaceContainer().onDimensionalTravel(event.getDimension());
     }
 
     @SuppressWarnings("unchecked")

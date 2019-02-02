@@ -43,6 +43,11 @@ class ItemCapabilities implements IRaceContainer<EntityItem>, IOwned<EntityItem>
     }
 
     @Override
+    public void onDimensionalTravel(int destinationDimension) {
+
+    }
+
+    @Override
     public EntityItem getOwner() {
         return owner;
     }

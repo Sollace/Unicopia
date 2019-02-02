@@ -10,4 +10,5 @@ public interface IRaceContainer<T extends Entity> extends InbtSerialisable, IUpd
 
     void setPlayerSpecies(Race race);
 
+    void onDimensionalTravel(int destinationDimension);
 }

@@ -67,6 +67,8 @@ class PlayerCapabilities implements IPlayer {
 
     private EntityPlayer entity;
 
+    private boolean dirty = false;
+
     PlayerCapabilities(EntityPlayer player) {
         setOwner(player);
 
@@ -133,12 +135,21 @@ class PlayerCapabilities implements IPlayer {
 
     @Override
     public void sendCapabilities(boolean full) {
-        if (!getOwner().getEntityWorld().isRemote) {
+        dirty = false;
+
+        if (!getWorld().isRemote) {
             if (full) {
                 Unicopia.channel.broadcast(new MsgPlayerCapabilities(this));
             } else {
                 Unicopia.channel.broadcast(new MsgPlayerCapabilities(getPlayerSpecies(), getOwner()));
             }
+        }
+    }
+
+    @Override
+    public void onDimensionalTravel(int destinationDimension) {
+        if (!getWorld().isRemote) {
+            dirty = true;
         }
     }
 
@@ -201,11 +212,15 @@ class PlayerCapabilities implements IPlayer {
         addEnergy(-1);
 
         attributes.applyAttributes(entity, getPlayerSpecies());
+
+        if (dirty) {
+            sendCapabilities(true);
+        }
     }
 
     @Override
     public void onFall(float distance, float damageMultiplier) {
-        if (!entity.getEntityWorld().isRemote) {
+        if (!getWorld().isRemote) {
             if (getPlayerSpecies().canFly()) {
                 if (entity.fallDistance > 2) {
                     entity.addStat(StatList.FALL_ONE_CM, (int)Math.round(distance * 100));
@@ -298,6 +313,7 @@ class PlayerCapabilities implements IPlayer {
 
     @Override
     public void copyFrom(IPlayer oldPlayer) {
+        pages.addAll(oldPlayer.getUnlockedPages());
         setEffect(oldPlayer.getEffect());
         setPlayerSpecies(oldPlayer.getPlayerSpecies());
     }
@@ -337,5 +353,4 @@ class PlayerCapabilities implements IPlayer {
     public List<Integer> getUnlockedPages() {
         return pages;
     }
-
 }
