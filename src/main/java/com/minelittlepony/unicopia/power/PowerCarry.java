@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.power;
 import org.lwjgl.input.Keyboard;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.entity.EntityCloud;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.power.data.Hit;
 import com.minelittlepony.util.vector.VecHelper;
@@ -50,7 +51,9 @@ public class PowerCarry implements IPower<Hit> {
         Entity hit = VecHelper.getLookedAtEntity(player, 10);
 
         if (hit instanceof EntityLivingBase && !player.isRidingOrBeingRiddenBy(hit)) {
-            return (EntityLivingBase)hit;
+            if (!(hit instanceof EntityCloud)) {
+                return (EntityLivingBase)hit;
+            }
         }
 
         return null;
