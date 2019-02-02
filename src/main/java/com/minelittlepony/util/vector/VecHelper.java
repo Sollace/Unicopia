@@ -38,6 +38,7 @@ public class VecHelper {
 	/**
      * Gets the entity the player is currently looking at, or null.
      */
+	@Nullable
     public static Entity getLookedAtEntity(EntityLivingBase e, int reach) {
         RayTraceResult objectMouseOver = getObjectMouseOver(e, reach, 1);
 

@@ -28,11 +28,18 @@ public class EffectSync<T extends EntityLivingBase> {
         NBTTagCompound comp = owned.getEntity().getDataManager().get(param);
 
         if (comp == null || !comp.hasKey("effect_id")) {
-            effect = null;
+            if (effect != null) {
+                effect.setDead();
+                effect = null;
+            }
         } else {
             String id = comp.getString("effect_id");
 
             if (effect == null || !effect.getName().contentEquals(id)) {
+                if (effect != null) {
+                    effect.setDead();
+                    effect = null;
+                }
                 effect = SpellRegistry.instance().createEffectFromNBT(comp);
             } else if (owned.getEntity().world.isRemote) {
                 effect.readFromNBT(comp);
@@ -43,6 +50,9 @@ public class EffectSync<T extends EntityLivingBase> {
     }
 
     public void set(IMagicEffect effect) {
+        if (this.effect != null && this.effect != effect) {
+            this.effect.setDead();
+        }
         this.effect = effect;
 
         if (effect == null) {

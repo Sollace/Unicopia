@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.power;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.lwjgl.input.Keyboard;
 
 import com.minelittlepony.unicopia.Race;
@@ -51,6 +53,7 @@ public class PowerFeed implements IPower<Hit> {
         return playerSpecies == Race.CHANGELING;
     }
 
+    @Nullable
     @Override
     public Hit tryActivate(EntityPlayer player, World w) {
         if (player.getHealth() < player.getMaxHealth() || player.canEat(false)) {

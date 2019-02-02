@@ -54,6 +54,10 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
 
     boolean stepOnCloud();
 
+    boolean isInvisible();
+
+    void setInvisible(boolean invisible);
+
     void onFall(float distance, float damageMultiplier);
 
     void beforeUpdate(EntityPlayer entity);

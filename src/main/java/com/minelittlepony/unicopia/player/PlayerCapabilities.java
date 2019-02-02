@@ -69,6 +69,8 @@ class PlayerCapabilities implements IPlayer {
 
     private boolean dirty = false;
 
+    private boolean invisible = false;
+
     PlayerCapabilities(EntityPlayer player) {
         setOwner(player);
 
@@ -126,6 +128,16 @@ class PlayerCapabilities implements IPlayer {
     @Override
     public void setEnergy(float energy) {
         getOwner().getDataManager().set(ENERGY, Math.max(0, energy));
+    }
+
+    @Override
+    public boolean isInvisible() {
+        return invisible;
+    }
+
+    @Override
+    public void setInvisible(boolean invisible) {
+        this.invisible = invisible;
     }
 
     @Override
@@ -195,16 +207,12 @@ class PlayerCapabilities implements IPlayer {
         gravity.onUpdate(entity);
 
         if (hasEffect()) {
-            if (!getPlayerSpecies().canCast()) {
-                setEffect(null);
-            } else {
-                if (entity.getEntityWorld().isRemote) {
-                    getEffect().renderOnPerson(this);
-                }
+            if (entity.getEntityWorld().isRemote) {
+                getEffect().renderOnPerson(this);
+            }
 
-                if (!getEffect().updateOnPerson(this)) {
-                    setEffect(null);
-                }
+            if (!getEffect().updateOnPerson(this)) {
+                setEffect(null);
             }
         }
 

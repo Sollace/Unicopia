@@ -22,6 +22,7 @@ import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -98,6 +99,21 @@ public class UnicopiaClient extends UClient {
         }
 
         return getPlayer().getGameProfile().getId().equals(player.getGameProfile().getId());
+    }
+
+    @Override
+    public int getViewMode() {
+        return Minecraft.getMinecraft().gameSettings.thirdPersonView;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public static void preEntityRender(RenderLivingEvent.Pre<?> event) {
+        if (event.getEntity() instanceof EntityPlayer) {
+            if (PlayerSpeciesList.instance().getPlayer((EntityPlayer)event.getEntity()).isInvisible()) {
+                event.setCanceled(true);
+            }
+        }
     }
 
     @SideOnly(Side.CLIENT)

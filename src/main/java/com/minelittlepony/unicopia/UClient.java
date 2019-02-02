@@ -56,6 +56,10 @@ public class UClient {
         return false;
     }
 
+    public int getViewMode() {
+        return 0;
+    }
+
     public void preInit(FMLPreInitializationEvent event) {}
 
     public void init(FMLInitializationEvent event) {}

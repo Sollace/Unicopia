@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.power;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.input.IKeyBind;
 import com.minelittlepony.unicopia.particle.Particles;
@@ -99,6 +101,7 @@ public interface IPower<T extends IData> extends IKeyBind {
      * @param w         The player's world
      * @return  Data to be sent, or null if activation failed
      */
+    @Nullable
     T tryActivate(EntityPlayer player, World w);
 
     Class<T> getPackageType();
