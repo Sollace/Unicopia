@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.power;
 import org.lwjgl.input.Keyboard;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.data.Hit;
@@ -61,11 +62,11 @@ public class PowerMagic implements IPower<Hit> {
 
     @Override
     public void preApply(IPlayer player) {
-
+        IPower.spawnParticles(UParticles.MAGIC_PARTICLE, player, 5);
     }
 
     @Override
     public void postApply(IPlayer player) {
-
+        IPower.spawnParticles(UParticles.MAGIC_PARTICLE, player, 5);
     }
 }
