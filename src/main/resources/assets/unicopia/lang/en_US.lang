@@ -176,8 +176,7 @@ unicopia.power.earth=Secondary Earth Pony ability
 unicopia.power.teleport=Primary Unicorn ability
 unicopia.power.magic=Secondary Unicorn ability
 
-unicopia.power.rain=Primary Pegasus ability
-unicopia.power.thunder=Secondary Pegasus ability
+unicopia.power.cloud=Primary Pegasus ability
 unicopia.power.carry=Pick up & Drop riders
 
 unicopia.power.feed=Primary Changeling ability

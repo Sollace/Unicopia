@@ -72,6 +72,8 @@ public class EntityWildCloud extends EntityCloud {
 
     @Override
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData pack) {
+        pack = super.onInitialSpawn(difficulty, pack);
+
         if (!(pack instanceof PackData)) {
             float minSpawnHeight = getMinimumFlyingHeight();
 
@@ -84,6 +86,14 @@ public class EntityWildCloud extends EntityCloud {
                 collideWithNearbyEntities();
             }
 
+            if (world.isRainingAt(getPosition())) {
+                setIsRaining(true);
+            }
+
+            if (world.isThundering()) {
+                setIsThundering(true);
+            }
+
             pack = new PackData(this);
         } else {
             PackData packData = (PackData)pack;
@@ -91,11 +101,14 @@ public class EntityWildCloud extends EntityCloud {
 
             Vec3d position = packData.getUnOccupiedPosition(getCloudSize());
 
+            setIsRaining(packData.leader.getIsRaining());
+            setIsThundering(packData.leader.getIsThundering());
+
             setLocationAndAngles(position.x, position.y, position.z, packData.leader.rotationYaw, packData.leader.rotationPitch);
             collideWithNearbyEntities();
         }
 
-    	return super.onInitialSpawn(difficulty, pack);
+    	return pack;
     }
 
     static class PackData implements IEntityLivingData {

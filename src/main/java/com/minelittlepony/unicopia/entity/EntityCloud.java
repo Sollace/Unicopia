@@ -167,7 +167,11 @@ public class EntityCloud extends EntityFlying implements IAnimals {
 
     @Override
     protected void collideWithEntity(Entity other) {
-        if (other instanceof EntityCloud) {
+        if (other instanceof EntityCloud || other instanceof EntityPlayer) {
+            if (other.posY > posY) {
+                return;
+            }
+
             super.collideWithEntity(other);
         }
     }
@@ -264,8 +268,15 @@ public class EntityCloud extends EntityFlying implements IAnimals {
             }
 
             if (setRainTimer(getRainTimer() - 1) == 0) {
-                if (rand.nextInt(20000) == 0) {
-                    setDead();
+                if (!getStationary()) {
+                    pomf();
+
+                    if (getCloudSize() > 1) {
+                        setIsRaining(false);
+                        setCloudSize(getCloudSize() - 1);
+                    } else {
+                        setDead();
+                    }
                 }
             }
         } else {
@@ -303,10 +314,12 @@ public class EntityCloud extends EntityFlying implements IAnimals {
             motionZ = 0;
         }
 
-        motionX /= (1 + getCloudSize());
-        motionZ /= (1 + getCloudSize());
-
         super.onUpdate();
+
+        double motionFactor = (1 + getCloudSize() / 4);
+
+        motionX /= motionFactor;
+        motionZ /= motionFactor;
 
         hurtTime = 0;
     }
@@ -340,38 +353,31 @@ public class EntityCloud extends EntityFlying implements IAnimals {
                 }
             }
         }
+
         super.onCollideWithPlayer(player);
     }
 
     @Override
     protected void updateAITasks() {
         if (!getStationary()) {
-            super.updateAITasks();
-
             if (!isBeingRidden()) {
                 double distance = targetAltitude - posY;
+
+                if (targetAltitude < posY && !world.isAirBlock(getPosition())) {
+                    distance = 0;
+                }
 
                 if (Math.abs(distance) < 1 && rand.nextInt(7000) == 0) {
                     targetAltitude = getRandomFlyingHeight();
                     distance = targetAltitude - posY;
                 }
 
-                if (rand.nextInt(7000) == 0) {
-                    directionX = directionX == 0 ? rand.nextInt(3) - 1 : 0;
-                }
-
-                if (rand.nextInt(7000) == 0) {
-                    directionZ = directionZ == 0 ? rand.nextInt(3) - 1 : 0;
-                }
-
                 if (Math.abs(distance) < 1) {
                     distance = 0;
                 }
 
-                motionX -= 0.02;
-                motionX -= (Math.signum(directionX) * 0.699999988079071D - motionX) * 0.10000000149011612D;
+                motionX -= 0.002;
                 motionY += (Math.signum(distance) * 0.699999988079071D - motionY) * 0.10000000149011612D;
-                motionZ -= (Math.signum(directionZ) * 0.699999988079071D - motionZ) * 0.10000000149011612D;
             }
         }
     }
@@ -437,6 +443,29 @@ public class EntityCloud extends EntityFlying implements IAnimals {
             }
         }
         super.handleStatusUpdate(type);
+    }
+
+    public void handlePegasusInteration(int interationType) {
+        if (!world.isRemote) {
+            switch (interationType) {
+                case 1:
+                    setIsRaining(!getIsRaining());
+                    break;
+                case 2:
+                    spawnThunderbolt();
+                    break;
+            }
+        }
+
+        pomf();
+    }
+
+    public void pomf() {
+        for (int i = 0; i < 50 * getCloudSize(); i++) {
+            Particles.instance().getEntityEmitter().emitDiggingParticles(this, UBlocks.cloud.getDefaultState());
+        }
+
+        playHurtSound(DamageSource.GENERIC);
     }
 
     @Override
@@ -515,7 +544,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
             } else if (stack != null && stack.getItem() instanceof ItemSpade) {
                 return super.attackEntityFrom(source, amount * 1.5f);
             } else if (canFly) {
-                if (player.posY < posY) {
+                if (player.posY < posY || !world.isAirBlock(getPosition())) {
                     targetAltitude = posY + 5;
                 } else if (player.posY > posY) {
                     targetAltitude = posY - 5;
@@ -554,7 +583,6 @@ public class EntityCloud extends EntityFlying implements IAnimals {
         return e instanceof EntityItem
                 && Predicates.ITEM_INTERACT_WITH_CLOUDS.test((EntityItem)e);
     }
-
 
     @Override
     protected void dropFewItems(boolean hitByPlayer, int looting) {
@@ -611,7 +639,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
             entity.onGround = true;
             entity.motionY += (((floatStrength > 2 ? 1 : floatStrength/2) * 0.699999998079071D) - entity.motionY + boundModifier * 0.7) * 0.10000000149011612D;
             if (!getStationary()) {
-                entity.motionX -= 0.013;
+                entity.motionX -= 0.0105;
             }
 
             if (!getStationary() && entity.motionY > 0.4 && world.rand.nextInt(900) == 0) {
@@ -633,14 +661,9 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     }
 
     @Override
-    protected void doBlockCollisions() {
-        super.doBlockCollisions();
-    }
-
-    @Override
     public void move(MoverType type, double x, double y, double z) {
-        this.setEntityBoundingBox(this.getEntityBoundingBox().offset(x, y, z));
-        this.resetPositionToBB();
+        setEntityBoundingBox(getEntityBoundingBox().offset(x, y, z));
+        resetPositionToBB();
     }
 
     public int getFloatStrength(Entity entity) {
