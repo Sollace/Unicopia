@@ -172,6 +172,7 @@ public class UItems {
             .setCreativeTab(CreativeTabs.MATERIALS)
             .setFull3D();
     public static final Item apple_cider = new ItemEdible(Unicopia.MODID, "apple_cider", 4, 2, stack -> Toxicity.MILD)
+            .setUseAction(EnumAction.DRINK)
             .setContainerItem(mug)
             .setFull3D();
     public static final Item juice = new ItemEdible(Unicopia.MODID, "juice", 2, 2, stack -> Toxicity.SAFE)
