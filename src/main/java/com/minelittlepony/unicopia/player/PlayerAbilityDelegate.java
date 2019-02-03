@@ -63,6 +63,7 @@ class PlayerAbilityDelegate implements IAbilityReceiver, IUpdatable<EntityPlayer
 
     protected synchronized void setAbility(@Nullable IPower<?> power) {
         if (activeAbility != power) {
+            triggered = false;
             activeAbility = power;
             warmup = power == null ? 0 : power.getWarmupTime(player);
             cooldown = 0;
