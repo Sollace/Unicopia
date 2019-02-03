@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.player;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.jumpingcastle.api.Target;
@@ -17,9 +18,20 @@ class PlayerAbilityDelegate implements IAbilityReceiver, IUpdatable<EntityPlayer
 
     private final IPlayer player;
 
-    private int warmup = 0;
+    /**
+     * Ticks of warmup before an ability is triggered.
+     */
+    private int warmup;
 
-    private int cooldown = 0;
+    /**
+     * Ticks of cooldown after an ability has been triggered.
+     */
+    private int cooldown;
+
+    /**
+     * True once the current ability has been triggered.
+     */
+    private boolean triggered;
 
     @Nullable
     private IPower<?> activeAbility = null;
@@ -28,26 +40,41 @@ class PlayerAbilityDelegate implements IAbilityReceiver, IUpdatable<EntityPlayer
         this.player = player;
     }
 
+    /**
+     * Returns true if the currrent ability can we swapped out.
+     */
     boolean canSwitchStates() {
-        return (warmup == 0 && cooldown == 0) || activeAbility == null;
+        return activeAbility == null || (warmup != 0) || (triggered && cooldown == 0);
     }
 
     @Override
-    public synchronized void tryUseAbility(IPower<?> power) {
-        if (canSwitchStates() || activeAbility != power) {
-            activeAbility = power;
-            warmup = power.getWarmupTime(player);
-            cooldown = 0;
-        }
-    }
-
-    @Override
-    public synchronized void tryClearAbility() {
+    public void tryUseAbility(IPower<?> power) {
         if (canSwitchStates()) {
-            activeAbility = null;
-            warmup = 0;
+            setAbility(power);
+        }
+    }
+
+    @Override
+    public void tryClearAbility() {
+        if (canSwitchStates()) {
+            setAbility(null);
+        }
+    }
+
+    protected synchronized void setAbility(@Nullable IPower<?> power) {
+        if (activeAbility != power) {
+            activeAbility = power;
+            warmup = power == null ? 0 : power.getWarmupTime(player);
             cooldown = 0;
         }
+    }
+
+    @Nullable
+    protected synchronized IPower<?> getUsableAbility() {
+        if (!(activeAbility == null || (triggered && warmup == 0 && cooldown == 0)) && activeAbility.canUse(player.getPlayerSpecies())) {
+            return activeAbility;
+        }
+        return null;
     }
 
     @Override
@@ -56,58 +83,80 @@ class PlayerAbilityDelegate implements IAbilityReceiver, IUpdatable<EntityPlayer
     }
 
     @Override
-    public synchronized void onUpdate(EntityPlayer entity) {
-        if (activeAbility != null && activeAbility.canUse(player.getPlayerSpecies())) {
-            if (warmup > 0) {
-                warmup--;
-                activeAbility.preApply(player);
-            } else if (player.isClientPlayer()) {
-                if (activateAbility()) {
-                    cooldown = activeAbility.getCooldownTime(player);
-                } else {
-                    cooldown = 0;
-                }
-            }
+    public void onUpdate(EntityPlayer entity) {
+        IPower<?> ability = getUsableAbility();
 
-            if (cooldown > 0 && activeAbility != null) {
-                cooldown--;
-                activeAbility.postApply(player);
+        if (ability == null) {
+            return;
+        }
+
+        if (warmup > 0) {
+            warmup--;
+            ability.preApply(player);
+            return;
+        }
+
+        if (cooldown > 0) {
+            cooldown--;
+            ability.postApply(player);
+            return;
+        }
+
+        if (triggered) {
+            return;
+        }
+
+        if (ability.canActivate(player.getWorld(), player)) {
+            triggered = true;
+            cooldown = ability.getCooldownTime(player);
+
+            if (player.isClientPlayer()) {
+                activateAbility(ability);
             }
+        }
+
+        if (cooldown <= 0) {
+            setAbility(null);
         }
     }
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
+        compound.setBoolean("triggered", triggered);
         compound.setInteger("warmup", warmup);
         compound.setInteger("cooldown", cooldown);
 
-        if (activeAbility != null) {
-            compound.setString("activeAbility", activeAbility.getKeyName());
+        IPower<?> ability = getUsableAbility();
+
+        if (ability != null) {
+            compound.setString("activeAbility", ability.getKeyName());
         }
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        warmup = compound.getInteger("warmup");
-        cooldown = compound.getInteger("cooldown");
         activeAbility = null;
 
+        triggered = compound.getBoolean("triggered");
+        warmup = compound.getInteger("warmup");
+        cooldown = compound.getInteger("cooldown");
+
         if (compound.hasKey("activeAbility")) {
-            PowersRegistry.instance().getPowerFromName(compound.getString("activeAbility")).ifPresent(p -> {
-                activeAbility = p;
-            });
+            PowersRegistry.instance()
+                .getPowerFromName(compound.getString("activeAbility"))
+                .ifPresent(p -> activeAbility = p);
         }
     }
 
-    protected boolean activateAbility() {
-        if (activeAbility == null || !activeAbility.canActivate(player.getWorld(), player)) {
-            return false;
-        }
-
-        IData data = activeAbility.tryActivate(player.getOwner(), player.getWorld());
+    /**
+     * Attempts to activate the current stored ability.
+     * Returns true if the ability suceeded, otherwise false.
+     */
+    protected boolean activateAbility(@Nonnull IPower<?> ability) {
+        IData data = ability.tryActivate(player);
 
         if (data != null) {
-            Unicopia.channel.send(new MsgPlayerAbility(player.getOwner(), activeAbility, data), Target.SERVER);
+            Unicopia.channel.send(new MsgPlayerAbility(player.getOwner(), ability, data), Target.SERVER);
         }
 
         return data != null;

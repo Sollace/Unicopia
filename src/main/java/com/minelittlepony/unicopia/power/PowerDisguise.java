@@ -6,7 +6,6 @@ import org.lwjgl.input.Keyboard;
 
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.player.IPlayer;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.data.Hit;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.SpellDisguise;
@@ -16,7 +15,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.world.World;
 
 public class PowerDisguise extends PowerFeed {
 
@@ -32,15 +30,14 @@ public class PowerDisguise extends PowerFeed {
 
     @Nullable
     @Override
-    public Hit tryActivate(EntityPlayer player, World w) {
+    public Hit tryActivate(IPlayer player) {
         return new Hit();
     }
 
     @Override
-    public void apply(EntityPlayer player, Hit data) {
+    public void apply(IPlayer iplayer, Hit data) {
+        EntityPlayer player = iplayer.getOwner();
         Entity looked = VecHelper.getLookedAtEntity(player, 17);
-
-        IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(player);
 
         player.world.playSound(null, player.getPosition(), SoundEvents.E_PARROT_IM_POLAR_BEAR, SoundCategory.PLAYERS, 1.4F, 0.4F);
 

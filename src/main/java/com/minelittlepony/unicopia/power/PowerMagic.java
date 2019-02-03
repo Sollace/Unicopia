@@ -5,12 +5,8 @@ import org.lwjgl.input.Keyboard;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.player.IPlayer;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.data.Hit;
 import com.minelittlepony.unicopia.spell.SpellShield;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
 
 public class PowerMagic implements IPower<Hit> {
 
@@ -40,7 +36,7 @@ public class PowerMagic implements IPower<Hit> {
     }
 
     @Override
-    public Hit tryActivate(EntityPlayer player, World w) {
+    public Hit tryActivate(IPlayer player) {
         return new Hit();
     }
 
@@ -50,13 +46,11 @@ public class PowerMagic implements IPower<Hit> {
     }
 
     @Override
-    public void apply(EntityPlayer player, Hit data) {
-        IPlayer prop = PlayerSpeciesList.instance().getPlayer(player);
-
-        if (prop.getEffect() instanceof SpellShield) {
-            prop.setEffect(null);
+    public void apply(IPlayer player, Hit data) {
+        if (player.getEffect() instanceof SpellShield) {
+            player.setEffect(null);
         } else {
-            prop.setEffect(new SpellShield());
+            player.setEffect(new SpellShield());
         }
     }
 

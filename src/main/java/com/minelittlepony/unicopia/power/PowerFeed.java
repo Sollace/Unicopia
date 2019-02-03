@@ -24,7 +24,6 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.world.World;
 
 public class PowerFeed implements IPower<Hit> {
 
@@ -55,9 +54,9 @@ public class PowerFeed implements IPower<Hit> {
 
     @Nullable
     @Override
-    public Hit tryActivate(EntityPlayer player, World w) {
-        if (player.getHealth() < player.getMaxHealth() || player.canEat(false)) {
-            Entity i = VecHelper.getLookedAtEntity(player, 15);
+    public Hit tryActivate(IPlayer player) {
+        if (player.getOwner().getHealth() < player.getOwner().getMaxHealth() || player.getOwner().canEat(false)) {
+            Entity i = VecHelper.getLookedAtEntity(player.getOwner(), 15);
             if (i != null && canDrain(i)) {
                 return new Hit();
             }
@@ -81,7 +80,8 @@ public class PowerFeed implements IPower<Hit> {
     }
 
     @Override
-    public void apply(EntityPlayer player, Hit data) {
+    public void apply(IPlayer iplayer, Hit data) {
+        EntityPlayer player = iplayer.getOwner();
         List<Entity> list = VecHelper.getWithinRange(player, 3, this::canDrain);
 
         Entity looked = VecHelper.getLookedAtEntity(player, 17);
@@ -98,7 +98,7 @@ public class PowerFeed implements IPower<Hit> {
             for (Entity i : list) {
                 DamageSource d = MagicalDamageSource.causePlayerDamage("feed", player);
 
-                if (player.world.rand.nextFloat() > 0.95f) {
+                if (iplayer.getWorld().rand.nextFloat() > 0.95f) {
                     i.attackEntityFrom(d, Integer.MAX_VALUE);
                 } else {
                     i.attackEntityFrom(d, drained);
@@ -112,7 +112,7 @@ public class PowerFeed implements IPower<Hit> {
                 player.getFoodStats().addStats(3, 0.25f);
             }
 
-            if (player.world.rand.nextFloat() > 0.9f) {
+            if (iplayer.getWorld().rand.nextFloat() > 0.9f) {
                 player.addPotionEffect(new PotionEffect(MobEffects.WITHER, 20, 1));
             }
 

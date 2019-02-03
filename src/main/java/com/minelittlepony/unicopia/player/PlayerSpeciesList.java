@@ -55,6 +55,10 @@ public class PlayerSpeciesList {
     }
 
     public IPlayer getPlayer(EntityPlayer player) {
+        if (player == null) {
+            return null;
+        }
+
         return FBS.of(player).getPlayer();
     }
 

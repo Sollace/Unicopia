@@ -9,6 +9,7 @@ import com.minelittlepony.jumpingcastle.api.IChannel;
 import com.minelittlepony.jumpingcastle.api.IMessage;
 import com.minelittlepony.jumpingcastle.api.IMessageHandler;
 import com.minelittlepony.unicopia.player.IPlayer;
+import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.IData;
 import com.minelittlepony.unicopia.power.IPower;
 import com.minelittlepony.unicopia.power.PowersRegistry;
@@ -38,7 +39,7 @@ public class MsgPlayerAbility implements IMessage, IMessageHandler<MsgPlayerAbil
     }
 
     private <T extends IData> void apply(IPower<T> power) {
-        EntityPlayer player = IPlayer.getPlayerFromServer(senderId);
+        IPlayer player = PlayerSpeciesList.instance().getPlayer(senderId);
         if (player == null) {
             return;
         }

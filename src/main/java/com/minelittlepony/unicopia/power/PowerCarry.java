@@ -43,7 +43,7 @@ public class PowerCarry implements IPower<Hit> {
     }
 
     @Override
-    public Hit tryActivate(EntityPlayer player, World w) {
+    public Hit tryActivate(IPlayer player) {
         return new Hit();
     }
 
@@ -65,8 +65,9 @@ public class PowerCarry implements IPower<Hit> {
     }
 
     @Override
-    public void apply(EntityPlayer player, Hit data) {
-        EntityLivingBase rider = findRider(player, player.world);
+    public void apply(IPlayer iplayer, Hit data) {
+        EntityPlayer player = iplayer.getOwner();
+        EntityLivingBase rider = findRider(player, iplayer.getWorld());
 
         if (rider != null) {
             rider.startRiding(player, true);

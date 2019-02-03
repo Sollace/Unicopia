@@ -98,11 +98,10 @@ public interface IPower<T extends IData> extends IKeyBind {
      * Called on the client to activate the ability.
      *
      * @param player    The player activating the ability
-     * @param w         The player's world
      * @return  Data to be sent, or null if activation failed
      */
     @Nullable
-    T tryActivate(EntityPlayer player, World w);
+    T tryActivate(IPlayer player);
 
     Class<T> getPackageType();
 
@@ -113,10 +112,10 @@ public interface IPower<T extends IData> extends IKeyBind {
      * @param player    The player that triggered the ability
      * @param data      Data previously sent from the client
      */
-    void apply(EntityPlayer player, T data);
+    void apply(IPlayer player, T data);
 
     /**
-     * Called just before the ability is activated.
+     * Called every tick until the warmup timer runs out.
      * @param player    The current player
      */
     void preApply(IPlayer player);

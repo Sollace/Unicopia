@@ -25,7 +25,6 @@ import net.minecraft.block.BlockLog;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -43,6 +42,13 @@ import net.minecraft.world.World;
 import static net.minecraft.util.EnumFacing.*;
 
 public class PowerStomp implements IPower<PowerStomp.Data> {
+
+    private final double rad = 4;
+
+    private final AxisAlignedBB areaOfEffect = new AxisAlignedBB(
+            -rad, -rad, -rad,
+             rad,  rad,  rad
+     );
 
     @Override
     public String getKeyName() {
@@ -70,21 +76,21 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
     }
 
     @Override
-    public PowerStomp.Data tryActivate(EntityPlayer player, World w) {
-        RayTraceResult mop = VecHelper.getObjectMouseOver(player, 2, 1);
+    public PowerStomp.Data tryActivate(IPlayer player) {
+        RayTraceResult mop = VecHelper.getObjectMouseOver(player.getOwner(), 2, 1);
         if (mop != null && mop.typeOfHit == RayTraceResult.Type.BLOCK) {
             BlockPos pos = mop.getBlockPos();
-            IBlockState state = w.getBlockState(pos);
+            IBlockState state = player.getWorld().getBlockState(pos);
             if (state.getBlock() instanceof BlockLog) {
-                pos = getBaseOfTree(w, state, pos);
-                if (measureTree(w, state, pos) > 0) {
+                pos = getBaseOfTree(player.getWorld(), state, pos);
+                if (measureTree(player.getWorld(), state, pos) > 0) {
                     return new Data(pos.getX(), pos.getY(), pos.getZ(), 1);
                 }
             }
         }
 
-        if (!player.onGround && !player.capabilities.isFlying) {
-            player.addVelocity(0, -6, 0);
+        if (!player.getOwner().onGround && !player.getOwner().capabilities.isFlying) {
+            player.getOwner().addVelocity(0, -6, 0);
             return new Data(0, 0, 0, 0);
         }
         return null;
@@ -107,9 +113,9 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
     }
 
     @Override
-    public void apply(EntityPlayer player, Data data) {
+    public void apply(IPlayer iplayer, Data data) {
 
-        double rad = 4;
+        EntityPlayer player = iplayer.getOwner();
 
         if (data.hitType == 0) {
             BlockPos ppos = player.getPosition();
@@ -117,13 +123,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
 
             player.addVelocity(0, -(ppos.distanceSq(pos)), 0);
 
-            AxisAlignedBB box = new AxisAlignedBB(
-                    player.posX - rad, player.posY - rad, player.posZ - rad,
-                    player.posX + rad, player.posY + rad, player.posZ + rad
-            );
-            List<Entity> entities = player.world.getEntitiesWithinAABBExcludingEntity(player, box);
-
-            for (Entity i : entities) {
+            iplayer.getWorld().getEntitiesWithinAABBExcludingEntity(player, areaOfEffect.offset(iplayer.getOriginVector())).forEach(i -> {
                 double dist = Math.sqrt(i.getDistanceSq(pos));
 
                 if (dist <= rad + 3) {
@@ -136,7 +136,6 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
                     DamageSource damage = MagicalDamageSource.causePlayerDamage("smash", player);
 
                     double amount = (4 * player.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue()) / (float)dist;
-
 
                     if (i instanceof EntityPlayer) {
                         Race race = PlayerSpeciesList.instance().getPlayer((EntityPlayer)i).getPlayerSpecies();
@@ -151,27 +150,25 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
 
                     i.attackEntityFrom(damage, (float)amount);
                 }
-            }
+            });
 
-            Iterable<BlockPos> area = BlockPos.getAllInBox(pos.add(-rad, -rad, -rad), pos.add(rad, rad, rad));
-            for (BlockPos i : area) {
+            BlockPos.getAllInBoxMutable(pos.add(-rad, -rad, -rad), pos.add(rad, rad, rad)).forEach(i -> {
                 if (i.distanceSqToCenter(player.posX, player.posY, player.posZ) <= rad*rad) {
                     spawnEffect(player.world, i);
                 }
-            }
+            });
 
             for (int i = 1; i < 202; i+= 2) {
                 spawnParticleRing(player, i);
             }
 
-            IPower.takeFromPlayer(player, 4);
-
+            IPower.takeFromPlayer(player, rad);
         } else if (data.hitType == 1) {
 
             if (player.world.rand.nextInt(30) == 0) {
-                removeTree(player.world, new BlockPos(data.x, data.y, data.z));
+                removeTree(player.world, data.pos());
             } else {
-                dropApples(player.world, new BlockPos(data.x, data.y, data.z));
+                dropApples(player.world, data.pos());
             }
 
             IPower.takeFromPlayer(player, 1);
@@ -311,15 +308,16 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
         }
     }
 
-
     private void dropApplesPart(List<BlockPos> done, World w, IBlockState log, BlockPos pos, int level) {
         if (!done.contains(pos)) {
             done.add(pos);
             pos = ascendTree(w, log, pos, false);
             if (level < 10 && isWoodOrLeaf(w, log, pos)) {
                 IBlockState state = w.getBlockState(pos);
+
                 if (state.getBlock() instanceof BlockLeaves && w.getBlockState(pos.down()).getMaterial() == Material.AIR) {
                     w.playEvent(2001, pos, Block.getStateId(state));
+
                     EntityItem item = new EntityItem(w);
                     item.setPosition(pos.getX() + 0.5, pos.getY() - 0.5, pos.getZ() + 0.5);
                     item.setItem(getApple(w, log));
@@ -340,7 +338,9 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
     private int measureTree(World w, IBlockState log, BlockPos pos) {
         List<BlockPos> logs = new ArrayList<BlockPos>();
         List<BlockPos> leaves = new ArrayList<BlockPos>();
+
         countParts(logs, leaves, w, log, pos);
+
         return logs.size() <= (leaves.size() / 2) ? logs.size() + leaves.size() : 0;
     }
 
@@ -427,6 +427,10 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
     }
 
     private Object getVariant(IBlockState state) {
+        if (state.getBlock() instanceof BlockLeaves) {
+            return ((BlockLeaves)state.getBlock()).getWoodType(state.getBlock().getMetaFromState(state));
+        }
+
         for (Entry<IProperty<?>, ?> i : state.getProperties().entrySet()) {
             if (i.getKey().getName().contentEquals("variant")) {
                 return i.getValue();

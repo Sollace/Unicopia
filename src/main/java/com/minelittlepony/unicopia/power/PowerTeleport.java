@@ -52,8 +52,10 @@ public class PowerTeleport implements IPower<Location> {
     }
 
     @Override
-    public Location tryActivate(EntityPlayer player, World w) {
-        RayTraceResult ray = VecHelper.getObjectMouseOver(player, 100, 1);
+    public Location tryActivate(IPlayer player) {
+        RayTraceResult ray = VecHelper.getObjectMouseOver(player.getOwner(), 100, 1);
+
+        World w = player.getWorld();
 
         if (ray != null && ray.typeOfHit != RayTraceResult.Type.MISS) {
             BlockPos pos;
@@ -68,7 +70,7 @@ public class PowerTeleport implements IPower<Location> {
             if (exception(w, pos)) {
                 EnumFacing sideHit = ray.sideHit;
 
-                if (player.isSneaking()) {
+                if (player.getOwner().isSneaking()) {
                     sideHit = sideHit.getOpposite();
                 }
 
@@ -109,9 +111,10 @@ public class PowerTeleport implements IPower<Location> {
     }
 
     @Override
-    public void apply(EntityPlayer player, Location data) {
-        player.world.playSound(null, player.posX, player.posY, player.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
+    public void apply(IPlayer iplayer, Location data) {
+        iplayer.getWorld().playSound(null, iplayer.getOrigin(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
 
+        EntityPlayer player = iplayer.getOwner();
         double distance = player.getDistance(data.x, data.y, data.z) / 10;
 
         if (player.isRiding()) {
@@ -129,7 +132,7 @@ public class PowerTeleport implements IPower<Location> {
 
         player.fallDistance /= distance;
 
-        player.world.playSound(null, data.x, data.y, data.z, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
+        player.world.playSound(null, data.pos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
     }
 
     private boolean enterable(World w, BlockPos pos) {

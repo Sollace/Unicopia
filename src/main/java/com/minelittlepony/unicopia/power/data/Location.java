@@ -27,4 +27,8 @@ public class Location implements IData {
         y = pos.getY();
         z = pos.getZ();
     }
+
+    public BlockPos pos() {
+        return new BlockPos(x, y, z);
+    }
 }

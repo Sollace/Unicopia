@@ -40,15 +40,15 @@ class UKeyHandler implements IKeyHandler {
 
 				if (!pressed.contains(i)) {
 				    pressed.add(i);
-				}
 
-				if (!PowersRegistry.instance().hasRegisteredPower(i.getKeyCodeDefault())) {
-					removed.add(i);
-					System.out.println("Error: Keybinding(" + i.getKeyDescription() + ") does not have a registered pony power. Keybinding will be removed from event.");
-				} else {
-				    PowersRegistry.instance()
-				        .getCapablePowerFromKey(i.getKeyCodeDefault(), iplayer.getPlayerSpecies())
-				        .ifPresent(iplayer.getAbilities()::tryUseAbility);
+				    if (!PowersRegistry.instance().hasRegisteredPower(i.getKeyCodeDefault())) {
+	                    removed.add(i);
+	                    System.out.println("Error: Keybinding(" + i.getKeyDescription() + ") does not have a registered pony power. Keybinding will be removed from event.");
+	                } else {
+	                    PowersRegistry.instance()
+	                        .getCapablePowerFromKey(i.getKeyCodeDefault(), iplayer.getPlayerSpecies())
+	                        .ifPresent(iplayer.getAbilities()::tryUseAbility);
+	                }
 				}
 			} else {
 				if (pressed.contains(i)) {

@@ -12,7 +12,6 @@ import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.BlockGrass;
 import net.minecraft.block.IGrowable;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
@@ -48,8 +47,8 @@ public class PowerGrow implements IPower<Location> {
     }
 
     @Override
-    public Location tryActivate(EntityPlayer player, World w) {
-        RayTraceResult ray = VecHelper.getObjectMouseOver(player, 3, 1);
+    public Location tryActivate(IPlayer player) {
+        RayTraceResult ray = VecHelper.getObjectMouseOver(player.getOwner(), 3, 1);
 
         if (ray != null && ray.typeOfHit == RayTraceResult.Type.BLOCK) {
             return new Location(ray.getBlockPos());
@@ -64,17 +63,17 @@ public class PowerGrow implements IPower<Location> {
     }
 
     @Override
-    public void apply(EntityPlayer player, Location data) {
+    public void apply(IPlayer player, Location data) {
         int count = 0;
 
         for (BlockPos pos : BlockPos.getAllInBox(
                 new BlockPos(data.x - 2, data.y - 2, data.z - 2),
                 new BlockPos(data.x + 2, data.y + 2, data.z + 2))) {
-            count += applySingle(player.world, player.world.getBlockState(pos), pos);
+            count += applySingle(player.getWorld(), player.getWorld().getBlockState(pos), pos);
         }
 
         if (count > 0) {
-            IPower.takeFromPlayer(player, count * 5);
+            IPower.takeFromPlayer(player.getOwner(), count * 5);
         }
     }
 
