@@ -56,11 +56,11 @@ public class PowerMagic implements IPower<Hit> {
 
     @Override
     public void preApply(IPlayer player) {
-        IPower.spawnParticles(UParticles.MAGIC_PARTICLE, player, 5);
+        IPower.spawnParticles(UParticles.UNICORN_MAGIC, player, 5);
     }
 
     @Override
     public void postApply(IPlayer player) {
-        IPower.spawnParticles(UParticles.MAGIC_PARTICLE, player, 5);
+        IPower.spawnParticles(UParticles.UNICORN_MAGIC, player, 5);
     }
 }

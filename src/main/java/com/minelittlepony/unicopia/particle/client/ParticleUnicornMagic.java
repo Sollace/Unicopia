@@ -6,17 +6,17 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
-public class EntityMagicFX extends Particle {
+public class ParticleUnicornMagic extends Particle {
     private float portalParticleScale;
     private double portalPosX;
     private double portalPosY;
     private double portalPosZ;
 
-    public EntityMagicFX(int id, World w, double x, double y, double z, double vX, double vY, double vZ, int... args) {
+    public ParticleUnicornMagic(int id, World w, double x, double y, double z, double vX, double vY, double vZ, int... args) {
         this(w, x, y, z, vX, vY, vZ);
     }
 
-	public EntityMagicFX(World w, double x, double y, double z, double vX, double vY, double vZ) {
+	public ParticleUnicornMagic(World w, double x, double y, double z, double vX, double vY, double vZ) {
 		super(w, x, y, z, vX, vY, vZ);
         motionX = vX;
         motionY = vY;

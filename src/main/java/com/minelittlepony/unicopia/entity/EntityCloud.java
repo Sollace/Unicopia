@@ -202,7 +202,7 @@ public class EntityCloud extends EntityFlying implements IAnimals {
                     double y = getEntityBoundingBox().minY + height/2;
                     double z = posZ + randomIn(rand, boundingbox.minX, boundingbox.maxX) - width / 2;
 
-                    int particleId = canSnowHere(new BlockPos(x, y, z)) ? EnumParticleTypes.SNOW_SHOVEL.getParticleID() : UParticles.RAIN_PARTICLE;
+                    int particleId = canSnowHere(new BlockPos(x, y, z)) ? EnumParticleTypes.SNOW_SHOVEL.getParticleID() : UParticles.RAIN_DROPS;
 
                     Particles.instance().spawnParticle(particleId, false, x, y, z, 0, 0, 0);
                 }

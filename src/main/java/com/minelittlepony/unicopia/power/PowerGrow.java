@@ -103,7 +103,7 @@ public class PowerGrow implements IPower<Location> {
         player.addExertion(3);
 
         if (player.getWorld().isRemote) {
-            IPower.spawnParticles(UParticles.MAGIC_PARTICLE, player, 1);
+            IPower.spawnParticles(UParticles.UNICORN_MAGIC, player, 1);
         }
     }
 

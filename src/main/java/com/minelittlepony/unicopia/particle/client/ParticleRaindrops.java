@@ -5,13 +5,13 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleRain;
 import net.minecraft.world.World;
 
-public class EntityRaindropFX extends ParticleRain {
+public class ParticleRaindrops extends ParticleRain {
 
-    public EntityRaindropFX(int id, World w, double x, double y, double z, double vX, double vY, double vZ, int... args) {
+    public ParticleRaindrops(int id, World w, double x, double y, double z, double vX, double vY, double vZ, int... args) {
         this(w, x, y, z);
     }
 
-	public EntityRaindropFX(World w, double x, double y, double z) {
+	public ParticleRaindrops(World w, double x, double y, double z) {
 		super(w, x, y, z);
 		motionY = -0.1;
 		particleMaxAge += 19;
@@ -30,7 +30,7 @@ public class EntityRaindropFX extends ParticleRain {
 	public static class Factory implements IParticleFactory {
 		@Override
 		public Particle createParticle(int id, World w, double x, double y, double z, double vX, double vY, double vZ, int... args) {
-			return new EntityRaindropFX(w, x, y, z);
+			return new ParticleRaindrops(w, x, y, z);
 		}
 
 	}

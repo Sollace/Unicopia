@@ -21,7 +21,7 @@ public class SpellVortex extends SpellShield {
         Vec3d pos = source.getOriginVector();
 
         source.spawnParticles(new Sphere(false, strength), strength * 9, p -> {
-            Particles.instance().spawnParticle(UParticles.MAGIC_PARTICLE, false, p, p.subtract(pos));
+            Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, p, p.subtract(pos));
         });
     }
 
