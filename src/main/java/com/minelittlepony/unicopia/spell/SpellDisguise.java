@@ -11,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.nbt.NBTTagCompound;
@@ -78,7 +79,8 @@ public class SpellDisguise extends AbstractSpell {
         }
 
         if (entity != null) {
-
+            entity.onGround = owner.onGround;
+            entity.onUpdate();
 
             if (entity instanceof EntityLiving) {
                 EntityLiving l = (EntityLiving)entity;
@@ -99,13 +101,10 @@ public class SpellDisguise extends AbstractSpell {
                 l.swingProgressInt = owner.swingProgressInt;
                 l.isSwingInProgress = owner.isSwingInProgress;
 
+                l.hurtTime = owner.hurtTime;
+
                 for (EntityEquipmentSlot i : EntityEquipmentSlot.values()) {
                     l.setItemStackToSlot(i, owner.getItemStackFromSlot(i));
-                }
-
-                if (l.world.rand.nextInt(1000) < l.livingSoundTime++) {
-                    l.playLivingSound();
-                    l.livingSoundTime = -l.getTalkInterval();
                 }
             }
 
@@ -128,6 +127,12 @@ public class SpellDisguise extends AbstractSpell {
             entity.distanceWalkedOnStepModified = owner.distanceWalkedOnStepModified;
             entity.distanceWalkedModified = owner.distanceWalkedModified;
             entity.prevDistanceWalkedModified = owner.prevDistanceWalkedModified;
+
+            if (owner.isBurning()) {
+                entity.setFire(1);
+            } else {
+                entity.extinguish();
+            }
 
             entity.updateBlocked = true;
 
