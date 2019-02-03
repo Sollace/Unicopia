@@ -34,7 +34,7 @@ public class PowerFeed implements IPower<Hit> {
 
     @Override
     public int getKeyCode() {
-        return Keyboard.KEY_N;
+        return Keyboard.KEY_O;
     }
 
     @Override
