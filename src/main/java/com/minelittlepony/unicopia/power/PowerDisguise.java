@@ -54,12 +54,12 @@ public class PowerDisguise extends PowerFeed {
     @Override
     public void preApply(IPlayer player) {
         player.addEnergy(2);
-        IPower.spawnParticles(UParticles.MAGIC_PARTICLE, player, 5);
+        IPower.spawnParticles(UParticles.CHANGELING_MAGIC, player, 5);
     }
 
     @Override
     public void postApply(IPlayer player) {
         player.setEnergy(0);
-        IPower.spawnParticles(UParticles.MAGIC_PARTICLE, player, 5);
+        IPower.spawnParticles(UParticles.CHANGELING_MAGIC, player, 5);
     }
 }
