@@ -37,6 +37,9 @@ public class SpellDisguise extends AbstractSpell {
     }
 
     public SpellDisguise setDisguise(@Nullable Entity entity) {
+        if (entity == this.entity) {
+            entity = null;
+        }
         this.entityNbt = null;
 
         if (this.entity != null) {
@@ -75,6 +78,8 @@ public class SpellDisguise extends AbstractSpell {
         }
 
         if (entity != null) {
+
+
             if (entity instanceof EntityLiving) {
                 EntityLiving l = (EntityLiving)entity;
 
@@ -124,10 +129,11 @@ public class SpellDisguise extends AbstractSpell {
             entity.distanceWalkedModified = owner.distanceWalkedModified;
             entity.prevDistanceWalkedModified = owner.prevDistanceWalkedModified;
 
+            entity.updateBlocked = true;
+
             owner.height = entity.height;
 
             entity.setSneaking(owner.isSneaking());
-
             entity.setInvisible(false);
 
             if (source instanceof IPlayer) {
