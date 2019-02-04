@@ -232,7 +232,9 @@ public class ItemSpell extends Item implements ICastable {
     public boolean canFeed(EntitySpell entity, ItemStack stack) {
         IMagicEffect effect = entity.getEffect();
 
-        return effect != null && effect.getName().equals(SpellRegistry.getKeyFromStack(stack));
+        return effect != null
+                && entity.getAffinity() == getAffinity()
+                && effect.getName().equals(SpellRegistry.getKeyFromStack(stack));
     }
 
     @Override
