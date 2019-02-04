@@ -1,23 +1,23 @@
 package com.minelittlepony.unicopia;
 
-import java.util.List;
-
 import com.minelittlepony.unicopia.entity.EntityCloud;
 import com.minelittlepony.unicopia.entity.EntityConstructionCloud;
 import com.minelittlepony.unicopia.entity.EntityRacingCloud;
+import com.minelittlepony.unicopia.entity.EntityRainbow;
 import com.minelittlepony.unicopia.entity.EntitySpell;
 import com.minelittlepony.unicopia.entity.EntitySpellbook;
 import com.minelittlepony.unicopia.entity.EntityProjectile;
 import com.minelittlepony.unicopia.entity.EntityWildCloud;
+import com.minelittlepony.unicopia.forgebullshit.BiomeBS;
 import com.minelittlepony.unicopia.forgebullshit.EntityType;
 import com.minelittlepony.unicopia.render.RenderCloud;
 import com.minelittlepony.unicopia.render.RenderGem;
 import com.minelittlepony.unicopia.render.RenderProjectile;
+import com.minelittlepony.unicopia.render.RenderRainbow;
 import com.minelittlepony.unicopia.render.RenderSpellbook;
 
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biome.SpawnListEntry;
 import net.minecraft.world.biome.BiomeEnd;
 import net.minecraft.world.biome.BiomeHell;
 import net.minecraftforge.common.BiomeManager;
@@ -38,6 +38,8 @@ public class UEntities {
                 builder.creature(EntityConstructionCloud.class, "construction_cloud"),
                 builder.creature(EntitySpell.class, "magic_spell"),
                 builder.creature(EntitySpellbook.class, "spellbook"),
+                builder.creature(EntityRainbow.Spawner.class, "rainbow_spawner"),
+                builder.projectile(EntityRainbow.class, "rainbow", 500, 5),
                 builder.projectile(EntityProjectile.class, "thrown_item", 10, 5)
         );
     }
@@ -47,19 +49,18 @@ public class UEntities {
         RenderingRegistry.registerEntityRenderingHandler(EntitySpell.class, RenderGem::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityProjectile.class, RenderProjectile::new);
         RenderingRegistry.registerEntityRenderingHandler(EntitySpellbook.class, RenderSpellbook::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityRainbow.class, RenderRainbow::new);
     }
 
     static void registerSpawnEntries(Biome biome) {
-
         if (!(biome instanceof BiomeHell || biome instanceof BiomeEnd)) {
-            List<SpawnListEntry> entries = biome.getSpawnableList(EnumCreatureType.AMBIENT);
-            entries.stream().filter(p -> p.entityClass == EntityWildCloud.class).findFirst().orElseGet(() -> {
-                entries.add(
-                        BiomeManager.oceanBiomes.contains(biome) ?
-                                EntityWildCloud.SPAWN_ENTRY_LAND : EntityWildCloud.SPAWN_ENTRY_OCEAN
-                );
-                return null;
-            });
+
+            BiomeBS.addSpawnEntry(biome, EnumCreatureType.AMBIENT, EntityWildCloud.class, b ->
+                BiomeManager.oceanBiomes.contains(b) ? EntityWildCloud.SPAWN_ENTRY_LAND : EntityWildCloud.SPAWN_ENTRY_OCEAN
+            );
+            BiomeBS.addSpawnEntry(biome, EnumCreatureType.CREATURE, EntityRainbow.Spawner.class, b -> EntityRainbow.SPAWN_ENTRY);
         }
     }
+
+
 }
