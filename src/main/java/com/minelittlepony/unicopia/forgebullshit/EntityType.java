@@ -23,15 +23,15 @@ public class EntityType {
         return new Entry(cls, name);
     }
 
-    public EntityEntry projectile(Class<? extends Entity> cls, String name, int min, int max) {
-        return projectile(cls, name, min, max, true);
+    public EntityEntry projectile(Class<? extends Entity> cls, String name, int range, int frequency) {
+        return projectile(cls, name, range, frequency, true);
     }
 
     @FUF(reason = "...and it's much shorter than typing out this factory mess every time.")
-    public EntityEntry projectile(Class<? extends Entity> cls, String name, int min, int max, boolean includeVelocity) {
+    public EntityEntry projectile(Class<? extends Entity> cls, String name, int range, int frequency, boolean includeVelocity) {
         return EntityEntryBuilder.create().entity(cls)
             .name(name)
-            .id(new ResourceLocation(modid, name), 0).tracker(min, max, includeVelocity)
+            .id(new ResourceLocation(modid, name), 0).tracker(range, frequency, includeVelocity)
             .build();
     }
 
