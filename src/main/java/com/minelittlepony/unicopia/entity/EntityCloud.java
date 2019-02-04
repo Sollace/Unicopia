@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
 import java.util.Map;
-import java.util.Random;
 
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.Race;
@@ -187,10 +186,6 @@ public class EntityCloud extends EntityFlying implements IAnimals {
         }
     }
 
-    public static double randomIn(Random rand, double min, double max) {
-        return ((max - min) * rand.nextFloat());
-    }
-
     @Override
     public void onUpdate() {
         AxisAlignedBB boundingbox = getEntityBoundingBox();
@@ -198,9 +193,9 @@ public class EntityCloud extends EntityFlying implements IAnimals {
         if (getIsRaining()) {
             if (world.isRemote) {
                 for (int i = 0; i < 30 * getCloudSize(); i++) {
-                    double x = posX + randomIn(rand, boundingbox.minX, boundingbox.maxX) - width / 2;
+                    double x = MathHelper.nextDouble(rand, boundingbox.minX, boundingbox.maxX);
                     double y = getEntityBoundingBox().minY + height/2;
-                    double z = posZ + randomIn(rand, boundingbox.minX, boundingbox.maxX) - width / 2;
+                    double z = MathHelper.nextDouble(rand, boundingbox.minZ, boundingbox.maxZ);
 
                     int particleId = canSnowHere(new BlockPos(x, y, z)) ? EnumParticleTypes.SNOW_SHOVEL.getParticleID() : UParticles.RAIN_DROPS;
 
@@ -211,8 +206,11 @@ public class EntityCloud extends EntityFlying implements IAnimals {
                         .expand(1, 0, 1)
                         .expand(0, -(posY - getGroundPosition(posX, posZ).getY()), 0);
 
+
                 for (EntityPlayer j : world.getEntitiesWithinAABB(EntityPlayer.class, rainedArea)) {
-                    j.world.playSound(j, j.getPosition(), SoundEvents.WEATHER_RAIN, SoundCategory.AMBIENT, 0.1F, 0.6F);
+                    if (!canSnowHere(j.getPosition())) {
+                        j.world.playSound(j, j.getPosition(), SoundEvents.WEATHER_RAIN, SoundCategory.AMBIENT, 0.1F, 0.6F);
+                    }
                 }
             }
 
@@ -302,9 +300,9 @@ public class EntityCloud extends EntityFlying implements IAnimals {
         if (isBurning() && !dead) {
             for (int i = 0; i < 5; i++) {
                 world.spawnParticle(EnumParticleTypes.CLOUD,
-                        posX + randomIn(rand, boundingbox.minX, boundingbox.maxX),
-                        posY + randomIn(rand, boundingbox.minY, boundingbox.maxY),
-                        posZ + randomIn(rand, boundingbox.minZ, boundingbox.maxZ), 0, 0.25, 0);
+                        MathHelper.nextDouble(rand, boundingbox.minX, boundingbox.maxX),
+                        MathHelper.nextDouble(rand, boundingbox.minY, boundingbox.maxY),
+                        MathHelper.nextDouble(rand, boundingbox.minZ, boundingbox.maxZ), 0, 0.25, 0);
             }
         }
 
@@ -537,7 +535,6 @@ public class EntityCloud extends EntityFlying implements IAnimals {
                     Particles.instance().getEntityEmitter().emitDiggingParticles(this, UBlocks.cloud.getDefaultState());
                 }
             }
-
 
             if (stack != null && stack.getItem() instanceof ItemSword) {
                 return super.attackEntityFrom(source, amount);
