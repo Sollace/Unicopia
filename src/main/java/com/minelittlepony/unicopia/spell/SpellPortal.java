@@ -68,6 +68,11 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
     }
 
     @Override
+    public SpellAffinity getAffinity() {
+        return SpellAffinity.GOOD;
+    }
+
+    @Override
     public void setDead() {
         super.setDead();
 

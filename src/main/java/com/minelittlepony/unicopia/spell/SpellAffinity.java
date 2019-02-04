@@ -11,6 +11,8 @@ public enum SpellAffinity {
 
     private final int corruption;
 
+    private SpellAffinity[] implications;
+
     SpellAffinity(TextFormatting color, int corruption) {
         this.color = color;
         this.corruption = corruption;
@@ -30,5 +32,19 @@ public enum SpellAffinity {
 
     public boolean isNeutral() {
         return this == NEUTRAL;
+    }
+
+    public SpellAffinity[] getImplicators() {
+        if (implications != null) {
+            return implications;
+        }
+
+        if (this == NEUTRAL) {
+            implications = values();
+        } else {
+            implications = new SpellAffinity[] { this };
+        }
+
+        return implications;
     }
 }

@@ -1,12 +1,15 @@
 package com.minelittlepony.unicopia.spell;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,7 +26,9 @@ public class SpellRegistry {
         return stack.hasTagCompound() && stack.getTagCompound().hasKey("spell");
     }
 
-    private final Map<String, Entry> entries = new HashMap<>();
+    private final Map<String, Entry<?>> entries = new HashMap<>();
+
+    private final Map<SpellAffinity, Set<String>> keysByAffinity = new HashMap<>();
 
     private SpellRegistry() {
         registerSpell(SpellShield::new);
@@ -35,6 +40,7 @@ public class SpellRegistry {
         registerSpell(SpellDisguise::new);
     }
 
+    @Nullable
     public IMagicEffect getSpellFromName(String name) {
         if (entries.containsKey(name)) {
             return entries.get(name).create();
@@ -65,41 +71,28 @@ public class SpellRegistry {
         return compound;
     }
 
+    private Optional<Entry<?>> getEntryFromStack(ItemStack stack) {
+        return Optional.ofNullable(entries.get(getKeyFromStack(stack)));
+    }
+
     @Nullable
     public IDispenceable getDispenseActionFrom(ItemStack stack) {
-        String key = getKeyFromStack(stack);
-
-        if (entries.containsKey(key)) {
-            Entry entry = entries.get(key);
-            if (entry.canDispense) {
-                return entry.create();
-            }
-        }
-
-        return null;
+        return getEntryFromStack(stack).map(Entry::dispensable).orElse(null);
     }
 
     @Nullable
     public IUseAction getUseActionFrom(ItemStack stack) {
-        String key = getKeyFromStack(stack);
-
-        if (entries.containsKey(key)) {
-            Entry entry = entries.get(key);
-            if (entry.canUse) {
-                return entry.create();
-            }
-        }
-
-        return null;
+        return getEntryFromStack(stack).map(Entry::useable).orElse(null);
     }
 
+    @Nullable
     public IMagicEffect getSpellFromItemStack(ItemStack stack) {
         return getSpellFromName(getKeyFromStack(stack));
     }
 
-    public void registerSpell(Callable<IMagicEffect> factory) {
+    public <T extends IMagicEffect> void registerSpell(Callable<T> factory) {
         try {
-            new Entry(factory);
+            new Entry<T>(factory);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -118,10 +111,7 @@ public class SpellRegistry {
     }
 
     public ItemStack enchantStack(ItemStack stack, ItemStack from) {
-        stack.setTagCompound(new NBTTagCompound());
-        stack.getTagCompound().setString("spell", getKeyFromStack(from));
-
-        return stack;
+        return enchantStack(stack, getKeyFromStack(from));
     }
 
     public ItemStack enchantStack(ItemStack stack, String name) {
@@ -152,33 +142,58 @@ public class SpellRegistry {
         return 0xffffff;
     }
 
-    public Set<String> getAllNames() {
-        return entries.keySet();
+    public Set<String> getAllNames(SpellAffinity affinity) {
+        return keysByAffinity.get(affinity);
     }
 
-    class Entry {
-        Callable<IMagicEffect> factory;
+    @Immutable
+    class Entry<T extends IMagicEffect> {
+        final Callable<T> factory;
 
-        int color;
+        final int color;
 
-        boolean canDispense;
-        boolean canUse;
+        final boolean canDispense;
+        final boolean canUse;
 
-        Entry(Callable<IMagicEffect> factory) throws Exception {
-            IMagicEffect inst = factory.call();
+        final SpellAffinity affinity;
+
+        Entry(Callable<T> factory) throws Exception {
+            T inst = factory.call();
 
             this.factory = factory;
             this.color = inst.getTint();
             this.canDispense = inst instanceof IDispenceable;
             this.canUse = inst instanceof IUseAction;
+            this.affinity = inst.getAffinity();
+
+            if (inst.isCraftable()) {
+                for (SpellAffinity affinity : affinity.getImplicators()) {
+                    keysByAffinity.computeIfAbsent(affinity, a -> new HashSet<>()).add(inst.getName());
+                }
+            }
 
             entries.put(inst.getName(), this);
         }
 
-        @SuppressWarnings("unchecked")
-        <T extends IMagicEffect> T create() {
+        IUseAction useable() {
+            if (!canUse) {
+                return null;
+            }
+
+            return (IUseAction)create();
+        }
+
+        IDispenceable dispensable() {
+            if (!canDispense) {
+                return null;
+            }
+
+            return (IDispenceable)create();
+        }
+
+        T create() {
             try {
-                return (T) factory.call();
+                return factory.call();
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -184,7 +184,7 @@ public class ItemSpell extends Item implements ICastable {
         if (SpellRegistry.stackHasEnchantment(stack)) {
             SpellAffinity affinity = getAffinity(stack);
 
-            tooltip.add(affinity.getColourCode() + I18n.format(String.format("%s.%s.name",
+            tooltip.add(affinity.getColourCode() + I18n.format(String.format("%s.%s.tagline",
                     affinity.getTranslationKey(),
                     SpellRegistry.getKeyFromStack(stack)
             )));
@@ -213,7 +213,7 @@ public class ItemSpell extends Item implements ICastable {
         super.getSubItems(tab, subItems);
 
         if (isInCreativeTab(tab)) {
-            for (String name : SpellRegistry.instance().getAllNames()) {
+            for (String name : SpellRegistry.instance().getAllNames(getAffinity())) {
                 subItems.add(SpellRegistry.instance().enchantStack(new ItemStack(this, 1), name));
             }
         }
@@ -236,7 +236,7 @@ public class ItemSpell extends Item implements ICastable {
     }
 
     @Override
-    public SpellAffinity getAffinity(ItemStack stack) {
+    public SpellAffinity getAffinity() {
         return SpellAffinity.GOOD;
     }
 }

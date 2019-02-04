@@ -32,6 +32,16 @@ public class SpellDisguise extends AbstractSpell {
     }
 
     @Override
+    public boolean isCraftable() {
+        return false;
+    }
+
+    @Override
+    public SpellAffinity getAffinity() {
+        return SpellAffinity.BAD;
+    }
+
+    @Override
     public int getTint() {
         return 0;
     }

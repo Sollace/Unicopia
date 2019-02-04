@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.spell;
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
@@ -14,6 +15,11 @@ public class SpellVortex extends SpellShield {
     @Override
     public String getName() {
         return "vortex";
+    }
+
+    @Override
+    public SpellAffinity getAffinity() {
+        return SpellAffinity.NEUTRAL;
     }
 
     @Override
@@ -33,6 +39,10 @@ public class SpellVortex extends SpellShield {
 
         if (source.getAffinity() != SpellAffinity.BAD && target instanceof EntityPlayer) {
             force *= calculateAdjustedForce(PlayerSpeciesList.instance().getPlayer((EntityPlayer)target));
+        }
+
+        if (source.getAffinity() == SpellAffinity.BAD && source.getWorld().rand.nextInt(4500) == 0) {
+            source.getEntity().attackEntityFrom(MagicalDamageSource.create("vortex"), 4);
         }
 
         applyForce(pos, target, -force, 0);

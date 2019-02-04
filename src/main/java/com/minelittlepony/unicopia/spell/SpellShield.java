@@ -35,6 +35,11 @@ public class SpellShield extends AbstractSpell {
         return "shield";
     }
 
+    @Override
+    public SpellAffinity getAffinity() {
+        return SpellAffinity.NEUTRAL;
+    }
+
 	@Override
 	public int getTint() {
 	    return 0x66CDAA;

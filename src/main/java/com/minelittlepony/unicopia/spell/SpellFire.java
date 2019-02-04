@@ -74,6 +74,11 @@ public class SpellFire extends AbstractSpell implements IUseAction, IDispenceabl
     }
 
     @Override
+    public SpellAffinity getAffinity() {
+        return SpellAffinity.GOOD;
+    }
+
+    @Override
     public int getTint() {
         return 0xFF0000;
     }

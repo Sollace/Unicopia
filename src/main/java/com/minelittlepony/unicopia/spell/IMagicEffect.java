@@ -5,7 +5,7 @@ import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
 /**
  * Interface for a magic spells
  */
-public interface IMagicEffect extends InbtSerialisable, ILevelled {
+public interface IMagicEffect extends InbtSerialisable, ILevelled, IAligned {
 
     /**
      * Gets the name used to identify this effect.
@@ -26,6 +26,11 @@ public interface IMagicEffect extends InbtSerialisable, ILevelled {
 	 * Returns true if this spell is dead, and must be cleaned up.
 	 */
 	boolean getDead();
+
+	/**
+	 * Returns true if this effect can be crafted into a gem.
+	 */
+	boolean isCraftable();
 
 	/**
 	 * Called when first attached to a gem.

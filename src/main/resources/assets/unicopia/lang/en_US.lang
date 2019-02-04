@@ -31,22 +31,31 @@ item.corrupted_gem.name=Fractured Gem
 item.corrupted_gem.enchanted.name=Fractured Gem of %s
 
 spell.shield.name=Defense
-spell.charge.name=Chanelling
-spell.fire.name=Flame
-spell.infero.name=Burning
-spell.ice.name=Frost
+spell.shield.tagline=Protection I
+
 spell.portal.name=Transportation
+spell.portal.tagline=Teleportation I
+
+spell.fire.name=Flame
+spell.fire.tagline=Fire I
+
 spell.vortex.name=Retention
-spell.minion.name=Obedience
+spell.vortex.tagline=Containment I
+
+spell.charge.name=Chanelling
+spell.charge.tagline=Energy I
+
+spell.ice.name=Frost
+spell.ice.tagline=Ice I
 
 curse.shield.name=Repulsion
-curse.charge.name=Draining
-curse.fire.name=Hades
-curse.inferno.name=Inferno
-curse.ice.name=Freezing
-curse.portal.name=Summoning
-curse.attract.name=Entrapment
-curse.minion.name=Slavery
+curse.shield.tagline=Hostility I
+
+curse.vortex.name=Suffering
+curse.vortex.tagline=Torture I
+
+curse.necromany.name=Necromancy
+curse.necromancy.tagline=Resurrection I
 
 item.spellbook.name=Spellbook
 item.bag_of_holding.name=Bag of Holding

@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.inventory.ContainerOfHolding;
 import com.minelittlepony.unicopia.inventory.InventoryOfHolding;
+import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.util.vector.VecHelper;
 
 import net.minecraft.client.util.ITooltipFlag;
@@ -119,6 +120,11 @@ public class ItemOfHolding extends Item implements IMagicalItem {
         player.playSound(SoundEvents.BLOCK_ENDERCHEST_OPEN, 0.5F, 1);
 
         return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+    }
+
+    @Override
+    public SpellAffinity getAffinity() {
+        return SpellAffinity.NEUTRAL;
     }
 
     @Override

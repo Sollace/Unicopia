@@ -62,6 +62,11 @@ public class SpellIce extends AbstractSpell implements IUseAction, IDispenceable
     }
 
     @Override
+    public SpellAffinity getAffinity() {
+        return SpellAffinity.GOOD;
+    }
+
+    @Override
     public int getTint() {
         return 0xADD8E6;
     }

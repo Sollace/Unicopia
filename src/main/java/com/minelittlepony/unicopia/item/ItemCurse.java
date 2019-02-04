@@ -52,7 +52,7 @@ public class ItemCurse extends ItemSpell {
     }
 
     @Override
-    public SpellAffinity getAffinity(ItemStack stack) {
+    public SpellAffinity getAffinity() {
         return SpellAffinity.BAD;
     }
 }

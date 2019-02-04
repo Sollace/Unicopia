@@ -14,6 +14,11 @@ public abstract class AbstractSpell implements IMagicEffect {
 
     }
 
+    @Override
+    public boolean isCraftable() {
+        return true;
+    }
+
 	@Override
 	public void setDead() {
 		isDead = true;

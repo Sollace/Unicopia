@@ -15,13 +15,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelled {
+public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelled, IAligned {
 
     void setEffect(IMagicEffect effect);
 
     IMagicEffect getEffect();
-
-    SpellAffinity getAffinity();
 
     default boolean hasEffect() {
         return getEffect() != null;

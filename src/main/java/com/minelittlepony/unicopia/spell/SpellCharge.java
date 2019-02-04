@@ -33,6 +33,11 @@ public class SpellCharge extends AbstractSpell {
     }
 
     @Override
+    public SpellAffinity getAffinity() {
+        return SpellAffinity.GOOD;
+    }
+
+    @Override
     public int getTint() {
         return 0x0000AA;
     }
