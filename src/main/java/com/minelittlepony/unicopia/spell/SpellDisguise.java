@@ -101,6 +101,8 @@ public class SpellDisguise extends AbstractSpell {
                 l.isSwingInProgress = owner.isSwingInProgress;
 
                 l.hurtTime = owner.hurtTime;
+                l.deathTime = owner.deathTime;
+                l.setHealth(owner.getHealth());
 
                 for (EntityEquipmentSlot i : EntityEquipmentSlot.values()) {
                     l.setItemStackToSlot(i, owner.getItemStackFromSlot(i));
