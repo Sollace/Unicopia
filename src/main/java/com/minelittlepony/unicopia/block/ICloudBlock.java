@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.CloudType;
+import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.forgebullshit.FUF;
 
@@ -30,6 +31,8 @@ public interface ICloudBlock {
                 return true;
             }
 
+            CloudType type = getCloudMaterialType(state);
+
             ItemStack main = player.getHeldItemMainhand();
             if (main.isEmpty()) {
                 main = player.getHeldItemOffhand();
@@ -38,16 +41,19 @@ public interface ICloudBlock {
             if (!main.isEmpty() && main.getItem() instanceof ItemBlock) {
                 Block block = ((ItemBlock)main.getItem()).getBlock();
 
-                if (block == null) {
+                if (block == null || block == Blocks.AIR) {
                     return false;
                 }
 
-                if (block instanceof BlockTorch && getCloudMaterialType(state) != CloudType.NORMAL) {
-                    return false;
+                if (block instanceof BlockTorch) {
+                    if (Predicates.INTERACT_WITH_CLOUDS.apply(player)) {
+                        return type == CloudType.NORMAL;
+                    }
+                    return type != CloudType.ENCHANTED;
                 }
 
-                if (block != Blocks.AIR && !(block instanceof ICloudBlock)) {
-                    return true;
+                if (!(block instanceof ICloudBlock)) {
+                    return type != CloudType.ENCHANTED;
                 }
             }
         }
