@@ -33,6 +33,9 @@ item.corrupted_gem.enchanted.name=Fractured Gem of %s
 spell.shield.name=Defense
 spell.shield.tagline=Protection I
 
+spell.awkward.name=Awkwardness
+spell.awkward.tagline=*Derp*
+
 spell.portal.name=Transportation
 spell.portal.tagline=Teleportation I
 
@@ -50,6 +53,9 @@ spell.ice.tagline=Ice I
 
 curse.shield.name=Repulsion
 curse.shield.tagline=Hostility I
+
+curse.awkward.name=Awkwardness
+curse.awkward.tagline=*Derp*
 
 curse.vortex.name=Suffering
 curse.vortex.tagline=Torture I
