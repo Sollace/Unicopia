@@ -38,6 +38,7 @@ public class SpellRegistry {
         registerSpell(SpellPortal::new);
         registerSpell(SpellVortex::new);
         registerSpell(SpellDisguise::new);
+        registerSpell(SpellNecromancy::new);
     }
 
     @Nullable
