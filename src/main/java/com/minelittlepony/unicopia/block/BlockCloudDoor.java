@@ -80,13 +80,7 @@ public class BlockCloudDoor extends BlockDoor implements ICloudBlock {
 
     @Override
     public void onEntityCollision(World w, BlockPos pos, IBlockState state, Entity entity) {
-        if (getCanInteract(state, entity)) {
-            if (!entity.isSneaking() && Math.abs(entity.motionY) >= 0.25) {
-                entity.motionY += 0.0155 * (entity.fallDistance < 1 ? 1 : entity.fallDistance);
-            } else {
-                entity.motionY = 0;
-            }
-
+        if (!applyBouncyness(state, entity)) {
             super.onEntityCollision(w, pos, state, entity);
         }
     }
@@ -104,10 +98,10 @@ public class BlockCloudDoor extends BlockDoor implements ICloudBlock {
     @Deprecated
     @Override
     public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos) {
-        if (!CloudType.NORMAL.canInteract(player)) {
-            return -1;
+        if (CloudType.NORMAL.canInteract(player)) {
+            return super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
         }
-        return super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
+        return -1;
     }
 
     @Override

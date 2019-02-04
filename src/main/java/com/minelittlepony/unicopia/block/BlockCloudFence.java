@@ -5,14 +5,14 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.UBlocks;
+import com.minelittlepony.unicopia.UMaterials;
 
+import net.minecraft.block.BlockFence;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -20,12 +20,18 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockCloudFarm extends UFarmland implements ICloudBlock {
+public class BlockCloudFence extends BlockFence implements ICloudBlock {
 
-    public BlockCloudFarm(String domain, String name) {
-        super(domain, name);
+    public BlockCloudFence(String domain, String name) {
+        super(UMaterials.cloud, UMaterials.cloud.getMaterialMapColor());
+        setTranslationKey(name);
+        setRegistryName(domain, name);
 
+        setHardness(0.5f);
+        setResistance(1.0F);
+        setLightOpacity(20);
         setSoundType(SoundType.CLOTH);
+        useNeighborBrightness = true;
     }
 
     @Override
@@ -34,31 +40,33 @@ public class BlockCloudFarm extends UFarmland implements ICloudBlock {
     }
 
     @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
     public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
         return allowsFallingBlockToPass(state, world, pos);
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.TRANSLUCENT;
+    public boolean isNormalCube(IBlockState state) {
+        return false;
     }
 
     @Override
-    public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
+    public CloudType getCloudMaterialType(IBlockState blockState) {
+        return CloudType.NORMAL;
+    }
 
-        IBlockState beside = world.getBlockState(pos.offset(face));
-
-        if (beside.getBlock() instanceof ICloudBlock) {
-            ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
-
-            if ((face == EnumFacing.DOWN || face == EnumFacing.UP || cloud == this)) {
-                if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
-                    return true;
-                }
-            }
-        }
-
-        return super.doesSideBlockRendering(state, world, pos, face);
+    @Override
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.TRANSLUCENT;
     }
 
     @Override
@@ -88,18 +96,9 @@ public class BlockCloudFarm extends UFarmland implements ICloudBlock {
     }
 
     @Deprecated
-    @Override
-    public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
-        if (!handleRayTraceSpecialCases(worldIn, pos, blockState)) {
-            return super.collisionRayTrace(blockState, worldIn, pos, start, end);
-        }
-        return null;
-    }
-
-    @Deprecated
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
         if (getCanInteract(state, entity)) {
-            super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, p_185477_7_);
+            super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, isActualState);
         }
     }
 
@@ -112,14 +111,12 @@ public class BlockCloudFarm extends UFarmland implements ICloudBlock {
         return -1;
     }
 
-
+    @Deprecated
     @Override
-    public CloudType getCloudMaterialType(IBlockState blockState) {
-        return CloudType.NORMAL;
-    }
-
-    @Override
-    protected IBlockState getDroppedState(IBlockState state) {
-        return UBlocks.cloud.getDefaultState();
+    public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end) {
+        if (!handleRayTraceSpecialCases(world, pos, state)) {
+            return super.collisionRayTrace(state, world, pos, start, end);
+        }
+        return null;
     }
 }

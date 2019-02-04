@@ -1,0 +1,6 @@
+{
+    "parent": "block/fence_post",
+    "textures": {
+        "texture": "unicopia:blocks/cloud_normal"
+    }
+}

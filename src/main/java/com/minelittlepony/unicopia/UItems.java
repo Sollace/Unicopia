@@ -82,6 +82,9 @@ public class UItems {
 
     public static final Item cloud_farmland = new UItemBlock(UBlocks.cloud_farmland, Unicopia.MODID, "cloud_farmland", INTERACT_WITH_CLOUDS);
 
+    public static final Item cloud_fence = new UItemBlock(UBlocks.cloud_fence, Unicopia.MODID, "cloud_fence", INTERACT_WITH_CLOUDS);
+    public static final Item cloud_banister = new UItemBlock(UBlocks.cloud_banister, Unicopia.MODID, "cloud_banister", INTERACT_WITH_CLOUDS);
+
     public static final Item anvil = new UItemBlock(UBlocks.anvil, Unicopia.MODID, "anvil", INTERACT_WITH_CLOUDS)
             .setTranslationKey("cloud_anvil");
 
@@ -193,8 +196,8 @@ public class UItems {
 
         registry.registerAll(
                 cloud_spawner, dew_drop, cloud_matter, cloud_block,
-                cloud_stairs, cloud_slab, cloud_farmland,
-                mist_door, anvil,
+                cloud_stairs, cloud_slab, cloud_fence, cloud_banister,
+                cloud_farmland, mist_door, anvil,
 
                 bag_of_holding, spell, curse, spellbook, mug,
 
@@ -221,7 +224,8 @@ public class UItems {
 
                     tomato, cloudsdale_tomato,
 
-                    cloud_spawner, cloud_matter, cloud_stairs, cloud_farmland, mist_door, anvil,
+                    cloud_spawner, cloud_matter, cloud_stairs, cloud_fence, cloud_banister,
+                    cloud_farmland, mist_door, anvil,
                     bag_of_holding, spell, curse, spellbook, mug,
 
                     alfalfa_seeds, alfalfa_leaves,

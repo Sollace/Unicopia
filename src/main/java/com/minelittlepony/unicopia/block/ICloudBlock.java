@@ -55,6 +55,45 @@ public interface ICloudBlock {
         return false;
     }
 
+    default boolean applyLanding(Entity entity, float fallDistance) {
+        if (!entity.isSneaking()) {
+            entity.fall(fallDistance, 0);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    default boolean applyRebound(Entity entity) {
+        if (!entity.isSneaking() && entity.motionY < 0) {
+            if (Math.abs(entity.motionY) >= 0.25) {
+                entity.motionY = -entity.motionY * 1.2;
+            } else {
+                entity.motionY = 0;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    default boolean applyBouncyness(IBlockState state, Entity entity) {
+        if (getCanInteract(state, entity)) {
+            if (!entity.isSneaking() && Math.abs(entity.motionY) >= 0.25) {
+                entity.motionY += 0.0155 * (entity.fallDistance < 1 ? 1 : entity.fallDistance);
+            } else {
+                entity.motionY = 0;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+
     default boolean getCanInteract(IBlockState state, Entity e) {
         if (getCloudMaterialType(state).canInteract(e)) {
             if (e instanceof EntityItem) {

@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.block.BlockAlfalfa;
 import com.minelittlepony.unicopia.block.BlockFruitLeaves;
 import com.minelittlepony.unicopia.block.BlockCloud;
 import com.minelittlepony.unicopia.block.BlockCloudAnvil;
+import com.minelittlepony.unicopia.block.BlockCloudBanister;
 import com.minelittlepony.unicopia.block.BlockCloudSlab;
 import com.minelittlepony.unicopia.block.BlockCloudStairs;
 import com.minelittlepony.unicopia.block.BlockSugar;
@@ -12,6 +13,7 @@ import com.minelittlepony.unicopia.block.IColourful;
 import com.minelittlepony.unicopia.block.USapling;
 import com.minelittlepony.unicopia.block.BlockCloudDoor;
 import com.minelittlepony.unicopia.block.BlockCloudFarm;
+import com.minelittlepony.unicopia.block.BlockCloudFence;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -39,6 +41,9 @@ public class UBlocks {
 
     public static final BlockCloudAnvil anvil = new BlockCloudAnvil(Unicopia.MODID, "anvil");
 
+    public static final BlockCloudFence cloud_fence = new BlockCloudFence(Unicopia.MODID, "cloud_fence");
+    public static final BlockCloudBanister cloud_banister = new BlockCloudBanister(Unicopia.MODID, "cloud_banister");
+
     public static final BlockAlfalfa alfalfa = new BlockAlfalfa(Unicopia.MODID, "alfalfa");
 
     public static final BlockTomatoPlant tomato_plant = new BlockTomatoPlant(Unicopia.MODID, "tomato_plant");
@@ -56,7 +61,8 @@ public class UBlocks {
             .setUnharvestFruit(w -> new ItemStack(UItems.rotten_apple));
 
     static void init(IForgeRegistry<Block> registry) {
-        registry.registerAll(cloud, cloud_stairs, cloud_double_slab, cloud_slab, mist_door, anvil, cloud_farmland,
+        registry.registerAll(cloud, cloud_stairs, cloud_double_slab, cloud_slab, cloud_fence, cloud_banister,
+                             mist_door, anvil, cloud_farmland,
                              sugar_block,
                              alfalfa,
                              tomato_plant,

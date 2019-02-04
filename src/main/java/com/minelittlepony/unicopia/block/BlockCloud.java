@@ -34,13 +34,14 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
 
 	public BlockCloud(Material material, String domain, String name) {
 		super(material);
+		setRegistryName(domain, name);
+        setTranslationKey(name);
+
 		setCreativeTab(CreativeTabs.MISC);
 		setHardness(0.5f);
 		setResistance(1.0F);
 		setSoundType(SoundType.CLOTH);
-		setRegistryName(domain, name);
 		setLightOpacity(20);
-		setTranslationKey(name);
 		useNeighborBrightness = true;
 	}
 
@@ -103,35 +104,21 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
 
     @Override
     public void onFallenUpon(World world, BlockPos pos, Entity entityIn, float fallDistance) {
-        if (entityIn.isSneaking()) {
+        if (!applyLanding(entityIn, fallDistance)) {
             super.onFallenUpon(world, pos, entityIn, fallDistance);
-        } else {
-            entityIn.fall(fallDistance, 0);
         }
     }
 
     @Override
     public void onLanded(World worldIn, Entity entity) {
-        if (entity.isSneaking()) {
+        if (!applyRebound(entity)) {
             super.onLanded(worldIn, entity);
-        } else if (entity.motionY < 0) {
-            if (Math.abs(entity.motionY) >= 0.25) {
-                entity.motionY = -entity.motionY * 1.2;
-            } else {
-                entity.motionY = 0;
-            }
         }
     }
 
     @Override
 	public void onEntityCollision(World w, BlockPos pos, IBlockState state, Entity entity) {
-        if (getCanInteract(state, entity)) {
-    		if (!entity.isSneaking() && Math.abs(entity.motionY) >= 0.25) {
-    			entity.motionY += 0.0155 * (entity.fallDistance < 1 ? 1 : entity.fallDistance);
-    		} else {
-    			entity.motionY = 0;
-    		}
-
+        if (!applyBouncyness(state, entity)) {
     		super.onEntityCollision(w, pos, state, entity);
         }
 	}
@@ -192,10 +179,10 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
     @Deprecated
     @Override
     public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
-        if (handleRayTraceSpecialCases(worldIn, pos, blockState)) {
-            return null;
+        if (!handleRayTraceSpecialCases(worldIn, pos, blockState)) {
+            return super.collisionRayTrace(blockState, worldIn, pos, start, end);
         }
-        return super.collisionRayTrace(blockState, worldIn, pos, start, end);
+        return null;
     }
 
     @Override

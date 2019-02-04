@@ -7,6 +7,8 @@ tile.cloud_slab.packed.name=Dense Cloud Slab
 tile.cloud_slab.enchanted.name=Enchanted Cloud Slab
 
 tile.cloud_stairs.name=Cloud Stairs
+tile.cloud_fence.name=Cloud Fence
+tile.cloud_banister.name=Banister
 tile.cloud_farmland.name=Tilled Clouds
 
 tile.apple_leaves.name=Apple Leaves
