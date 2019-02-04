@@ -18,6 +18,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -99,9 +100,13 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 	}
 
 	public ItemStack onPlayerMiddleClick(EntityPlayer player) {
-	    ItemStack stack = new ItemStack(UItems.spell, 1);
+	    ItemStack stack = new ItemStack(getItem(), 1);
 	    SpellRegistry.instance().enchantStack(stack, getEffect().getName());
 		return stack;
+	}
+
+	protected Item getItem() {
+	    return getAffinity() == SpellAffinity.BAD ? UItems.curse : UItems.spell;
 	}
 
 	@Override
@@ -226,7 +231,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 		if (world.getGameRules().getBoolean("doTileDrops")) {
 			int level = getCurrentLevel();
 
-			ItemStack stack = new ItemStack(UItems.spell, level + 1);
+			ItemStack stack = new ItemStack(getItem(), level + 1);
 			if (hasEffect()) {
 			    SpellRegistry.instance().enchantStack(stack, getEffect().getName());
 			}
