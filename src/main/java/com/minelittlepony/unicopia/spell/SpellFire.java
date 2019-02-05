@@ -100,11 +100,11 @@ public class SpellFire extends AbstractSpell implements IUseAction, IDispenceabl
 		boolean result = false;
 
 		if (player == null || player.isSneaking()) {
-			result = applyBlocks(player, world, pos);
+			result = applyBlocks(world, pos);
 		} else {
 
 			for (BlockPos i : PosHelper.getAllInRegionMutable(pos, effect_range)) {
-				result |= applyBlocks(player, world, i);
+				result |= applyBlocks(world, i);
 			}
 		}
 
@@ -127,7 +127,7 @@ public class SpellFire extends AbstractSpell implements IUseAction, IDispenceabl
 		boolean result = false;
 
 		for (BlockPos i : PosHelper.getAllInRegionMutable(pos, effect_range)) {
-		    result |= applyBlocks(null, source.getWorld(), i);
+		    result |= applyBlocks(source.getWorld(), i);
 		}
 
 		if (!result) {
@@ -137,7 +137,7 @@ public class SpellFire extends AbstractSpell implements IUseAction, IDispenceabl
 		return result ? SpellCastResult.NONE : SpellCastResult.DEFAULT;
 	}
 
-	protected boolean applyBlocks(EntityPlayer owner, World world, BlockPos pos) {
+	protected boolean applyBlocks(World world, BlockPos pos) {
 		IBlockState state = world.getBlockState(pos);
 		Block id = state.getBlock();
 
@@ -191,7 +191,7 @@ public class SpellFire extends AbstractSpell implements IUseAction, IDispenceabl
 		return false;
 	}
 
-	protected boolean applyEntities(EntityPlayer owner, World world, BlockPos pos) {
+	protected boolean applyEntities(Entity owner, World world, BlockPos pos) {
 		return VecHelper
 		        .findAllEntitiesInRange(owner, world, pos, 3)
 		        .filter(i -> applyEntitySingle(owner, world, i))

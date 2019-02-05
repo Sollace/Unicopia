@@ -51,6 +51,9 @@ spell.charge.tagline=Energy I
 spell.ice.name=Frost
 spell.ice.tagline=Ice I
 
+spell.drake.name=Assistance
+spell.drake.tagline=Helpfulness I
+
 curse.shield.name=Repulsion
 curse.shield.tagline=Hostility I
 
@@ -62,6 +65,12 @@ curse.vortex.tagline=Torture I
 
 curse.necromancy.name=Necromancy
 curse.necromancy.tagline=Resurrection I
+
+curse.drake.name=Assistance
+curse.drake.tagline=Unhelpfulness I
+
+curse.inferno.name=Inferno
+curse.inferno.tagline=Fire II
 
 item.spellbook.name=Spellbook
 item.bag_of_holding.name=Bag of Holding

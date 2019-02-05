@@ -40,6 +40,8 @@ public class SpellRegistry {
         registerSpell(SpellDisguise::new);
         registerSpell(SpellNecromancy::new);
         registerSpell(SpellAwkward::new);
+        registerSpell(SpellInferno::new);
+        registerSpell(SpellDrake::new);
     }
 
     @Nullable

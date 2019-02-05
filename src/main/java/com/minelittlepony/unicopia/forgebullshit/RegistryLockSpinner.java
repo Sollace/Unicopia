@@ -71,7 +71,7 @@ public final class RegistryLockSpinner {
     }
 
     @FUF(reason = "Not exactly forge's fault, but it was would be nice of them to not leave these as final")
-    private static Field makeNonFinal(Field f) throws IllegalArgumentException, IllegalAccessException {
+    public static Field makeNonFinal(Field f) throws IllegalArgumentException, IllegalAccessException {
         initModifiersField();
         if (Modifier.isFinal(f.getModifiers()) && modifieres != null) {
             modifieres.setInt(f, f.getModifiers() & ~Modifier.FINAL);
