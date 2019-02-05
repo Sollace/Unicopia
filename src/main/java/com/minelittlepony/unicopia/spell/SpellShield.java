@@ -1,7 +1,10 @@
 package com.minelittlepony.unicopia.spell;
 
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.particle.IAttachableParticle;
 import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
@@ -16,6 +19,8 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
 public class SpellShield extends AbstractSpell {
+
+    private Optional<IAttachableParticle> particleEffect = Optional.empty();
 
 	@Override
     public String getName() {
@@ -39,11 +44,19 @@ public class SpellShield extends AbstractSpell {
 
 	@Override
 	public void render(ICaster<?> source, int level) {
-	    level = 4 + (level * 2);
+	    int radius = 4 + (level * 2);
 
-	    source.spawnParticles(new Sphere(true, level), level * 6, pos -> {
+	    source.spawnParticles(new Sphere(true, radius), radius * 6, pos -> {
             Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0);
         });
+
+	    particleEffect.filter(IAttachableParticle::isStillAlive).orElseGet(() -> {
+	        particleEffect = Particles.instance().spawnParticle(UParticles.SPHERE, false, source.getOriginVector(), 0, 0, 0, radius, getTint(), 30);
+	        particleEffect.ifPresent(p -> p.attachTo(source));
+
+	        return null;
+	    });
+	    particleEffect.ifPresent(p -> p.setAttribute(0, radius));
 	}
 
 	@Override

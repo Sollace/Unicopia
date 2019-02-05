@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.particle.client;
 
-import net.minecraft.client.particle.IParticleFactory;
-import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleRain;
 import net.minecraft.world.World;
 
@@ -26,12 +24,4 @@ public class ParticleRaindrops extends ParticleRain {
             motionZ *= 0.30000001192092896D;
         }
     }
-
-	public static class Factory implements IParticleFactory {
-		@Override
-		public Particle createParticle(int id, World w, double x, double y, double z, double vX, double vY, double vZ, int... args) {
-			return new ParticleRaindrops(w, x, y, z);
-		}
-
-	}
 }

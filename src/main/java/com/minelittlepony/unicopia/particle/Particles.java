@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.particle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,22 +44,24 @@ public class Particles<Particle> {
     }
 
     @Nullable
-    public void spawnParticle(int particleId, boolean ignoreDistance, Vec3d pos, Vec3d vel, int ...pars) {
-        spawnParticle(particleId, ignoreDistance, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z, pars);
+    public Optional<IAttachableParticle> spawnParticle(int particleId, boolean ignoreDistance, Vec3d pos, Vec3d vel, int ...pars) {
+        return spawnParticle(particleId, ignoreDistance, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z, pars);
     }
 
     @Nullable
-    public void spawnParticle(int particleId, boolean ignoreDistance, Vec3d pos, double speedX, double speedY, double speedZ, int ...pars) {
-        spawnParticle(particleId, ignoreDistance, pos.x, pos.y, pos.z, speedX, speedY, speedZ, pars);
+    public Optional<IAttachableParticle> spawnParticle(int particleId, boolean ignoreDistance, Vec3d pos, double speedX, double speedY, double speedZ, int ...pars) {
+        return spawnParticle(particleId, ignoreDistance, pos.x, pos.y, pos.z, speedX, speedY, speedZ, pars);
     }
 
     @Nullable
-    public void spawnParticle(int particleId, boolean ignoreDistance, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, int ...pars) {
+    public Optional<IAttachableParticle> spawnParticle(int particleId, boolean ignoreDistance, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, int ...pars) {
         /* noop */
         /* or network */
         /* i don't know */
         /* ... */
         /* maybe later */
+
+        return Optional.empty();
     }
 
     public static interface IFactory<T> {

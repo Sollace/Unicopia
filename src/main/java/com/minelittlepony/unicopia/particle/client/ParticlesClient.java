@@ -1,7 +1,10 @@
 package com.minelittlepony.unicopia.particle.client;
 
+import java.util.Optional;
+
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.particle.IAttachableParticle;
 import com.minelittlepony.unicopia.particle.Particles;
 
 import net.minecraft.client.Minecraft;
@@ -17,30 +20,40 @@ public class ParticlesClient extends Particles<Particle> {
     private final Minecraft mc = Minecraft.getMinecraft();
 
     @Override
-    public void spawnParticle(int particleId, boolean ignoreDistance, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, int ...pars) {
+    public Optional<IAttachableParticle> spawnParticle(int particleId, boolean ignoreDistance, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, int ...pars) {
         Entity entity = mc.getRenderViewEntity();
 
-        if (entity == null && mc.effectRenderer == null) {
-            return;
+        if (entity != null && mc.effectRenderer != null) {
+            if (ignoreDistance || (entity.getDistanceSq(posX, posY, posZ) <= 1024 && calculateParticleLevel(false) < 2)) {
+                return spawnEffectParticle(particleId, posX, posY, posZ, speedX, speedY, speedZ, pars);
+            }
         }
 
-        if (ignoreDistance || (entity.getDistanceSq(posX, posY, posZ) <= 1024 && calculateParticleLevel(false) < 2)) {
-            spawnEffectParticle(particleId, posX, posY, posZ, speedX, speedY, speedZ, pars);
-        }
+        return Optional.empty();
     }
 
     @Nullable
-    private void spawnEffectParticle(int particleId, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, int ...pars) {
+    private Optional<IAttachableParticle> spawnEffectParticle(int particleId, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, int ...pars) {
         if (particleId >= 0) {
             // Not ours, delegate to mojang
             mc.effectRenderer.spawnEffectParticle(particleId, posX, posY, posZ, speedX, speedY, speedZ, pars);
         } else {
             IFactory<Particle> factory = registeredParticles.get(-(particleId + 1));
 
+
+
             if (factory != null) {
-                mc.effectRenderer.addEffect(factory.createParticle(particleId, mc.world, posX, posY, posZ, speedX, speedY, speedZ, pars));
+                Particle particle = factory.createParticle(particleId, mc.world, posX, posY, posZ, speedX, speedY, speedZ, pars);
+
+                mc.effectRenderer.addEffect(particle);
+
+                if (particle instanceof IAttachableParticle) {
+                    return Optional.ofNullable((IAttachableParticle)particle);
+                }
             }
         }
+
+        return Optional.empty();
     }
 
     private int calculateParticleLevel(boolean minimiseLevel) {
