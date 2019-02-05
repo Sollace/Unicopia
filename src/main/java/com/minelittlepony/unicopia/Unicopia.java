@@ -56,6 +56,7 @@ import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.PowersRegistry;
+import com.minelittlepony.unicopia.spell.SpellRegistry;
 import com.minelittlepony.unicopia.util.crafting.CraftingManager;
 
 @Mod(
@@ -156,22 +157,26 @@ public class Unicopia implements IGuiHandler {
             if (event.getWorld().rand.nextInt(500 / fortuneFactor) == 0) {
                 for (int i = 0; i < 1 + event.getFortuneLevel(); i++) {
                     if (event.getWorld().rand.nextInt(10) > 3) {
-                        event.getDrops().add(new ItemStack(UItems.curse, 1));
+                        event.getDrops().add(new ItemStack(UItems.curse));
                     } else {
-                        event.getDrops().add(new ItemStack(UItems.spell, 1));
+                        event.getDrops().add(new ItemStack(UItems.spell));
                     }
                 }
+            }
+
+            if (event.getWorld().rand.nextInt(5000) == 0) {
+                event.getDrops().add(SpellRegistry.instance().enchantStack(new ItemStack(UItems.spell), "awkward"));
             }
         } else if (block instanceof BlockTallGrass) {
             if (event.getWorld().rand.nextInt(25 / fortuneFactor) == 0) {
                 for (int i = 0; i < 1 + event.getFortuneLevel(); i++) {
                     int chance = event.getWorld().rand.nextInt(3);
                     if (chance == 0) {
-                        event.getDrops().add(new ItemStack(UItems.alfalfa_seeds, 1));
+                        event.getDrops().add(new ItemStack(UItems.alfalfa_seeds));
                     } else if (chance == 1) {
-                        event.getDrops().add(new ItemStack(UItems.apple_seeds, 1));
+                        event.getDrops().add(new ItemStack(UItems.apple_seeds));
                     } else {
-                        event.getDrops().add(new ItemStack(UItems.tomato_seeds, 1));
+                        event.getDrops().add(new ItemStack(UItems.tomato_seeds));
                     }
                 }
             }
