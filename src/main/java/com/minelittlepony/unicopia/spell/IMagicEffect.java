@@ -27,6 +27,16 @@ public interface IMagicEffect extends InbtSerialisable, ILevelled, IAligned {
 	 */
 	boolean getDead();
 
+    /**
+     * Returns true if this effect has changes that need to be sent to the client.
+     */
+    boolean isDirty();
+
+    /**
+     * Marks this effect as dirty.
+     */
+    void setDirty(boolean dirty);
+
 	/**
 	 * Returns true if this effect can be crafted into a gem.
 	 */

@@ -42,11 +42,12 @@ public class EffectSync<T extends EntityLivingBase> {
             if (effect == null || !effect.getName().contentEquals(id)) {
                 if (effect != null) {
                     effect.setDead();
-                    effect = null;
                 }
                 effect = SpellRegistry.instance().createEffectFromNBT(comp);
             } else if (owned.getEntity().world.isRemote) {
                 effect.readFromNBT(comp);
+            } else if (effect.isDirty()) {
+                set(effect);
             }
         }
 

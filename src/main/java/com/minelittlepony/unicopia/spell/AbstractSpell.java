@@ -4,7 +4,8 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public abstract class AbstractSpell implements IMagicEffect {
 
-	protected boolean isDead = false;
+	protected boolean isDead;
+	protected boolean isDirty;
 
 	private int strength = 0;
 
@@ -34,6 +35,16 @@ public abstract class AbstractSpell implements IMagicEffect {
 	}
 
     @Override
+    public boolean isDirty() {
+        return isDirty;
+    }
+
+    @Override
+    public void setDirty(boolean dirty) {
+        isDirty = dirty;
+    }
+
+    @Override
     public void writeToNBT(NBTTagCompound compound) {
         compound.setBoolean("dead", isDead);
         compound.setInteger("spell_strength", strength);
@@ -41,6 +52,7 @@ public abstract class AbstractSpell implements IMagicEffect {
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
+        setDirty(false);
         isDead = compound.getBoolean("dead");
         strength = compound.getInteger("spell_strength");
     }
