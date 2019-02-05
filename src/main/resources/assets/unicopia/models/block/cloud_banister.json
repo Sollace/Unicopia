@@ -1,7 +1,7 @@
 {
     "textures": {
 		"texture": "unicopia:blocks/cloud_enchanted_top",
-        "particle": "#texture"
+        "particle": "unicopia:blocks/cloud_enchanted_top"
     },
     "elements": [
         {   "from": [ 5, 0, 0 ],

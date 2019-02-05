@@ -1,7 +1,7 @@
 {
     "textures": {
 		"texture": "unicopia:blocks/cloud_normal",
-        "particle": "#texture"
+        "particle": "unicopia:blocks/cloud_normal"
     },
     "elements": [
         {   "from": [ 6, 10, 0 ],
