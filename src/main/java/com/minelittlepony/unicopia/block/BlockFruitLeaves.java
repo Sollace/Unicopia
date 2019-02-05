@@ -144,7 +144,7 @@ public class BlockFruitLeaves extends BlockLeaves implements IColourful {
     @Override
     public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
         if (!world.isRemote && world.isAreaLoaded(pos, 1)) {
-            if (state.getValue(CHECK_DECAY) && state.getValue(DECAYABLE)) {
+            if (state.getValue(DECAYABLE)) {
                 int growthChance = getGrowthChance(world, pos, state);
 
                 if (!state.getValue(HEAVY) && (growthChance <= 0 || rand.nextInt(growthChance) == 0)) {
