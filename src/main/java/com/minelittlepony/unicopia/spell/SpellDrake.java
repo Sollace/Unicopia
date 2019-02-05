@@ -67,20 +67,17 @@ public class SpellDrake extends AbstractSpell {
             }
         }
 
-        if (!source.getWorld().isRemote) {
+        if (piggyBackSpell == null) {
+            AxisAlignedBB bb = EFFECT_BOUNDS.offset(source.getOriginVector());
 
-            if (piggyBackSpell == null) {
-                AxisAlignedBB bb = EFFECT_BOUNDS.offset(source.getOriginVector());
-
-                source.getWorld().getEntitiesInAABBexcluding(source.getEntity(), bb, e -> e instanceof EntitySpell).stream()
-                    .map(i -> (EntitySpell)i)
-                    .filter(i -> i.hasEffect() && !(i.getEffect() instanceof SpellDrake))
-                    .findFirst().ifPresent(i -> {
-                        piggyBackSpell = i.getEffect().copy();
-                        piggyBackSpell.onPlaced(source);
-                        i.setEffect(null);
-                    });
-            }
+            source.getWorld().getEntitiesInAABBexcluding(source.getEntity(), bb, e -> e instanceof EntitySpell).stream()
+                .map(i -> (EntitySpell)i)
+                .filter(i -> i.hasEffect() && !(i.getEffect() instanceof SpellDrake))
+                .findFirst().ifPresent(i -> {
+                    piggyBackSpell = i.getEffect().copy();
+                    piggyBackSpell.onPlaced(source);
+                    i.setEffect(null);
+                });
         }
 
         if (piggyBackSpell != null) {
