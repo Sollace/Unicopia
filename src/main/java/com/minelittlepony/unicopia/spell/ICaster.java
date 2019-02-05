@@ -5,6 +5,8 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.player.IOwned;
 import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.vector.VecHelper;
@@ -17,8 +19,9 @@ import net.minecraft.world.World;
 
 public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelled, IAligned {
 
-    void setEffect(IMagicEffect effect);
+    void setEffect(@Nullable IMagicEffect effect);
 
+    @Nullable
     IMagicEffect getEffect();
 
     default boolean hasEffect() {

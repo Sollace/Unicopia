@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.network;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.spell.ICaster;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
@@ -9,6 +11,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 
 public class EffectSync<T extends EntityLivingBase> {
+
+    @Nullable
     private IMagicEffect effect;
 
     private final ICaster<T> owned;
@@ -49,7 +53,7 @@ public class EffectSync<T extends EntityLivingBase> {
         return effect;
     }
 
-    public void set(IMagicEffect effect) {
+    public void set(@Nullable IMagicEffect effect) {
         if (this.effect != null && this.effect != effect) {
             this.effect.setDead();
         }

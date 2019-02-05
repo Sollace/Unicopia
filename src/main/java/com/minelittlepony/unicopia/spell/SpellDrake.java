@@ -49,7 +49,7 @@ public class SpellDrake extends AbstractSpell {
     }
 
     public boolean getDead() {
-        return super.getDead() || (piggyBackSpell != null && piggyBackSpell.getDead());
+        return super.getDead();
     }
 
     @Override
@@ -58,28 +58,36 @@ public class SpellDrake extends AbstractSpell {
         if (firstUpdate) {
             firstUpdate = false;
 
-            if (source.getOwner() instanceof EntitySpell) {
-                EntitySpell living = (EntitySpell)source.getOwner();
+            if (source.getEntity() instanceof EntitySpell) {
+                EntitySpell living = (EntitySpell)source.getEntity();
 
                 ((PathNavigateGround)living.getNavigator()).setCanSwim(false);
                 living.tasks.addTask(1, new EntityAISwimming(living));
-                living.tasks.addTask(2, new EntityAIFollowCaster(source, 1, 4, 6));
+                living.tasks.addTask(2, new EntityAIFollowCaster<>(source, 1, 4, 70));
             }
         }
 
-        if (piggyBackSpell == null) {
-            AxisAlignedBB bb = EFFECT_BOUNDS.offset(source.getOriginVector());
+        if (!source.getWorld().isRemote) {
 
-            source.getWorld().getEntitiesInAABBexcluding(source.getEntity(), bb, e -> e instanceof EntitySpell).stream()
-                .map(i -> (EntitySpell)i)
-                .filter(i -> i.getEffect() != null && !(i.getEffect() instanceof SpellDrake))
-                .findFirst().ifPresent(i -> {
-                    piggyBackSpell = i.getEffect();
-                    i.setEffect(null);
-                });
+            if (piggyBackSpell == null) {
+                AxisAlignedBB bb = EFFECT_BOUNDS.offset(source.getOriginVector());
+
+                source.getWorld().getEntitiesInAABBexcluding(source.getEntity(), bb, e -> e instanceof EntitySpell).stream()
+                    .map(i -> (EntitySpell)i)
+                    .filter(i -> i.hasEffect() && !(i.getEffect() instanceof SpellDrake))
+                    .findFirst().ifPresent(i -> {
+                        piggyBackSpell = i.getEffect().copy();
+                        piggyBackSpell.onPlaced(source);
+                        i.setEffect(null);
+                    });
+            }
         }
 
-        return piggyBackSpell != null && piggyBackSpell.update(source, level);
+        if (piggyBackSpell != null) {
+            piggyBackSpell.update(source, level);
+        }
+
+        return true;
     }
 
     @Override
@@ -89,7 +97,10 @@ public class SpellDrake extends AbstractSpell {
         }
     }
 
+    @Override
     public void writeToNBT(NBTTagCompound compound) {
+        super.writeToNBT(compound);
+
         if (piggyBackSpell != null) {
             compound.setTag("effect", SpellRegistry.instance().serializeEffectToNBT(piggyBackSpell));
         }
@@ -97,6 +108,8 @@ public class SpellDrake extends AbstractSpell {
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+
         if (compound.hasKey("effect")) {
             piggyBackSpell = SpellRegistry.instance().createEffectFromNBT(compound.getCompoundTag("effect"));
         }

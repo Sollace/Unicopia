@@ -18,8 +18,6 @@ import net.minecraft.util.math.Vec3d;
 
 public class SpellCharge extends AbstractSpell {
 
-    private int desiredLevel = 0;
-
     boolean searching = true;
 
     private UUID targettedEntityId;
@@ -116,29 +114,20 @@ public class SpellCharge extends AbstractSpell {
     }
 
     @Override
-    public int getCurrentLevel() {
-        return desiredLevel;
-    }
-
-    @Override
-    public void setCurrentLevel(int level) {
-        desiredLevel = level;
-    }
-
-    @Override
     public void writeToNBT(NBTTagCompound compound) {
+        super.writeToNBT(compound);
+
         if (targettedEntityId != null) {
             compound.setUniqueId("target", targettedEntityId);
         }
-        compound.setInteger("level", desiredLevel);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+
         if (compound.hasKey("target")) {
             targettedEntityId = compound.getUniqueId("target");
         }
-
-        desiredLevel = compound.getInteger("level");
     }
 }

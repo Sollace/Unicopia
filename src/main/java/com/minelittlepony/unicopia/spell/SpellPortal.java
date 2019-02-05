@@ -290,6 +290,8 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
+        super.writeToNBT(compound);
+
         if (destinationPos != null) {
             compound.setTag("destination", InbtSerialisable.writeBlockPos(destinationPos));
         }
@@ -307,6 +309,8 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+
         if (compound.hasKey("destination")) {
             destinationPos = InbtSerialisable.readBlockPos(compound.getCompoundTag("destination"));
         }

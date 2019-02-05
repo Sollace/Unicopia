@@ -208,6 +208,7 @@ public class SpellDisguise extends AbstractSpell {
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
+        super.writeToNBT(compound);
 
         compound.setString("entityId", entityId);
         compound.setBoolean("dead", getDead());
@@ -225,6 +226,8 @@ public class SpellDisguise extends AbstractSpell {
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
+        super.readFromNBT(compound);
+
         String newId = compound.getString("entityId");
 
         if (!newId.contentEquals(entityId)) {

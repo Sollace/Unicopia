@@ -23,19 +23,25 @@ public class SpellVortex extends SpellShield {
     }
 
     @Override
-    protected void spawnParticles(ICaster<?> source, int strength) {
+    public void render(ICaster<?> source, int level) {
+        level = 4 + (level * 2);
         Vec3d pos = source.getOriginVector();
 
-        source.spawnParticles(new Sphere(false, strength), strength * 9, p -> {
+        source.spawnParticles(new Sphere(false, level), level * 9, p -> {
             Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, p, p.subtract(pos));
         });
+    }
+
+    @Override
+    protected double getDrawDropOffRange(int level) {
+        return 10 + (level * 2);
     }
 
     @Override
     protected void applyRadialEffect(ICaster<?> source, Entity target, double distance, double radius) {
         Vec3d pos = source.getOriginVector();
 
-        double force = 4 / distance;
+        double force = 2.5F / distance;
 
         if (source.getAffinity() != SpellAffinity.BAD && target instanceof EntityPlayer) {
             force *= calculateAdjustedForce(PlayerSpeciesList.instance().getPlayer((EntityPlayer)target));

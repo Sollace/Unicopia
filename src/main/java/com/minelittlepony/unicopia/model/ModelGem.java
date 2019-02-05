@@ -104,7 +104,9 @@ public class ModelGem extends ModelBase {
 
         setLightingConditionsBrightness(0xF0F0);
 
-        Color.glColor(spell.getEffect().getTint(), 1);
+        if (spell.hasEffect()) {
+            Color.glColor(spell.getEffect().getTint(), 1);
+        }
 
         int tiers = Math.min(spell.getCurrentLevel(), 5);
 
@@ -144,10 +146,7 @@ public class ModelGem extends ModelBase {
 	}
 
 	protected void renderOverlay(float grow, float scale) {
-
-
         body.render(scale);
-
 	}
 
 	private void setLightingConditionsBrightness(int brightness) {

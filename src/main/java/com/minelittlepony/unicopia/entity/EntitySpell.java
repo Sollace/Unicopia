@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity;
 
+import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.minelittlepony.unicopia.Predicates;
@@ -79,12 +81,15 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
     }
 
 	@Override
-	public void setEffect(IMagicEffect effect) {
+	public void setEffect(@Nullable IMagicEffect effect) {
 	    effectDelegate.set(effect);
 
-	    effect.onPlaced(this);
+	    if (effect != null) {
+	        effect.onPlaced(this);
+	    }
 	}
 
+	@Nullable
 	@Override
 	public IMagicEffect getEffect() {
 	    return effectDelegate.get();
@@ -174,7 +179,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 			displayTick();
 		}
 
-		if (getEffect() == null) {
+		if (!hasEffect()) {
 			setDead();
 		} else {
 			if (getEffect().getDead()) {
@@ -274,8 +279,8 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 	}
 
     public boolean tryLevelUp(ItemStack stack) {
-        if (SpellRegistry.stackHasEnchantment(stack)) {
-            if (!getEffect().getName().equals(SpellRegistry.getKeyFromStack(stack))) {
+        if (hasEffect() && SpellRegistry.stackHasEnchantment(stack)) {
+            if (!getEffect().getName().contentEquals(SpellRegistry.getKeyFromStack(stack))) {
                 return false;
             }
 

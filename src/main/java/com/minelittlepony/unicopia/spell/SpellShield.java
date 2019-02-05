@@ -13,22 +13,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Vec3d;
 
 public class SpellShield extends AbstractSpell {
-
-	private int strength = 0;
-
-    @Override
-    public int getCurrentLevel() {
-        return strength;
-    }
-
-    @Override
-    public void setCurrentLevel(int level) {
-        strength = level;
-    }
 
 	@Override
     public String getName() {
@@ -52,43 +39,51 @@ public class SpellShield extends AbstractSpell {
 
 	@Override
 	public void render(ICaster<?> source, int level) {
-		spawnParticles(source, 4 + (level * 2));
-	}
+	    level = 4 + (level * 2);
 
-	protected void spawnParticles(ICaster<?> source, int strength) {
-	    source.spawnParticles(new Sphere(true, strength), strength * 6, pos -> {
-	        Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0);
-	    });
+	    source.spawnParticles(new Sphere(true, level), level * 6, pos -> {
+            Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0);
+        });
 	}
 
 	@Override
 	public boolean updateOnPerson(ICaster<?> source) {
-	    update(source, strength);
-
-		if (source.getEntity().getEntityWorld().getWorldTime() % 50 == 0) {
-			double radius = 4 + (strength * 2);
-			if (!IPower.takeFromPlayer((EntityPlayer)source.getOwner(), radius/4)) {
-				setDead();
-			}
-		}
+	    if (super.updateOnPerson(source)) {
+    		if (source.getEntity().getEntityWorld().getWorldTime() % 50 == 0) {
+    			double radius = 4 + (getCurrentLevel() * 2);
+    			if (!IPower.takeFromPlayer((EntityPlayer)source.getOwner(), radius/4)) {
+    				setDead();
+    			}
+    		}
+	    }
 
 		return !getDead();
 	}
 
+	protected double getDrawDropOffRange(int level) {
+	    return 4 + (level * 2);
+	}
+
 	@Override
 	public boolean update(ICaster<?> source, int level) {
-		double radius = 4 + (level * 2);
+		double radius = getDrawDropOffRange(level);
 
 		Entity owner = source.getOwner();
 
 		boolean ownerIsValid = source.getAffinity() != SpellAffinity.BAD && Predicates.MAGI.test(owner);
 
+		Vec3d origin = source.getOriginVector();
+
 		source.findAllEntitiesInRange(radius)
 	        .filter(entity -> !(ownerIsValid && entity.equals(owner)))
 	        .forEach(i -> {
-    		    double dist = Math.sqrt(i.getDistanceSq(source.getOrigin()));
+	            try {
+        		    double dist = i.getPositionVector().distanceTo(origin);
 
-    		    applyRadialEffect(source, i, dist, radius);
+        		    applyRadialEffect(source, i, dist, radius);
+	            } catch (Throwable e) {
+	                e.printStackTrace();
+	            }
     	    });
 
 		return true;
@@ -107,10 +102,12 @@ public class SpellShield extends AbstractSpell {
                 }
             }
         } else if (target instanceof EntityLivingBase) {
-            double force = Math.min(0.25F, distance);
+            double force = Math.max(0.1, radius / 4);
 
             if (source.getAffinity() != SpellAffinity.BAD && target instanceof EntityPlayer) {
                 force *= calculateAdjustedForce(PlayerSpeciesList.instance().getPlayer((EntityPlayer)target));
+            } else {
+                force *= 0.75;
             }
 
             applyForce(pos, target, force, distance);
@@ -121,12 +118,12 @@ public class SpellShield extends AbstractSpell {
 	 * Applies a force to the given entity based on distance from the source.
 	 */
 	protected void applyForce(Vec3d pos, Entity target, double force, double distance) {
-	    pos = target.getPositionVector().subtract(pos);
+	    pos = target.getPositionVector().subtract(pos).normalize().scale(force);
 
         target.addVelocity(
-                force / pos.x,
-                force / pos.y + (distance < 1 ? distance : 0),
-                force / pos.z
+                pos.x,
+                pos.y + (distance < 1 ? distance : 0),
+                pos.z
         );
 	}
 
@@ -162,15 +159,5 @@ public class SpellShield extends AbstractSpell {
 		if (approach.length() >= motion.length()) {
 			ProjectileUtil.setThrowableHeading(projectile, normal, (float)motion.length(), 0);
 		}
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound compound) {
-		compound.setInteger("spell_strength", strength);
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound compound) {
-		strength = compound.getInteger("spell_strength");
 	}
 }

@@ -327,12 +327,13 @@ class PlayerCapabilities implements IPlayer {
     }
 
     @Override
-    public void setEffect(IMagicEffect effect) {
+    public void setEffect(@Nullable IMagicEffect effect) {
         effectDelegate.set(effect);
 
         sendCapabilities(true);
     }
 
+    @Nullable
     @Override
     public IMagicEffect getEffect() {
         return effectDelegate.get();

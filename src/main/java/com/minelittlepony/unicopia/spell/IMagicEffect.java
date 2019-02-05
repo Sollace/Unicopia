@@ -83,4 +83,8 @@ public interface IMagicEffect extends InbtSerialisable, ILevelled, IAligned {
 	default boolean allowAI() {
 	    return false;
 	}
+
+	default IMagicEffect copy() {
+	    return SpellRegistry.instance().copyInstance(this);
+	}
 }

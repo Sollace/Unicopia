@@ -53,6 +53,11 @@ public class SpellRegistry {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends IMagicEffect> T copyInstance(T effect) {
+        return (T)createEffectFromNBT(serializeEffectToNBT(effect));
+    }
+
     public IMagicEffect createEffectFromNBT(NBTTagCompound compound) {
         if (compound.hasKey("effect_id")) {
             IMagicEffect effect = getSpellFromName(compound.getString("effect_id"));
