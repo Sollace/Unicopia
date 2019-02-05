@@ -6,6 +6,8 @@ import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.forgebullshit.FUF;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockBed;
+import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockFalling;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.state.IBlockState;
@@ -45,7 +47,7 @@ public interface ICloudBlock {
                     return false;
                 }
 
-                if (block instanceof BlockTorch) {
+                if (isPlacementExcempt(block)) {
                     if (Predicates.INTERACT_WITH_CLOUDS.apply(player)) {
                         return type == CloudType.NORMAL;
                     }
@@ -59,6 +61,12 @@ public interface ICloudBlock {
         }
 
         return false;
+    }
+
+    default boolean isPlacementExcempt(Block block) {
+        return block instanceof BlockTorch
+            || block instanceof BlockBed
+            || block instanceof BlockChest;
     }
 
     default boolean applyLanding(Entity entity, float fallDistance) {
