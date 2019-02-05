@@ -64,6 +64,9 @@ public class SpellDrake extends AbstractSpell {
                 ((PathNavigateGround)living.getNavigator()).setCanSwim(false);
                 living.tasks.addTask(1, new EntityAISwimming(living));
                 living.tasks.addTask(2, new EntityAIFollowCaster<>(source, 1, 4, 70));
+                living.height = 1.8F;
+
+                living.setPosition(living.posX, living.posY, living.posZ);
             }
         }
 
@@ -77,6 +80,7 @@ public class SpellDrake extends AbstractSpell {
                     piggyBackSpell = i.getEffect().copy();
                     piggyBackSpell.onPlaced(source);
                     i.setEffect(null);
+                    setDirty(true);
                 });
         }
 

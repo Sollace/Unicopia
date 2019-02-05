@@ -76,7 +76,7 @@ public class ModelGem extends ModelBase {
 		EntitySpell spell = (EntitySpell)entity;
 
 		float floatOffset = MathHelper.sin((spell.ticksExisted + stutter) / 10 + spell.hoverStart) / 10 + 0.1F;
-        GlStateManager.translate(0, floatOffset, 0);
+        GlStateManager.translate(0, floatOffset - entity.getEyeHeight(), 0);
 
         floatOffset = (spell.ticksExisted + stutter) / 20;
         if (spell.getCurrentLevel() > 0) {
