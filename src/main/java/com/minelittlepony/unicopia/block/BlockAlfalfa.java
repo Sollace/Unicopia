@@ -106,9 +106,11 @@ public class BlockAlfalfa extends BlockCrops {
         boolean hasTrunk = world.getBlockState(pos.down(2)).getBlock() == this;
         boolean hasRoot = world.getBlockState(pos.down(3)).getBlock() == this;
 
-        if (state.getBlock().isAir(state, world, pos)) {
-            if (!(hasDown && hasTrunk && hasRoot)) {
-                world.setBlockState(pos, withAge(increase).withProperty(HALF, Half.TOP));
+        if (state.getBlock() != this) {
+            if (state.getBlock().isAir(state, world, pos)) {
+                if (!(hasDown && hasTrunk && hasRoot)) {
+                    world.setBlockState(pos, withAge(increase).withProperty(HALF, Half.TOP));
+                }
             }
             return;
         }
