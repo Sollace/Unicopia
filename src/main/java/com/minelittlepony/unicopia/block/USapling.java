@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.BlockSapling;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.properties.IProperty;
@@ -130,6 +131,17 @@ public class USapling extends BlockSapling implements ITreeGen {
 
     protected boolean isMatch(IBlockState state, IBlockState other) {
         return other.getBlock() == this;
+    }
+
+    @Deprecated
+    @Override
+    public boolean isTypeAt(World world, BlockPos pos, BlockPlanks.EnumType type) {
+        return world.getBlockState(pos).getBlock() == this;
+    }
+
+    @Override
+    public int damageDropped(IBlockState state) {
+        return 0;
     }
 
     @Override
