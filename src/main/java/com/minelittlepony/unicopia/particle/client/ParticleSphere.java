@@ -3,12 +3,9 @@ package com.minelittlepony.unicopia.particle.client;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
-import org.lwjgl.util.glu.GLU;
-import org.lwjgl.util.glu.Sphere;
-
+import com.minelittlepony.unicopia.model.ModelSphere;
 import com.minelittlepony.unicopia.particle.IAttachableParticle;
 import com.minelittlepony.unicopia.spell.ICaster;
 import com.minelittlepony.util.render.Color;
@@ -17,12 +14,14 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
 
     private final float baseAlpha;
 
-    private int tint;
-    private float alpha;
+    protected int tint;
+    protected float alpha;
 
-    private int radius;
+    protected int radius;
 
     private ICaster<?> caster;
+
+    private static final ModelSphere model = new ModelSphere();
 
     public ParticleSphere(int id, World w, double x, double y, double z, double vX, double vY, double vZ, int... args) {
         this(w, x, y, z, args[0], args[1], args[2]/255F);
@@ -67,37 +66,17 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
         }
     }
 
-    public void renderParticle(BufferBuilder buffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+    public void renderParticle(BufferBuilder buffer, Entity viewer, float partialTicks, float x, float z, float yz, float xy, float xz) {
         if (alpha <= 0) {
             return;
         }
 
-        GlStateManager.pushMatrix();
-        GlStateManager.disableTexture2D();
-        GlStateManager.enableAlpha();
-        GlStateManager.enableColorMaterial();
-        GlStateManager.colorMaterial(1032, 5634);
-
-        GlStateManager.translate(
-                posX - TileEntityRendererDispatcher.staticPlayerX,
-                posY - TileEntityRendererDispatcher.staticPlayerY,
-                posZ - TileEntityRendererDispatcher.staticPlayerZ
-        );
-
         Color.glColor(tint, alpha);
 
-        final Sphere s = new Sphere();
-
-        s.setDrawStyle(GLU.GLU_FILL);
-        s.setNormals(GLU.GLU_SMOOTH);
-        s.draw(radius, 32, 32);
+        model.setPosition(posX, posY, posZ);
+        model.render(radius);
 
         GlStateManager.color(1, 1, 1, 1);
-
-        GlStateManager.disableColorMaterial();
-        GlStateManager.disableAlpha();
-        GlStateManager.enableTexture2D();
-        GlStateManager.popMatrix();
     }
 
     @Override
