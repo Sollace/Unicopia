@@ -10,6 +10,13 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 
+/**
+ * Synchronisation class for spell effects.
+ * Since we can't have our own serializers, we have to intelligently
+ * determine whether to update it from an nbt tag.
+ *
+ * @param <T> The owning entity
+ */
 public class EffectSync<T extends EntityLivingBase> {
 
     @Nullable
@@ -25,7 +32,27 @@ public class EffectSync<T extends EntityLivingBase> {
     }
 
     public boolean has() {
-        return get() != null;
+        NBTTagCompound comp = owned.getEntity().getDataManager().get(param);
+
+        if (comp == null || !comp.hasKey("effect_id")) {
+            if (effect != null) {
+                effect.setDead();
+                effect = null;
+            }
+        } else {
+            String id = comp.getString("effect_id");
+
+            if (effect == null || !effect.getName().contentEquals(id)) {
+                if (effect != null) {
+                    effect.setDead();
+                }
+                effect = SpellRegistry.instance().createEffectFromNBT(comp);
+            } else if (!owned.getEntity().world.isRemote && effect.isDirty()) {
+                set(effect);
+            }
+        }
+
+        return effect != null;
     }
 
     public IMagicEffect get() {

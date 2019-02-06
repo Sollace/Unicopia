@@ -23,8 +23,6 @@ public class RenderRainbow extends Render<EntityRainbow> {
     private static final ResourceLocation TEXTURE = new ResourceLocation("unicopia", "textures/environment/rainbow.png");
 
     public void doRender(EntityRainbow entity, double x, double y, double z, float entityYaw, float partialTicks) {
-
-
         float distance = Minecraft.getMinecraft().getRenderViewEntity().getDistance(entity);
         float maxDistance = 16 * Minecraft.getMinecraft().gameSettings.renderDistanceChunks;
         double r = entity.getRadius();

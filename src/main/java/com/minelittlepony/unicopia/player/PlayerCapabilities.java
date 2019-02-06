@@ -333,6 +333,11 @@ class PlayerCapabilities implements IPlayer {
         sendCapabilities(true);
     }
 
+    @Override
+    public boolean hasEffect() {
+        return effectDelegate.has();
+    }
+
     @Nullable
     @Override
     public IMagicEffect getEffect() {

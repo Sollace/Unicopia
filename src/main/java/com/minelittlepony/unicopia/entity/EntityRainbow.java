@@ -53,11 +53,6 @@ public class EntityRainbow extends EntityWeatherEffect {
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return super.getRenderBoundingBox();
-    }
-
-    @Override
     public SoundCategory getSoundCategory() {
         return SoundCategory.WEATHER;
     }

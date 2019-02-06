@@ -46,6 +46,10 @@ public class SpellDisguise extends AbstractSpell {
         return 0;
     }
 
+    public Entity getDisguise() {
+        return entity;
+    }
+
     public SpellDisguise setDisguise(@Nullable Entity entity) {
         if (entity == this.entity) {
             entity = null;

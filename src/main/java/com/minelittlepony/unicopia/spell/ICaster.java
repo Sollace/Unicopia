@@ -24,9 +24,7 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelle
     @Nullable
     IMagicEffect getEffect();
 
-    default boolean hasEffect() {
-        return getEffect() != null;
-    }
+    boolean hasEffect();
 
     /**
      * Gets the entity directly responsible for casting.

@@ -13,6 +13,8 @@ import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.IView;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.spell.IMagicEffect;
+import com.minelittlepony.unicopia.spell.SpellDisguise;
 import com.minelittlepony.util.gui.ButtonGridLayout;
 import com.minelittlepony.util.gui.UButton;
 
@@ -21,7 +23,10 @@ import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptions;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.world.IInteractionObject;
@@ -160,8 +165,37 @@ public class UnicopiaClient extends UClient {
     @SubscribeEvent
     public static void preEntityRender(RenderLivingEvent.Pre<?> event) {
         if (event.getEntity() instanceof EntityPlayer) {
-            if (PlayerSpeciesList.instance().getPlayer((EntityPlayer)event.getEntity()).isInvisible()) {
+            IPlayer iplayer = PlayerSpeciesList.instance().getPlayer((EntityPlayer)event.getEntity());
+
+            if (iplayer.isInvisible()) {
                 event.setCanceled(true);
+
+                // This fixes lighting errors on the armour slots.
+                // #MahjongPls
+                // @FUF(reason = "Forge should fix this. Cancelling their event skips neccessary state resetting at the end of the render method")
+                GlStateManager.enableAlpha();
+            }
+
+            if (iplayer.hasEffect()) {
+                RenderManager renderMan = Minecraft.getMinecraft().getRenderManager();
+
+                if (renderMan.isRenderShadow()) {
+                    return;
+                }
+
+                // I assume we're in the inventory now.
+                IMagicEffect effect = iplayer.getEffect();
+                if (!effect.getDead() && effect instanceof SpellDisguise) {
+                    effect.update(iplayer);
+
+                    Entity e = ((SpellDisguise)effect).getDisguise();
+
+                    // Check for a disguise and render it in our place.
+                    if (e != null) {
+                        e.setInvisible(false);
+                        renderMan.renderEntity(e, 0, 0, 0, 0, 1, false);
+                    }
+                }
             }
         }
     }
@@ -213,7 +247,7 @@ public class UnicopiaClient extends UClient {
         if (event.phase == Phase.END) {
             EntityPlayer player = UClient.instance().getPlayer();
 
-            if (player != null) {
+            if (player != null && !player.isDead) {
                 Race newRace = getclientPlayerRace();
 
                 if (newRace != clientPlayerRace) {

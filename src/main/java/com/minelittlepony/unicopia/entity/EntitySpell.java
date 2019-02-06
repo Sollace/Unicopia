@@ -95,6 +95,11 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 	    return effectDelegate.get();
 	}
 
+    @Override
+    public boolean hasEffect() {
+        return effectDelegate.has();
+    }
+
 	@Override
 	protected void entityInit() {
 		super.entityInit();
