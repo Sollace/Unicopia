@@ -20,134 +20,134 @@ import net.minecraft.world.World;
 
 public class ItemApple extends ItemFood implements IMultiItem, IEdible {
 
-	private int[] typeRarities = new int[0];
+    private int[] typeRarities = new int[0];
 
-	private String[] subTypes = new String[0];
+    private String[] subTypes = new String[0];
 
-	private String[] variants = subTypes;
+    private String[] variants = subTypes;
 
-	public ItemStack getRandomApple(Random rand, Object variant) {
+    public ItemStack getRandomApple(Random rand, Object variant) {
 
-		int[] rarity = typeRarities;
+        int[] rarity = typeRarities;
 
-		int result = 0;
+        int result = 0;
 
-		for (int i = 0; i < rarity.length && i < subTypes.length; i++) {
-			if (rand.nextInt(rarity[i]) == 0) {
-				result++;
-			}
-		}
+        for (int i = 0; i < rarity.length && i < subTypes.length; i++) {
+            if (rand.nextInt(rarity[i]) == 0) {
+                result++;
+            }
+        }
 
-		if (variant == BlockPlanks.EnumType.JUNGLE) {
-		    result = oneOr(result, 0, 1);
-		}
+        if (variant == BlockPlanks.EnumType.JUNGLE) {
+            result = oneOr(result, 0, 1);
+        }
 
-		if (variant == BlockPlanks.EnumType.BIRCH) {
+        if (variant == BlockPlanks.EnumType.BIRCH) {
             result = oneOr(result, 0, 2);
         }
 
-		if (variant == BlockPlanks.EnumType.SPRUCE) {
-		    if (result == 0) {
-		        return new ItemStack(UItems.rotten_apple, 1);
-		    }
-		}
+        if (variant == BlockPlanks.EnumType.SPRUCE) {
+            if (result == 0) {
+                return new ItemStack(UItems.rotten_apple, 1);
+            }
+        }
 
-		if (variant == BlockPlanks.EnumType.DARK_OAK) {
-		    if (result == 1) {
-		        return new ItemStack(UItems.zap_apple, 1);
-		    }
-		}
+        if (variant == BlockPlanks.EnumType.DARK_OAK) {
+            if (result == 1) {
+                return new ItemStack(UItems.zap_apple, 1);
+            }
+        }
 
-		if (variant == BlockPlanks.EnumType.ACACIA) {
+        if (variant == BlockPlanks.EnumType.ACACIA) {
             result = oneOr(result, 0, 4);
         }
 
-		return new ItemStack(this, 1, result);
-	}
+        return new ItemStack(this, 1, result);
+    }
 
-	int oneOr(int initial, int a, int b) {
-	    if (initial == a) {
-	        return b;
-	    }
+    int oneOr(int initial, int a, int b) {
+        if (initial == a) {
+            return b;
+        }
 
-	    if (initial == b) {
-	        return a;
-	    }
+        if (initial == b) {
+            return a;
+        }
 
-	     return initial;
-	}
+         return initial;
+    }
 
-	public ItemApple(String domain, String name) {
-		super(4, 3, false);
-		setTranslationKey(name);
+    public ItemApple(String domain, String name) {
+        super(4, 3, false);
+        setTranslationKey(name);
 
-		if (!"minecraft".contentEquals(domain)) {
-		    setRegistryName(domain, name);
-		}
-	}
+        if (!"minecraft".contentEquals(domain)) {
+            setRegistryName(domain, name);
+        }
+    }
 
-	public ItemApple setSubTypes(String... types) {
-	    setHasSubtypes(types.length > 0);
+    public ItemApple setSubTypes(String... types) {
+        setHasSubtypes(types.length > 0);
         setMaxDamage(0);
 
-		subTypes = types;
-		variants = new String[subTypes.length];
+        subTypes = types;
+        variants = new String[subTypes.length];
 
-		setTranslationKey(variants[0] = types[0]);
+        setTranslationKey(variants[0] = types[0]);
 
-		for (int i = 1; i < variants.length; i++) {
-			variants[i] = variants[0] + "_" + subTypes[i % subTypes.length];
-		}
-		return this;
-	}
+        for (int i = 1; i < variants.length; i++) {
+            variants[i] = variants[0] + "_" + subTypes[i % subTypes.length];
+        }
+        return this;
+    }
 
-	public ItemApple setTypeRarities(int ... rarity) {
-		typeRarities = rarity;
-		return this;
-	}
+    public ItemApple setTypeRarities(int ... rarity) {
+        typeRarities = rarity;
+        return this;
+    }
 
-	@Override
-	public String[] getVariants() {
-		return variants;
-	}
+    @Override
+    public String[] getVariants() {
+        return variants;
+    }
 
-	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-	    if (isInCreativeTab(tab)) {
-	        items.add(new ItemStack(this, 1, 0));
+    @Override
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+        if (isInCreativeTab(tab)) {
+            items.add(new ItemStack(this, 1, 0));
 
-    		for (int i = 1; i < subTypes.length; i++) {
-    			items.add(new ItemStack(this, 1, i));
-    		}
-	    }
-	}
+            for (int i = 1; i < subTypes.length; i++) {
+                items.add(new ItemStack(this, 1, i));
+            }
+        }
+    }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         tooltip.add(getToxicityLevel(stack).getTooltip());
     }
 
-	@Override
-	public int getMetadata(ItemStack stack) {
-	    if (getHasSubtypes()) {
-	        return super.getMetadata(stack) % subTypes.length;
-	    }
+    @Override
+    public int getMetadata(ItemStack stack) {
+        if (getHasSubtypes()) {
+            return super.getMetadata(stack) % subTypes.length;
+        }
 
-	    return super.getMetadata(stack);
-	}
+        return super.getMetadata(stack);
+    }
 
-	@Override
-	public String getTranslationKey(ItemStack stack) {
-	    if (getHasSubtypes()) {
-    	    int meta = Math.max(0, stack.getMetadata() % subTypes.length);
+    @Override
+    public String getTranslationKey(ItemStack stack) {
+        if (getHasSubtypes()) {
+            int meta = Math.max(0, stack.getMetadata() % subTypes.length);
 
-    	    if (meta > 0) {
-    	        return super.getTranslationKey(stack) + "." + subTypes[meta];
-    	    }
-	    }
+            if (meta > 0) {
+                return super.getTranslationKey(stack) + "." + subTypes[meta];
+            }
+        }
 
-	    return super.getTranslationKey(stack);
-	}
+        return super.getTranslationKey(stack);
+    }
 
     @Override
     public Toxicity getToxicityLevel(ItemStack stack) {
