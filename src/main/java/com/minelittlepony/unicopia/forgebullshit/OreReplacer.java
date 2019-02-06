@@ -103,21 +103,19 @@ public class OreReplacer {
 
     public void done() {
         log.info("Searching for ore replacements...");
-        Streams.stream(ForgeRegistries.RECIPES).forEach(recipe -> {
+        Streams.stream(ForgeRegistries.RECIPES).forEach(recipe ->
             remappers.stream()
                 .filter(remapper -> remapper.canRemap(recipe))
                 .findFirst()
-                .ifPresent(remapper -> remapper.replaceIngredients(this, recipe));
-        });
+                .ifPresent(remapper -> remapper.replaceIngredients(this, recipe))
+        );
         log.info("Replaced {} ingredients.", replacements);
     }
 
     public boolean replaceOre(ItemStack stack, NonNullList<ItemStack> newStacks) {
-        return ores.stream().filter(ore -> ore.matches(stack)).map(ore -> {
-            ore.getSubItems(stack, newStacks);
-
-            return ore;
-        }).findFirst().isPresent();
+        return ores.stream().filter(ore -> ore.matches(stack)).peek(ore ->
+            ore.getSubItems(stack, newStacks)
+        ).findFirst().isPresent();
     }
 
     public interface IIngredientRemapper {

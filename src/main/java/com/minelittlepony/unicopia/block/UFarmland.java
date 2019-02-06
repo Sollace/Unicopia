@@ -74,9 +74,9 @@ public abstract class UFarmland extends BlockFarmland {
     }
 
     public boolean hasWater(World world, BlockPos pos) {
-        return PosHelper.inRegion(pos.add(-4, 0, -4), pos.add(4, 1, 4)).anyMatch(p -> {
-            return world.getBlockState(p).getMaterial() == Material.WATER;
-        });
+        return PosHelper.inRegion(pos.add(-4, 0, -4), pos.add(4, 1, 4)).anyMatch(p ->
+            world.getBlockState(p).getMaterial() == Material.WATER
+        );
     }
 
     @Override
