@@ -30,13 +30,13 @@ public class SpellAwkward extends AbstractSpell {
     }
 
     @Override
-    public boolean update(ICaster<?> source, int level) {
+    public boolean update(ICaster<?> source) {
         return true;
     }
 
     @Override
-    public void render(ICaster<?> source, int level) {
-        source.spawnParticles(new Sphere(false, (1 + level) * 8), 10, pos -> {
+    public void render(ICaster<?> source) {
+        source.spawnParticles(new Sphere(false, (1 + source.getCurrentLevel()) * 8), 10, pos -> {
             int index = (int)MathHelper.nextDouble(source.getWorld().rand, 0, max);
 
             EnumParticleTypes type = EnumParticleTypes.getByName(names.get(index));

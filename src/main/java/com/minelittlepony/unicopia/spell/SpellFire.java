@@ -38,7 +38,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 
-public class SpellFire extends AbstractSpell implements IUseAction, IDispenceable {
+public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseAction, IDispenceable {
 
 	public final StateMapList affected = new StateMapList();
 
@@ -84,13 +84,13 @@ public class SpellFire extends AbstractSpell implements IUseAction, IDispenceabl
     }
 
     @Override
-    public boolean update(ICaster<?> source, int level) {
+    public boolean update(ICaster<?> source) {
         return false;
     }
 
 	@Override
-	public void render(ICaster<?> source, int level) {
-	    source.spawnParticles(visual_effect_region, level * 6, pos -> {
+	public void render(ICaster<?> source) {
+	    source.spawnParticles(visual_effect_region, source.getCurrentLevel() * 6, pos -> {
 	        source.getWorld().spawnParticle(EnumParticleTypes.SMOKE_LARGE, pos.x, pos.y, pos.z, 0, 0, 0);
         });
 	}

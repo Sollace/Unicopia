@@ -28,7 +28,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 
-public class SpellIce extends AbstractSpell implements IUseAction, IDispenceable {
+public class SpellIce extends AbstractSpell.RangedAreaSpell implements IUseAction, IDispenceable {
 
 	public final StateMapList affected = new StateMapList();
 
@@ -72,12 +72,12 @@ public class SpellIce extends AbstractSpell implements IUseAction, IDispenceable
     }
 
     @Override
-    public boolean update(ICaster<?> source, int level) {
+    public boolean update(ICaster<?> source) {
         return false;
     }
 
     @Override
-    public void render(ICaster<?> source, int level) {
+    public void render(ICaster<?> source) {
     }
 
 	@Override

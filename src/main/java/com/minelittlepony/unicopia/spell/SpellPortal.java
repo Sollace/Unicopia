@@ -29,7 +29,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-public class SpellPortal extends AbstractSpell implements IUseAction {
+public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseAction {
 
     private static final IShape portalZone_X = new Sphere(true, 1, 0, 2, 1);
     private static final IShape portalZone_Y = new Sphere(true, 1, 2, 0, 2);
@@ -142,7 +142,7 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
     }
 
     @Override
-    public boolean update(ICaster<?> source, int level) {
+    public boolean update(ICaster<?> source) {
         if (!source.getWorld().isRemote) {
             getDestinationPortal().ifPresent(dest ->
                 source.getWorld().getEntitiesWithinAABB(Entity.class, getTeleportBounds().offset(source.getOrigin())).stream()
@@ -159,7 +159,7 @@ public class SpellPortal extends AbstractSpell implements IUseAction {
     }
 
     @Override
-    public void render(ICaster<?> source, int level) {
+    public void render(ICaster<?> source) {
         source.spawnParticles(getPortalZone(), 10, pos -> {
             Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0);
         });

@@ -53,7 +53,7 @@ public class SpellDrake extends AbstractSpell {
     }
 
     @Override
-    public boolean update(ICaster<?> source, int level) {
+    public boolean update(ICaster<?> source) {
 
         if (firstUpdate) {
             firstUpdate = false;
@@ -85,16 +85,16 @@ public class SpellDrake extends AbstractSpell {
         }
 
         if (piggyBackSpell != null) {
-            piggyBackSpell.update(source, level);
+            piggyBackSpell.update(source);
         }
 
         return true;
     }
 
     @Override
-    public void render(ICaster<?> source, int level) {
+    public void render(ICaster<?> source) {
         if (piggyBackSpell != null) {
-            piggyBackSpell.render(source, level);
+            piggyBackSpell.render(source);
         }
     }
 

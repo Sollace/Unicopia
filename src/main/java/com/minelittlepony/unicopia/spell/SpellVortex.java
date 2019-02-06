@@ -23,18 +23,18 @@ public class SpellVortex extends SpellShield {
     }
 
     @Override
-    public void render(ICaster<?> source, int level) {
-        level = 4 + (level * 2);
+    public void render(ICaster<?> source) {
+        int range = 4 + (source.getCurrentLevel() * 2);
         Vec3d pos = source.getOriginVector();
 
-        source.spawnParticles(new Sphere(false, level), level * 9, p -> {
+        source.spawnParticles(new Sphere(false, range), range * 9, p -> {
             Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, p, p.subtract(pos));
         });
     }
 
     @Override
-    protected double getDrawDropOffRange(int level) {
-        return 10 + (level * 2);
+    protected double getDrawDropOffRange(ICaster<?> caster) {
+        return 10 + (caster.getCurrentLevel() * 2);
     }
 
     @Override

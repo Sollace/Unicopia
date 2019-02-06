@@ -67,11 +67,11 @@ public class SpellInferno extends SpellFire {
     }
 
     @Override
-    public boolean update(ICaster<?> source, int level) {
+    public boolean update(ICaster<?> source) {
         World w = source.getWorld();
 
         if (!w.isRemote) {
-            int radius = 4 + (level * 4);
+            int radius = 4 + (source.getCurrentLevel() * 4);
             IShape shape = new Sphere(false, radius);
 
             Vec3d origin = source.getOriginVector();

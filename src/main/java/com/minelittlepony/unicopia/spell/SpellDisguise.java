@@ -70,7 +70,7 @@ public class SpellDisguise extends AbstractSpell {
     }
 
     @Override
-    public boolean update(ICaster<?> source, int level) {
+    public boolean update(ICaster<?> source) {
         if (entity == null && entityNbt != null) {
             entity = EntityList.createEntityFromNBT(entityNbt, source.getWorld());
 
@@ -202,7 +202,7 @@ public class SpellDisguise extends AbstractSpell {
     }
 
     @Override
-    public void render(ICaster<?> source, int level) {
+    public void render(ICaster<?> source) {
 
     }
 

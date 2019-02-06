@@ -169,7 +169,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 
 	protected void displayTick() {
 		if (hasEffect()) {
-		    getEffect().render(this, getCurrentLevel());
+		    getEffect().render(this);
 		}
 	}
 
@@ -186,7 +186,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 				setDead();
 				onDeath();
 			} else {
-			    getEffect().update(this, getCurrentLevel());
+			    getEffect().update(this);
 			}
 
 			if (getEffect().allowAI()) {
@@ -194,23 +194,37 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 			}
 		}
 
-		if (getCurrentLevel() > 0 && !world.isRemote && world.rand.nextInt(200) == 0) {
-		    addLevels(-1);
-		    if (getCurrentLevel() <= 0) {
-		        setDead();
-		    }
-		}
-
 		if (overLevelCap()) {
 		    if (world.rand.nextInt(10) == 0) {
 		        spawnExplosionParticle();
 		    }
+
+            if (!world.isRemote && hasEffect()) {
+                float exhaustionChance = getEffect().getExhaustion(this);
+
+                if (exhaustionChance == 0 || world.rand.nextInt((int)(exhaustionChance / 500)) == 0) {
+                    addLevels(-1);
+                } else if (world.rand.nextInt((int)(exhaustionChance * 500)) == 0) {
+                    setEffect(null);
+                } else if (world.rand.nextInt((int)(exhaustionChance * 3500)) == 0) {
+                    world.createExplosion(this, posX, posY, posZ, getCurrentLevel()/2, true);
+                    setDead();
+                }
+            }
 		}
+
+		if (getCurrentLevel() < 0) {
+            setDead();
+        }
 	}
 
 	@Override
 	public void fall(float distance, float damageMultiplier) {
 
+	}
+
+	public boolean overLevelCap() {
+	    return getCurrentLevel() > getMaxLevel();
 	}
 
 	@Override
@@ -286,14 +300,6 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 
             addLevels(1);
 
-            if (!world.isRemote) {
-                if (overLevelCap() || (rand.nextFloat() * getCurrentLevel()) > 10) {
-                    world.createExplosion(this, posX, posY, posZ, getCurrentLevel()/2, true);
-                    setDead();
-                    return false;
-                }
-            }
-
             playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 0.1f, 1);
 
             return true;
@@ -304,7 +310,7 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 
 	@Override
 	public int getMaxLevel() {
-	    return hasEffect() ? getEffect().getMaxLevel() : 0;
+	    return hasEffect() ? getEffect().getMaxLevelCutOff(this) : 0;
 	}
 
 	@Override
@@ -314,19 +320,10 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 
 	@Override
     public void setCurrentLevel(int level) {
-        level = Math.max(level, 0);
-        if (hasEffect()) {
-            getEffect().setCurrentLevel(level);
-            level = getEffect().getCurrentLevel();
-        }
+        level = Math.max(level, 1);
 
         dataManager.set(LEVEL, level);
     }
-
-	public boolean overLevelCap() {
-		int max = getMaxLevel();
-		return max > 0 && getCurrentLevel() >= (max * 1.1);
-	}
 
 	@Override
 	public Entity getEntity() {

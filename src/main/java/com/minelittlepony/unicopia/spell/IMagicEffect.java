@@ -5,7 +5,7 @@ import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
 /**
  * Interface for a magic spells
  */
-public interface IMagicEffect extends InbtSerialisable, ILevelled, IAligned {
+public interface IMagicEffect extends InbtSerialisable, IAligned {
 
     /**
      * Gets the name used to identify this effect.
@@ -42,6 +42,20 @@ public interface IMagicEffect extends InbtSerialisable, ILevelled, IAligned {
 	 */
 	boolean isCraftable();
 
+
+    /**
+     * Gets the highest level this spell can be safely operated at.
+     * Gems may go higher, however chance of explosion/exhaustion increases with every level.
+     */
+    int getMaxLevelCutOff(ICaster<?> caster);
+
+    float getMaxExhaustion(ICaster<?> caster);
+
+    /**
+     * Gets the chances of this effect turning into an innert gem or exploding.
+     */
+    float getExhaustion(ICaster<?> caster);
+
 	/**
 	 * Called when first attached to a gem.
 	 */
@@ -56,7 +70,7 @@ public interface IMagicEffect extends InbtSerialisable, ILevelled, IAligned {
 	 * @return true to keep alive
 	 */
     default boolean updateOnPerson(ICaster<?> caster) {
-        return update(caster, getCurrentLevel());
+        return update(caster);
     }
 
 	/**
@@ -64,9 +78,8 @@ public interface IMagicEffect extends InbtSerialisable, ILevelled, IAligned {
 	 * Called on both sides.
 	 *
 	 * @param source   The entity we are currently attached to.
-	 * @param level		Current active spell level
 	 */
-	boolean update(ICaster<?> source, int level);
+	boolean update(ICaster<?> source);
 
     /**
      * Called every tick when attached to a player. Used to apply particle effects.
@@ -75,7 +88,7 @@ public interface IMagicEffect extends InbtSerialisable, ILevelled, IAligned {
      * @param source    The entity we are currently attached to.
      */
     default void renderOnPerson(ICaster<?> source) {
-        render(source, getCurrentLevel());
+        render(source);
     }
 
 	/**
@@ -83,9 +96,8 @@ public interface IMagicEffect extends InbtSerialisable, ILevelled, IAligned {
 	 * Is only called on the client side.
 	 *
 	 * @param source	The entity we are attached to.
-	 * @param level		Current spell level
 	 */
-	void render(ICaster<?> source, int level);
+	void render(ICaster<?> source);
 
 	/**
 	 * Return true to allow the gem update and move.

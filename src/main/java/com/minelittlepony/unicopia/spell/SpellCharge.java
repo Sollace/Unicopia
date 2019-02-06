@@ -41,8 +41,8 @@ public class SpellCharge extends AbstractSpell {
     }
 
     @Override
-    public void render(ICaster<?> source, int level) {
-        if (source.getWorld().rand.nextInt(4 + level * 4) == 0) {
+    public void render(ICaster<?> source) {
+        if (source.getWorld().rand.nextInt(4 + source.getCurrentLevel() * 4) == 0) {
             EntitySpell target = getTarget(source);
 
             if (target != null) {
@@ -83,7 +83,7 @@ public class SpellCharge extends AbstractSpell {
     }
 
     @Override
-    public boolean update(ICaster<?> source, int level) {
+    public boolean update(ICaster<?> source) {
 
         if (searching) {
             BlockPos origin = source.getOrigin();
@@ -99,18 +99,13 @@ public class SpellCharge extends AbstractSpell {
         } else {
             EntitySpell target = getTarget(source);
 
-            if (target != null && !target.overLevelCap() && level > 0) {
+            if (target != null && !target.overLevelCap() && source.getCurrentLevel() > 0) {
                 source.addLevels(-1);
                 target.addLevels(1);
             }
         }
 
         return !getDead();
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 2;
     }
 
     @Override

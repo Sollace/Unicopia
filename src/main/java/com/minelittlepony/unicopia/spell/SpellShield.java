@@ -18,7 +18,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
-public class SpellShield extends AbstractSpell {
+public class SpellShield extends AbstractSpell.RangedAreaSpell {
 
     private Optional<IAttachableParticle> particleEffect = Optional.empty();
 
@@ -38,13 +38,8 @@ public class SpellShield extends AbstractSpell {
 	}
 
 	@Override
-	public int getMaxLevel() {
-		return 17;
-	}
-
-	@Override
-	public void render(ICaster<?> source, int level) {
-	    int radius = 4 + (level * 2);
+	public void render(ICaster<?> source) {
+	    int radius = 4 + (source.getCurrentLevel() * 2);
 
 	    source.spawnParticles(new Sphere(true, radius), radius * 6, pos -> {
             Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0);
@@ -63,7 +58,7 @@ public class SpellShield extends AbstractSpell {
 	public boolean updateOnPerson(ICaster<?> source) {
 	    if (super.updateOnPerson(source)) {
     		if (source.getEntity().getEntityWorld().getWorldTime() % 50 == 0) {
-    			double radius = 4 + (getCurrentLevel() * 2);
+    			double radius = 4 + (source.getCurrentLevel() * 2);
     			if (!IPower.takeFromPlayer((EntityPlayer)source.getOwner(), radius/4)) {
     				setDead();
     			}
@@ -73,13 +68,13 @@ public class SpellShield extends AbstractSpell {
 		return !getDead();
 	}
 
-	protected double getDrawDropOffRange(int level) {
-	    return 4 + (level * 2);
+	protected double getDrawDropOffRange(ICaster<?> source) {
+	    return 4 + (source.getCurrentLevel() * 2);
 	}
 
 	@Override
-	public boolean update(ICaster<?> source, int level) {
-		double radius = getDrawDropOffRange(level);
+	public boolean update(ICaster<?> source) {
+		double radius = getDrawDropOffRange(source);
 
 		Entity owner = source.getOwner();
 

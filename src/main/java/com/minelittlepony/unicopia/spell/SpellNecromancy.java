@@ -20,7 +20,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 
-public class SpellNecromancy extends AbstractSpell {
+public class SpellNecromancy extends AbstractSpell.RangedAreaSpell {
 
     private final List<IMonsterSpawn<?>> spawns = Lists.newArrayList(
             EntityZombie::new,
@@ -44,7 +44,7 @@ public class SpellNecromancy extends AbstractSpell {
     }
 
     @Override
-    public boolean update(ICaster<?> source, int level) {
+    public boolean update(ICaster<?> source) {
 
         if (source.getWorld().isRemote || source.getWorld().getDifficulty() == EnumDifficulty.PEACEFUL) {
             return true;
@@ -53,9 +53,9 @@ public class SpellNecromancy extends AbstractSpell {
 
         float additional = source.getWorld().getDifficultyForLocation(source.getOrigin()).getAdditionalDifficulty();
 
-        level++;
+        int radius = source.getCurrentLevel() + 1;
 
-        IShape affectRegion = new Sphere(false, level * 4);
+        IShape affectRegion = new Sphere(false, radius * 4);
 
         if (source.getWorld().rand.nextInt(100) != 0) {
             return true;
@@ -63,7 +63,7 @@ public class SpellNecromancy extends AbstractSpell {
 
         Vec3d origin = source.getOriginVector();
 
-        if (VecHelper.findAllEntitiesInRange(source.getEntity(), source.getWorld(), source.getOrigin(), level * 4)
+        if (VecHelper.findAllEntitiesInRange(source.getEntity(), source.getWorld(), source.getOrigin(), radius * 4)
                 .filter(e -> e instanceof EntityZombie)
                 .count() >= 10 * (1 + additional)) {
             return true;
@@ -102,8 +102,8 @@ public class SpellNecromancy extends AbstractSpell {
     }
 
     @Override
-    public void render(ICaster<?> source, int level) {
-        IShape affectRegion = new Sphere(false, (1 + level) * 4);
+    public void render(ICaster<?> source) {
+        IShape affectRegion = new Sphere(false, (1 + source.getCurrentLevel()) * 4);
 
         source.spawnParticles(affectRegion, 5, pos -> {
             if (!source.getWorld().isAirBlock(new BlockPos(pos).down())) {
