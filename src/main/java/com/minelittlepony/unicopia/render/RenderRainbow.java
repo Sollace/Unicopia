@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.render;
 import org.lwjgl.opengl.GL11;
 
 import com.minelittlepony.unicopia.entity.EntityRainbow;
+import com.minelittlepony.util.WorldHelper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -22,6 +23,21 @@ public class RenderRainbow extends Render<EntityRainbow> {
     private static final ResourceLocation TEXTURE = new ResourceLocation("unicopia", "textures/environment/rainbow.png");
 
     public void doRender(EntityRainbow entity, double x, double y, double z, float entityYaw, float partialTicks) {
+
+
+        float distance = Minecraft.getMinecraft().getRenderViewEntity().getDistance(entity);
+        float maxDistance = 16 * Minecraft.getMinecraft().gameSettings.renderDistanceChunks;
+        double r = entity.getRadius();
+        float light = WorldHelper.getDaylightBrightness(entity.getEntityWorld(), partialTicks);
+
+        float opacity = ((maxDistance - distance) / maxDistance);
+
+        opacity *= light;
+
+        if (opacity <= 0) {
+            return;
+        }
+
         bindEntityTexture(entity);
 
         GlStateManager.pushMatrix();
@@ -33,17 +49,10 @@ public class RenderRainbow extends Render<EntityRainbow> {
         GlStateManager.translate(x, y, z);
         GlStateManager.rotate(entityYaw, 0, 1, 0);
 
-        float distance = Minecraft.getMinecraft().getRenderViewEntity().getDistance(entity);
-
-
-        float maxDistance = 16 * Minecraft.getMinecraft().gameSettings.renderDistanceChunks;
-
-        GlStateManager.color(1, 1, 1, ((maxDistance - distance) / maxDistance) * 0.9f);
+        GlStateManager.color(1, 1, 1, opacity);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
-
-        double r = entity.getRadius();
 
         bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
         bufferbuilder.pos(-r, r, 0).tex(1, 0).endVertex();
