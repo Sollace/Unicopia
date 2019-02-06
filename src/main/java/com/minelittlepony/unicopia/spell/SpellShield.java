@@ -46,7 +46,7 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell {
         });
 
 	    particleEffect.filter(IAttachableParticle::isStillAlive).orElseGet(() -> {
-	        particleEffect = Particles.instance().spawnParticle(UParticles.SPHERE, false, source.getOriginVector(), 0, 0, 0, radius, getTint(), 30);
+	        particleEffect = Particles.instance().spawnParticle(UParticles.SPHERE, true, source.getOriginVector(), 0, 0, 0, radius, getTint(), 30);
 	        particleEffect.ifPresent(p -> p.attachTo(source));
 
 	        return null;
