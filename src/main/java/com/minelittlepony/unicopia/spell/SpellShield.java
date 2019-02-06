@@ -1,10 +1,8 @@
 package com.minelittlepony.unicopia.spell;
 
-import java.util.Optional;
-
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.UParticles;
-import com.minelittlepony.unicopia.particle.IAttachableParticle;
+import com.minelittlepony.unicopia.particle.ParticleConnection;
 import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
@@ -20,7 +18,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class SpellShield extends AbstractSpell.RangedAreaSpell {
 
-    private Optional<IAttachableParticle> particleEffect = Optional.empty();
+    private final ParticleConnection particlEffect = new ParticleConnection();
 
 	@Override
     public String getName() {
@@ -45,13 +43,9 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell {
             Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0);
         });
 
-	    particleEffect.filter(IAttachableParticle::isStillAlive).orElseGet(() -> {
-	        particleEffect = Particles.instance().spawnParticle(UParticles.SPHERE, true, source.getOriginVector(), 0, 0, 0, radius, getTint(), 30);
-	        particleEffect.ifPresent(p -> p.attachTo(source));
-
-	        return null;
-	    });
-	    particleEffect.ifPresent(p -> p.setAttribute(0, radius));
+	    particlEffect
+    	    .ifMissing(source, () -> Particles.instance().spawnParticle(UParticles.SPHERE, true, source.getOriginVector(), 0, 0, 0, radius, getTint(), 30))
+    	    .ifPresent(p -> p.setAttribute(0, radius));
 	}
 
 	@Override
