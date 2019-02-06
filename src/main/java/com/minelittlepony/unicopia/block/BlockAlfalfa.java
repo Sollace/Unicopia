@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.block;
 
 import java.util.Random;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.UItems;
 
 import net.minecraft.block.BlockCrops;
@@ -169,19 +171,23 @@ public class BlockAlfalfa extends BlockCrops {
         return getHalf(state) != Half.BOTTOM || super.canBlockStay(world, pos, state);
     }
 
+    public void onPlayerDestroy(World worldIn, BlockPos pos, IBlockState state) {
+        breakConnectedBlocks(worldIn, pos, null);
+    }
+
     @Override
     public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player) {
         breakConnectedBlocks(worldIn, pos, player);
     }
 
-    protected void breakConnectedBlocks(World worldIn, BlockPos pos, EntityPlayer player) {
+    protected void breakConnectedBlocks(World worldIn, BlockPos pos, @Nullable EntityPlayer player) {
         IBlockState state = worldIn.getBlockState(pos);
 
         if (state.getBlock() != this) {
             return;
         }
 
-        if (player.capabilities.isCreativeMode) {
+        if (player != null && player.capabilities.isCreativeMode) {
             worldIn.setBlockToAir(pos);
         } else {
             if (worldIn.isRemote) {
