@@ -54,7 +54,7 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
 
         alpha = Math.min(1F, 1 - (float)particleAge/particleMaxAge) * baseAlpha;
 
-        if (caster == null || caster.getEntity().isDead) {
+        if (caster == null || !caster.hasEffect() || caster.getEffect().getDead() || caster.getEntity().isDead) {
             setExpired();
         } else {
             Entity e = caster.getEntity();
