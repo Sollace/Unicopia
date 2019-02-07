@@ -68,9 +68,13 @@ public class ParticleUnicornMagic extends Particle {
         prevPosZ = posZ;
         float var1 = (float)particleAge / (float)particleMaxAge;
         var1 = 1 + var1 - var1 * var1 * 2;
+
         posX = portalPosX + motionX * var1;
         posY = portalPosY + motionY;
         posZ = portalPosZ + motionZ * var1;
-        if (particleAge++ >= particleMaxAge) setExpired();
+
+        if (particleAge++ >= particleMaxAge) {
+            setExpired();
+        }
     }
 }

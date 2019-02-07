@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Callable;
+import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -42,6 +42,7 @@ public class SpellRegistry {
         registerSpell(SpellAwkward::new);
         registerSpell(SpellInferno::new);
         registerSpell(SpellDrake::new);
+        registerSpell(GenericSpell.factory("light", 0xf0ff0f, SpellAffinity.GOOD));
     }
 
     @Nullable
@@ -99,7 +100,7 @@ public class SpellRegistry {
         return getSpellFromName(getKeyFromStack(stack));
     }
 
-    public <T extends IMagicEffect> void registerSpell(Callable<T> factory) {
+    public <T extends IMagicEffect> void registerSpell(Supplier<T> factory) {
         try {
             new Entry<T>(factory);
         } catch (Exception e) {
@@ -157,7 +158,7 @@ public class SpellRegistry {
 
     @Immutable
     class Entry<T extends IMagicEffect> {
-        final Callable<T> factory;
+        final Supplier<T> factory;
 
         final int color;
 
@@ -166,8 +167,8 @@ public class SpellRegistry {
 
         final SpellAffinity affinity;
 
-        Entry(Callable<T> factory) throws Exception {
-            T inst = factory.call();
+        Entry(Supplier<T> factory) throws Exception {
+            T inst = factory.get();
 
             this.factory = factory;
             this.color = inst.getTint();
@@ -202,7 +203,7 @@ public class SpellRegistry {
 
         T create() {
             try {
-                return factory.call();
+                return factory.get();
             } catch (Exception e) {
                 e.printStackTrace();
             }

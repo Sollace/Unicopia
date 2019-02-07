@@ -1,0 +1,9 @@
+{
+    "variants": {
+        "facing=up": { "model": "unicopia:enchanted_torch" },
+        "facing=east": { "model": "unicopia:enchanted_torch_wall" },
+        "facing=south": { "model": "unicopia:enchanted_torch_wall", "y": 90 },
+        "facing=west": { "model": "unicopia:enchanted_torch_wall", "y": 180 },
+        "facing=north": { "model": "unicopia:enchanted_torch_wall", "y": 270 }
+    }
+}

@@ -52,6 +52,15 @@ public interface ICloudBlock {
                 }
 
                 if (isPlacementExcempt(block)) {
+
+                    if (block instanceof ICloudBlock) {
+                        CloudType other = ((ICloudBlock)block).getCloudMaterialType(block.getDefaultState());
+
+                        if (other.canInteract(player)) {
+                            return false;
+                        }
+                    }
+
                     if (Predicates.INTERACT_WITH_CLOUDS.apply(player)) {
                         return type == CloudType.NORMAL;
                     }

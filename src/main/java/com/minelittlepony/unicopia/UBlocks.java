@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia;
 
 import com.minelittlepony.unicopia.block.BlockAlfalfa;
 import com.minelittlepony.unicopia.block.BlockFruitLeaves;
+import com.minelittlepony.unicopia.block.BlockGlowingGem;
 import com.minelittlepony.unicopia.block.BlockCloud;
 import com.minelittlepony.unicopia.block.BlockCloudAnvil;
 import com.minelittlepony.unicopia.block.BlockCloudBanister;
@@ -40,6 +41,8 @@ public class UBlocks {
 
     public static final BlockCloudDoor mist_door = new BlockCloudDoor(UMaterials.cloud, Unicopia.MODID, "mist_door");
 
+    public static final BlockGlowingGem enchanted_torch = new BlockGlowingGem(Unicopia.MODID, "enchanted_torch");
+
     public static final BlockCloudAnvil anvil = new BlockCloudAnvil(Unicopia.MODID, "anvil");
 
     public static final BlockCloudFence cloud_fence = new BlockCloudFence(Unicopia.MODID, "cloud_fence");
@@ -67,6 +70,7 @@ public class UBlocks {
                              sugar_block,
                              alfalfa,
                              tomato_plant,
+                             enchanted_torch,
                              apple_tree, apple_leaves);
     }
 

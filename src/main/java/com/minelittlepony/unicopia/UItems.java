@@ -29,6 +29,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemDoor;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemSeedFood;
@@ -113,6 +114,8 @@ public class UItems {
             .setCreativeTab(CreativeTabs.MATERIALS);
 
     public static final ItemStick stick = new ItemStick();
+    public static final Item enchanted_torch = new ItemBlock(UBlocks.enchanted_torch)
+            .setRegistryName(Unicopia.MODID, "enchanted_torch");
 
     public static final Item alfalfa_leaves = new ItemFood(1, 3, false)
             .setTranslationKey("alfalfa_leaves")
@@ -202,7 +205,7 @@ public class UItems {
                 cloud_stairs, cloud_slab, cloud_fence, cloud_banister,
                 cloud_farmland, mist_door, anvil,
 
-                bag_of_holding, spell, curse, spellbook, mug,
+                bag_of_holding, spell, curse, spellbook, mug, enchanted_torch,
 
                 alfalfa_seeds, alfalfa_leaves,
                 cereal, sugar_cereal, sugar_block,
@@ -230,7 +233,7 @@ public class UItems {
 
                     cloud_spawner, cloud_matter, cloud_stairs, cloud_fence, cloud_banister,
                     cloud_farmland, mist_door, anvil,
-                    bag_of_holding, spell, curse, spellbook, mug,
+                    bag_of_holding, spell, curse, spellbook, mug, enchanted_torch,
 
                     alfalfa_seeds, alfalfa_leaves,
                     cereal, sugar_cereal, sugar_block,
