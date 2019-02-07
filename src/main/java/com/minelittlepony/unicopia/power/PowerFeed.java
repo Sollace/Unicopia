@@ -1,18 +1,21 @@
 package com.minelittlepony.unicopia.power;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
 import org.lwjgl.input.Keyboard;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.power.data.Hit;
 import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.vector.VecHelper;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.passive.EntityPig;
@@ -55,8 +58,7 @@ public class PowerFeed implements IPower<Hit> {
     @Override
     public Hit tryActivate(IPlayer player) {
         if (player.getOwner().getHealth() < player.getOwner().getMaxHealth() || player.getOwner().canEat(false)) {
-            Entity i = VecHelper.getLookedAtEntity(player.getOwner(), 15);
-            if (i != null && canDrain(i)) {
+            if (!getTargets(player).isEmpty()) {
                 return new Hit();
             }
         }
@@ -65,12 +67,13 @@ public class PowerFeed implements IPower<Hit> {
     }
 
     private boolean canDrain(Entity e) {
-        return e instanceof EntityCow
+        return (e instanceof EntityLiving)
+            && (e instanceof EntityCow
             || e instanceof EntityVillager
             || e instanceof EntityPlayer
             || e instanceof EntitySheep
             || e instanceof EntityPig
-            || EnumCreatureType.MONSTER.getCreatureClass().isAssignableFrom(e.getClass());
+            || EnumCreatureType.MONSTER.getCreatureClass().isAssignableFrom(e.getClass()));
     }
 
     @Override
@@ -78,45 +81,63 @@ public class PowerFeed implements IPower<Hit> {
         return Hit.class;
     }
 
-    @Override
-    public void apply(IPlayer iplayer, Hit data) {
-        EntityPlayer player = iplayer.getOwner();
-        List<Entity> list = VecHelper.getWithinRange(player, 3, this::canDrain);
+    protected List<EntityLiving> getTargets(IPlayer player) {
+        List<Entity> list = VecHelper.getWithinRange(player.getOwner(), 3, this::canDrain);
 
-        Entity looked = VecHelper.getLookedAtEntity(player, 17);
-        if (looked != null && !list.contains(looked)) {
+        Entity looked = VecHelper.getLookedAtEntity(player.getOwner(), 17);
+        if (looked != null && !list.contains(looked) && canDrain(looked)) {
             list.add(looked);
         }
 
-        float lostHealth = player.getMaxHealth() - player.getHealth();
+        return list.stream().map(i -> (EntityLiving)i).collect(Collectors.toList());
+    }
 
-        if (lostHealth > 0 || player.canEat(false)) {
-            float totalDrained = (lostHealth < 2 ? lostHealth : 2);
-            float drained = totalDrained / list.size();
+    @Override
+    public void apply(IPlayer iplayer, Hit data) {
+        EntityPlayer player = iplayer.getOwner();
 
-            for (Entity i : list) {
-                DamageSource d = MagicalDamageSource.causePlayerDamage("feed", player);
+        float maximumHealthGain = player.getMaxHealth() - player.getHealth();
+        int maximumFoodGain = player.canEat(false) ? (20 - player.getFoodStats().getFoodLevel()) : 0;
 
-                if (iplayer.getWorld().rand.nextFloat() > 0.95f) {
-                    i.attackEntityFrom(d, Integer.MAX_VALUE);
-                } else {
-                    i.attackEntityFrom(d, drained);
-                }
+        if (maximumHealthGain > 0 || maximumFoodGain > 0) {
+
+            float healAmount = 0;
+
+            for (Entity i : getTargets(iplayer)) {
+                healAmount += drainFrom(player, (EntityLiving)i);
             }
 
-            if (lostHealth > 0) {
-                player.getFoodStats().addStats(3, 0.125f);
-                player.heal(totalDrained);
-            } else {
-                player.getFoodStats().addStats(3, 0.25f);
+            int foodAmount = (int)Math.floor(Math.min(healAmount / 3, maximumFoodGain));
+
+            if (foodAmount > 0) {
+                healAmount -= foodAmount;
+                player.getFoodStats().addStats(foodAmount, 0.125f);
             }
 
-            if (iplayer.getWorld().rand.nextFloat() > 0.9f) {
-                player.addPotionEffect(new PotionEffect(MobEffects.WITHER, 20, 1));
+            if (healAmount > 0) {
+                player.heal(Math.min(healAmount, maximumHealthGain));
             }
-
-            player.removePotionEffect(MobEffects.NAUSEA);
         }
+    }
+
+    protected float drainFrom(EntityPlayer changeling, EntityLiving living) {
+        DamageSource d = MagicalDamageSource.causePlayerDamage("feed", changeling);
+
+        float damage = living.getHealth()/2;
+
+        if (damage > 0) {
+            living.attackEntityFrom(d, damage);
+        }
+
+        IPower.spawnParticles(UParticles.CHANGELING_MAGIC, living, 7);
+
+        if (changeling.isPotionActive(MobEffects.NAUSEA)) {
+            living.addPotionEffect(changeling.removeActivePotionEffect(MobEffects.NAUSEA));
+        } else if (changeling.getEntityWorld().rand.nextInt(2300) == 0) {
+            living.addPotionEffect(new PotionEffect(MobEffects.WITHER, 20, 1));
+        }
+
+        return damage;
     }
 
     @Override
@@ -128,7 +149,7 @@ public class PowerFeed implements IPower<Hit> {
     public void postApply(IPlayer player) {
         EntityPlayer entity = player.getOwner();
 
-        IPower.spawnParticles(EnumParticleTypes.HEART.getParticleID(), entity, 10);
+        IPower.spawnParticles(EnumParticleTypes.HEART.getParticleID(), entity, 1);
     }
 
 }
