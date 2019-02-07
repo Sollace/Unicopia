@@ -8,8 +8,6 @@ import net.minecraft.util.NonNullList;
 
 public class ItemAppleMultiType extends ItemApple implements IMultiItem {
 
-    private int[] typeRarities = new int[0];
-
     private String[] subTypes = new String[0];
 
     private String[] variants = subTypes;
@@ -38,17 +36,8 @@ public class ItemAppleMultiType extends ItemApple implements IMultiItem {
         return variants;
     }
 
-    protected int[] getTypeRarities() {
-        return typeRarities;
-    }
-
     protected String[] getSubTypes() {
         return subTypes;
-    }
-
-    public ItemAppleMultiType setTypeRarities(int ... rarity) {
-        typeRarities = rarity;
-        return this;
     }
 
     @Override
