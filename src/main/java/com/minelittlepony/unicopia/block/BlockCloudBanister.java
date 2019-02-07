@@ -52,6 +52,22 @@ public class BlockCloudBanister extends BlockCloudFence {
         return BlockRenderLayer.SOLID;
     }
 
+    @Override
+    public boolean canConnectTo(IBlockAccess world, BlockPos pos, EnumFacing facing) {
+        IBlockState myState = world.getBlockState(pos);
+
+        return myState.getBlock() instanceof BlockCloudBanister
+                && super.canConnectTo(world, pos, facing);
+    }
+
+    @Override
+    public boolean canBeConnectedTo(IBlockAccess world, BlockPos pos, EnumFacing facing) {
+        IBlockState state = world.getBlockState(pos.offset(facing));
+
+        return state.getBlock() instanceof BlockCloudBanister
+                && state.getMaterial() == world.getBlockState(pos).getMaterial();
+    }
+
     @Deprecated
     @Override
     public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
