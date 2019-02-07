@@ -1,84 +1,71 @@
 package com.minelittlepony.unicopia.item;
 
 import java.util.List;
-import java.util.Random;
+import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.edibles.IEdible;
 import com.minelittlepony.unicopia.edibles.Toxicity;
-import com.minelittlepony.unicopia.forgebullshit.IMultiItem;
+import com.minelittlepony.util.collection.Pool;
+import com.minelittlepony.util.collection.Weighted;
 
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
-public class ItemApple extends ItemFood implements IMultiItem, IEdible {
+public class ItemApple extends ItemFood implements IEdible {
 
-    private int[] typeRarities = new int[0];
+    public static final Pool<Object, Weighted<Supplier<ItemStack>>> typeVariantMap = Pool.of(BlockPlanks.EnumType.OAK,
+            BlockPlanks.EnumType.OAK, new Weighted<Supplier<ItemStack>>()
+                    .put(1, () -> new ItemStack(UItems.rotten_apple))
+                    .put(2, () -> new ItemStack(UItems.apple, 1, 1))
+                    .put(3, () -> new ItemStack(UItems.apple, 1, 0)),
+            BlockPlanks.EnumType.SPRUCE, new Weighted<Supplier<ItemStack>>()
+                    .put(1, () -> new ItemStack(UItems.apple, 1, 3))
+                    .put(2, () -> new ItemStack(UItems.apple, 1, 1))
+                    .put(3, () -> new ItemStack(UItems.apple, 1, 2))
+                    .put(4, () -> new ItemStack(UItems.rotten_apple)),
+            BlockPlanks.EnumType.BIRCH, new Weighted<Supplier<ItemStack>>()
+                    .put(1, () -> new ItemStack(UItems.rotten_apple))
+                    .put(2, () -> new ItemStack(UItems.apple, 1, 2))
+                    .put(5, () -> new ItemStack(UItems.apple, 1, 1)),
+            BlockPlanks.EnumType.JUNGLE, new Weighted<Supplier<ItemStack>>()
+                    .put(5, () -> new ItemStack(UItems.apple, 1, 1))
+                    .put(2, () -> new ItemStack(UItems.apple, 1, 2))
+                    .put(1, () -> new ItemStack(UItems.apple, 1, 3)),
+            BlockPlanks.EnumType.ACACIA, new Weighted<Supplier<ItemStack>>()
+                    .put(1, () -> new ItemStack(UItems.rotten_apple))
+                    .put(2, () -> new ItemStack(UItems.apple, 1, 2))
+                    .put(5, () -> new ItemStack(UItems.apple, 1, 1)),
+            BlockPlanks.EnumType.DARK_OAK, new Weighted<Supplier<ItemStack>>()
+                    .put(1, () -> new ItemStack(UItems.rotten_apple))
+                    .put(2, () -> new ItemStack(UItems.apple, 1, 2))
+                    .put(5, () -> new ItemStack(UItems.zap_apple)
+            )
+    );
 
-    private String[] subTypes = new String[0];
-
-    private String[] variants = subTypes;
-
-    public ItemStack getRandomApple(Random rand, Object variant) {
-
-        int[] rarity = typeRarities;
-
-        int result = 0;
-
-        for (int i = 0; i < rarity.length && i < subTypes.length; i++) {
-            if (rand.nextInt(rarity[i]) == 0) {
-                result++;
-            }
-        }
-
-        if (variant == BlockPlanks.EnumType.JUNGLE) {
-            result = oneOr(result, 0, 1);
-        }
-
-        if (variant == BlockPlanks.EnumType.BIRCH) {
-            result = oneOr(result, 0, 2);
-        }
-
-        if (variant == BlockPlanks.EnumType.SPRUCE) {
-            if (result == 0) {
-                return new ItemStack(UItems.rotten_apple, 1);
-            }
-        }
-
-        if (variant == BlockPlanks.EnumType.DARK_OAK) {
-            if (result == 1) {
-                return new ItemStack(UItems.zap_apple, 1);
-            }
-        }
-
-        if (variant == BlockPlanks.EnumType.ACACIA) {
-            result = oneOr(result, 0, 4);
-        }
-
-        return new ItemStack(this, 1, result);
+    public static ItemStack getRandomItemStack(Object variant) {
+        return typeVariantMap.getOptional(variant)
+                .flatMap(Weighted::get)
+                .map(Supplier::get)
+                .orElse(ItemStack.EMPTY);
     }
 
-    int oneOr(int initial, int a, int b) {
-        if (initial == a) {
-            return b;
-        }
+    public ItemStack getRandomApple() {
+        return getRandomApple(null);
+    }
 
-        if (initial == b) {
-            return a;
-        }
-
-         return initial;
+    public ItemStack getRandomApple(Object variant) {
+        return getRandomItemStack(variant);
     }
 
     public ItemApple(String domain, String name) {
         super(4, 3, false);
+
         setTranslationKey(name);
 
         if (!"minecraft".contentEquals(domain)) {
@@ -86,67 +73,9 @@ public class ItemApple extends ItemFood implements IMultiItem, IEdible {
         }
     }
 
-    public ItemApple setSubTypes(String... types) {
-        setHasSubtypes(types.length > 0);
-        setMaxDamage(0);
-
-        subTypes = types;
-        variants = new String[subTypes.length];
-
-        setTranslationKey(variants[0] = types[0]);
-
-        for (int i = 1; i < variants.length; i++) {
-            variants[i] = variants[0] + "_" + subTypes[i % subTypes.length];
-        }
-        return this;
-    }
-
-    public ItemApple setTypeRarities(int ... rarity) {
-        typeRarities = rarity;
-        return this;
-    }
-
-    @Override
-    public String[] getVariants() {
-        return variants;
-    }
-
-    @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-        if (isInCreativeTab(tab)) {
-            items.add(new ItemStack(this, 1, 0));
-
-            for (int i = 1; i < subTypes.length; i++) {
-                items.add(new ItemStack(this, 1, i));
-            }
-        }
-    }
-
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
         tooltip.add(getToxicityLevel(stack).getTooltip());
-    }
-
-    @Override
-    public int getMetadata(ItemStack stack) {
-        if (getHasSubtypes()) {
-            return super.getMetadata(stack) % subTypes.length;
-        }
-
-        return super.getMetadata(stack);
-    }
-
-    @Override
-    public String getTranslationKey(ItemStack stack) {
-        if (getHasSubtypes()) {
-            int meta = Math.max(0, stack.getMetadata() % subTypes.length);
-
-            if (meta > 0) {
-                return super.getTranslationKey(stack) + "." + subTypes[meta];
-            }
-        }
-
-        return super.getTranslationKey(stack);
     }
 
     @Override

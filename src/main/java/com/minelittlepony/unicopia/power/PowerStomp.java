@@ -62,12 +62,12 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
 
     @Override
     public int getWarmupTime(IPlayer player) {
-        return 0;
+        return 3;
     }
 
     @Override
     public int getCooldownTime(IPlayer player) {
-        return 500;
+        return 50;
     }
 
     @Override
@@ -77,7 +77,8 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
 
     @Override
     public PowerStomp.Data tryActivate(IPlayer player) {
-        RayTraceResult mop = VecHelper.getObjectMouseOver(player.getOwner(), 2, 1);
+        RayTraceResult mop = VecHelper.getObjectMouseOver(player.getOwner(), 6, 1);
+
         if (mop != null && mop.typeOfHit == RayTraceResult.Type.BLOCK) {
             BlockPos pos = mop.getBlockPos();
             IBlockState state = player.getWorld().getBlockState(pos);
@@ -332,7 +333,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
     }
 
     private ItemStack getApple(World w, IBlockState log) {
-        return UItems.apple.getRandomApple(w.rand, getVariant(log));
+        return UItems.apple.getRandomApple(getVariant(log));
     }
 
     private int measureTree(World w, IBlockState log, BlockPos pos) {

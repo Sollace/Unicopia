@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia;
 
 import com.minelittlepony.unicopia.item.ItemApple;
+import com.minelittlepony.unicopia.item.ItemAppleMultiType;
 import com.minelittlepony.unicopia.item.ItemCereal;
 import com.minelittlepony.unicopia.item.ItemCloud;
 import com.minelittlepony.unicopia.item.ItemCurse;
@@ -52,11 +53,11 @@ import com.minelittlepony.unicopia.forgebullshit.OreReplacer;
 import com.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
 
 public class UItems {
-    public static final ItemApple apple = new ItemApple("minecraft", "apple")
+    public static final ItemAppleMultiType apple = new ItemAppleMultiType("minecraft", "apple")
             .setSubTypes("apple", "green", "sweet", "sour")
             .setTypeRarities(10, 20, 10, 30);
 
-    public static final ItemApple zap_apple = new ItemZapApple(Unicopia.MODID, "zap_apple")
+    public static final ItemAppleMultiType zap_apple = new ItemZapApple(Unicopia.MODID, "zap_apple")
             .setSubTypes("zap_apple", "red", "green", "sweet", "sour", "zap");
 
     public static final ItemApple rotten_apple = new ItemRottenApple(Unicopia.MODID, "rotten_apple");

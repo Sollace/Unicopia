@@ -57,7 +57,7 @@ public class UBlocks {
     public static final Block apple_leaves = new BlockFruitLeaves(Unicopia.MODID, "apple_leaves", apple_tree)
             .setBaseGrowthChance(1200)
             .setTint(0xFFEE81)
-            .setHarvestFruit(w -> UItems.apple.getRandomApple(w.rand, null))
+            .setHarvestFruit(w -> UItems.apple.getRandomApple())
             .setUnharvestFruit(w -> new ItemStack(UItems.rotten_apple));
 
     static void init(IForgeRegistry<Block> registry) {

@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.spell;
 
 import com.minelittlepony.util.MagicalDamageSource;
-import com.minelittlepony.util.blockstate.IStateMapping;
-import com.minelittlepony.util.blockstate.StateMapList;
+import com.minelittlepony.util.collection.IStateMapping;
+import com.minelittlepony.util.collection.StateMapList;
 import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.shape.Sphere;
 

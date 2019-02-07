@@ -21,7 +21,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class ItemZapApple extends ItemApple {
+public class ItemZapApple extends ItemAppleMultiType {
 
     public ItemZapApple(String domain, String name) {
         super(domain, name);

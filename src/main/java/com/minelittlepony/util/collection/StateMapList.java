@@ -1,4 +1,4 @@
-package com.minelittlepony.util.blockstate;
+package com.minelittlepony.util.collection;
 
 import java.util.ArrayList;
 import java.util.function.Predicate;
