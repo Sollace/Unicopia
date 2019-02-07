@@ -1,18 +1,18 @@
 {
     "multipart": [
         {   "when": { "north": "false", "south": "false", "east": "false", "west": "false" },
-        	"apply": { "model": "unicopia:cloud_banister" }},
+        	"apply": { "model": "unicopia:cloud_banister_post" }},
         {   "when": { "north": "true" },
-            "apply": { "model": "unicopia:cloud_banister", "uvlock": true }
+            "apply": { "model": "unicopia:cloud_banister_side", "uvlock": true }
         },
         {   "when": { "east": "true" },
-            "apply": { "model": "unicopia:cloud_banister", "y": 90, "uvlock": true }
+            "apply": { "model": "unicopia:cloud_banister_side", "y": 90, "uvlock": true }
         },
         {   "when": { "south": "true" },
-            "apply": { "model": "unicopia:cloud_banister", "y": 180, "uvlock": true }
+            "apply": { "model": "unicopia:cloud_banister_side", "y": 180, "uvlock": true }
         },
         {   "when": { "west": "true" },
-            "apply": { "model": "unicopia:cloud_banister", "y": 270, "uvlock": true }
+            "apply": { "model": "unicopia:cloud_banister_side", "y": 270, "uvlock": true }
         }
     ]
 }
