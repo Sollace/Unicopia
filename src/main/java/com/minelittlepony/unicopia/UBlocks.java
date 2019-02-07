@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.block.BlockSugar;
 import com.minelittlepony.unicopia.block.BlockTomatoPlant;
 import com.minelittlepony.unicopia.block.IColourful;
 import com.minelittlepony.unicopia.block.USapling;
+import com.minelittlepony.unicopia.item.ItemApple;
 import com.minelittlepony.unicopia.block.BlockCloudDoor;
 import com.minelittlepony.unicopia.block.BlockCloudFarm;
 import com.minelittlepony.unicopia.block.BlockCloudFence;
@@ -57,7 +58,7 @@ public class UBlocks {
     public static final Block apple_leaves = new BlockFruitLeaves(Unicopia.MODID, "apple_leaves", apple_tree)
             .setBaseGrowthChance(1200)
             .setTint(0xFFEE81)
-            .setHarvestFruit(w -> UItems.apple.getRandomApple())
+            .setHarvestFruit(w -> ItemApple.getRandomItemStack(null))
             .setUnharvestFruit(w -> new ItemStack(UItems.rotten_apple));
 
     static void init(IForgeRegistry<Block> registry) {

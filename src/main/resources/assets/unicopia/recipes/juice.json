@@ -11,7 +11,7 @@
       { "item": "minecraft:glass_bottle" }
     ],
     "A": [
-      { "item": "minecraft:apple", "data": 0 }
+      { "item": "minecraft:apple" }
     ]
   },
   "result": { "item": "unicopia:juice", "data": 0, "count": 1 }

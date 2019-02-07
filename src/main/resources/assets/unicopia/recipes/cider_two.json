@@ -17,7 +17,7 @@
       { "item": "unicopia:burned_juice", "data": 0 }
     ],
     "A": [
-      { "item": "minecraft:apple", "data": 0 }
+      { "item": "minecraft:apple" }
     ]
   },
   "result": { "item": "unicopia:apple_cider", "data": 0, "count": 1 }

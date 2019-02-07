@@ -8,7 +8,7 @@ import org.lwjgl.input.Keyboard;
 
 import com.google.gson.annotations.Expose;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UItems;
+import com.minelittlepony.unicopia.item.ItemApple;
 import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
@@ -333,7 +333,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
     }
 
     private ItemStack getApple(World w, IBlockState log) {
-        return UItems.apple.getRandomApple(getVariant(log));
+        return ItemApple.getRandomItemStack(getVariant(log));
     }
 
     private int measureTree(World w, IBlockState log, BlockPos pos) {

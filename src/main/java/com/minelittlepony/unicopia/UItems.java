@@ -53,9 +53,10 @@ import com.minelittlepony.unicopia.forgebullshit.OreReplacer;
 import com.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
 
 public class UItems {
-    public static final ItemAppleMultiType apple = new ItemAppleMultiType("minecraft", "apple")
-            .setSubTypes("apple", "green", "sweet", "sour")
-            .setTypeRarities(10, 20, 10, 30);
+    public static final ItemApple red_apple = new ItemApple("minecraft", "apple");
+    public static final ItemApple green_apple = new ItemApple(Unicopia.MODID, "apple_green");
+    public static final ItemApple sweet_apple = new ItemApple(Unicopia.MODID, "apple_sweet");
+    public static final ItemApple sour_apple = new ItemApple(Unicopia.MODID, "apple_sour");
 
     public static final ItemAppleMultiType zap_apple = new ItemZapApple(Unicopia.MODID, "zap_apple")
             .setSubTypes("zap_apple", "red", "green", "sweet", "sour", "zap");
@@ -188,7 +189,7 @@ public class UItems {
 
     static void init(IForgeRegistry<Item> registry) {
         RegistryLockSpinner.open(Item.REGISTRY, Items.class, r -> r
-                .replace(Items.APPLE, apple)
+                .replace(Items.APPLE, red_apple)
                 .replace(Items.STICK, stick)
                 .replace(Item.getItemFromBlock(Blocks.TALLGRASS), tall_grass)
                 .replace(Item.getItemFromBlock(Blocks.DOUBLE_PLANT), double_plant)
@@ -196,6 +197,7 @@ public class UItems {
                 .replace(Item.getItemFromBlock(Blocks.RED_FLOWER), red_flower));
 
         registry.registerAll(
+                green_apple, sweet_apple, sour_apple,
                 cloud_spawner, dew_drop, cloud_matter, cloud_block,
                 cloud_stairs, cloud_slab, cloud_fence, cloud_banister,
                 cloud_farmland, mist_door, anvil,
@@ -216,9 +218,10 @@ public class UItems {
         if (UClient.isClientSide()) {
             ItemModels.registerAllVariants(cloud_slab, CloudType.getVariants("_cloud_slab"));
             ItemModels.registerAllVariants(cloud_block, CloudType.getVariants("_cloud_block"));
-            ItemModels.registerAllVariants(apple, Unicopia.MODID, apple.getVariants());
             ItemModels.registerAll(
                     cloud_spawner,
+
+                    green_apple, sweet_apple, sour_apple,
 
                     zap_apple,
                     rotten_apple, cooked_zap_apple, dew_drop,
@@ -252,7 +255,7 @@ public class UItems {
 
     static void fixRecipes() {
         new OreReplacer()
-            .registerAll(stack -> stack.getItem().getRegistryName().equals(apple.getRegistryName()))
+            .registerAll(stack -> stack.getItem().getRegistryName().equals(red_apple.getRegistryName()))
             .done();
     }
 
