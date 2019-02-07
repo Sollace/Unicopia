@@ -112,7 +112,9 @@ class PlayerAbilityDelegate implements IAbilityReceiver, IUpdatable<EntityPlayer
             cooldown = ability.getCooldownTime(player);
 
             if (player.isClientPlayer()) {
-                activateAbility(ability);
+                if (!activateAbility(ability)) {
+                    cooldown = 0;
+                }
             }
         }
 
