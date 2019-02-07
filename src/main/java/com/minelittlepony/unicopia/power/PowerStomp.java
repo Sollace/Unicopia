@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import org.lwjgl.input.Keyboard;
 
+import com.google.common.collect.Lists;
 import com.google.gson.annotations.Expose;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.item.ItemApple;
@@ -306,11 +307,16 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
         IBlockState log = w.getBlockState(pos);
         int size = measureTree(w, log, pos);
         if (size > 0) {
-            dropApplesPart(new ArrayList<BlockPos>(), w, log, pos, 0);
+
+            List<EntityItem> capturedDrops = Lists.newArrayList();
+
+            dropApplesPart(capturedDrops, new ArrayList<BlockPos>(), w, log, pos, 0);
+
+            capturedDrops.forEach(w::spawnEntity);
         }
     }
 
-    private void dropApplesPart(List<BlockPos> done, World w, IBlockState log, BlockPos pos, int level) {
+    private void dropApplesPart(List<EntityItem> drops, List<BlockPos> done, World w, IBlockState log, BlockPos pos, int level) {
         if (!done.contains(pos)) {
             done.add(pos);
             pos = ascendTree(w, log, pos, false);
@@ -323,11 +329,12 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
                     EntityItem item = new EntityItem(w);
                     item.setPosition(pos.getX() + 0.5, pos.getY() - 0.5, pos.getZ() + 0.5);
                     item.setItem(getApple(w, log));
-                    w.spawnEntity(item);
+
+                    drops.add(item);
                 }
 
                 PosHelper.all(pos, p -> {
-                    dropApplesPart(done, w, log, p, level + 1);
+                    dropApplesPart(drops, done, w, log, p, level + 1);
                 }, UP, NORTH, SOUTH, EAST, WEST);
             }
         }
