@@ -62,12 +62,12 @@ public class BlockCloudAnvil extends BlockAnvil implements ICloudBlock {
 
     @Override
     public void onEndFalling(World world, BlockPos pos, IBlockState fallingState, IBlockState hitState) {
-        WorldEvent.ENTITY_TAKEOFF.play(world, pos, 0);
+        WorldEvent.ENTITY_TAKEOFF.play(world, pos);
     }
 
     @Override
     public void onBroken(World world, BlockPos pos) {
-        WorldEvent.ENTITY_TAKEOFF.play(world, pos, 0);
+        WorldEvent.ENTITY_TAKEOFF.play(world, pos);
     }
 
     @Override

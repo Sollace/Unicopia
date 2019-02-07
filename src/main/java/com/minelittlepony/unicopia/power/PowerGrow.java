@@ -86,10 +86,10 @@ public class PowerGrow implements IPower<Location> {
 
             if (g.canGrow(w, pos, state, w.isRemote) && g.canUseBonemeal(w, w.rand, pos, state)) {
                 if (ItemDye.applyBonemeal(new ItemStack(Items.DYE, 1), w, pos)) {
-                    WorldEvent.BONEMEAL.play(w, pos, 0);
+                    WorldEvent.BONEMEAL.play(w, pos);
 
                     if (g instanceof BlockDoublePlant) {
-                        WorldEvent.BONEMEAL.play(w, pos.up(), 0);
+                        WorldEvent.BONEMEAL.play(w, pos.up());
                     }
                 }
 

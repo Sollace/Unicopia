@@ -96,7 +96,7 @@ public class SpellNecromancy extends AbstractSpell.RangedAreaSpell {
         }
         zombie.motionY += 0.3F;
 
-        source.getWorld().playEvent(WorldEvent.DOOR_BROKEN.getId(), zombie.getPosition(), 0);
+        WorldEvent.DOOR_BROKEN.play(source.getWorld(), zombie.getPosition());
 
         source.getWorld().spawnEntity(zombie);
     }

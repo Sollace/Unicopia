@@ -1,5 +1,7 @@
 package com.minelittlepony.util;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -70,6 +72,14 @@ public enum WorldEvent {
 
     public int getId() {
         return id;
+    }
+
+    public void play(World world, BlockPos pos, IBlockState state) {
+        play(world, pos, Block.getStateId(state));
+    }
+
+    public void play(World world, BlockPos pos) {
+        play(world, pos, 0);
     }
 
     public void play(World world, BlockPos pos, int data) {

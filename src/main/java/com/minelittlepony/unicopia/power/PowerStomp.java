@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.data.Location;
 import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.PosHelper;
+import com.minelittlepony.util.WorldEvent;
 import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.shape.Sphere;
 import com.minelittlepony.util.vector.VecHelper;
@@ -181,7 +182,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
 
         if (state.getBlock() != Blocks.AIR) {
             if (w.getBlockState(pos.up()).getBlock() == Blocks.AIR) {
-                w.playEvent(2001, pos, Block.getStateId(state));
+                WorldEvent.DESTROY_BLOCK.play(w, pos, state);
             }
         }
     }
@@ -317,7 +318,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
                 IBlockState state = w.getBlockState(pos);
 
                 if (state.getBlock() instanceof BlockLeaves && w.getBlockState(pos.down()).getMaterial() == Material.AIR) {
-                    w.playEvent(2001, pos, Block.getStateId(state));
+                    WorldEvent.DESTROY_BLOCK.play(w, pos, state);
 
                     EntityItem item = new EntityItem(w);
                     item.setPosition(pos.getX() + 0.5, pos.getY() - 0.5, pos.getZ() + 0.5);
