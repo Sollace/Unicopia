@@ -159,12 +159,11 @@ public class PowerTeleport implements IPower<Location> {
     @Override
     public void preApply(IPlayer player) {
         player.addExertion(3);
-
-        IPower.spawnParticles(UParticles.UNICORN_MAGIC, player, 5);
+        player.spawnParticles(UParticles.UNICORN_MAGIC, 5);
     }
 
     @Override
     public void postApply(IPlayer player) {
-        IPower.spawnParticles(UParticles.UNICORN_MAGIC, player, 5);
+        player.spawnParticles(UParticles.UNICORN_MAGIC, 5);
     }
 }

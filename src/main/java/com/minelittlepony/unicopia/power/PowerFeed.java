@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 import org.lwjgl.input.Keyboard;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.power.data.Hit;
 import com.minelittlepony.util.MagicalDamageSource;
@@ -129,13 +128,7 @@ public class PowerFeed implements IPower<Hit> {
     public void postApply(IPlayer player) {
         EntityPlayer entity = player.getOwner();
 
-        for (int i = 0; i < 10; i++) {
-            Particles.instance().spawnParticle(EnumParticleTypes.HEART.getParticleID(), false,
-                    entity.posX + entity.world.rand.nextFloat() * 2 - 1,
-                    entity.posY + entity.world.rand.nextFloat() * 2 - 1,
-                    entity.posZ + entity.world.rand.nextFloat() * 2 - 1,
-                    0, 0.25, 0);
-        }
+        IPower.spawnParticles(EnumParticleTypes.HEART.getParticleID(), entity, 10);
     }
 
 }

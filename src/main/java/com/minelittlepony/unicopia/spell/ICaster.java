@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.player.IOwned;
+import com.minelittlepony.unicopia.power.IPower;
 import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.vector.VecHelper;
 
@@ -47,6 +48,10 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelle
 
     default Vec3d getOriginVector() {
         return getEntity().getPositionVector();
+    }
+
+    default void spawnParticles(int particleId, int count) {
+        IPower.spawnParticles(particleId, getEntity(), count);
     }
 
     default void spawnParticles(IShape area, int count, Consumer<Vec3d> particleSpawner) {

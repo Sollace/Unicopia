@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.shape.Sphere;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
@@ -41,10 +42,7 @@ public interface IPower<T extends IData> extends IKeyBind {
         return player.posY + player.getEyeHeight() - 1;
     }
 
-    static void spawnParticles(int particleId, IPlayer player, int count) {
-
-        EntityPlayer entity = player.getOwner();
-
+    static void spawnParticles(int particleId, Entity entity, int count) {
         double halfDist = entity.getEyeHeight() / 1.5;
         double middle = entity.getEntityBoundingBox().minY + halfDist;
 

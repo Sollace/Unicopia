@@ -80,11 +80,11 @@ public class PowerCloudBase implements IPower<Numeric> {
 
     @Override
     public void preApply(IPlayer player) {
-        IPower.spawnParticles(UParticles.UNICORN_MAGIC, player, 10);
+        player.spawnParticles(UParticles.UNICORN_MAGIC, 10);
     }
 
     @Override
     public void postApply(IPlayer player) {
-        IPower.spawnParticles(UParticles.RAIN_DROPS, player, 5);
+        player.spawnParticles(UParticles.RAIN_DROPS, 5);
     }
 }

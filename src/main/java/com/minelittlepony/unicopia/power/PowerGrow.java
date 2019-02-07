@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.power.data.Location;
+import com.minelittlepony.util.WorldEvent;
 import com.minelittlepony.util.vector.VecHelper;
 
 import net.minecraft.block.BlockDoublePlant;
@@ -85,10 +86,10 @@ public class PowerGrow implements IPower<Location> {
 
             if (g.canGrow(w, pos, state, w.isRemote) && g.canUseBonemeal(w, w.rand, pos, state)) {
                 if (ItemDye.applyBonemeal(new ItemStack(Items.DYE, 1), w, pos)) {
-                    w.playEvent(2005, pos, 0);
+                    WorldEvent.BONEMEAL.play(w, pos, 0);
 
                     if (g instanceof BlockDoublePlant) {
-                        w.playEvent(2005, pos.up(), 0);
+                        WorldEvent.BONEMEAL.play(w, pos.up(), 0);
                     }
                 }
 
@@ -103,7 +104,7 @@ public class PowerGrow implements IPower<Location> {
         player.addExertion(3);
 
         if (player.getWorld().isRemote) {
-            IPower.spawnParticles(UParticles.UNICORN_MAGIC, player, 1);
+            player.spawnParticles(UParticles.UNICORN_MAGIC, 1);
         }
     }
 
