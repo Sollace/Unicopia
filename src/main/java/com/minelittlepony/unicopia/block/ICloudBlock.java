@@ -29,6 +29,10 @@ public interface ICloudBlock {
         if (world.isRemote) {
             EntityPlayer player = UClient.instance().getPlayer();
 
+            if (player.capabilities.isCreativeMode) {
+                return false;
+            }
+
             if (!getCanInteract(state, player)) {
                 return true;
             }

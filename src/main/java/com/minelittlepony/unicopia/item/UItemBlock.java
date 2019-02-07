@@ -21,8 +21,8 @@ public class UItemBlock extends UItemDecoration {
 
     @Override
     public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side, EntityPlayer player, ItemStack stack) {
-        if (!abilityTest.test(player)) {
-            return player.capabilities.isCreativeMode;
+        if (!(player.capabilities.isCreativeMode || abilityTest.test(player))) {
+            return false;
         }
 
         return super.canPlaceBlockOnSide(worldIn, pos, side, player, stack);
