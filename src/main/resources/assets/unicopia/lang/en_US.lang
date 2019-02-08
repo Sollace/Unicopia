@@ -133,8 +133,8 @@ toxicity.lethal.name=Lethal
 gui.unicopia=Unicopia...
 
 commands.race.success.self=Your race has been updated
-commands.race.success.otherself=%s changed race to %s
-commands.race.success.other=Changed %s's race to %s
+commands.race.success.otherself=%1$s changed race to %2$s
+commands.race.success.other=Changed %1$s's race to %2$s
 commands.race.usage=/race <get|set|list|describe> [player] <species>
 commands.race.list=The available races are:
 commands.race.permission=Selected Race is not permitted by your current server
@@ -180,9 +180,6 @@ commands.racelist.disallowed=Removed %1$s from the whitelist.
 commands.racelist.disallowed.failed=%1$s is not on the whitelist.
 commands.racelist.disallowed.other=%1$s was removed from the whitelist by %2$s.
 commands.racelist.disallowed.failed.other=%2$s tried to remove %1$s from the whitelist but it has not been added yet.
-
-commands.decloud.success=%s clouds removed
-commands.decloud.usage=/decloud <all>
 
 unicopia.race.human=Human
 unicopia.race.human.alt=Humans
