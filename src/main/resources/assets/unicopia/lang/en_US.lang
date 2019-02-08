@@ -39,6 +39,9 @@ spell.awkward.tagline=*Derp*
 spell.portal.name=Transportation
 spell.portal.tagline=Teleportation I
 
+spell.light.name=Illumination
+spell.light.tagline=Discovery I
+
 spell.fire.name=Flame
 spell.fire.tagline=Fire I
 
