@@ -47,6 +47,7 @@ import com.minelittlepony.jumpingcastle.api.JumpingCastle;
 import com.minelittlepony.unicopia.advancements.UAdvancements;
 import com.minelittlepony.unicopia.block.ITillable;
 import com.minelittlepony.unicopia.command.Commands;
+import com.minelittlepony.unicopia.enchanting.Pages;
 import com.minelittlepony.unicopia.enchanting.SpellRecipe;
 import com.minelittlepony.unicopia.forgebullshit.FBS;
 import com.minelittlepony.unicopia.inventory.gui.ContainerSpellBook;
@@ -111,6 +112,8 @@ public class Unicopia implements IGuiHandler {
                 types.put("unicopia:crafting_spell", SpellRecipe::deserialize);
             }
         };
+
+        Pages.instance().load();
 
         Biome.REGISTRY.forEach(UEntities::registerSpawnEntries);
         UClient.instance().posInit(event);

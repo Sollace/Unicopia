@@ -47,4 +47,13 @@ public enum SpellAffinity {
 
         return implications;
     }
+
+    public static SpellAffinity of(String s) {
+        try {
+            if (s != null)
+                return valueOf(s.toUpperCase());
+        } catch (Throwable e) {}
+
+        return SpellAffinity.NEUTRAL;
+    }
 }

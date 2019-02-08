@@ -114,7 +114,7 @@ public class EntitySpellbook extends EntityLiving implements IMagicals {
 			SoundType sound = SoundType.WOOD;
 			world.playSound(posX, posY, posZ, sound.getBreakSound(), SoundCategory.BLOCKS, sound.getVolume(), sound.getPitch(), true);
 			if (world.getGameRules().getBoolean("doTileDrops")) {
-				entityDropItem(new ItemStack(UItems.spellbook, 1), 0);
+				entityDropItem(new ItemStack(UItems.spellbook), 0);
 			}
 		}
 		return false;

@@ -4,8 +4,11 @@ import java.io.IOException;
 
 import org.lwjgl.opengl.GL11;
 
+import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.enchanting.IPage;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
-import com.minelittlepony.unicopia.enchanting.PagesList;
+import com.minelittlepony.unicopia.enchanting.PageState;
+import com.minelittlepony.unicopia.enchanting.Pages;
 import com.minelittlepony.unicopia.inventory.slot.SlotEnchanting;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
@@ -21,12 +24,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.ResourceLocation;
 
 public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
-	private static int currentPage = 0;
-	private static ResourceLocation spellBookPageTextures = new ResourceLocation("unicopia", "textures/gui/container/pages/page-" + currentPage + ".png");
+
+	private static IPage currentIPage;
 
 	private static final ResourceLocation spellBookGuiTextures = new ResourceLocation("unicopia", "textures/gui/container/book.png");
 
 	private IPlayer playerExtension;
+
 
 	private PageButton nextPage;
 	private PageButton prevPage;
@@ -34,7 +38,7 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
 	public GuiSpellBook(EntityPlayer player) {
 		super(new ContainerSpellBook(player.inventory, player.world, new BlockPos(player)));
 		player.openContainer = inventorySlots;
-		((ContainerSpellBook)inventorySlots).setListener(this);
+
 		xSize = 405;
         ySize = 219;
         allowUserInput = true;
@@ -51,6 +55,12 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
 
 		buttonList.add(nextPage = new PageButton(1, x + 360, y + 160, true));
         buttonList.add(prevPage = new PageButton(2, x + 20, y + 160, false));
+
+        if (currentIPage == null) {
+            currentIPage = Pages.instance().getByIndex(0);
+        }
+
+        onPageChange();
 	}
 
 	@Override
@@ -58,45 +68,37 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
 		initGui();
 
 		if (button.id == 1) {
-			nextPage();
+		    currentIPage = currentIPage.next();
 		} else {
-			prevPage();
+		    currentIPage = currentIPage.prev();
 		}
+
+		onPageChange();
 	}
 
-	public void nextPage() {
-		if (currentPage == 0) {
-			playerExtension.unlockPage(1);
-		}
-		if (currentPage < PagesList.getTotalPages() - 1) {
-			currentPage++;
-			spellBookPageTextures = new ResourceLocation("unicopia", "textures/gui/container/pages/page-" + currentPage + ".png");
+	protected void onPageChange() {
+        prevPage.visible = currentIPage.getIndex() > 0;
+        nextPage.visible = currentIPage.getIndex() < Pages.instance().getTotalPages() - 1;
 
-			onPageUnlocked();
-			PagesList.readPage(currentPage);
-		}
-	}
-
-	@Override
-	public void onPageUnlocked() {
-		if (PagesList.hasUnreadPagesAfter(currentPage)) {
-		    nextPage.triggerShake();
-		}
-
-        if (PagesList.hasUnreadPagesBefore(currentPage)) {
-            prevPage.triggerShake();
+        if (playerExtension.getPageState(currentIPage) == PageState.UNREAD) {
+            playerExtension.setPageState(currentIPage, PageState.READ);
         }
 	}
 
-	public void prevPage() {
-		if (currentPage > 0) {
-			currentPage--;
-			spellBookPageTextures = new ResourceLocation("unicopia", "textures/gui/container/pages/page-" + currentPage + ".png");
+    @Override
+    public boolean onPageUnlocked(IPage page) {
+        int i = currentIPage.compareTo(page);
 
-			onPageUnlocked();
-			PagesList.readPage(currentPage);
-		}
-	}
+        if (i <= 0) {
+            prevPage.triggerShake();
+        }
+
+        if (i >= 0) {
+            nextPage.triggerShake();
+        }
+
+        return true;
+    }
 
 	@Override
 	protected void drawGradientRect(int left, int top, int width, int height, int startColor, int endColor) {
@@ -128,10 +130,9 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		if (PagesList.getTotalPages() > 0) {
-    		String text = (currentPage + 1) + "/" + PagesList.getTotalPages();
-    		fontRenderer.drawString(text, 203 - fontRenderer.getStringWidth(text)/2, 165, 0x0);
-		}
+	    String text = String.format("%d / %d", currentIPage.getIndex() + 1, Pages.instance().getTotalPages());
+
+		fontRenderer.drawString(text, 203 - fontRenderer.getStringWidth(text)/2, 165, 0x0);
 	}
 
 	@Override
@@ -147,12 +148,18 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
         GlStateManager.enableBlend();
         GL11.glDisable(GL11.GL_ALPHA_TEST);
 
-        if (playerExtension.hasPageUnlock(currentPage)) {
-        	if (mc.getTextureManager().getTexture(spellBookPageTextures) != TextureUtil.MISSING_TEXTURE) {
+        if (playerExtension.getPageState(currentIPage) != PageState.LOCKED) {
+            ResourceLocation texture = currentIPage.getTexture();
+
+        	if (mc.getTextureManager().getTexture(texture) != TextureUtil.MISSING_TEXTURE) {
 		        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-		        mc.getTextureManager().bindTexture(spellBookPageTextures);
+		        mc.getTextureManager().bindTexture(texture);
 		        drawModalRectWithCustomSizedTexture(left, top, 0, 0, xSize, ySize, 512, 256);
+        	} else {
+        	    if (playerExtension.getWorld().rand.nextInt(100) == 0) {
+        	        Unicopia.log.fatal("Missing texture " + texture);
+        	    }
         	}
         }
 

@@ -1,8 +1,9 @@
 package com.minelittlepony.unicopia.inventory.slot;
 
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.enchanting.IPageOwner;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
-import com.minelittlepony.unicopia.enchanting.PagesList;
+import com.minelittlepony.unicopia.enchanting.SpellCraftingEvent;
 import com.minelittlepony.unicopia.inventory.InventorySpellBook;
 import com.minelittlepony.unicopia.item.ItemSpell;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
@@ -14,14 +15,14 @@ import net.minecraft.util.NonNullList;
 
 public class SlotEnchantingResult extends SlotEnchanting {
 
-	private final EntityPlayer thePlayer;
+	private final IPageOwner owner;
 	private final InventorySpellBook craftMatrix;
 
 	private IPageUnlockListener listener;
 
-	public SlotEnchantingResult(IPageUnlockListener listener, EntityPlayer player, InventorySpellBook craftMatric, IInventory inventory, int index, int xPosition, int yPosition) {
+	public SlotEnchantingResult(IPageUnlockListener listener, IPageOwner owner, InventorySpellBook craftMatric, IInventory inventory, int index, int xPosition, int yPosition) {
 		super(inventory, index, xPosition, yPosition);
-		thePlayer = player;
+		this.owner = owner;
 		this.listener = listener;
 		craftMatrix = craftMatric;
 	}
@@ -75,13 +76,7 @@ public class SlotEnchantingResult extends SlotEnchanting {
 
 	@Override
 	protected void onCrafting(ItemStack stack) {
-		if (PagesList.unlockPage(thePlayer, stack) && listener != null) {
-			listener.onPageUnlocked();
-		}
-
-		if (listener != null) {
-			listener.onPageUnlocked();
-		}
+	    SpellCraftingEvent.trigger(owner, stack, listener);
 	}
 
 	@Override

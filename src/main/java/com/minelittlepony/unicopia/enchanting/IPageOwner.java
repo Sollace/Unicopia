@@ -1,32 +1,32 @@
 package com.minelittlepony.unicopia.enchanting;
 
-import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 
 import com.minelittlepony.unicopia.network.ITransmittable;
 
+import net.minecraft.util.ResourceLocation;
+
+/**
+ * Interface for things that own and can unlock pages.
+ *
+ */
 public interface IPageOwner extends ITransmittable {
 
     @Nonnull
-    List<Integer> getUnlockedPages();
+    Map<ResourceLocation, PageState> getPageStates();
 
-    default boolean hasPageUnlock(int pageIndex) {
-        return getUnlockedPages().contains(pageIndex);
-    }
-
-    default boolean unlockPage(int pageIndex) {
-        if (!hasPageUnlock(pageIndex)) {
-            if (getUnlockedPages().add(pageIndex)) {
-                sendCapabilities(true);
-
-                return true;
-            }
+    default void setPageState(IPage page, PageState state) {
+        if (state == PageState.LOCKED) {
+            getPageStates().remove(page.getName());
+        } else {
+            getPageStates().put(page.getName(), state);
         }
-        return false;
+        sendCapabilities(true);
     }
 
-    default boolean hasUnlockedPages() {
-        return getUnlockedPages().size() > 0;
+    default PageState getPageState(IPage page) {
+        return getPageStates().getOrDefault(page.getName(), page.getDefaultState());
     }
 }

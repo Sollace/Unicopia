@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.inventory.InventorySpellBook;
 import com.minelittlepony.unicopia.inventory.slot.SlotEnchanting;
 import com.minelittlepony.unicopia.inventory.slot.SlotEnchantingResult;
 import com.minelittlepony.unicopia.item.ItemSpell;
+import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -64,7 +65,7 @@ public class ContainerSpellBook extends Container {
 		addSlotToContainer(new SlotEnchanting(craftMatrix, 2, 180, 134));
 		addSlotToContainer(new SlotEnchanting(craftMatrix, 3, 231, 120));
 		addSlotToContainer(new SlotEnchanting(craftMatrix, 4, 232, 65));
-		addSlotToContainer(resultSlot = new SlotEnchantingResult(listener, player, craftMatrix, craftResult, 0, 196, 92));
+		addSlotToContainer(resultSlot = new SlotEnchantingResult(listener, PlayerSpeciesList.instance().getPlayer(player), craftMatrix, craftResult, 0, 196, 92));
 	}
 
 	@Override

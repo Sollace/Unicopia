@@ -1,0 +1,8 @@
+{
+	"texture": "unicopia:preface",
+	"state": "unread",
+	"conditions": {
+		"type": "unicopia:compound_condition",
+		"conditions": []
+	}
+}

@@ -1,16 +1,16 @@
 package com.minelittlepony.unicopia.player;
 
-import java.util.List;
+import java.util.Map;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.minelittlepony.model.anim.BasicEasingInterpolator;
 import com.minelittlepony.model.anim.IInterpolator;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UEffects;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.enchanting.PageState;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
@@ -24,13 +24,13 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketSetPassengers;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.StatList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.EnumDifficulty;
 
 class PlayerCapabilities implements IPlayer {
@@ -47,7 +47,7 @@ class PlayerCapabilities implements IPlayer {
     private static final DataParameter<NBTTagCompound> EFFECT = EntityDataManager
             .createKey(EntityPlayer.class, DataSerializers.COMPOUND_TAG);
 
-    private final List<Integer> pages = Lists.newArrayList();
+    private final Map<ResourceLocation, PageState> pageStates = Maps.newHashMap();
 
     private final PlayerAbilityDelegate powers = new PlayerAbilityDelegate(this);
 
@@ -289,14 +289,26 @@ class PlayerCapabilities implements IPlayer {
         compound.setTag("powers", powers.toNBT());
         compound.setTag("gravity", gravity.toNBT());
 
-        if (hasUnlockedPages()) {
-            compound.setTag("pages", new NBTTagIntArray(pages));
-        }
-
         IMagicEffect effect = getEffect();
 
         if (effect != null) {
             compound.setTag("effect", SpellRegistry.instance().serializeEffectToNBT(effect));
+        }
+
+        if (!pageStates.isEmpty()) {
+            NBTTagCompound pages = new NBTTagCompound();
+            boolean written = false;
+
+            for (Map.Entry<ResourceLocation, PageState> entry : pageStates.entrySet()) {
+                if (entry.getValue() != PageState.LOCKED) {
+                    pages.setString(entry.getKey().toString(), entry.getValue().name());
+                    written = true;
+                }
+            }
+
+            if (written) {
+                compound.setTag("pageStates", pages);
+            }
         }
     }
 
@@ -311,17 +323,22 @@ class PlayerCapabilities implements IPlayer {
             setEffect(SpellRegistry.instance().createEffectFromNBT(compound.getCompoundTag("effect")));
         }
 
-        if (compound.hasKey("pages")) {
-            pages.clear();
-            for (int i : compound.getIntArray("pages")) {
-                pages.add(i);
+        pageStates.clear();
+        if (compound.hasKey("pageStates")) {
+            NBTTagCompound pages = compound.getCompoundTag("pageStates");
+
+            for (String key : pages.getKeySet()) {
+                PageState state = PageState.of(pages.getString(key));
+
+                if (state != PageState.LOCKED) {
+                    pageStates.put(new ResourceLocation(key), state);
+                }
             }
         }
     }
 
     @Override
     public void copyFrom(IPlayer oldPlayer) {
-        pages.addAll(oldPlayer.getUnlockedPages());
         setEffect(oldPlayer.getEffect());
         setPlayerSpecies(oldPlayer.getPlayerSpecies());
     }
@@ -363,8 +380,8 @@ class PlayerCapabilities implements IPlayer {
     public void setCurrentLevel(int level) {
     }
 
-    @Nonnull
-    public List<Integer> getUnlockedPages() {
-        return pages;
+    @Override
+    public Map<ResourceLocation, PageState> getPageStates() {
+        return pageStates;
     }
 }

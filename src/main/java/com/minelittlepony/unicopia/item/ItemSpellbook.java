@@ -56,7 +56,6 @@ public class ItemSpellbook extends ItemBook {
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, dispenserBehavior);
 	}
 
-
 	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 
     	if (!world.isRemote && Predicates.MAGI.test(player)) {
