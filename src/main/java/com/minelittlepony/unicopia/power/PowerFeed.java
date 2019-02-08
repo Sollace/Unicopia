@@ -15,7 +15,7 @@ import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.vector.VecHelper;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.passive.EntityCow;
 import net.minecraft.entity.passive.EntityPig;
@@ -67,7 +67,7 @@ public class PowerFeed implements IPower<Hit> {
     }
 
     private boolean canDrain(Entity e) {
-        return (e instanceof EntityLiving)
+        return (e instanceof EntityLivingBase)
             && (e instanceof EntityCow
             || e instanceof EntityVillager
             || e instanceof EntityPlayer
@@ -81,7 +81,7 @@ public class PowerFeed implements IPower<Hit> {
         return Hit.class;
     }
 
-    protected List<EntityLiving> getTargets(IPlayer player) {
+    protected List<EntityLivingBase> getTargets(IPlayer player) {
         List<Entity> list = VecHelper.getWithinRange(player.getOwner(), 3, this::canDrain);
 
         Entity looked = VecHelper.getLookedAtEntity(player.getOwner(), 17);
@@ -89,7 +89,7 @@ public class PowerFeed implements IPower<Hit> {
             list.add(looked);
         }
 
-        return list.stream().map(i -> (EntityLiving)i).collect(Collectors.toList());
+        return list.stream().map(i -> (EntityLivingBase)i).collect(Collectors.toList());
     }
 
     @Override
@@ -103,8 +103,8 @@ public class PowerFeed implements IPower<Hit> {
 
             float healAmount = 0;
 
-            for (Entity i : getTargets(iplayer)) {
-                healAmount += drainFrom(player, (EntityLiving)i);
+            for (EntityLivingBase i : getTargets(iplayer)) {
+                healAmount += drainFrom(player, i);
             }
 
             int foodAmount = (int)Math.floor(Math.min(healAmount / 3, maximumFoodGain));
@@ -120,7 +120,7 @@ public class PowerFeed implements IPower<Hit> {
         }
     }
 
-    protected float drainFrom(EntityPlayer changeling, EntityLiving living) {
+    protected float drainFrom(EntityPlayer changeling, EntityLivingBase living) {
         DamageSource d = MagicalDamageSource.causePlayerDamage("feed", changeling);
 
         float damage = living.getHealth()/2;
