@@ -50,28 +50,28 @@ public interface IStateMapping extends Predicate<IBlockState>, Function<IBlockSt
         };
     }
 
-	/**
-	 * Checks if this state can be converted by this mapping
-	 *
-	 * @param state	State to check
-	 *
-	 * @return	True if the state can be converted
-	 */
+    /**
+     * Checks if this state can be converted by this mapping
+     *
+     * @param state    State to check
+     *
+     * @return    True if the state can be converted
+     */
     @Override
-	default boolean test(@Nonnull IBlockState state) {
-	    return true;
-	}
+    default boolean test(@Nonnull IBlockState state) {
+        return true;
+    }
 
-	/**
-	 * Converts the given state based on this mapping
-	 *
-	 * @param state	State to convert
-	 *
-	 * @return	The converted state
-	 */
-	@Nonnull
-	@Override
-	default IBlockState apply(@Nonnull IBlockState state) {
-	    return state;
-	}
+    /**
+     * Converts the given state based on this mapping
+     *
+     * @param state    State to convert
+     *
+     * @return    The converted state
+     */
+    @Nonnull
+    @Override
+    default IBlockState apply(@Nonnull IBlockState state) {
+        return state;
+    }
 }

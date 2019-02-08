@@ -25,35 +25,35 @@ import net.minecraft.util.ResourceLocation;
 
 public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
 
-	private static IPage currentIPage;
+    private static IPage currentIPage;
 
-	private static final ResourceLocation spellBookGuiTextures = new ResourceLocation("unicopia", "textures/gui/container/book.png");
+    private static final ResourceLocation spellBookGuiTextures = new ResourceLocation("unicopia", "textures/gui/container/book.png");
 
-	private IPlayer playerExtension;
+    private IPlayer playerExtension;
 
 
-	private PageButton nextPage;
-	private PageButton prevPage;
+    private PageButton nextPage;
+    private PageButton prevPage;
 
-	public GuiSpellBook(EntityPlayer player) {
-		super(new ContainerSpellBook(player.inventory, player.world, new BlockPos(player)));
-		player.openContainer = inventorySlots;
+    public GuiSpellBook(EntityPlayer player) {
+        super(new ContainerSpellBook(player.inventory, player.world, new BlockPos(player)));
+        player.openContainer = inventorySlots;
 
-		xSize = 405;
+        xSize = 405;
         ySize = 219;
         allowUserInput = true;
         playerExtension = PlayerSpeciesList.instance().getPlayer(player);
-	}
+    }
 
-	@Override
-	public void initGui() {
-		super.initGui();
-		buttonList.clear();
+    @Override
+    public void initGui() {
+        super.initGui();
+        buttonList.clear();
 
-		int x = (width - xSize) / 2;
+        int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
 
-		buttonList.add(nextPage = new PageButton(1, x + 360, y + 160, true));
+        buttonList.add(nextPage = new PageButton(1, x + 360, y + 160, true));
         buttonList.add(prevPage = new PageButton(2, x + 20, y + 160, false));
 
         if (currentIPage == null) {
@@ -61,29 +61,29 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
         }
 
         onPageChange();
-	}
+    }
 
-	@Override
-	protected void actionPerformed(GuiButton button) throws IOException {
-		initGui();
+    @Override
+    protected void actionPerformed(GuiButton button) throws IOException {
+        initGui();
 
-		if (button.id == 1) {
-		    currentIPage = currentIPage.next();
-		} else {
-		    currentIPage = currentIPage.prev();
-		}
+        if (button.id == 1) {
+            currentIPage = currentIPage.next();
+        } else {
+            currentIPage = currentIPage.prev();
+        }
 
-		onPageChange();
-	}
+        onPageChange();
+    }
 
-	protected void onPageChange() {
+    protected void onPageChange() {
         prevPage.visible = currentIPage.getIndex() > 0;
         nextPage.visible = currentIPage.getIndex() < Pages.instance().getTotalPages() - 1;
 
         if (playerExtension.getPageState(currentIPage) == PageState.UNREAD) {
             playerExtension.setPageState(currentIPage, PageState.READ);
         }
-	}
+    }
 
     @Override
     public boolean onPageUnlocked(IPage page) {
@@ -100,44 +100,44 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
         return true;
     }
 
-	@Override
-	protected void drawGradientRect(int left, int top, int width, int height, int startColor, int endColor) {
-		Slot slot = getSlotUnderMouse();
-		if (slot == null || left != slot.xPos || top != slot.yPos || !drawSlotOverlay(slot)) {
-			super.drawGradientRect(left, top, width, height, startColor, endColor);
-		}
-	}
+    @Override
+    protected void drawGradientRect(int left, int top, int width, int height, int startColor, int endColor) {
+        Slot slot = getSlotUnderMouse();
+        if (slot == null || left != slot.xPos || top != slot.yPos || !drawSlotOverlay(slot)) {
+            super.drawGradientRect(left, top, width, height, startColor, endColor);
+        }
+    }
 
-	protected boolean drawSlotOverlay(Slot slot) {
-		if (slot instanceof SlotEnchanting) {
-			GlStateManager.enableBlend();
-	        GL11.glDisable(GL11.GL_ALPHA_TEST);
-			mc.getTextureManager().bindTexture(spellBookGuiTextures);
-	        drawModalRectWithCustomSizedTexture(slot.xPos - 1, slot.yPos - 1, 51, 223, 18, 18, 512, 256);
-	        GL11.glEnable(GL11.GL_ALPHA_TEST);
-	        GlStateManager.disableBlend();
-			return true;
-		}
-		return false;
-	}
+    protected boolean drawSlotOverlay(Slot slot) {
+        if (slot instanceof SlotEnchanting) {
+            GlStateManager.enableBlend();
+            GL11.glDisable(GL11.GL_ALPHA_TEST);
+            mc.getTextureManager().bindTexture(spellBookGuiTextures);
+            drawModalRectWithCustomSizedTexture(slot.xPos - 1, slot.yPos - 1, 51, 223, 18, 18, 512, 256);
+            GL11.glEnable(GL11.GL_ALPHA_TEST);
+            GlStateManager.disableBlend();
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-	    super.drawScreen(mouseX, mouseY, partialTicks);
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScreen(mouseX, mouseY, partialTicks);
 
-	    renderHoveredToolTip(mouseX, mouseY);
-	}
+        renderHoveredToolTip(mouseX, mouseY);
+    }
 
-	@Override
-	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-	    String text = String.format("%d / %d", currentIPage.getIndex() + 1, Pages.instance().getTotalPages());
+    @Override
+    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+        String text = String.format("%d / %d", currentIPage.getIndex() + 1, Pages.instance().getTotalPages());
 
-		fontRenderer.drawString(text, 203 - fontRenderer.getStringWidth(text)/2, 165, 0x0);
-	}
+        fontRenderer.drawString(text, 203 - fontRenderer.getStringWidth(text)/2, 165, 0x0);
+    }
 
-	@Override
-	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-		GlStateManager.color(1, 1, 1, 1);
+    @Override
+    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+        GlStateManager.color(1, 1, 1, 1);
 
         int left = (width - xSize) / 2;
         int top = (height - ySize) / 2;
@@ -151,26 +151,26 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
         if (playerExtension.getPageState(currentIPage) != PageState.LOCKED) {
             ResourceLocation texture = currentIPage.getTexture();
 
-        	if (mc.getTextureManager().getTexture(texture) != TextureUtil.MISSING_TEXTURE) {
-		        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            if (mc.getTextureManager().getTexture(texture) != TextureUtil.MISSING_TEXTURE) {
+                GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-		        mc.getTextureManager().bindTexture(texture);
-		        drawModalRectWithCustomSizedTexture(left, top, 0, 0, xSize, ySize, 512, 256);
-        	} else {
-        	    if (playerExtension.getWorld().rand.nextInt(100) == 0) {
-        	        Unicopia.log.fatal("Missing texture " + texture);
-        	    }
-        	}
+                mc.getTextureManager().bindTexture(texture);
+                drawModalRectWithCustomSizedTexture(left, top, 0, 0, xSize, ySize, 512, 256);
+            } else {
+                if (playerExtension.getWorld().rand.nextInt(100) == 0) {
+                    Unicopia.log.fatal("Missing texture " + texture);
+                }
+            }
         }
 
-    	mc.getTextureManager().bindTexture(spellBookGuiTextures);
+        mc.getTextureManager().bindTexture(spellBookGuiTextures);
         drawModalRectWithCustomSizedTexture(left + 152, top + 49, 407, 2, 100, 101, 512, 256);
 
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GlStateManager.disableBlend();
-	}
+    }
 
-	static class PageButton extends GuiButton {
+    static class PageButton extends GuiButton {
         private final boolean direction;
 
         private int shakesLeft = 0;
@@ -184,17 +184,17 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
         @Override
         public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
             if (visible) {
-            	int x = this.x;
-            	int y = this.y;
-            	if (shakesLeft > 0) {
-            		shakeCount += (float)Math.PI/2;
-            		if (shakeCount >= Math.PI * 2) {
-            			shakeCount %= Math.PI*2;
-            			shakesLeft--;
-            		}
-	            	x += (int)(Math.sin(shakeCount)*3);
-	            	y -= (int)(Math.sin(shakeCount)*3);
-            	}
+                int x = this.x;
+                int y = this.y;
+                if (shakesLeft > 0) {
+                    shakeCount += (float)Math.PI/2;
+                    if (shakeCount >= Math.PI * 2) {
+                        shakeCount %= Math.PI*2;
+                        shakesLeft--;
+                    }
+                    x += (int)(Math.sin(shakeCount)*3);
+                    y -= (int)(Math.sin(shakeCount)*3);
+                }
 
                 boolean hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + width && mouseY < this.y + height;
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -208,9 +208,9 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
         }
 
         public void triggerShake() {
-        	if (shakesLeft <= 0) {
-        		shakesLeft = 5;
-        	}
+            if (shakesLeft <= 0) {
+                shakesLeft = 5;
+            }
         }
     }
 }

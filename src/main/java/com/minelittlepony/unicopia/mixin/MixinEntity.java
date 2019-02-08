@@ -1,9 +1,12 @@
 package com.minelittlepony.unicopia.mixin;
 
+import com.minelittlepony.unicopia.forgebullshit.FUF;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.util.math.AxisAlignedBB;
 
+@FUF(reason = "Waiting for mixins?")
 // pseudo code for things forge can't do.
 // @Mixin(Entity.class)
 public interface MixinEntity {

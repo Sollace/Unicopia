@@ -19,19 +19,19 @@ public class EntityWildCloud extends EntityCloud {
     public static final SpawnListEntry SPAWN_ENTRY_OCEAN = new SpawnListEntry(EntityWildCloud.class, 1, 1, 7);
 
     public EntityWildCloud(World world) {
-		super(world);
+        super(world);
 
-		preventEntitySpawning = true;
-	}
+        preventEntitySpawning = true;
+    }
 
     @Override
     public boolean isNotColliding() {
         AxisAlignedBB boundingbox = getEntityBoundingBox();
 
-    	return checkNoEntityCollision(boundingbox, this)
-	            && world.canBlockSeeSky(new BlockPos(this))
-    	        && world.getCollisionBoxes(this, boundingbox).isEmpty()
-    	        && !world.containsAnyLiquid(boundingbox);
+        return checkNoEntityCollision(boundingbox, this)
+                && world.canBlockSeeSky(new BlockPos(this))
+                && world.getCollisionBoxes(this, boundingbox).isEmpty()
+                && !world.containsAnyLiquid(boundingbox);
     }
 
     /**
@@ -108,7 +108,7 @@ public class EntityWildCloud extends EntityCloud {
             collideWithNearbyEntities();
         }
 
-    	return pack;
+        return pack;
     }
 
     static class PackData implements IEntityLivingData {

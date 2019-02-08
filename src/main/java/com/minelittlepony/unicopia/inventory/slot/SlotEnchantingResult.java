@@ -15,24 +15,24 @@ import net.minecraft.util.NonNullList;
 
 public class SlotEnchantingResult extends SlotEnchanting {
 
-	private final IPageOwner owner;
-	private final InventorySpellBook craftMatrix;
+    private final IPageOwner owner;
+    private final InventorySpellBook craftMatrix;
 
-	private IPageUnlockListener listener;
+    private IPageUnlockListener listener;
 
-	public SlotEnchantingResult(IPageUnlockListener listener, IPageOwner owner, InventorySpellBook craftMatric, IInventory inventory, int index, int xPosition, int yPosition) {
-		super(inventory, index, xPosition, yPosition);
-		this.owner = owner;
-		this.listener = listener;
-		craftMatrix = craftMatric;
-	}
+    public SlotEnchantingResult(IPageUnlockListener listener, IPageOwner owner, InventorySpellBook craftMatric, IInventory inventory, int index, int xPosition, int yPosition) {
+        super(inventory, index, xPosition, yPosition);
+        this.owner = owner;
+        this.listener = listener;
+        craftMatrix = craftMatric;
+    }
 
-	public void setListener(IPageUnlockListener listener) {
-		this.listener = listener;
-	}
+    public void setListener(IPageUnlockListener listener) {
+        this.listener = listener;
+    }
 
-	@Override
-	public ItemStack onTake(EntityPlayer player, ItemStack stack) {
+    @Override
+    public ItemStack onTake(EntityPlayer player, ItemStack stack) {
         onCrafting(stack);
 
         ItemStack current = craftMatrix.getCraftResultMatrix().getStackInSlot(0);
@@ -53,8 +53,8 @@ public class SlotEnchantingResult extends SlotEnchanting {
                     craftMatrix.decrStackSize(i, stack.getCount());
                 }
 
-        		if (!remainder.isEmpty()) {
-        		    if (craftMatrix.getStackInSlot(i).isEmpty()) {
+                if (!remainder.isEmpty()) {
+                    if (craftMatrix.getStackInSlot(i).isEmpty()) {
                         craftMatrix.setInventorySlotContents(i, remainder);
                     } else {
                         remainder.setCount(stack.getCount());
@@ -62,30 +62,30 @@ public class SlotEnchantingResult extends SlotEnchanting {
                             player.dropItem(remainder, true);
                         }
                     }
-        		}
+                }
             }
         }
 
         return super.onTake(player, stack);
     }
 
-	@Override
-	protected void onCrafting(ItemStack stack, int amount) {
-		onCrafting(stack);
-	}
+    @Override
+    protected void onCrafting(ItemStack stack, int amount) {
+        onCrafting(stack);
+    }
 
-	@Override
-	protected void onCrafting(ItemStack stack) {
-	    SpellCraftingEvent.trigger(owner, stack, listener);
-	}
+    @Override
+    protected void onCrafting(ItemStack stack) {
+        SpellCraftingEvent.trigger(owner, stack, listener);
+    }
 
-	@Override
-	public boolean isItemValid(ItemStack stack) {
+    @Override
+    public boolean isItemValid(ItemStack stack) {
         return stack.getItem() instanceof ItemSpell && !SpellRegistry.stackHasEnchantment(stack);
     }
 
-	@Override
-	public String getSlotTexture() {
+    @Override
+    public String getSlotTexture() {
         return "unicopia:items/empty_slot_gem";
     }
 }

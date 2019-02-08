@@ -15,13 +15,13 @@ import net.minecraft.block.state.IBlockState;
  *
  */
 public class StateMapList extends ArrayList<IStateMapping> {
-	private static final long serialVersionUID = 2602772651960588745L;
+    private static final long serialVersionUID = 2602772651960588745L;
 
-	public void removeBlock(Predicate<IBlockState> mapper) {
-	    add(IStateMapping.removeBlock(mapper));
-	}
+    public void removeBlock(Predicate<IBlockState> mapper) {
+        add(IStateMapping.removeBlock(mapper));
+    }
 
-	public void replaceBlock(Block from, Block to) {
+    public void replaceBlock(Block from, Block to) {
         add(IStateMapping.replaceBlock(from, to));
     }
 
@@ -33,32 +33,32 @@ public class StateMapList extends ArrayList<IStateMapping> {
         add(IStateMapping.setProperty(block, property, to));
     }
 
-	/**
-	 * Checks if this collection contains a mapping capable of converting the given state.
-	 *
-	 * @param state		State to check
-	 *
-	 * @return	True if the state can be converted
-	 */
-	public boolean canConvert(@Nullable IBlockState state) {
-	    return state != null && stream().anyMatch(i -> i.test(state));
-	}
+    /**
+     * Checks if this collection contains a mapping capable of converting the given state.
+     *
+     * @param state        State to check
+     *
+     * @return    True if the state can be converted
+     */
+    public boolean canConvert(@Nullable IBlockState state) {
+        return state != null && stream().anyMatch(i -> i.test(state));
+    }
 
-	/**
-	 * Attempts to convert the given state based on the known mappings in this collection.
-	 *
-	 * @param state		State to convert
-	 *
-	 * @return	The converted state if there is one, otherwise null
-	 */
-	@Nonnull
-	public IBlockState getConverted(@Nonnull IBlockState state) {
-		for (IStateMapping i : this) {
-			if (i.test(state)) {
-			    return i.apply(state);
-			}
-		}
+    /**
+     * Attempts to convert the given state based on the known mappings in this collection.
+     *
+     * @param state        State to convert
+     *
+     * @return    The converted state if there is one, otherwise null
+     */
+    @Nonnull
+    public IBlockState getConverted(@Nonnull IBlockState state) {
+        for (IStateMapping i : this) {
+            if (i.test(state)) {
+                return i.apply(state);
+            }
+        }
 
-		return state;
-	}
+        return state;
+    }
 }

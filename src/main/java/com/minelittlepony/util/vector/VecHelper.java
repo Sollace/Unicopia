@@ -19,26 +19,26 @@ import net.minecraft.world.World;
 
 public class VecHelper {
 
-	/**
-	 * Performs a ray cast from the given entity and returns a result for the first block that ray intercepts.
-	 *
-	 * @param e				Entity to start from
-	 * @param distance		Maximum distance
-	 * @param partialTick	Client partial ticks
-	 *
-	 * @return	RayTraceResult result or null
-	 */
-	public static RayTraceResult rayTrace(Entity e, double distance, float partialTicks) {
+    /**
+     * Performs a ray cast from the given entity and returns a result for the first block that ray intercepts.
+     *
+     * @param e                Entity to start from
+     * @param distance        Maximum distance
+     * @param partialTick    Client partial ticks
+     *
+     * @return    RayTraceResult result or null
+     */
+    public static RayTraceResult rayTrace(Entity e, double distance, float partialTicks) {
         Vec3d pos = e.getPositionEyes(partialTicks);
         Vec3d look = e.getLook(partialTicks).scale(distance);
 
         return e.world.rayTraceBlocks(pos, pos.add(look), false, false, true);
-	}
+    }
 
-	/**
+    /**
      * Gets the entity the player is currently looking at, or null.
      */
-	@Nullable
+    @Nullable
     public static Entity getLookedAtEntity(EntityLivingBase e, int reach) {
         RayTraceResult objectMouseOver = getObjectMouseOver(e, reach, 1);
 
@@ -76,32 +76,32 @@ public class VecHelper {
                 .expand(1, 1, 1), predicate);
     }
 
-	/**
-	 * Performs a ray trace from the given entity and returns a result for the first Entity or block that the ray intercepts.
-	 *
-	 * @param e				Entity to start from
-	 * @param distance		Maximum distance
-	 * @param partialTick	Client partial ticks
-	 *
-	 * @return	RayTraceResult result or null
-	 */
-	public static RayTraceResult getObjectMouseOver(Entity e, double distance, float partialTick) {
-		return getObjectMouseOver(e, distance, partialTick, EntitySelectors.NOT_SPECTATING);
-	}
+    /**
+     * Performs a ray trace from the given entity and returns a result for the first Entity or block that the ray intercepts.
+     *
+     * @param e                Entity to start from
+     * @param distance        Maximum distance
+     * @param partialTick    Client partial ticks
+     *
+     * @return    RayTraceResult result or null
+     */
+    public static RayTraceResult getObjectMouseOver(Entity e, double distance, float partialTick) {
+        return getObjectMouseOver(e, distance, partialTick, EntitySelectors.NOT_SPECTATING);
+    }
 
-	/**
-	 * Performs a ray trace from the given entity and returns a result for the first Entity that passing the given predicate or block that the ray intercepts.
-	 * <p>
-	 *
-	 *
-	 * @param e				Entity to start from
-	 * @param distance		Maximum distance
-	 * @param partialTick	Client partial ticks
-	 * @param predicate		Predicate test to filter entities
-	 *
-	 * @return	RayTraceResult result or null
-	 */
-	public static RayTraceResult getObjectMouseOver(Entity e, double distance, float partialTick, Predicate<Entity> predicate) {
+    /**
+     * Performs a ray trace from the given entity and returns a result for the first Entity that passing the given predicate or block that the ray intercepts.
+     * <p>
+     *
+     *
+     * @param e                Entity to start from
+     * @param distance        Maximum distance
+     * @param partialTick    Client partial ticks
+     * @param predicate        Predicate test to filter entities
+     *
+     * @return    RayTraceResult result or null
+     */
+    public static RayTraceResult getObjectMouseOver(Entity e, double distance, float partialTick, Predicate<Entity> predicate) {
         RayTraceResult tracedBlock = rayTrace(e, distance, partialTick);
 
         double totalTraceDistance = distance;

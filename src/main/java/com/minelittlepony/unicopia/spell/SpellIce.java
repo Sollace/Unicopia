@@ -30,12 +30,12 @@ import net.minecraft.world.World;
 
 public class SpellIce extends AbstractSpell.RangedAreaSpell implements IUseAction, IDispenceable {
 
-	public final StateMapList affected = new StateMapList();
+    public final StateMapList affected = new StateMapList();
 
-	public SpellIce() {
-		affected.add(IStateMapping.build(
-		        s -> s.getMaterial() == Material.WATER,
-		        s -> Blocks.ICE.getDefaultState()));
+    public SpellIce() {
+        affected.add(IStateMapping.build(
+                s -> s.getMaterial() == Material.WATER,
+                s -> Blocks.ICE.getDefaultState()));
         affected.add(IStateMapping.build(
                 s -> s.getMaterial() == Material.LAVA,
                 s -> Blocks.OBSIDIAN.getDefaultState()));
@@ -49,12 +49,12 @@ public class SpellIce extends AbstractSpell.RangedAreaSpell implements IUseActio
 
                     return s;
                 }));
-		affected.replaceBlock(Blocks.FIRE, Blocks.AIR);
-		affected.setProperty(Blocks.REDSTONE_WIRE, BlockRedstoneWire.POWER, 0);
-	}
+        affected.replaceBlock(Blocks.FIRE, Blocks.AIR);
+        affected.setProperty(Blocks.REDSTONE_WIRE, BlockRedstoneWire.POWER, 0);
+    }
 
-	private final int rad = 3;
-	private final IShape effect_range = new Sphere(false, rad);
+    private final int rad = 3;
+    private final IShape effect_range = new Sphere(false, rad);
 
     @Override
     public String getName() {
@@ -80,93 +80,93 @@ public class SpellIce extends AbstractSpell.RangedAreaSpell implements IUseActio
     public void render(ICaster<?> source) {
     }
 
-	@Override
-	public SpellCastResult onDispenced(BlockPos pos, EnumFacing facing, IBlockSource source, SpellAffinity affinity) {
-		return applyBlocks(null, source.getWorld(), pos.offset(facing, rad)) ? SpellCastResult.NONE : SpellCastResult.DEFAULT;
-	}
+    @Override
+    public SpellCastResult onDispenced(BlockPos pos, EnumFacing facing, IBlockSource source, SpellAffinity affinity) {
+        return applyBlocks(null, source.getWorld(), pos.offset(facing, rad)) ? SpellCastResult.NONE : SpellCastResult.DEFAULT;
+    }
 
-	@Override
-	public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
-		if (player != null && player.isSneaking()) {
-			applyBlockSingle(world, pos);
-		} else {
-			applyBlocks(player, world, pos);
-		}
+    @Override
+    public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
+        if (player != null && player.isSneaking()) {
+            applyBlockSingle(world, pos);
+        } else {
+            applyBlocks(player, world, pos);
+        }
 
-		return SpellCastResult.DEFAULT;
-	}
+        return SpellCastResult.DEFAULT;
+    }
 
-	@Override
-	public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, Entity hitEntity) {
-		if (hitEntity != null && applyEntitySingle(player, hitEntity)) {
-			return SpellCastResult.DEFAULT;
-		}
+    @Override
+    public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, Entity hitEntity) {
+        if (hitEntity != null && applyEntitySingle(player, hitEntity)) {
+            return SpellCastResult.DEFAULT;
+        }
 
-		return SpellCastResult.NONE;
-	}
+        return SpellCastResult.NONE;
+    }
 
-	private boolean applyBlocks(EntityPlayer owner, World world, BlockPos pos) {
+    private boolean applyBlocks(EntityPlayer owner, World world, BlockPos pos) {
 
-		for (BlockPos i : PosHelper.getAllInRegionMutable(pos, effect_range)) {
-		    applyBlockSingle(world, i);
-		}
+        for (BlockPos i : PosHelper.getAllInRegionMutable(pos, effect_range)) {
+            applyBlockSingle(world, i);
+        }
 
-		return applyEntities(owner, world, pos);
-	}
+        return applyEntities(owner, world, pos);
+    }
 
-	protected boolean applyEntities(EntityPlayer owner, World world, BlockPos pos) {
-	    return VecHelper.findAllEntitiesInRange(owner, world, pos, 3).filter(i ->
-	        applyEntitySingle(owner, i)
-	    ).count() > 0;
-	}
+    protected boolean applyEntities(EntityPlayer owner, World world, BlockPos pos) {
+        return VecHelper.findAllEntitiesInRange(owner, world, pos, 3).filter(i ->
+            applyEntitySingle(owner, i)
+        ).count() > 0;
+    }
 
-	protected boolean applyEntitySingle(EntityPlayer owner, Entity e) {
-		if (e instanceof EntityTNTPrimed) {
-			e.setDead();
-			e.getEntityWorld().setBlockState(e.getPosition(), Blocks.TNT.getDefaultState());
-		} else if (e.isBurning()) {
-			e.extinguish();
-		} else {
-			DamageSource d = MagicalDamageSource.causePlayerDamage("cold", owner);
-			e.attackEntityFrom(d, 2);
-		}
+    protected boolean applyEntitySingle(EntityPlayer owner, Entity e) {
+        if (e instanceof EntityTNTPrimed) {
+            e.setDead();
+            e.getEntityWorld().setBlockState(e.getPosition(), Blocks.TNT.getDefaultState());
+        } else if (e.isBurning()) {
+            e.extinguish();
+        } else {
+            DamageSource d = MagicalDamageSource.causePlayerDamage("cold", owner);
+            e.attackEntityFrom(d, 2);
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	private void applyBlockSingle(World world, BlockPos pos) {
-		IBlockState state = world.getBlockState(pos);
-		Block id = state.getBlock();
+    private void applyBlockSingle(World world, BlockPos pos) {
+        IBlockState state = world.getBlockState(pos);
+        Block id = state.getBlock();
 
-		IBlockState converted = affected.getConverted(state);
+        IBlockState converted = affected.getConverted(state);
 
-		if (!state.equals(converted)) {
-			world.setBlockState(pos, converted, 3);
-		} else if (state.getMaterial() != UMaterials.cloud && state.isSideSolid(world, pos, EnumFacing.UP)
-		        || (id == Blocks.SNOW)
-		        || (id instanceof BlockLeaves)) {
-			incrementIce(world, pos.up());
-		} else if (state.getMaterial() == Material.ICE && world.rand.nextInt(10) == 0) {
-			if (isSurroundedByIce(world, pos)) {
-				world.setBlockState(pos, Blocks.PACKED_ICE.getDefaultState());
-			}
-		}
+        if (!state.equals(converted)) {
+            world.setBlockState(pos, converted, 3);
+        } else if (state.getMaterial() != UMaterials.cloud && state.isSideSolid(world, pos, EnumFacing.UP)
+                || (id == Blocks.SNOW)
+                || (id instanceof BlockLeaves)) {
+            incrementIce(world, pos.up());
+        } else if (state.getMaterial() == Material.ICE && world.rand.nextInt(10) == 0) {
+            if (isSurroundedByIce(world, pos)) {
+                world.setBlockState(pos, Blocks.PACKED_ICE.getDefaultState());
+            }
+        }
 
-		world.spawnParticle(EnumParticleTypes.WATER_SPLASH, pos.getX() + world.rand.nextFloat(), pos.getY() + 1, pos.getZ() + world.rand.nextFloat(), 0, 0, 0);
-	}
+        world.spawnParticle(EnumParticleTypes.WATER_SPLASH, pos.getX() + world.rand.nextFloat(), pos.getY() + 1, pos.getZ() + world.rand.nextFloat(), 0, 0, 0);
+    }
 
-	public static boolean isSurroundedByIce(World w, BlockPos pos) {
-	    return !PosHelper.adjacentNeighbours(pos).stream().anyMatch(i ->
-	        w.getBlockState(i).getMaterial() == Material.ICE
-	    );
-	}
+    public static boolean isSurroundedByIce(World w, BlockPos pos) {
+        return !PosHelper.adjacentNeighbours(pos).stream().anyMatch(i ->
+            w.getBlockState(i).getMaterial() == Material.ICE
+        );
+    }
 
-	private void incrementIce(World world, BlockPos pos) {
-		IBlockState state = world.getBlockState(pos);
-		Block id = state.getBlock();
+    private void incrementIce(World world, BlockPos pos) {
+        IBlockState state = world.getBlockState(pos);
+        Block id = state.getBlock();
 
-		if (id == Blocks.AIR || (id instanceof BlockBush)) {
-			world.setBlockState(pos, Blocks.SNOW_LAYER.getDefaultState(), 3);
-		}
-	}
+        if (id == Blocks.AIR || (id instanceof BlockBush)) {
+            world.setBlockState(pos, Blocks.SNOW_LAYER.getDefaultState(), 3);
+        }
+    }
 }

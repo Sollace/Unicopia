@@ -4,23 +4,23 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public abstract class AbstractSpell implements IMagicEffect {
 
-	protected boolean isDead;
-	protected boolean isDirty;
+    protected boolean isDead;
+    protected boolean isDirty;
 
     @Override
     public boolean isCraftable() {
         return true;
     }
 
-	@Override
-	public void setDead() {
-		isDead = true;
-	}
+    @Override
+    public void setDead() {
+        isDead = true;
+    }
 
-	@Override
-	public boolean getDead() {
-		return isDead;
-	}
+    @Override
+    public boolean getDead() {
+        return isDead;
+    }
 
     @Override
     public boolean isDirty() {

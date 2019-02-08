@@ -14,75 +14,75 @@ import net.minecraft.util.math.MathHelper;
 
 public class ModelGem extends ModelBase {
 
-	private ModelRenderer body;
+    private ModelRenderer body;
 
-	public ModelGem() {
+    public ModelGem() {
         textureWidth = 256;
         textureHeight = 256;
 
-		body = new ModelRenderer(this);
-		body.offsetY = 1.2f;
+        body = new ModelRenderer(this);
+        body.offsetY = 1.2f;
 
-		int size = 1;
+        int size = 1;
 
-		body.cubeList.add(new ModelQuads(body).addFace(
-			new Vertex( size, 0,     size, 0,     0.5f),
-			new Vertex(-size, 0,     size, 0.25f, 0.25f),
-			new Vertex( 0, size * 2, 0, 0,     0.25f),
-			new Vertex( 0, size * 2, 0, 0,     0.25f)
-		).addFace(
-			new Vertex( size,  0,     size, 0,     0.25f),
-			new Vertex(-size,  0,     size, 0.25f, 0),
-			new Vertex( 0, -size * 2, 0, 0.25f, 0.25f),
-			new Vertex( 0, -size * 2, 0, 0.25f, 0.25f)
-		).addFace(
-			new Vertex(size, 0,    -size, 0.25f, 0.5f),
-			new Vertex(size, 0,     size, 0.5f,  0.25f),
-			new Vertex(0, size * 2, 0, 0.25f, 0.25f),
-			new Vertex(0, size * 2, 0, 0.25f, 0.25f)
-		).addFace(
-			new Vertex(size,  0,    -size, 0.25f, 0.25f),
-			new Vertex(size,  0,     size, 0.5f,  0),
-			new Vertex(0, -size * 2, 0, 0.5f,  0.25f),
-			new Vertex(0, -size * 2, 0, 0.5f,  0.25f)
-		).addFace(
-			new Vertex(-size, 0,    -size, 0.5f,  0.5f),
-			new Vertex( size, 0,    -size, 0.75f, 0.25f),
-			new Vertex( 0, size * 2, 0, 0.5f,  0.25f),
-			new Vertex( 0, size * 2, 0, 0.5f,  0.25f)
-		).addFace(
-			new Vertex(-size,  0,    -size, 0.5f,  0.25f),
-			new Vertex( size,  0,    -size, 0.75f, 0),
-			new Vertex( 0, -size * 2, 0, 0.75f, 0.25f),
-			new Vertex( 0, -size * 2, 0, 0.75f, 0.25f)
-		).addFace(
-			new Vertex(-size, 0,     size, 0.75f, 0.5f),
-			new Vertex(-size, 0,    -size, 1,     0.25f),
-			new Vertex( 0, size * 2, 0, 0.75f, 0.25f),
-			new Vertex( 0, size * 2, 0, 0.75f, 0.25f)
-		).addFace(
-			new Vertex(-size,  0,     size, 0.75f, 0.25f),
-			new Vertex(-size,  0,    -size, 1,     0),
-			new Vertex( 0, -size * 2, 0, 1,     0.25f),
-			new Vertex( 0, -size * 2, 0, 1,     0.25f)
-		));
-	}
+        body.cubeList.add(new ModelQuads(body).addFace(
+            new Vertex( size, 0,     size, 0,     0.5f),
+            new Vertex(-size, 0,     size, 0.25f, 0.25f),
+            new Vertex( 0, size * 2, 0, 0,     0.25f),
+            new Vertex( 0, size * 2, 0, 0,     0.25f)
+        ).addFace(
+            new Vertex( size,  0,     size, 0,     0.25f),
+            new Vertex(-size,  0,     size, 0.25f, 0),
+            new Vertex( 0, -size * 2, 0, 0.25f, 0.25f),
+            new Vertex( 0, -size * 2, 0, 0.25f, 0.25f)
+        ).addFace(
+            new Vertex(size, 0,    -size, 0.25f, 0.5f),
+            new Vertex(size, 0,     size, 0.5f,  0.25f),
+            new Vertex(0, size * 2, 0, 0.25f, 0.25f),
+            new Vertex(0, size * 2, 0, 0.25f, 0.25f)
+        ).addFace(
+            new Vertex(size,  0,    -size, 0.25f, 0.25f),
+            new Vertex(size,  0,     size, 0.5f,  0),
+            new Vertex(0, -size * 2, 0, 0.5f,  0.25f),
+            new Vertex(0, -size * 2, 0, 0.5f,  0.25f)
+        ).addFace(
+            new Vertex(-size, 0,    -size, 0.5f,  0.5f),
+            new Vertex( size, 0,    -size, 0.75f, 0.25f),
+            new Vertex( 0, size * 2, 0, 0.5f,  0.25f),
+            new Vertex( 0, size * 2, 0, 0.5f,  0.25f)
+        ).addFace(
+            new Vertex(-size,  0,    -size, 0.5f,  0.25f),
+            new Vertex( size,  0,    -size, 0.75f, 0),
+            new Vertex( 0, -size * 2, 0, 0.75f, 0.25f),
+            new Vertex( 0, -size * 2, 0, 0.75f, 0.25f)
+        ).addFace(
+            new Vertex(-size, 0,     size, 0.75f, 0.5f),
+            new Vertex(-size, 0,    -size, 1,     0.25f),
+            new Vertex( 0, size * 2, 0, 0.75f, 0.25f),
+            new Vertex( 0, size * 2, 0, 0.75f, 0.25f)
+        ).addFace(
+            new Vertex(-size,  0,     size, 0.75f, 0.25f),
+            new Vertex(-size,  0,    -size, 1,     0),
+            new Vertex( 0, -size * 2, 0, 1,     0.25f),
+            new Vertex( 0, -size * 2, 0, 1,     0.25f)
+        ));
+    }
 
-	@Override
-	public void render(Entity entity, float time, float walkSpeed, float stutter, float yaw, float pitch, float scale) {
+    @Override
+    public void render(Entity entity, float time, float walkSpeed, float stutter, float yaw, float pitch, float scale) {
 
-		GlStateManager.pushMatrix();
+        GlStateManager.pushMatrix();
 
-		EntitySpell spell = (EntitySpell)entity;
+        EntitySpell spell = (EntitySpell)entity;
 
-		float eyes = entity.getEyeHeight();
+        float eyes = entity.getEyeHeight();
 
-		float floatOffset = MathHelper.sin((spell.ticksExisted + stutter) / 10 + spell.hoverStart) / 10 + 0.1F;
+        float floatOffset = MathHelper.sin((spell.ticksExisted + stutter) / 10 + spell.hoverStart) / 10 + 0.1F;
         GlStateManager.translate(0, floatOffset - (eyes > 0.25F ? eyes : 0), 0);
 
         floatOffset = (spell.ticksExisted + stutter) / 20;
         if (spell.getCurrentLevel() > 0) {
-        	floatOffset *= spell.getCurrentLevel() + 1;
+            floatOffset *= spell.getCurrentLevel() + 1;
         }
 
         floatOffset += spell.hoverStart;
@@ -139,27 +139,27 @@ public class ModelGem extends ModelBase {
             GlStateManager.popMatrix();
         }
 
-		setLightingConditionsBrightness(entity.getBrightnessForRender());
+        setLightingConditionsBrightness(entity.getBrightnessForRender());
 
-		GlStateManager.disableBlend();
+        GlStateManager.disableBlend();
         GlStateManager.enableAlpha();
 
-		GlStateManager.popMatrix();
-	}
+        GlStateManager.popMatrix();
+    }
 
-	protected void renderOverlay(float grow, float scale) {
+    protected void renderOverlay(float grow, float scale) {
         body.render(scale);
-	}
+    }
 
-	private void setLightingConditionsBrightness(int brightness) {
+    private void setLightingConditionsBrightness(int brightness) {
         int texX = brightness % 0x10000;
         int texY = brightness / 0x10000;
 
-	    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, texX, texY);
-	}
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, texX, texY);
+    }
 
-	@Override
-	public void setRotationAngles(float time, float walkSpeed, float stutter, float yaw, float pitch, float increment, Entity entity) {
+    @Override
+    public void setRotationAngles(float time, float walkSpeed, float stutter, float yaw, float pitch, float increment, Entity entity) {
 
     }
 }

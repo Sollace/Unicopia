@@ -30,22 +30,22 @@ import net.minecraft.world.World;
 
 public class BlockCloud extends Block implements ICloudBlock, ITillable {
 
-	public static final PropertyEnum<CloudType> VARIANT = PropertyEnum.create("variant", CloudType.class);
+    public static final PropertyEnum<CloudType> VARIANT = PropertyEnum.create("variant", CloudType.class);
 
-	public BlockCloud(Material material, String domain, String name) {
-		super(material);
-		setRegistryName(domain, name);
+    public BlockCloud(Material material, String domain, String name) {
+        super(material);
+        setRegistryName(domain, name);
         setTranslationKey(name);
 
-		setCreativeTab(CreativeTabs.MISC);
-		setHardness(0.5f);
-		setResistance(1.0F);
-		setSoundType(SoundType.CLOTH);
-		setLightOpacity(20);
-		useNeighborBrightness = true;
-	}
+        setCreativeTab(CreativeTabs.MISC);
+        setHardness(0.5f);
+        setResistance(1.0F);
+        setSoundType(SoundType.CLOTH);
+        setLightOpacity(20);
+        useNeighborBrightness = true;
+    }
 
-	@Override
+    @Override
     public boolean isTranslucent(IBlockState state) {
         return true;
     }
@@ -68,7 +68,7 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
 
     @Override
     public boolean isNormalCube(IBlockState state) {
-    	return false;
+        return false;
     }
 
     @Override
@@ -117,11 +117,11 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
     }
 
     @Override
-	public void onEntityCollision(World w, BlockPos pos, IBlockState state, Entity entity) {
+    public void onEntityCollision(World w, BlockPos pos, IBlockState state, Entity entity) {
         if (!applyBouncyness(state, entity)) {
-    		super.onEntityCollision(w, pos, state, entity);
+            super.onEntityCollision(w, pos, state, entity);
         }
-	}
+    }
 
     @Override
     public boolean canEntityDestroy(IBlockState state, IBlockAccess world, BlockPos pos, Entity entity) {
@@ -130,9 +130,9 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
 
     @Deprecated
     public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
-    	if (getCanInteract(state, entity)) {
-    		super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, p_185477_7_);
-    	}
+        if (getCanInteract(state, entity)) {
+            super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, p_185477_7_);
+        }
     }
 
     @Deprecated
@@ -144,29 +144,29 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
         return -1;
     }
 
-	@Override
+    @Override
     public int damageDropped(IBlockState state) {
         return ((CloudType)state.getValue(VARIANT)).getMetadata();
     }
 
-	@Override
+    @Override
     public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> list) {
         for (CloudType i : CloudType.values()) {
-        	list.add(new ItemStack(this, 1, i.getMetadata()));
+            list.add(new ItemStack(this, 1, i.getMetadata()));
         }
     }
 
-	@Override
+    @Override
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(VARIANT, CloudType.byMetadata(meta));
     }
 
-	@Override
+    @Override
     public int getMetaFromState(IBlockState state) {
         return ((CloudType)state.getValue(VARIANT)).getMetadata();
     }
 
-	@Override
+    @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, VARIANT);
     }

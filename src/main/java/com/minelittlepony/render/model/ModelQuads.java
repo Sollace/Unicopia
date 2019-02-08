@@ -12,21 +12,21 @@ import net.minecraft.client.renderer.BufferBuilder;
 
 public class ModelQuads extends Box<ModelRenderer> {
 
-	public ModelQuads(ModelRenderer renderer) {
-		super(renderer, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-	}
+    public ModelQuads(ModelRenderer renderer) {
+        super(renderer, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
 
-	protected List<TexturedQuad> quadList = new ArrayList<TexturedQuad>();
+    protected List<TexturedQuad> quadList = new ArrayList<TexturedQuad>();
 
-	public ModelQuads addFace(PositionTextureVertex... vertices) {
-		quadList.add(new TexturedShape2d(vertices));
+    public ModelQuads addFace(PositionTextureVertex... vertices) {
+        quadList.add(new TexturedShape2d(vertices));
 
-		return this;
-	}
+        return this;
+    }
 
-	public void render(BufferBuilder renderer, float scale) {
-		for (TexturedQuad i : quadList) {
-			i.draw(renderer, scale);
+    public void render(BufferBuilder renderer, float scale) {
+        for (TexturedQuad i : quadList) {
+            i.draw(renderer, scale);
         }
-	}
+    }
 }

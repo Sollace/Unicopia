@@ -16,8 +16,8 @@ public class ParticleUnicornMagic extends Particle {
         this(w, x, y, z, vX, vY, vZ);
     }
 
-	public ParticleUnicornMagic(World w, double x, double y, double z, double vX, double vY, double vZ) {
-		super(w, x, y, z, vX, vY, vZ);
+    public ParticleUnicornMagic(World w, double x, double y, double z, double vX, double vY, double vZ) {
+        super(w, x, y, z, vX, vY, vZ);
         motionX = vX;
         motionY = vY;
         motionZ = vZ;
@@ -37,13 +37,13 @@ public class ParticleUnicornMagic extends Particle {
         if (rand.nextBoolean()) particleGreen += 0.5F;
 
         if (rand.nextBoolean()) {
-        	particleGreen *= 2F;
+            particleGreen *= 2F;
         } else if (rand.nextBoolean()) {
-        	particleRed *= 3.9F;
+            particleRed *= 3.9F;
         }
     }
 
-	public void renderParticle(BufferBuilder renderer, Entity e, float p_70539_2_, float p_70539_3_, float p_70539_4_, float p_70539_5_, float p_70539_6_, float p_70539_7_) {
+    public void renderParticle(BufferBuilder renderer, Entity e, float p_70539_2_, float p_70539_3_, float p_70539_4_, float p_70539_5_, float p_70539_6_, float p_70539_7_) {
         float f6 = 1 - ((particleAge + p_70539_2_) / particleMaxAge);
         f6 = 1 - f6 * f6;
         particleScale = portalParticleScale * f6;
@@ -63,7 +63,7 @@ public class ParticleUnicornMagic extends Particle {
     }
 
     public void onUpdate() {
-    	prevPosX = posX;
+        prevPosX = posX;
         prevPosY = posY;
         prevPosZ = posZ;
         float var1 = (float)particleAge / (float)particleMaxAge;

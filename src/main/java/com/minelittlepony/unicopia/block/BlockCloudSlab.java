@@ -33,25 +33,25 @@ import net.minecraft.world.World;
 
 public class BlockCloudSlab extends BlockSlab implements ICloudBlock {
 
-	public static final PropertyEnum<CloudType> VARIANT = PropertyEnum.create("variant", CloudType.class);
+    public static final PropertyEnum<CloudType> VARIANT = PropertyEnum.create("variant", CloudType.class);
 
-	private boolean isDouble;
+    private boolean isDouble;
 
-	public BlockCloudSlab(boolean isDouble, Material material, String domain, String name) {
-		super(material);
+    public BlockCloudSlab(boolean isDouble, Material material, String domain, String name) {
+        super(material);
 
-		setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
-		setHardness(0.5F);
-		setResistance(1.0F);
-		setSoundType(SoundType.CLOTH);
-		setLightOpacity(20);
-		setTranslationKey(name);
-		setRegistryName(domain, name);
-		this.isDouble = isDouble;
-		useNeighborBrightness = true;
-	}
+        setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
+        setHardness(0.5F);
+        setResistance(1.0F);
+        setSoundType(SoundType.CLOTH);
+        setLightOpacity(20);
+        setTranslationKey(name);
+        setRegistryName(domain, name);
+        this.isDouble = isDouble;
+        useNeighborBrightness = true;
+    }
 
-	@Override
+    @Override
     public boolean isTranslucent(IBlockState state) {
         return UBlocks.cloud.isTranslucent(state);
     }
@@ -61,22 +61,22 @@ public class BlockCloudSlab extends BlockSlab implements ICloudBlock {
         return allowsFallingBlockToPass(state, world, pos);
     }
 
-	@Override
+    @Override
     public boolean isOpaqueCube(IBlockState state) {
         return isDouble() ? UBlocks.cloud.isOpaqueCube(state) : false;
     }
 
-	@Override
+    @Override
     public boolean isFullCube(IBlockState state) {
         return isDouble() ? UBlocks.cloud.isFullCube(state) : false;
     }
 
-	@Override
+    @Override
     public boolean isNormalCube(IBlockState state) {
-    	return isDouble() ? UBlocks.cloud.isNormalCube(state) : false;
+        return isDouble() ? UBlocks.cloud.isNormalCube(state) : false;
     }
 
-	@Override
+    @Override
     public BlockRenderLayer getRenderLayer() {
         return UBlocks.cloud.getRenderLayer();
     }
@@ -88,25 +88,25 @@ public class BlockCloudSlab extends BlockSlab implements ICloudBlock {
 
     @Override
     public void onFallenUpon(World w, BlockPos pos, Entity entity, float fallDistance) {
-    	UBlocks.cloud.onFallenUpon(w, pos, entity, fallDistance);
+        UBlocks.cloud.onFallenUpon(w, pos, entity, fallDistance);
     }
 
     @Override
     public void onLanded(World w, Entity entity) {
-    	UBlocks.cloud.onLanded(w, entity);
+        UBlocks.cloud.onLanded(w, entity);
     }
 
     @Override
     public void onEntityCollision(World w, BlockPos pos, IBlockState state, Entity entity) {
-    	UBlocks.cloud.onEntityCollision(w, pos, state, entity);
+        UBlocks.cloud.onEntityCollision(w, pos, state, entity);
     }
 
     @Override
     @Deprecated
     public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
-    	if (getCanInteract(state, entity)) {
-    		super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, p_185477_7_);
-    	}
+        if (getCanInteract(state, entity)) {
+            super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, p_185477_7_);
+        }
     }
 
     @Deprecated
@@ -232,12 +232,12 @@ public class BlockCloudSlab extends BlockSlab implements ICloudBlock {
     }
 
     @Override
-	public boolean isDouble() {
-		return isDouble;
-	}
+    public boolean isDouble() {
+        return isDouble;
+    }
 
-	@Override
-	public Comparable<CloudType> getTypeForItem(ItemStack stack) {
-		return CloudType.byMetadata(stack.getMetadata() & 7);
-	}
+    @Override
+    public Comparable<CloudType> getTypeForItem(ItemStack stack) {
+        return CloudType.byMetadata(stack.getMetadata() & 7);
+    }
 }

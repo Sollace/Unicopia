@@ -24,46 +24,46 @@ import net.minecraft.world.World;
 
 public class BlockCloudStairs extends BlockStairs implements ICloudBlock {
 
-	protected Block theBlock;
-	protected IBlockState theState;
+    protected Block theBlock;
+    protected IBlockState theState;
 
-	public BlockCloudStairs(IBlockState inherited, String domain, String name) {
-		super(inherited);
-		setTranslationKey(name);
-		setRegistryName(domain, name);
-		theBlock = inherited.getBlock();
-		theState = inherited;
-		useNeighborBrightness = true;
+    public BlockCloudStairs(IBlockState inherited, String domain, String name) {
+        super(inherited);
+        setTranslationKey(name);
+        setRegistryName(domain, name);
+        theBlock = inherited.getBlock();
+        theState = inherited;
+        useNeighborBrightness = true;
 
-		fullBlock = isOpaqueCube(inherited);
-	}
+        fullBlock = isOpaqueCube(inherited);
+    }
 
-	@Override
-	@Deprecated
-	public boolean isTranslucent(IBlockState state) {
+    @Override
+    @Deprecated
+    public boolean isTranslucent(IBlockState state) {
         return theBlock.isTranslucent(state);
     }
 
-	@Override
-	@Deprecated
+    @Override
+    @Deprecated
     public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
-	@Override
-	@Deprecated
-	public boolean isNormalCube(IBlockState state) {
-    	return theBlock.isNormalCube(state);
+    @Override
+    @Deprecated
+    public boolean isNormalCube(IBlockState state) {
+        return theBlock.isNormalCube(state);
     }
 
-	@Override
+    @Override
     public boolean isPassable(IBlockAccess worldIn, BlockPos pos) {
         return theBlock.isPassable(worldIn, pos);
     }
 
-	@Override
+    @Override
     public void onFallenUpon(World w, BlockPos pos, Entity entity, float fallDistance) {
-    	theBlock.onFallenUpon(w, pos, entity, fallDistance);
+        theBlock.onFallenUpon(w, pos, entity, fallDistance);
     }
 
     @Override
@@ -71,25 +71,25 @@ public class BlockCloudStairs extends BlockStairs implements ICloudBlock {
         return allowsFallingBlockToPass(state, world, pos);
     }
 
-	@Override
+    @Override
     public void onLanded(World w, Entity entity) {
-    	theBlock.onLanded(w, entity);
+        theBlock.onLanded(w, entity);
     }
 
-	@Override
+    @Override
     public void onEntityCollision(World w, BlockPos pos, IBlockState state, Entity entity) {
-		theBlock.onEntityCollision(w, pos, theState, entity);
-	}
+        theBlock.onEntityCollision(w, pos, theState, entity);
+    }
 
-	@Override
-	public void onEntityWalk(World w, BlockPos pos, Entity entity) {
-		theBlock.onEntityWalk(w, pos, entity);
-	}
+    @Override
+    public void onEntityWalk(World w, BlockPos pos, Entity entity) {
+        theBlock.onEntityWalk(w, pos, entity);
+    }
 
-	@Override
-	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
+    @Override
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
         if (getCanInteract(theState, entity)) {
-	        super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, p_185477_7_);
+            super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, p_185477_7_);
         }
     }
 

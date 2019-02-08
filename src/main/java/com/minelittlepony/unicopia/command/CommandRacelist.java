@@ -19,19 +19,19 @@ import net.minecraft.util.text.TextFormatting;
 
 class CommandRacelist extends CommandBase {
 
-	public String getName() {
-		return "racelist";
-	}
+    public String getName() {
+        return "racelist";
+    }
 
     public int getRequiredPermissionLevel() {
         return 4;
     }
 
-	public String getUsage(ICommandSender sender) {
-		return "commands.racelist.usage";
-	}
+    public String getUsage(ICommandSender sender) {
+        return "commands.racelist.usage";
+    }
 
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 2) {
             throw new WrongUsageException(getUsage(sender));
         }
@@ -75,7 +75,7 @@ class CommandRacelist extends CommandBase {
         } else {
             throw new WrongUsageException(getUsage(sender));
         }
-	}
+    }
 
     /**
      * Adds the strings available in this command to the given list of tab completion options.

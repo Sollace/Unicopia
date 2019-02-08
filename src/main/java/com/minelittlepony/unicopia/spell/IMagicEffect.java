@@ -10,22 +10,22 @@ public interface IMagicEffect extends InbtSerialisable, IAligned {
     /**
      * Gets the name used to identify this effect.
      */
-	String getName();
+    String getName();
 
-	/**
-	 * Gets the tint for this spell when applied to a gem.
-	 */
-	int getTint();
+    /**
+     * Gets the tint for this spell when applied to a gem.
+     */
+    int getTint();
 
-	/**
-	 * Sets this effect as dead.
-	 */
-	void setDead();
+    /**
+     * Sets this effect as dead.
+     */
+    void setDead();
 
-	/**
-	 * Returns true if this spell is dead, and must be cleaned up.
-	 */
-	boolean getDead();
+    /**
+     * Returns true if this spell is dead, and must be cleaned up.
+     */
+    boolean getDead();
 
     /**
      * Returns true if this effect has changes that need to be sent to the client.
@@ -37,10 +37,10 @@ public interface IMagicEffect extends InbtSerialisable, IAligned {
      */
     void setDirty(boolean dirty);
 
-	/**
-	 * Returns true if this effect can be crafted into a gem.
-	 */
-	boolean isCraftable();
+    /**
+     * Returns true if this effect can be crafted into a gem.
+     */
+    boolean isCraftable();
 
 
     /**
@@ -56,30 +56,30 @@ public interface IMagicEffect extends InbtSerialisable, IAligned {
      */
     float getExhaustion(ICaster<?> caster);
 
-	/**
-	 * Called when first attached to a gem.
-	 */
-	default void onPlaced(ICaster<?> caster) {
+    /**
+     * Called when first attached to a gem.
+     */
+    default void onPlaced(ICaster<?> caster) {
 
-	}
+    }
 
-	/**
-	 * Called every tick when attached to a player.
-	 *
-	 * @param source	The entity we are currently attached to.
-	 * @return true to keep alive
-	 */
+    /**
+     * Called every tick when attached to a player.
+     *
+     * @param source    The entity we are currently attached to.
+     * @return true to keep alive
+     */
     default boolean updateOnPerson(ICaster<?> caster) {
         return update(caster);
     }
 
-	/**
-	 * Called every tick when attached to an entity.
-	 * Called on both sides.
-	 *
-	 * @param source   The entity we are currently attached to.
-	 */
-	boolean update(ICaster<?> source);
+    /**
+     * Called every tick when attached to an entity.
+     * Called on both sides.
+     *
+     * @param source   The entity we are currently attached to.
+     */
+    boolean update(ICaster<?> source);
 
     /**
      * Called every tick when attached to a player. Used to apply particle effects.
@@ -91,22 +91,22 @@ public interface IMagicEffect extends InbtSerialisable, IAligned {
         render(source);
     }
 
-	/**
-	 * Called every tick when attached to an entity to produce particle effects.
-	 * Is only called on the client side.
-	 *
-	 * @param source	The entity we are attached to.
-	 */
-	void render(ICaster<?> source);
+    /**
+     * Called every tick when attached to an entity to produce particle effects.
+     * Is only called on the client side.
+     *
+     * @param source    The entity we are attached to.
+     */
+    void render(ICaster<?> source);
 
-	/**
-	 * Return true to allow the gem update and move.
-	 */
-	default boolean allowAI() {
-	    return false;
-	}
+    /**
+     * Return true to allow the gem update and move.
+     */
+    default boolean allowAI() {
+        return false;
+    }
 
-	default IMagicEffect copy() {
-	    return SpellRegistry.instance().copyInstance(this);
-	}
+    default IMagicEffect copy() {
+        return SpellRegistry.instance().copyInstance(this);
+    }
 }
