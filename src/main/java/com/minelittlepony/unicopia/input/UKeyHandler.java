@@ -2,13 +2,12 @@ package com.minelittlepony.unicopia.input;
 
 import java.util.ArrayList;
 
-import org.lwjgl.input.Keyboard;
-
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.PowersRegistry;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
@@ -36,7 +35,7 @@ class UKeyHandler implements IKeyHandler {
 		IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(Minecraft.getMinecraft().player);
 
 		for (KeyBinding i : bindings) {
-			if (Keyboard.isKeyDown(i.getKeyCode())) {
+			if (GameSettings.isKeyDown(i)) {
 
 				if (!pressed.contains(i)) {
 				    pressed.add(i);
