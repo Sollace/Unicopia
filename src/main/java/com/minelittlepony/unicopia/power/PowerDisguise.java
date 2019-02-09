@@ -6,6 +6,7 @@ import org.lwjgl.input.Keyboard;
 
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.player.IPlayer;
+import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.data.Hit;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.SpellDisguise;
@@ -38,6 +39,17 @@ public class PowerDisguise extends PowerFeed {
     public void apply(IPlayer iplayer, Hit data) {
         EntityPlayer player = iplayer.getOwner();
         Entity looked = VecHelper.getLookedAtEntity(player, 17);
+
+        if (looked instanceof EntityPlayer) {
+            IPlayer ilooked = PlayerSpeciesList.instance().getPlayer((EntityPlayer)looked);
+            IMagicEffect ef = ilooked.getEffect();
+            if (ef instanceof SpellDisguise && !ef.getDead()) {
+                Entity e = ((SpellDisguise)ef).getDisguise();
+                if (e != null) {
+                    looked = e;
+                }
+            }
+        }
 
         player.world.playSound(null, player.getPosition(), SoundEvents.E_PARROT_IM_POLAR_BEAR, SoundCategory.PLAYERS, 1.4F, 0.4F);
 

@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.jumpingcastle.api.Target;
@@ -17,9 +18,11 @@ import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.SpellDisguise;
 import com.minelittlepony.util.gui.ButtonGridLayout;
 import com.minelittlepony.util.gui.UButton;
+import com.mojang.authlib.GameProfile;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptions;
@@ -105,6 +108,14 @@ public class UnicopiaClient extends UClient {
         return mc.world.getPlayerEntityByUUID(playerId);
     }
 
+    @Nonnull
+    public EntityPlayer createPlayer(Entity observer, GameProfile profile) {
+        if (!observer.world.isRemote) {
+            return super.createPlayer(observer, profile);
+        }
+        return new EntityOtherPlayerMP(observer.world, profile);
+    }
+
     @Override
     public boolean isClientPlayer(@Nullable EntityPlayer player) {
         if (getPlayer() == player) {
@@ -166,6 +177,14 @@ public class UnicopiaClient extends UClient {
     public static void preEntityRender(RenderLivingEvent.Pre<?> event) {
         if (event.getEntity() instanceof EntityPlayer) {
             IPlayer iplayer = PlayerSpeciesList.instance().getPlayer((EntityPlayer)event.getEntity());
+            System.out.println(event.getEntity().getName());
+
+            if (!MineLP.modIsActive()) {
+                float roll = iplayer.getCamera().calculateRoll();
+                float pitch = iplayer.getCamera().calculatePitch(0);
+                GlStateManager.rotate(roll, 0, 0, 1);
+                GlStateManager.rotate(pitch, 1, 0, 0);
+            }
 
             if (iplayer.isInvisible()) {
                 event.setCanceled(true);
@@ -179,16 +198,19 @@ public class UnicopiaClient extends UClient {
             if (iplayer.hasEffect()) {
                 RenderManager renderMan = Minecraft.getMinecraft().getRenderManager();
 
-                if (renderMan.isRenderShadow()) {
-                    return;
-                }
-
-                // I assume we're in the inventory now.
                 IMagicEffect effect = iplayer.getEffect();
+
                 if (!effect.getDead() && effect instanceof SpellDisguise) {
-                    effect.update(iplayer);
 
                     Entity e = ((SpellDisguise)effect).getDisguise();
+
+                    if (renderMan.isRenderShadow() && !(e instanceof EntityPlayer)) {
+                        return;
+                    }
+
+                    effect.update(iplayer);
+
+
 
                     // Check for a disguise and render it in our place.
                     if (e != null) {

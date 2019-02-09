@@ -2,12 +2,17 @@ package com.minelittlepony.unicopia;
 
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.forgebullshit.FUF;
+import com.mojang.authlib.GameProfile;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.IInteractionObject;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -58,6 +63,16 @@ public class UClient {
 
     public int getViewMode() {
         return 0;
+    }
+
+    /**
+     * Side-independent method to create a new player.
+     *
+     * Returns an implementation of EntityPlayer appropriate to the side being called on.
+     */
+    @Nonnull
+    public EntityPlayer createPlayer(Entity observer, GameProfile profile) {
+        return new FakePlayer((WorldServer)observer.world, profile);
     }
 
     public void preInit(FMLPreInitializationEvent event) {}

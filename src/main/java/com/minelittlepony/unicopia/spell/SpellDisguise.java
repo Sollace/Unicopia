@@ -1,11 +1,15 @@
 package com.minelittlepony.unicopia.spell;
 
+import java.util.UUID;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.player.IPlayer;
+import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -65,9 +69,19 @@ public class SpellDisguise extends AbstractSpell {
         this.entityId = "";
 
         if (entity != null) {
-            this.entityId = EntityList.getKey(entity).toString();
-            this.entityNbt = entity.writeToNBT(new NBTTagCompound());
-            this.entityNbt.setString("id", entityId);
+            if (entity instanceof EntityPlayer) {
+                GameProfile profile = ((EntityPlayer)entity).getGameProfile();
+                this.entityId = "player";
+                this.entityNbt = new NBTTagCompound();
+                this.entityNbt.setUniqueId("playerId", profile.getId());
+                this.entityNbt.setString("playerName", profile.getName());
+                this.entityNbt.setTag("playerNbt", entity.writeToNBT(new NBTTagCompound()));
+            } else {
+                this.entityId = EntityList.getKey(entity).toString();
+                this.entityNbt = entity.writeToNBT(new NBTTagCompound());
+                this.entityNbt.setString("id", entityId);
+            }
+
         }
 
         return this;
@@ -76,13 +90,25 @@ public class SpellDisguise extends AbstractSpell {
     @Override
     public boolean update(ICaster<?> source) {
         if (entity == null && entityNbt != null) {
-            entity = EntityList.createEntityFromNBT(entityNbt, source.getWorld());
+            if ("player".equals(entityId)) {
 
-            if (entity != null && source.getWorld().isRemote) {
-                source.getWorld().spawnEntity(entity);
+                GameProfile profile = new GameProfile(
+                        entityNbt.getUniqueId("playerId"),
+                        entityNbt.getString("playerName"));
+
+                entity = UClient.instance().createPlayer(source.getEntity(), profile);
+                entity.setUniqueId(UUID.randomUUID());
+                entity.readFromNBT(entityNbt.getCompoundTag("playerNbt"));
+                PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity).setEffect(null);;
+            } else {
+                entity = EntityList.createEntityFromNBT(entityNbt, source.getWorld());
+
+                if (entity != null && source.getWorld().isRemote) {
+                    source.getWorld().spawnEntity(entity);
+                }
+
+                entityNbt = null;
             }
-
-            entityNbt = null;
         }
 
         EntityLivingBase owner = source.getOwner();
@@ -123,6 +149,9 @@ public class SpellDisguise extends AbstractSpell {
                 }
             }
 
+            if (owner.world.isRemote) {
+              //  entity.setPositionAndRotationDirect(owner.posX, owner.posY, owner.posZ, owner.rotationYaw, owner.rotationPitch, 1, false);
+            }
 
             entity.copyLocationAndAnglesFrom(owner);
 
