@@ -26,7 +26,7 @@ public interface IPower<T extends IData> extends IKeyBind {
             int food = (int)(player.getFoodStats().getFoodLevel() - foodSubtract);
             if (food < 0) {
                 player.getFoodStats().addStats(-player.getFoodStats().getFoodLevel(), 0);
-                player.attackEntityFrom(DamageSource.MAGIC, -food);
+                player.attackEntityFrom(DamageSource.MAGIC, -food/2);
             } else {
                 player.getFoodStats().addStats((int)-foodSubtract, 0);
             }
