@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.minelittlepony.unicopia.entity.EntityCloud;
 import com.minelittlepony.unicopia.model.ModelCloud;
+import com.minelittlepony.util.WorldHelper;
 
 public class RenderCloud extends RenderLiving<EntityCloud> {
     private static final ResourceLocation cloud = new ResourceLocation("unicopia", "textures/entity/clouds.png");
@@ -36,7 +37,9 @@ public class RenderCloud extends RenderLiving<EntityCloud> {
             GlStateManager.disableLighting();
             GlStateManager.enableBlend();
 
-            GlStateManager.color(1, 1, 1, entity.getOpaque() ? 1 : 0.8F);
+            float brightness = Math.max(WorldHelper.getDaylightBrightness(entity.getEntityWorld(), 0) * 3, 0.05F);
+
+            GlStateManager.color(brightness, brightness, brightness, entity.getOpaque() ? 1 : 0.8F);
 
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
