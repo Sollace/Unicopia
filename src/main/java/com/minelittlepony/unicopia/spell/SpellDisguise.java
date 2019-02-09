@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UClient;
+import com.minelittlepony.unicopia.mixin.MixinEntity;
 import com.minelittlepony.unicopia.player.IOwned;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
@@ -194,9 +195,8 @@ public class SpellDisguise extends AbstractSpell {
                 entity.extinguish();
             }
 
+            entity.noClip = true;
             entity.updateBlocked = true;
-
-            owner.height = entity.height;
 
             entity.setSneaking(owner.isSneaking());
             entity.setInvisible(false);
