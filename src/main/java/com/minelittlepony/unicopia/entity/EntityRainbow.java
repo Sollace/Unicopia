@@ -41,6 +41,11 @@ public class EntityRainbow extends EntityWeatherEffect {
     }
 
     @Override
+    public boolean shouldRenderInPass(int pass) {
+        return pass == 1;
+    }
+
+    @Override
     public void setPosition(double x, double y, double z) {
         posX = x;
         posY = y;
