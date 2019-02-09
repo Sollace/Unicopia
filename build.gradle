@@ -16,11 +16,9 @@ buildscript {
   }
   dependencies {
     classpath 'net.minecraftforge.gradle:ForgeGradle:' + project.forgeGradleVersion
-    classpath 'org.spongepowered:mixingradle:' + project.mixinGradleVersion
   }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'org.spongepowered.mixin'
 
 def ver = "${project.buildType}${project.buildVersion}.${project.buildRevision}"
 
@@ -37,10 +35,6 @@ minecraft {
   replace '@AUTHOR@', project.author
   replace '@VERSION@', ver
   replace '@DESCRIPTION@', project.description
-}
-
-mixin {
-  defaultObfuscationEnv notch
 }
 
 sourceCompatibility = 1.8
