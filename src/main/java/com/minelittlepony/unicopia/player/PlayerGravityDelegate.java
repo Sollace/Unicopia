@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.player;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.mixin.MixinEntity;
+import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
 
 import net.minecraft.block.Block;
@@ -35,13 +36,28 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
         this.player = player;
     }
 
+    public boolean checkCanFly(IPlayer player) {
+        if (player.getOwner().capabilities.isCreativeMode) {
+            return true;
+        }
+
+        if (player.hasEffect()) {
+            IMagicEffect effect = player.getEffect();
+            if (!effect.getDead() && effect instanceof IFlyingPredicate) {
+                return ((IFlyingPredicate)effect).checkCanFly(player);
+            }
+        }
+
+        return player.getPlayerSpecies().canFly();
+    }
+
     @Override
     public void onUpdate(EntityPlayer entity) {
 
-        entity.capabilities.allowFlying = entity.capabilities.isCreativeMode || player.getPlayerSpecies().canFly();
+        entity.capabilities.allowFlying = checkCanFly(player);
 
         if (!entity.capabilities.isCreativeMode) {
-            entity.capabilities.isFlying |= entity.capabilities.allowFlying && isFlying && !entity.onGround;
+            entity.capabilities.isFlying |= entity.capabilities.allowFlying && isFlying && !entity.onGround && !entity.isWet();
         }
 
         isFlying = entity.capabilities.isFlying && !entity.capabilities.isCreativeMode;

@@ -7,22 +7,25 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UClient;
-import com.minelittlepony.unicopia.mixin.MixinEntity;
+import com.minelittlepony.unicopia.player.IFlyingPredicate;
 import com.minelittlepony.unicopia.player.IOwned;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.passive.EntityAmbientCreature;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class SpellDisguise extends AbstractSpell {
+public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
 
     @Nonnull
     private String entityId = "";
@@ -301,5 +304,29 @@ public class SpellDisguise extends AbstractSpell {
                 entity.readFromNBT(entityNbt);
             }
         }
+    }
+
+    @Override
+    public boolean checkCanFly(IPlayer player) {
+        if (!player.getPlayerSpecies().canFly()) {
+            return false;
+        }
+
+        if (entity != null) {
+            if (entity instanceof EntityFlying
+                    || entity instanceof net.minecraft.entity.passive.EntityFlying
+                    || entity instanceof EntityDragon
+                    || entity instanceof EntityAmbientCreature) {
+                return true;
+            }
+
+            if (entity instanceof IOwned) {
+                IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(IOwned.<UUID>cast(entity).getOwner());
+
+                return iplayer != null && iplayer.getPlayerSpecies().canFly();
+            }
+        }
+
+        return false;
     }
 }

@@ -14,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPlayer>, ITransmittable, IPageOwner {
@@ -63,7 +64,13 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
     void beforeUpdate(EntityPlayer entity);
 
     static EntityPlayer getPlayerFromServer(UUID playerId) {
-        Entity e = FMLCommonHandler.instance().getMinecraftServerInstance().getEntityFromUuid(playerId);
+        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+
+        if (server == null) {
+            return UClient.instance().getPlayerByUUID(playerId);
+        }
+
+        Entity e = server.getEntityFromUuid(playerId);
 
         if (e instanceof EntityPlayer) {
             return (EntityPlayer)e;

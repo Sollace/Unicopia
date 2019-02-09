@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.player;
 
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UConfig;
 import com.minelittlepony.unicopia.forgebullshit.FBS;
@@ -66,6 +68,7 @@ public class PlayerSpeciesList {
         throw new IllegalArgumentException("entity");
     }
 
+    @Nullable
     public IPlayer getPlayer(EntityPlayer player) {
         if (player == null) {
             return null;
@@ -74,6 +77,7 @@ public class PlayerSpeciesList {
         return FBS.of(player).getPlayer();
     }
 
+    @Nullable
     public IPlayer getPlayer(UUID playerId) {
         return getPlayer(IPlayer.getPlayerFromServer(playerId));
     }
