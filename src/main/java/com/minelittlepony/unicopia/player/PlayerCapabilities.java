@@ -93,13 +93,7 @@ class PlayerCapabilities implements IPlayer {
     public void setPlayerSpecies(Race race) {
         EntityPlayer player = getOwner();
 
-        if (!PlayerSpeciesList.instance().speciesPermitted(race, player)) {
-            race = Race.EARTH;
-
-            if (!PlayerSpeciesList.instance().speciesPermitted(race, player)) {
-                race = Race.HUMAN;
-            }
-        }
+        race = PlayerSpeciesList.instance().validate(race, player);
 
         player.getDataManager().set(PLAYER_RACE, race.ordinal());
 
@@ -132,7 +126,7 @@ class PlayerCapabilities implements IPlayer {
 
     @Override
     public boolean isInvisible() {
-        return invisible;
+        return invisible && hasEffect();
     }
 
     @Override

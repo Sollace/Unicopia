@@ -35,11 +35,23 @@ public class PlayerSpeciesList {
     }
 
     public boolean speciesPermitted(Race race, EntityPlayer sender) {
-        if (race == Race.ALICORN && (sender == null || !sender.capabilities.isCreativeMode)) {
+        if (race.isOp() && (sender == null || !sender.capabilities.isCreativeMode)) {
             return false;
         }
 
         return race.isDefault() || UConfig.getInstance().getSpeciesWhiteList().isEmpty() || UConfig.getInstance().getSpeciesWhiteList().contains(race);
+    }
+
+    public Race validate(Race race, EntityPlayer sender) {
+        if (!speciesPermitted(race, sender)) {
+            race = Race.EARTH;
+
+            if (!speciesPermitted(race, sender)) {
+                race = Race.HUMAN;
+            }
+        }
+
+        return race;
     }
 
     public IRaceContainer<?> emptyContainer(Entity entity) {

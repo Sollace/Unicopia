@@ -1,48 +1,51 @@
 package com.minelittlepony.unicopia.command;
 
+import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandGameMode;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.GameType;
 
 class CommandOverrideGameMode extends CommandGameMode {
+
+    @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] params) throws CommandException {
+
         if (params.length <= 0) {
             throw new WrongUsageException("commands.gamemode.usage");
         }
 
         GameType gametype = getGameModeFromCommand(sender, params[0]);
 
-        EntityPlayerMP entityplayermp = params.length >= 2 ? getPlayer(server, sender, params[1]) : getCommandSenderAsPlayer(sender);
+        EntityPlayer player = params.length >= 2 ? getPlayer(server, sender, params[1]) : getCommandSenderAsPlayer(sender);
 
-        updateGameMode(entityplayermp, gametype);
+        updateGameMode(player, gametype);
 
-        ITextComponent chatcomponenttranslation = new TextComponentTranslation("gameMode." + gametype.getName(), new Object[0]);
+        ITextComponent mode = new TextComponentTranslation("gameMode." + gametype.getName(), new Object[0]);
 
-        if (entityplayermp != sender) {
-            notifyCommandListener(sender, this, 1, "commands.gamemode.success.other", entityplayermp.getName(), chatcomponenttranslation);
+        if (sender.getEntityWorld().getGameRules().getBoolean("sendCommandFeedback")) {
+            player.sendMessage(new TextComponentTranslation("gameMode.changed", mode));
+        }
+
+        if (player == sender) {
+            notifyCommandListener(sender, this, 1, "commands.gamemode.success.self", mode);
         } else {
-            notifyCommandListener(sender, this, 1, "commands.gamemode.success.self", chatcomponenttranslation);
+            notifyCommandListener(sender, this, 1, "commands.gamemode.success.other", player.getName(), mode);
         }
     }
 
-    private void updateGameMode(EntityPlayerMP player, GameType m) {
-        boolean flying = player.capabilities.isFlying;
-
+    protected void updateGameMode(EntityPlayer player, GameType m) {
         player.setGameType(m);
-        player.capabilities.isFlying = PlayerSpeciesList.instance().getPlayer(player).getPlayerSpecies().canFly();
 
-        if (flying != player.capabilities.isFlying) {
-            player.sendPlayerAbilities();
-        }
+        IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(player);
 
-        player.fallDistance = 0;
+        iplayer.setPlayerSpecies(iplayer.getPlayerSpecies());
     }
 }

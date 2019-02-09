@@ -38,6 +38,10 @@ public enum Race {
         return this == HUMAN;
     }
 
+    public boolean isOp() {
+        return this == ALICORN;
+    }
+
     public boolean canFly() {
         return flight;
     }
@@ -58,7 +62,7 @@ public enum Race {
         return String.format("unicopia.race.%s", name().toLowerCase());
     }
 
-    public boolean isSameAs(String s) {
+    public boolean equals(String s) {
         return name().equalsIgnoreCase(s)
                 || getTranslationKey().equalsIgnoreCase(s);
     }
@@ -66,7 +70,7 @@ public enum Race {
     public static Race fromName(String s, Race def) {
         if (!Strings.isNullOrEmpty(s)) {
             for (Race i : values()) {
-                if (i.isSameAs(s)) return i;
+                if (i.equals(s)) return i;
             }
         }
 

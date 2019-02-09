@@ -42,7 +42,6 @@ public interface IMagicEffect extends InbtSerialisable, IAligned {
      */
     boolean isCraftable();
 
-
     /**
      * Gets the highest level this spell can be safely operated at.
      * Gems may go higher, however chance of explosion/exhaustion increases with every level.
@@ -106,6 +105,9 @@ public interface IMagicEffect extends InbtSerialisable, IAligned {
         return false;
     }
 
+    /**
+     * Returns a new, deep-copied instance of this spell.
+     */
     default IMagicEffect copy() {
         return SpellRegistry.instance().copyInstance(this);
     }
