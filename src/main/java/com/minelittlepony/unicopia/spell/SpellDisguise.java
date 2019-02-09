@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UClient;
+import com.minelittlepony.unicopia.player.IOwned;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.mojang.authlib.GameProfile;
@@ -17,6 +18,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class SpellDisguise extends AbstractSpell {
@@ -87,6 +89,7 @@ public class SpellDisguise extends AbstractSpell {
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean update(ICaster<?> source) {
         if (entity == null && entityNbt != null) {
@@ -97,6 +100,7 @@ public class SpellDisguise extends AbstractSpell {
                         entityNbt.getString("playerName"));
 
                 entity = UClient.instance().createPlayer(source.getEntity(), profile);
+                entity.setCustomNameTag(source.getOwner().getName());
                 entity.setUniqueId(UUID.randomUUID());
                 entity.readFromNBT(entityNbt.getCompoundTag("playerNbt"));
                 PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity).setEffect(null);;
@@ -121,10 +125,27 @@ public class SpellDisguise extends AbstractSpell {
             entity.onGround = owner.onGround;
             entity.onUpdate();
 
-            if (entity instanceof EntityLiving) {
-                EntityLiving l = (EntityLiving)entity;
+            entity.copyLocationAndAnglesFrom(owner);
 
-                l.setNoAI(true);
+            entity.setNoGravity(true);
+
+            entity.prevPosX = owner.prevPosX;
+            entity.prevPosY = owner.prevPosY;
+            entity.prevPosZ = owner.prevPosZ;
+
+            entity.motionX = owner.motionX;
+            entity.motionY = owner.motionY;
+            entity.motionZ = owner.motionZ;
+
+            entity.prevRotationPitch = owner.prevRotationPitch;
+            entity.prevRotationYaw = owner.prevRotationYaw;
+
+            entity.distanceWalkedOnStepModified = owner.distanceWalkedOnStepModified;
+            entity.distanceWalkedModified = owner.distanceWalkedModified;
+            entity.prevDistanceWalkedModified = owner.prevDistanceWalkedModified;
+
+            if (entity instanceof EntityLivingBase) {
+                EntityLivingBase l = (EntityLivingBase)entity;
 
                 l.rotationYawHead = owner.rotationYawHead;
                 l.prevRotationYawHead = owner.prevRotationYawHead;
@@ -145,32 +166,27 @@ public class SpellDisguise extends AbstractSpell {
                 l.setHealth(owner.getHealth());
 
                 for (EntityEquipmentSlot i : EntityEquipmentSlot.values()) {
-                    l.setItemStackToSlot(i, owner.getItemStackFromSlot(i));
+                    ItemStack neu = owner.getItemStackFromSlot(i);
+                    ItemStack old = l.getItemStackFromSlot(i);
+                    if (old != neu) {
+                        l.setItemStackToSlot(i, neu);
+                    }
                 }
             }
 
-            if (owner.world.isRemote) {
-              //  entity.setPositionAndRotationDirect(owner.posX, owner.posY, owner.posZ, owner.rotationYaw, owner.rotationPitch, 1, false);
+            if (entity instanceof EntityLiving) {
+                EntityLiving l = (EntityLiving)entity;
+
+                l.setNoAI(true);
             }
 
-            entity.copyLocationAndAnglesFrom(owner);
+            if (entity instanceof EntityPlayer) {
+                EntityPlayer l = (EntityPlayer)entity;
 
-            entity.setNoGravity(true);
-
-            entity.prevPosX = owner.prevPosX;
-            entity.prevPosY = owner.prevPosY;
-            entity.prevPosZ = owner.prevPosZ;
-
-            entity.motionX = owner.motionX;
-            entity.motionY = owner.motionY;
-            entity.motionZ = owner.motionZ;
-
-            entity.prevRotationPitch = owner.prevRotationPitch;
-            entity.prevRotationYaw = owner.prevRotationYaw;
-
-            entity.distanceWalkedOnStepModified = owner.distanceWalkedOnStepModified;
-            entity.distanceWalkedModified = owner.distanceWalkedModified;
-            entity.prevDistanceWalkedModified = owner.prevDistanceWalkedModified;
+                l.chasingPosX = l.posX;
+                l.chasingPosY = l.posY;
+                l.chasingPosZ = l.posZ;
+            }
 
             if (owner.isBurning()) {
                 entity.setFire(1);
@@ -194,6 +210,10 @@ public class SpellDisguise extends AbstractSpell {
                 EntityPlayer player = (EntityPlayer)owner;
 
                 player.eyeHeight = entity.getEyeHeight();
+
+                if (entity instanceof IOwned) {
+                    IOwned.cast(entity).setOwner(player.getGameProfile().getId());
+                }
 
                 if (UClient.instance().isClientPlayer(player)) {
                     entity.setAlwaysRenderNameTag(false);

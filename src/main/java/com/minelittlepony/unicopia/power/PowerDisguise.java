@@ -1,9 +1,12 @@
 package com.minelittlepony.unicopia.power;
 
+import java.util.UUID;
+
 import javax.annotation.Nullable;
 
 import org.lwjgl.input.Keyboard;
 
+import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
@@ -11,6 +14,7 @@ import com.minelittlepony.unicopia.power.data.Hit;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.SpellDisguise;
 import com.minelittlepony.util.vector.VecHelper;
+import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

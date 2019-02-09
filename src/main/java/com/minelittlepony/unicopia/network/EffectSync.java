@@ -55,7 +55,11 @@ public class EffectSync<T extends EntityLivingBase> {
         return effect != null;
     }
 
-    public IMagicEffect get() {
+    public IMagicEffect get(boolean update) {
+        if (!update) {
+            return effect;
+        }
+
         NBTTagCompound comp = owned.getEntity().getDataManager().get(param);
 
         if (comp == null || !comp.hasKey("effect_id")) {

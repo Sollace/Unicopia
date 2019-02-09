@@ -91,8 +91,8 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 
 	@Nullable
 	@Override
-	public IMagicEffect getEffect() {
-	    return effectDelegate.get();
+	public IMagicEffect getEffect(boolean update) {
+	    return effectDelegate.get(update);
 	}
 
     @Override

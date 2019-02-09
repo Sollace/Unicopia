@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.jumpingcastle.api.Target;
+import com.minelittlepony.unicopia.entity.EntityFakeClientPlayer;
 import com.minelittlepony.unicopia.hud.UHud;
 import com.minelittlepony.unicopia.input.Keyboard;
 import com.minelittlepony.unicopia.inventory.gui.GuiOfHolding;
@@ -22,10 +23,10 @@ import com.mojang.authlib.GameProfile;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
-import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptions;
+import net.minecraft.client.gui.GuiShareToLan;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
@@ -110,10 +111,7 @@ public class UnicopiaClient extends UClient {
 
     @Nonnull
     public EntityPlayer createPlayer(Entity observer, GameProfile profile) {
-        if (!observer.world.isRemote) {
-            return super.createPlayer(observer, profile);
-        }
-        return new EntityOtherPlayerMP(observer.world, profile);
+        return new EntityFakeClientPlayer(observer.world, profile);
     }
 
     @Override
@@ -137,7 +135,7 @@ public class UnicopiaClient extends UClient {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public static void onDisplayGui(GuiScreenEvent.InitGuiEvent.Post event) {
-        if (event.getGui() instanceof GuiOptions) {
+        if (event.getGui() instanceof GuiOptions || event.getGui() instanceof GuiShareToLan) {
             addUniButton(event);
         }
     }
@@ -198,24 +196,28 @@ public class UnicopiaClient extends UClient {
             if (iplayer.hasEffect()) {
                 RenderManager renderMan = Minecraft.getMinecraft().getRenderManager();
 
-                IMagicEffect effect = iplayer.getEffect();
+                IMagicEffect effect = iplayer.getEffect(false);
 
                 if (!effect.getDead() && effect instanceof SpellDisguise) {
-
                     Entity e = ((SpellDisguise)effect).getDisguise();
 
                     if (renderMan.isRenderShadow() && !(e instanceof EntityPlayer)) {
                         return;
                     }
 
-                    effect.update(iplayer);
-
-
-
                     // Check for a disguise and render it in our place.
                     if (e != null) {
                         e.setInvisible(false);
-                        renderMan.renderEntity(e, 0, 0, 0, 0, 1, false);
+
+                        float partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
+
+                        if (renderMan.isRenderShadow()) {
+                            renderMan.renderEntityStatic(e, partialTicks, false);
+                        } else {
+                            e.setAlwaysRenderNameTag(false);
+                            effect.update(iplayer);
+                            renderMan.renderEntity(e, 0, 0, 0, 0, 1, false);
+                        }
                     }
                 }
             }

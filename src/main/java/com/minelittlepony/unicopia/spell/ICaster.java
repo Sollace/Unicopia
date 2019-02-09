@@ -23,7 +23,12 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelle
     void setEffect(@Nullable IMagicEffect effect);
 
     @Nullable
-    IMagicEffect getEffect();
+    IMagicEffect getEffect(boolean update);
+
+    @Nullable
+    default IMagicEffect getEffect() {
+        return getEffect(true);
+    }
 
     boolean hasEffect();
 

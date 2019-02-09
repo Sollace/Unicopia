@@ -2,10 +2,13 @@ package com.minelittlepony.unicopia.player;
 
 public interface IOwned<E> {
 
-    default void setOwner(E owner) {
-
-    }
+    void setOwner(E owner);
 
     E getOwner();
 
+
+    @SuppressWarnings("unchecked")
+    static <T> IOwned<T> cast(Object o) {
+        return (IOwned<T>)o;
+    }
 }
