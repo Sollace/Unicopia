@@ -25,6 +25,7 @@ import com.minelittlepony.util.vector.VecHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockLog;
+import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -169,18 +170,28 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
             IPower.takeFromPlayer(player, rad);
         } else if (data.hitType == 1) {
 
-            if (player.world.rand.nextInt(5) == 0) {
+            boolean harmed = player.getHealth() < player.getMaxHealth();
+
+            if (harmed && player.world.rand.nextInt(30) == 0) {
+                IPower.takeFromPlayer(player, 3);
+                return;
+            }
+
+            if (harmed || player.world.rand.nextInt(5) == 0) {
+
+                if (!harmed || player.world.rand.nextInt(30) == 0) {
+                    UWorld.enqueueTask(() -> {
+                        removeTree(player.world, data.pos());
+                    });
+                }
+
+                IPower.takeFromPlayer(player, 3);
+            } else {
                 int cost = dropApples(player.world, data.pos());
 
                 if (cost > 0) {
-                    IPower.takeFromPlayer(player, cost / 3);
+                    IPower.takeFromPlayer(player, cost * 3);
                 }
-            } else {
-                UWorld.enqueueTask(() -> {
-                    removeTree(player.world, data.pos());
-                });
-
-                IPower.takeFromPlayer(player, 3);
             }
         }
     }
@@ -266,6 +277,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
             if (variantAndBlockEquals(w.getBlockState(pos.south()), log)) {
                 result = ascendTrunk(done, w, pos.south(), log, level + 1);
             }
+
             return result;
         }
         return pos;
@@ -344,7 +356,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
                     WorldEvent.DESTROY_BLOCK.play(w, pos, state);
 
                     EntityItem item = new EntityItem(w);
-                    item.setPosition(pos.getX() + 0.5, pos.getY() - 0.5, pos.getZ() + 0.5);
+                    item.setPosition(pos.getX() + w.rand.nextFloat(), pos.getY() - 0.5, pos.getZ() + w.rand.nextFloat());
                     item.setItem(getApple(w, log));
 
                     drops.add(item);
