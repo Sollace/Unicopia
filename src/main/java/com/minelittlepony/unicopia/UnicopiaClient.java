@@ -177,12 +177,12 @@ public class UnicopiaClient extends UClient {
             IPlayer iplayer = PlayerSpeciesList.instance().getPlayer((EntityPlayer)event.getEntity());
             System.out.println(event.getEntity().getName());
 
-            if (!MineLP.modIsActive()) {
+            /*if (!MineLP.modIsActive()) {
                 float roll = iplayer.getCamera().calculateRoll();
                 float pitch = iplayer.getCamera().calculatePitch(0);
                 GlStateManager.rotate(roll, 0, 0, 1);
                 GlStateManager.rotate(pitch, 1, 0, 0);
-            }
+            }*/
 
             if (iplayer.isInvisible()) {
                 event.setCanceled(true);
