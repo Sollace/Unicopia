@@ -65,12 +65,9 @@ public class ModelSphere {
 
         GlStateManager.disableTexture2D();
         GlStateManager.enableAlpha();
-        GlStateManager.enableColorMaterial();
-        GlStateManager.colorMaterial(1032, 5634);
 
         drawShape();
 
-        GlStateManager.disableColorMaterial();
         GlStateManager.disableAlpha();
         GlStateManager.enableTexture2D();
 

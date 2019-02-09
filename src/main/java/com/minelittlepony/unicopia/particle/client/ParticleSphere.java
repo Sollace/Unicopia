@@ -5,6 +5,9 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
+
+import org.lwjgl.opengl.GL11;
+
 import com.minelittlepony.unicopia.model.ModelSphere;
 import com.minelittlepony.unicopia.particle.IAttachableParticle;
 import com.minelittlepony.unicopia.spell.ICaster;
@@ -71,12 +74,22 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
             return;
         }
 
+        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+
+        GlStateManager.depthMask(false);
+        GlStateManager.shadeModel(GL11.GL_SMOOTH);
+        GlStateManager.tryBlendFuncSeparate(
+                GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         Color.glColor(tint, alpha);
 
         model.setPosition(posX, posY, posZ);
         model.render(radius);
 
+
         GlStateManager.color(1, 1, 1, 1);
+
+        GL11.glPopAttrib();
     }
 
     @Override
