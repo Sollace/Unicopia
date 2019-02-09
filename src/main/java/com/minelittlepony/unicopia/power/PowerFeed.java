@@ -41,12 +41,12 @@ public class PowerFeed implements IPower<Hit> {
 
     @Override
     public int getWarmupTime(IPlayer player) {
-        return 20;
+        return 5;
     }
 
     @Override
     public int getCooldownTime(IPlayer player) {
-        return 50;
+        return canFeed(player) ? 15 : 80;
     }
 
     @Override
@@ -57,13 +57,17 @@ public class PowerFeed implements IPower<Hit> {
     @Nullable
     @Override
     public Hit tryActivate(IPlayer player) {
-        if (player.getOwner().getHealth() < player.getOwner().getMaxHealth() || player.getOwner().canEat(false)) {
+        if (canFeed(player)) {
             if (!getTargets(player).isEmpty()) {
                 return new Hit();
             }
         }
 
         return null;
+    }
+
+    private boolean canFeed(IPlayer player) {
+        return player.getOwner().getHealth() < player.getOwner().getMaxHealth() || player.getOwner().canEat(false);
     }
 
     private boolean canDrain(Entity e) {
