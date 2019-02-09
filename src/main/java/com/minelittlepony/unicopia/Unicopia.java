@@ -59,6 +59,7 @@ import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.PowersRegistry;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 import com.minelittlepony.unicopia.util.crafting.CraftingManager;
+import com.minelittlepony.unicopia.world.UWorld;
 
 @Mod(
     modid = Unicopia.MODID,
@@ -202,6 +203,13 @@ public class Unicopia implements IGuiHandler {
 
                 event.setResult(Result.ALLOW);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onWorldTick(TickEvent.WorldTickEvent event) {
+        if (event.phase == Phase.START) {
+            UWorld.tick(event.world);
         }
     }
 

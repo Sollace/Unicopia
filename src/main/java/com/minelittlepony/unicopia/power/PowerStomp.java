@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.data.Location;
+import com.minelittlepony.unicopia.world.UWorld;
 import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.PosHelper;
 import com.minelittlepony.util.WorldEvent;
@@ -168,13 +169,19 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
             IPower.takeFromPlayer(player, rad);
         } else if (data.hitType == 1) {
 
-            if (player.world.rand.nextInt(30) == 0) {
-                removeTree(player.world, data.pos());
-            } else {
-                dropApples(player.world, data.pos());
-            }
+            if (player.world.rand.nextInt(5) == 0) {
+                int cost = dropApples(player.world, data.pos());
 
-            IPower.takeFromPlayer(player, 1);
+                if (cost > 0) {
+                    IPower.takeFromPlayer(player, cost / 3);
+                }
+            } else {
+                UWorld.enqueueTask(() -> {
+                    removeTree(player.world, data.pos());
+                });
+
+                IPower.takeFromPlayer(player, 3);
+            }
         }
     }
 
@@ -233,7 +240,8 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
         int size = measureTree(w, log, pos);
         if (size > 0) {
             pos = ascendTrunk(new ArrayList<BlockPos>(), w, pos, log, 0);
-            removeTreePart(w, log, pos, 0);
+
+            removeTreePart( w, log, pos, 0);
         }
     }
 
@@ -303,7 +311,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
         return pos;
     }
 
-    private void dropApples(World w, BlockPos pos) {
+    private int dropApples(World w, BlockPos pos) {
         IBlockState log = w.getBlockState(pos);
         int size = measureTree(w, log, pos);
         if (size > 0) {
@@ -312,8 +320,17 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
 
             dropApplesPart(capturedDrops, new ArrayList<BlockPos>(), w, log, pos, 0);
 
-            capturedDrops.forEach(w::spawnEntity);
+            UWorld.enqueueTask(() -> {
+                capturedDrops.forEach(item -> {
+                    item.setNoPickupDelay();
+                    w.spawnEntity(item);
+                });
+            });
+
+            return capturedDrops.size() / 3;
         }
+
+        return 0;
     }
 
     private void dropApplesPart(List<EntityItem> drops, List<BlockPos> done, World w, IBlockState log, BlockPos pos, int level) {
