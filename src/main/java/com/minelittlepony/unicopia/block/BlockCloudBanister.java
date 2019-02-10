@@ -96,6 +96,17 @@ public class BlockCloudBanister extends BlockCloudFence {
         }
     }
 
+    @Override
+    public boolean isTopSolid(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean canPlaceTorchOnTop(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return false;
+    }
+
+    @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         state = getActualState(state, source, pos);
         return BOUNDING_BOXES[getBoundingBoxIdx(state)];
