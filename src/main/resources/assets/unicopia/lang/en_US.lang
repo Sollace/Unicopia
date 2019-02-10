@@ -16,6 +16,8 @@ tile.apple_sapling.name=Apple Seeds
 
 tile.sugar_block.name=Block of Sugar
 
+tile.enchanted_torch.name=Stone Lamp
+
 item.cloud_matter.name=Lump of Cloud
 item.cloud.small.name=Bucking Bronco
 item.cloud.medium.name=Construction Cloud

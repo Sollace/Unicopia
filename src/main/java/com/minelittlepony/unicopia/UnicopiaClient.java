@@ -175,7 +175,6 @@ public class UnicopiaClient extends UClient {
     public static void preEntityRender(RenderLivingEvent.Pre<?> event) {
         if (event.getEntity() instanceof EntityPlayer) {
             IPlayer iplayer = PlayerSpeciesList.instance().getPlayer((EntityPlayer)event.getEntity());
-            System.out.println(event.getEntity().getName());
 
             /*if (!MineLP.modIsActive()) {
                 float roll = iplayer.getCamera().calculateRoll();
