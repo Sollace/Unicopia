@@ -94,7 +94,10 @@ public class EntityRainbow extends EntityWeatherEffect {
 
     public static class Spawner extends EntityLiving {
 
-        public static final AxisAlignedBB SPAWN_COLLISSION_RADIUS = new AxisAlignedBB(0, 0, 0, RAINBOW_MAX_SIZE, RAINBOW_MAX_SIZE, RAINBOW_MAX_SIZE);
+        public static final AxisAlignedBB SPAWN_COLLISSION_RADIUS = new AxisAlignedBB(
+                -RAINBOW_MAX_SIZE, -RAINBOW_MAX_SIZE, -RAINBOW_MAX_SIZE,
+                 RAINBOW_MAX_SIZE,  RAINBOW_MAX_SIZE,  RAINBOW_MAX_SIZE
+         );
 
         public Spawner(World worldIn) {
             super(worldIn);
