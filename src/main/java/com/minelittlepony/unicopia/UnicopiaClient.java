@@ -15,8 +15,7 @@ import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.IView;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
-import com.minelittlepony.unicopia.spell.IMagicEffect;
-import com.minelittlepony.unicopia.spell.SpellDisguise;
+import com.minelittlepony.unicopia.render.DisguiseRenderer;
 import com.minelittlepony.util.gui.ButtonGridLayout;
 import com.minelittlepony.util.gui.UButton;
 import com.mojang.authlib.GameProfile;
@@ -28,7 +27,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiShareToLan;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -124,7 +122,7 @@ public class UnicopiaClient extends UClient {
             return false;
         }
 
-        return getPlayer().getGameProfile().getId().equals(player.getGameProfile().getId());
+        return IPlayer.equal(getPlayer(), player);
     }
 
     @Override
@@ -173,54 +171,50 @@ public class UnicopiaClient extends UClient {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public static void preEntityRender(RenderLivingEvent.Pre<?> event) {
-        if (event.getEntity() instanceof EntityPlayer) {
-            IPlayer iplayer = PlayerSpeciesList.instance().getPlayer((EntityPlayer)event.getEntity());
 
-            /*if (!MineLP.modIsActive()) {
-                float roll = iplayer.getCamera().calculateRoll();
-                float pitch = iplayer.getCamera().calculatePitch(0);
-                GlStateManager.rotate(roll, 0, 0, 1);
-                GlStateManager.rotate(pitch, 1, 0, 0);
-            }*/
+        Entity entity = event.getEntity();
+
+        if (DisguiseRenderer.instance().renderDisguise(entity, event.getPartialRenderTick())) {
+            event.setCanceled(true);
+        }
+
+        if (entity instanceof EntityPlayer) {
+            IPlayer iplayer = PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity);
 
             if (iplayer.isInvisible()) {
                 event.setCanceled(true);
+            } else {
+                GlStateManager.pushMatrix();
 
-                // This fixes lighting errors on the armour slots.
-                // #MahjongPls
-                // @FUF(reason = "Forge should fix this. Cancelling their event skips neccessary state resetting at the end of the render method")
-                GlStateManager.enableAlpha();
+                if (!MineLP.modIsActive() && !entity.onGround) {
+                    float roll = iplayer.getCamera().calculateRoll();
+                    float pitch = iplayer.getCamera().calculatePitch(0);
+                    GlStateManager.rotate(roll, 0, 0, 1);
+                    GlStateManager.rotate(pitch, 1, 0, 0);
+                }
             }
 
             if (iplayer.hasEffect()) {
-                RenderManager renderMan = Minecraft.getMinecraft().getRenderManager();
-
-                IMagicEffect effect = iplayer.getEffect(false);
-
-                if (!effect.getDead() && effect instanceof SpellDisguise) {
-                    Entity e = ((SpellDisguise)effect).getDisguise();
-
-                    if (renderMan.isRenderShadow() && !(e instanceof EntityPlayer)) {
-                        return;
-                    }
-
-                    // Check for a disguise and render it in our place.
-                    if (e != null) {
-                        e.setInvisible(false);
-
-                        float partialTicks = Minecraft.getMinecraft().getRenderPartialTicks();
-
-                        if (renderMan.isRenderShadow()) {
-                            renderMan.renderEntityStatic(e, partialTicks, false);
-                        } else {
-                            e.setAlwaysRenderNameTag(false);
-                            effect.update(iplayer);
-                            renderMan.renderEntity(e, 0, 0, 0, 0, 1, false);
-                        }
-                    }
-                }
+                DisguiseRenderer.instance().renderDisguiseToGui(iplayer);
             }
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public static void postEntityRender(RenderLivingEvent.Post<?> event) {
+        Entity entity = event.getEntity();
+
+        if (entity instanceof EntityPlayer) {
+            GlStateManager.popMatrix();
+
+
+        }
+
+        // This fixes lighting errors on the armour slots.
+        // #MahjongPls
+        // @FUF(reason = "Forge should fix this. Cancelling their event skips neccessary state resetting at the end of the render method")
+        GlStateManager.enableAlpha();
     }
 
     @SideOnly(Side.CLIENT)

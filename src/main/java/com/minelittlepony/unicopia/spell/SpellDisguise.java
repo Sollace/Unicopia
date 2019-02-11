@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UClient;
+import com.minelittlepony.unicopia.mixin.MixinEntity;
 import com.minelittlepony.unicopia.player.IFlyingPredicate;
 import com.minelittlepony.unicopia.player.IOwned;
 import com.minelittlepony.unicopia.player.IPlayer;
@@ -19,6 +20,9 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.item.EntityFallingBlock;
+import net.minecraft.entity.item.EntityMinecart;
+import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.passive.EntityAmbientCreature;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -107,7 +111,14 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
                 entity.setCustomNameTag(source.getOwner().getName());
                 entity.setUniqueId(UUID.randomUUID());
                 entity.readFromNBT(entityNbt.getCompoundTag("playerNbt"));
+
                 PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity).setEffect(null);;
+
+                if (entity != null && source.getWorld().isRemote) {
+                    source.getWorld().spawnEntity(entity);
+                }
+
+                entityNbt = null;
             } else {
                 entity = EntityList.createEntityFromNBT(entityNbt, source.getWorld());
 
@@ -127,11 +138,20 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
 
         if (entity != null) {
             entity.onGround = owner.onGround;
-            entity.onUpdate();
+
+            if (!(entity instanceof EntityFallingBlock)) {
+                entity.onUpdate();
+            }
 
             entity.copyLocationAndAnglesFrom(owner);
 
             entity.setNoGravity(true);
+
+            entity.getEntityData().setBoolean("disguise", true);
+
+            entity.lastTickPosX = owner.lastTickPosX;
+            entity.lastTickPosY = owner.lastTickPosY;
+            entity.lastTickPosZ = owner.lastTickPosZ;
 
             entity.prevPosX = owner.prevPosX;
             entity.prevPosY = owner.prevPosY;
@@ -176,12 +196,51 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
                         l.setItemStackToSlot(i, neu);
                     }
                 }
+
+                if (l instanceof EntityShulker) {
+                    l.rotationYaw = 0;
+                    l.rotationPitch = 0;
+                    l.rotationYawHead = 0;
+                    l.prevRotationYawHead = 0;
+                    l.renderYawOffset = 0;
+                    l.prevRenderYawOffset = 0;
+                }
+            }
+
+            if (entity instanceof EntityShulker || entity instanceof EntityFallingBlock) {
+
+                if (entity instanceof EntityFallingBlock) {
+                    entity.posX = Math.floor(owner.posX) + 0.5;
+                    entity.posY = Math.floor(owner.posY);
+                    entity.posZ = Math.floor(owner.posZ) + 0.5;
+                } else {
+                    entity.posX = owner.posX;
+                    entity.posY = owner.posY;
+                    entity.posZ = owner.posZ;
+                }
+
+                entity.lastTickPosX = entity.posX;
+                entity.lastTickPosY = entity.posY;
+                entity.lastTickPosZ = entity.posZ;
+
+                entity.prevPosX = entity.posX;
+                entity.prevPosY = entity.posY;
+                entity.prevPosZ = entity.posZ;
+
+                if (entity instanceof EntityShulker) {
+                    ((EntityShulker)entity).setAttachmentPos(null);
+                }
             }
 
             if (entity instanceof EntityLiving) {
                 EntityLiving l = (EntityLiving)entity;
 
                 l.setNoAI(true);
+            }
+
+            if (entity instanceof EntityMinecart) {
+                entity.rotationYaw += 90;
+                entity.rotationPitch = 0;
             }
 
             if (entity instanceof EntityPlayer) {
@@ -207,6 +266,7 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
             if (source instanceof IPlayer) {
                 ((IPlayer) source).setInvisible(true);
             }
+
             owner.setInvisible(true);
 
             if (owner instanceof EntityPlayer) {
@@ -215,7 +275,11 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
                 player.eyeHeight = entity.getEyeHeight();
 
                 if (entity instanceof IOwned) {
-                    IOwned.cast(entity).setOwner(player.getGameProfile().getId());
+                    IOwned.cast(entity).setOwner(player);
+                }
+
+                if (entity instanceof EntityPlayer) {
+                    entity.getDataManager().set(MixinEntity.Player.getModelFlag(), owner.getDataManager().get(MixinEntity.Player.getModelFlag()));
                 }
 
                 if (UClient.instance().isClientPlayer(player)) {
@@ -321,7 +385,7 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
             }
 
             if (entity instanceof IOwned) {
-                IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(IOwned.<UUID>cast(entity).getOwner());
+                IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(IOwned.<EntityPlayer>cast(entity).getOwner());
 
                 return iplayer != null && iplayer.getPlayerSpecies().canFly();
             }

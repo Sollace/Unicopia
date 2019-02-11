@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.enchanting.IPageOwner;
 import com.minelittlepony.unicopia.network.ITransmittable;
 import com.minelittlepony.unicopia.spell.ICaster;
+import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -77,5 +78,13 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
         }
 
         return null;
+    }
+
+    static boolean equal(GameProfile one, GameProfile two) {
+        return one == two || (one != null && two != null && one.getId().equals(two.getId()));
+    }
+
+    static boolean equal(EntityPlayer one, EntityPlayer two) {
+        return one == two || (one != null && two != null && equal(one.getGameProfile(), two.getGameProfile()));
     }
 }

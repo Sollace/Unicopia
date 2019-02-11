@@ -1,40 +1,21 @@
 package com.minelittlepony.unicopia.entity;
 
-import javax.annotation.Nullable;
-
 import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.player.IOwned;
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.client.entity.AbstractClientPlayer;
-import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.util.FakePlayer;
 
-public class EntityFakeClientPlayer extends AbstractClientPlayer implements IOwned<EntityPlayer> {
-
-    private final GameProfile profile;
-
-    private NetworkPlayerInfo playerInfo;
+public class EntityFakeServerPlayer extends FakePlayer implements IOwned<EntityPlayer> {
 
     private EntityPlayer owner;
 
-    public EntityFakeClientPlayer(World world, GameProfile profile) {
+    public EntityFakeServerPlayer(WorldServer world, GameProfile profile) {
         super(world, profile);
-
-        this.profile = profile;
-    }
-
-    @Override
-    @Nullable
-    protected NetworkPlayerInfo getPlayerInfo() {
-        if (playerInfo == null) {
-            playerInfo = new NetworkPlayerInfo(profile);
-        }
-
-        return playerInfo;
     }
 
     @Override
@@ -48,8 +29,13 @@ public class EntityFakeClientPlayer extends AbstractClientPlayer implements IOwn
     }
 
     @Override
-    public boolean isUser() {
-        return false;
+    public EntityPlayer getOwner() {
+        return owner;
+    }
+
+    @Override
+    public void setOwner(EntityPlayer owner) {
+        this.owner = owner;
     }
 
     @Override
@@ -60,16 +46,6 @@ public class EntityFakeClientPlayer extends AbstractClientPlayer implements IOwn
     @Override
     public boolean getAlwaysRenderNameTagForRender() {
         return getAlwaysRenderNameTag();
-    }
-
-    @Override
-    public EntityPlayer getOwner() {
-        return owner;
-    }
-
-    @Override
-    public void setOwner(EntityPlayer owner) {
-        this.owner = owner;
     }
 
     @Override

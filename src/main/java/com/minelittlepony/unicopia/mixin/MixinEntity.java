@@ -1,17 +1,34 @@
 package com.minelittlepony.unicopia.mixin;
 
+import com.google.common.base.Optional;
 import com.minelittlepony.unicopia.forgebullshit.FUF;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
+import net.minecraft.entity.monster.EntityShulker;
+import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 
 @FUF(reason = "Waiting for mixins?")
-// pseudo code for things forge can't do.
-// @Mixin(Entity.class)
 public interface MixinEntity {
 
-    // @Accessor("setSize")
+    abstract class Player extends net.minecraft.entity.player.EntityPlayer {
+        private Player() { super(null, null);}
+
+        public static DataParameter<Byte> getModelFlag() {
+            return PLAYER_MODEL_FLAG;
+        }
+
+    }
+    abstract class Shulker extends EntityShulker {
+        private Shulker() { super(null);}
+
+        public static DataParameter<Optional<BlockPos>> getAttachmentPosFlag() {
+            return ATTACHED_BLOCK_POS;
+        }
+    }
+
     static void setSize(Entity self, float width, float height) {
         if (self.width != width || self.height != height) {
             float f = self.width;
