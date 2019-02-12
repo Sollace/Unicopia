@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UClient;
+import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.mixin.MixinEntity;
 import com.minelittlepony.unicopia.player.IFlyingPredicate;
 import com.minelittlepony.unicopia.player.IOwned;
@@ -364,6 +365,9 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
 
     @Override
     public void render(ICaster<?> source) {
+        if (source.getWorld().rand.nextInt(30) == 0) {
+            source.spawnParticles(UParticles.CHANGELING_MAGIC, 2);
+        }
     }
 
     @Override
