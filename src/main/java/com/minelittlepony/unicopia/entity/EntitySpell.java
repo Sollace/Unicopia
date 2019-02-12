@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 
 import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.item.ICastable;
 import com.minelittlepony.unicopia.network.EffectSync;
@@ -34,7 +35,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class EntitySpell extends EntityLiving implements IMagicals, ICaster<EntityLivingBase> {
+public class EntitySpell extends EntityLiving implements IMagicals, ICaster<EntityLivingBase>, IInAnimate {
 
 	private EntityLivingBase owner = null;
 
@@ -88,6 +89,11 @@ public class EntitySpell extends EntityLiving implements IMagicals, ICaster<Enti
 	        effect.onPlaced(this);
 	    }
 	}
+
+    @Override
+    public boolean canInteract(Race race) {
+        return race.canCast();
+    }
 
 	@Nullable
 	@Override

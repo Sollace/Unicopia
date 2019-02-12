@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity;
 
+import com.minelittlepony.unicopia.Race;
+
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.effect.EntityWeatherEffect;
 import net.minecraft.nbt.NBTTagCompound;
@@ -9,7 +11,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome.SpawnListEntry;
 
-public class EntityRainbow extends EntityWeatherEffect {
+public class EntityRainbow extends EntityWeatherEffect implements IInAnimate {
 
     public static final SpawnListEntry SPAWN_ENTRY = new SpawnListEntry(EntityRainbow.Spawner.class, 1, 1, 1);
 
@@ -43,6 +45,11 @@ public class EntityRainbow extends EntityWeatherEffect {
     @Override
     public boolean shouldRenderInPass(int pass) {
         return pass == 1;
+    }
+
+    @Override
+    public boolean canInteract(Race race) {
+        return false;
     }
 
     @Override

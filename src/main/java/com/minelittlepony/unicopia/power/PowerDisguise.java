@@ -5,7 +5,9 @@ import javax.annotation.Nullable;
 
 import org.lwjgl.input.Keyboard;
 
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.entity.IInAnimate;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.data.Hit;
@@ -15,6 +17,7 @@ import com.minelittlepony.util.vector.VecHelper;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.effect.EntityWeatherEffect;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -43,7 +46,8 @@ public class PowerDisguise extends PowerFeed {
     public void apply(IPlayer iplayer, Hit data) {
         EntityPlayer player = iplayer.getOwner();
         RayTraceResult trace = VecHelper.getObjectMouseOver(player, 10, 1);
-        Entity looked = null;
+
+        Entity looked = trace.entityHit;
 
         if (trace.typeOfHit == RayTraceResult.Type.BLOCK) {
             IBlockState state = player.getEntityWorld().getBlockState(trace.getBlockPos());
@@ -51,8 +55,10 @@ public class PowerDisguise extends PowerFeed {
             if (!state.getBlock().isAir(state, player.getEntityWorld(), trace.getBlockPos())) {
                 looked = new EntityFallingBlock(player.getEntityWorld(), 0, 0, 0, state);
             }
-        } else {
-            looked = trace.entityHit;
+        }
+
+        if (looked instanceof EntityWeatherEffect || (looked instanceof IInAnimate && !((IInAnimate)looked).canInteract(Race.CHANGELING))) {
+            looked = null;
         }
 
         if (looked instanceof EntityPlayer) {

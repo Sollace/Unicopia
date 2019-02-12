@@ -58,7 +58,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 
-public class EntityCloud extends EntityFlying implements IAnimals {
+public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
 
     private static final DataParameter<Integer> RAINTIMER = EntityDataManager.createKey(EntityCloud.class, DataSerializers.VARINT);
     private static final DataParameter<Boolean> THUNDERING = EntityDataManager.createKey(EntityCloud.class, DataSerializers.BOOLEAN);
@@ -143,6 +143,11 @@ public class EntityCloud extends EntityFlying implements IAnimals {
     @Override
     public int getMaxSpawnedInChunk() {
         return 6;
+    }
+
+    @Override
+    public boolean canInteract(Race race) {
+        return race.canInteractWithClouds();
     }
 
     @Override
