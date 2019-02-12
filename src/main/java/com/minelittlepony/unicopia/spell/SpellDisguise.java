@@ -14,7 +14,6 @@ import com.minelittlepony.unicopia.player.IOwned;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.IPlayerHeightPredicate;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
-import com.minelittlepony.unicopia.render.DisguiseRenderer;
 import com.minelittlepony.util.ProjectileUtil;
 import com.mojang.authlib.GameProfile;
 
@@ -35,6 +34,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntitySkull;
+import net.minecraft.util.math.MathHelper;
 
 public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IPlayerHeightPredicate {
 
@@ -123,18 +123,15 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
 
         PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity).setEffect(null);
 
-        if (entity != null && source.getWorld().isRemote) {
-            source.getWorld().spawnEntity(entity);
-        }
+        onEntityLoaded(source);
     }
 
     protected void checkAndCreateDisguiseEntity(ICaster<?> source) {
         if (entity == null && entityNbt != null) {
+            NBTTagCompound nbt = entityNbt;
+            entityNbt = null;
+
             if ("player".equals(entityId)) {
-
-                NBTTagCompound nbt = entityNbt;
-                entityNbt = null;
-
                 createPlayer(nbt, new GameProfile(
                         nbt.getUniqueId("playerId"),
                         nbt.getString("playerName")
@@ -144,15 +141,114 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
                     nbt.getString("playerName")
                 )), source)).start();
             } else {
-                entity = EntityList.createEntityFromNBT(entityNbt, source.getWorld());
+                entity = EntityList.createEntityFromNBT(nbt, source.getWorld());
             }
 
-            if (entity != null && source.getWorld().isRemote) {
-                source.getWorld().spawnEntity(entity);
-            }
-
-            entityNbt = null;
+            onEntityLoaded(source);
         }
+    }
+
+    protected void onEntityLoaded(ICaster<?> source) {
+        if (entity == null) {
+            return;
+        }
+
+        if (source.getWorld().isRemote) {
+            source.getWorld().spawnEntity(entity);
+        }
+    }
+
+    protected void copyBaseAttributes(EntityLivingBase from, Entity to) {
+
+        // Set first because position calculations rely on it
+        to.onGround = from.onGround;
+
+        if (isAttachedEntity(entity)) {
+            to.posX = Math.floor(from.posX) + 0.5;
+            to.posY = Math.floor(from.posY);
+            to.posZ = Math.floor(from.posZ) + 0.5;
+
+            to.lastTickPosX = to.posX;
+            to.lastTickPosY = to.posY;
+            to.lastTickPosZ = to.posZ;
+
+            to.prevPosX = to.posX;
+            to.prevPosY = to.posY;
+            to.prevPosZ = to.posZ;
+
+            to.setPosition(to.posX, to.posY, to.posZ);
+        } else {
+            to.copyLocationAndAnglesFrom(from);
+
+            to.lastTickPosX = from.lastTickPosX;
+            to.lastTickPosY = from.lastTickPosY;
+            to.lastTickPosZ = from.lastTickPosZ;
+
+            to.prevPosX = from.prevPosX;
+            to.prevPosY = from.prevPosY;
+            to.prevPosZ = from.prevPosZ;
+        }
+
+        if (to instanceof EntityPlayer) {
+            EntityPlayer l = (EntityPlayer)to;
+
+            l.chasingPosX = l.posX;
+            l.chasingPosY = l.posY;
+            l.chasingPosZ = l.posZ;
+        }
+
+        to.motionX = from.motionX;
+        to.motionY = from.motionY;
+        to.motionZ = from.motionZ;
+
+        to.prevRotationPitch = from.prevRotationPitch;
+        to.prevRotationYaw = from.prevRotationYaw;
+
+        to.distanceWalkedOnStepModified = from.distanceWalkedOnStepModified;
+        to.distanceWalkedModified = from.distanceWalkedModified;
+        to.prevDistanceWalkedModified = from.prevDistanceWalkedModified;
+
+        if (to instanceof EntityLivingBase) {
+            EntityLivingBase l = (EntityLivingBase)to;
+
+            l.rotationYawHead = from.rotationYawHead;
+            l.prevRotationYawHead = from.prevRotationYawHead;
+            l.renderYawOffset = from.renderYawOffset;
+            l.prevRenderYawOffset = from.prevRenderYawOffset;
+
+            l.limbSwing = from.limbSwing;
+            l.limbSwingAmount = from.limbSwingAmount;
+            l.prevLimbSwingAmount = from.prevLimbSwingAmount;
+
+            l.swingingHand = from.swingingHand;
+            l.swingProgress = from.swingProgress;
+            l.swingProgressInt = from.swingProgressInt;
+            l.isSwingInProgress = from.isSwingInProgress;
+
+            l.hurtTime = from.hurtTime;
+            l.deathTime = from.deathTime;
+            l.setHealth(from.getHealth());
+
+            for (EntityEquipmentSlot i : EntityEquipmentSlot.values()) {
+                ItemStack neu = from.getItemStackFromSlot(i);
+                ItemStack old = l.getItemStackFromSlot(i);
+                if (old != neu) {
+                    l.setItemStackToSlot(i, neu);
+                }
+            }
+        }
+
+        if (to instanceof EntityTameable) {
+            ((EntityTameable)to).setSitting(from.isSneaking());
+        }
+
+        if (from.isBurning()) {
+            to.setFire(1);
+        } else {
+            to.extinguish();
+        }
+
+        to.setSneaking(from.isSneaking());
     }
 
     @SuppressWarnings("unchecked")
@@ -166,195 +262,88 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
             return true;
         }
 
-        if (entity != null) {
-            entity.onGround = owner.onGround;
-
-            if (!(entity instanceof EntityFallingBlock || entity instanceof EntityPlayer)) {
-                entity.onUpdate();
+        if (entity == null) {
+            if (source instanceof IPlayer) {
+                owner.setInvisible(false);
+                ((IPlayer) source).setInvisible(false);
             }
 
-            entity.copyLocationAndAnglesFrom(owner);
+            return false;
+        }
 
-            entity.setNoGravity(true);
+        entity.noClip = true;
+        entity.updateBlocked = true;
 
-            entity.getEntityData().setBoolean("disguise", true);
+        entity.getEntityData().setBoolean("disguise", true);
 
-            entity.lastTickPosX = owner.lastTickPosX;
-            entity.lastTickPosY = owner.lastTickPosY;
-            entity.lastTickPosZ = owner.lastTickPosZ;
+        if (entity instanceof EntityLiving) {
+            ((EntityLiving)entity).setNoAI(true);
+        }
 
-            entity.prevPosX = owner.prevPosX;
-            entity.prevPosY = owner.prevPosY;
-            entity.prevPosZ = owner.prevPosZ;
+        entity.setInvisible(false);
+        entity.setNoGravity(true);
 
-            entity.motionX = owner.motionX;
-            entity.motionY = owner.motionY;
-            entity.motionZ = owner.motionZ;
+        copyBaseAttributes(owner, entity);
 
-            entity.prevRotationPitch = owner.prevRotationPitch;
-            entity.prevRotationYaw = owner.prevRotationYaw;
+        if (!skipsUpdate(entity)) {
+            entity.onUpdate();
+        }
 
-            entity.distanceWalkedOnStepModified = owner.distanceWalkedOnStepModified;
-            entity.distanceWalkedModified = owner.distanceWalkedModified;
-            entity.prevDistanceWalkedModified = owner.prevDistanceWalkedModified;
+        if (entity instanceof EntityShulker) {
+            EntityShulker shulker = ((EntityShulker)entity);
 
-            if (entity instanceof EntityLivingBase) {
-                EntityLivingBase l = (EntityLivingBase)entity;
+            shulker.rotationYaw = 0;
+            shulker.renderYawOffset = 0;
+            shulker.prevRenderYawOffset = 0;
 
-                l.rotationYawHead = owner.rotationYawHead;
-                l.prevRotationYawHead = owner.prevRotationYawHead;
-                l.renderYawOffset = owner.renderYawOffset;
-                l.prevRenderYawOffset = owner.prevRenderYawOffset;
+            shulker.setAttachmentPos(null);
 
-                l.limbSwing = owner.limbSwing;
-                l.limbSwingAmount = owner.limbSwingAmount;
-                l.prevLimbSwingAmount = owner.prevLimbSwingAmount;
+            if (source.getWorld().isRemote && source instanceof IPlayer) {
+                IPlayer player = (IPlayer)source;
 
-                l.swingingHand = owner.swingingHand;
-                l.swingProgress = owner.swingProgress;
-                l.swingProgressInt = owner.swingProgressInt;
-                l.isSwingInProgress = owner.isSwingInProgress;
 
-                l.hurtTime = owner.hurtTime;
-                l.deathTime = owner.deathTime;
-                l.setHealth(owner.getHealth());
+                float peekAmount = 0.3F;
 
-                for (EntityEquipmentSlot i : EntityEquipmentSlot.values()) {
-                    ItemStack neu = owner.getItemStackFromSlot(i);
-                    ItemStack old = l.getItemStackFromSlot(i);
-                    if (old != neu) {
-                        l.setItemStackToSlot(i, neu);
-                    }
+                if (!owner.isSneaking()) {
+                    float speed = (float)Math.sqrt(Math.pow(owner.motionX, 2) + Math.pow(owner.motionZ, 2));
+
+                    peekAmount = MathHelper.clamp(speed * 30, 0, 1);
                 }
 
-                if (l instanceof EntityShulker) {
-                    l.rotationYaw = 0;
+                peekAmount = player.getInterpolator().interpolate("peek", peekAmount, 5);
 
-                    l.renderYawOffset = 0;
-                    l.prevRenderYawOffset = 0;
-                }
+                MixinEntity.Shulker.setPeek(shulker, peekAmount);
             }
+        }
 
-            if (isAttachedEntity(entity)) {
+        if (entity instanceof EntityMinecart) {
+            entity.rotationYaw += 90;
+            entity.rotationPitch = 0;
+        }
 
-                entity.posX = Math.floor(owner.posX) + 0.5;
-                entity.posY = Math.floor(owner.posY + 0.2);
-                entity.posZ = Math.floor(owner.posZ) + 0.5;
+        if (source instanceof IPlayer) {
+            IPlayer player = (IPlayer)source;
 
-                entity.lastTickPosX = entity.posX;
-                entity.lastTickPosY = entity.posY;
-                entity.lastTickPosZ = entity.posZ;
+            player.setInvisible(true);
+            source.getOwner().setInvisible(true);
 
-                entity.prevPosX = entity.posX;
-                entity.prevPosY = entity.posY;
-                entity.prevPosZ = entity.posZ;
-            }
-
-            if (entity instanceof EntityShulker) {
-                EntityShulker shulker = ((EntityShulker)entity);
-
-                shulker.setAttachmentPos(null);
-
-                if (source.getWorld().isRemote && source instanceof IPlayer) {
-                    IPlayer player = (IPlayer)source;
-
-
-                    float peekAmount = 0.3F;
-
-                    if (!owner.isSneaking()) {
-                        float speed = (float)Math.sqrt(Math.pow(owner.motionX, 2) + Math.pow(owner.motionZ, 2));
-
-                        peekAmount = speed * 30;
-                        if (peekAmount > 1) {
-                            peekAmount = 1;
-                        }
-                    }
-
-                    peekAmount = player.getInterpolator().interpolate("peek", peekAmount, 5);
-
-                    MixinEntity.Shulker.setPeek(shulker, peekAmount);
-                }
-            }
-
-            if (entity instanceof EntityLiving) {
-                EntityLiving l = (EntityLiving)entity;
-
-                l.setNoAI(true);
-            }
-
-            if (entity instanceof EntityMinecart) {
-                entity.rotationYaw += 90;
-                entity.rotationPitch = 0;
+            if (entity instanceof IOwned) {
+                IOwned.cast(entity).setOwner(player.getOwner());
             }
 
             if (entity instanceof EntityPlayer) {
-                EntityPlayer l = (EntityPlayer)entity;
-
-                l.chasingPosX = l.posX;
-                l.chasingPosY = l.posY;
-                l.chasingPosZ = l.posZ;
+                entity.getDataManager().set(MixinEntity.Player.getModelFlag(), owner.getDataManager().get(MixinEntity.Player.getModelFlag()));
             }
 
-            if (owner.isBurning()) {
-                entity.setFire(1);
-            } else {
-                entity.extinguish();
+            if (player.isClientPlayer() && UClient.instance().getViewMode() == 0) {
+                entity.setInvisible(true);
+                entity.posY = -Integer.MIN_VALUE;
             }
 
-            entity.noClip = true;
-            entity.updateBlocked = true;
-
-            entity.setSneaking(owner.isSneaking());
-            entity.setInvisible(false);
-
-            if (source instanceof IPlayer) {
-                ((IPlayer) source).setInvisible(true);
-            }
-
-            owner.setInvisible(true);
-
-            if (entity instanceof EntityTameable) {
-                ((EntityTameable)entity).setSitting(owner.isSneaking());
-            }
-
-            if (owner instanceof EntityPlayer) {
-                EntityPlayer player = (EntityPlayer)owner;
-
-                if (entity instanceof IOwned) {
-                    IOwned.cast(entity).setOwner(player);
-                }
-
-                if (entity instanceof EntityPlayer) {
-                    entity.getDataManager().set(MixinEntity.Player.getModelFlag(), owner.getDataManager().get(MixinEntity.Player.getModelFlag()));
-                }
-
-                if (UClient.instance().isClientPlayer(player)) {
-                    entity.setAlwaysRenderNameTag(false);
-                    entity.setCustomNameTag("");
-
-                    if (UClient.instance().getViewMode() == 0) {
-                        entity.setInvisible(true);
-                        entity.posY = -Integer.MIN_VALUE;
-                    }
-                } else {
-                    entity.setAlwaysRenderNameTag(true);
-                    entity.setCustomNameTag(player.getName());
-                }
-            }
-
-            if (!(source instanceof IPlayer) || ((IPlayer) source).getPlayerSpecies() == Race.CHANGELING) {
-                return true;
-            }
+            return player.getPlayerSpecies() == Race.CHANGELING;
         }
 
-        owner.setInvisible(false);
-
-        if (source instanceof IPlayer) {
-            ((IPlayer) source).setInvisible(false);
-        }
-
-
-        return false;
+        return !source.getOwner().isDead;
     }
 
     @Override
@@ -446,6 +435,11 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
             return entity.height - 0.1F;
         }
         return -1;
+    }
+
+    public static boolean skipsUpdate(Entity entity) {
+        return entity instanceof EntityFallingBlock
+            || entity instanceof EntityPlayer;
     }
 
     public static boolean isAttachedEntity(Entity entity) {
