@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.IPlayerHeightPredicate;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.render.DisguiseRenderer;
+import com.minelittlepony.util.ProjectileUtil;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
@@ -28,6 +29,7 @@ import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.passive.EntityAmbientCreature;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityShulkerBullet;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -410,7 +412,9 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
             if (entity instanceof EntityFlying
                     || entity instanceof net.minecraft.entity.passive.EntityFlying
                     || entity instanceof EntityDragon
-                    || entity instanceof EntityAmbientCreature) {
+                    || entity instanceof EntityAmbientCreature
+                    || entity instanceof EntityShulkerBullet
+                    || ProjectileUtil.isProjectile(entity)) {
                 return true;
             }
 
