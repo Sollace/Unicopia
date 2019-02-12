@@ -46,7 +46,7 @@ public interface IPower<T extends IData> extends IKeyBind {
         double halfDist = entity.getEyeHeight() / 1.5;
         double middle = entity.getEntityBoundingBox().minY + halfDist;
 
-        IShape shape = new Sphere(false, (float)halfDist);
+        IShape shape = new Sphere(false, (float)halfDist + entity.width);
 
         for (int i = 0; i < count; i++) {
             Vec3d point = shape.computePoint(entity.getEntityWorld().rand);
