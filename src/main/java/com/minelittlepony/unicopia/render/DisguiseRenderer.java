@@ -7,8 +7,6 @@ import com.minelittlepony.unicopia.spell.SpellDisguise;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityFallingBlock;
-import net.minecraft.entity.monster.EntityShulker;
 
 public class DisguiseRenderer {
 
@@ -25,7 +23,7 @@ public class DisguiseRenderer {
 
         if (entity.getEntityData().hasKey("disguise") && entity.getEntityData().getBoolean("disguise")) {
 
-            renderMan.setRenderShadow(!isAttachedEntity(entity));
+            renderMan.setRenderShadow(!SpellDisguise.isAttachedEntity(entity));
             renderDisguise(renderMan, entity);
             renderMan.setRenderShadow(false);
 
@@ -79,10 +77,5 @@ public class DisguiseRenderer {
         }
 
         return true;
-    }
-
-    public boolean isAttachedEntity(Entity entity) {
-        return entity instanceof EntityShulker
-            || entity instanceof EntityFallingBlock;
     }
 }

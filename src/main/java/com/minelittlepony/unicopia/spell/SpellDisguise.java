@@ -235,7 +235,7 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
                 }
             }
 
-            if (DisguiseRenderer.instance().isAttachedEntity(entity)) {
+            if (isAttachedEntity(entity)) {
 
                 entity.posX = Math.floor(owner.posX) + 0.5;
                 entity.posY = Math.floor(owner.posY + 0.2);
@@ -408,28 +408,22 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
 
     @Override
     public boolean checkCanFly(IPlayer player) {
-        if (!player.getPlayerSpecies().canFly()) {
+        if (entity == null || !player.getPlayerSpecies().canFly()) {
             return false;
         }
 
-        if (entity != null) {
-            if (entity instanceof EntityFlying
-                    || entity instanceof net.minecraft.entity.passive.EntityFlying
-                    || entity instanceof EntityDragon
-                    || entity instanceof EntityAmbientCreature
-                    || entity instanceof EntityShulkerBullet
-                    || ProjectileUtil.isProjectile(entity)) {
-                return true;
-            }
+        if (entity instanceof IOwned) {
+            IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(IOwned.<EntityPlayer>cast(entity).getOwner());
 
-            if (entity instanceof IOwned) {
-                IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(IOwned.<EntityPlayer>cast(entity).getOwner());
-
-                return iplayer != null && iplayer.getPlayerSpecies().canFly();
-            }
+            return iplayer != null && iplayer.getPlayerSpecies().canFly();
         }
 
-        return false;
+        return entity instanceof EntityFlying
+                || entity instanceof net.minecraft.entity.passive.EntityFlying
+                || entity instanceof EntityDragon
+                || entity instanceof EntityAmbientCreature
+                || entity instanceof EntityShulkerBullet
+                || ProjectileUtil.isProjectile(entity);
     }
 
     @Override
@@ -452,5 +446,10 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
             return entity.height - 0.1F;
         }
         return -1;
+    }
+
+    public static boolean isAttachedEntity(Entity entity) {
+        return entity instanceof EntityShulker
+            || entity instanceof EntityFallingBlock;
     }
 }
