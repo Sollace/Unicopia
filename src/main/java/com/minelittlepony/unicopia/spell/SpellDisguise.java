@@ -28,6 +28,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntitySkull;
 
 public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
 
@@ -69,66 +70,89 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
             entity = null;
         }
         this.entityNbt = null;
-
-        if (this.entity != null) {
-            this.entity.setDead();
-        }
-
-        this.entity = null;
-
         this.entityId = "";
 
-        if (entity != null) {
-            if (entity instanceof EntityPlayer) {
-                GameProfile profile = ((EntityPlayer)entity).getGameProfile();
-                this.entityId = "player";
-                this.entityNbt = new NBTTagCompound();
-                this.entityNbt.setUniqueId("playerId", profile.getId());
-                this.entityNbt.setString("playerName", profile.getName());
-                this.entityNbt.setTag("playerNbt", entity.writeToNBT(new NBTTagCompound()));
-            } else {
-                this.entityId = EntityList.getKey(entity).toString();
-                this.entityNbt = entity.writeToNBT(new NBTTagCompound());
-                this.entityNbt.setString("id", entityId);
-            }
+        removeDisguise();
 
+        if (entity != null) {
+            entityNbt = encodeEntityToNBT(entity);
+            entityId = entityNbt.getString("id");
         }
 
         return this;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public boolean update(ICaster<?> source) {
+    protected void removeDisguise() {
+        if (entity != null) {
+            entity.setDead();
+            entity = null;
+        }
+    }
+
+    protected NBTTagCompound encodeEntityToNBT(Entity entity) {
+        NBTTagCompound entityNbt = new NBTTagCompound();
+
+        if (entity instanceof EntityPlayer) {
+            GameProfile profile = ((EntityPlayer)entity).getGameProfile();
+
+            entityNbt.setString("id", "player");
+            entityNbt.setUniqueId("playerId", profile.getId());
+            entityNbt.setString("playerName", profile.getName());
+            entityNbt.setTag("playerNbt", entity.writeToNBT(new NBTTagCompound()));
+        } else {
+            entityNbt = entity.writeToNBT(entityNbt);
+            entityNbt.setString("id", EntityList.getKey(entity).toString());
+        }
+
+        return entityNbt;
+    }
+
+    protected synchronized void createPlayer(NBTTagCompound nbt, GameProfile profile, ICaster<?> source) {
+        removeDisguise();
+
+        entity = UClient.instance().createPlayer(source.getEntity(), profile);
+        entity.setCustomNameTag(source.getOwner().getName());
+        ((EntityPlayer)entity).readFromNBT(nbt.getCompoundTag("playerNbt"));
+        entity.setUniqueId(UUID.randomUUID());
+
+        PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity).setEffect(null);
+
+        if (entity != null && source.getWorld().isRemote) {
+            source.getWorld().spawnEntity(entity);
+        }
+    }
+
+    protected void checkAndCreateDisguiseEntity(ICaster<?> source) {
         if (entity == null && entityNbt != null) {
             if ("player".equals(entityId)) {
 
-                GameProfile profile = new GameProfile(
-                        entityNbt.getUniqueId("playerId"),
-                        entityNbt.getString("playerName"));
-
-                entity = UClient.instance().createPlayer(source.getEntity(), profile);
-                entity.setCustomNameTag(source.getOwner().getName());
-                entity.setUniqueId(UUID.randomUUID());
-                entity.readFromNBT(entityNbt.getCompoundTag("playerNbt"));
-
-                PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity).setEffect(null);;
-
-                if (entity != null && source.getWorld().isRemote) {
-                    source.getWorld().spawnEntity(entity);
-                }
-
+                NBTTagCompound nbt = entityNbt;
                 entityNbt = null;
+
+                createPlayer(nbt, new GameProfile(
+                        nbt.getUniqueId("playerId"),
+                        nbt.getString("playerName")
+                    ), source);
+                new Thread(() -> createPlayer(nbt, TileEntitySkull.updateGameProfile(new GameProfile(
+                    null,
+                    nbt.getString("playerName")
+                )), source)).start();
             } else {
                 entity = EntityList.createEntityFromNBT(entityNbt, source.getWorld());
-
-                if (entity != null && source.getWorld().isRemote) {
-                    source.getWorld().spawnEntity(entity);
-                }
-
-                entityNbt = null;
             }
+
+            if (entity != null && source.getWorld().isRemote) {
+                source.getWorld().spawnEntity(entity);
+            }
+
+            entityNbt = null;
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean update(ICaster<?> source) {
+        checkAndCreateDisguiseEntity(source);
 
         EntityLivingBase owner = source.getOwner();
 
@@ -139,7 +163,7 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
         if (entity != null) {
             entity.onGround = owner.onGround;
 
-            if (!(entity instanceof EntityFallingBlock)) {
+            if (!(entity instanceof EntityFallingBlock || entity instanceof EntityPlayer)) {
                 entity.onUpdate();
             }
 
@@ -209,15 +233,9 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
 
             if (entity instanceof EntityShulker || entity instanceof EntityFallingBlock) {
 
-                if (entity instanceof EntityFallingBlock) {
-                    entity.posX = Math.floor(owner.posX) + 0.5;
-                    entity.posY = Math.floor(owner.posY);
-                    entity.posZ = Math.floor(owner.posZ) + 0.5;
-                } else {
-                    entity.posX = owner.posX;
-                    entity.posY = owner.posY;
-                    entity.posZ = owner.posZ;
-                }
+                entity.posX = Math.floor(owner.posX) + 0.5;
+                entity.posY = Math.floor(owner.posY + 0.2);
+                entity.posZ = Math.floor(owner.posZ) + 0.5;
 
                 entity.lastTickPosX = entity.posX;
                 entity.lastTickPosY = entity.posY;
@@ -314,11 +332,7 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
     @Override
     public void setDead() {
         super.setDead();
-
-        if (entity != null) {
-            entity.setDead();
-            entity = null;
-        }
+        removeDisguise();
     }
 
     @Override
@@ -336,11 +350,7 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
         if (entityNbt != null) {
             compound.setTag("entity", entityNbt);
         } else if (entity != null) {
-            NBTTagCompound entityTag = new NBTTagCompound();
-            entity.writeToNBT(entityTag);
-            entityTag.setString("id", entityId);
-
-            compound.setTag("entity", entityTag);
+            compound.setTag("entity", encodeEntityToNBT(entity));
         }
     }
 
@@ -352,11 +362,7 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
 
         if (!newId.contentEquals(entityId)) {
             entityNbt = null;
-
-            if (entity != null) {
-                entity.setDead();
-                entity = null;
-            }
+            removeDisguise();
         }
 
         if (compound.hasKey("entity")) {

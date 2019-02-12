@@ -6,7 +6,9 @@ import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.player.IOwned;
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -15,23 +17,25 @@ import net.minecraft.world.World;
 
 public class EntityFakeClientPlayer extends AbstractClientPlayer implements IOwned<EntityPlayer> {
 
-    private final GameProfile profile;
-
     private NetworkPlayerInfo playerInfo;
 
     private EntityPlayer owner;
 
     public EntityFakeClientPlayer(World world, GameProfile profile) {
         super(world, profile);
-
-        this.profile = profile;
     }
 
     @Override
     @Nullable
     protected NetworkPlayerInfo getPlayerInfo() {
         if (playerInfo == null) {
-            playerInfo = new NetworkPlayerInfo(profile);
+            NetHandlerPlayClient connection = Minecraft.getMinecraft().getConnection();
+
+            playerInfo = connection.getPlayerInfo(getGameProfile().getId());
+
+            if (playerInfo == null) {
+                playerInfo = new NetworkPlayerInfo(getGameProfile());
+            }
         }
 
         return playerInfo;

@@ -183,15 +183,6 @@ public class UnicopiaClient extends UClient {
 
             if (iplayer.isInvisible()) {
                 event.setCanceled(true);
-            } else {
-                GlStateManager.pushMatrix();
-
-                if (!MineLP.modIsActive() && !entity.onGround) {
-                    float roll = iplayer.getCamera().calculateRoll();
-                    float pitch = iplayer.getCamera().calculatePitch(0);
-                    GlStateManager.rotate(roll, 0, 0, 1);
-                    GlStateManager.rotate(pitch, 1, 0, 0);
-                }
             }
 
             if (iplayer.hasEffect()) {
@@ -203,14 +194,6 @@ public class UnicopiaClient extends UClient {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public static void postEntityRender(RenderLivingEvent.Post<?> event) {
-        Entity entity = event.getEntity();
-
-        if (entity instanceof EntityPlayer) {
-            GlStateManager.popMatrix();
-
-
-        }
-
         // This fixes lighting errors on the armour slots.
         // #MahjongPls
         // @FUF(reason = "Forge should fix this. Cancelling their event skips neccessary state resetting at the end of the render method")
