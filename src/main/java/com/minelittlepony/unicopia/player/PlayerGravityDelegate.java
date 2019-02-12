@@ -21,7 +21,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
-class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtSerialisable {
+class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtSerialisable, IFlyingPredicate, IPlayerHeightPredicate {
 
     private final IPlayer player;
 
@@ -36,6 +36,7 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
         this.player = player;
     }
 
+    @Override
     public boolean checkCanFly(IPlayer player) {
         if (player.getOwner().capabilities.isCreativeMode) {
             return true;
@@ -51,6 +52,51 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
         return player.getPlayerSpecies().canFly();
     }
 
+    protected boolean isRainboom(IPlayer player) {
+        return Math.sqrt(getHorizontalMotion(player.getOwner())) > 0.4F;
+    }
+
+    @Override
+    public float getTargetEyeHeight(IPlayer player) {
+        if (player.hasEffect()) {
+            IMagicEffect effect = player.getEffect();
+            if (!effect.getDead() && effect instanceof IPlayerHeightPredicate) {
+                float val = ((IPlayerHeightPredicate)effect).getTargetEyeHeight(player);
+                if (val > 0) {
+                    return val;
+                }
+            }
+        }
+
+        if (isFlying && isRainboom(player)) {
+            return 0.5F;
+        }
+
+        return player.getOwner().getDefaultEyeHeight();
+    }
+
+    @Override
+    public float getTargetBodyHeight(IPlayer player) {
+        if (player.hasEffect()) {
+            IMagicEffect effect = player.getEffect();
+            if (!effect.getDead() && effect instanceof IPlayerHeightPredicate) {
+                float val = ((IPlayerHeightPredicate)effect).getTargetBodyHeight(player);
+                if (val > 0) {
+                    return val;
+                }
+            }
+        }
+
+        // Player height is reset at this point, so we can use it as our baseline.
+
+        if (isFlying && isRainboom(player)) {
+            return player.getOwner().height / 2;
+        }
+
+        return player.getOwner().height;
+    }
+
+
     @Override
     public void onUpdate(EntityPlayer entity) {
 
@@ -62,15 +108,8 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
 
         isFlying = entity.capabilities.isFlying && !entity.capabilities.isCreativeMode;
 
-        boolean rainboom = Math.sqrt(getHorizontalMotion(entity)) > 0.4F;
-
-        if (isFlying && rainboom) {
-            MixinEntity.setSize(entity, entity.width, player.getInterpolator().interpolate("standingHeight", 0.5F, 10));
-            entity.eyeHeight = player.getInterpolator().interpolate("eyeHeight", entity.height / 2, 10);
-        } else {
-            MixinEntity.setSize(entity, entity.width, player.getInterpolator().interpolate("standingHeight", entity.height, 10));
-            entity.eyeHeight = player.getInterpolator().interpolate("eyeHeight", entity.getDefaultEyeHeight(), 10);
-        }
+        MixinEntity.setSize(entity, entity.width, player.getInterpolator().interpolate("standingHeight", getTargetBodyHeight(player), 10));
+        entity.eyeHeight = player.getInterpolator().interpolate("eyeHeight", getTargetEyeHeight(player), 10);
 
         if (!entity.capabilities.isCreativeMode && !entity.isElytraFlying()) {
             if (isFlying && !entity.isRiding()) {

@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.mixin;
 
-import com.google.common.base.Optional;
+import java.lang.reflect.Field;
+
 import com.minelittlepony.unicopia.forgebullshit.FUF;
 
 import net.minecraft.entity.Entity;
@@ -8,7 +9,6 @@ import net.minecraft.entity.MoverType;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 
 @FUF(reason = "Waiting for mixins?")
 public interface MixinEntity {
@@ -24,8 +24,28 @@ public interface MixinEntity {
     abstract class Shulker extends EntityShulker {
         private Shulker() { super(null);}
 
-        public static DataParameter<Optional<BlockPos>> getAttachmentPosFlag() {
-            return ATTACHED_BLOCK_POS;
+        private static boolean __init;
+        private static Field __peekAmount = null;
+
+        public static void setPeek(EntityShulker shulker, float peekAmount) {
+            initFields();
+
+            try {
+                if (__peekAmount != null) {
+                    __peekAmount.set(shulker, peekAmount);
+                }
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        private static void initFields() {
+            if (!__init && __peekAmount == null) {
+                Field[] fields = EntityShulker.class.getDeclaredFields();
+                __peekAmount = fields[fields.length - 3];
+                __peekAmount.setAccessible(true);
+            }
         }
     }
 

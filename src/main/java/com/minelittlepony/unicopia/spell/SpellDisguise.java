@@ -11,7 +11,9 @@ import com.minelittlepony.unicopia.mixin.MixinEntity;
 import com.minelittlepony.unicopia.player.IFlyingPredicate;
 import com.minelittlepony.unicopia.player.IOwned;
 import com.minelittlepony.unicopia.player.IPlayer;
+import com.minelittlepony.unicopia.player.IPlayerHeightPredicate;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.render.DisguiseRenderer;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
@@ -24,13 +26,14 @@ import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.passive.EntityAmbientCreature;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntitySkull;
 
-public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
+public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IPlayerHeightPredicate {
 
     @Nonnull
     private String entityId = "";
@@ -223,15 +226,13 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
 
                 if (l instanceof EntityShulker) {
                     l.rotationYaw = 0;
-                    l.rotationPitch = 0;
-                    l.rotationYawHead = 0;
-                    l.prevRotationYawHead = 0;
+
                     l.renderYawOffset = 0;
                     l.prevRenderYawOffset = 0;
                 }
             }
 
-            if (entity instanceof EntityShulker || entity instanceof EntityFallingBlock) {
+            if (DisguiseRenderer.instance().isAttachedEntity(entity)) {
 
                 entity.posX = Math.floor(owner.posX) + 0.5;
                 entity.posY = Math.floor(owner.posY + 0.2);
@@ -244,9 +245,31 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
                 entity.prevPosX = entity.posX;
                 entity.prevPosY = entity.posY;
                 entity.prevPosZ = entity.posZ;
+            }
 
-                if (entity instanceof EntityShulker) {
-                    ((EntityShulker)entity).setAttachmentPos(null);
+            if (entity instanceof EntityShulker) {
+                EntityShulker shulker = ((EntityShulker)entity);
+
+                shulker.setAttachmentPos(null);
+
+                if (source.getWorld().isRemote && source instanceof IPlayer) {
+                    IPlayer player = (IPlayer)source;
+
+
+                    float peekAmount = 0.3F;
+
+                    if (!owner.isSneaking()) {
+                        float speed = (float)Math.sqrt(Math.pow(owner.motionX, 2) + Math.pow(owner.motionZ, 2));
+
+                        peekAmount = speed * 30;
+                        if (peekAmount > 1) {
+                            peekAmount = 1;
+                        }
+                    }
+
+                    peekAmount = player.getInterpolator().interpolate("peek", peekAmount, 5);
+
+                    MixinEntity.Shulker.setPeek(shulker, peekAmount);
                 }
             }
 
@@ -287,10 +310,12 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
 
             owner.setInvisible(true);
 
+            if (entity instanceof EntityTameable) {
+                ((EntityTameable)entity).setSitting(owner.isSneaking());
+            }
+
             if (owner instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer)owner;
-
-                player.eyeHeight = entity.getEyeHeight();
 
                 if (entity instanceof IOwned) {
                     IOwned.cast(entity).setOwner(player);
@@ -306,7 +331,7 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
 
                     if (UClient.instance().getViewMode() == 0) {
                         entity.setInvisible(true);
-                        entity.posY = -10;
+                        entity.posY = -Integer.MIN_VALUE;
                     }
                 } else {
                     entity.setAlwaysRenderNameTag(true);
@@ -337,7 +362,6 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
 
     @Override
     public void render(ICaster<?> source) {
-
     }
 
     @Override
@@ -398,5 +422,27 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate {
         }
 
         return false;
+    }
+
+    @Override
+    public float getTargetEyeHeight(IPlayer player) {
+        if (entity != null) {
+            if (entity instanceof EntityFallingBlock) {
+                return 0.5F;
+            }
+            return entity.getEyeHeight();
+        }
+        return -1;
+    }
+
+    @Override
+    public float getTargetBodyHeight(IPlayer player) {
+        if (entity != null) {
+            if (entity instanceof EntityFallingBlock) {
+                return 0.9F;
+            }
+            return entity.height - 0.1F;
+        }
+        return -1;
     }
 }

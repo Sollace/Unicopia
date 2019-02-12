@@ -13,10 +13,13 @@ import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.SpellDisguise;
 import com.minelittlepony.util.vector.VecHelper;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.RayTraceResult;
 
 public class PowerDisguise extends PowerFeed {
 
@@ -39,7 +42,18 @@ public class PowerDisguise extends PowerFeed {
     @Override
     public void apply(IPlayer iplayer, Hit data) {
         EntityPlayer player = iplayer.getOwner();
-        Entity looked = VecHelper.getLookedAtEntity(player, 17);
+        RayTraceResult trace = VecHelper.getObjectMouseOver(player, 10, 1);
+        Entity looked = null;
+
+        if (trace.typeOfHit == RayTraceResult.Type.BLOCK) {
+            IBlockState state = player.getEntityWorld().getBlockState(trace.getBlockPos());
+
+            if (!state.getBlock().isAir(state, player.getEntityWorld(), trace.getBlockPos())) {
+                looked = new EntityFallingBlock(player.getEntityWorld(), 0, 0, 0, state);
+            }
+        } else {
+            looked = trace.entityHit;
+        }
 
         if (looked instanceof EntityPlayer) {
             IPlayer ilooked = PlayerSpeciesList.instance().getPlayer((EntityPlayer)looked);
@@ -52,7 +66,7 @@ public class PowerDisguise extends PowerFeed {
             }
         }
 
-        player.world.playSound(null, player.getPosition(), SoundEvents.E_PARROT_IM_POLAR_BEAR, SoundCategory.PLAYERS, 1.4F, 0.4F);
+        player.getEntityWorld().playSound(null, player.getPosition(), SoundEvents.E_PARROT_IM_POLAR_BEAR, SoundCategory.PLAYERS, 1.4F, 0.4F);
 
         IMagicEffect effect = iplayer.getEffect();
         if (effect instanceof SpellDisguise && !effect.getDead()) {

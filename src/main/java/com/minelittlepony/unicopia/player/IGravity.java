@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.player;
 
-public interface IGravity extends IFlyingPredicate {
+public interface IGravity {
     boolean isFlying();
 
     float getFlightExperience();
