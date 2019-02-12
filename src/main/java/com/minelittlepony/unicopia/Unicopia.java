@@ -12,9 +12,11 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
@@ -219,6 +221,17 @@ public class Unicopia implements IGuiHandler {
             PlayerSpeciesList.instance().getPlayer(event.player).onUpdate(event.player);
         } else {
             PlayerSpeciesList.instance().getPlayer(event.player).beforeUpdate(event.player);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onProjectileHit(ProjectileImpactEvent event) {
+        RayTraceResult ray = event.getRayTraceResult();
+
+        if (ray.typeOfHit == RayTraceResult.Type.ENTITY && ray.entityHit instanceof EntityPlayer) {
+            if (!PlayerSpeciesList.instance().getPlayer((EntityPlayer)ray.entityHit).onProjectileImpact(event.getEntity())) {
+                event.setCanceled(true);
+            }
         }
     }
 

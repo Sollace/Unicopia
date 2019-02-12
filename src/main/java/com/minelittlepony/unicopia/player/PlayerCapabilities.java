@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.SpellAffinity;
+import com.minelittlepony.unicopia.spell.SpellDisguise;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
 import net.minecraft.entity.Entity;
@@ -231,6 +232,23 @@ class PlayerCapabilities implements IPlayer {
                 gravity.landHard(entity, distance, damageMultiplier);
             }
         }
+    }
+
+    @Override
+    public boolean onProjectileImpact(Entity projectile) {
+
+        if (hasEffect()) {
+            IMagicEffect effect = getEffect();
+            if (effect instanceof SpellDisguise && !effect.getDead()) {
+                Entity disguise = ((SpellDisguise)effect).getDisguise();
+
+                if (disguise == projectile) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     @Override
