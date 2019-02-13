@@ -55,9 +55,14 @@ public class EffectSync<T extends EntityLivingBase> {
         return effect != null;
     }
 
-    public IMagicEffect get(boolean update) {
+    @SuppressWarnings("unchecked")
+    public <E extends IMagicEffect> E get(Class<E> type, boolean update) {
         if (!update) {
-            return effect;
+            if (effect == null || type == null || type.isAssignableFrom(effect.getClass())) {
+                return (E)effect;
+            }
+
+            return null;
         }
 
         NBTTagCompound comp = owned.getEntity().getDataManager().get(param);
@@ -82,7 +87,11 @@ public class EffectSync<T extends EntityLivingBase> {
             }
         }
 
-        return effect;
+        if (effect == null || type == null || type.isAssignableFrom(effect.getClass())) {
+            return (E)effect;
+        }
+
+        return null;
     }
 
     public void set(@Nullable IMagicEffect effect) {

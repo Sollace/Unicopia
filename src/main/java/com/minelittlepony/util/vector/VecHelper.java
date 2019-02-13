@@ -32,7 +32,7 @@ public class VecHelper {
         Vec3d pos = e.getPositionEyes(partialTicks);
         Vec3d look = e.getLook(partialTicks).scale(distance);
 
-        return e.world.rayTraceBlocks(pos, pos.add(look), false, false, true);
+        return e.getEntityWorld().rayTraceBlocks(pos, pos.add(look), false, false, true);
     }
 
     /**

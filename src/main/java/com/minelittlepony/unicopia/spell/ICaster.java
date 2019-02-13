@@ -14,6 +14,7 @@ import com.minelittlepony.util.vector.VecHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -23,7 +24,12 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelle
     void setEffect(@Nullable IMagicEffect effect);
 
     @Nullable
-    IMagicEffect getEffect(boolean update);
+    default IMagicEffect getEffect(boolean update) {
+        return getEffect(null, update);
+    }
+
+    @Nullable
+    <T extends IMagicEffect> T getEffect(@Nullable Class<T> type, boolean update);
 
     @Nullable
     default IMagicEffect getEffect() {
@@ -39,14 +45,23 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelle
         return getOwner();
     }
 
+    /**
+     * Gets the unique id associated with this caste.
+     */
     default UUID getUniqueId() {
         return getEntity().getUniqueID();
     }
 
+    /**
+     * gets the minecraft world
+     */
     default World getWorld() {
         return getEntity().getEntityWorld();
     }
 
+    /**
+     * Gets the center position where this caster is located.
+     */
     default BlockPos getOrigin() {
         return getEntity().getPosition();
     }
@@ -67,6 +82,14 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelle
         for (int i = 0; i < count; i++) {
             particleSpawner.accept(area.computePoint(rand).add(pos));
         }
+    }
+
+    default Stream<ICaster<?>> findAllSpellsInRange(double radius) {
+        return CasterUtils.findAllSpellsInRange(this, radius);
+    }
+
+    default Stream<ICaster<?>> findAllSpellsInRange(AxisAlignedBB bb) {
+        return CasterUtils.findAllSpellsInRange(this, bb);
     }
 
     default Stream<Entity> findAllEntitiesInRange(double radius) {

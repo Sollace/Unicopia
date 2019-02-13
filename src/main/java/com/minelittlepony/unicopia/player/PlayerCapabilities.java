@@ -369,8 +369,8 @@ class PlayerCapabilities implements IPlayer {
 
     @Nullable
     @Override
-    public IMagicEffect getEffect(boolean update) {
-        return effectDelegate.get(update);
+    public <T extends IMagicEffect> T getEffect(@Nullable Class<T> type, boolean update) {
+        return effectDelegate.get(type, update);
     }
 
     @Override
