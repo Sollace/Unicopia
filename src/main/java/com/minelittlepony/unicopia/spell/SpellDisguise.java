@@ -77,6 +77,7 @@ public class SpellDisguise extends AbstractSpell implements ISuppressable, IFlyi
     @Override
     public void onSuppressed(ICaster<?> otherSource) {
         suppressionCounter = 100;
+        setDirty(true);
     }
 
     @Override
@@ -455,7 +456,7 @@ public class SpellDisguise extends AbstractSpell implements ISuppressable, IFlyi
 
     @Override
     public float getTargetEyeHeight(IPlayer player) {
-        if (entity != null) {
+        if (entity != null && !getSuppressed()) {
             if (entity instanceof EntityFallingBlock) {
                 return 0.5F;
             }
@@ -466,7 +467,7 @@ public class SpellDisguise extends AbstractSpell implements ISuppressable, IFlyi
 
     @Override
     public float getTargetBodyHeight(IPlayer player) {
-        if (entity != null) {
+        if (entity != null && !getSuppressed()) {
             if (entity instanceof EntityFallingBlock) {
                 return 0.9F;
             }
