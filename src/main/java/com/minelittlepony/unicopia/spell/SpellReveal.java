@@ -27,7 +27,7 @@ public class SpellReveal extends AbstractSpell {
 
             if (spell != null && spell.isVulnerable(source, this)) {
                 spell.onSuppressed(source);
-                source.getWorld().playSound(null, e.getOrigin(), SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, SoundCategory.PLAYERS, 1, 1);
+                source.getWorld().playSound(null, e.getOrigin(), SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, SoundCategory.PLAYERS, 0.2F, 0.5F);
             }
         });
 
