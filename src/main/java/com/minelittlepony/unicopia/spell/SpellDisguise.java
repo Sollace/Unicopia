@@ -36,7 +36,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.math.MathHelper;
 
-public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IPlayerHeightPredicate {
+public class SpellDisguise extends AbstractSpell implements ISuppressable, IFlyingPredicate, IPlayerHeightPredicate {
 
     @Nonnull
     private String entityId = "";
@@ -46,6 +46,8 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
 
     @Nullable
     private NBTTagCompound entityNbt;
+
+    private int suppressionCounter;
 
     @Override
     public String getName() {
@@ -64,7 +66,22 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
 
     @Override
     public int getTint() {
-        return 0;
+        return 0x19E48E;
+    }
+
+    @Override
+    public boolean isVulnerable(ICaster<?> otherSource, IMagicEffect other) {
+        return suppressionCounter <= otherSource.getCurrentLevel();
+    }
+
+    @Override
+    public void onSuppressed(ICaster<?> otherSource) {
+        suppressionCounter = 100;
+    }
+
+    @Override
+    public boolean getSuppressed() {
+        return suppressionCounter > 0;
     }
 
     public Entity getDisguise() {
@@ -254,9 +271,25 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
     @SuppressWarnings("unchecked")
     @Override
     public boolean update(ICaster<?> source) {
-        checkAndCreateDisguiseEntity(source);
-
         EntityLivingBase owner = source.getOwner();
+
+        if (getSuppressed()) {
+            suppressionCounter--;
+
+            owner.setInvisible(false);
+            if (source instanceof IPlayer) {
+                ((IPlayer)source).setInvisible(false);
+            }
+
+            if (entity != null) {
+                entity.setInvisible(true);
+                entity.posY = Integer.MIN_VALUE;
+            }
+
+            return true;
+        }
+
+        checkAndCreateDisguiseEntity(source);
 
         if (owner == null) {
             return true;
@@ -354,7 +387,10 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
 
     @Override
     public void render(ICaster<?> source) {
-        if (source.getWorld().rand.nextInt(30) == 0) {
+        if (getSuppressed()) {
+            source.spawnParticles(UParticles.UNICORN_MAGIC, 5);
+            source.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
+        } else if (source.getWorld().rand.nextInt(30) == 0) {
             source.spawnParticles(UParticles.CHANGELING_MAGIC, 2);
         }
     }
@@ -363,8 +399,8 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
     public void writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
 
+        compound.setInteger("suppressionCounter", suppressionCounter);
         compound.setString("entityId", entityId);
-        compound.setBoolean("dead", getDead());
 
         if (entityNbt != null) {
             compound.setTag("entity", entityNbt);
@@ -376,6 +412,8 @@ public class SpellDisguise extends AbstractSpell implements IFlyingPredicate, IP
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
+
+        suppressionCounter = compound.getInteger("suppressionCounter");
 
         String newId = compound.getString("entityId");
 
