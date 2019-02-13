@@ -21,6 +21,11 @@ public class SpellReveal extends AbstractSpell {
     }
 
     @Override
+    public void onPlaced(ICaster<?> source) {
+        source.setCurrentLevel(1);
+    }
+
+    @Override
     public boolean update(ICaster<?> source) {
         source.findAllSpellsInRange(15).forEach(e -> {
             ISuppressable spell = e.getEffect(ISuppressable.class, false);
