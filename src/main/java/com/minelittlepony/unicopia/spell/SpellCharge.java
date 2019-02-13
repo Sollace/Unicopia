@@ -37,7 +37,7 @@ public class SpellCharge extends AbstractSpell {
 
     @Override
     public int getTint() {
-        return 0x0000AA;
+        return 0x7272B7;
     }
 
     @Override
@@ -70,7 +70,10 @@ public class SpellCharge extends AbstractSpell {
 
     protected EntitySpell getTarget(ICaster<?> source) {
         if (targettedEntity == null && targettedEntityId != null) {
-            source.getWorld().getEntities(EntitySpell.class, e -> e.getUniqueID().equals(targettedEntityId)).stream().findFirst().ifPresent(this::setTarget);
+            source.getWorld().getEntities(EntitySpell.class, e -> e.getUniqueID().equals(targettedEntityId))
+                .stream()
+                .findFirst()
+                .ifPresent(this::setTarget);
         }
 
         if (targettedEntity != null && targettedEntity.isDead) {
@@ -89,9 +92,9 @@ public class SpellCharge extends AbstractSpell {
             BlockPos origin = source.getOrigin();
 
             List<Entity> list = source.getWorld().getEntitiesInAABBexcluding(source.getEntity(),
-                    searchArea.offset(origin), this::canTargetEntity).stream().sorted((a, b) -> {
-                        return (int)(a.getDistanceSq(origin) - b.getDistanceSq(origin));
-                    }).collect(Collectors.toList());
+                    searchArea.offset(origin), this::canTargetEntity).stream().sorted((a, b) ->
+                        (int)(a.getDistanceSq(origin) - b.getDistanceSq(origin))
+                    ).collect(Collectors.toList());
 
             if (list.size() > 0) {
                 setTarget((EntitySpell)list.get(0));

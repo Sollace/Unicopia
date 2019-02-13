@@ -26,7 +26,7 @@ public class SpellAwkward extends AbstractSpell {
 
     @Override
     public int getTint() {
-        return 0x248712;
+        return 0xE1239C;
     }
 
     @Override

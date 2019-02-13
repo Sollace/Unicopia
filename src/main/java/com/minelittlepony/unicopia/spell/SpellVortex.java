@@ -18,6 +18,11 @@ public class SpellVortex extends SpellShield {
     }
 
     @Override
+    public int getTint() {
+        return 0x4CDEE7;
+    }
+
+    @Override
     public SpellAffinity getAffinity() {
         return SpellAffinity.NEUTRAL;
     }

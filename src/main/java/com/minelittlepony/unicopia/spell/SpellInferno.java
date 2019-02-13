@@ -58,7 +58,7 @@ public class SpellInferno extends SpellFire {
 
     @Override
     public int getTint() {
-        return 0xFF8C00;
+        return 0xF00F00;
     }
 
     @Override

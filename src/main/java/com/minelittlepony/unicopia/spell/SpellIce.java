@@ -68,7 +68,7 @@ public class SpellIce extends AbstractSpell.RangedAreaSpell implements IUseActio
 
     @Override
     public int getTint() {
-        return 0xADD8E6;
+        return 0xBDBDF9;
     }
 
     @Override

@@ -40,7 +40,7 @@ public class SpellNecromancy extends AbstractSpell.RangedAreaSpell {
 
     @Override
     public int getTint() {
-        return 0;
+        return 0x3A3A3A;
     }
 
     @Override

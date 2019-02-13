@@ -80,7 +80,7 @@ public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseActi
 
     @Override
     public int getTint() {
-        return 0xFF0000;
+        return 0xFF5D00;
     }
 
     @Override

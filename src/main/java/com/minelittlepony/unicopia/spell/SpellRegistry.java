@@ -42,7 +42,8 @@ public class SpellRegistry {
         registerSpell(SpellAwkward::new);
         registerSpell(SpellInferno::new);
         registerSpell(SpellDrake::new);
-        registerSpell(GenericSpell.factory("light", 0xf0ff0f, SpellAffinity.GOOD));
+        registerSpell(SpellReveal::new);
+        registerSpell(GenericSpell.factory("light", 0xF7FACB, SpellAffinity.GOOD));
     }
 
     @Nullable
