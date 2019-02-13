@@ -44,6 +44,9 @@ spell.portal.tagline=Teleportation I
 spell.light.name=Illumination
 spell.light.tagline=Discovery I
 
+spell.reveal.name=Revealing
+spell.reveal.tagline=Discovery II
+
 spell.fire.name=Flame
 spell.fire.tagline=Fire I
 
