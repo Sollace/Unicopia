@@ -23,7 +23,7 @@ public class DisguiseRenderer {
         if (entity.getEntityData().hasKey("disguise") && entity.getEntityData().getBoolean("disguise")) {
 
             renderMan.setRenderShadow(true);
-            renderDisguise(renderMan, entity);
+            renderStaticDisguise(renderMan, entity);
             renderMan.setRenderShadow(false);
 
             return true;
@@ -34,18 +34,20 @@ public class DisguiseRenderer {
         return false;
     }
 
-    protected void renderDisguise(RenderManager renderMan, Entity entity) {
+    protected void renderDisguise(RenderManager renderMan, Entity entity, double x, double y, double z) {
         entity.getEntityData().setBoolean("disguise", false);
+        renderMan.renderEntity(entity, x, y, z, 0, 1, false);
+        entity.getEntityData().setBoolean("disguise", true);
+    }
 
+    protected void renderStaticDisguise(RenderManager renderMan, Entity entity) {
         Entity observer = Minecraft.getMinecraft().getRenderViewEntity();
 
         double x = entity.posX - observer.posX;
         double y = entity.posY - observer.posY;
         double z = entity.posZ - observer.posZ;
 
-        renderMan.renderEntity(entity, x, y, z, 0, 1, false);
-
-        entity.getEntityData().setBoolean("disguise", true);
+        renderDisguise(renderMan, entity, x, y, z);
     }
 
     public boolean renderDisguiseToGui(IPlayer player) {
@@ -72,7 +74,7 @@ public class DisguiseRenderer {
             e.setInvisible(false);
             e.posY = player.getOwner().posY;
 
-            renderMan.renderEntity(e, 0, 0, 0, 0, 1, false);
+            renderDisguise(renderMan, e, 0, 0, 0);
         }
 
         return true;
