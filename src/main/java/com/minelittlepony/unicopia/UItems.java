@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.item.ItemOfHolding;
 import com.minelittlepony.unicopia.item.ItemRottenApple;
 import com.minelittlepony.unicopia.item.ItemSpell;
 import com.minelittlepony.unicopia.item.ItemSpellbook;
+import com.minelittlepony.unicopia.item.ItemStaff;
 import com.minelittlepony.unicopia.item.ItemStick;
 import com.minelittlepony.unicopia.item.ItemTomato;
 import com.minelittlepony.unicopia.item.ItemTomatoSeeds;
@@ -107,6 +108,8 @@ public class UItems {
     public static final ItemOfHolding bag_of_holding = new ItemOfHolding(Unicopia.MODID, "bag_of_holding");
 
     public static final ItemSpellbook spellbook = new ItemSpellbook(Unicopia.MODID, "spellbook");
+    public static final Item staff_meadow_brook = new ItemStaff(Unicopia.MODID, "staff_meadow_brook").setMaxDamage(2);
+
 
     public static final Item alfalfa_seeds = new ItemSeedFood(1, 4, UBlocks.alfalfa, Blocks.FARMLAND)
             .setTranslationKey("alfalfa_seeds")
@@ -206,6 +209,7 @@ public class UItems {
                 cloud_farmland, mist_door, anvil,
 
                 bag_of_holding, spell, curse, spellbook, mug, enchanted_torch,
+                staff_meadow_brook,
 
                 alfalfa_seeds, alfalfa_leaves,
                 cereal, sugar_cereal, sugar_block,
@@ -233,7 +237,9 @@ public class UItems {
 
                     cloud_spawner, cloud_matter, cloud_stairs, cloud_fence, cloud_banister,
                     cloud_farmland, mist_door, anvil,
+
                     bag_of_holding, spell, curse, spellbook, mug, enchanted_torch,
+                    staff_meadow_brook,
 
                     alfalfa_seeds, alfalfa_leaves,
                     cereal, sugar_cereal, sugar_block,

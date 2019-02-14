@@ -54,7 +54,7 @@ public class CasterUtils {
                 .filter(e -> !e.getDead());
     }
 
-    static Optional<ICaster<?>> toCaster(@Nullable Entity entity) {
+    public static Optional<ICaster<?>> toCaster(@Nullable Entity entity) {
 
         if (entity instanceof ICaster<?>) {
             return Optional.of((ICaster<?>)entity);
