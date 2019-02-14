@@ -15,8 +15,6 @@ import com.minelittlepony.util.render.Color;
 
 public class ParticleSphere extends Particle implements IAttachableParticle {
 
-    private final float baseAlpha;
-
     protected int tint;
     protected float alpha;
 
@@ -28,6 +26,10 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
 
     public ParticleSphere(int id, World w, double x, double y, double z, double vX, double vY, double vZ, int... args) {
         this(w, x, y, z, args[0], args[1], args[2]/255F);
+
+        this.motionX = vX;
+        this.motionY = vY;
+        this.motionZ = vZ;
     }
 
     public ParticleSphere(World w, double x, double y, double z, int radius, int tint, float alpha) {
@@ -36,9 +38,8 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
         this.radius = radius;
         this.tint = tint;
         this.alpha = alpha;
-        this.baseAlpha = alpha;
 
-        this.setMaxAge(50000);
+        setMaxAge(10);
     }
 
     @Override
@@ -48,29 +49,34 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
 
     @Override
     public void attachTo(ICaster<?> caster) {
+        setMaxAge(50000);
         this.caster = caster;
     }
 
     public void onUpdate() {
         super.onUpdate();
 
-        alpha = Math.min(1F, 1 - (float)particleAge/particleMaxAge) * baseAlpha;
-
-        if (caster == null || !caster.hasEffect() || caster.getEffect().getDead() || caster.getEntity().isDead) {
-            setExpired();
-        } else {
-            Entity e = caster.getEntity();
-
-            if (!caster.getWorld().loadedEntityList.contains(caster.getEntity())) {
+        if (caster != null) {
+            if (!caster.hasEffect() || caster.getEffect().getDead() || caster.getEntity().isDead) {
                 setExpired();
-            }
+            } else {
+                Entity e = caster.getEntity();
 
-            setPosition(e.posX, e.posY, e.posZ);
+                if (!caster.getWorld().loadedEntityList.contains(caster.getEntity())) {
+                    setExpired();
+                }
+
+                setPosition(e.posX, e.posY, e.posZ);
+            }
+        } else {
+            if (this.rand.nextInt(10000) == 0) {
+                this.radius--;
+            }
         }
     }
 
     public void renderParticle(BufferBuilder buffer, Entity viewer, float partialTicks, float x, float z, float yz, float xy, float xz) {
-        if (alpha <= 0) {
+        if (alpha <= 0 || radius <= 0) {
             return;
         }
 

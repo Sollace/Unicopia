@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
@@ -52,6 +53,12 @@ public class CasterUtils {
                 .filter(ICaster::hasEffect)
                 .map(caster -> caster.getEffect(type, false))
                 .filter(e -> !e.getDead());
+    }
+
+    public static boolean isHoldingEffect(String effectName, Entity entity) {
+        return Streams.stream(entity.getEquipmentAndArmor())
+            .map(SpellRegistry::getKeyFromStack)
+            .anyMatch(s -> s.equals(effectName));
     }
 
     public static Optional<ICaster<?>> toCaster(@Nullable Entity entity) {

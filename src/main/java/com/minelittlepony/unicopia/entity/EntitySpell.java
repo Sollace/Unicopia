@@ -17,7 +17,7 @@ import com.minelittlepony.unicopia.spell.SpellRegistry;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -35,7 +35,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class EntitySpell extends EntityLiving implements IMagicals, ICaster<EntityLivingBase>, IInAnimate {
+public class EntitySpell extends EntityCreature implements IMagicals, ICaster<EntityLivingBase>, IInAnimate {
 
 	private EntityLivingBase owner = null;
 

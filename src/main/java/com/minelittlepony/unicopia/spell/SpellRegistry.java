@@ -43,6 +43,7 @@ public class SpellRegistry {
         registerSpell(SpellInferno::new);
         registerSpell(SpellDrake::new);
         registerSpell(SpellReveal::new);
+        registerSpell(SpellDarkness::new);
         registerSpell(GenericSpell.factory("light", 0xF7FACB, SpellAffinity.GOOD));
     }
 

@@ -63,10 +63,16 @@ spell.ice.name=Frost
 spell.ice.tagline=Ice I
 
 spell.drake.name=Assistance
-spell.drake.tagline=Helpfulness I
+spell.drake.tagline=Golomancy I
 
 curse.shield.name=Repulsion
 curse.shield.tagline=Hostility I
+
+curse.darkness.name=Darkness
+curse.darkness.tagline=Golomancy I/Resurrection II
+
+curse.harm.name=Hurting
+curse.harm.tagline=Hostility II
 
 curse.awkward.name=Awkwardness
 curse.awkward.tagline=*Derp*
@@ -76,9 +82,6 @@ curse.vortex.tagline=Torture I
 
 curse.necromancy.name=Necromancy
 curse.necromancy.tagline=Resurrection I
-
-curse.drake.name=Assistance
-curse.drake.tagline=Unhelpfulness I
 
 curse.inferno.name=Inferno
 curse.inferno.tagline=Fire II
@@ -218,6 +221,7 @@ unicopia.power.disguise=Secondary Changeling ability
 
 unicopia.gui.title.bagofholding=Bag of Holding
 
+death.attack.darkness=%1$s went missing
 death.attack.feed=%1$s was drained of all life
 death.attack.feed.player=%1$s died to feed %2$s
 death.attack.cold=%1$s died of frost bite

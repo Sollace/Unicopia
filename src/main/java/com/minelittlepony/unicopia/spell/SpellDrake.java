@@ -17,8 +17,6 @@ public class SpellDrake extends AbstractSpell {
     @Nullable
     private IMagicEffect piggyBackSpell;
 
-    private boolean firstUpdate = true;
-
     @Override
     public String getName() {
         return "drake";
@@ -26,7 +24,7 @@ public class SpellDrake extends AbstractSpell {
 
     @Override
     public SpellAffinity getAffinity() {
-        return SpellAffinity.NEUTRAL;
+        return SpellAffinity.GOOD;
     }
 
     @Override
@@ -53,23 +51,21 @@ public class SpellDrake extends AbstractSpell {
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public void onPlaced(ICaster<?> caster) {
+        if (caster.getEntity() instanceof EntitySpell) {
+            EntitySpell living = (EntitySpell)caster.getEntity();
 
-        if (firstUpdate) {
-            firstUpdate = false;
+            ((PathNavigateGround)living.getNavigator()).setCanSwim(false);
+            living.tasks.addTask(1, new EntityAISwimming(living));
+            living.tasks.addTask(2, new EntityAIFollowCaster<>(caster, 1, 4, 70));
+            living.height = 1.8F;
 
-            if (source.getEntity() instanceof EntitySpell) {
-                EntitySpell living = (EntitySpell)source.getEntity();
-
-                ((PathNavigateGround)living.getNavigator()).setCanSwim(false);
-                living.tasks.addTask(1, new EntityAISwimming(living));
-                living.tasks.addTask(2, new EntityAIFollowCaster<>(source, 1, 4, 70));
-                living.height = 1.8F;
-
-                living.setPosition(living.posX, living.posY, living.posZ);
-            }
+            living.setPosition(living.posX, living.posY, living.posZ);
         }
+    }
 
+    @Override
+    public boolean update(ICaster<?> source) {
         if (piggyBackSpell == null) {
             AxisAlignedBB bb = EFFECT_BOUNDS.offset(source.getOriginVector());
 
