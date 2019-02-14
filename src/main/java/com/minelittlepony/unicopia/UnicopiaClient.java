@@ -185,8 +185,8 @@ public class UnicopiaClient extends UClient {
                 event.setCanceled(true);
             }
 
-            if (iplayer.hasEffect()) {
-                DisguiseRenderer.instance().renderDisguiseToGui(iplayer);
+            if (DisguiseRenderer.instance().renderDisguiseToGui(iplayer)) {
+                event.setCanceled(true);
             }
         }
     }

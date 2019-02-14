@@ -22,7 +22,7 @@ public class DisguiseRenderer {
 
         if (entity.getEntityData().hasKey("disguise") && entity.getEntityData().getBoolean("disguise")) {
 
-            renderMan.setRenderShadow(!SpellDisguise.isAttachedEntity(entity));
+            renderMan.setRenderShadow(true);
             renderDisguise(renderMan, entity);
             renderMan.setRenderShadow(false);
 
@@ -43,7 +43,7 @@ public class DisguiseRenderer {
         double y = entity.posY - observer.posY;
         double z = entity.posZ - observer.posZ;
 
-        renderMan.renderEntity(entity, x, y, z, 0, 0, false);
+        renderMan.renderEntity(entity, x, y, z, 0, 1, false);
 
         entity.getEntityData().setBoolean("disguise", true);
     }
