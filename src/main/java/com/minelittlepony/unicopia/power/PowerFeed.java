@@ -141,6 +141,15 @@ public class PowerFeed implements IPower<Hit> {
             living.addPotionEffect(new PotionEffect(MobEffects.WITHER, 20, 1));
         }
 
+        if (living instanceof EntityPlayer) {
+            damage ++;
+            damage *= 1.6F;
+
+            if (!changeling.isPotionActive(MobEffects.HEALTH_BOOST)) {
+                changeling.addPotionEffect(new PotionEffect(MobEffects.HEALTH_BOOST, 13000, 1));
+            }
+        }
+
         return damage;
     }
 
