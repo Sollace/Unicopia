@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -36,6 +37,15 @@ public class CasterUtils {
             .map(CasterUtils::toCaster)
             .filter(o -> o.isPresent() && o.get() != source)
             .map(Optional::get);
+    }
+
+    static Stream<ICaster<?>> findAllSpells(ICaster<?> source) {
+        return source.getWorld().getEntities(EntityLivingBase.class, e -> {
+            return e instanceof ICaster || e instanceof EntityPlayer;
+        }).stream()
+                .map(CasterUtils::toCaster)
+                .filter(Optional::isPresent)
+                .map(Optional::get);
     }
 
     static Stream<ICaster<?>> findAllSpellsInRange(ICaster<?> source, AxisAlignedBB bb) {

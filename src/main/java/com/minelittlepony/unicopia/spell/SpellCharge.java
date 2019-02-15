@@ -1,27 +1,15 @@
 package com.minelittlepony.unicopia.spell;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.entity.EntitySpell;
 import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.shape.Line;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-public class SpellCharge extends AbstractSpell {
-
-    boolean searching = true;
-
-    private UUID targettedEntityId;
-    private EntitySpell targettedEntity;
+public class SpellCharge extends AbstractAttachableSpell {
 
     private static final AxisAlignedBB searchArea = new AxisAlignedBB(-15, -15, -15, 15, 15, 15);
 
@@ -38,6 +26,16 @@ public class SpellCharge extends AbstractSpell {
     @Override
     public int getTint() {
         return 0x7272B7;
+    }
+
+    @Override
+    protected boolean canTargetEntity(EntitySpell e) {
+        return e.hasEffect();
+    }
+
+    @Override
+    protected AxisAlignedBB getSearchArea(ICaster<?> source) {
+        return searchArea.offset(source.getOriginVector());
     }
 
     @Override
@@ -58,48 +56,11 @@ public class SpellCharge extends AbstractSpell {
         }
     }
 
-    protected boolean canTargetEntity(Entity e) {
-        return e instanceof EntitySpell && ((EntitySpell)e).hasEffect();
-    }
-
-    protected void setTarget(EntitySpell e) {
-        searching = false;
-        targettedEntity = e;
-        targettedEntityId = e.getUniqueID();
-    }
-
-    protected EntitySpell getTarget(ICaster<?> source) {
-        if (targettedEntity == null && targettedEntityId != null) {
-            source.getWorld().getEntities(EntitySpell.class, e -> e.getUniqueID().equals(targettedEntityId))
-                .stream()
-                .findFirst()
-                .ifPresent(this::setTarget);
-        }
-
-        if (targettedEntity != null && targettedEntity.isDead) {
-            targettedEntity = null;
-            targettedEntityId = null;
-            searching = true;
-        }
-
-        return targettedEntity;
-    }
-
     @Override
     public boolean update(ICaster<?> source) {
+        super.update(source);
 
-        if (searching) {
-            BlockPos origin = source.getOrigin();
-
-            List<Entity> list = source.getWorld().getEntitiesInAABBexcluding(source.getEntity(),
-                    searchArea.offset(origin), this::canTargetEntity).stream().sorted((a, b) ->
-                        (int)(a.getDistanceSq(origin) - b.getDistanceSq(origin))
-                    ).collect(Collectors.toList());
-
-            if (list.size() > 0) {
-                setTarget((EntitySpell)list.get(0));
-            }
-        } else {
+        if (!searching) {
             EntitySpell target = getTarget(source);
 
             if (target != null && !target.overLevelCap() && source.getCurrentLevel() > 0) {
@@ -109,23 +70,5 @@ public class SpellCharge extends AbstractSpell {
         }
 
         return !getDead();
-    }
-
-    @Override
-    public void writeToNBT(NBTTagCompound compound) {
-        super.writeToNBT(compound);
-
-        if (targettedEntityId != null) {
-            compound.setUniqueId("target", targettedEntityId);
-        }
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
-
-        if (compound.hasKey("target")) {
-            targettedEntityId = compound.getUniqueId("target");
-        }
     }
 }

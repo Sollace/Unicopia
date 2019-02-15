@@ -18,21 +18,21 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
     protected int tint;
     protected float alpha;
 
-    protected int radius;
+    protected float radius;
 
     private ICaster<?> caster;
 
     private static final ModelSphere model = new ModelSphere();
 
     public ParticleSphere(int id, World w, double x, double y, double z, double vX, double vY, double vZ, int... args) {
-        this(w, x, y, z, args[0], args[1], args[2]/255F);
+        this(w, x, y, z, args[0] / 1000F, args[1], args[2]/255F);
 
         this.motionX = vX;
         this.motionY = vY;
         this.motionZ = vZ;
     }
 
-    public ParticleSphere(World w, double x, double y, double z, int radius, int tint, float alpha) {
+    public ParticleSphere(World w, double x, double y, double z, float radius, int tint, float alpha) {
         super(w, x, y, z);
 
         this.radius = radius;
@@ -69,9 +69,7 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
                 setPosition(e.posX, e.posY, e.posZ);
             }
         } else {
-            if (this.rand.nextInt(10000) == 0) {
-                this.radius--;
-            }
+            radius *= 0.9998281;
         }
     }
 
@@ -82,16 +80,18 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
 
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 
-        GlStateManager.depthMask(false);
-        GlStateManager.shadeModel(GL11.GL_SMOOTH);
-        GlStateManager.tryBlendFuncSeparate(
-                GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-                GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        if (alpha < 0) {
+            GlStateManager.depthMask(false);
+            GlStateManager.shadeModel(GL11.GL_SMOOTH);
+            GlStateManager.tryBlendFuncSeparate(
+                    GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                    GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        }
+
         Color.glColor(tint, alpha);
 
         model.setPosition(posX, posY, posZ);
         model.render(radius);
-
 
         GlStateManager.color(1, 1, 1, 1);
 
@@ -101,7 +101,7 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
     @Override
     public void setAttribute(int key, Object value) {
         if (key == 0) {
-            radius = (int)value;
+            radius = (float)value;
         }
     }
 }

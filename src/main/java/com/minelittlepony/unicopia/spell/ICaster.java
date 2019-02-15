@@ -84,6 +84,10 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelle
         }
     }
 
+    default Stream<ICaster<?>> findAllSpells() {
+        return CasterUtils.findAllSpells(this);
+    }
+
     default Stream<ICaster<?>> findAllSpellsInRange(double radius) {
         return CasterUtils.findAllSpellsInRange(this, radius);
     }
@@ -95,4 +99,6 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelle
     default Stream<Entity> findAllEntitiesInRange(double radius) {
         return VecHelper.findAllEntitiesInRange(getEntity(), getWorld(), getOrigin(), radius);
     }
+
+
 }

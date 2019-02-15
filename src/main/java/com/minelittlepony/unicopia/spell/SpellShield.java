@@ -37,14 +37,14 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell {
 
     @Override
     public void render(ICaster<?> source) {
-        int radius = 4 + (source.getCurrentLevel() * 2);
+        float radius = 4 + (source.getCurrentLevel() * 2);
 
-        source.spawnParticles(new Sphere(true, radius), radius * 6, pos -> {
+        source.spawnParticles(new Sphere(true, radius), (int)(radius * 6), pos -> {
             Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0);
         });
 
         particlEffect
-            .ifMissing(source, () -> Particles.instance().spawnParticle(UParticles.SPHERE, true, source.getOriginVector(), 0, 0, 0, radius, getTint(), 30))
+            .ifMissing(source, () -> Particles.instance().spawnParticle(UParticles.SPHERE, true, source.getOriginVector(), 0, 0, 0, 1, getTint(), 30))
             .ifPresent(p -> p.setAttribute(0, radius));
     }
 
@@ -62,7 +62,7 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell {
         return !getDead();
     }
 
-    protected double getDrawDropOffRange(ICaster<?> source) {
+    public double getDrawDropOffRange(ICaster<?> source) {
         return 4 + (source.getCurrentLevel() * 2);
     }
 

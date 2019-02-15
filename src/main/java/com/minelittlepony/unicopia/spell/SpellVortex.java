@@ -38,7 +38,7 @@ public class SpellVortex extends SpellShield {
     }
 
     @Override
-    protected double getDrawDropOffRange(ICaster<?> caster) {
+    public double getDrawDropOffRange(ICaster<?> caster) {
         return 10 + (caster.getCurrentLevel() * 2);
     }
 
