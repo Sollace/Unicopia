@@ -51,6 +51,11 @@ public class SpellDrake extends AbstractSpell {
     }
 
     @Override
+    public boolean isDirty() {
+        return super.isDirty() || (piggyBackSpell != null && piggyBackSpell.isDirty());
+    }
+
+    @Override
     public void onPlaced(ICaster<?> caster) {
         if (caster.getEntity() instanceof EntitySpell) {
             EntitySpell living = (EntitySpell)caster.getEntity();
@@ -108,7 +113,11 @@ public class SpellDrake extends AbstractSpell {
         super.readFromNBT(compound);
 
         if (compound.hasKey("effect")) {
-            piggyBackSpell = SpellRegistry.instance().createEffectFromNBT(compound.getCompoundTag("effect"));
+            if (piggyBackSpell != null) {
+                piggyBackSpell.readFromNBT(compound.getCompoundTag("effect"));
+            } else {
+                piggyBackSpell = SpellRegistry.instance().createEffectFromNBT(compound.getCompoundTag("effect"));
+            }
         }
     }
 }
