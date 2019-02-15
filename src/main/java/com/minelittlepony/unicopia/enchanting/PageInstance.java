@@ -12,6 +12,9 @@ class PageInstance implements IPage {
 
     int index;
 
+    @Nullable
+    ResourceLocation parent;
+
     @Nonnull
     ResourceLocation name;
 
@@ -26,6 +29,10 @@ class PageInstance implements IPage {
 
     PageInstance(ResourceLocation id, JsonObject json) {
         this.name = id;
+
+        if (json.has("parent")) {
+            parent = new ResourceLocation(json.get("parent").getAsString());
+        }
 
         if (json.has("state")) {
             state = PageState.of(json.get("state").getAsString());

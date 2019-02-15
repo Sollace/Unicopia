@@ -112,10 +112,13 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
         if (slot instanceof SlotEnchanting) {
             GlStateManager.enableBlend();
             GL11.glDisable(GL11.GL_ALPHA_TEST);
+
             mc.getTextureManager().bindTexture(spellBookGuiTextures);
             drawModalRectWithCustomSizedTexture(slot.xPos - 1, slot.yPos - 1, 51, 223, 18, 18, 512, 256);
+
             GL11.glEnable(GL11.GL_ALPHA_TEST);
             GlStateManager.disableBlend();
+
             return true;
         }
         return false;
@@ -148,6 +151,9 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
         GlStateManager.enableBlend();
         GL11.glDisable(GL11.GL_ALPHA_TEST);
 
+        mc.getTextureManager().bindTexture(spellBookGuiTextures);
+        drawModalRectWithCustomSizedTexture(left + 147, top + 49, 407, 2, 100, 101, 512, 256);
+
         if (playerExtension.getPageState(currentIPage) != PageState.LOCKED) {
             ResourceLocation texture = currentIPage.getTexture();
 
@@ -162,9 +168,6 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
                 }
             }
         }
-
-        mc.getTextureManager().bindTexture(spellBookGuiTextures);
-        drawModalRectWithCustomSizedTexture(left + 152, top + 49, 407, 2, 100, 101, 512, 256);
 
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GlStateManager.disableBlend();

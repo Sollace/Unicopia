@@ -23,8 +23,8 @@ public class Pages {
         return instance;
     }
 
-    private final Map<ResourceLocation, IPage> pages = Maps.newHashMap();
-    private final List<IPage> pagesByIndex = Lists.newArrayList();
+    private final Map<ResourceLocation, PageInstance> pages = Maps.newHashMap();
+    private final List<PageInstance> pagesByIndex = Lists.newArrayList();
 
     private final Map<String, IConditionFactory> conditionFactories = Maps.newHashMap();
 
@@ -41,10 +41,25 @@ public class Pages {
         pagesByIndex.clear();
         assets.walk();
 
-        int index = 0;
-        for (IPage ipage : pages.values()) {
-            ((PageInstance)ipage).index = index++;
-            pagesByIndex.add(ipage);
+        List<ResourceLocation> names = Lists.newArrayList();
+
+        for (PageInstance page : pages.values()) {
+            if (page.parent != null) {
+                int i = names.indexOf(page.parent);
+                if (i != -1) {
+                    names.add(i, page.name);
+                    pagesByIndex.add(i, page);
+
+                    continue;
+                }
+            }
+
+            names.add(page.name);
+            pagesByIndex.add(page);
+        }
+
+        for (int i = 0; i < pagesByIndex.size(); i++) {
+            pagesByIndex.get(i).index = i;
         }
     }
 
@@ -70,7 +85,7 @@ public class Pages {
     }
 
     public Stream<IPage> getUnlockablePages(Predicate<IPage> predicate) {
-        return pages.values().stream().filter(predicate);
+        return pages.values().stream().map(IPage.class::cast).filter(predicate);
     }
 
     public void triggerUnlockEvent(IPageOwner owner, IUnlockEvent event, @Nullable IPageUnlockListener unlockListener) {

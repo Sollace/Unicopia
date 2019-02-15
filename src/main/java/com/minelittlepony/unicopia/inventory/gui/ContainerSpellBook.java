@@ -60,12 +60,12 @@ public class ContainerSpellBook extends Container {
     }
 
     public void initCraftingSlots() {
-        addSlotToContainer(new SlotEnchanting(craftMatrix, 0, 180, 50));
-        addSlotToContainer(new SlotEnchanting(craftMatrix, 1, 154, 94));
-        addSlotToContainer(new SlotEnchanting(craftMatrix, 2, 180, 134));
-        addSlotToContainer(new SlotEnchanting(craftMatrix, 3, 231, 120));
-        addSlotToContainer(new SlotEnchanting(craftMatrix, 4, 232, 65));
-        addSlotToContainer(resultSlot = new SlotEnchantingResult(listener, PlayerSpeciesList.instance().getPlayer(player), craftMatrix, craftResult, 0, 196, 92));
+        addSlotToContainer(new SlotEnchanting(craftMatrix, 0, 175, 50));
+        addSlotToContainer(new SlotEnchanting(craftMatrix, 1, 149, 94));
+        addSlotToContainer(new SlotEnchanting(craftMatrix, 2, 175, 134));
+        addSlotToContainer(new SlotEnchanting(craftMatrix, 3, 226, 120));
+        addSlotToContainer(new SlotEnchanting(craftMatrix, 4, 227, 65));
+        addSlotToContainer(resultSlot = new SlotEnchantingResult(listener, PlayerSpeciesList.instance().getPlayer(player), craftMatrix, craftResult, 0, 191, 92));
     }
 
     @Override
