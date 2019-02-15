@@ -78,10 +78,12 @@ public class ContainerSpellBook extends Container {
             if (!crafted.isEmpty()) {
                 current = SpellRegistry.instance().enchantStack(current, crafted);
 
+                resultSlot.setCrafted(true);
                 player.playSound(SoundEvents.BLOCK_NOTE_CHIME, 1, 1);
             } else {
                 current = SpellRegistry.instance().disenchantStack(current);
 
+                resultSlot.setCrafted(false);
                 player.playSound(SoundEvents.BLOCK_NOTE_BASS, 1, 1);
             }
 

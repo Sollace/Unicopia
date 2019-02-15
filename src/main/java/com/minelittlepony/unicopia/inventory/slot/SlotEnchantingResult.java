@@ -20,6 +20,8 @@ public class SlotEnchantingResult extends SlotEnchanting {
 
     private IPageUnlockListener listener;
 
+    private boolean crafted;
+
     public SlotEnchantingResult(IPageUnlockListener listener, IPageOwner owner, InventorySpellBook craftMatric, IInventory inventory, int index, int xPosition, int yPosition) {
         super(inventory, index, xPosition, yPosition);
         this.owner = owner;
@@ -31,35 +33,41 @@ public class SlotEnchantingResult extends SlotEnchanting {
         this.listener = listener;
     }
 
+    public void setCrafted(boolean crafted) {
+        this.crafted = crafted;
+    }
+
     @Override
     public ItemStack onTake(EntityPlayer player, ItemStack stack) {
-        onCrafting(stack);
+        if (crafted) {
+            onCrafting(stack);
 
-        ItemStack current = craftMatrix.getCraftResultMatrix().getStackInSlot(0);
-        craftMatrix.getCraftResultMatrix().setInventorySlotContents(0, stack);
+            ItemStack current = craftMatrix.getCraftResultMatrix().getStackInSlot(0);
+            craftMatrix.getCraftResultMatrix().setInventorySlotContents(0, stack);
 
-        NonNullList<ItemStack> remaining = Unicopia.getCraftingManager().getRemainingItems(craftMatrix, player.world);
+            NonNullList<ItemStack> remaining = Unicopia.getCraftingManager().getRemainingItems(craftMatrix, player.world);
 
-        craftMatrix.getCraftResultMatrix().setInventorySlotContents(0, current);
+            craftMatrix.getCraftResultMatrix().setInventorySlotContents(0, current);
 
-        for (int i = 0; i < remaining.size(); ++i) {
-            current = craftMatrix.getStackInSlot(i);
-            ItemStack remainder = remaining.get(i);
+            for (int i = 0; i < remaining.size(); ++i) {
+                current = craftMatrix.getStackInSlot(i);
+                ItemStack remainder = remaining.get(i);
 
-            if (!current.isEmpty()) {
-                if (current.getCount() < stack.getCount()) {
-                    craftMatrix.setInventorySlotContents(i, ItemStack.EMPTY);
-                } else {
-                    craftMatrix.decrStackSize(i, stack.getCount());
-                }
-
-                if (!remainder.isEmpty()) {
-                    if (craftMatrix.getStackInSlot(i).isEmpty()) {
-                        craftMatrix.setInventorySlotContents(i, remainder);
+                if (!current.isEmpty()) {
+                    if (current.getCount() < stack.getCount()) {
+                        craftMatrix.setInventorySlotContents(i, ItemStack.EMPTY);
                     } else {
-                        remainder.setCount(stack.getCount());
-                        if (!player.inventory.addItemStackToInventory(remainder)) {
-                            player.dropItem(remainder, true);
+                        craftMatrix.decrStackSize(i, stack.getCount());
+                    }
+
+                    if (!remainder.isEmpty()) {
+                        if (craftMatrix.getStackInSlot(i).isEmpty()) {
+                            craftMatrix.setInventorySlotContents(i, remainder);
+                        } else {
+                            remainder.setCount(stack.getCount());
+                            if (!player.inventory.addItemStackToInventory(remainder)) {
+                                player.dropItem(remainder, true);
+                            }
                         }
                     }
                 }
