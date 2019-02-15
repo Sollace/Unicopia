@@ -1,0 +1,28 @@
+{
+    "parent": "unicopia:first_staff",
+    "rewards": {
+        "experience": 10
+    },
+    "display": {
+        "icon": {
+            "item": "unicopia:staff_meadow_brook"
+        },
+        "title": {
+            "translate": "advancements.adventure.just_a_stick.title"
+        },
+        "description": {
+            "translate": "advancements.adventure.just_a_stick.description"
+        }
+    },
+    "criteria": {
+        "break_brook": {
+            "trigger": "minecraft:item_durability_changed",
+            "conditions": {
+                "item": {
+                    "item": "minecraft:diamond_hoe"
+                },
+                "durability": -1
+            }
+        }
+    }
+}

@@ -246,4 +246,13 @@ advancements.adventure.bag_of_holding_2.description=Die by the Bag of Holding a 
 advancements.adventure.bag_of_holding_3.title=Oh come on!
 advancements.adventure.bag_of_holding_3.description=-_-
 
+advancements.adventure.first_staff.title=Baby Steps
+advancements.adventure.first_staff.description=Craft your first staff
+
+advancements.adventure.just_a_stick.title=Old 'n Busted
+advancements.adventure.just_a_stick.description=It's a stick. What did you expect?
+
+advancements.adventure.unicopia_beginning.title=Just the beginning...
+advancements.adventure.unicopia_beginning.description=Found your first gem, but what can it do?
+
 effect.food_poisoning=Food Poisoning

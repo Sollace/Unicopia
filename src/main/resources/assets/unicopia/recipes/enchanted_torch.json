@@ -9,7 +9,7 @@
       { "item": "minecraft:stick" }
     ],
     "#": [
-      { "item": "unicopia:gem" }
+      { "item": "unicopia:gem", "nbt": { "spell": "light" } }
     ]
   },
   "result": { "item": "unicopia:enchanted_torch", "count": 1 }
