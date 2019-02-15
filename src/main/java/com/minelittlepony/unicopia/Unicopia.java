@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.structure.MapGenStructureIO;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
@@ -22,6 +23,8 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerFlyableFallEvent;
 import net.minecraftforge.event.entity.player.UseHoeEvent;
+import net.minecraftforge.event.terraingen.PopulateChunkEvent;
+import net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -60,7 +63,9 @@ import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.PowersRegistry;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
+import com.minelittlepony.unicopia.structure.CloudDungeon;
 import com.minelittlepony.unicopia.util.crafting.CraftingManager;
+import com.minelittlepony.unicopia.world.CloudGen;
 import com.minelittlepony.unicopia.world.UWorld;
 
 @Mod(
@@ -122,6 +127,16 @@ public class Unicopia implements IGuiHandler {
         UClient.instance().posInit(event);
 
         UItems.fixRecipes();
+
+        MapGenStructureIO.registerStructure(CloudGen.Start.class, "unicopia:clouds");
+        MapGenStructureIO.registerStructureComponent(CloudDungeon.class, "unicopia:cloud_dungeon");
+    }
+
+    @EventHandler
+    public static void onStructureGen(PopulateChunkEvent.Populate event) {
+        if (event.getType() == EventType.DUNGEON) {
+            UWorld.instance().generateStructures(event.getWorld(), event.getChunkX(), event.getChunkZ(), event.getGen());
+        }
     }
 
     public static CraftingManager getCraftingManager() {
