@@ -127,7 +127,9 @@ public class SpellRegistry {
     }
 
     public ItemStack enchantStack(ItemStack stack, String name) {
-        stack.setTagCompound(new NBTTagCompound());
+        if (!stack.hasTagCompound()) {
+            stack.setTagCompound(new NBTTagCompound());
+        }
         stack.getTagCompound().setString("spell", name);
 
         return stack;
