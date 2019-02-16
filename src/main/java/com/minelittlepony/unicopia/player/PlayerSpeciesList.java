@@ -21,17 +21,17 @@ public class PlayerSpeciesList {
     }
 
     public boolean whiteListRace(Race race) {
-        boolean result = UConfig.getInstance().getSpeciesWhiteList().add(race);
+        boolean result = UConfig.instance().getSpeciesWhiteList().add(race);
 
-        UConfig.getInstance().save();
+        UConfig.instance().save();
 
         return result;
     }
 
     public boolean unwhiteListRace(Race race) {
-        boolean result = UConfig.getInstance().getSpeciesWhiteList().remove(race);
+        boolean result = UConfig.instance().getSpeciesWhiteList().remove(race);
 
-        UConfig.getInstance().save();
+        UConfig.instance().save();
 
         return result;
     }
@@ -41,7 +41,7 @@ public class PlayerSpeciesList {
             return false;
         }
 
-        return race.isDefault() || UConfig.getInstance().getSpeciesWhiteList().isEmpty() || UConfig.getInstance().getSpeciesWhiteList().contains(race);
+        return race.isDefault() || UConfig.instance().getSpeciesWhiteList().isEmpty() || UConfig.instance().getSpeciesWhiteList().contains(race);
     }
 
     public Race validate(Race race, EntityPlayer sender) {
@@ -69,7 +69,7 @@ public class PlayerSpeciesList {
     }
 
     @Nullable
-    public IPlayer getPlayer(EntityPlayer player) {
+    public IPlayer getPlayer(@Nullable EntityPlayer player) {
         if (player == null) {
             return null;
         }

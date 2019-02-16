@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.player;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.init.USounds;
 import com.minelittlepony.unicopia.mixin.MixinEntity;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;

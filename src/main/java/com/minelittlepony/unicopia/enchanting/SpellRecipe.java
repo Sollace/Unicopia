@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.UItems;
+import com.minelittlepony.unicopia.init.UItems;
 import com.minelittlepony.unicopia.inventory.InventorySpellBook;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 

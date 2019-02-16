@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.spell;
 
 import com.minelittlepony.unicopia.Predicates;
-import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.init.UParticles;
 import com.minelittlepony.unicopia.particle.ParticleConnection;
 import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.IPlayer;

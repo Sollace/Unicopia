@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.spell;
 
-import com.minelittlepony.unicopia.UMaterials;
+import com.minelittlepony.unicopia.init.UMaterials;
 import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.PosHelper;
 import com.minelittlepony.util.collection.IStateMapping;

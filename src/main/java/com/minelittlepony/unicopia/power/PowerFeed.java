@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import org.lwjgl.input.Keyboard;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.init.UParticles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.power.data.Hit;
 import com.minelittlepony.util.MagicalDamageSource;

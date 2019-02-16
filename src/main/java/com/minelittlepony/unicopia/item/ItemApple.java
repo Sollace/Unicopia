@@ -5,9 +5,9 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.edibles.IEdible;
 import com.minelittlepony.unicopia.edibles.Toxicity;
+import com.minelittlepony.unicopia.init.UItems;
 import com.minelittlepony.util.collection.Pool;
 import com.minelittlepony.util.collection.Weighted;
 

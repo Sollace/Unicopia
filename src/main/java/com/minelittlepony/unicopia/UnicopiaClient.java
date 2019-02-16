@@ -8,12 +8,12 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.jumpingcastle.api.Target;
 import com.minelittlepony.unicopia.entity.EntityFakeClientPlayer;
-import com.minelittlepony.unicopia.hud.UHud;
+import com.minelittlepony.unicopia.init.UEntities;
+import com.minelittlepony.unicopia.init.UParticles;
 import com.minelittlepony.unicopia.input.Keyboard;
 import com.minelittlepony.unicopia.inventory.gui.GuiOfHolding;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.player.IPlayer;
-import com.minelittlepony.unicopia.player.IView;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.render.DisguiseRenderer;
 import com.minelittlepony.util.gui.ButtonGridLayout;
@@ -24,33 +24,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiOptions;
-import net.minecraft.client.gui.GuiShareToLan;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.world.IInteractionObject;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.client.event.FOVUpdateEvent;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import static com.minelittlepony.util.gui.ButtonGridLayout.*;
 
-@EventBusSubscriber(Side.CLIENT)
 public class UnicopiaClient extends UClient {
 
     /**
@@ -64,7 +45,7 @@ public class UnicopiaClient extends UClient {
     private static Race clientPlayerRace = getclientPlayerRace();
 
     private static Race getclientPlayerRace() {
-        if (!UConfig.getInstance().ignoresMineLittlePony()
+        if (!UConfig.instance().ignoresMineLittlePony()
                 && Minecraft.getMinecraft().player != null) {
             Race race = MineLP.getPlayerPonyRace();
 
@@ -74,9 +55,38 @@ public class UnicopiaClient extends UClient {
         }
 
 
-        return UConfig.getInstance().getPrefferedRace();
+        return UConfig.instance().getPrefferedRace();
     }
 
+    static void addUniButton(List<GuiButton> buttons) {
+        ButtonGridLayout layout = new ButtonGridLayout(buttons);
+
+        GuiButton uni = new UButton(layout.getNextButtonId(), 0, 0, 150, 20, I18n.format("gui.unicopia"), b -> {
+            Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.BLOCK_ANVIL_USE, 1));
+            b.displayString = "<< WIP >>";
+
+            return false;
+        });
+
+        List<Integer> possibleXCandidates = list(layout.getColumns());
+        List<Integer> possibleYCandidates = list(layout.getRows());
+
+        uni.y = last(possibleYCandidates, 1);
+
+        if (layout.getRows()
+                .filter(y -> layout.getRow(y).size() == 1).count() < 2) {
+            uni.y += 25;
+            uni.x = first(possibleXCandidates, 0);
+
+            layout.getRow(last(possibleYCandidates, 0)).forEach(button -> {
+                button.y = Math.max(button.y, uni.y + uni.height + 13);
+            });
+        } else {
+            uni.x = first(possibleXCandidates, 2);
+        }
+
+        layout.getElements().add(uni);
+    }
 
     @Override
     public void displayGuiToPlayer(EntityPlayer player, IInteractionObject inventory) {
@@ -130,149 +140,52 @@ public class UnicopiaClient extends UClient {
         return Minecraft.getMinecraft().gameSettings.thirdPersonView;
     }
 
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void onDisplayGui(GuiScreenEvent.InitGuiEvent.Post event) {
-        if (event.getGui() instanceof GuiOptions || event.getGui() instanceof GuiShareToLan) {
-            addUniButton(event);
-        }
-    }
+    @Override
+    public boolean renderEntity(Entity entity, float renderPartialTicks) {
 
-    static void addUniButton(GuiScreenEvent.InitGuiEvent.Post event) {
-        ButtonGridLayout layout = new ButtonGridLayout(event.getButtonList());
-
-        GuiButton uni = new UButton(layout.getNextButtonId(), 0, 0, 150, 20, I18n.format("gui.unicopia"), b -> {
-            Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.BLOCK_ANVIL_USE, 1));
-            b.displayString = "<< WIP >>";
-
-            return false;
-        });
-
-        List<Integer> possibleXCandidates = list(layout.getColumns());
-        List<Integer> possibleYCandidates = list(layout.getRows());
-
-        uni.y = last(possibleYCandidates, 1);
-
-        if (layout.getRows()
-                .filter(y -> layout.getRow(y).size() == 1).count() < 2) {
-            uni.y += 25;
-            uni.x = first(possibleXCandidates, 0);
-
-            layout.getRow(last(possibleYCandidates, 0)).forEach(button -> {
-                button.y = Math.max(button.y, uni.y + uni.height + 13);
-            });
-        } else {
-            uni.x = first(possibleXCandidates, 2);
-        }
-
-        layout.getElements().add(uni);
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void preEntityRender(RenderLivingEvent.Pre<?> event) {
-
-        Entity entity = event.getEntity();
-
-        if (DisguiseRenderer.instance().renderDisguise(entity, event.getPartialRenderTick())) {
-            event.setCanceled(true);
+        if (DisguiseRenderer.instance().renderDisguise(entity, renderPartialTicks)) {
+            return true;
         }
 
         if (entity instanceof EntityPlayer) {
             IPlayer iplayer = PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity);
 
-            if (iplayer.isInvisible()) {
-                event.setCanceled(true);
+            if (DisguiseRenderer.instance().renderDisguiseToGui(iplayer)) {
+                return true;
             }
 
-            if (DisguiseRenderer.instance().renderDisguiseToGui(iplayer)) {
-                event.setCanceled(true);
+            if (iplayer.isInvisible()) {
+                return true;
             }
         }
+
+        return false;
     }
 
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void postEntityRender(RenderLivingEvent.Post<?> event) {
-        // This fixes lighting errors on the armour slots.
-        // #MahjongPls
-        // @FUF(reason = "Forge should fix this. Cancelling their event skips neccessary state resetting at the end of the render method")
-        GlStateManager.enableAlpha();
-    }
-
-    @SideOnly(Side.CLIENT)
     @Override
-    public void preInit(FMLPreInitializationEvent event) {
+    public void preInit() {
         UEntities.preInit();
         UParticles.init();
     }
 
-    @SideOnly(Side.CLIENT)
     @Override
-    public void init(FMLInitializationEvent event) {
+    public void init() {
         clientPlayerRace = getclientPlayerRace();
     }
 
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void registerItemColours(ColorHandlerEvent.Item event) {
-        UItems.registerColors(event.getItemColors());
-        UBlocks.registerColors(event.getItemColors(), event.getBlockColors());
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void onRenderHud(RenderGameOverlayEvent.Post event) {
-        if (event.getType() != ElementType.ALL) {
-            return;
-        }
-
-        Minecraft mc = Minecraft.getMinecraft();
-        if (mc.player != null && mc.world != null) {
-            IPlayer player = PlayerSpeciesList.instance().getPlayer(mc.player);
-
-            UHud.instance.renderHud(player, event.getResolution());
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void modifyFOV(FOVUpdateEvent event) {
-        event.setNewfov(PlayerSpeciesList.instance().getPlayer(event.getEntity()).getCamera().calculateFieldOfView(event.getFov()));
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void onGameTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == Phase.END) {
-            EntityPlayer player = UClient.instance().getPlayer();
-
-            if (player != null && !player.isDead) {
-                Race newRace = getclientPlayerRace();
-
-                if (newRace != clientPlayerRace) {
-                    clientPlayerRace = newRace;
-
-                    Unicopia.channel.send(new MsgRequestCapabilities(player, clientPlayerRace), Target.SERVER);
-                }
-            }
-
-            Keyboard.getKeyHandler().onKeyInput();
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public static void setupPlayerCamera(EntityViewRenderEvent.CameraSetup event) {
-
+    public void tick() {
         EntityPlayer player = UClient.instance().getPlayer();
 
-        if (player != null) {
-            IView view = PlayerSpeciesList.instance().getPlayer(player).getCamera();
+        if (player != null && !player.isDead) {
+            Race newRace = getclientPlayerRace();
 
-            event.setRoll(view.calculateRoll());
-            event.setPitch(view.calculatePitch(event.getPitch()));
-            event.setYaw(view.calculateYaw(event.getYaw()));
+            if (newRace != clientPlayerRace) {
+                clientPlayerRace = newRace;
+
+                Unicopia.getConnection().send(new MsgRequestCapabilities(player, clientPlayerRace), Target.SERVER);
+            }
         }
+
+        Keyboard.getKeyHandler().onKeyInput();
     }
 }

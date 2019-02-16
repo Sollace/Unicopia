@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.init;
 
 import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.particle.client.ParticleUnicornMagic;
@@ -21,7 +21,7 @@ public class UParticles {
     public static int DISK;
 
     @SideOnly(Side.CLIENT)
-    static void init() {
+    public static void init() {
         UNICORN_MAGIC = Particles.instance().registerParticle(ParticleUnicornMagic::new);
         RAIN_DROPS = Particles.instance().registerParticle(ParticleRaindrops::new);
         CHANGELING_MAGIC = Particles.instance().registerParticle(ParticleChanglingMagic::new);

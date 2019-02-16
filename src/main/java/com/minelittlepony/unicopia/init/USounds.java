@@ -1,4 +1,6 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.init;
+
+import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;

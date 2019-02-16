@@ -6,7 +6,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.UBlocks;
+import com.minelittlepony.unicopia.init.UBlocks;
 
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.BlockStairs;

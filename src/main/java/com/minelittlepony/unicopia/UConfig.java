@@ -24,7 +24,7 @@ public class UConfig {
             .setPrettyPrinting()
             .create();
 
-    public static UConfig getInstance() {
+    public static UConfig instance() {
         return instance;
     }
 

@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.Predicates;
-import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.init.UItems;
 
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.EntityLiving;

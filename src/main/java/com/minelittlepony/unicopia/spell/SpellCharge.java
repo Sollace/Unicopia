@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.spell;
 
-import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.entity.EntitySpell;
+import com.minelittlepony.unicopia.init.UParticles;
 import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.shape.Line;

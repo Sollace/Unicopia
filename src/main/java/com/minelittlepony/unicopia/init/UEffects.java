@@ -1,5 +1,6 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.init;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.potion.UPotion;
 
 import net.minecraft.init.MobEffects;

@@ -123,11 +123,6 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
     boolean onProjectileImpact(Entity projectile);
 
     /**
-     * Called at the beginning of a player's update cycle.
-     */
-    void beforeUpdate(EntityPlayer entity);
-
-    /**
      * Returns true if this player is the use.
      */
     default boolean isClientPlayer() {

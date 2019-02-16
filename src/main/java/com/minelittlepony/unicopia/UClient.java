@@ -7,23 +7,21 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.entity.EntityFakeServerPlayer;
 import com.minelittlepony.unicopia.forgebullshit.FUF;
+import com.minelittlepony.unicopia.player.IPlayer;
+import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class UClient {
 
     private static UClient instance;
 
     public static boolean isClientSide() {
-        return FMLCommonHandler.instance().getSide().isClient();
+        return net.minecraftforge.fml.common.FMLCommonHandler.instance().getSide().isClient();
     }
 
     @FUF(reason = "Forced client Separation")
@@ -48,6 +46,11 @@ public class UClient {
     @Nullable
     public EntityPlayer getPlayer() {
         return null;
+    }
+
+    @Nullable
+    public IPlayer getIPlayer() {
+        return PlayerSpeciesList.instance().getPlayer(getPlayer());
     }
 
     @FUF(reason = "Forced client Separation")
@@ -75,9 +78,15 @@ public class UClient {
         return new EntityFakeServerPlayer((WorldServer)observer.world, profile);
     }
 
-    public void preInit(FMLPreInitializationEvent event) {}
+    public boolean renderEntity(Entity entity, float renderPartialTicks) {
+        return false;
+    }
 
-    public void init(FMLInitializationEvent event) {}
+    public void tick() {}
 
-    public void posInit(FMLPostInitializationEvent event) {}
+    public void preInit() {}
+
+    public void init() {}
+
+    public void posInit() {}
 }

@@ -1,5 +1,6 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.init;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.EntityCloud;
 import com.minelittlepony.unicopia.entity.EntityConstructionCloud;
 import com.minelittlepony.unicopia.entity.EntityRacingCloud;
@@ -44,7 +45,7 @@ public class UEntities {
         );
     }
 
-    static void preInit() {
+    public static void preInit() {
         RenderingRegistry.registerEntityRenderingHandler(EntityCloud.class, RenderCloud::new);
         RenderingRegistry.registerEntityRenderingHandler(EntitySpell.class, RenderGem::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityProjectile.class, RenderProjectile::new);
@@ -52,7 +53,7 @@ public class UEntities {
         RenderingRegistry.registerEntityRenderingHandler(EntityRainbow.class, RenderRainbow::new);
     }
 
-    static void registerSpawnEntries(Biome biome) {
+    public static void registerSpawnEntries(Biome biome) {
         if (!(biome instanceof BiomeHell || biome instanceof BiomeEnd)) {
 
             BiomeBS.addSpawnEntry(biome, EnumCreatureType.AMBIENT, EntityWildCloud.class, b ->
@@ -61,6 +62,4 @@ public class UEntities {
             BiomeBS.addSpawnEntry(biome, EnumCreatureType.CREATURE, EntityRainbow.Spawner.class, b -> EntityRainbow.SPAWN_ENTRY);
         }
     }
-
-
 }

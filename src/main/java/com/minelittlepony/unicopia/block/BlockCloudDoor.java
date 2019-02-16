@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.block;
 import java.util.Random;
 
 import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.UItems;
+import com.minelittlepony.unicopia.init.UItems;
 
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.SoundType;

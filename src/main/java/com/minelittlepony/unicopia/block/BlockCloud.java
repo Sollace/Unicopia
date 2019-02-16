@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.UBlocks;
+import com.minelittlepony.unicopia.init.UBlocks;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.block.Block;

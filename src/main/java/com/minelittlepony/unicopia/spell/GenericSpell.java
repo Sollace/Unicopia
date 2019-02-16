@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.spell;
 
 import java.util.function.Supplier;
 
-import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.init.UParticles;
 
 public class GenericSpell extends AbstractSpell {
 

@@ -6,6 +6,9 @@ import java.util.Random;
 import com.google.common.collect.Queues;
 import com.minelittlepony.jumpingcastle.Exceptions;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.player.IUpdatable;
+import com.minelittlepony.unicopia.structure.CloudDungeon;
+import com.minelittlepony.unicopia.structure.GroundDungeon;
 
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -13,10 +16,11 @@ import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkGeneratorOverworld;
 import net.minecraft.world.gen.IChunkGenerator;
+import net.minecraft.world.gen.structure.MapGenStructureIO;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class UWorld implements IWorldGenerator {
+public class UWorld implements IWorldGenerator, IUpdatable<World> {
 
     private static final UWorld instance = new UWorld();
 
@@ -28,7 +32,28 @@ public class UWorld implements IWorldGenerator {
 
     private static final Object locker = new Object();
 
-    public static void tick(World world) {
+    public static void enqueueTask(Runnable task) {
+        synchronized (locker) {
+            tickTasks.add(task);
+        }
+    }
+
+    private final BlockInteractions blocks = new BlockInteractions();
+
+    private final CloudGen cloudsGen = new CloudGen();
+    private final StructuresGen structuresGen = new StructuresGen();
+
+    public void init() {
+        GameRegistry.registerWorldGenerator(this, 1);
+
+        MapGenStructureIO.registerStructure(CloudGen.Start.class, "unicopia:clouds");
+        MapGenStructureIO.registerStructure(StructuresGen.Start.class, "unicopia:ruins");
+        MapGenStructureIO.registerStructureComponent(CloudDungeon.class, "unicopia:cloud_dungeon");
+        MapGenStructureIO.registerStructureComponent(GroundDungeon.class, "unicopia:ground_dungeon");
+    }
+
+    @Override
+    public void onUpdate(World world) {
         synchronized (locker) {
             Runnable task;
             while ((task = tickTasks.poll()) != null) {
@@ -37,17 +62,8 @@ public class UWorld implements IWorldGenerator {
         }
     }
 
-    public static void enqueueTask(Runnable task) {
-        synchronized (locker) {
-            tickTasks.add(task);
-        }
-    }
-
-    private CloudGen cloudsGen = new CloudGen();
-    private StructuresGen structuresGen = new StructuresGen();
-
-    public void init() {
-        GameRegistry.registerWorldGenerator(this, 1);
+    public BlockInteractions getBlocks() {
+        return blocks;
     }
 
     public void generateStructures(World world, int chunkX, int chunkZ, IChunkGenerator gen) {

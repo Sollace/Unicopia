@@ -4,7 +4,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.UItems;
+import com.minelittlepony.unicopia.init.UItems;
 
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.properties.PropertyEnum;

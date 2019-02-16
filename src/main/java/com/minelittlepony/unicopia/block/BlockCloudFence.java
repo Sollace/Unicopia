@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.UMaterials;
+import com.minelittlepony.unicopia.init.UMaterials;
 
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.SoundType;

@@ -8,9 +8,9 @@ import com.google.common.collect.Maps;
 import com.minelittlepony.model.anim.BasicEasingInterpolator;
 import com.minelittlepony.model.anim.IInterpolator;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UEffects;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.enchanting.PageState;
+import com.minelittlepony.unicopia.init.UEffects;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
@@ -146,9 +146,9 @@ class PlayerCapabilities implements IPlayer {
 
         if (!getWorld().isRemote) {
             if (full) {
-                Unicopia.channel.broadcast(new MsgPlayerCapabilities(this));
+                Unicopia.getConnection().broadcast(new MsgPlayerCapabilities(this));
             } else {
-                Unicopia.channel.broadcast(new MsgPlayerCapabilities(getPlayerSpecies(), getOwner()));
+                Unicopia.getConnection().broadcast(new MsgPlayerCapabilities(getPlayerSpecies(), getOwner()));
             }
         }
     }
@@ -181,7 +181,7 @@ class PlayerCapabilities implements IPlayer {
     }
 
     @Override
-    public void beforeUpdate(EntityPlayer entity) {
+    public void beforeUpdate() {
         if (entity.world.isRemote) {
             if (entity.isRiding() && entity.isSneaking()) {
 
@@ -197,7 +197,7 @@ class PlayerCapabilities implements IPlayer {
     }
 
     @Override
-    public void onUpdate(EntityPlayer entity) {
+    public void onUpdate() {
         powers.onUpdate(entity);
         gravity.onUpdate(entity);
 

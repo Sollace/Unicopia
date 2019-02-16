@@ -6,8 +6,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UEffects;
 import com.minelittlepony.unicopia.forgebullshit.IMultiItem;
+import com.minelittlepony.unicopia.init.UEffects;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.advancements.CriteriaTriggers;

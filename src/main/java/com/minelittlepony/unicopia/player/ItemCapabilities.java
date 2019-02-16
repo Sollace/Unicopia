@@ -12,7 +12,12 @@ class ItemCapabilities implements IRaceContainer<EntityItem>, IOwned<EntityItem>
     private EntityItem owner;
 
     @Override
-    public void onUpdate(EntityItem entity) {
+    public void onUpdate() {
+
+    }
+
+    @Override
+    public void beforeUpdate() {
 
     }
 

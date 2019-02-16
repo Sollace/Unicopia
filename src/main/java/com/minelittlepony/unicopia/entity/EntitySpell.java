@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UItems;
+import com.minelittlepony.unicopia.init.UItems;
 import com.minelittlepony.unicopia.item.ICastable;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.spell.ICaster;

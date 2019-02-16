@@ -4,10 +4,10 @@ import java.util.Map;
 
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UBlocks;
-import com.minelittlepony.unicopia.UItems;
-import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.forgebullshit.FUF;
+import com.minelittlepony.unicopia.init.UBlocks;
+import com.minelittlepony.unicopia.init.UItems;
+import com.minelittlepony.unicopia.init.UParticles;
 import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 

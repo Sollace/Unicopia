@@ -1,5 +1,6 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.init;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.BlockAlfalfa;
 import com.minelittlepony.unicopia.block.BlockFruitLeaves;
 import com.minelittlepony.unicopia.block.BlockGlowingGem;

@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UClient;
-import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.init.UParticles;
 import com.minelittlepony.unicopia.mixin.MixinEntity;
 import com.minelittlepony.unicopia.player.IFlyingPredicate;
 import com.minelittlepony.unicopia.player.IOwned;

@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.spell;
 
-import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.init.UParticles;
 import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.util.MagicalDamageSource;

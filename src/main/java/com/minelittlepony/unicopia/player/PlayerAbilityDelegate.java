@@ -159,7 +159,7 @@ class PlayerAbilityDelegate implements IAbilityReceiver, IUpdatable<EntityPlayer
         IData data = ability.tryActivate(player);
 
         if (data != null) {
-            Unicopia.channel.send(new MsgPlayerAbility(player.getOwner(), ability, data), Target.SERVER);
+            Unicopia.getConnection().send(new MsgPlayerAbility(player.getOwner(), ability, data), Target.SERVER);
         }
 
         return data != null;

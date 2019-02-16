@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.init;
 
 import com.minelittlepony.unicopia.item.ItemApple;
 import com.minelittlepony.unicopia.item.ItemAppleMultiType;
@@ -43,6 +43,9 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 import static com.minelittlepony.unicopia.Predicates.*;
 
+import com.minelittlepony.unicopia.CloudType;
+import com.minelittlepony.unicopia.UClient;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.edibles.BushToxicityDeterminent;
 import com.minelittlepony.unicopia.edibles.CookedToxicityDeterminent;
 import com.minelittlepony.unicopia.edibles.FlowerToxicityDeterminent;
@@ -262,7 +265,7 @@ public class UItems {
         FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(juice), new ItemStack(burned_juice), 0);
     }
 
-    static void fixRecipes() {
+    public static void fixRecipes() {
         new OreReplacer()
             .registerAll(stack -> stack.getItem().getRegistryName().equals(red_apple.getRegistryName()))
             .done();
