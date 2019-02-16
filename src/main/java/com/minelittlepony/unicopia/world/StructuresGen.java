@@ -1,18 +1,34 @@
 package com.minelittlepony.unicopia.world;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import com.minelittlepony.unicopia.structure.AbstractFeature;
 import com.minelittlepony.unicopia.structure.GroundDungeon;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.init.Biomes;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.structure.MapGenScatteredFeature;
-import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureStart;
 
-public class StructuresGen extends MapGenScatteredFeature {
+public class StructuresGen extends AbstractFeaturesGen {
+
+    private static final List<Biome> BIOMELIST = Arrays.<Biome>asList(
+            Biomes.TAIGA,
+            Biomes.TAIGA_HILLS,
+            Biomes.EXTREME_HILLS_WITH_TREES,
+            Biomes.COLD_TAIGA,
+            Biomes.COLD_TAIGA_HILLS,
+            Biomes.MUTATED_TAIGA,
+            Biomes.MUTATED_TAIGA_COLD,
+            Biomes.MUTATED_EXTREME_HILLS_WITH_TREES,
+            Biomes.ROOFED_FOREST
+    );
+
+    public StructuresGen() {
+        super(8, 16);
+    }
 
     @Override
     public String getStructureName() {
@@ -20,8 +36,13 @@ public class StructuresGen extends MapGenScatteredFeature {
     }
 
     @Override
-    public boolean isSwampHut(BlockPos pos) {
-        return false;
+    protected int getRandomSeed() {
+        return 39548;
+    }
+
+    @Override
+    protected boolean canSpawnInBiome(Biome biome) {
+        return BIOMELIST.contains(biome);
     }
 
     @Override
@@ -41,11 +62,6 @@ public class StructuresGen extends MapGenScatteredFeature {
         @Override
         protected void addComponents(World world, Random rand, int x, int z, Biome biome) {
             components.add(new GroundDungeon(rand, x * 16, z * 16));
-        }
-
-        @Override
-        public void generateStructure(World world, Random rand, StructureBoundingBox bounds) {
-            super.generateStructure(world, rand, bounds);
         }
     }
 }

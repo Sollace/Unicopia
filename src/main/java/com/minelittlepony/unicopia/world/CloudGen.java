@@ -1,27 +1,48 @@
 package com.minelittlepony.unicopia.world;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+
+import javax.annotation.Nonnull;
 
 import com.minelittlepony.unicopia.structure.AbstractFeature;
 import com.minelittlepony.unicopia.structure.CloudDungeon;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.init.Biomes;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.structure.MapGenScatteredFeature;
-import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.StructureStart;
 
-public class CloudGen extends MapGenScatteredFeature {
+public class CloudGen extends AbstractFeaturesGen {
+
+    private static final List<Biome> BIOMELIST = Arrays.<Biome>asList(
+            Biomes.OCEAN,
+            Biomes.MESA,
+            Biomes.DESERT, Biomes.DESERT_HILLS,
+            Biomes.JUNGLE, Biomes.JUNGLE_HILLS,
+            Biomes.SWAMPLAND,
+            Biomes.ICE_PLAINS, Biomes.COLD_TAIGA
+    );
+
+    public CloudGen() {
+        super(8, 32);
+    }
 
     @Override
     public String getStructureName() {
         return "unicopia:clouds";
     }
 
+
     @Override
-    public boolean isSwampHut(BlockPos pos) {
-        return false;
+    protected int getRandomSeed() {
+        return 143592;
+    }
+
+    @Override
+    protected boolean canSpawnInBiome(@Nonnull Biome biome) {
+        return BIOMELIST.contains(biome);
     }
 
     @Override
@@ -47,10 +68,6 @@ public class CloudGen extends MapGenScatteredFeature {
         protected void addComponents(World world, Random rand, int x, int z, Biome biome) {
             components.add(new CloudDungeon(rand, x * 16, z * 16));
         }
-
-        @Override
-        public void generateStructure(World world, Random rand, StructureBoundingBox bounds) {
-            super.generateStructure(world, rand, bounds);
-        }
     }
+
 }

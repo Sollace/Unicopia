@@ -19,7 +19,7 @@ public class GroundDungeon extends TemplateBasedFeature {
     }
 
     public GroundDungeon(Random rand, int x, int z) {
-        super(rand, x, 0, z, 7, 5, 8);
+        super(rand, x, 64, z, 7, 5, 8);
     }
 
     @Override
