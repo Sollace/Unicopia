@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.template.PlacementSettings;
 import net.minecraft.world.gen.structure.template.TemplateManager;
 
@@ -24,12 +25,13 @@ public class CloudDungeon extends TemplateBasedFeature {
     @Override
     public boolean addComponentParts(World world, BlockPos startPos, TemplateManager templates, PlacementSettings placement) {
 
-        if (startPos.getY() < 200) {
-            startPos = new BlockPos(startPos.getX(), 200, startPos.getZ());
-        }
-
         applyTemplate(world, startPos, templates, placement, STRUCTURE);
 
+        return true;
+    }
+
+    @Override
+    protected boolean tryFitTerrain(World world, StructureBoundingBox bounds, int yOffset) {
         return true;
     }
 }

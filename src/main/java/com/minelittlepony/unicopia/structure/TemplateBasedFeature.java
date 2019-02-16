@@ -31,7 +31,7 @@ public abstract class TemplateBasedFeature extends AbstractFeature {
     @Override
     public boolean addComponentParts(World world, Random rand, StructureBoundingBox bounds) {
 
-        if (!offsetToAverageGroundLevel(world, bounds, -1)) {
+        if (!tryFitTerrain(world, bounds, -1)) {
             return false;
         }
 

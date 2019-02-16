@@ -21,7 +21,7 @@ public abstract class AbstractFeature extends StructureComponent {
 
     protected int depth;
 
-    protected int horizontalPos = -1;
+    protected int verticalPos = -1;
 
     public AbstractFeature() {
     }
@@ -47,7 +47,7 @@ public abstract class AbstractFeature extends StructureComponent {
         tagCompound.setInteger("Width", width);
         tagCompound.setInteger("Height", height);
         tagCompound.setInteger("Depth", depth);
-        tagCompound.setInteger("HPos", horizontalPos);
+        tagCompound.setInteger("HPos", verticalPos);
     }
 
     @Override
@@ -55,15 +55,25 @@ public abstract class AbstractFeature extends StructureComponent {
         width = tagCompound.getInteger("Width");
         height = tagCompound.getInteger("Height");
         depth = tagCompound.getInteger("Depth");
-        horizontalPos = tagCompound.getInteger("HPos");
+        verticalPos = tagCompound.getInteger("HPos");
     }
 
     protected int getAverageStructureAltitude() {
         return 64;
     }
 
-    protected boolean offsetToAverageGroundLevel(World worldIn, StructureBoundingBox structurebb, int yOffset) {
-        if (horizontalPos >= 0) {
+    /**
+     * Offsets this component to the average ground level, sliding it down hill if needed.
+     * Called to make structures 'lay on top' of the land and also prevent floating houses.
+     *
+     * @param world    The world
+     * @param bounds   The structure bounding box
+     * @param yOffset  Offset from ground level. (default: -1)
+     *
+     * @return Trues true if we can generate here.
+     */
+    protected boolean tryFitTerrain(World world, StructureBoundingBox bounds, int yOffset) {
+        if (verticalPos >= 0) {
             return true;
         }
 
@@ -78,8 +88,8 @@ public abstract class AbstractFeature extends StructureComponent {
             for (int x = boundingBox.minX; x <= boundingBox.maxX; ++x) {
                 pos.setPos(x, targetY, z);
 
-                if (structurebb.isVecInside(pos)) {
-                    xOff += Math.max(worldIn.getTopSolidOrLiquidBlock(pos).getY(), worldIn.provider.getAverageGroundLevel());
+                if (bounds.isVecInside(pos)) {
+                    xOff += Math.max(world.getTopSolidOrLiquidBlock(pos).getY(), world.provider.getAverageGroundLevel());
                     offsetIncrements++;
                 }
             }
@@ -89,8 +99,9 @@ public abstract class AbstractFeature extends StructureComponent {
             return false;
         }
 
-        horizontalPos = xOff / offsetIncrements;
-        boundingBox.offset(0, horizontalPos - boundingBox.minY + yOffset, 0);
+        verticalPos = xOff / offsetIncrements;
+        boundingBox.offset(0, verticalPos - boundingBox.minY + yOffset, 0);
+
         return true;
     }
 
