@@ -43,9 +43,6 @@ public final class WorldHelper {
             celst = 0;
         }
 
-
-        System.out.println(celst);
-
         return celst;
     }
 
@@ -78,8 +75,6 @@ public final class WorldHelper {
         if (celst < 0.7F && celst > 0.3F) {
             return Math.abs(celst - 0.5F) / 0.2F;
         }
-
-        System.out.println(celst);
 
         return 0;
     }
