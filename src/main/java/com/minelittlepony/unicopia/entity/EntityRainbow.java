@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.Race;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.effect.EntityWeatherEffect;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,6 +22,11 @@ public class EntityRainbow extends EntityWeatherEffect implements IInAnimate {
 
     public static final int RAINBOW_MAX_SIZE = 180;
     public static final int RAINBOW_MIN_SIZE = 50;
+
+    public static final AxisAlignedBB SPAWN_COLLISSION_RADIUS = new AxisAlignedBB(
+            -RAINBOW_MAX_SIZE, -RAINBOW_MAX_SIZE, -RAINBOW_MAX_SIZE,
+             RAINBOW_MAX_SIZE,  RAINBOW_MAX_SIZE,  RAINBOW_MAX_SIZE
+     ).grow(RAINBOW_MAX_SIZE);
 
     public EntityRainbow(World world) {
         this(world, 0, 0, 0);
@@ -85,6 +91,19 @@ public class EntityRainbow extends EntityWeatherEffect implements IInAnimate {
         if (ticksAlive-- <= 0) {
             setDead();
         }
+
+        if (!isDead) {
+            AxisAlignedBB bounds = SPAWN_COLLISSION_RADIUS.offset(getPosition());
+
+            world.getEntitiesWithinAABB(EntityRainbow.class, bounds).forEach(this::attackCompetitor);
+            world.getEntitiesWithinAABB(EntityRainbow.Spawner.class, bounds).forEach(this::attackCompetitor);
+        }
+    }
+
+    private void attackCompetitor(Entity other) {
+        if (other != this) {
+            other.setDead();
+        }
     }
 
     @Override
@@ -101,11 +120,6 @@ public class EntityRainbow extends EntityWeatherEffect implements IInAnimate {
 
     public static class Spawner extends EntityLiving {
 
-        public static final AxisAlignedBB SPAWN_COLLISSION_RADIUS = new AxisAlignedBB(
-                -RAINBOW_MAX_SIZE, -RAINBOW_MAX_SIZE, -RAINBOW_MAX_SIZE,
-                 RAINBOW_MAX_SIZE,  RAINBOW_MAX_SIZE,  RAINBOW_MAX_SIZE
-         );
-
         public Spawner(World worldIn) {
             super(worldIn);
             this.setInvisible(true);
@@ -113,11 +127,11 @@ public class EntityRainbow extends EntityWeatherEffect implements IInAnimate {
 
         @Override
         public boolean getCanSpawnHere() {
-            if (super.getCanSpawnHere()) {
-                return world.getEntitiesWithinAABB(EntityRainbow.class, SPAWN_COLLISSION_RADIUS.offset(getPosition())).size() == 0;
-            }
+            AxisAlignedBB bounds = SPAWN_COLLISSION_RADIUS.offset(getPosition());
 
-            return false;
+            return super.getCanSpawnHere()
+                    && world.getEntitiesWithinAABB(EntityRainbow.class, bounds).isEmpty()
+                    && world.getEntitiesWithinAABB(EntityRainbow.Spawner.class, bounds).isEmpty();
         }
 
         @Override
@@ -128,8 +142,13 @@ public class EntityRainbow extends EntityWeatherEffect implements IInAnimate {
         @Override
         public void onUpdate() {
             super.onUpdate();
-            setDead();
+            if (!this.dead) {
+                setDead();
+                trySpawnRainbow();
+            }
+        }
 
+        public void trySpawnRainbow() {
             EntityRainbow rainbow = new EntityRainbow(world);
             rainbow.setPosition(posX, posY, posZ);
             world.spawnEntity(rainbow);
