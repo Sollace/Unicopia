@@ -173,9 +173,9 @@ public class SpellDarkness extends AbstractAttachableSpell {
     public void render(ICaster<?> source) {
         int radius = 7 + (source.getCurrentLevel() * 3);
 
-        boolean tamed = hasTarget();
+        boolean tamed = !searching;
 
-        int tint = tamed ? 0xFFFFFF : getTint();
+        int tint = tamed ? 0xFFFFFF : 0x000000;
 
         if (tamed) {
             radius /= 3;
@@ -231,7 +231,7 @@ public class SpellDarkness extends AbstractAttachableSpell {
             double vX = (source.getWorld().rand.nextFloat() - 0.5) * particleSpeed;
             double vZ = (source.getWorld().rand.nextFloat() - 0.5) * particleSpeed;
 
-            Particles.instance().spawnParticle(UParticles.SPHERE, false, pos, vX, 0, vZ, (int)(size * 1000), tint, 100);
+            Particles.instance().spawnParticle(UParticles.SPHERE, false, pos, vX, 0, vZ, (int)(size * 1000), tint, 30);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.model;
 
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.util.glu.Sphere;
 
@@ -61,15 +62,9 @@ public class ModelSphere {
 
     private void bake() {
         displayList = GLAllocation.generateDisplayLists(1);
-        GlStateManager.glNewList(displayList, 4864);
-
-        GlStateManager.disableTexture2D();
-        GlStateManager.enableAlpha();
+        GlStateManager.glNewList(displayList, GL11.GL_COMPILE);
 
         drawShape();
-
-        GlStateManager.disableAlpha();
-        GlStateManager.enableTexture2D();
 
         GlStateManager.glEndList();
     }

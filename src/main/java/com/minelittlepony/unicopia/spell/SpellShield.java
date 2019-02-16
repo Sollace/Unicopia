@@ -44,7 +44,7 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell {
         });
 
         particlEffect
-            .ifMissing(source, () -> Particles.instance().spawnParticle(UParticles.SPHERE, true, source.getOriginVector(), 0, 0, 0, 1, getTint(), 30))
+            .ifMissing(source, () -> Particles.instance().spawnParticle(UParticles.SPHERE, true, source.getOriginVector(), 0, 0, 0, 1, getTint(), 10))
             .ifPresent(p -> p.setAttribute(0, radius));
     }
 

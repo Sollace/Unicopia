@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.particle.client;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -7,7 +8,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
-
 import com.minelittlepony.unicopia.model.ModelSphere;
 import com.minelittlepony.unicopia.particle.IAttachableParticle;
 import com.minelittlepony.unicopia.spell.ICaster;
@@ -25,7 +25,7 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
     private static final ModelSphere model = new ModelSphere();
 
     public ParticleSphere(int id, World w, double x, double y, double z, double vX, double vY, double vZ, int... args) {
-        this(w, x, y, z, args[0] / 1000F, args[1], args[2]/255F);
+        this(w, x, y, z, args[0] / 1000F, args[1], args[2]/100F);
 
         this.motionX = vX;
         this.motionY = vY;
@@ -78,30 +78,40 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
             return;
         }
 
-        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+        GlStateManager.depthMask(false);
+        GlStateManager.shadeModel(GL11.GL_SMOOTH);
 
-        if (alpha < 1) {
-            GlStateManager.depthMask(false);
-            GlStateManager.shadeModel(GL11.GL_SMOOTH);
-            GlStateManager.tryBlendFuncSeparate(
-                    GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
-                    GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        }
+        GlStateManager.enableBlend();
+        Minecraft.getMinecraft().entityRenderer.disableLightmap();
+        GlStateManager.enableLighting();
 
         Color.glColor(tint, alpha);
+
+        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        GlStateManager.disableTexture2D();
 
         model.setPosition(posX, posY, posZ);
         model.render(radius);
 
-        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableLighting();
+        Minecraft.getMinecraft().entityRenderer.enableLightmap();
 
-        GL11.glPopAttrib();
+        GlStateManager.disableBlend();
+        GlStateManager.depthMask(true);
+        GlStateManager.color(1, 1, 1, 1);
     }
 
     @Override
     public void setAttribute(int key, Object value) {
         if (key == 0) {
             radius = (float)value;
+        }
+        if (key == 1) {
+            tint = (int)value;
+        }
+        if (key == 3) {
+            alpha = (float)value;
         }
     }
 }
