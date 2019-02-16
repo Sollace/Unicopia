@@ -16,6 +16,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.structure.MapGenStructureIO;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
@@ -55,6 +56,7 @@ import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.enchanting.Pages;
 import com.minelittlepony.unicopia.enchanting.SpellRecipe;
 import com.minelittlepony.unicopia.forgebullshit.FBS;
+import com.minelittlepony.unicopia.forgebullshit.FUF;
 import com.minelittlepony.unicopia.inventory.gui.ContainerSpellBook;
 import com.minelittlepony.unicopia.inventory.gui.GuiSpellBook;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
@@ -76,6 +78,8 @@ import com.minelittlepony.unicopia.world.UWorld;
 )
 @EventBusSubscriber
 public class Unicopia implements IGuiHandler {
+
+
     public static final String MODID = "unicopia";
     public static final String NAME = "@NAME@";
     public static final String VERSION = "@VERSION@";
@@ -86,10 +90,22 @@ public class Unicopia implements IGuiHandler {
 
     private static CraftingManager craftingManager;
 
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         UConfig.init(event.getModConfigurationDirectory());
         UClient.instance().preInit(event);
+        UWorld.instance().init();
+
+        MinecraftForge.TERRAIN_GEN_BUS.register(Unicopia.class);
+    }
+
+    @FUF(reason = "Why u no run!?!??!")
+    @SubscribeEvent
+    public static void onStructureGenStatic(PopulateChunkEvent.Populate event) {
+        if (event.getType() == EventType.DUNGEON) {
+            UWorld.instance().generateStructures(event.getWorld(), event.getChunkX(), event.getChunkZ(), event.getGen());
+        }
     }
 
     @EventHandler
@@ -130,13 +146,6 @@ public class Unicopia implements IGuiHandler {
 
         MapGenStructureIO.registerStructure(CloudGen.Start.class, "unicopia:clouds");
         MapGenStructureIO.registerStructureComponent(CloudDungeon.class, "unicopia:cloud_dungeon");
-    }
-
-    @EventHandler
-    public static void onStructureGen(PopulateChunkEvent.Populate event) {
-        if (event.getType() == EventType.DUNGEON) {
-            UWorld.instance().generateStructures(event.getWorld(), event.getChunkX(), event.getChunkZ(), event.getGen());
-        }
     }
 
     public static CraftingManager getCraftingManager() {

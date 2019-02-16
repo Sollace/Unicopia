@@ -80,7 +80,7 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
 
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 
-        if (alpha < 0) {
+        if (alpha < 1) {
             GlStateManager.depthMask(false);
             GlStateManager.shadeModel(GL11.GL_SMOOTH);
             GlStateManager.tryBlendFuncSeparate(

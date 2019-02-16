@@ -12,16 +12,24 @@ import net.minecraft.world.gen.structure.template.TemplateManager;
 
 public class CloudDungeon extends TemplateBasedFeature {
 
-    private static final ResourceLocation STRUCTURE = new ResourceLocation(Unicopia.MODID, "cloud/dungeon_1");
+    private static final ResourceLocation STRUCTURE = new ResourceLocation(Unicopia.MODID, "cloud/temple_small");
+
+    public CloudDungeon() {
+    }
 
     public CloudDungeon(Random rand, int x, int z) {
-        super(rand, x, 120, z, 7, 5, 8);
+        super(rand, x, 0, z, 7, 5, 8);
     }
 
     @Override
     public boolean addComponentParts(World world, BlockPos startPos, TemplateManager templates, PlacementSettings placement) {
+
+        if (startPos.getY() < 200) {
+            startPos = new BlockPos(startPos.getX(), 200, startPos.getZ());
+        }
+
         applyTemplate(world, startPos, templates, placement, STRUCTURE);
 
-        return false;
+        return true;
     }
 }

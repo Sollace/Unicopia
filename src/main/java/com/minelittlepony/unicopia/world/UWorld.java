@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.world;
 
 import java.util.Queue;
+import java.util.Random;
 
 import com.google.common.collect.Queues;
 import com.minelittlepony.jumpingcastle.Exceptions;
@@ -8,10 +9,14 @@ import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.ChunkPrimer;
+import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkGeneratorOverworld;
 import net.minecraft.world.gen.IChunkGenerator;
+import net.minecraftforge.fml.common.IWorldGenerator;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class UWorld {
+public class UWorld implements IWorldGenerator {
 
     private static final UWorld instance = new UWorld();
 
@@ -40,12 +45,27 @@ public class UWorld {
 
     private CloudGen cloudStructureGen = new CloudGen();
 
+    public void init() {
+        GameRegistry.registerWorldGenerator(this, 1);
+    }
+
     public void generateStructures(World world, int chunkX, int chunkZ, IChunkGenerator gen) {
         if (gen instanceof ChunkGeneratorOverworld) {
             if (world.getWorldInfo().isMapFeaturesEnabled()) {
                 ChunkPos pos = new ChunkPos(chunkX, chunkZ);
 
                 cloudStructureGen.generateStructure(world, world.rand, pos);
+            }
+        }
+    }
+
+    @Override
+    public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
+        if (chunkGenerator instanceof ChunkGeneratorOverworld) {
+            if (world.getWorldInfo().isMapFeaturesEnabled()) {
+                ChunkPrimer primer = new ChunkPrimer();
+
+                cloudStructureGen.generate(world, chunkX, chunkZ, primer);
             }
         }
     }

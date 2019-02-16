@@ -107,6 +107,19 @@ public abstract class AbstractFeature extends StructureComponent {
             super(x, z);
             addComponents(world, rand, x, z, biome);
             updateBoundingBox();
+            init(world, rand, x, z, biome);
+        }
+
+        protected void init(World world, Random rand, int x, int z, Biome biome) {
+
+        }
+
+        public void offset(int x, int y, int z) {
+            boundingBox.offset(x, y, z);
+
+            for (StructureComponent structurecomponent : components) {
+                structurecomponent.offset(x, y, z);
+            }
         }
 
         protected abstract void addComponents(World world, Random ran, int x, int z, Biome biome);

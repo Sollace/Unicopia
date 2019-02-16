@@ -28,7 +28,6 @@ public abstract class TemplateBasedFeature extends AbstractFeature {
         super(rand, x, y, z, sizeX, sizeY, sizeX);
     }
 
-
     @Override
     public boolean addComponentParts(World world, Random rand, StructureBoundingBox bounds) {
 
@@ -53,7 +52,7 @@ public abstract class TemplateBasedFeature extends AbstractFeature {
     }
 
     protected void applyTemplate(World world, BlockPos startPos, TemplateManager templates, PlacementSettings placement, ResourceLocation templateId) {
-        Template template = templates.get(world.getMinecraftServer(), templateId);
+        Template template = templates.getTemplate(world.getMinecraftServer(), templateId);
 
         template.addBlocksToWorldChunk(world, startPos, placement);
 
