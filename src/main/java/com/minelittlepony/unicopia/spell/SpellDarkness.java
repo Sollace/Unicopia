@@ -231,7 +231,7 @@ public class SpellDarkness extends AbstractAttachableSpell {
             double vX = (source.getWorld().rand.nextFloat() - 0.5) * particleSpeed;
             double vZ = (source.getWorld().rand.nextFloat() - 0.5) * particleSpeed;
 
-            Particles.instance().spawnParticle(UParticles.SPHERE, false, pos, vX, 0, vZ, (int)(size * 1000), tint, 30);
+            Particles.instance().spawnParticle(UParticles.SPHERE, true, pos, vX, 0, vZ, (int)(size * 1000), tint, 30);
         }
     }
 
