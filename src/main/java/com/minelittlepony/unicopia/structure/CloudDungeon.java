@@ -13,7 +13,8 @@ import net.minecraft.world.gen.structure.template.TemplateManager;
 
 public class CloudDungeon extends TemplateBasedFeature {
 
-    private static final ResourceLocation STRUCTURE = new ResourceLocation(Unicopia.MODID, "cloud/temple_small");
+    private static final ResourceLocation TEMPLE = new ResourceLocation(Unicopia.MODID, "cloud/temple_small");
+    private static final ResourceLocation HOUSE = new ResourceLocation(Unicopia.MODID, "cloud/house_small");
 
     public CloudDungeon() {
     }
@@ -25,7 +26,11 @@ public class CloudDungeon extends TemplateBasedFeature {
     @Override
     public boolean addComponentParts(World world, BlockPos startPos, TemplateManager templates, PlacementSettings placement) {
 
-        applyTemplate(world, startPos, templates, placement, STRUCTURE);
+        if (world.rand.nextBoolean()) {
+            applyTemplate(world, startPos, templates, placement, TEMPLE);
+        } else {
+            applyTemplate(world, startPos, templates, placement, HOUSE);
+        }
 
         return true;
     }

@@ -66,8 +66,10 @@ import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.power.PowersRegistry;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 import com.minelittlepony.unicopia.structure.CloudDungeon;
+import com.minelittlepony.unicopia.structure.GroundDungeon;
 import com.minelittlepony.unicopia.util.crafting.CraftingManager;
 import com.minelittlepony.unicopia.world.CloudGen;
+import com.minelittlepony.unicopia.world.StructuresGen;
 import com.minelittlepony.unicopia.world.UWorld;
 
 @Mod(
@@ -145,7 +147,9 @@ public class Unicopia implements IGuiHandler {
         UItems.fixRecipes();
 
         MapGenStructureIO.registerStructure(CloudGen.Start.class, "unicopia:clouds");
+        MapGenStructureIO.registerStructure(StructuresGen.Start.class, "unicopia:ruins");
         MapGenStructureIO.registerStructureComponent(CloudDungeon.class, "unicopia:cloud_dungeon");
+        MapGenStructureIO.registerStructureComponent(GroundDungeon.class, "unicopia:ground_dungeon");
     }
 
     public static CraftingManager getCraftingManager() {

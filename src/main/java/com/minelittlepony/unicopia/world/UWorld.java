@@ -43,7 +43,8 @@ public class UWorld implements IWorldGenerator {
         }
     }
 
-    private CloudGen cloudStructureGen = new CloudGen();
+    private CloudGen cloudsGen = new CloudGen();
+    private StructuresGen structuresGen = new StructuresGen();
 
     public void init() {
         GameRegistry.registerWorldGenerator(this, 1);
@@ -54,7 +55,8 @@ public class UWorld implements IWorldGenerator {
             if (world.getWorldInfo().isMapFeaturesEnabled()) {
                 ChunkPos pos = new ChunkPos(chunkX, chunkZ);
 
-                cloudStructureGen.generateStructure(world, world.rand, pos);
+                cloudsGen.generateStructure(world, world.rand, pos);
+                structuresGen.generateStructure(world, world.rand, pos);
             }
         }
     }
@@ -65,7 +67,8 @@ public class UWorld implements IWorldGenerator {
             if (world.getWorldInfo().isMapFeaturesEnabled()) {
                 ChunkPrimer primer = new ChunkPrimer();
 
-                cloudStructureGen.generate(world, chunkX, chunkZ, primer);
+                cloudsGen.generate(world, chunkX, chunkZ, primer);
+                structuresGen.generate(world, chunkX, chunkZ, primer);
             }
         }
     }
