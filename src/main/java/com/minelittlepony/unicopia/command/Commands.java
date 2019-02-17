@@ -8,6 +8,7 @@ public class Commands {
         event.registerServerCommand(new CommandOverrideGameMode());
         event.registerServerCommand(new CommandSpecies());
         event.registerServerCommand(new CommandRacelist());
+        event.registerServerCommand(new CommandDisguise());
 
         event.getServer().setAllowFlight(true);
     }

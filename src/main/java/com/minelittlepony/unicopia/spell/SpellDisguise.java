@@ -19,6 +19,7 @@ import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
+import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -26,6 +27,7 @@ import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.monster.EntityShulker;
+import net.minecraft.entity.monster.EntityVex;
 import net.minecraft.entity.passive.EntityAmbientCreature;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -102,6 +104,8 @@ public class SpellDisguise extends AbstractSpell implements ISuppressable, IFlyi
             entityNbt = encodeEntityToNBT(entity);
             entityId = entityNbt.getString("id");
         }
+
+        setDirty(true);
 
         return this;
     }
@@ -449,6 +453,7 @@ public class SpellDisguise extends AbstractSpell implements ISuppressable, IFlyi
         return entity instanceof EntityFlying
                 || entity instanceof net.minecraft.entity.passive.EntityFlying
                 || entity instanceof EntityDragon
+                || entity instanceof EntityVex
                 || entity instanceof EntityAmbientCreature
                 || entity instanceof EntityShulkerBullet
                 || ProjectileUtil.isProjectile(entity);
@@ -478,11 +483,13 @@ public class SpellDisguise extends AbstractSpell implements ISuppressable, IFlyi
 
     public static boolean skipsUpdate(Entity entity) {
         return entity instanceof EntityFallingBlock
+            || entity instanceof EntityHanging
             || entity instanceof EntityPlayer;
     }
 
     public static boolean isAttachedEntity(Entity entity) {
         return entity instanceof EntityShulker
+            || entity instanceof EntityHanging
             || entity instanceof EntityFallingBlock;
     }
 }

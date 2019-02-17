@@ -192,6 +192,12 @@ commands.racelist.disallowed.failed=%1$s is not on the whitelist.
 commands.racelist.disallowed.other=%1$s was removed from the whitelist by %2$s.
 commands.racelist.disallowed.failed.other=%2$s tried to remove %1$s from the whitelist but it has not been added yet.
 
+commands.disguise.usage=/disguise <player> <entity> [nbt]
+commands.disguise.notfound=The entity id '%s' does not exist.
+commands.disguise.success.other=%1$s is now disguised as %2$s
+commands.disguise.success.self=Updated disguise to %s
+commands.disguise.success.otherself=%1$s changed their disguise to %2$s
+
 unicopia.race.human=Human
 unicopia.race.human.alt=Humans
 unicopia.race.earth=Earth Pony

@@ -21,28 +21,27 @@ import net.minecraft.util.text.TextFormatting;
 
 class CommandSpecies extends CommandBase {
 
+    @Override
     public String getName() {
         return "race";
     }
 
+    @Override
     public int getRequiredPermissionLevel() {
         return 0;
     }
 
+    @Override
     public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
         return sender.canUseCommand(getRequiredPermissionLevel(), "help");
     }
 
-    private String getRacesString() {
-        String values = "";
-
-        return values;
-    }
-
+    @Override
     public String getUsage(ICommandSender sender) {
         return "commands.race.usage";
     }
 
+    @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (!processCommand(server, sender, args)) {
             throw new WrongUsageException(getUsage(sender));
@@ -133,7 +132,7 @@ class CommandSpecies extends CommandBase {
     protected boolean list(EntityPlayer player) {
         player.sendMessage(new TextComponentTranslation("commands.race.list"));
 
-        ITextComponent message = new TextComponentString(getRacesString());
+        ITextComponent message = new TextComponentString("");
 
         boolean first = true;
         for (Race i : Race.values()) {
