@@ -33,7 +33,9 @@ class ClientHooks {
 
     @SubscribeEvent
     public static void preEntityRender(RenderLivingEvent.Pre<?> event) {
-        UClient.instance().renderEntity(event.getEntity(), event.getPartialRenderTick());
+        if (UClient.instance().renderEntity(event.getEntity(), event.getPartialRenderTick())) {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent
