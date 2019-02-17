@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.init;
 
+import com.minelittlepony.unicopia.item.ItemAlicornAmulet;
 import com.minelittlepony.unicopia.item.ItemApple;
 import com.minelittlepony.unicopia.item.ItemAppleMultiType;
 import com.minelittlepony.unicopia.item.ItemCereal;
@@ -109,6 +110,7 @@ public class UItems {
     public static final ItemSpell curse = new ItemCurse(Unicopia.MODID, "corrupted_gem");
 
     public static final ItemOfHolding bag_of_holding = new ItemOfHolding(Unicopia.MODID, "bag_of_holding");
+    public static final ItemAlicornAmulet alicorn_amulet = new ItemAlicornAmulet(Unicopia.MODID, "alicorn_amulet");
 
     public static final ItemSpellbook spellbook = new ItemSpellbook(Unicopia.MODID, "spellbook");
     public static final Item staff_meadow_brook = new ItemStaff(Unicopia.MODID, "staff_meadow_brook").setMaxDamage(2);
@@ -212,7 +214,7 @@ public class UItems {
                 cloud_farmland, mist_door, anvil,
 
                 bag_of_holding, spell, curse, spellbook, mug, enchanted_torch,
-                staff_meadow_brook,
+                staff_meadow_brook, alicorn_amulet,
 
                 alfalfa_seeds, alfalfa_leaves,
                 cereal, sugar_cereal, sugar_block,
@@ -242,7 +244,7 @@ public class UItems {
                     cloud_farmland, mist_door, anvil,
 
                     bag_of_holding, spell, curse, spellbook, mug, enchanted_torch,
-                    staff_meadow_brook,
+                    staff_meadow_brook, alicorn_amulet,
 
                     alfalfa_seeds, alfalfa_leaves,
                     cereal, sugar_cereal, sugar_block,

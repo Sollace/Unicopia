@@ -21,7 +21,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
-class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtSerialisable, IFlyingPredicate, IPlayerHeightPredicate {
+class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, IFlyingPredicate, IPlayerHeightPredicate {
 
     private final IPlayer player;
 
@@ -98,7 +98,8 @@ class PlayerGravityDelegate implements IUpdatable<EntityPlayer>, IGravity, InbtS
 
 
     @Override
-    public void onUpdate(EntityPlayer entity) {
+    public void onUpdate() {
+        EntityPlayer entity = player.getOwner();
 
         entity.capabilities.allowFlying = checkCanFly(player);
 

@@ -11,10 +11,9 @@ import com.minelittlepony.unicopia.power.IPower;
 import com.minelittlepony.unicopia.power.PowersRegistry;
 import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
-class PlayerAbilityDelegate implements IAbilityReceiver, IUpdatable<EntityPlayer>, InbtSerialisable {
+class PlayerAbilityDelegate implements IAbilityReceiver, IUpdatable, InbtSerialisable {
 
     private final IPlayer player;
 
@@ -84,7 +83,7 @@ class PlayerAbilityDelegate implements IAbilityReceiver, IUpdatable<EntityPlayer
     }
 
     @Override
-    public void onUpdate(EntityPlayer entity) {
+    public void onUpdate() {
         IPower<?> ability = getUsableAbility();
 
         if (ability == null) {

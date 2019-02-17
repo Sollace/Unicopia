@@ -46,6 +46,11 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
     IFood getFood();
 
     /**
+     * Gets the inventory delegate for this player.
+     */
+    IInventory getInventory();
+
+    /**
      * Gets an animation interpolator.
      */
     IInterpolator getInterpolator();

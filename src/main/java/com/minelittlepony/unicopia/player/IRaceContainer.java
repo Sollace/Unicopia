@@ -10,17 +10,12 @@ import net.minecraft.entity.Entity;
  *
  * @param <T> The type of owner
  */
-public interface IRaceContainer<T extends Entity> extends InbtSerialisable {
+public interface IRaceContainer<T extends Entity> extends InbtSerialisable, IUpdatable {
     Race getPlayerSpecies();
 
     void setPlayerSpecies(Race race);
 
     void onDimensionalTravel(int destinationDimension);
-
-    /**
-     * Called to update this container's logic
-     */
-    void onUpdate();
 
     /**
      * Called at the beginning of a player's update cycle.

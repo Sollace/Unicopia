@@ -29,6 +29,8 @@ item.cloud_anvil.name=Anvilhead Anvil
 
 item.staff_meadow_brook.name=Meadow Brook's Staff
 item.staff_meadow_brook.tagline=It's a big stick
+item.alicorn_amulet.name=The Alicorn Amulet
+item.alicorn_amulet.tagline=Time Worn: %s
 
 item.gem.name=Gem
 item.gem.enchanted.name=Gem of %s
@@ -227,6 +229,7 @@ unicopia.power.disguise=Secondary Changeling ability
 
 unicopia.gui.title.bagofholding=Bag of Holding
 
+death.attack.alicorn_amulet=%1$s was driven insane
 death.attack.darkness=%1$s went missing
 death.attack.feed=%1$s was drained of all life
 death.attack.feed.player=%1$s died to feed %2$s
@@ -244,7 +247,7 @@ death.attack.food_poisoning=%1$s died of food poisoning
 death.attack.food_poisoning.player=%1$s poisoned %1$s' to death
 
 advancements.adventure.bag_of_holding.title=Read the Manual
-advancements.adventure.bag_of_holding.description=Successfuly die using the Bag of Holding
+advancements.adventure.bag_of_holding.description=Successfully die using the Bag of Holding
 
 advancements.adventure.bag_of_holding_2.title=Oops! I did it again
 advancements.adventure.bag_of_holding_2.description=Die by the Bag of Holding a second time

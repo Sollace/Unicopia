@@ -6,7 +6,6 @@ import java.util.Random;
 import com.google.common.collect.Queues;
 import com.minelittlepony.jumpingcastle.Exceptions;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.player.IUpdatable;
 import com.minelittlepony.unicopia.structure.CloudDungeon;
 import com.minelittlepony.unicopia.structure.GroundDungeon;
 
@@ -20,7 +19,7 @@ import net.minecraft.world.gen.structure.MapGenStructureIO;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class UWorld implements IWorldGenerator, IUpdatable<World> {
+public class UWorld implements IWorldGenerator {
 
     private static final UWorld instance = new UWorld();
 
@@ -52,7 +51,6 @@ public class UWorld implements IWorldGenerator, IUpdatable<World> {
         MapGenStructureIO.registerStructureComponent(GroundDungeon.class, "unicopia:ground_dungeon");
     }
 
-    @Override
     public void onUpdate(World world) {
         synchronized (locker) {
             Runnable task;

@@ -10,9 +10,11 @@ class PlayerFood implements IFood {
 
     private ItemStack eatingStack = ItemStack.EMPTY;
 
+
     public PlayerFood(IPlayer player) {
         this.player = player;
     }
+
 
     @Override
     public void begin(ItemStack stack) {
@@ -38,5 +40,4 @@ class PlayerFood implements IFood {
             player.onEat(eatingStack, (ItemFood)eatingStack.getItem());
         }
     }
-
 }

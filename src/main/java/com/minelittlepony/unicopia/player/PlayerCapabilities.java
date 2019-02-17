@@ -60,6 +60,8 @@ class PlayerCapabilities implements IPlayer {
 
     private final PlayerFood food = new PlayerFood(this);
 
+    private final PlayerInventory inventory = new PlayerInventory(this);
+
     private final EffectSync<EntityPlayer> effectDelegate = new EffectSync<>(this, EFFECT);
 
     private final IInterpolator interpolator = new BasicEasingInterpolator();
@@ -198,8 +200,9 @@ class PlayerCapabilities implements IPlayer {
 
     @Override
     public void onUpdate() {
-        powers.onUpdate(entity);
-        gravity.onUpdate(entity);
+        powers.onUpdate();
+        gravity.onUpdate();
+        inventory.onUpdate();
 
         if (hasEffect()) {
             if (entity.getEntityWorld().isRemote) {
@@ -268,6 +271,11 @@ class PlayerCapabilities implements IPlayer {
     @Override
     public IFood getFood() {
         return food;
+    }
+
+    @Override
+    public IInventory getInventory() {
+        return inventory;
     }
 
     @Override
