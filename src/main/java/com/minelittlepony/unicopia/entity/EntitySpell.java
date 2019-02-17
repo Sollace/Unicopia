@@ -344,6 +344,10 @@ public class EntitySpell extends EntityCreature implements IMagicals, ICaster<En
 	@Override
 	public void readEntityFromNBT(NBTTagCompound compound) {
 		super.readEntityFromNBT(compound);
+		if (compound.hasKey("affinity")) {
+		    setAffinity(SpellAffinity.of(compound.getString("affinity")));
+		}
+
 		setOwner(compound.getString("ownerName"));
         setCurrentLevel(compound.getInteger("level"));
 
@@ -356,6 +360,7 @@ public class EntitySpell extends EntityCreature implements IMagicals, ICaster<En
 	public void writeEntityToNBT(NBTTagCompound compound) {
 		super.writeEntityToNBT(compound);
 
+		compound.setString("affinity", getAffinity().name());
         compound.setString("ownerName", getOwnerName());
         compound.setInteger("level", getCurrentLevel());
 
