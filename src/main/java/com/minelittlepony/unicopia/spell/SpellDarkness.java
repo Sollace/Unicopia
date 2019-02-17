@@ -173,7 +173,7 @@ public class SpellDarkness extends AbstractAttachableSpell {
     public void render(ICaster<?> source) {
         int radius = 7 + (source.getCurrentLevel() * 3);
 
-        boolean tamed = !searching;
+        boolean tamed = hasTarget();
 
         int tint = tamed ? 0xFFFFFF : 0x000000;
 

@@ -36,7 +36,7 @@ public abstract class AbstractAttachableSpell extends AbstractSpell {
             setDirty(true);
         }
 
-        return targettedEntity != null;
+        return targettedEntityId != null;
     }
 
     @Nullable
