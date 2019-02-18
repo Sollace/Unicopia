@@ -16,6 +16,7 @@ import com.minelittlepony.util.vector.VecHelper;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -152,14 +153,15 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
 
         IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(player);
 
+        float attachedTime = iplayer.getInventory().getTicksAttached(this);
+
         if (iplayer.getExertion() < 1) {
             iplayer.addExertion(2);
         }
-        if (iplayer.getEnergy() < 0.005F) {
+
+        if (iplayer.getEnergy() < 0.005F + (attachedTime / 1000000)) {
             iplayer.addEnergy(2);
         }
-
-        int attachedTime = iplayer.getInventory().getTicksAttached(this);
 
         if (attachedTime == 1) {
             world.playSound(null, player.getPosition(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.PLAYERS, 3, 1);
@@ -216,6 +218,11 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
         if (attachedTime > 120) {
             player.getOwner().knockBack(player.getOwner(), 1, 1, 1);
         }
+    }
+
+    @Override
+    public String getArmorTexture(ItemStack stack, Entity entity, EntityEquipmentSlot slot, String type) {
+        return "unicopia:textures/models/armor/alicorn_amulet.png";
     }
 
     @Override
