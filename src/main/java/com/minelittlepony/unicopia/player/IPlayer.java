@@ -13,9 +13,11 @@ import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 /**
@@ -126,6 +128,15 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
      * @return True if the hit was successful.
      */
     boolean onProjectileImpact(Entity projectile);
+
+    /**
+     * Attempts to sleep in a bed.
+     *
+     * @param pos The position of the bed
+     *
+     * @return The sleep result.
+     */
+    SleepResult trySleep(BlockPos pos);
 
     /**
      * Returns true if this player is the use.

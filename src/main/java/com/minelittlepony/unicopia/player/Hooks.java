@@ -11,6 +11,7 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerFlyableFallEvent;
+import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -42,6 +43,13 @@ class Hooks {
         event.getDrops().stream()
             .map(PlayerSpeciesList.instance()::getEntity)
             .forEach(item -> item.setPlayerSpecies(race));
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTrySleep(PlayerSleepInBedEvent event) {
+        if (event.getResultStatus() == null) {
+            event.setResult(PlayerSpeciesList.instance().getPlayer(event.getEntityPlayer()).trySleep(event.getPos()));
+        }
     }
 
     @SubscribeEvent

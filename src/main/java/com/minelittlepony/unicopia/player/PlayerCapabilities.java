@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.enchanting.PageState;
 import com.minelittlepony.unicopia.init.UEffects;
+import com.minelittlepony.unicopia.init.UItems;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
@@ -21,6 +22,7 @@ import com.minelittlepony.unicopia.spell.SpellRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer.SleepResult;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -32,6 +34,8 @@ import net.minecraft.network.play.server.SPacketSetPassengers;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.EnumDifficulty;
 
 class PlayerCapabilities implements IPlayer {
@@ -266,6 +270,24 @@ class PlayerCapabilities implements IPlayer {
         }
 
         return false;
+    }
+
+    @Override
+    public SleepResult trySleep(BlockPos pos) {
+
+
+        if (getInventory().isWearing(UItems.alicorn_amulet)) {
+            if (!getWorld().isRemote) {
+                entity.sendStatusMessage(new TextComponentTranslation("tile.bed.youAreAMonster"), true);
+            }
+            return SleepResult.OTHER_PROBLEM;
+        }
+
+        if (findAllSpellsInRange(10).anyMatch(c -> c instanceof IPlayer && ((IPlayer)c).getInventory().isWearing(UItems.alicorn_amulet))) {
+            return SleepResult.NOT_SAFE;
+        }
+
+        return null;
     }
 
     @Override

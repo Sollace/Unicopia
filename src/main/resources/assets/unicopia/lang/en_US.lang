@@ -32,6 +32,8 @@ item.staff_meadow_brook.tagline=It's a big stick
 item.alicorn_amulet.name=The Alicorn Amulet
 item.alicorn_amulet.tagline=Time Worn: %s
 
+tile.bed.youAreAMonster=You may not rest here, you are the monster
+
 item.gem.name=Gem
 item.gem.enchanted.name=Gem of %s
 item.corrupted_gem.name=Fractured Gem
