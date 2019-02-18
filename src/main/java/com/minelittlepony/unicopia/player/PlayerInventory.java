@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
+import com.minelittlepony.unicopia.extern.Baubles;
 import com.minelittlepony.unicopia.item.IDependable;
 import com.minelittlepony.unicopia.item.IMagicalItem;
 import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
@@ -75,7 +76,7 @@ public class PlayerInventory implements IInventory, IUpdatable, InbtSerialisable
             }
         }
 
-        return false;
+        return item instanceof Item && Baubles.isBaubleEquipped(player.getOwner(), (Item)item) != -1;
     }
 
     @Override

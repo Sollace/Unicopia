@@ -43,7 +43,7 @@ import com.minelittlepony.unicopia.world.UWorld;
     modid = Unicopia.MODID,
     name = Unicopia.NAME,
     version = Unicopia.VERSION,
-    dependencies = "required-after:jumpingcastle"
+    dependencies = "required-after:jumpingcastle;after:baubles"
 )
 public class Unicopia implements IGuiHandler {
     public static final String MODID = "unicopia";

@@ -1,8 +1,9 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.extern;
 
 import com.minelittlepony.MineLittlePony;
 import com.minelittlepony.pony.data.IPony;
 import com.minelittlepony.pony.data.PonyRace;
+import com.minelittlepony.unicopia.Race;
 
 import net.minecraft.client.Minecraft;
 

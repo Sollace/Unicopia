@@ -28,6 +28,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
@@ -99,9 +100,13 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
         if (!player.world.isRemote && !entity.isDead) {
             if (player.getPositionVector().distanceTo(entity.getPositionVector()) < 3) {
                if (entity.world.rand.nextInt(150) == 0) {
-                    player.setItemStackToSlot(getEquipmentSlot(), entity.getItem());
-                    entity.setPickupDelay(1000);
-                    entity.setDead();
+
+                   ActionResult<ItemStack> result = onItemRightClick(player.world, player, EnumHand.MAIN_HAND);
+
+                   if (result.getType() == EnumActionResult.SUCCESS) {
+                       entity.setPickupDelay(1000);
+                       entity.setDead();
+                   }
                }
             }
         }
@@ -211,15 +216,6 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
         if (attachedTime > 120) {
             player.getOwner().knockBack(player.getOwner(), 1, 1, 1);
         }
-    }
-
-    @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-        ActionResult<ItemStack> result = super.onItemRightClick(world, player, hand);
-
-
-
-        return result;
     }
 
     @Override

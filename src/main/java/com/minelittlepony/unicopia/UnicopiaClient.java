@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.jumpingcastle.api.Target;
 import com.minelittlepony.unicopia.entity.EntityFakeClientPlayer;
+import com.minelittlepony.unicopia.extern.MineLP;
 import com.minelittlepony.unicopia.init.UEntities;
 import com.minelittlepony.unicopia.init.UParticles;
 import com.minelittlepony.unicopia.input.Keyboard;
