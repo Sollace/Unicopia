@@ -72,8 +72,6 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
 
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
-        initGui();
-
         if (button.id == 1) {
             currentIPage = currentIPage.next();
         } else {
