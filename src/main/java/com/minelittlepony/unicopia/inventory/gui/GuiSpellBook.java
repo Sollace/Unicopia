@@ -31,7 +31,6 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
 
     private IPlayer playerExtension;
 
-
     private PageButton nextPage;
     private PageButton prevPage;
 
@@ -53,14 +52,22 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
 
-        buttonList.add(nextPage = new PageButton(1, x + 360, y + 160, true));
-        buttonList.add(prevPage = new PageButton(2, x + 20, y + 160, false));
+        buttonList.add(nextPage = new PageButton(1, x + 360, y + 185, true));
+        buttonList.add(prevPage = new PageButton(2, x + 20, y + 185, false));
 
         if (currentIPage == null) {
             currentIPage = Pages.instance().getByIndex(0);
         }
 
         onPageChange();
+
+        if (playerExtension.hasPageStateRelative(currentIPage, PageState.UNREAD, 1)) {
+            nextPage.triggerShake();
+        }
+
+        if (playerExtension.hasPageStateRelative(currentIPage, PageState.UNREAD, -1)) {
+            prevPage.triggerShake();
+        }
     }
 
     @Override
@@ -77,8 +84,8 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
     }
 
     protected void onPageChange() {
-        prevPage.visible = currentIPage.getIndex() > 0;
-        nextPage.visible = currentIPage.getIndex() < Pages.instance().getTotalPages() - 1;
+        prevPage.enabled = currentIPage.getIndex() > 0;
+        nextPage.enabled = currentIPage.getIndex() < Pages.instance().getTotalPages() - 1;
 
         if (playerExtension.getPageState(currentIPage) == PageState.UNREAD) {
             playerExtension.setPageState(currentIPage, PageState.READ);
@@ -103,6 +110,7 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
     @Override
     protected void drawGradientRect(int left, int top, int width, int height, int startColor, int endColor) {
         Slot slot = getSlotUnderMouse();
+
         if (slot == null || left != slot.xPos || top != slot.yPos || !drawSlotOverlay(slot)) {
             super.drawGradientRect(left, top, width, height, startColor, endColor);
         }
@@ -114,13 +122,14 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
             GL11.glDisable(GL11.GL_ALPHA_TEST);
 
             mc.getTextureManager().bindTexture(spellBookGuiTextures);
-            drawModalRectWithCustomSizedTexture(slot.xPos - 1, slot.yPos - 1, 51, 223, 18, 18, 512, 256);
+            drawModalRectWithCustomSizedTexture(slot.xPos - 1, slot.yPos - 1, 74, 223, 18, 18, 512, 256);
 
             GL11.glEnable(GL11.GL_ALPHA_TEST);
             GlStateManager.disableBlend();
 
             return true;
         }
+
         return false;
     }
 
@@ -135,11 +144,12 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         String text = String.format("%d / %d", currentIPage.getIndex() + 1, Pages.instance().getTotalPages());
 
-        fontRenderer.drawString(text, 203 - fontRenderer.getStringWidth(text)/2, 165, 0x0);
+        fontRenderer.drawString(text, 70 - fontRenderer.getStringWidth(text)/2, 190, 0x0);
     }
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+        drawWorldBackground(0);
         GlStateManager.color(1, 1, 1, 1);
 
         int left = (width - xSize) / 2;
@@ -187,27 +197,50 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
         @Override
         public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
             if (visible) {
+
+                boolean shaking = false;
+
                 int x = this.x;
                 int y = this.y;
+
                 if (shakesLeft > 0) {
-                    shakeCount += (float)Math.PI/2;
+                    shaking = true;
+                    shakeCount += (float)Math.PI / 2;
+
                     if (shakeCount >= Math.PI * 2) {
-                        shakeCount %= Math.PI*2;
+                        shakeCount %= Math.PI * 2;
                         shakesLeft--;
                     }
-                    x += (int)(Math.sin(shakeCount)*3);
-                    y -= (int)(Math.sin(shakeCount)*3);
+
+                    x += (int)(Math.sin(shakeCount) * 3);
+                    y -= (int)(Math.sin(shakeCount) * 3);
                 }
 
-                boolean hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + width && mouseY < this.y + height;
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                GlStateManager.color(1, 1, 1, 1);
                 mc.getTextureManager().bindTexture(spellBookGuiTextures);
+
                 int u = 0;
                 int v = 220;
-                if (hovered) u += 23;
-                if (!direction) v += 13;
+
+                if (shaking || isMouseOver(mouseX, mouseY)) {
+                    u += 23;
+                }
+
+                if (shaking) {
+                    u += 23;
+                }
+
+                if (!direction) {
+                    v += 13;
+                }
+
                 drawModalRectWithCustomSizedTexture(x, y, u, v, 23, 13, 512, 256);
             }
+        }
+
+        public boolean isMouseOver(int mouseX, int mouseY) {
+            return enabled &&  mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
+
         }
 
         public void triggerShake() {

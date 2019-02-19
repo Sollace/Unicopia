@@ -26,6 +26,21 @@ public interface IPageOwner extends ITransmittable {
         sendCapabilities(true);
     }
 
+    default boolean hasPageStateRelative(IPage start, PageState state, int direction) {
+        int pos = start.getIndex();
+
+        do {
+            if (getPageState(Pages.instance().getByIndex(pos)) == state) {
+                return true;
+            }
+
+            pos += direction;
+
+        } while (pos >= 0 && pos < Pages.instance().getTotalPages());
+
+        return false;
+    }
+
     default PageState getPageState(IPage page) {
         return getPageStates().getOrDefault(page.getName(), page.getDefaultState());
     }
