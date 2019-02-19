@@ -52,6 +52,7 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
 
         setTranslationKey(name);
         setRegistryName(domain, name);
+        setMaxDamage(0);
     }
 
     @Override
@@ -197,7 +198,7 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
             if (world.rand.nextInt(300) == 0) {
                 DamageSource source = MagicalDamageSource.causePlayerDamage("alicorn_amulet", player);
 
-                player.attackEntityFrom(source, 0.5F);
+                player.attackEntityFrom(source, 1F);
             }
         }
 
@@ -210,8 +211,11 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
         float attachedTime = player.getInventory().getTicksAttached(this) / 100F;
 
         DamageSource source = MagicalDamageSource.causePlayerDamage("alicorn_amulet", player.getOwner());
+
         DifficultyInstance difficulty = player.getWorld().getDifficultyForLocation(player.getOrigin());
         float amount = (attachedTime * (1 + needfulness)) * (1 + difficulty.getClampedAdditionalDifficulty());
+
+        amount = Math.min(amount, player.getOwner().getMaxHealth());
 
         player.getOwner().attackEntityFrom(source, amount);
 
