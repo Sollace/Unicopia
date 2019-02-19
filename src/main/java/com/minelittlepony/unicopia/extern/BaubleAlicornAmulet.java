@@ -27,6 +27,16 @@ public class BaubleAlicornAmulet extends ItemAlicornAmulet implements IBauble {
     }
 
     @Override
+    public void onEquipped(ItemStack itemstack, EntityLivingBase player) {
+        player.getAttributeMap().applyAttributeModifiers(itemstack.getAttributeModifiers(getEquipmentSlot(itemstack)));
+    }
+
+    @Override
+    public void onUnequipped(ItemStack itemstack, EntityLivingBase player) {
+        player.getAttributeMap().removeAttributeModifiers(itemstack.getAttributeModifiers(getEquipmentSlot(itemstack)));
+    }
+
+    @Override
     public void onWornTick(ItemStack itemstack, EntityLivingBase player) {
         if (player instanceof EntityPlayer) {
             onArmorTick(player.world, (EntityPlayer)player, itemstack);
