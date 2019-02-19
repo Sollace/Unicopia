@@ -6,6 +6,7 @@ import baubles.api.BaubleType;
 import baubles.api.BaublesApi;
 import baubles.api.IBauble;
 import baubles.api.cap.IBaublesItemHandler;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -58,6 +59,11 @@ public class BaubleAlicornAmulet extends ItemAlicornAmulet implements IBauble {
         }
 
         return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemstack);
+    }
+
+    @Override
+    public boolean isValidArmor(ItemStack stack, EntityEquipmentSlot armorType, Entity entity) {
+        return false;
     }
 
     @Override
