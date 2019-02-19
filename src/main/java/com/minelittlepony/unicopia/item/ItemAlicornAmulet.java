@@ -12,9 +12,9 @@ import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.util.MagicalDamageSource;
+import com.minelittlepony.util.lang.ClientLocale;
 import com.minelittlepony.util.vector.VecHelper;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
@@ -121,7 +121,7 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
         if (iplayer != null) {
             int attachedTime = iplayer.getInventory().getTicksAttached(this);
             if (attachedTime > 0) {
-                tooltip.add(I18n.format(this.getTranslationKey() + ".tagline", StringUtils.ticksToElapsedTime(attachedTime)));
+                tooltip.add(ClientLocale.format(getTranslationKey() + ".tagline", StringUtils.ticksToElapsedTime(attachedTime)));
             }
         }
     }

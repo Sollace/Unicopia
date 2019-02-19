@@ -19,13 +19,13 @@ import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.render.DisguiseRenderer;
 import com.minelittlepony.util.gui.ButtonGridLayout;
 import com.minelittlepony.util.gui.UButton;
+import com.minelittlepony.util.lang.ClientLocale;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -62,7 +62,7 @@ public class UnicopiaClient extends UClient {
     static void addUniButton(List<GuiButton> buttons) {
         ButtonGridLayout layout = new ButtonGridLayout(buttons);
 
-        GuiButton uni = new UButton(layout.getNextButtonId(), 0, 0, 150, 20, I18n.format("gui.unicopia"), b -> {
+        GuiButton uni = new UButton(layout.getNextButtonId(), 0, 0, 150, 20, ClientLocale.format("gui.unicopia"), b -> {
             Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.BLOCK_ANVIL_USE, 1));
             b.displayString = "<< WIP >>";
 

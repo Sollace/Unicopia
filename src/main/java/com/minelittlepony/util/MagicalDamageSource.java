@@ -1,6 +1,7 @@
 package com.minelittlepony.util;
 
-import net.minecraft.client.resources.I18n;
+import com.minelittlepony.util.lang.ServerLocale;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -42,11 +43,11 @@ public class MagicalDamageSource extends EntityDamageSource {
             ItemStack held = attacker instanceof EntityLivingBase ? ((EntityLivingBase)attacker).getHeldItemMainhand() : ItemStack.EMPTY;
 
             String withItem = withAttecker + ".item";
-            if (held != null && held.hasDisplayName() && I18n.hasKey(withItem)) {
+            if (held != null && held.hasDisplayName() && ServerLocale.hasKey(withItem)) {
                 return new TextComponentTranslation(withItem, target.getDisplayName(), attacker.getDisplayName(), held.getTextComponent());
             }
 
-            if (I18n.hasKey(withAttecker)) {
+            if (ServerLocale.hasKey(withAttecker)) {
                 return new TextComponentTranslation(withAttecker, target.getDisplayName(), attacker.getDisplayName());
             }
         }

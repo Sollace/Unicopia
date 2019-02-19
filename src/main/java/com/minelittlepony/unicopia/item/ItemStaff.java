@@ -8,10 +8,10 @@ import javax.annotation.Nullable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.util.lang.ClientLocale;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -77,7 +77,7 @@ public class ItemStaff extends ItemSword implements ITossable {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        tooltip.add(I18n.format(getTranslationKey(stack) + ".tagline"));
+        tooltip.add(ClientLocale.format(getTranslationKey(stack) + ".tagline"));
     }
 
     @Override

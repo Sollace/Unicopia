@@ -12,10 +12,10 @@ import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.unicopia.spell.SpellCastResult;
 import com.minelittlepony.unicopia.spell.IDispenceable;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
+import com.minelittlepony.util.lang.ClientLocale;
 import com.minelittlepony.util.vector.VecHelper;
 
 import net.minecraft.block.BlockDispenser;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
@@ -184,7 +184,7 @@ public class ItemSpell extends Item implements ICastable {
         if (SpellRegistry.stackHasEnchantment(stack)) {
             SpellAffinity affinity = getAffinity(stack);
 
-            tooltip.add(affinity.getColourCode() + I18n.format(String.format("%s.%s.tagline",
+            tooltip.add(affinity.getColourCode() + ClientLocale.format(String.format("%s.%s.tagline",
                     affinity.getTranslationKey(),
                     SpellRegistry.getKeyFromStack(stack)
             )));
@@ -199,7 +199,7 @@ public class ItemSpell extends Item implements ICastable {
     @Override
     public String getItemStackDisplayName(ItemStack stack) {
         if (SpellRegistry.stackHasEnchantment(stack)) {
-            return I18n.format(getTranslationKey(stack) + ".enchanted.name", I18n.format(String.format("%s.%s.name",
+            return ClientLocale.format(getTranslationKey(stack) + ".enchanted.name", ClientLocale.format(String.format("%s.%s.name",
                     getAffinity(stack).getTranslationKey(),
                     SpellRegistry.getKeyFromStack(stack)
             )));
