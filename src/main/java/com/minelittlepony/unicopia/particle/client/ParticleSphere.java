@@ -78,9 +78,11 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
             return;
         }
 
+        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
         GlStateManager.depthMask(false);
         GlStateManager.shadeModel(GL11.GL_SMOOTH);
 
+        GlStateManager.enableAlpha();
         GlStateManager.enableBlend();
         Minecraft.getMinecraft().entityRenderer.disableLightmap();
         GlStateManager.enableLighting();
@@ -100,6 +102,7 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
         GlStateManager.disableBlend();
         GlStateManager.depthMask(true);
         GlStateManager.color(1, 1, 1, 1);
+        GL11.glPopAttrib();
     }
 
     @Override
