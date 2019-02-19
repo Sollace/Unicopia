@@ -179,9 +179,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
             if (harmed || player.world.rand.nextInt(5) == 0) {
 
                 if (!harmed || player.world.rand.nextInt(30) == 0) {
-                    UWorld.enqueueTask(() -> {
-                        removeTree(player.world, data.pos());
-                    });
+                    UWorld.enqueueTask(w -> removeTree(w, data.pos()));
                 }
 
                 IPower.takeFromPlayer(player, 3);
@@ -331,10 +329,10 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
 
             dropApplesPart(capturedDrops, new ArrayList<BlockPos>(), w, log, pos, 0);
 
-            UWorld.enqueueTask(() -> {
+            UWorld.enqueueTask(wo -> {
                 capturedDrops.forEach(item -> {
                     item.setNoPickupDelay();
-                    w.spawnEntity(item);
+                    wo.spawnEntity(item);
                 });
             });
 

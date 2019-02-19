@@ -1,8 +1,12 @@
 package com.minelittlepony.unicopia.world;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.Random;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.minelittlepony.jumpingcastle.Exceptions;
 import com.minelittlepony.unicopia.Unicopia;
@@ -27,13 +31,20 @@ public class UWorld implements IWorldGenerator {
         return instance;
     }
 
-    private static final Queue<Runnable> tickTasks = Queues.newArrayDeque();
+    private static final Queue<Consumer<World>> tickTasks = Queues.newArrayDeque();
+    private static List<DelayedTask> delayedTasks = Lists.newArrayList();
 
     private static final Object locker = new Object();
 
-    public static void enqueueTask(Runnable task) {
+    public static void enqueueTask(Consumer<World> task) {
         synchronized (locker) {
             tickTasks.add(task);
+        }
+    }
+
+    public static void scheduleTask(Consumer<World> task, int ticksLater) {
+        synchronized (locker) {
+            delayedTasks.add(new DelayedTask(task, ticksLater));
         }
     }
 
@@ -53,9 +64,12 @@ public class UWorld implements IWorldGenerator {
 
     public void onUpdate(World world) {
         synchronized (locker) {
-            Runnable task;
+            delayedTasks = delayedTasks.stream().filter(DelayedTask::tick).collect(Collectors.toList());
+
+            Consumer<World> task;
             while ((task = tickTasks.poll()) != null) {
-                Exceptions.logged(task, Unicopia.log);
+                Consumer<World> i = task;
+                Exceptions.logged(() -> i.accept(world), Unicopia.log);
             }
         }
     }
@@ -84,6 +98,27 @@ public class UWorld implements IWorldGenerator {
                 cloudsGen.generate(world, chunkX, chunkZ, primer);
                 structuresGen.generate(world, chunkX, chunkZ, primer);
             }
+        }
+    }
+
+    private static class DelayedTask {
+        final Consumer<World> task;
+
+        int ticksDelay;
+
+        DelayedTask(Consumer<World> task, int ticks) {
+            this.task = task;
+            this.ticksDelay = ticks;
+        }
+
+        boolean tick() {
+            if (ticksDelay-- <= 0) {
+                tickTasks.add(task);
+
+                return false;
+            }
+
+            return true;
         }
     }
 }

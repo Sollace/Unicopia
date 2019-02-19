@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.spell.SpellAffinity;
+import com.minelittlepony.unicopia.world.UWorld;
 import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.lang.ClientLocale;
 import com.minelittlepony.util.vector.VecHelper;
@@ -56,7 +57,6 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
 
         setTranslationKey(name);
         setRegistryName(domain, name);
-        setMaxDamage(0);
     }
 
     @Override
@@ -202,6 +202,21 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
             if (world.rand.nextInt(300) == 0) {
                 player.attackEntityFrom(DAMAGE_SOURCE, 1F);
             }
+        }
+
+        if (itemStack.getItemDamage() >= getMaxDamage(itemStack) - 1) {
+            itemStack.damageItem(10, player);
+
+            player.attackEntityFrom(DAMAGE_SOURCE, player.getMaxHealth() - 0.01F);
+            player.getFoodStats().setFoodLevel(1);
+
+            Vec3d pos = player.getPositionVector();
+
+            player.world.newExplosion(player, pos.x, pos.y, pos.z, 10, false, false);
+
+            UWorld.scheduleTask(w -> {
+                w.newExplosion(player, pos.x, pos.y, pos.z, 6, false, true);
+            }, 50);
         }
 
         iplayer.getInventory().enforceDependency(this);
