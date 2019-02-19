@@ -6,6 +6,7 @@ import baubles.api.BaubleType;
 import baubles.api.BaublesApi;
 import baubles.api.IBauble;
 import baubles.api.cap.IBaublesItemHandler;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -23,6 +24,13 @@ public class BaubleAlicornAmulet extends ItemAlicornAmulet implements IBauble {
     @Override
     public BaubleType getBaubleType(ItemStack itemstack) {
         return BaubleType.AMULET;
+    }
+
+    @Override
+    public void onWornTick(ItemStack itemstack, EntityLivingBase player) {
+        if (player instanceof EntityPlayer) {
+            onArmorTick(player.world, (EntityPlayer)player, itemstack);
+        }
     }
 
     @Override
