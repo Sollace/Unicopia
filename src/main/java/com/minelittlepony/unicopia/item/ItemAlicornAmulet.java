@@ -40,6 +40,10 @@ import net.minecraft.world.World;
 
 public class ItemAlicornAmulet extends ItemArmor implements IDependable {
 
+    public static final DamageSource DAMAGE_SOURCE = MagicalDamageSource.create("alicorn_amulet")
+            .setDamageBypassesArmor()
+            .setDamageIsAbsolute();
+
     private static final UUID[] ARMOR_MODIFIERS = new UUID[] {
             UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"),
             UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"),
@@ -196,9 +200,7 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
 
         if (attachedTime > 13000) {
             if (world.rand.nextInt(300) == 0) {
-                DamageSource source = MagicalDamageSource.causePlayerDamage("alicorn_amulet", player);
-
-                player.attackEntityFrom(source, 1F);
+                player.attackEntityFrom(DAMAGE_SOURCE, 1F);
             }
         }
 
@@ -210,14 +212,12 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
 
         float attachedTime = player.getInventory().getTicksAttached(this) / 100F;
 
-        DamageSource source = MagicalDamageSource.causePlayerDamage("alicorn_amulet", player.getOwner());
-
         DifficultyInstance difficulty = player.getWorld().getDifficultyForLocation(player.getOrigin());
         float amount = (attachedTime * (1 + needfulness)) * (1 + difficulty.getClampedAdditionalDifficulty());
 
         amount = Math.min(amount, player.getOwner().getMaxHealth());
 
-        player.getOwner().attackEntityFrom(source, amount);
+        player.getOwner().attackEntityFrom(DAMAGE_SOURCE, amount);
 
         if (attachedTime > 120) {
             player.getOwner().knockBack(player.getOwner(), 1, 1, 1);
