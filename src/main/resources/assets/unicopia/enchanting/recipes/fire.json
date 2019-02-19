@@ -6,6 +6,7 @@
         { "item": "minecraft:lava_bucket" }
     ],
 	"result": {
+		"item": "unicopia:gem",
 		"spell": "fire"
 	}
 }

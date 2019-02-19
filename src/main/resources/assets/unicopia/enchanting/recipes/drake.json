@@ -1,0 +1,12 @@
+{
+	"type": "unicopia:crafting_spell",
+	"ingredients": [
+        { "item": "unicopia:gem", "spell": "charge" },
+        { "item": "unicopia:corrupted_gem" },
+        { "item": "minecraft:red_flower", "data": 0 }
+    ],
+	"result": {
+		"item": "unicopia:gem",
+		"spell": "drake"
+	}
+}

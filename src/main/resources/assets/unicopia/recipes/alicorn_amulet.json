@@ -1,0 +1,53 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "*D~",
+    "#$#",
+    " # "
+  ],
+  "key": {
+    "#": [
+      { "item": "unicopia:corrupted_gem" }
+    ],
+    "D": [
+      { "item": "minecraft:diamond" }
+    ],
+    "*": [
+      { "item": "unicopia:corrupted_gem", "nbt": { "spell": "inferno" } }
+    ],
+    "$": [
+      { "item": "unicopia:corrupted_gem", "nbt": { "spell": "darkness" } }
+    ],
+    "~": [
+      { "item": "unicopia:corrupted_gem", "nbt": { "spell": "necromancy" } }
+    ]
+  },
+  "result": { "item": "unicopia:alicorn_amulet" }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,11 @@
+{
+	"type": "unicopia:crafting_spell",
+	"ingredients": [
+        { "item": "minecraft:fire_charge" },
+        { "item": "unicopia:gem", "spell": "fire" }
+    ],
+	"result": {
+		"item": "unicopia:corrupted_gem",
+		"spell": "vortex"
+	}
+}

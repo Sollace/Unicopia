@@ -14,13 +14,16 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import net.minecraftforge.registries.IForgeRegistryEntry.Impl;
 
 public class SpellRecipe extends Impl<IRecipe> implements IRecipe {
 
-	private String spellId;
+    private final ResourceLocation spellitem;
+
+	private final String spellId;
 
 	private final NonNullList<RecipeItem> ingredients;
 
@@ -52,11 +55,17 @@ public class SpellRecipe extends Impl<IRecipe> implements IRecipe {
 
 	    String spellId = json.get("spell").getAsString();
 
-	    return new SpellRecipe(spellId, ingredients);
+	    Item spellitem = json.has("item") ? Item.getByNameOrId(json.get("item").getAsString()) : null;
+	    if (spellitem == null) {
+	        spellitem = UItems.spell;
+	    }
+
+	    return new SpellRecipe(spellitem, spellId, ingredients);
 	}
 
-	public SpellRecipe(String spellName, NonNullList<RecipeItem> ingredients) {
-		spellId = spellName;
+	public SpellRecipe(Item spellitem, String spellName, NonNullList<RecipeItem> ingredients) {
+	    this.spellitem = spellitem.getRegistryName();
+	    this.spellId = spellName;
 		this.ingredients = ingredients;
 	}
 
@@ -64,7 +73,11 @@ public class SpellRecipe extends Impl<IRecipe> implements IRecipe {
 	public boolean matches(InventoryCrafting inv, World worldIn) {
 		ItemStack enchantedStack = ((InventorySpellBook)inv).getCraftResultMatrix().getStackInSlot(0);
 
-		if (enchantedStack.isEmpty()) {
+		if (enchantedStack.isEmpty() || enchantedStack.getItem() == null) {
+		    return false;
+		}
+
+		if (!spellitem.equals(enchantedStack.getItem().getRegistryName())) {
 		    return false;
 		}
 

@@ -1,0 +1,12 @@
+{
+	"type": "unicopia:crafting_spell",
+	"ingredients": [
+        { "item": "unicopia:gem", "spell": "fire" },
+        { "item": "minecraft:redstone" },
+        { "item": "minecraft:lava_bucket" }
+    ],
+	"result": {
+		"item": "unicopia:corrupted_gem",
+		"spell": "inferno"
+	}
+}
