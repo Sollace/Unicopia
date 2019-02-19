@@ -200,13 +200,14 @@ class PlayerCapabilities implements IPlayer {
                 }
             }
         }
+
+        powers.onUpdate();
+        inventory.onUpdate();
     }
 
     @Override
     public void onUpdate() {
-        powers.onUpdate();
         gravity.onUpdate();
-        inventory.onUpdate();
 
         if (hasEffect()) {
             if (entity.getEntityWorld().isRemote) {
