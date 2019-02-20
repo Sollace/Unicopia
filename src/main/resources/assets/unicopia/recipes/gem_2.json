@@ -10,24 +10,24 @@
       { "item": "minecraft:stone", "data": 3 }
     ],
     "C": [
-      { "item": "minecraft:stained_hardenned_clay", "data": 0 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 1 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 2 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 3 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 4 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 5 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 6 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 7 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 8 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 9 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 10 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 11 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 12 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 13 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 14 },
-      { "item": "minecraft:stained_hardenned_clay", "data": 15 }
+      { "item": "minecraft:stained_hardened_clay", "data": 0 },
+      { "item": "minecraft:stained_hardened_clay", "data": 1 },
+      { "item": "minecraft:stained_hardened_clay", "data": 2 },
+      { "item": "minecraft:stained_hardened_clay", "data": 3 },
+      { "item": "minecraft:stained_hardened_clay", "data": 4 },
+      { "item": "minecraft:stained_hardened_clay", "data": 5 },
+      { "item": "minecraft:stained_hardened_clay", "data": 6 },
+      { "item": "minecraft:stained_hardened_clay", "data": 7 },
+      { "item": "minecraft:stained_hardened_clay", "data": 8 },
+      { "item": "minecraft:stained_hardened_clay", "data": 9 },
+      { "item": "minecraft:stained_hardened_clay", "data": 10 },
+      { "item": "minecraft:stained_hardened_clay", "data": 11 },
+      { "item": "minecraft:stained_hardened_clay", "data": 12 },
+      { "item": "minecraft:stained_hardened_clay", "data": 13 },
+      { "item": "minecraft:stained_hardened_clay", "data": 14 },
+      { "item": "minecraft:stained_hardened_clay", "data": 15 }
     ],
-    "S": [
+    "B": [
       { "item": "minecraft:dye", "data": 15 }
     ]
   },
