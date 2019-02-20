@@ -1,0 +1,11 @@
+{
+	"items": [
+		{ "item": "minecraft:red_glazed_terracotta" },
+		{ "item": "minecraft:dye", "data": 1 },
+		{ "item": "minecraft:redstone_block" },
+		{ "item": "minecraft:redstone" },
+		{ "item": "minecraft:emerald" },
+		{ "item": "minecraft:ghast_tear" },
+		{ "item": "minecraft:red_nether_brick" }
+	]
+}

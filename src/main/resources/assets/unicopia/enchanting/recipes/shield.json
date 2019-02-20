@@ -1,9 +1,9 @@
 {
 	"type": "unicopia:crafting_spell",
 	"ingredients": [
-        { "item": "minecraft:egg" },
-        { "item": "minecraft:coal" },
-        { "item": "minecraft:blaze_powder" }
+        { "id": "unicopia:shell" },
+        { "id": "unicopia:shell" },
+        { "id": "unicopia:shard" }
     ],
 	"result": {
 		"item": { "item": "unicopia:gem" },

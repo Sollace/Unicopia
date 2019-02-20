@@ -1,10 +1,10 @@
 {
 	"type": "unicopia:crafting_spell",
 	"ingredients": [
-        { "item": "minecraft:firework_charge" },
-        { "item": "minecraft:fire_charge" },
+        { "id": "unicopia:fire" },
+        { "id": "unicopia:shell" },
         { "item": "unicopia:gem", "spell": "shield" },
-        { "item": "minecraft:egg" }
+        { "id": "unicopia:shell" }
     ],
 	"result": {
 		"item": { "item": "unicopia:corrupted_gem" },

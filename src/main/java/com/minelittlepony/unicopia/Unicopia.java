@@ -25,6 +25,7 @@ import com.minelittlepony.jumpingcastle.api.IChannel;
 import com.minelittlepony.jumpingcastle.api.JumpingCastle;
 import com.minelittlepony.unicopia.advancements.UAdvancements;
 import com.minelittlepony.unicopia.command.Commands;
+import com.minelittlepony.unicopia.enchanting.AffineIngredients;
 import com.minelittlepony.unicopia.enchanting.Pages;
 import com.minelittlepony.unicopia.enchanting.SpellRecipe;
 import com.minelittlepony.unicopia.forgebullshit.FBS;
@@ -104,6 +105,8 @@ public class Unicopia implements IGuiHandler {
                 super.registerRecipeTypes(types);
 
                 types.put("unicopia:crafting_spell", SpellRecipe::deserialize);
+
+                AffineIngredients.instance().load();
             }
         };
 

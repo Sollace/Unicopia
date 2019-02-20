@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.minelittlepony.unicopia.enchanting.AffineIngredients.AffineIngredient;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
 import net.minecraft.item.Item;
@@ -92,7 +93,7 @@ public interface SpellIngredient {
         }
 
         @Nullable
-        public static Single parse(JsonObject json) {
+        public static SpellIngredient parse(JsonObject json) {
             Item item = json.has("item") ? Item.getByNameOrId(json.get("item").getAsString()) : null;
 
             if (item != null) {
@@ -107,6 +108,10 @@ public interface SpellIngredient {
                 }
 
                 return new Single(stack, !json.has("data"));
+            }
+
+            if (json.has("id")) {
+                return AffineIngredient.parse(json);
             }
 
             return null;

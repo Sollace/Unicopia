@@ -1,9 +1,9 @@
 {
 	"type": "unicopia:crafting_spell",
 	"ingredients": [
-        { "item": "minecraft:fire_charge" },
-        { "item": "minecraft:fire_charge" },
-        { "item": "minecraft:lava_bucket" }
+        { "id": "unicopia:fire" },
+        { "id": "unicopia:fire" },
+        { "id": "unicopia:fire" }
     ],
 	"result": {
 		"item": { "item": "unicopia:gem" },

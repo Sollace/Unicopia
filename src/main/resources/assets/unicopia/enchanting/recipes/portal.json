@@ -1,9 +1,9 @@
 {
 	"type": "unicopia:crafting_spell",
 	"ingredients": [
-        { "item": "minecraft:ender_pearl" },
+        { "id": "unicopia:sight" },
         { "item": "minecraft:ghast_tear" },
-        { "item": "minecraft:redstone" },
+        { "id": "unicopia:energy" },
         { "item": "unicopia:gem", "spell": "fire" }
     ],
 	"result": {

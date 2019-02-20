@@ -1,9 +1,9 @@
 {
 	"type": "unicopia:crafting_spell",
 	"ingredients": [
-        { "item": "unicopia:zap_apple" },
+        { "id": "unicopia:energy" },
         { "item": "unicopia:gem", "spell": "fire" },
-        { "item": "minecraft:redstone" }
+        { "id": "unicopia:fire" }
     ],
 	"result": {
 		"item": { "item": "unicopia:gem" },

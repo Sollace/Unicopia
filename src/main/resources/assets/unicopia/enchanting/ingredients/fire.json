@@ -1,0 +1,10 @@
+{
+	"items": [
+		{ "item": "minecraft:fire_charge" },
+		{ "item": "minecraft:magma_cream" },
+		{ "item": "minecraft:blaze_powder" },
+		{ "item": "minecraft:blaze_rod" },
+		{ "item": "minecraft:gold_nugget" },
+		{ "item": "minecraft:lava_bucket" }
+	]
+}

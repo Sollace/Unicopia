@@ -1,9 +1,14 @@
 {
 	"type": "unicopia:crafting_spell",
 	"ingredients": [
-        { "item": "minecraft:glowstone_dust" },
+        { "id": "unicopia:light" },
         { "item": "unicopia:gem", "spell": "fire" },
-        { "item": "unicopia:apple_green" }
+        [
+        	{ "item": "minecraft:apple" },
+        	{ "item": "unicopia:apple_green" },
+        	{ "item": "unicopia:apple_sweet" },
+        	{ "item": "unicopia:apple_sour" }
+        ]
     ],
 	"result": {
 		"item": { "item": "unicopia:gem" },

@@ -1,9 +1,9 @@
 {
 	"type": "unicopia:crafting_spell",
 	"ingredients": [
-        { "item": "minecraft:snowball" },
-        { "item": "minecraft:snowball" },
-        { "item": "minecraft:water_bucket" }
+		{ "id": "unicopia:ice" },
+		{ "id": "unicopia:ice" },
+		{ "id": "unicopia:ice" }
     ],
 	"result": {
 		"item": { "item": "unicopia:gem" },

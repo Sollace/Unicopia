@@ -1,9 +1,9 @@
 {
 	"type": "unicopia:crafting_spell",
 	"ingredients": [
-        { "item": "minecraft:dye", "data": 1 },
-        { "item": "minecraft:redstone" },
-        { "item": "minecraft:rotten_flesh" }
+        { "id": "unicopia:blood" },
+        { "id": "unicopia:energy" },
+        { "id": "unicopia:rot" }
     ],
 	"result": {
 		"item": { "item": "unicopia:corrupted_gem" },

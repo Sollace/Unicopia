@@ -1,0 +1,10 @@
+{
+	"items": [
+		{ "item": "minecraft:brown_mushroom" },
+		{ "item": "unicopia:rotten_apple" },
+		{ "item": "minecraft:golden_carrot" },
+		{ "item": "minecraft:wheat" },
+		{ "item": "minecraft:grain" },
+		{ "item": "minecraft:alfalfa_leaves" }
+	]
+}

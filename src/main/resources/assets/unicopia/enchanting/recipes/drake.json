@@ -3,6 +3,7 @@
 	"ingredients": [
         { "item": "unicopia:gem", "spell": "charge" },
         { "item": "unicopia:corrupted_gem" },
+        { "id": "unicopia:life" },
         { "item": "minecraft:red_flower", "data": 0 }
     ],
 	"result": {

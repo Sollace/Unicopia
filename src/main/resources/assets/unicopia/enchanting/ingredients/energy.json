@@ -1,0 +1,8 @@
+{
+	"items": [
+		{ "item": "unicopia:zap_apple" },
+		{ "item": "minecraft:redstone_torch" },
+		{ "item": "minecraft:redstone_block" },
+		{ "item": "minecraft:redstone" }
+	]
+}
