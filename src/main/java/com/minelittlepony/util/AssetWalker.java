@@ -38,12 +38,15 @@ public class AssetWalker {
 
     private final String loadLocation;
 
+    private final String namespace;
+
     private final JsonConsumer consumer;
 
     public AssetWalker(ResourceLocation assetLocation, JsonConsumer consumer) {
         this.consumer = consumer;
+        this.namespace = assetLocation.getNamespace();
 
-        loadLocation = "/assets/" + assetLocation.getNamespace() + "/" + assetLocation.getPath();
+        loadLocation = "/assets/" + namespace + "/" + assetLocation.getPath();
     }
 
     public void walk() {
@@ -86,7 +89,7 @@ public class AssetWalker {
             Path i = iterator.next();
 
             if ("json".equals(FilenameUtils.getExtension(i.toString()))) {
-                ResourceLocation id = new ResourceLocation(FilenameUtils.removeExtension(path.relativize(i).toString()).replaceAll("\\\\", "/"));
+                ResourceLocation id = new ResourceLocation(namespace, FilenameUtils.removeExtension(path.relativize(i).toString()).replaceAll("\\\\", "/"));
 
                 try(BufferedReader bufferedreader = Files.newBufferedReader(i)) {
                     consumer.accept(id, JsonUtils.fromJson(GSON, bufferedreader, JsonObject.class));
