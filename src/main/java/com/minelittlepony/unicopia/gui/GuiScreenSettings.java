@@ -28,6 +28,6 @@ public class GuiScreenSettings extends GameGui {
         drawDefaultBackground();
         drawCenteredString(fontRenderer, title, width / 2, 15, 16777215);
 
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        super.drawContents(mouseX, mouseY, partialTicks);
     }
 }

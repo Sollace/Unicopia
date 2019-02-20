@@ -56,7 +56,7 @@ public class Button extends GuiButton implements IGuiTooltipped<Button> {
         if (super.mousePressed(mc, mouseX, mouseY)) {
             action.perform(this);
 
-            return false;
+            return true;
         }
 
         return false;
