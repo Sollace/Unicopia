@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.enchanting;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -24,7 +25,7 @@ public class Pages {
     }
 
     private final Map<ResourceLocation, PageInstance> pages = Maps.newHashMap();
-    private final List<PageInstance> pagesByIndex = Lists.newArrayList();
+    private List<PageInstance> pagesByIndex = Lists.newArrayList();
 
     private final Map<String, IConditionFactory> conditionFactories = Maps.newHashMap();
 
@@ -38,29 +39,39 @@ public class Pages {
 
     public void load() {
         pages.clear();
-        pagesByIndex.clear();
         assets.walk();
 
-        List<ResourceLocation> names = Lists.newArrayList();
+        pagesByIndex = pages.values().stream().sorted(this::comparePages).collect(Collectors.toList());
 
-        for (PageInstance page : pages.values()) {
-            if (page.parent != null) {
-                int i = names.indexOf(page.parent);
-                if (i != -1) {
-                    names.add(i, page.name);
-                    pagesByIndex.add(i, page);
+        int i = 0;
 
-                    continue;
-                }
-            }
+        for (PageInstance page : pagesByIndex) {
+            page.index = i++;
+        }
+    }
 
-            names.add(page.name);
-            pagesByIndex.add(page);
+    protected int comparePages(PageInstance a, PageInstance b) {
+        if (a.parent == null && b.parent == null) {
+            return 0;
         }
 
-        for (int i = 0; i < pagesByIndex.size(); i++) {
-            pagesByIndex.get(i).index = i;
+        if (a.parent == null) {
+            return -1;
         }
+
+        if (b.parent == null) {
+            return 1;
+        }
+
+        if (a.parent.equals(b.name)) {
+            return 1;
+        }
+
+        if (b.parent.equals(a.name)) {
+            return -1;
+        }
+
+        return a.name.compareTo(b.name);
     }
 
     void addPage(ResourceLocation id, JsonObject json) throws JsonParseException {
