@@ -6,11 +6,14 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.entity.EntitySpell;
+import com.minelittlepony.unicopia.player.IPlayer;
+import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.IUseAction;
 import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.unicopia.spell.SpellCastResult;
 import com.minelittlepony.unicopia.spell.IDispenceable;
+import com.minelittlepony.unicopia.spell.IHeldEffect;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 import com.minelittlepony.util.lang.ClientLocale;
 import com.minelittlepony.util.vector.VecHelper;
@@ -80,6 +83,20 @@ public class ItemSpell extends Item implements ICastable {
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, dispenserBehavior);
     }
 
+    public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean isSelected) {
+        if (isSelected && entity instanceof EntityPlayer) {
+            IPlayer player = PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity);
+
+            if (player.getPlayerSpecies().canCast()) {
+                IHeldEffect effect = SpellRegistry.instance().getHeldFrom(stack);
+
+                if (effect != null) {
+                    effect.updateInHand(player, getAffinity(stack));
+                }
+            }
+        }
+    }
+
     public Item setTranslationKey(String key) {
         translationKey = key;
         return super.setTranslationKey(key);
@@ -120,7 +137,7 @@ public class ItemSpell extends Item implements ICastable {
             return EnumActionResult.FAIL;
         }
 
-        IMagicEffect effect = SpellRegistry.instance().getSpellFromItemStack(stack);
+        IMagicEffect effect = SpellRegistry.instance().getSpellFrom(stack);
 
         if (effect == null) {
             return EnumActionResult.FAIL;

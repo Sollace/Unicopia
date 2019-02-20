@@ -1,7 +1,7 @@
 {
 	"type": "unicopia:crafting_spell",
 	"ingredients": [
-        { "item": "unicopia:gem", "spell": "flame" },
+        { "id": "unicopia:fire" },
         { "id": "unicopia:fire" },
         { "id": "unicopia:fire" }
     ],

@@ -16,7 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
-public class SpellShield extends AbstractSpell.RangedAreaSpell {
+public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttachedEffect {
 
     private final ParticleConnection particlEffect = new ParticleConnection();
 
@@ -49,8 +49,8 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell {
     }
 
     @Override
-    public boolean updateOnPerson(ICaster<?> source) {
-        if (super.updateOnPerson(source)) {
+    public boolean updateOnPerson(IPlayer source) {
+        if (update(source)) {
             if (source.getEntity().getEntityWorld().getWorldTime() % 50 == 0) {
                 double radius = 4 + (source.getCurrentLevel() * 2);
                 if (!IPower.takeFromPlayer((EntityPlayer)source.getOwner(), radius/4)) {

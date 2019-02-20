@@ -63,32 +63,12 @@ public interface IMagicEffect extends InbtSerialisable, IAligned {
     }
 
     /**
-     * Called every tick when attached to a player.
-     *
-     * @param source    The entity we are currently attached to.
-     * @return true to keep alive
-     */
-    default boolean updateOnPerson(ICaster<?> caster) {
-        return update(caster);
-    }
-
-    /**
      * Called every tick when attached to an entity.
      * Called on both sides.
      *
      * @param source   The entity we are currently attached to.
      */
     boolean update(ICaster<?> source);
-
-    /**
-     * Called every tick when attached to a player. Used to apply particle effects.
-     * Is only called on the client side.
-     *
-     * @param source    The entity we are currently attached to.
-     */
-    default void renderOnPerson(ICaster<?> source) {
-        render(source);
-    }
 
     /**
      * Called every tick when attached to an entity to produce particle effects.

@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.init.UEffects;
 import com.minelittlepony.unicopia.init.UItems;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
+import com.minelittlepony.unicopia.spell.IAttachedEffect;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.unicopia.spell.SpellDisguise;
@@ -210,12 +211,16 @@ class PlayerCapabilities implements IPlayer {
         gravity.onUpdate();
 
         if (hasEffect()) {
-            if (entity.getEntityWorld().isRemote) {
-                getEffect().renderOnPerson(this);
-            }
+            IAttachedEffect effect = getEffect(IAttachedEffect.class, true);
 
-            if (!getEffect().updateOnPerson(this)) {
-                setEffect(null);
+            if (effect != null) {
+                if (entity.getEntityWorld().isRemote) {
+                    effect.renderOnPerson(this);
+                }
+
+                if (!effect.updateOnPerson(this)) {
+                    setEffect(null);
+                }
             }
         }
 

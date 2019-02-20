@@ -44,6 +44,7 @@ public class SpellRegistry {
         registerSpell(SpellDrake::new);
         registerSpell(SpellReveal::new);
         registerSpell(SpellDarkness::new);
+        registerSpell(SpellFlame::new);
         registerSpell(GenericSpell.factory("light", 0xF7FACB, SpellAffinity.GOOD));
     }
 
@@ -98,7 +99,12 @@ public class SpellRegistry {
     }
 
     @Nullable
-    public IMagicEffect getSpellFromItemStack(ItemStack stack) {
+    public IHeldEffect getHeldFrom(ItemStack stack) {
+        return getEntryFromStack(stack).map(Entry::holdable).orElse(null);
+    }
+
+    @Nullable
+    public IMagicEffect getSpellFrom(ItemStack stack) {
         return getSpellFromName(getKeyFromStack(stack));
     }
 
@@ -168,6 +174,7 @@ public class SpellRegistry {
 
         final boolean canDispense;
         final boolean canUse;
+        final boolean canHold;
 
         final SpellAffinity affinity;
 
@@ -178,6 +185,7 @@ public class SpellRegistry {
             this.color = inst.getTint();
             this.canDispense = inst instanceof IDispenceable;
             this.canUse = inst instanceof IUseAction;
+            this.canHold = inst instanceof IHeldEffect;
             this.affinity = inst.getAffinity();
 
             if (inst.isCraftable()) {
@@ -195,6 +203,14 @@ public class SpellRegistry {
             }
 
             return (IUseAction)create();
+        }
+
+        IHeldEffect holdable() {
+            if (!canHold) {
+                return null;
+            }
+
+            return (IHeldEffect)create();
         }
 
         IDispenceable dispensable() {

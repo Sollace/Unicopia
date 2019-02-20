@@ -54,8 +54,11 @@ spell.light.tagline=Discovery I
 spell.reveal.name=Revealing
 spell.reveal.tagline=Discovery II
 
+spell.flame.name=Burning
+spell.flame.tagline=Fire I
+
 spell.fire.name=Flame
-spell.fire.tagline=Fire I
+spell.fire.tagline=Fire II
 
 spell.vortex.name=Retention
 spell.vortex.tagline=Containment I
@@ -88,7 +91,7 @@ curse.necromancy.name=Necromancy
 curse.necromancy.tagline=Resurrection I
 
 curse.inferno.name=Inferno
-curse.inferno.tagline=Fire II
+curse.inferno.tagline=Fire III
 
 item.spellbook.name=Spellbook
 item.bag_of_holding.name=Bag of Holding

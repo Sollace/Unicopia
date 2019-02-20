@@ -137,11 +137,6 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseAc
     }
 
     @Override
-    public boolean updateOnPerson(ICaster<?> caster) {
-        return true;
-    }
-
-    @Override
     public boolean update(ICaster<?> source) {
         if (!source.getWorld().isRemote) {
             getDestinationPortal().ifPresent(dest ->
@@ -151,11 +146,6 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseAc
         }
 
         return true;
-    }
-
-    @Override
-    public void renderOnPerson(ICaster<?> source) {
-        /*noop*/
     }
 
     @Override
