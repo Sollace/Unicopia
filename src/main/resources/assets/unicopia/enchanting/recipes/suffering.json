@@ -5,7 +5,7 @@
         { "item": "unicopia:gem", "spell": "fire" }
     ],
 	"result": {
-		"item": "unicopia:corrupted_gem",
+		"item": { "item": "unicopia:corrupted_gem" },
 		"spell": "vortex"
 	}
 }

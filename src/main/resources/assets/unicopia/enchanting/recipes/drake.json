@@ -6,7 +6,7 @@
         { "item": "minecraft:red_flower", "data": 0 }
     ],
 	"result": {
-		"item": "unicopia:gem",
+		"item": { "item": "unicopia:gem" },
 		"spell": "drake"
 	}
 }

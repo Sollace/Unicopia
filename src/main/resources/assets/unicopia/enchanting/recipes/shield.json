@@ -6,7 +6,7 @@
         { "item": "minecraft:blaze_powder" }
     ],
 	"result": {
-		"item": "unicopia:gem",
+		"item": { "item": "unicopia:gem" },
 		"spell": "shield"
 	}
 }

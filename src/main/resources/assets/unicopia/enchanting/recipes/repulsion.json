@@ -7,7 +7,7 @@
         { "item": "minecraft:egg" }
     ],
 	"result": {
-		"item": "unicopia:corrupted_gem",
+		"item": { "item": "unicopia:corrupted_gem" },
 		"spell": "shield"
 	}
 }

@@ -6,7 +6,7 @@
         { "item": "minecraft:rotten_flesh" }
     ],
 	"result": {
-		"item": "unicopia:corrupted_gem",
+		"item": { "item": "unicopia:corrupted_gem" },
 		"spell": "necromancy"
 	}
 }

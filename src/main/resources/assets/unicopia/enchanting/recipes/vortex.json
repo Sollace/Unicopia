@@ -6,7 +6,7 @@
         { "item": "unicopia:gem", "spell": "portal" }
     ],
 	"result": {
-		"item": "unicopia:gem",
+		"item": { "item": "unicopia:gem" },
 		"spell": "vortex"
 	}
 }

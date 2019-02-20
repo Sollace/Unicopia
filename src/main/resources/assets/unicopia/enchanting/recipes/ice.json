@@ -6,7 +6,7 @@
         { "item": "minecraft:water_bucket" }
     ],
 	"result": {
-		"item": "unicopia:gem",
+		"item": { "item": "unicopia:gem" },
 		"spell": "ice"
 	}
 }

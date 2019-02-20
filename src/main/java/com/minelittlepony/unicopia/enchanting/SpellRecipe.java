@@ -1,70 +1,63 @@
 package com.minelittlepony.unicopia.enchanting;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.minelittlepony.unicopia.init.UItems;
 import com.minelittlepony.unicopia.inventory.InventorySpellBook;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
 import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import net.minecraftforge.registries.IForgeRegistryEntry.Impl;
 
 public class SpellRecipe extends Impl<IRecipe> implements IRecipe {
 
-    private final ResourceLocation spellitem;
+    private final SpellIngredient spellitem;
 
 	private final String spellId;
 
-	private final NonNullList<RecipeItem> ingredients;
+	private final NonNullList<SpellIngredient> ingredients;
 
 	public static IRecipe deserialize(JsonObject json) {
 
-	    NonNullList<RecipeItem> ingredients = NonNullList.create();
+	    NonNullList<SpellIngredient> ingredients = NonNullList.create();
 
 	    for (JsonElement i : json.get("ingredients").getAsJsonArray()) {
-	        JsonObject o = i.getAsJsonObject();
+	        SpellIngredient ingredient = SpellIngredient.parse(i);
 
-            Item item = o.has("item") ? Item.getByNameOrId(o.get("item").getAsString()) : null;
+	        if (ingredient != null) {
+	            ingredients.add(ingredient);
+	        }
+	    }
 
-            if (item != null) {
-                int metadata = Math.max(0, o.has("data") ? o.get("data").getAsInt() : 0);
-                int size = Math.max(1, o.has("count") ? o.get("count").getAsInt() : 1);
-                String spell = o.has("spell") ? o.get("spell").getAsString() : null;
-
-                ItemStack stack = new ItemStack(item, size, metadata);
-
-                if (spell != null) {
-                    stack = SpellRegistry.instance().enchantStack(stack, spell);
-                }
-
-                ingredients.add(new RecipeItem(stack, !o.has("data")));
-            }
+	    if (ingredients.isEmpty()) {
+	        throw new JsonParseException("Recipe cannot have 0 ingredients");
 	    }
 
 	    json = json.get("result").getAsJsonObject();
 
 	    String spellId = json.get("spell").getAsString();
 
-	    Item spellitem = json.has("item") ? Item.getByNameOrId(json.get("item").getAsString()) : null;
-	    if (spellitem == null) {
-	        spellitem = UItems.spell;
+	    SpellIngredient result = SpellIngredient.parse(json.get("item"));
+
+	    if (result == null) {
+	        throw new JsonParseException("Recipe cannot have no enchantable input");
 	    }
 
-	    return new SpellRecipe(spellitem, spellId, ingredients);
+	    return new SpellRecipe(result, spellId, ingredients);
 	}
 
-	public SpellRecipe(Item spellitem, String spellName, NonNullList<RecipeItem> ingredients) {
-	    this.spellitem = spellitem.getRegistryName();
+	public SpellRecipe(SpellIngredient spellitem, String spellName, NonNullList<SpellIngredient> ingredients) {
+	    this.spellitem = spellitem;
 	    this.spellId = spellName;
 		this.ingredients = ingredients;
 	}
@@ -77,13 +70,13 @@ public class SpellRecipe extends Impl<IRecipe> implements IRecipe {
 		    return false;
 		}
 
-		if (!spellitem.equals(enchantedStack.getItem().getRegistryName())) {
+		if (!spellitem.matches(enchantedStack, enchantedStack.getCount())) {
 		    return false;
 		}
 
 		int materialMult = enchantedStack.getCount();
 
-		ArrayList<RecipeItem> toMatch = Lists.newArrayList(ingredients);
+		ArrayList<SpellIngredient> toMatch = Lists.newArrayList(ingredients);
 
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack stack = inv.getStackInSlot(i);
@@ -97,7 +90,7 @@ public class SpellRecipe extends Impl<IRecipe> implements IRecipe {
 		return toMatch.isEmpty();
 	}
 
-	private boolean removeMatch(ArrayList<RecipeItem> toMatch, ItemStack stack, int materialMult) {
+	private boolean removeMatch(List<SpellIngredient> toMatch, ItemStack stack, int materialMult) {
 	    return toMatch.stream()
 	            .filter(s -> s.matches(stack, materialMult))
 	            .findFirst()
@@ -123,6 +116,7 @@ public class SpellRecipe extends Impl<IRecipe> implements IRecipe {
 	@Override
 	public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
 		NonNullList<ItemStack> remainers = NonNullList.<ItemStack>withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+
         for (int i = 0; i < remainers.size(); i++) {
             ItemStack stack = inv.getStackInSlot(i);
 
@@ -130,37 +124,9 @@ public class SpellRecipe extends Impl<IRecipe> implements IRecipe {
                 remainers.set(i, new ItemStack(stack.getItem().getContainerItem()));
             }
         }
+
         return remainers;
 	}
 
-	private static class RecipeItem {
 
-		private final ItemStack contained;
-		private final boolean ignoreMeta;
-
-		RecipeItem(ItemStack stack, boolean meta) {
-			contained = stack;
-			ignoreMeta = meta;
-		}
-
-		boolean matches(ItemStack other,  int materialMult) {
-			if (other.isEmpty() != contained.isEmpty()) {
-			    return false;
-			} else if (other.isEmpty()) {
-			    return true;
-			}
-
-			if (other.isEmpty()) {
-			    return false;
-			}
-
-			if (contained.getItem() == other.getItem()
-			        && (ignoreMeta || other.getMetadata() == contained.getMetadata())
-			        && ItemStack.areItemStackTagsEqual(contained, other)) {
-				return other.getCount() >= (materialMult * contained.getCount());
-			}
-
-			return false;
-		}
-	}
 }

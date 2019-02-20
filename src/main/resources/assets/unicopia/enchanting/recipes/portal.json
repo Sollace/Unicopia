@@ -7,7 +7,7 @@
         { "item": "unicopia:gem", "spell": "fire" }
     ],
 	"result": {
-		"item": "unicopia:gem",
+		"item": { "item": "unicopia:gem" },
 		"spell": "portal"
 	}
 }

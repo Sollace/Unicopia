@@ -6,7 +6,7 @@
         { "item": "unicopia:apple_green" }
     ],
 	"result": {
-		"item": "unicopia:gem",
+		"item": { "item": "unicopia:gem" },
 		"spell": "light"
 	}
 }
