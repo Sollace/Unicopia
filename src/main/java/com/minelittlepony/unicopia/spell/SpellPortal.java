@@ -151,7 +151,7 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseAc
     @Override
     public void render(ICaster<?> source) {
         source.spawnParticles(getPortalZone(), 10, pos -> {
-            Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0);
+            Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0, getTint());
         });
     }
 

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.particle.client;
 
+import com.minelittlepony.util.render.Color;
+
 import net.minecraft.client.particle.Particle;
 
 import net.minecraft.client.renderer.BufferBuilder;
@@ -13,10 +15,10 @@ public class ParticleUnicornMagic extends Particle {
     private double portalPosZ;
 
     public ParticleUnicornMagic(int id, World w, double x, double y, double z, double vX, double vY, double vZ, int... args) {
-        this(w, x, y, z, vX, vY, vZ);
+        this(w, x, y, z, vX, vY, vZ, args.length > 0 ? args[0] : -1);
     }
 
-    public ParticleUnicornMagic(World w, double x, double y, double z, double vX, double vY, double vZ) {
+    public ParticleUnicornMagic(World w, double x, double y, double z, double vX, double vY, double vZ, int tint) {
         super(w, x, y, z, vX, vY, vZ);
         motionX = vX;
         motionY = vY;
@@ -29,17 +31,32 @@ public class ParticleUnicornMagic extends Particle {
 
         setParticleTextureIndex((int)(Math.random() * 8));
 
-        particleRed = particleGreen = particleBlue = 1;
-        particleGreen *= 0.3F;
+        if (tint >= 0) {
+            particleRed = Color.r(tint);
+            particleGreen = Color.g(tint);
+            particleBlue = Color.b(tint);
+        } else {
+            particleRed = 1;
+            particleGreen = 1;
+            particleBlue = 1;
 
-        if (rand.nextBoolean()) particleBlue *= 0.4F;
-        if (rand.nextBoolean()) particleRed *= 0.9F;
-        if (rand.nextBoolean()) particleGreen += 0.5F;
+            particleGreen *= 0.3F;
 
-        if (rand.nextBoolean()) {
-            particleGreen *= 2F;
-        } else if (rand.nextBoolean()) {
-            particleRed *= 3.9F;
+            if (rand.nextBoolean()) {
+                particleBlue *= 0.4F;
+            }
+            if (rand.nextBoolean()) {
+                particleRed *= 0.9F;
+            }
+            if (rand.nextBoolean()) {
+                particleGreen += 0.5F;
+            }
+
+            if (rand.nextBoolean()) {
+                particleGreen *= 2F;
+            } else if (rand.nextBoolean()) {
+                particleRed *= 3.9F;
+            }
         }
     }
 

@@ -42,7 +42,7 @@ public interface IPower<T extends IData> extends IKeyBind {
         return player.posY + player.getEyeHeight() - 1;
     }
 
-    static void spawnParticles(int particleId, Entity entity, int count) {
+    static void spawnParticles(int particleId, Entity entity, int count, int...args) {
         double halfDist = entity.getEyeHeight() / 1.5;
         double middle = entity.getEntityBoundingBox().minY + halfDist;
 
@@ -55,7 +55,7 @@ public interface IPower<T extends IData> extends IKeyBind {
                     entity.posX + point.x,
                     middle + point.y,
                     entity.posZ + point.z,
-                    0, 0, 0);
+                    0, 0, 0, args);
         }
     }
 

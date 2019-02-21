@@ -39,7 +39,7 @@ public class GenericSpell extends AbstractSpell {
 
     @Override
     public void render(ICaster<?> source) {
-        source.spawnParticles(UParticles.UNICORN_MAGIC, 1);
+        source.spawnParticles(UParticles.UNICORN_MAGIC, 1, getTint());
     }
 
     @Override

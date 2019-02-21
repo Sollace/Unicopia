@@ -44,10 +44,10 @@ public class SpellReveal extends AbstractSpell {
         IShape area = new Sphere(false, 15);
 
         source.spawnParticles(area, 5, pos -> {
-            Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0);
+            Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0, getTint());
         });
 
-        source.spawnParticles(UParticles.UNICORN_MAGIC, 5);
+        source.spawnParticles(UParticles.UNICORN_MAGIC, 5, getTint());
     }
 
     @Override

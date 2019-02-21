@@ -70,8 +70,8 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelle
         return getEntity().getPositionVector();
     }
 
-    default void spawnParticles(int particleId, int count) {
-        IPower.spawnParticles(particleId, getEntity(), count);
+    default void spawnParticles(int particleId, int count, int...args) {
+        IPower.spawnParticles(particleId, getEntity(), count, args);
     }
 
     default void spawnParticles(IShape area, int count, Consumer<Vec3d> particleSpawner) {

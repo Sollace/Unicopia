@@ -40,7 +40,7 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
         float radius = 4 + (source.getCurrentLevel() * 2);
 
         source.spawnParticles(new Sphere(true, radius), (int)(radius * 6), pos -> {
-            Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0);
+            Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0, getTint());
         });
 
         particlEffect

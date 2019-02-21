@@ -49,7 +49,7 @@ public class SpellCharge extends AbstractAttachableSpell {
                 IShape line = new Line(start, target.getPositionVector());
 
                 source.spawnParticles(line, (int)line.getVolumeOfSpawnableSpace(), pos -> {
-                    Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos.add(start), 0, 0, 0);
+                    Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos.add(start), 0, 0, 0, getTint());
                 });
             }
 
