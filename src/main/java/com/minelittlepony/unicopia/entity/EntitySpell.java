@@ -28,6 +28,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -115,10 +116,9 @@ public class EntitySpell extends EntityCreature implements IMagicals, ICaster<En
 		dataManager.register(AFFINITY, SpellAffinity.NEUTRAL.ordinal());
 	}
 
-	public ItemStack onPlayerMiddleClick(EntityPlayer player) {
-	    ItemStack stack = new ItemStack(getItem(), 1);
-	    SpellRegistry.instance().enchantStack(stack, getEffect().getName());
-		return stack;
+    @Override
+    public ItemStack getPickedResult(RayTraceResult target) {
+		return SpellRegistry.instance().enchantStack(new ItemStack(getItem()), getEffect().getName());
 	}
 
 	protected Item getItem() {
