@@ -641,7 +641,7 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
             entity.onGround = true;
             entity.motionY += (((floatStrength > 2 ? 1 : floatStrength/2) * 0.699999998079071D) - entity.motionY + boundModifier * 0.7) * 0.10000000149011612D;
             if (!getStationary()) {
-                entity.motionX -= 0.0105;
+                entity.motionX += ((motionX - entity.motionX) / getCloudSize()) - 0.002F;
             }
 
             if (!getStationary() && entity.motionY > 0.4 && world.rand.nextInt(900) == 0) {
