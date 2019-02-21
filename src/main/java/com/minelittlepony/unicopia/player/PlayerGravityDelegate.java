@@ -134,11 +134,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
                     entity.playSound(SoundEvents.ENTITY_GUARDIAN_FLOP, 1, 1);
                 }
 
-                float forward = 0.00015F * flightExperience;
-
-                entity.motionX += - forward * MathHelper.sin(entity.rotationYaw * 0.017453292F);
-                entity.motionY -= 0.05F - getHorizontalMotion(entity) / 100;
-                entity.motionZ += forward * MathHelper.cos(entity.rotationYaw * 0.017453292F);
+                moveFlying(entity);
 
                 if (ticksInAir > 0 && ticksInAir % 12 == 0) {
                     entity.playSound(USounds.WING_FLAP, 0.5F, 1);
@@ -152,6 +148,22 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
                 flightExperience *= 0.9991342;
             }
         }
+    }
+
+    protected void moveFlying(EntityPlayer player) {
+
+        float forward = 0.00015F * flightExperience * player.moveForward;
+
+        // vertical drop due to gravity
+        if (!player.isSneaking()) {
+            player.motionY -= 0.05F - getHorizontalMotion(player) / 100;
+        } else {
+            forward += 0.005F;
+            player.motionY -= 0.0005F;
+        }
+
+        player.motionX += - forward * MathHelper.sin(player.rotationYaw * 0.017453292F);
+        player.motionZ += forward * MathHelper.cos(player.rotationYaw * 0.017453292F);
     }
 
     public void landHard(EntityPlayer player, float distance, float damageMultiplier) {
