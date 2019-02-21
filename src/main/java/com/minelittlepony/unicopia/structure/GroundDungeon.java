@@ -16,7 +16,8 @@ public class GroundDungeon extends TemplateBasedFeature {
             new ResourceLocation(Unicopia.MODID, "ground/tower"),
             new ResourceLocation(Unicopia.MODID, "ground/temple_with_book"),
             new ResourceLocation(Unicopia.MODID, "ground/temple_without_book"),
-            new ResourceLocation(Unicopia.MODID, "ground/wizard_tower_red")
+            new ResourceLocation(Unicopia.MODID, "ground/wizard_tower_red"),
+            new ResourceLocation(Unicopia.MODID, "ground/wizard_tower_blue")
     };
 
     public GroundDungeon() {
