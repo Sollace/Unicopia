@@ -12,8 +12,12 @@ import net.minecraft.world.gen.structure.template.TemplateManager;
 
 public class GroundDungeon extends TemplateBasedFeature {
 
-    private static final ResourceLocation TOWER = new ResourceLocation(Unicopia.MODID, "ground/tower");
-    private static final ResourceLocation TEMPLE_1 = new ResourceLocation(Unicopia.MODID, "ground/temple_with_book");
+    private static final ResourceLocation[] VARIANTS = new ResourceLocation[] {
+            new ResourceLocation(Unicopia.MODID, "ground/tower"),
+            new ResourceLocation(Unicopia.MODID, "ground/temple_with_book"),
+            new ResourceLocation(Unicopia.MODID, "ground/temple_without_book"),
+            new ResourceLocation(Unicopia.MODID, "ground/wizard_tower_red")
+    };
 
     public GroundDungeon() {
     }
@@ -25,11 +29,9 @@ public class GroundDungeon extends TemplateBasedFeature {
     @Override
     public boolean addComponentParts(World world, BlockPos startPos, TemplateManager templates, PlacementSettings placement) {
 
-        if (world.rand.nextBoolean()) {
-            applyTemplate(world, startPos, templates, placement, TOWER);
-        } else {
-            applyTemplate(world, startPos, templates, placement, TEMPLE_1);
-        }
+        int index = world.rand.nextInt(VARIANTS.length);
+
+        applyTemplate(world, startPos, templates, placement, VARIANTS[index]);
 
         return true;
     }
