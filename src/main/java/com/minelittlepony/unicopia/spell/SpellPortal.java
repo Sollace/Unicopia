@@ -64,7 +64,7 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseAc
 
     @Override
     public int getTint() {
-        return 0x384C38;
+        return 0x384CA8;
     }
 
     @Override
