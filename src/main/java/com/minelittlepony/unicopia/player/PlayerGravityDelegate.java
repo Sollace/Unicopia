@@ -17,6 +17,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -164,6 +165,39 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
         player.motionX += - forward * MathHelper.sin(player.rotationYaw * 0.017453292F);
         player.motionZ += forward * MathHelper.cos(player.rotationYaw * 0.017453292F);
+
+        if (player.world.isRainingAt(player.getPosition())) {
+            float glance = 360 * player.world.rand.nextFloat();
+
+
+            forward = 0.015F * player.world.rand.nextFloat() *  player.world.getRainStrength(1);
+
+            if (player.world.rand.nextInt(30) == 0) {
+                forward *= 10;
+            }
+            if (player.world.rand.nextInt(30) == 0) {
+                forward *= 10;
+            }
+            if (player.world.rand.nextInt(40) == 0) {
+                forward *= 100;
+            }
+
+            if (player.world.isThundering() && player.world.rand.nextInt(60) == 0) {
+                player.motionY += forward * 3;
+            }
+
+            if (forward >= 1) {
+                player.world.playSound(null, player.getPosition(), USounds.WIND_RUSH, SoundCategory.AMBIENT, 3, 1);
+            }
+
+            if (forward > 4) {
+                forward = 4;
+            }
+
+            //player.knockBack(player, forward, 1, 1);
+            player.motionX += - forward * MathHelper.sin((player.rotationYaw + glance) * 0.017453292F);
+            player.motionZ += forward * MathHelper.cos((player.rotationYaw + glance) * 0.017453292F);
+        }
     }
 
     public void landHard(EntityPlayer player, float distance, float damageMultiplier) {

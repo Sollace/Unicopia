@@ -8,5 +8,13 @@
        "unicopia:wing/wing2",
        "unicopia:wing/wing3"
      ]
+  },
+  "wind_rush": {
+    "category": "ambient",
+    "subtitle": "unicopia.subtitle.wind_rush",
+    "sounds": [
+       "unicopia:wind/altitude_wind5",
+       "unicopia:wind/altitude_wind7"
+     ]
   }
 }
