@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.extern;
 
-import java.util.function.Supplier;
+import com.minelittlepony.unicopia.item.ItemAlicornAmulet;
 
 import baubles.api.BaubleType;
 import baubles.api.BaublesApi;
@@ -26,8 +26,11 @@ public class Baubles {
         return modIsActive;
     }
 
-    public static <T> T ifActiveElseGet(Supplier<T> yes, Supplier<T> no) {
-        return (isModActive() ? yes : no).get();
+    public static ItemAlicornAmulet alicornAmulet(String domain, String name) {
+        if (isModActive()) {
+            return new BaubleAlicornAmulet(domain, name);
+        }
+        return new ItemAlicornAmulet(domain, name);
     }
 
     public static int isBaubleEquipped(EntityPlayer player, Item bauble) {

@@ -53,7 +53,6 @@ import com.minelittlepony.unicopia.edibles.FlowerToxicityDeterminent;
 import com.minelittlepony.unicopia.edibles.ItemEdible;
 import com.minelittlepony.unicopia.edibles.Toxicity;
 import com.minelittlepony.unicopia.edibles.UItemFoodDelegate;
-import com.minelittlepony.unicopia.extern.BaubleAlicornAmulet;
 import com.minelittlepony.unicopia.extern.Baubles;
 import com.minelittlepony.unicopia.forgebullshit.BuildInTexturesBakery;
 import com.minelittlepony.unicopia.forgebullshit.ItemModels;
@@ -112,9 +111,7 @@ public class UItems {
     public static final ItemSpell curse = new ItemCurse(Unicopia.MODID, "corrupted_gem");
 
     public static final ItemOfHolding bag_of_holding = new ItemOfHolding(Unicopia.MODID, "bag_of_holding");
-    public static final ItemAlicornAmulet alicorn_amulet = Baubles.ifActiveElseGet(
-            () -> new BaubleAlicornAmulet(Unicopia.MODID, "alicorn_amulet"),
-            () -> new ItemAlicornAmulet(Unicopia.MODID, "alicorn_amulet"));
+    public static final ItemAlicornAmulet alicorn_amulet = Baubles.alicornAmulet(Unicopia.MODID, "alicorn_amulet");
 
     public static final ItemSpellbook spellbook = new ItemSpellbook(Unicopia.MODID, "spellbook");
     public static final Item staff_meadow_brook = new ItemStaff(Unicopia.MODID, "staff_meadow_brook").setMaxDamage(2);
