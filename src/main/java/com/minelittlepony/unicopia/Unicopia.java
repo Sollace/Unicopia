@@ -38,6 +38,7 @@ import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.power.PowersRegistry;
 import com.minelittlepony.unicopia.util.crafting.CraftingManager;
+import com.minelittlepony.unicopia.world.Hooks;
 import com.minelittlepony.unicopia.world.UWorld;
 
 @Mod(
@@ -71,7 +72,7 @@ public class Unicopia implements IGuiHandler {
         UClient.instance().preInit();
         UWorld.instance().init();
 
-        MinecraftForge.TERRAIN_GEN_BUS.register(Unicopia.class);
+        MinecraftForge.TERRAIN_GEN_BUS.register(Hooks.class);
     }
 
     @EventHandler

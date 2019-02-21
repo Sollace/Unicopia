@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 @EventBusSubscriber
-class Hooks {
+public class Hooks {
 
     @SubscribeEvent
     public static void onBlockHarvested(BlockEvent.HarvestDropsEvent event) {
