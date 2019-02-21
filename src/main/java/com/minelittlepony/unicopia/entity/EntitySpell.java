@@ -331,9 +331,7 @@ public class EntitySpell extends EntityCreature implements IMagicals, ICaster<En
 
 	@Override
     public void setCurrentLevel(int level) {
-        level = Math.max(level, 1);
-
-        dataManager.set(LEVEL, level);
+        dataManager.set(LEVEL, Math.max(level, 0));
     }
 
 	@Override
