@@ -83,6 +83,8 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseAc
         getDestinationPortal().ifPresent(IMagicEffect::setDead);
     }
 
+    private SpellPortal bridge;
+
     @Override
     public void onPlaced(ICaster<?> caster) {
         world = caster.getWorld();
@@ -93,6 +95,10 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseAc
             sibling.destinationId = casterId;
             sibling.destinationPos = position;
         }
+
+        if (bridge != null) {
+            bridge.onPlaced(caster);
+        }
     }
 
     @Override
@@ -102,16 +108,18 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseAc
 
         IPlayer prop = PlayerSpeciesList.instance().getPlayer(player);
 
-        IMagicEffect other = prop.getEffect();
-        if (other instanceof SpellPortal && other != this && !other.getDead()) {
-            ((SpellPortal)other).getActualInstance().setDestinationPortal(this);
+        SpellPortal other = prop.getEffect(SpellPortal.class, true);
+        if (other != null) {
+            other.getActualInstance().setDestinationPortal(this);
 
             if (!world.isRemote) {
                 prop.setEffect(null);
             }
         } else {
             if (!world.isRemote) {
-                prop.setEffect(this);
+                bridge = (SpellPortal)copy();
+
+                prop.setEffect(bridge);
             }
         }
 
