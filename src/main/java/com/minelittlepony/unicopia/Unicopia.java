@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -73,6 +74,11 @@ public class Unicopia implements IGuiHandler {
         UWorld.instance().init();
 
         MinecraftForge.TERRAIN_GEN_BUS.register(Hooks.class);
+    }
+
+    @EventHandler
+    public void onServerCreated(FMLServerAboutToStartEvent event) {
+        Fixes.init(event.getServer().getDataFixer());
     }
 
     @EventHandler

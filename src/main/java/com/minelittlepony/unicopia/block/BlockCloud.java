@@ -11,48 +11,47 @@ import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.NonNullList;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockCloud extends Block implements ICloudBlock, ITillable {
 
-    public static final PropertyEnum<CloudType> VARIANT = PropertyEnum.create("variant", CloudType.class);
+    private final CloudType variant;
 
-    public BlockCloud(Material material, String domain, String name) {
+    public BlockCloud(Material material, CloudType variant, String domain, String name) {
         super(material);
         setRegistryName(domain, name);
         setTranslationKey(name);
 
-        setCreativeTab(CreativeTabs.MISC);
+        setCreativeTab(CreativeTabs.MATERIALS);
         setHardness(0.5f);
         setResistance(1.0F);
         setSoundType(SoundType.CLOTH);
         setLightOpacity(20);
         useNeighborBrightness = true;
+
+        this.variant = variant;
     }
 
     @Override
     public boolean isTranslucent(IBlockState state) {
-        return true;
+        return variant == CloudType.NORMAL;
     }
 
     @Override
     public boolean isOpaqueCube(IBlockState state) {
-        return false;
+        return variant != CloudType.NORMAL;
     }
 
     @Override
@@ -73,7 +72,7 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
 
     @Override
     public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.TRANSLUCENT;
+        return variant == CloudType.NORMAL ? BlockRenderLayer.TRANSLUCENT : super.getRenderLayer();
     }
 
     @Deprecated
@@ -145,35 +144,8 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
     }
 
     @Override
-    public int damageDropped(IBlockState state) {
-        return ((CloudType)state.getValue(VARIANT)).getMetadata();
-    }
-
-    @Override
-    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> list) {
-        for (CloudType i : CloudType.values()) {
-            list.add(new ItemStack(this, 1, i.getMetadata()));
-        }
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(VARIANT, CloudType.byMetadata(meta));
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return ((CloudType)state.getValue(VARIANT)).getMetadata();
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, VARIANT);
-    }
-
-    @Override
     public CloudType getCloudMaterialType(IBlockState blockState) {
-        return (CloudType)blockState.getValue(VARIANT);
+        return variant;
     }
 
     @Deprecated

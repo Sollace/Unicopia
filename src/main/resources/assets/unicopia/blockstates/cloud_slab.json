@@ -1,10 +1,6 @@
 {
     "variants": {
-	    "half=bottom,variant=normal": { "model": "unicopia:half_slab_normal_cloud" },
-	    "half=top,variant=normal": { "model": "unicopia:upper_slab_normal_cloud" },
-	    "half=bottom,variant=packed": { "model": "unicopia:half_slab_packed_cloud" },
-	    "half=top,variant=packed": { "model": "unicopia:upper_slab_packed_cloud" },
-        "half=bottom,variant=enchanted": { "model": "unicopia:half_slab_enchanted_cloud" },
-        "half=top,variant=enchanted": { "model": "unicopia:upper_slab_enchanted_cloud" }
+        "half=bottom,variant=normal": { "model": "unicopia:half_slab_normal_cloud" },
+        "half=top,variant=normal": { "model": "unicopia:upper_slab_normal_cloud" }
     }
 }

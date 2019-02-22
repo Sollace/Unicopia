@@ -1,7 +1,5 @@
 {
     "variants": {
-        "variant=normal": { "model": "unicopia:normal_cloud_block" },
-        "variant=packed": { "model": "unicopia:packed_cloud_block" },
-        "variant=enchanted": { "model": "unicopia:enchanted_cloud_block" }
+        "normal": { "model": "unicopia:normal_cloud_block" }
     }
 }

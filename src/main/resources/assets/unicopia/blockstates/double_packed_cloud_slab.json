@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "variant=normal": { "model": "unicopia:packed_cloud_block" }
+    }
+}

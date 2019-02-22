@@ -5,10 +5,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.init.UMaterials;
 
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,8 +23,10 @@ import net.minecraft.world.World;
 
 public class BlockCloudFence extends BlockFence implements ICloudBlock {
 
-    public BlockCloudFence(String domain, String name) {
-        super(UMaterials.cloud, UMaterials.cloud.getMaterialMapColor());
+    private final CloudType variant;
+
+    public BlockCloudFence(Material material, CloudType variant, String domain, String name) {
+        super(material, material.getMaterialMapColor());
         setTranslationKey(name);
         setRegistryName(domain, name);
 
@@ -33,16 +35,18 @@ public class BlockCloudFence extends BlockFence implements ICloudBlock {
         setLightOpacity(20);
         setSoundType(SoundType.CLOTH);
         useNeighborBrightness = true;
+
+        this.variant = variant;
     }
 
     @Override
     public boolean isTranslucent(IBlockState state) {
-        return true;
+        return variant == CloudType.NORMAL;
     }
 
     @Override
     public boolean isOpaqueCube(IBlockState state) {
-        return false;
+        return variant != CloudType.NORMAL;
     }
 
     @Override
@@ -62,12 +66,12 @@ public class BlockCloudFence extends BlockFence implements ICloudBlock {
 
     @Override
     public CloudType getCloudMaterialType(IBlockState blockState) {
-        return CloudType.NORMAL;
+        return variant;
     }
 
     @Override
     public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.TRANSLUCENT;
+        return variant == CloudType.NORMAL ? BlockRenderLayer.TRANSLUCENT : super.getRenderLayer();
     }
 
     @Override

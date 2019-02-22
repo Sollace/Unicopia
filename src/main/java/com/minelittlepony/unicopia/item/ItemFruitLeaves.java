@@ -4,8 +4,8 @@ import net.minecraft.block.Block;
 
 public class ItemFruitLeaves extends UItemDecoration {
 
-    public ItemFruitLeaves(Block block, String domain, String name) {
-        super(block, domain, name);
+    public ItemFruitLeaves(Block block) {
+        super(block);
     }
 
     @Override

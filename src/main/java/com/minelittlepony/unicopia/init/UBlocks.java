@@ -1,10 +1,10 @@
 package com.minelittlepony.unicopia.init;
 
+import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.BlockAlfalfa;
 import com.minelittlepony.unicopia.block.BlockFruitLeaves;
 import com.minelittlepony.unicopia.block.BlockGlowingGem;
-import com.minelittlepony.unicopia.block.BlockCloud;
 import com.minelittlepony.unicopia.block.BlockCloudAnvil;
 import com.minelittlepony.unicopia.block.BlockCloudBanister;
 import com.minelittlepony.unicopia.block.BlockCloudSlab;
@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.item.ItemApple;
 import com.minelittlepony.unicopia.block.BlockCloudDoor;
 import com.minelittlepony.unicopia.block.BlockCloudFarm;
 import com.minelittlepony.unicopia.block.BlockCloudFence;
+import com.minelittlepony.unicopia.block.BlockCloud;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -33,12 +34,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 
 public class UBlocks {
-    public static final BlockCloud cloud = new BlockCloud(UMaterials.cloud, Unicopia.MODID, "cloud_block");
+    public static final BlockCloud normal_cloud = new BlockCloud(UMaterials.cloud, CloudType.NORMAL, Unicopia.MODID, "cloud_block");
+    public static final BlockCloud enchanted_cloud = new BlockCloud(UMaterials.cloud, CloudType.ENCHANTED, Unicopia.MODID, "enchanted_cloud_block");
+    public static final BlockCloud packed_cloud = new BlockCloud(UMaterials.cloud, CloudType.PACKED, Unicopia.MODID, "packed_cloud_block");
 
-    public static final BlockCloudStairs cloud_stairs = new BlockCloudStairs(UBlocks.cloud.getDefaultState(), Unicopia.MODID, "cloud_stairs");
+    public static final BlockCloudStairs cloud_stairs = new BlockCloudStairs(normal_cloud.getDefaultState(), Unicopia.MODID, "cloud_stairs");
 
-    public static final BlockCloudSlab cloud_double_slab = new BlockCloudSlab(true, UMaterials.cloud, Unicopia.MODID, "cloud_double_slab");
-    public static final BlockCloudSlab cloud_slab = new BlockCloudSlab(false, UMaterials.cloud, Unicopia.MODID, "cloud_slab");
+    public static final BlockCloudSlab.Single<?> cloud_slab = new BlockCloudSlab.Single<>(normal_cloud, UMaterials.cloud, Unicopia.MODID, "cloud_slab");
+    public static final BlockCloudSlab.Single<?> enchanted_cloud_slab = new BlockCloudSlab.Single<>(enchanted_cloud, UMaterials.cloud, Unicopia.MODID, "enchanted_cloud_slab");
+    public static final BlockCloudSlab.Single<?> packed_cloud_slab = new BlockCloudSlab.Single<>(enchanted_cloud, UMaterials.cloud, Unicopia.MODID, "packed_cloud_slab");
 
     public static final BlockCloudDoor mist_door = new BlockCloudDoor(UMaterials.cloud, Unicopia.MODID, "mist_door");
 
@@ -46,8 +50,8 @@ public class UBlocks {
 
     public static final BlockCloudAnvil anvil = new BlockCloudAnvil(Unicopia.MODID, "anvil");
 
-    public static final BlockCloudFence cloud_fence = new BlockCloudFence(Unicopia.MODID, "cloud_fence");
-    public static final BlockCloudBanister cloud_banister = new BlockCloudBanister(Unicopia.MODID, "cloud_banister");
+    public static final BlockCloudFence cloud_fence = new BlockCloudFence(UMaterials.cloud, CloudType.NORMAL, Unicopia.MODID, "cloud_fence");
+    public static final BlockCloudBanister cloud_banister = new BlockCloudBanister(UMaterials.cloud, Unicopia.MODID, "cloud_banister");
 
     public static final BlockAlfalfa alfalfa = new BlockAlfalfa(Unicopia.MODID, "alfalfa");
 
@@ -66,7 +70,12 @@ public class UBlocks {
             .setUnharvestFruit(w -> new ItemStack(UItems.rotten_apple));
 
     static void init(IForgeRegistry<Block> registry) {
-        registry.registerAll(cloud, cloud_stairs, cloud_double_slab, cloud_slab, cloud_fence, cloud_banister,
+        registry.registerAll(normal_cloud, enchanted_cloud, packed_cloud,
+                             cloud_stairs,
+                             cloud_slab, cloud_slab.doubleSlab,
+                             enchanted_cloud_slab, enchanted_cloud_slab.doubleSlab,
+                             packed_cloud_slab, packed_cloud_slab.doubleSlab,
+                             cloud_fence, cloud_banister,
                              mist_door, anvil, cloud_farmland,
                              sugar_block,
                              alfalfa,

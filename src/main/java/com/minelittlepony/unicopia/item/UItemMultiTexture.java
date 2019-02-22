@@ -16,6 +16,7 @@ public class UItemMultiTexture extends ItemMultiTexture {
 
     public UItemMultiTexture(Block block, ItemMultiTexture.Mapper mapper, Predicate<EntityPlayer> abilityTest) {
         super(block, block, mapper);
+        this.setRegistryName(block.getRegistryName());
 
         this.abilityTest = abilityTest;
     }

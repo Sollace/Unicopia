@@ -16,16 +16,19 @@ public class UItemSlab extends ItemSlab {
 
     public UItemSlab(BlockSlab singleSlab, BlockSlab doubleSlab, Predicate<EntityPlayer> abilityTest) {
         super(singleSlab, singleSlab, doubleSlab);
-
         this.abilityTest = abilityTest;
+
+        setHasSubtypes(false);
+        setRegistryName(singleSlab.getRegistryName());
+        setTranslationKey(singleSlab.getRegistryName().getPath());
     }
 
     @Override
-    public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side, EntityPlayer player, ItemStack stack) {
+    public boolean canPlaceBlockOnSide(World world, BlockPos origin, EnumFacing side, EntityPlayer player, ItemStack stack) {
         if (!(player.capabilities.isCreativeMode || abilityTest.test(player))) {
             return false;
         }
 
-        return super.canPlaceBlockOnSide(worldIn, pos, side, player, stack);
+        return super.canPlaceBlockOnSide(world, origin, side, player, stack);
     }
 }

@@ -7,7 +7,7 @@
   ],
   "key": {
     "#": [
-      { "item": "unicopia:cloud_block", "data": 0 }
+      { "item": "unicopia:cloud_block" }
     ]
   },
   "result": { "item": "unicopia:cloud_stairs", "count": 4 }

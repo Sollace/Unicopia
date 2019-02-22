@@ -441,7 +441,7 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
         if (type == 2) {
             if (!isBurning()) {
                 for (int i = 0; i < 50 * getCloudSize(); i++) {
-                    Particles.instance().getEntityEmitter().emitDiggingParticles(this, UBlocks.cloud.getDefaultState());
+                    Particles.instance().getEntityEmitter().emitDiggingParticles(this, UBlocks.normal_cloud.getDefaultState());
                 }
             }
         }
@@ -465,7 +465,7 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
 
     public void pomf() {
         for (int i = 0; i < 50 * getCloudSize(); i++) {
-            Particles.instance().getEntityEmitter().emitDiggingParticles(this, UBlocks.cloud.getDefaultState());
+            Particles.instance().getEntityEmitter().emitDiggingParticles(this, UBlocks.normal_cloud.getDefaultState());
         }
 
         playHurtSound(DamageSource.GENERIC);
@@ -537,7 +537,7 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
         if (stat || canFly) {
             if (!isBurning()) {
                 for (int i = 0; i < 50 * getCloudSize(); i++) {
-                    Particles.instance().getEntityEmitter().emitDiggingParticles(this, UBlocks.cloud.getDefaultState());
+                    Particles.instance().getEntityEmitter().emitDiggingParticles(this, UBlocks.normal_cloud.getDefaultState());
                 }
             }
 

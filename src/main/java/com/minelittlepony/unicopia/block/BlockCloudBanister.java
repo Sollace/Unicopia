@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.CloudType;
+
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockRenderLayer;
@@ -43,8 +46,8 @@ public class BlockCloudBanister extends BlockCloudFence {
             new AxisAlignedBB(0, 0, 0, 1, h, 1)
     };
 
-    public BlockCloudBanister(String domain, String name) {
-        super(domain, name);
+    public BlockCloudBanister(Material material, String domain, String name) {
+        super(material, CloudType.ENCHANTED, domain, name);
     }
 
     @Override

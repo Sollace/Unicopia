@@ -6,12 +6,26 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class UItemBlock extends UItemDecoration {
 
     private final Predicate<EntityPlayer> abilityTest;
+
+    public UItemBlock(Block block, Predicate<EntityPlayer> abilityTest) {
+        super(block);
+
+        this.abilityTest = abilityTest;
+    }
+
+    public UItemBlock(Block block, ResourceLocation res, Predicate<EntityPlayer> abilityTest) {
+        super(block, res);
+
+        this.abilityTest = abilityTest;
+    }
+
 
     public UItemBlock(Block block, String domain, String name, Predicate<EntityPlayer> abilityTest) {
         super(block, domain, name);

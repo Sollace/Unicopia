@@ -5,8 +5,8 @@
   ],
   "key": {
     "#": [
-      { "item": "unicopia:cloud_block", "data": 2 }
+      { "item": "unicopia:enchanted_cloud_block" }
     ]
   },
-  "result": { "item": "unicopia:cloud_slab", "data": 2, "count": 6 }
+  "result": { "item": "unicopia:enchanted_cloud_slab", "count": 6 }
 }

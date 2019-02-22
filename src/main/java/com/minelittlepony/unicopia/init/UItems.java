@@ -17,7 +17,6 @@ import com.minelittlepony.unicopia.item.ItemTomato;
 import com.minelittlepony.unicopia.item.ItemTomatoSeeds;
 import com.minelittlepony.unicopia.item.ItemZapApple;
 import com.minelittlepony.unicopia.item.UItemBlock;
-import com.minelittlepony.unicopia.item.UItemMultiTexture;
 import com.minelittlepony.unicopia.item.UItemDecoration;
 import com.minelittlepony.unicopia.item.UItemSlab;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
@@ -44,7 +43,6 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 import static com.minelittlepony.unicopia.Predicates.*;
 
-import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.edibles.BushToxicityDeterminent;
@@ -83,29 +81,28 @@ public class UItems {
 
     public static final ItemCloud cloud_spawner = new ItemCloud(Unicopia.MODID, "cloud");
 
-    public static final Item cloud_block = new UItemMultiTexture(UBlocks.cloud, stack ->
-        CloudType.byMetadata(stack.getMetadata()).getTranslationKey(), INTERACT_WITH_CLOUDS)
-            .setRegistryName(Unicopia.MODID, "cloud_block");
+    public static final Item cloud_block = new UItemBlock(UBlocks.normal_cloud, INTERACT_WITH_CLOUDS);
+    public static final Item enchanted_cloud = new UItemBlock(UBlocks.enchanted_cloud, INTERACT_WITH_CLOUDS);
+    public static final Item packed_cloud = new UItemBlock(UBlocks.packed_cloud, INTERACT_WITH_CLOUDS);
 
-    public static final Item cloud_stairs = new UItemBlock(UBlocks.cloud_stairs, Unicopia.MODID, "cloud_stairs", INTERACT_WITH_CLOUDS);
+    public static final Item cloud_stairs = new UItemBlock(UBlocks.cloud_stairs, INTERACT_WITH_CLOUDS);
 
-    public static final Item cloud_farmland = new UItemBlock(UBlocks.cloud_farmland, Unicopia.MODID, "cloud_farmland", INTERACT_WITH_CLOUDS);
+    public static final Item cloud_farmland = new UItemBlock(UBlocks.cloud_farmland, INTERACT_WITH_CLOUDS);
 
-    public static final Item cloud_fence = new UItemBlock(UBlocks.cloud_fence, Unicopia.MODID, "cloud_fence", INTERACT_WITH_CLOUDS);
-    public static final Item cloud_banister = new UItemBlock(UBlocks.cloud_banister, Unicopia.MODID, "cloud_banister", INTERACT_WITH_CLOUDS);
+    public static final Item cloud_fence = new UItemBlock(UBlocks.cloud_fence, INTERACT_WITH_CLOUDS);
+    public static final Item cloud_banister = new UItemBlock(UBlocks.cloud_banister, INTERACT_WITH_CLOUDS);
 
-    public static final Item anvil = new UItemBlock(UBlocks.anvil, Unicopia.MODID, "anvil", INTERACT_WITH_CLOUDS)
-            .setTranslationKey("cloud_anvil");
+    public static final Item anvil = new UItemBlock(UBlocks.anvil, INTERACT_WITH_CLOUDS).setTranslationKey("cloud_anvil");
 
     public static final Item mist_door = new ItemDoor(UBlocks.mist_door)
             .setTranslationKey("mist_door")
             .setRegistryName(Unicopia.MODID, "mist_door");
 
-    public static final Item sugar_block = new UItemDecoration(UBlocks.sugar_block, Unicopia.MODID, "sugar_block");
+    public static final Item sugar_block = new UItemDecoration(UBlocks.sugar_block);
 
-    public static final Item cloud_slab = new UItemSlab(UBlocks.cloud_slab, UBlocks.cloud_double_slab, INTERACT_WITH_CLOUDS)
-            .setTranslationKey("cloud_slab")
-            .setRegistryName(Unicopia.MODID, "cloud_slab");
+    public static final Item cloud_slab = new UItemSlab(UBlocks.cloud_slab, UBlocks.cloud_slab.doubleSlab, INTERACT_WITH_CLOUDS);
+    public static final Item enchanted_cloud_slab = new UItemSlab(UBlocks.enchanted_cloud_slab, UBlocks.enchanted_cloud_slab.doubleSlab, INTERACT_WITH_CLOUDS);
+    public static final Item packed_cloud_slab = new UItemSlab(UBlocks.packed_cloud_slab, UBlocks.packed_cloud_slab.doubleSlab, INTERACT_WITH_CLOUDS);
 
     public static final ItemSpell spell = new ItemSpell(Unicopia.MODID, "gem");
     public static final ItemSpell curse = new ItemCurse(Unicopia.MODID, "corrupted_gem");
@@ -139,7 +136,7 @@ public class UItems {
 
     public static final Item apple_seeds = new UItemDecoration(UBlocks.apple_tree, Unicopia.MODID, "apple_seeds");
 
-    public static final Item apple_leaves = new ItemFruitLeaves(UBlocks.apple_leaves, Unicopia.MODID, "apple_leaves");
+    public static final Item apple_leaves = new ItemFruitLeaves(UBlocks.apple_leaves);
 
     public static final Item double_plant = new UItemFoodDelegate(Blocks.DOUBLE_PLANT, stack ->
                 BlockDoublePlant.EnumPlantType.byMetadata(stack.getMetadata()).getTranslationKey()
@@ -210,8 +207,10 @@ public class UItems {
 
         registry.registerAll(
                 green_apple, sweet_apple, sour_apple,
-                cloud_spawner, dew_drop, cloud_matter, cloud_block,
-                cloud_stairs, cloud_slab, cloud_fence, cloud_banister,
+                cloud_spawner, dew_drop, cloud_matter, cloud_block, enchanted_cloud, packed_cloud,
+                cloud_stairs,
+                cloud_slab, enchanted_cloud_slab, packed_cloud_slab,
+                cloud_fence, cloud_banister,
                 cloud_farmland, mist_door, anvil,
 
                 bag_of_holding, spell, curse, spellbook, mug, enchanted_torch,
@@ -229,8 +228,6 @@ public class UItems {
                 apple_cider, juice, burned_juice);
 
         if (UClient.isClientSide()) {
-            ItemModels.registerAllVariants(cloud_slab, CloudType.getVariants("_cloud_slab"));
-            ItemModels.registerAllVariants(cloud_block, CloudType.getVariants("_cloud_block"));
             ItemModels.registerAll(
                     cloud_spawner,
 
@@ -241,7 +238,10 @@ public class UItems {
 
                     tomato, cloudsdale_tomato,
 
-                    cloud_spawner, cloud_matter, cloud_stairs, cloud_fence, cloud_banister,
+                    cloud_spawner, cloud_matter, cloud_block, enchanted_cloud, packed_cloud,
+                    cloud_stairs,
+                    cloud_slab, enchanted_cloud_slab, packed_cloud_slab,
+                    cloud_fence, cloud_banister,
                     cloud_farmland, mist_door, anvil,
 
                     bag_of_holding, spell, curse, spellbook, mug, enchanted_torch,

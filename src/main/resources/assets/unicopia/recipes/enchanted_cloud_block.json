@@ -7,7 +7,7 @@
   ],
   "key": {
     "#": [
-      { "item": "unicopia:cloud_block", "data": 0 }
+      { "item": "unicopia:cloud_block" }
     ],
     "$": [
       { "item": "unicopia:dew_drop" }
@@ -47,5 +47,5 @@
       }
     ]
   },
-  "result": { "item": "unicopia:cloud_block", "data": 2, "count": 5 }
+  "result": { "item": "unicopia:enchanted_cloud_block", "count": 5 }
 }

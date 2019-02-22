@@ -6,8 +6,8 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.init.UBlocks;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.SoundType;
@@ -23,7 +23,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.NonNullList;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -31,54 +31,61 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockCloudSlab extends BlockSlab implements ICloudBlock {
+public abstract class BlockCloudSlab<T extends Block & ICloudBlock> extends BlockSlab implements ICloudBlock {
 
-    public static final PropertyEnum<CloudType> VARIANT = PropertyEnum.create("variant", CloudType.class);
+    public static final PropertyEnum<Variant> VARIANT = PropertyEnum.<Variant>create("variant", Variant.class);
 
-    private boolean isDouble;
+    protected final T modelBlock;
 
-    public BlockCloudSlab(boolean isDouble, Material material, String domain, String name) {
+    public BlockCloudSlab(T modelBlock, BlockCloudSlab<? extends T> single, Material material, String domain, String name) {
         super(material);
 
         setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
         setHardness(0.5F);
-        setResistance(1.0F);
+        setResistance(1);
         setSoundType(SoundType.CLOTH);
         setLightOpacity(20);
         setTranslationKey(name);
         setRegistryName(domain, name);
-        this.isDouble = isDouble;
+
         useNeighborBrightness = true;
+
+        this.modelBlock = modelBlock;
+        this.fullBlock = isDouble();
     }
 
+    @Deprecated
     @Override
     public boolean isTranslucent(IBlockState state) {
-        return UBlocks.cloud.isTranslucent(state);
+        return modelBlock.isTranslucent(state);
     }
 
     @Override
     public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
-        return allowsFallingBlockToPass(state, world, pos);
+        return modelBlock.isAir(state, world, pos);
     }
 
+    @Deprecated
     @Override
     public boolean isOpaqueCube(IBlockState state) {
-        return isDouble() ? UBlocks.cloud.isOpaqueCube(state) : false;
+        return isDouble() && modelBlock != null && modelBlock.isOpaqueCube(state);
     }
 
+    @Deprecated
     @Override
     public boolean isFullCube(IBlockState state) {
-        return isDouble() ? UBlocks.cloud.isFullCube(state) : false;
+        return isDouble() && modelBlock.isFullCube(state);
     }
 
+    @Deprecated
     @Override
     public boolean isNormalCube(IBlockState state) {
-        return isDouble() ? UBlocks.cloud.isNormalCube(state) : false;
+        return isDouble() && modelBlock.isNormalCube(state);
     }
 
     @Override
     public BlockRenderLayer getRenderLayer() {
-        return UBlocks.cloud.getRenderLayer();
+        return modelBlock.getRenderLayer();
     }
 
     @Override
@@ -88,17 +95,17 @@ public class BlockCloudSlab extends BlockSlab implements ICloudBlock {
 
     @Override
     public void onFallenUpon(World w, BlockPos pos, Entity entity, float fallDistance) {
-        UBlocks.cloud.onFallenUpon(w, pos, entity, fallDistance);
+        modelBlock.onFallenUpon(w, pos, entity, fallDistance);
     }
 
     @Override
     public void onLanded(World w, Entity entity) {
-        UBlocks.cloud.onLanded(w, entity);
+        modelBlock.onLanded(w, entity);
     }
 
     @Override
     public void onEntityCollision(World w, BlockPos pos, IBlockState state, Entity entity) {
-        UBlocks.cloud.onEntityCollision(w, pos, state, entity);
+        modelBlock.onEntityCollision(w, pos, state, entity);
     }
 
     @Override
@@ -121,123 +128,170 @@ public class BlockCloudSlab extends BlockSlab implements ICloudBlock {
     @Deprecated
     @Override
     public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos) {
-        return UBlocks.cloud.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
-    }
-
-    @Override
-    public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
-
-        IBlockState beside = world.getBlockState(pos.offset(face));
-
-        if (beside.getBlock() instanceof ICloudBlock) {
-            ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
-
-            if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
-                if (isDouble) {
-                    return true;
-                }
-
-                if (face == EnumFacing.UP || face == EnumFacing.DOWN) {
-                    return (state.getValue(HALF) == EnumBlockHalf.TOP) && (face == EnumFacing.UP);
-                }
-
-                if (beside.getBlock() == this) {
-                    return beside.getValue(HALF) == state.getValue(HALF);
-                } else {
-                    if (beside.getBlock() instanceof BlockCloudStairs) {
-                        return beside.getValue(BlockStairs.HALF).ordinal() == state.getValue(HALF).ordinal()
-                           && beside.getValue(BlockStairs.FACING) == face;
-                    }
-                }
-            }
-        }
-
-        return false;
+        return modelBlock.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
     }
 
     @Override
     public boolean canEntityDestroy(IBlockState state, IBlockAccess world, BlockPos pos, Entity entity) {
-        return UBlocks.cloud.canEntityDestroy(state, world, pos, entity);
-    }
-
-    @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return Item.getItemFromBlock(UBlocks.cloud_slab);
-    }
-
-    @Override
-    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
-        return new ItemStack(Item.getItemFromBlock(UBlocks.cloud_slab), 2, getMetaFromState(state));
+        return modelBlock.canEntityDestroy(state, world, pos, entity);
     }
 
     @Override
     public String getTranslationKey(int meta) {
-        return super.getTranslationKey() + "." + CloudType.byMetadata(meta).getTranslationKey();
+        return super.getTranslationKey();
     }
 
     @Override
-    public IProperty<CloudType> getVariantProperty() {
+    public IProperty<Variant> getVariantProperty() {
         return VARIANT;
     }
 
-    public Object getVariant(ItemStack stack) {
-        return CloudType.byMetadata(stack.getMetadata() & 7);
-    }
-
-    @Override
-    public void getSubBlocks(CreativeTabs tab, NonNullList<ItemStack> list) {
-        for (CloudType i : CloudType.values()) {
-            list.add(new ItemStack(this, 1, i.getMetadata()));
-        }
-    }
-
-
     @Override
     public CloudType getCloudMaterialType(IBlockState blockState) {
-        return (CloudType)blockState.getValue(VARIANT);
+        return modelBlock.getCloudMaterialType(blockState);
     }
 
     @Override
-    public IBlockState getStateFromMeta(int meta) {
-        IBlockState state = getDefaultState().withProperty(VARIANT, CloudType.byMetadata(meta & 7));
-        if (!isDouble()) {
-            state = state.withProperty(HALF, (meta & 8) == 0 ? BlockSlab.EnumBlockHalf.BOTTOM : BlockSlab.EnumBlockHalf.TOP);
+    public Comparable<Variant> getTypeForItem(ItemStack stack) {
+        return Variant.DEFAULT;
+    }
+
+    public static class Single<T extends Block & ICloudBlock> extends BlockCloudSlab<T> {
+
+        public final Double<T> doubleSlab;
+
+        public Single(T modelBlock, Material material, String domain, String name) {
+            super(modelBlock, null, material, domain, name);
+
+            doubleSlab = new Double<>(this, domain, "double_" + name);
         }
-        return state;
-    }
 
-    /**
-     * Convert the BlockState into the correct metadata value
-     */
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        byte mask = 0;
-        int result = mask | getCloudMaterialType(state).getMetadata();
-        if (!isDouble() && state.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP) {
-            result |= 8;
+        @Override
+        public boolean isDouble() {
+            return false;
         }
-        return result;
+
+
+        @Override
+        public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
+
+            IBlockState beside = world.getBlockState(pos.offset(face));
+
+            if (beside.getBlock() instanceof ICloudBlock) {
+                ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
+
+                if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
+
+                    EnumBlockHalf half = state.getValue(HALF);
+
+                    if (beside.getBlock() instanceof BlockCloudStairs) {
+                        return beside.getValue(BlockStairs.HALF).ordinal() == state.getValue(HALF).ordinal()
+                           && beside.getValue(BlockStairs.FACING) == face;
+                    }
+
+                    if (face == EnumFacing.DOWN) {
+                        return half == EnumBlockHalf.BOTTOM;
+                    }
+
+                    if (face == EnumFacing.UP) {
+                        return half == EnumBlockHalf.TOP;
+                    }
+
+                    if (beside.getBlock() == this) {
+                        return beside.getValue(HALF) == state.getValue(HALF);
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        @Override
+        public IBlockState getStateFromMeta(int meta) {
+            return getDefaultState()
+                    .withProperty(VARIANT, Variant.DEFAULT)
+                    .withProperty(HALF, (meta & 8) == 0 ? BlockSlab.EnumBlockHalf.BOTTOM : BlockSlab.EnumBlockHalf.TOP);
+        }
+
+        @Override
+        public int getMetaFromState(IBlockState state) {
+            int i = 0;
+
+            if (state.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP) {
+                i |= 8;
+            }
+
+            return i;
+        }
+
+        @Override
+        protected BlockStateContainer createBlockState() {
+            return new BlockStateContainer(this, HALF, VARIANT);
+        }
     }
 
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, isDouble() ?
-                new IProperty[] {VARIANT}
-              : new IProperty[] {HALF, VARIANT});
+    public static class Double<T extends Block & ICloudBlock> extends BlockCloudSlab<T> {
+
+        public final Single<T> singleSlab;
+
+        public Double(Single<T> single, String domain, String name) {
+            super(single.modelBlock, single, single.material, domain, name);
+
+            this.singleSlab = single;
+        }
+
+        @Override
+        public boolean isDouble() {
+            return true;
+        }
+
+        @Override
+        public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
+
+            IBlockState beside = world.getBlockState(pos.offset(face));
+
+            if (beside.getBlock() instanceof ICloudBlock) {
+                ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
+
+                if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        @Override
+        public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+            return Item.getItemFromBlock(singleSlab);
+        }
+
+        @Override
+        public ItemStack getItem(World world, BlockPos pos, IBlockState state) {
+            return new ItemStack(getItemDropped(state, world.rand, 0));
+        }
+
+        @Override
+        public IBlockState getStateFromMeta(int meta) {
+            return getDefaultState().withProperty(VARIANT, Variant.DEFAULT);
+        }
+
+        @Override
+        public int getMetaFromState(IBlockState state) {
+            return 0;
+        }
+
+        @Override
+        protected BlockStateContainer createBlockState() {
+            return new BlockStateContainer(this, VARIANT);
+        }
     }
 
-    @Override
-    public int damageDropped(IBlockState state) {
-        return getCloudMaterialType(state).getMetadata();
-    }
+    private static enum Variant implements IStringSerializable {
+        DEFAULT;
 
-    @Override
-    public boolean isDouble() {
-        return isDouble;
-    }
-
-    @Override
-    public Comparable<CloudType> getTypeForItem(ItemStack stack) {
-        return CloudType.byMetadata(stack.getMetadata() & 7);
+        public String getName() {
+            return "normal";
+        }
     }
 }

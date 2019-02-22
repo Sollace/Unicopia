@@ -6,8 +6,8 @@
   ],
   "key": {
     "#": [
-      { "item": "unicopia:cloud_block", "data": 0 }
+      { "item": "unicopia:cloud_block" }
     ]
   },
-  "result": { "item": "unicopia:cloud_block", "data": 1, "count": 1 }
+  "result": { "item": "unicopia:packed_cloud_block", "count": 1 }
 }

@@ -7,7 +7,7 @@
   ],
   "key": {
     "B": [
-      { "item": "unicopia:cloud_block", "data": 0 }
+      { "item": "unicopia:cloud_block" }
     ]
   },
   "result": { "item": "unicopia:cloud_fence", "count": 3 }
