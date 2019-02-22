@@ -14,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -29,7 +30,7 @@ public class BlockCloudDoor extends BlockDoor implements ICloudBlock {
         setTranslationKey(name);
         setRegistryName(domain, name);
         setSoundType(SoundType.CLOTH);
-        setHardness(1);
+        setHardness(3);
         setResistance(200);
     }
 
@@ -48,9 +49,6 @@ public class BlockCloudDoor extends BlockDoor implements ICloudBlock {
         if (!getCanInteract(state, player)) {
             return false;
         }
-
-        setHardness(3);
-        setResistance(200);
 
         return super.onBlockActivated(worldIn, pos, state, player, hand, facing, hitX, hitY, hitZ);
     }
@@ -93,6 +91,11 @@ public class BlockCloudDoor extends BlockDoor implements ICloudBlock {
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return state.getValue(HALF) == BlockDoor.EnumDoorHalf.UPPER ? Items.AIR : UItems.mist_door;
+    }
+
+    @Override
+    public ItemStack getItem(World world, BlockPos pos, IBlockState state) {
+        return new ItemStack(UItems.mist_door);
     }
 
     @Deprecated
