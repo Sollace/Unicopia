@@ -1,9 +1,9 @@
-tile.normal_cloud_block.name=Block of Cloud
+tile.cloud_block.name=Block of Cloud
 tile.packed_cloud_block.name=Dense Cloud
 tile.enchanted_cloud_block.name=Enchanted Cloud
 
-tile.normal_cloud_slab.name=Cloud Slab
-tile.double_normal_cloud_slab.name=Double Cloud Slab
+tile.cloud_slab.name=Cloud Slab
+tile.double_cloud_slab.name=Double Cloud Slab
 tile.packed_cloud_slab.name=Dense Cloud Slab
 tile.packed_normal_cloud_slab.name=Double Dense Cloud Slab
 tile.enchanted_cloud_slab.name=Enchanted Cloud Slab
