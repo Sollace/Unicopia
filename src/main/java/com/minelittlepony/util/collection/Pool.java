@@ -31,7 +31,7 @@ public class Pool<K, V> extends HashMap<K, V> {
 
     @Override
     public V get(Object key) {
-        if (!containsKey(key)) {
+        if (key == null || !containsKey(key)) {
             key = defaultKey;
         }
 
@@ -39,10 +39,6 @@ public class Pool<K, V> extends HashMap<K, V> {
     }
 
     public Optional<V> getOptional(K key) {
-        if (!containsKey(key)) {
-            return Optional.empty();
-        }
-
         return Optional.ofNullable(get(key));
     }
 }

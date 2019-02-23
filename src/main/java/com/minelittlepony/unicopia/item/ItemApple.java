@@ -57,14 +57,6 @@ public class ItemApple extends ItemFood implements IEdible {
                 .orElse(ItemStack.EMPTY);
     }
 
-    public ItemStack getRandomApple() {
-        return getRandomApple(null);
-    }
-
-    public ItemStack getRandomApple(Object variant) {
-        return getRandomItemStack(variant);
-    }
-
     public ItemApple(String domain, String name) {
         super(4, 3, false);
 
