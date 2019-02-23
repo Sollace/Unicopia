@@ -38,7 +38,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.math.MathHelper;
 
-public class SpellDisguise extends AbstractSpell implements ISuppressable, IFlyingPredicate, IPlayerHeightPredicate {
+public class SpellDisguise extends AbstractSpell implements IAttachedEffect, ISuppressable, IFlyingPredicate, IPlayerHeightPredicate {
 
     @Nonnull
     private String entityId = "";
@@ -271,6 +271,11 @@ public class SpellDisguise extends AbstractSpell implements ISuppressable, IFlyi
         }
 
         to.setSneaking(from.isSneaking());
+    }
+
+    @Override
+    public boolean updateOnPerson(IPlayer caster) {
+        return update(caster);
     }
 
     @SuppressWarnings("unchecked")
