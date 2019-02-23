@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.mixin;
 
-import java.lang.reflect.Field;
-
 import com.minelittlepony.unicopia.forgebullshit.FUF;
 
 import net.minecraft.entity.Entity;
@@ -19,33 +17,12 @@ public interface MixinEntity {
         public static DataParameter<Byte> getModelFlag() {
             return PLAYER_MODEL_FLAG;
         }
-
     }
-    abstract class Shulker extends EntityShulker {
-        private Shulker() { super(null);}
-
-        private static boolean __init;
-        private static Field __peekAmount = null;
+    abstract class Shulker {
+        private static final FieldAccessor<EntityShulker, Float> __peekAmount = new FieldAccessor<>(EntityShulker.class, 8);
 
         public static void setPeek(EntityShulker shulker, float peekAmount) {
-            initFields();
-
-            try {
-                if (__peekAmount != null) {
-                    __peekAmount.set(shulker, peekAmount);
-                }
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-        private static void initFields() {
-            if (!__init && __peekAmount == null) {
-                Field[] fields = EntityShulker.class.getDeclaredFields();
-                __peekAmount = fields[fields.length - 3];
-                __peekAmount.setAccessible(true);
-            }
+            __peekAmount.set(shulker, peekAmount);
         }
     }
 

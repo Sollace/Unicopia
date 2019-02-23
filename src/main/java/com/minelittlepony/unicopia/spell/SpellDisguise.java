@@ -23,6 +23,7 @@ import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.item.EntityMinecart;
@@ -33,6 +34,7 @@ import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityShulkerBullet;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntitySkull;
@@ -261,6 +263,12 @@ public class SpellDisguise extends AbstractSpell implements IAttachedEffect, ISu
                     l.setItemStackToSlot(i, neu);
                 }
             }
+        }
+
+        if (to instanceof IRangedAttackMob) {
+            ItemStack activeItem = from.getActiveItemStack();
+
+            ((IRangedAttackMob)to).setSwingingArms(!activeItem.isEmpty() && activeItem.getItemUseAction() == EnumAction.BOW);
         }
 
         if (to instanceof EntityTameable) {
