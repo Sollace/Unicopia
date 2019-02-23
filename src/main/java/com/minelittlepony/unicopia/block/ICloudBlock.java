@@ -4,7 +4,6 @@ import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.forgebullshit.FUF;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.BlockChest;

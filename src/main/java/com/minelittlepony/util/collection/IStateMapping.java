@@ -21,13 +21,15 @@ public interface IStateMapping extends Predicate<IBlockState>, Function<IBlockSt
     static IStateMapping replaceBlock(Block from, Block to) {
         return build(
                 s -> s.getBlock() == from,
-                s -> to.getDefaultState());
+                s -> to.getDefaultState(),
+                s -> replaceBlock(to, from));
     }
 
     static <T extends Comparable<T>> IStateMapping replaceProperty(Block block, IProperty<T> property, T from, T to) {
         return build(
                 s -> s.getBlock() == block && s.getValue(property) == from,
-                s -> s.withProperty(property, to));
+                s -> s.withProperty(property, to),
+                s -> replaceProperty(block, property, to, from));
     }
 
     static <T extends Comparable<T>> IStateMapping setProperty(Block block, IProperty<T> property, T to) {
@@ -37,7 +39,13 @@ public interface IStateMapping extends Predicate<IBlockState>, Function<IBlockSt
     }
 
     static IStateMapping build(Predicate<IBlockState> predicate, Function<IBlockState, IBlockState> converter) {
+        return build(predicate, converter, s -> s);
+    }
+
+    static IStateMapping build(Predicate<IBlockState> predicate, Function<IBlockState, IBlockState> converter, Function<IStateMapping, IStateMapping> inverter) {
         return new IStateMapping() {
+            private IStateMapping inverse;
+
             @Override
             public boolean test(IBlockState state) {
                 return predicate.test(state);
@@ -46,6 +54,14 @@ public interface IStateMapping extends Predicate<IBlockState>, Function<IBlockSt
             @Override
             public IBlockState apply(IBlockState state) {
                 return converter.apply(state);
+            }
+
+            @Override
+            public IStateMapping inverse() {
+                if (inverse == null) {
+                    inverse = inverter.apply(this);
+                }
+                return inverse;
             }
         };
     }
@@ -73,5 +89,13 @@ public interface IStateMapping extends Predicate<IBlockState>, Function<IBlockSt
     @Override
     default IBlockState apply(@Nonnull IBlockState state) {
         return state;
+    }
+
+    /**
+     * Gets the inverse of this mapping if one exists. Otherwise returns itself.
+     */
+    @Nonnull
+    default IStateMapping inverse() {
+        return this;
     }
 }

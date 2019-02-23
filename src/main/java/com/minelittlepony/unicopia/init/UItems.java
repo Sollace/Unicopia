@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.item.ItemCereal;
 import com.minelittlepony.unicopia.item.ItemCloud;
 import com.minelittlepony.unicopia.item.ItemCurse;
 import com.minelittlepony.unicopia.item.ItemFruitLeaves;
+import com.minelittlepony.unicopia.item.ItemMoss;
 import com.minelittlepony.unicopia.item.ItemOfHolding;
 import com.minelittlepony.unicopia.item.ItemRottenApple;
 import com.minelittlepony.unicopia.item.ItemSpell;
@@ -48,7 +49,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.edibles.BushToxicityDeterminent;
 import com.minelittlepony.unicopia.edibles.CookedToxicityDeterminent;
 import com.minelittlepony.unicopia.edibles.FlowerToxicityDeterminent;
-import com.minelittlepony.unicopia.edibles.ItemEdible;
+import com.minelittlepony.unicopia.edibles.MultiItemEdible;
 import com.minelittlepony.unicopia.edibles.Toxicity;
 import com.minelittlepony.unicopia.edibles.UItemFoodDelegate;
 import com.minelittlepony.unicopia.extern.Baubles;
@@ -113,6 +114,7 @@ public class UItems {
     public static final ItemSpellbook spellbook = new ItemSpellbook(Unicopia.MODID, "spellbook");
     public static final Item staff_meadow_brook = new ItemStaff(Unicopia.MODID, "staff_meadow_brook").setMaxDamage(2);
 
+    public static final ItemMoss moss = new ItemMoss(Unicopia.MODID, "moss");
 
     public static final Item alfalfa_seeds = new ItemSeedFood(1, 4, UBlocks.alfalfa, Blocks.FARMLAND)
             .setTranslationKey("alfalfa_seeds")
@@ -140,7 +142,7 @@ public class UItems {
 
     public static final Item double_plant = new UItemFoodDelegate(Blocks.DOUBLE_PLANT, stack ->
                 BlockDoublePlant.EnumPlantType.byMetadata(stack.getMetadata()).getTranslationKey()
-            ).setFoodDelegate(new ItemEdible(new BushToxicityDeterminent()))
+            ).setFoodDelegate(new MultiItemEdible(new BushToxicityDeterminent()))
             .setTranslationKey("doublePlant");
 
     public static final Item tall_grass = new UItemFoodDelegate(Blocks.TALLGRASS, stack -> {
@@ -150,7 +152,7 @@ public class UItems {
             case 2: return "fern";
             default: return "";
         }
-    }).setFoodDelegate(new ItemEdible(stack -> {
+    }).setFoodDelegate(new MultiItemEdible(stack -> {
         switch (stack.getMetadata()) {
             default:
             case 0: return Toxicity.SAFE;
@@ -161,38 +163,38 @@ public class UItems {
 
     public static final Item yellow_flower = new UItemFoodDelegate(Blocks.YELLOW_FLOWER, stack ->
                 BlockFlower.EnumFlowerType.getType(BlockFlower.EnumFlowerColor.YELLOW, stack.getMetadata()).getTranslationKey()
-            ).setFoodDelegate(new ItemEdible(new FlowerToxicityDeterminent(BlockFlower.EnumFlowerColor.YELLOW)))
+            ).setFoodDelegate(new MultiItemEdible(new FlowerToxicityDeterminent(BlockFlower.EnumFlowerColor.YELLOW)))
             .setTranslationKey("flower");
 
     public static final Item red_flower = new UItemFoodDelegate(Blocks.RED_FLOWER, stack ->
                 BlockFlower.EnumFlowerType.getType(BlockFlower.EnumFlowerColor.RED, stack.getMetadata()).getTranslationKey()
-            ).setFoodDelegate(new ItemEdible(new FlowerToxicityDeterminent(BlockFlower.EnumFlowerColor.RED)))
+            ).setFoodDelegate(new MultiItemEdible(new FlowerToxicityDeterminent(BlockFlower.EnumFlowerColor.RED)))
             .setTranslationKey("rose");
 
-    public static final Item daffodil_daisy_sandwich = new ItemEdible(Unicopia.MODID, "daffodil_daisy_sandwich", 3, 2, CookedToxicityDeterminent.instance)
+    public static final Item daffodil_daisy_sandwich = new MultiItemEdible(Unicopia.MODID, "daffodil_daisy_sandwich", 3, 2, CookedToxicityDeterminent.instance)
             .setHasSubtypes(true);
-    public static final Item hay_burger = new ItemEdible(Unicopia.MODID, "hay_burger", 3, 4, CookedToxicityDeterminent.instance)
+    public static final Item hay_burger = new MultiItemEdible(Unicopia.MODID, "hay_burger", 3, 4, CookedToxicityDeterminent.instance)
             .setHasSubtypes(true);
-    public static final Item hay_fries = new ItemEdible(Unicopia.MODID, "hay_fries", 1, 5, stack -> Toxicity.SAFE);
-    public static final Item salad = new ItemEdible(Unicopia.MODID, "salad", 4, 2, CookedToxicityDeterminent.instance)
+    public static final Item hay_fries = new MultiItemEdible(Unicopia.MODID, "hay_fries", 1, 5, stack -> Toxicity.SAFE);
+    public static final Item salad = new MultiItemEdible(Unicopia.MODID, "salad", 4, 2, CookedToxicityDeterminent.instance)
             .setHasSubtypes(true)
             .setContainerItem(Items.BOWL);
 
-    public static final Item wheat_worms = new ItemEdible(Unicopia.MODID, "wheat_worms", 1, 0, stack -> Toxicity.SEVERE);
+    public static final Item wheat_worms = new MultiItemEdible(Unicopia.MODID, "wheat_worms", 1, 0, stack -> Toxicity.SEVERE);
 
     public static final Item mug = new Item()
             .setTranslationKey("mug")
             .setRegistryName(Unicopia.MODID, "mug")
             .setCreativeTab(CreativeTabs.MATERIALS)
             .setFull3D();
-    public static final Item apple_cider = new ItemEdible(Unicopia.MODID, "apple_cider", 4, 2, stack -> Toxicity.MILD)
+    public static final Item apple_cider = new MultiItemEdible(Unicopia.MODID, "apple_cider", 4, 2, stack -> Toxicity.MILD)
             .setUseAction(EnumAction.DRINK)
             .setContainerItem(mug)
             .setFull3D();
-    public static final Item juice = new ItemEdible(Unicopia.MODID, "juice", 2, 2, stack -> Toxicity.SAFE)
+    public static final Item juice = new MultiItemEdible(Unicopia.MODID, "juice", 2, 2, stack -> Toxicity.SAFE)
             .setUseAction(EnumAction.DRINK)
             .setContainerItem(Items.GLASS_BOTTLE);
-    public static final Item burned_juice = new ItemEdible(Unicopia.MODID, "burned_juice", 3, 1, stack -> Toxicity.FAIR)
+    public static final Item burned_juice = new MultiItemEdible(Unicopia.MODID, "burned_juice", 3, 1, stack -> Toxicity.FAIR)
             .setUseAction(EnumAction.DRINK)
             .setContainerItem(Items.GLASS_BOTTLE);
 
@@ -220,7 +222,7 @@ public class UItems {
                 cereal, sugar_cereal, sugar_block,
                 rotten_apple, zap_apple, cooked_zap_apple,
 
-                cloudsdale_tomato, tomato_seeds, tomato,
+                cloudsdale_tomato, tomato_seeds, tomato, moss,
 
                 apple_seeds, apple_leaves,
 
@@ -236,7 +238,7 @@ public class UItems {
                     zap_apple,
                     rotten_apple, cooked_zap_apple, dew_drop,
 
-                    tomato, cloudsdale_tomato,
+                    tomato, cloudsdale_tomato, moss,
 
                     cloud_spawner, cloud_matter, cloud_block, enchanted_cloud, packed_cloud,
                     cloud_stairs,

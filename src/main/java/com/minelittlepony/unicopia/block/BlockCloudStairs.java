@@ -33,6 +33,9 @@ public class BlockCloudStairs extends BlockStairs implements ICloudBlock {
         setRegistryName(domain, name);
         theBlock = inherited.getBlock();
         theState = inherited;
+
+        setTickRandomly(theBlock.getTickRandomly());
+
         useNeighborBrightness = true;
 
         fullBlock = isOpaqueCube(inherited);

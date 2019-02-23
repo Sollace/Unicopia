@@ -2,11 +2,9 @@ package com.minelittlepony.unicopia.edibles;
 
 import java.util.List;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.forgebullshit.IMultiItem;
 import com.minelittlepony.unicopia.init.UEffects;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
@@ -29,33 +27,19 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 
-public class ItemEdible extends ItemFood implements IEdible, IMultiItem {
-
-    private String translationKey;
-
-    private final IEdible toxicityDeterminant;
+public abstract class ItemEdible extends ItemFood implements IEdible {
 
     private EnumAction useAction = EnumAction.EAT;
 
-    public ItemEdible(@Nonnull IEdible mapper) {
-        super(1, 0, false);
-
-        toxicityDeterminant = mapper;
+    public ItemEdible(int amount, int saturation, boolean isMeat) {
+        super(amount, saturation, isMeat);
     }
 
-    public ItemEdible(String domain, String name, int amount, int saturation, @Nonnull IEdible mapper) {
-        super(amount, saturation, false);
+    public ItemEdible(String domain, String name, int amount, int saturation, boolean isMeat) {
+        super(amount, saturation, isMeat);
 
         setTranslationKey(name);
         setRegistryName(domain, name);
-
-        toxicityDeterminant = mapper;
-    }
-
-    public Item setTranslationKey(String key) {
-        translationKey = key;
-
-        return super.setTranslationKey(key);
     }
 
     public Item setUseAction(EnumAction action) {
@@ -140,22 +124,5 @@ public class ItemEdible extends ItemFood implements IEdible, IMultiItem {
         } else if (toxicity.toxicWhenCooked()) {
             player.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 3, 1, false, false));
         }
-
-        toxicityDeterminant.addSecondaryEffects(player, toxicity, stack);
-    }
-
-    @Override
-    public Toxicity getToxicityLevel(ItemStack stack) {
-        return toxicityDeterminant.getToxicityLevel(stack);
-    }
-
-    @Override
-    public String[] getVariants() {
-        return Toxicity.getVariants(translationKey);
-    }
-
-    @Override
-    public boolean variantsAreHidden() {
-        return true;
     }
 }

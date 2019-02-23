@@ -1,11 +1,13 @@
 package com.minelittlepony.unicopia.block;
 
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.init.UBlocks;
+import com.minelittlepony.unicopia.item.ItemMoss;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.block.Block;
@@ -39,6 +41,8 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
         setResistance(1.0F);
         setSoundType(SoundType.CLOTH);
         setLightOpacity(20);
+        setTickRandomly(true);
+
         useNeighborBrightness = true;
 
         this.variant = variant;
@@ -52,6 +56,20 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
     @Override
     public boolean isOpaqueCube(IBlockState state) {
         return variant != CloudType.NORMAL;
+    }
+
+    @Override
+    public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
+        if (rand.nextInt(10) == 0) {
+            pos = pos.offset(EnumFacing.random(rand), 1 + rand.nextInt(2));
+            state = world.getBlockState(pos);
+
+            IBlockState converted = ItemMoss.affected.getInverse().getConverted(state);
+
+            if (!state.equals(converted)) {
+                world.setBlockState(pos, converted);
+            }
+        }
     }
 
     @Override

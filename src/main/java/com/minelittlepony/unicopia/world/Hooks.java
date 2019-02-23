@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.world;
 
+import net.minecraft.util.EnumActionResult;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.UseHoeEvent;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType;
@@ -12,6 +14,22 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
 @EventBusSubscriber
 public class Hooks {
+
+    @SubscribeEvent
+    public static void onPlayerRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
+
+        if (event.isCanceled()) {
+            return;
+        }
+
+        EnumActionResult result = UWorld.instance().getBlocks().onBlockInteract(
+                event.getWorld(), event.getWorld().getBlockState(event.getPos()), event.getPos(), event.getEntityPlayer(), event.getItemStack(), event.getHand());
+
+        if (result != EnumActionResult.PASS) {
+            event.setCanceled(true);
+            event.setCancellationResult(result);
+        }
+    }
 
     @SubscribeEvent
     public static void onBlockHarvested(BlockEvent.HarvestDropsEvent event) {

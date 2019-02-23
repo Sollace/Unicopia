@@ -63,9 +63,7 @@ public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseActi
 
         affected.add(IStateMapping.build(
                 s -> s.getBlock() == Blocks.DIRT && s.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.DIRT,
-                s -> Math.random() <= 0.15 ?
-                    s.withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.COARSE_DIRT)
-                    : s));
+                s -> (Math.random() <= 0.15 ? s.withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.COARSE_DIRT) : s)));
     }
 
     @Override

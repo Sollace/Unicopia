@@ -46,6 +46,7 @@ public abstract class BlockCloudSlab<T extends Block & ICloudBlock> extends Bloc
         setSoundType(SoundType.CLOTH);
         setLightOpacity(20);
         setTranslationKey(name);
+        setTickRandomly(modelBlock.getTickRandomly());
         setRegistryName(domain, name);
 
         useNeighborBrightness = true;
@@ -81,6 +82,11 @@ public abstract class BlockCloudSlab<T extends Block & ICloudBlock> extends Bloc
     @Override
     public boolean isNormalCube(IBlockState state) {
         return isDouble() && modelBlock.isNormalCube(state);
+    }
+
+    @Override
+    public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
+        modelBlock.updateTick(world, pos, state, rand);
     }
 
     @Override

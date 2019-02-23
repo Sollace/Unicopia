@@ -5,6 +5,7 @@
 		{ "item": "minecraft:golden_carrot" },
 		{ "item": "minecraft:wheat" },
 		{ "item": "minecraft:grain" },
-		{ "item": "minecraft:alfalfa_leaves" }
+		{ "item": "minecraft:alfalfa_leaves" },
+		{ "item": "unicopia:moss" }
 	]
 }

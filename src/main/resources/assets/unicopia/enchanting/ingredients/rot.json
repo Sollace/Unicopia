@@ -5,6 +5,7 @@
 		{ "item": "unicopia:tomato", "data": 1 },
 		{ "item": "unicopia:rotten_apple" },
 		{ "item": "minecraft:red_mushroom" },
-		{ "item": "minecraft:brown_mushroom" }
+		{ "item": "minecraft:brown_mushroom" },
+		{ "item": "unicopia:moss" }
 	]
 }

@@ -11,7 +11,10 @@ import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -32,6 +35,22 @@ public class BlockInteractions {
         world.setBlockState(pos, farm.getFarmlandState(hoe, player, world, state, pos));
 
         return true;
+    }
+
+    public EnumActionResult onBlockInteract(World world, IBlockState state, BlockPos pos, EntityPlayer player, ItemStack stack, EnumHand hand) {
+
+        if (stack.getItem() == Items.SHEARS) {
+            if (UItems.moss.tryConvert(world, state, pos, player)) {
+
+                if (!player.isCreative()) {
+                    stack.damageItem(1, player);
+                }
+
+                return EnumActionResult.SUCCESS;
+            }
+        }
+
+        return EnumActionResult.PASS;
     }
 
     public void addAuxiliaryDrops(World world, IBlockState state, BlockPos pos, List<ItemStack> drops, int fortune) {
