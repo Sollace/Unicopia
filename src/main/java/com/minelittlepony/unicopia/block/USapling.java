@@ -1,17 +1,14 @@
 package com.minelittlepony.unicopia.block;
 
-import java.util.Optional;
 import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.ImmutableMap;
+import com.minelittlepony.util.LenientState;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.BlockSapling;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -21,7 +18,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
-import net.minecraftforge.common.property.IUnlistedProperty;
 
 public class USapling extends BlockSapling implements ITreeGen {
 
@@ -158,21 +154,6 @@ public class USapling extends BlockSapling implements ITreeGen {
 
     @Override
     protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, new IProperty[] {STAGE}) {
-            @Override
-            protected StateImplementation createState(Block block, ImmutableMap<IProperty<?>, Comparable<?>> properties, @Nullable ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties) {
-                return new StateImplementation(block, properties) {
-                    @Override
-                    public <T extends Comparable<T>, V extends T> IBlockState withProperty(IProperty<T> property, V value) {
-                        if (property == TYPE && !getProperties().containsKey(property)) {
-                            return this;
-                        }
-
-                        return super.withProperty(property, value);
-                    }
-                };
-            }
-
-        };
+        return new LenientState(this, STAGE);
     }
 }

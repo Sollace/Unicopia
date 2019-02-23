@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.block.BlockCloudStairs;
 import com.minelittlepony.unicopia.block.BlockSugar;
 import com.minelittlepony.unicopia.block.BlockTomatoPlant;
 import com.minelittlepony.unicopia.block.IColourful;
+import com.minelittlepony.unicopia.block.UPot;
 import com.minelittlepony.unicopia.block.USapling;
 import com.minelittlepony.unicopia.item.ItemApple;
 import com.minelittlepony.unicopia.block.BlockCloudDoor;
@@ -60,6 +61,7 @@ public class UBlocks {
     public static final BlockCloudFarm cloud_farmland = new BlockCloudFarm(Unicopia.MODID, "cloud_farmland");
 
     public static final Block sugar_block = new BlockSugar(Unicopia.MODID, "sugar_block");
+    public static final UPot flower_pot = new UPot(Unicopia.MODID, "flower_pot");
 
     public static final USapling apple_tree = new USapling(Unicopia.MODID, "apple_sapling")
             .setTreeGen((w, s, m) -> new WorldGenTrees(true, 5, Blocks.LOG.getDefaultState(), UBlocks.apple_leaves.getDefaultState(), false));
@@ -77,7 +79,7 @@ public class UBlocks {
                              packed_cloud_slab, packed_cloud_slab.doubleSlab,
                              cloud_fence, cloud_banister,
                              mist_door, anvil, cloud_farmland,
-                             sugar_block,
+                             sugar_block, flower_pot,
                              alfalfa,
                              tomato_plant,
                              enchanted_torch,

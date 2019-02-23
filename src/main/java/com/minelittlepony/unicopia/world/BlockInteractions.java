@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.world;
 import java.util.List;
 
 import com.minelittlepony.unicopia.block.ITillable;
+import com.minelittlepony.unicopia.init.UBlocks;
 import com.minelittlepony.unicopia.init.UItems;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
@@ -46,6 +47,12 @@ public class BlockInteractions {
                     stack.damageItem(1, player);
                 }
 
+                return EnumActionResult.SUCCESS;
+            }
+        }
+
+        if (state.getBlock() == Blocks.FLOWER_POT) {
+            if (UBlocks.flower_pot.onBlockActivated(world, pos, state, player, hand, player.getHorizontalFacing(), 0.5F, 0.5F, 0.5F)) {
                 return EnumActionResult.SUCCESS;
             }
         }
