@@ -264,10 +264,14 @@ public class SpellDisguise extends AbstractSpell implements IAttachedEffect, ISu
             ((EntityTameable)to).setSitting(from.isSneaking());
         }
 
-        if (from.isBurning()) {
-            to.setFire(1);
-        } else {
+        if (from instanceof EntityPlayer && ((EntityPlayer)from).isCreative()) {
             to.extinguish();
+        }
+
+        if (to.isBurning()) {
+            from.setFire(1);
+        } else {
+            from.extinguish();
         }
 
         to.setSneaking(from.isSneaking());
