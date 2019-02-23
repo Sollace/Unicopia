@@ -10,6 +10,7 @@ import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerFlyableFallEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -25,6 +26,13 @@ class Hooks {
             PlayerSpeciesList.instance().getPlayer(event.player).onUpdate();
         } else {
             PlayerSpeciesList.instance().getPlayer(event.player).beforeUpdate();
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerVisibilityCheck(PlayerEvent.Visibility event) {
+        if (PlayerSpeciesList.instance().getPlayer(event.getEntityPlayer()).isInvisible()) {
+            event.modifyVisibility(0);
         }
     }
 
