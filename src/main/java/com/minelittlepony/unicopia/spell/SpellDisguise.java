@@ -142,6 +142,7 @@ public class SpellDisguise extends AbstractSpell implements IAttachedEffect, ISu
         entity.setCustomNameTag(source.getOwner().getName());
         ((EntityPlayer)entity).readFromNBT(nbt.getCompoundTag("playerNbt"));
         entity.setUniqueId(UUID.randomUUID());
+        entity.extinguish();
 
         PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity).setEffect(null);
 
@@ -164,6 +165,7 @@ public class SpellDisguise extends AbstractSpell implements IAttachedEffect, ISu
                 )), source)).start();
             } else {
                 entity = EntityList.createEntityFromNBT(nbt, source.getWorld());
+                entity.extinguish();
             }
 
             onEntityLoaded(source);
@@ -183,6 +185,7 @@ public class SpellDisguise extends AbstractSpell implements IAttachedEffect, ISu
     protected void copyBaseAttributes(EntityLivingBase from, Entity to) {
 
         // Set first because position calculations rely on it
+        to.isDead = from.isDead;
         to.onGround = from.onGround;
 
         if (isAttachedEntity(entity)) {
@@ -264,7 +267,7 @@ public class SpellDisguise extends AbstractSpell implements IAttachedEffect, ISu
             ((EntityTameable)to).setSitting(from.isSneaking());
         }
 
-        if (from instanceof EntityPlayer && ((EntityPlayer)from).isCreative()) {
+        if (from.ticksExisted < 100 || from instanceof EntityPlayer && ((EntityPlayer)from).isCreative()) {
             to.extinguish();
         }
 
