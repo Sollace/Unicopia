@@ -1,20 +1,16 @@
 package com.minelittlepony.unicopia.block;
 
-import java.util.Random;
+import java.util.function.Supplier;
 
 import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.init.UItems;
 
-import net.minecraft.block.BlockDoor;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -22,13 +18,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockCloudDoor extends BlockDoor implements ICloudBlock {
+public class BlockCloudDoor extends UDoor implements ICloudBlock {
 
-    public BlockCloudDoor(Material material, String domain, String name) {
-        super(material);
+    public BlockCloudDoor(Material material, String domain, String name, Supplier<Item> theItem) {
+        super(material, domain, name, theItem);
 
-        setTranslationKey(name);
-        setRegistryName(domain, name);
         setSoundType(SoundType.CLOTH);
         setHardness(3);
         setResistance(200);
@@ -86,16 +80,6 @@ public class BlockCloudDoor extends BlockDoor implements ICloudBlock {
     @Override
     public boolean canEntityDestroy(IBlockState state, IBlockAccess world, BlockPos pos, Entity entity) {
         return getCanInteract(state, entity) && super.canEntityDestroy(state, world, pos, entity);
-    }
-
-    @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return state.getValue(HALF) == BlockDoor.EnumDoorHalf.UPPER ? Items.AIR : UItems.mist_door;
-    }
-
-    @Override
-    public ItemStack getItem(World world, BlockPos pos, IBlockState state) {
-        return new ItemStack(UItems.mist_door);
     }
 
     @Deprecated

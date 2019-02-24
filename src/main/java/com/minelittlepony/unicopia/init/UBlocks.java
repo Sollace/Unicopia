@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.block.BlockCloudAnvil;
 import com.minelittlepony.unicopia.block.BlockCloudBanister;
 import com.minelittlepony.unicopia.block.BlockCloudSlab;
 import com.minelittlepony.unicopia.block.BlockCloudStairs;
+import com.minelittlepony.unicopia.block.BlockDutchDoor;
 import com.minelittlepony.unicopia.block.BlockSugar;
 import com.minelittlepony.unicopia.block.BlockTomatoPlant;
 import com.minelittlepony.unicopia.block.IColourful;
@@ -21,6 +22,8 @@ import com.minelittlepony.unicopia.block.BlockCloudFence;
 import com.minelittlepony.unicopia.block.BlockCloud;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
@@ -45,7 +48,13 @@ public class UBlocks {
     public static final BlockCloudSlab.Single<?> enchanted_cloud_slab = new BlockCloudSlab.Single<>(enchanted_cloud, UMaterials.cloud, Unicopia.MODID, "enchanted_cloud_slab");
     public static final BlockCloudSlab.Single<?> packed_cloud_slab = new BlockCloudSlab.Single<>(enchanted_cloud, UMaterials.cloud, Unicopia.MODID, "packed_cloud_slab");
 
-    public static final BlockCloudDoor mist_door = new BlockCloudDoor(UMaterials.cloud, Unicopia.MODID, "mist_door");
+    public static final BlockCloudDoor mist_door = new BlockCloudDoor(UMaterials.cloud, Unicopia.MODID, "mist_door", () -> UItems.mist_door);
+    public static final Block library_door = new BlockDutchDoor(Material.WOOD, Unicopia.MODID, "library_door", () -> UItems.library_door)
+            .setSoundType(SoundType.WOOD)
+            .setHardness(3);
+    public static final Block bakery_door = new BlockDutchDoor(Material.WOOD, Unicopia.MODID, "bakery_door", () -> UItems.bakery_door)
+            .setSoundType(SoundType.WOOD)
+            .setHardness(3);
 
     public static final BlockGlowingGem enchanted_torch = new BlockGlowingGem(Unicopia.MODID, "enchanted_torch");
 
@@ -78,7 +87,8 @@ public class UBlocks {
                              enchanted_cloud_slab, enchanted_cloud_slab.doubleSlab,
                              packed_cloud_slab, packed_cloud_slab.doubleSlab,
                              cloud_fence, cloud_banister,
-                             mist_door, anvil, cloud_farmland,
+                             mist_door, library_door, bakery_door,
+                             anvil, cloud_farmland,
                              sugar_block, flower_pot,
                              alfalfa,
                              tomato_plant,

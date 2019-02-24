@@ -98,6 +98,12 @@ public class UItems {
     public static final Item mist_door = new ItemDoor(UBlocks.mist_door)
             .setTranslationKey("mist_door")
             .setRegistryName(Unicopia.MODID, "mist_door");
+    public static final Item library_door = new ItemDoor(UBlocks.library_door)
+            .setTranslationKey("library_door")
+            .setRegistryName(Unicopia.MODID, "library_door");
+    public static final Item bakery_door = new ItemDoor(UBlocks.bakery_door)
+            .setTranslationKey("bakery_door")
+            .setRegistryName(Unicopia.MODID, "bakery_door");
 
     public static final Item sugar_block = new UItemDecoration(UBlocks.sugar_block);
 
@@ -213,7 +219,7 @@ public class UItems {
                 cloud_stairs,
                 cloud_slab, enchanted_cloud_slab, packed_cloud_slab,
                 cloud_fence, cloud_banister,
-                cloud_farmland, mist_door, anvil,
+                cloud_farmland, mist_door, library_door, bakery_door, anvil,
 
                 bag_of_holding, spell, curse, spellbook, mug, enchanted_torch,
                 staff_meadow_brook, alicorn_amulet,
@@ -244,7 +250,7 @@ public class UItems {
                     cloud_stairs,
                     cloud_slab, enchanted_cloud_slab, packed_cloud_slab,
                     cloud_fence, cloud_banister,
-                    cloud_farmland, mist_door, anvil,
+                    cloud_farmland, mist_door, library_door, bakery_door, anvil,
 
                     bag_of_holding, spell, curse, spellbook, mug, enchanted_torch,
                     staff_meadow_brook, alicorn_amulet,

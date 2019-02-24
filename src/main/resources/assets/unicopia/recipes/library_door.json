@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##",
+    "**",
+    "**"
+  ],
+  "key": {
+    "#": [
+      { "item": "minecraft:planks", "data": 5 }
+    ],
+    "*": [
+      { "item": "minecraft:planks", "data": 1 }
+    ]
+  },
+  "result": { "item": "unicopia:library_door", "count": 3 }
+}
