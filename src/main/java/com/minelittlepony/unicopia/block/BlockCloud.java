@@ -96,7 +96,7 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
     @Deprecated
     @Override
     public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side) {
-        if (side == EnumFacing.UP && world.getBlockState(pos.up()).getBlock() instanceof ICloudBlock) {
+        if (side == EnumFacing.UP && (variant == CloudType.ENCHANTED || world.getBlockState(pos.up()).getBlock() instanceof ICloudBlock)) {
             return true;
         }
 

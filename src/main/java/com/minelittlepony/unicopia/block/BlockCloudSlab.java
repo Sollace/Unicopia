@@ -6,6 +6,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.CloudType;
+import com.minelittlepony.unicopia.forgebullshit.FUF;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
@@ -92,6 +93,18 @@ public abstract class BlockCloudSlab<T extends Block & ICloudBlock> extends Bloc
     @Override
     public BlockRenderLayer getRenderLayer() {
         return modelBlock.getRenderLayer();
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public boolean isTopSolid(IBlockState state) {
+        return getCloudMaterialType(state) == CloudType.ENCHANTED && super.isTopSolid(state);
+    }
+
+    @SuppressWarnings("deprecation")
+    @FUF(reason = "...Really?")
+    public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+        return getCloudMaterialType(base_state) == CloudType.ENCHANTED && super.isSideSolid(base_state, world, pos, side);
     }
 
     @Override
