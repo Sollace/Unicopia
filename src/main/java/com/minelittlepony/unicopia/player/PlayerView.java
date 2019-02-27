@@ -21,6 +21,10 @@ class PlayerView extends MotionCompositor implements IView {
             roll -= super.calculateRoll(player.getOwner(), player.getOwner().motionX, player.getOwner().motionY, player.getOwner().motionZ);
         }
 
+        if (player.getGravity().getGravitationConstant() < 0) {
+            roll += 180;
+        }
+
         return (float)player.getInterpolator().interpolate("roll", (float)roll, 100);
     }
 

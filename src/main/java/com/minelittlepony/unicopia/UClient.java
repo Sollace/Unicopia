@@ -78,6 +78,10 @@ public class UClient {
         return new EntityFakeServerPlayer((WorldServer)observer.world, profile);
     }
 
+    public void postRenderEntity(Entity entity) {
+
+    }
+
     public boolean renderEntity(Entity entity, float renderPartialTicks) {
         return false;
     }

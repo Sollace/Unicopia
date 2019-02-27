@@ -14,6 +14,8 @@ import com.minelittlepony.unicopia.gui.GuiScreenSettings;
 import com.minelittlepony.unicopia.init.UEntities;
 import com.minelittlepony.unicopia.init.UParticles;
 import com.minelittlepony.unicopia.input.Keyboard;
+import com.minelittlepony.unicopia.input.MouseControl;
+import com.minelittlepony.unicopia.input.MovementControl;
 import com.minelittlepony.unicopia.inventory.gui.GuiOfHolding;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.player.IPlayer;
@@ -26,8 +28,10 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MovementInput;
 import net.minecraft.world.IInteractionObject;
 
 import static com.minelittlepony.util.gui.ButtonGridLayout.*;
@@ -140,6 +144,20 @@ public class UnicopiaClient extends UClient {
     }
 
     @Override
+    public void postRenderEntity(Entity entity) {
+        if (entity instanceof EntityPlayer) {
+            IPlayer iplayer = PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity);
+
+            if (iplayer.getGravity().getGravitationConstant() < 0) {
+                GlStateManager.translate(0, entity.height, 0);
+                GlStateManager.scale(1, -1, 1);
+                entity.prevRotationPitch *= -1;
+                entity.rotationPitch *= -1;
+            }
+        }
+    }
+
+    @Override
     public boolean renderEntity(Entity entity, float renderPartialTicks) {
 
         if (DisguiseRenderer.instance().renderDisguise(entity, renderPartialTicks)) {
@@ -148,6 +166,13 @@ public class UnicopiaClient extends UClient {
 
         if (entity instanceof EntityPlayer) {
             IPlayer iplayer = PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity);
+
+            if (iplayer.getGravity().getGravitationConstant() < 0) {
+                GlStateManager.scale(1, -1, 1);
+                GlStateManager.translate(0, -entity.height, 0);
+                entity.prevRotationPitch *= -1;
+                entity.rotationPitch *= -1;
+            }
 
             if (DisguiseRenderer.instance().renderDisguiseToGui(iplayer)) {
                 return true;
@@ -186,5 +211,21 @@ public class UnicopiaClient extends UClient {
         }
 
         Keyboard.getKeyHandler().onKeyInput();
+
+        if (player instanceof EntityPlayerSP) {
+            EntityPlayerSP sp = (EntityPlayerSP)player;
+
+            MovementInput movement = sp.movementInput;
+
+            if (!(movement instanceof MovementControl)) {
+                sp.movementInput = new MovementControl(movement);
+            }
+        }
+
+        Minecraft mc = Minecraft.getMinecraft();
+
+        if (!(mc.mouseHelper instanceof MouseControl)) {
+            mc.mouseHelper = new MouseControl();
+        }
     }
 }

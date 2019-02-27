@@ -6,4 +6,12 @@ public interface IGravity {
     float getFlightExperience();
 
     float getFlightDuration();
+
+    void setGraviationConstant(float constant);
+
+    float getGravitationConstant();
+
+    default void clearGraviationConstant() {
+        setGraviationConstant(Float.NaN);
+    }
 }

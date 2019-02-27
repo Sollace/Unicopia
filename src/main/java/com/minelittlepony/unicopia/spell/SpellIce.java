@@ -23,7 +23,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
@@ -127,8 +126,7 @@ public class SpellIce extends AbstractSpell.RangedAreaSpell implements IUseActio
         } else if (e.isBurning()) {
             e.extinguish();
         } else {
-            DamageSource d = MagicalDamageSource.causePlayerDamage("cold", owner);
-            e.attackEntityFrom(d, 2);
+            e.attackEntityFrom(MagicalDamageSource.causePlayerDamage("cold", owner), 2);
         }
 
         return true;

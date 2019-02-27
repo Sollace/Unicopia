@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.hud.UHud;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.IView;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiShareToLan;
@@ -29,6 +30,8 @@ class ClientHooks {
     @SubscribeEvent
     public static void postEntityRender(RenderLivingEvent.Post<?> event) {
         GlStateManager.enableAlpha();
+
+        UClient.instance().postRenderEntity(event.getEntity());
     }
 
     @SubscribeEvent

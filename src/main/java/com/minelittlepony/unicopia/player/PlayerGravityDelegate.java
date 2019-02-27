@@ -33,6 +33,8 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
     public boolean isFlying = false;
 
+    private float gravity = Float.NaN;
+
     public PlayerGravityDelegate(IPlayer player) {
         this.player = player;
     }
@@ -97,6 +99,15 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
         return player.getOwner().height;
     }
 
+    @Override
+    public void setGraviationConstant(float constant) {
+        gravity = constant;
+    }
+
+    @Override
+    public float getGravitationConstant() {
+        return gravity;
+    }
 
     @Override
     public void onUpdate() {
@@ -110,8 +121,33 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
         isFlying = entity.capabilities.isFlying && !entity.capabilities.isCreativeMode;
 
-        MixinEntity.setSize(entity, entity.width, player.getInterpolator().interpolate("standingHeight", getTargetBodyHeight(player), 10));
-        entity.eyeHeight = player.getInterpolator().interpolate("eyeHeight", getTargetEyeHeight(player), 10);
+        if (!entity.capabilities.isFlying || !entity.capabilities.isCreativeMode) {
+            gravity = -0.08F;
+
+            if (gravity != Float.NaN) {
+                entity.motionY += 0.08;
+                entity.motionY -= gravity;
+
+                entity.onGround = !entity.world.isAirBlock(new BlockPos(entity.posX, entity.posY + entity.height + 0.5F, entity.posZ));
+            }
+        }
+
+        float bodyHeight = getTargetBodyHeight(player);
+
+        MixinEntity.setSize(entity, entity.width, player.getInterpolator().interpolate("standingHeight", bodyHeight, 10));
+        float eyeHeight = getTargetEyeHeight(player);
+
+        if (gravity < 0) {
+            eyeHeight = bodyHeight - eyeHeight;
+        }
+
+        entity.eyeHeight = player.getInterpolator().interpolate("eyeHeight", eyeHeight, 10);
+
+        if (gravity < 0) {
+            if (entity.isSneaking()) {
+                entity.eyeHeight += 0.2F;
+            }
+        }
 
         if (!entity.capabilities.isCreativeMode && !entity.isElytraFlying()) {
             if (isFlying && !entity.isRiding()) {
@@ -271,6 +307,10 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
         compound.setInteger("flightDuration", ticksInAir);
         compound.setFloat("flightExperience", flightExperience);
         compound.setBoolean("isFlying", isFlying);
+
+        if (gravity != Float.NaN) {
+            compound.setFloat("gravity", gravity);
+        }
     }
 
     @Override
@@ -278,6 +318,12 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
         ticksInAir = compound.getInteger("flightDuration");
         flightExperience = compound.getFloat("flightExperience");
         isFlying = compound.getBoolean("isFlying");
+
+        if (compound.hasKey("gravity")) {
+            gravity = compound.getFloat("gravity");
+        } else {
+            gravity = Float.NaN;
+        }
     }
 
     @Override
