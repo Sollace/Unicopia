@@ -1,0 +1,15 @@
+{
+	"type": "unicopia:crafting_spell",
+	"ingredients": [
+        { "id": "unicopia:energy" },
+        { "id": "unicopia:life" },
+        { "id": "unicopia:dark" },
+        { "item": "unicopia:gem", "spell": "siphon" }
+    ],
+	"result": {
+		"item": [
+			{ "item": "unicopia:corrupted_gem" }
+		],
+		"spell": "siphon"
+	}
+}

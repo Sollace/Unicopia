@@ -69,8 +69,11 @@ spell.fire.tagline=Fire II
 spell.vortex.name=Retention
 spell.vortex.tagline=Containment I
 
-spell.charge.name=Chanelling
+spell.charge.name=Channeling
 spell.charge.tagline=Energy I
+
+spell.siphon.name=Pilon
+spell.siphon.tagline=Energy II
 
 spell.ice.name=Frost
 spell.ice.tagline=Ice I
@@ -98,6 +101,9 @@ curse.necromancy.tagline=Resurrection I
 
 curse.inferno.name=Inferno
 curse.inferno.tagline=Fire III
+
+curse.siphon.name=Siphoning
+curse.siphon.tagline=Energy III
 
 item.spellbook.name=Spellbook
 item.bag_of_holding.name=Bag of Holding
