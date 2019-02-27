@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.spell;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.init.UParticles;
 import com.minelittlepony.unicopia.particle.ParticleConnection;
@@ -36,6 +39,11 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
     }
 
     @Override
+    public void renderOnPerson(IPlayer source) {
+        render(source);
+    }
+
+    @Override
     public void render(ICaster<?> source) {
         float radius = 4 + (source.getCurrentLevel() * 2);
 
@@ -50,10 +58,15 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
 
     @Override
     public boolean updateOnPerson(IPlayer source) {
-        if (update(source)) {
-            if (source.getEntity().getEntityWorld().getWorldTime() % 50 == 0) {
-                double radius = 4 + (source.getCurrentLevel() * 2);
-                if (!IPower.takeFromPlayer((EntityPlayer)source.getOwner(), radius/4)) {
+        int costMultiplier = applyEntities(source);
+        if (costMultiplier > 0) {
+            if (source.getOwner().ticksExisted % 20 == 0) {
+                double cost = 4 + (source.getCurrentLevel() * 2);
+
+                cost *= costMultiplier / 5F;
+                System.out.println("Taking " + cost);
+
+                if (!IPower.takeFromPlayer(source.getOwner(), cost)) {
                     setDead();
                 }
             }
@@ -68,6 +81,11 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
 
     @Override
     public boolean update(ICaster<?> source) {
+        applyEntities(source);
+        return true;
+    }
+
+    protected int applyEntities(ICaster<?> source) {
         double radius = getDrawDropOffRange(source);
 
         Entity owner = source.getOwner();
@@ -76,19 +94,21 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
 
         Vec3d origin = source.getOriginVector();
 
-        source.findAllEntitiesInRange(radius)
+        List<Entity> targets = source.findAllEntitiesInRange(radius)
             .filter(entity -> !(ownerIsValid && entity.equals(owner)))
-            .forEach(i -> {
-                try {
-                    double dist = i.getPositionVector().distanceTo(origin);
+            .collect(Collectors.toList());
 
-                    applyRadialEffect(source, i, dist, radius);
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            });
+        targets.forEach(i -> {
+            try {
+                double dist = i.getPositionVector().distanceTo(origin);
 
-        return true;
+                applyRadialEffect(source, i, dist, radius);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        });
+
+        return targets.size();
     }
 
     protected void applyRadialEffect(ICaster<?> source, Entity target, double distance, double radius) {

@@ -19,7 +19,7 @@ public interface IPower<T extends IData> extends IKeyBind {
 
     /**
      * Subtracts a given food amount from the player.
-     * Harms the player if there is not enough enough hunger available.
+     * Harms the player if there is not enough hunger available.
      */
     static boolean takeFromPlayer(EntityPlayer player, double foodSubtract) {
         if (!player.capabilities.isCreativeMode) {
