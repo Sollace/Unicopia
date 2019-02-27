@@ -122,8 +122,6 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
         isFlying = entity.capabilities.isFlying && !entity.capabilities.isCreativeMode;
 
         if (!entity.capabilities.isFlying || !entity.capabilities.isCreativeMode) {
-            gravity = -0.08F;
-
             if (gravity != Float.NaN) {
                 entity.motionY += 0.08;
                 entity.motionY -= gravity;
