@@ -33,7 +33,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
     public boolean isFlying = false;
 
-    private float gravity = Float.NaN;
+    private float gravity = 0;
 
     public PlayerGravityDelegate(IPlayer player) {
         this.player = player;
@@ -122,7 +122,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
         isFlying = entity.capabilities.isFlying && !entity.capabilities.isCreativeMode;
 
         if (!entity.capabilities.isFlying || !entity.capabilities.isCreativeMode) {
-            if (gravity != Float.NaN) {
+            if (gravity != 0) {
                 entity.motionY += 0.08;
                 entity.motionY -= gravity;
 
@@ -306,7 +306,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
         compound.setFloat("flightExperience", flightExperience);
         compound.setBoolean("isFlying", isFlying);
 
-        if (gravity != Float.NaN) {
+        if (gravity != 0) {
             compound.setFloat("gravity", gravity);
         }
     }
@@ -320,7 +320,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
         if (compound.hasKey("gravity")) {
             gravity = compound.getFloat("gravity");
         } else {
-            gravity = Float.NaN;
+            gravity = 0;
         }
     }
 

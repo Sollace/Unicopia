@@ -12,6 +12,6 @@ public interface IGravity {
     float getGravitationConstant();
 
     default void clearGraviationConstant() {
-        setGraviationConstant(Float.NaN);
+        setGraviationConstant(0);
     }
 }
