@@ -265,20 +265,18 @@ death.attack.food_poisoning.player=%1$s poisoned %1$s' to death
 
 advancements.adventure.bag_of_holding.title=Read the Manual
 advancements.adventure.bag_of_holding.description=Successfully die using the Bag of Holding
-
 advancements.adventure.bag_of_holding_2.title=Oops! I did it again
 advancements.adventure.bag_of_holding_2.description=Die by the Bag of Holding a second time
-
 advancements.adventure.bag_of_holding_3.title=Oh come on!
 advancements.adventure.bag_of_holding_3.description=-_-
-
 advancements.adventure.first_staff.title=Baby Steps
 advancements.adventure.first_staff.description=Craft your first staff
-
 advancements.adventure.just_a_stick.title=Old 'n Busted
 advancements.adventure.just_a_stick.description=It's a stick. What did you expect?
-
 advancements.adventure.unicopia_beginning.title=Just the beginning...
 advancements.adventure.unicopia_beginning.description=Found your first gem, but what can it do?
 
 effect.food_poisoning=Food Poisoning
+
+unicopia.subtitle.flap_wings=Wing Flaps
+unicopia.subtitle.wind_rush=Wind Gust
