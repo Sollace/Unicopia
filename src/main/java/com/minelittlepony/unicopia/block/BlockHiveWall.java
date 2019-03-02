@@ -5,6 +5,7 @@ import java.util.Random;
 
 import com.google.common.collect.Maps;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.init.UBlocks;
 import com.minelittlepony.unicopia.init.UMaterials;
 import com.minelittlepony.unicopia.init.USounds;
 import com.minelittlepony.unicopia.player.IPlayer;
@@ -103,7 +104,9 @@ public class BlockHiveWall extends BlockFalling {
             }
         } else {
 
-            if (!testForAxis(world, pos, axis)) {
+            if (pos.getX() % 3 == 0 && pos.getZ() % 4 == 0 && world.isAirBlock(pos.down()) && UBlocks.cuccoon.canPlaceBlockAt(world, pos.down())) {
+                world.setBlockState(pos.down(), UBlocks.cuccoon.getDefaultState());
+            } else if (!testForAxis(world, pos, axis)) {
                 world.setBlockState(pos, state.withProperty(STATE, State.GROWING));
             } else if (matchedNeighbours >= 27) {
                 world.setBlockState(pos, state.withProperty(STATE, State.DYING));

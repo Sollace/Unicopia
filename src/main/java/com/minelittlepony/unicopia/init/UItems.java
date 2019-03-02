@@ -96,6 +96,7 @@ public class UItems {
     public static final Item anvil = new UItemBlock(UBlocks.anvil, INTERACT_WITH_CLOUDS).setTranslationKey("cloud_anvil");
 
     public static final Item hive = new ItemBlock(UBlocks.hive).setRegistryName(Unicopia.MODID, "hive");
+    public static final Item cuccoon = new ItemBlock(UBlocks.cuccoon).setRegistryName(Unicopia.MODID, "cuccoon");
 
     public static final Item mist_door = new ItemDoor(UBlocks.mist_door)
             .setTranslationKey("mist_door")
@@ -232,7 +233,7 @@ public class UItems {
 
                 cloudsdale_tomato, tomato_seeds, tomato, moss,
 
-                hive,
+                hive, cuccoon,
 
                 apple_seeds, apple_leaves,
 
@@ -263,7 +264,7 @@ public class UItems {
                     cereal, sugar_cereal, sugar_block,
                     tomato_seeds,
 
-                    hive,
+                    hive, cuccoon,
 
                     apple_seeds, apple_leaves,
 

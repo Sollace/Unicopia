@@ -1,0 +1,30 @@
+{
+    "textures": {
+		"bulb": "unicopia:blocks/cuccoon_bulb",
+        "tail": "unicopia:blocks/cuccoon_tail",
+        "particle": "unicopia:blocks/cuccoon_bulb"
+    },
+    "elements": [
+	     {   "from": [ 4, 8, 4 ],
+	         "to": [ 12, 16, 12 ],
+	         "faces": {
+	    	 	 "up":    { "uv": [ 4, 4, 12, 12 ], "texture": "#tail", "cullface": "up" },
+	             "north": { "uv": [ 4, 8, 12, 16 ], "texture": "#tail", "cullface": "north" },
+	             "south": { "uv": [ 4, 8, 12, 16 ], "texture": "#tail", "cullface": "south" },
+	             "west":  { "uv": [ 4, 8, 12, 16 ], "texture": "#tail", "cullface": "west" },
+	             "east":  { "uv": [ 4, 8, 12, 16 ], "texture": "#tail", "cullface": "east" }
+	         }
+	     },
+	     {   "from": [ 2, 0, 2 ],
+	         "to": [ 14, 12, 14 ],
+	         "faces": {
+	    	 	 "up":    { "uv": [ 2, 2, 14, 14 ], "texture": "#bulb" },
+	             "down":  { "uv": [ 2, 2, 14, 14 ], "texture": "#bulb" },
+	             "north": { "uv": [ 2, 0, 14, 12 ], "texture": "#bulb" },
+	             "south": { "uv": [ 2, 0, 14, 12 ], "texture": "#bulb" },
+	             "west":  { "uv": [ 2, 0, 14, 12 ], "texture": "#bulb" },
+	             "east":  { "uv": [ 2, 0, 14, 12 ], "texture": "#bulb" }
+	         }
+	     }
+	 ]
+}

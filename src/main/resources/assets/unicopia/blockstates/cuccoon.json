@@ -1,0 +1,20 @@
+{
+    "variants": {
+        "age=0,shape=bulb": { "model": "unicopia:cuccoon/bulb_stage0" },
+        "age=1,shape=bulb": { "model": "unicopia:cuccoon/bulb_stage0" },
+        "age=2,shape=bulb": { "model": "unicopia:cuccoon/bulb_stage1" },
+        "age=3,shape=bulb": { "model": "unicopia:cuccoon/bulb_stage1" },
+        "age=4,shape=bulb": { "model": "unicopia:cuccoon/bulb_stage2" },
+        "age=5,shape=bulb": { "model": "unicopia:cuccoon/bulb_stage2" },
+        "age=6,shape=bulb": { "model": "unicopia:cuccoon/bulb_stage3" },
+        "age=7,shape=bulb": { "model": "unicopia:cuccoon/bulb_stage3" },
+        "age=0,shape=string": { "model": "unicopia:cuccoon/string_stage0" },
+        "age=1,shape=string": { "model": "unicopia:cuccoon/string_stage0" },
+        "age=2,shape=string": { "model": "unicopia:cuccoon/string_stage1" },
+        "age=3,shape=string": { "model": "unicopia:cuccoon/string_stage1" },
+        "age=4,shape=string": { "model": "unicopia:cuccoon/string_stage2" },
+        "age=5,shape=string": { "model": "unicopia:cuccoon/string_stage2" },
+        "age=6,shape=string": { "model": "unicopia:cuccoon/string_stage3" },
+        "age=7,shape=string": { "model": "unicopia:cuccoon/string_stage3" }
+    }
+}
