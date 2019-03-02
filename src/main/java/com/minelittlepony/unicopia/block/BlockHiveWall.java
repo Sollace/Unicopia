@@ -50,9 +50,9 @@ public class BlockHiveWall extends BlockFalling {
         setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
         setDefaultState(blockState.getBaseState().withProperty(STATE, State.GROWING).withProperty(AXIS, Axis.Y));
         setHardness(2);
-        setSoundType(SoundType.SLIME);
+        setSoundType(SoundType.SAND);
         setHarvestLevel("pickaxe", 1);
-        setResistance(2);
+        setResistance(10);
     }
 
     @Override
@@ -102,6 +102,7 @@ public class BlockHiveWall extends BlockFalling {
                 die(world, pos, rand);
             }
         } else {
+
             if (!testForAxis(world, pos, axis)) {
                 world.setBlockState(pos, state.withProperty(STATE, State.GROWING));
             } else if (matchedNeighbours >= 27) {
@@ -156,7 +157,6 @@ public class BlockHiveWall extends BlockFalling {
 
     @Override
     public void onEntityWalk(World world, BlockPos pos, Entity entity) {
-        this.setResistance(10);
         if (entity instanceof EntityPlayer) {
             IPlayer player = PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity);
 
@@ -177,7 +177,7 @@ public class BlockHiveWall extends BlockFalling {
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 
-        if (playerIn.getHeldItem(hand).isEmpty()) {
+        if (hand == EnumHand.MAIN_HAND && playerIn.getHeldItem(hand).isEmpty()) {
             IPlayer player = PlayerSpeciesList.instance().getPlayer(playerIn);
 
             if (player.getPlayerSpecies() == Race.CHANGELING) {
