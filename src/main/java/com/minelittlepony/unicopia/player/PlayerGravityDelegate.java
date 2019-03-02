@@ -172,17 +172,21 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
                 moveFlying(entity);
 
                 if (ticksInAir > 0 && ticksInAir % 12 == 0) {
-                    entity.playSound(USounds.WING_FLAP, 0.5F, 1);
+                    entity.playSound(getWingSound(), 0.5F, 1);
                 }
             } else {
                 if (ticksInAir != 0) {
-                    entity.playSound(USounds.WING_FLAP, 0.4F, 1);
+                    entity.playSound(getWingSound(), 0.4F, 1);
                 }
 
                 ticksInAir = 0;
                 flightExperience *= 0.9991342;
             }
         }
+    }
+
+    public SoundEvent getWingSound() {
+        return player.getPlayerSpecies() == Race.CHANGELING ? USounds.INSECT : USounds.WING_FLAP;
     }
 
     protected void moveFlying(EntityPlayer player) {

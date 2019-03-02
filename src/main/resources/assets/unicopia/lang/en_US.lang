@@ -14,6 +14,8 @@ tile.cloud_fence.name=Cloud Fence
 tile.cloud_banister.name=Banister
 tile.cloud_farmland.name=Tilled Clouds
 
+tile.hive.name=Hive Wall
+
 tile.apple_leaves.name=Apple Leaves
 tile.apple_sapling.name=Apple Seeds
 
@@ -280,3 +282,6 @@ effect.food_poisoning=Food Poisoning
 
 unicopia.subtitle.flap_wings=Wing Flaps
 unicopia.subtitle.wind_rush=Wind Gust
+unicopia.subtitle.insects=Insects Scurrying
+unicopia.subtitle.slime_advance=Squealch
+unicopia.subtitle.slime_retract=Sqonk

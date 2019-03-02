@@ -95,6 +95,8 @@ public class UItems {
 
     public static final Item anvil = new UItemBlock(UBlocks.anvil, INTERACT_WITH_CLOUDS).setTranslationKey("cloud_anvil");
 
+    public static final Item hive = new ItemBlock(UBlocks.hive).setRegistryName(Unicopia.MODID, "hive");
+
     public static final Item mist_door = new ItemDoor(UBlocks.mist_door)
             .setTranslationKey("mist_door")
             .setRegistryName(Unicopia.MODID, "mist_door");
@@ -230,6 +232,8 @@ public class UItems {
 
                 cloudsdale_tomato, tomato_seeds, tomato, moss,
 
+                hive,
+
                 apple_seeds, apple_leaves,
 
                 daffodil_daisy_sandwich, hay_burger, hay_fries, salad, wheat_worms,
@@ -258,6 +262,8 @@ public class UItems {
                     alfalfa_seeds, alfalfa_leaves,
                     cereal, sugar_cereal, sugar_block,
                     tomato_seeds,
+
+                    hive,
 
                     apple_seeds, apple_leaves,
 

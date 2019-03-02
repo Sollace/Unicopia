@@ -16,5 +16,28 @@
        "unicopia:wind/altitude_wind5",
        "unicopia:wind/altitude_wind7"
      ]
+  },
+  "insect": {
+  	"category": "blocks",
+  	"subtitle": "unicopia.subtitle.insects",
+  	"sounds": [
+  		"unicopia:insect/insect_1",
+  		"unicopia:insect/insect_2",
+  		"unicopia:insect/insect_3"
+  	]
+  },
+  "slime_advance": {
+  	"category": "blocks",
+  	"subtitle": "unicopia.subtitle.slime_advance",
+  	"sounds": [
+  		"unicopia:slime/advance"
+  	]
+  },
+  "slime_retract": {
+  	"category": "blocks",
+  	"subtitle": "unicopia.subtitle.slime_retract",
+  	"sounds": [
+  		"unicopia:slime/retract"
+  	]
   }
 }

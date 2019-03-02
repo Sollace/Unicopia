@@ -2,7 +2,7 @@ package com.minelittlepony.util;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
@@ -22,9 +22,9 @@ public class PosHelper {
         }
     }
 
-    public static boolean some(BlockPos origin, Function<BlockPos, Boolean> consumer, EnumFacing... directions) {
+    public static boolean some(BlockPos origin, Predicate<BlockPos> consumer, EnumFacing... directions) {
         for (EnumFacing facing : directions) {
-            if (consumer.apply(origin.offset(facing))) {
+            if (consumer.test(origin.offset(facing))) {
                 return true;
             }
         }
@@ -33,7 +33,7 @@ public class PosHelper {
 
     public static Iterators<MutableBlockPos> adjacentNeighbours(BlockPos origin) {
         MutableBlockPos pos = new MutableBlockPos(origin);
-        Iterator<EnumFacing> directions = Lists.newArrayList(EnumFacing.values()).iterator();
+        Iterator<EnumFacing> directions = Lists.newArrayList(EnumFacing.VALUES).iterator();
 
         return Iterators.iterate(() -> {
             if (directions.hasNext()) {

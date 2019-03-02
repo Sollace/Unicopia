@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.BlockAlfalfa;
 import com.minelittlepony.unicopia.block.BlockFruitLeaves;
 import com.minelittlepony.unicopia.block.BlockGlowingGem;
+import com.minelittlepony.unicopia.block.BlockHiveWall;
 import com.minelittlepony.unicopia.block.BlockCloudAnvil;
 import com.minelittlepony.unicopia.block.BlockCloudBanister;
 import com.minelittlepony.unicopia.block.BlockCloudSlab;
@@ -69,6 +70,8 @@ public class UBlocks {
 
     public static final BlockCloudFarm cloud_farmland = new BlockCloudFarm(Unicopia.MODID, "cloud_farmland");
 
+    public static final BlockHiveWall hive = new BlockHiveWall(Unicopia.MODID, "hive");
+
     public static final Block sugar_block = new BlockSugar(Unicopia.MODID, "sugar_block");
     public static final UPot flower_pot = new UPot(Unicopia.MODID, "flower_pot");
 
@@ -88,6 +91,7 @@ public class UBlocks {
                              packed_cloud_slab, packed_cloud_slab.doubleSlab,
                              cloud_fence, cloud_banister,
                              mist_door, library_door, bakery_door,
+                             hive,
                              anvil, cloud_farmland,
                              sugar_block, flower_pot,
                              alfalfa,
