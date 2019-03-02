@@ -111,7 +111,7 @@ public class BlockCloudBanister extends BlockCloudFence {
 
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        state = getActualState(state, source, pos);
+        state = state.getActualState(source, pos);
         return BOUNDING_BOXES[getBoundingBoxIdx(state)];
     }
 
