@@ -22,10 +22,15 @@ class PlayerView extends MotionCompositor implements IView {
         }
 
         if (player.getGravity().getGravitationConstant() < 0) {
+            roll = -roll;
             roll += 180;
         }
 
-        return (float)player.getInterpolator().interpolate("roll", (float)roll, 100);
+        if (player.getEntity().ticksExisted > 10) {
+            roll = player.getInterpolator().interpolate("roll", (float)roll, 250);
+        }
+
+        return (float)roll;
     }
 
     @Override

@@ -121,25 +121,33 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
         isFlying = entity.capabilities.isFlying && !entity.capabilities.isCreativeMode;
 
-        if (!entity.capabilities.isFlying || !entity.capabilities.isCreativeMode) {
-            if (gravity != 0) {
+        if (gravity != 0) {
+            if (!entity.capabilities.isFlying) {
                 entity.motionY += 0.08;
                 entity.motionY -= gravity;
+            }
 
-                entity.onGround = !entity.world.isAirBlock(new BlockPos(entity.posX, entity.posY + entity.height + 0.5F, entity.posZ));
+            entity.onGround = !entity.world.isAirBlock(new BlockPos(entity.posX, entity.posY + entity.height + 0.5F, entity.posZ));
+
+            if (entity.onGround) {
+                entity.capabilities.isFlying = isFlying = false;
             }
         }
 
         float bodyHeight = getTargetBodyHeight(player);
-
-        MixinEntity.setSize(entity, entity.width, player.getInterpolator().interpolate("standingHeight", bodyHeight, 10));
         float eyeHeight = getTargetEyeHeight(player);
 
         if (gravity < 0) {
             eyeHeight = bodyHeight - eyeHeight;
         }
 
-        entity.eyeHeight = player.getInterpolator().interpolate("eyeHeight", eyeHeight, 10);
+        if (entity.ticksExisted > 10) {
+            bodyHeight = player.getInterpolator().interpolate("standingHeight", bodyHeight, 10);
+            eyeHeight = player.getInterpolator().interpolate("eyeHeight", eyeHeight, 10);
+        }
+
+        MixinEntity.setSize(entity, entity.width, bodyHeight);
+        entity.eyeHeight = eyeHeight;
 
         if (gravity < 0) {
             if (entity.isSneaking()) {
@@ -192,13 +200,15 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
     protected void moveFlying(EntityPlayer player) {
 
         float forward = 0.00015F * flightExperience * player.moveForward;
+        int factor = gravity < 0 ? -1 : 1;
+        boolean sneak = !player.isSneaking();
 
         // vertical drop due to gravity
-        if (!player.isSneaking()) {
-            player.motionY -= 0.05F - getHorizontalMotion(player) / 100;
+        if (sneak) {
+            player.motionY -= (0.05F - getHorizontalMotion(player) / 100) * factor;
         } else {
             forward += 0.005F;
-            player.motionY -= 0.0005F;
+            player.motionY -= 0.0005F * factor;
         }
 
         player.motionX += - forward * MathHelper.sin(player.rotationYaw * 0.017453292F);

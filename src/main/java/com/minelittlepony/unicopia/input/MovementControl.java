@@ -52,7 +52,7 @@ public class MovementControl extends MovementInputFromOptions {
 
             moveStrafe = -moveStrafe;
 
-            if (player.getOwner().capabilities.isCreativeMode && player.getOwner().capabilities.isFlying) {
+            if (player.getOwner().capabilities.isFlying) {
                 tmp = jump;
                 jump = sneak;
                 sneak = tmp;
