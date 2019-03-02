@@ -18,10 +18,12 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -108,7 +110,7 @@ public class BlockGrowingCuccoon extends Block {
     @Override
     public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
         if (!checkSupport(world, pos)) {
-            world.destroyBlock(pos, true);
+            breakConnected(world, pos);
             return;
         }
 
@@ -143,6 +145,15 @@ public class BlockGrowingCuccoon extends Block {
         world.scheduleUpdate(pos, this, tickRate(world));
     }
 
+    protected void breakConnected(World world, BlockPos pos) {
+        world.destroyBlock(pos, true);
+
+        pos = pos.down();
+        if (world.getBlockState(pos).getBlock() == this) {
+            breakConnected(world, pos);
+        }
+    }
+
     protected int getMaximumAge(World world, BlockPos pos, IBlockState state, boolean spaceBelow) {
         if (state.getValue(SHAPE) == Shape.STRING) {
             IBlockState higher = world.getBlockState(pos.up());
@@ -151,7 +162,9 @@ public class BlockGrowingCuccoon extends Block {
                 return 7;
             }
 
-            return ((BlockGrowingCuccoon)higher.getBlock()).getMaximumAge(world, pos.up(), higher, false) - 1;
+            return Math.min(higher.getValue(AGE),
+                    ((BlockGrowingCuccoon)higher.getBlock()).getMaximumAge(world, pos.up(), higher, false) - 1
+                );
         }
 
         if (!spaceBelow) {
@@ -162,15 +175,13 @@ public class BlockGrowingCuccoon extends Block {
     }
 
     @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return Items.SLIME_BALL;
+    public int quantityDropped(IBlockState state, int fortune, Random random) {
+        return random.nextInt(3) == 0 ? state.getValue(AGE) : 0;
     }
 
     @Override
-    public void dropBlockAsItemWithChance(World world, BlockPos pos, IBlockState state, float chance, int fortune) {
-        if (state.getValue(AGE) == 7) {
-            super.dropBlockAsItemWithChance(world, pos, state, chance, fortune);
-        }
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+        return Items.SLIME_BALL;
     }
 
     @Override
@@ -181,7 +192,7 @@ public class BlockGrowingCuccoon extends Block {
     @Override
     public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor) {
         if (world instanceof World && !checkSupport(world, pos)) {
-            ((World)world).destroyBlock(pos, true);
+            breakConnected((World)world, pos);
         }
     }
 
@@ -264,6 +275,28 @@ public class BlockGrowingCuccoon extends Block {
     @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, AGE, SHAPE);
+    }
+
+    @Override
+    public boolean isLadder(IBlockState state, IBlockAccess world, BlockPos pos, EntityLivingBase entity) {
+        return true;
+    }
+
+    public void randomDisplayTick(IBlockState state, World world, BlockPos pos, Random rand) {
+        if (state.getValue(SHAPE) == Shape.BULB) {
+            if (rand.nextInt(8) == 0) {
+
+                AxisAlignedBB bounds = BULBS[state.getValue(AGE) / 2]
+                        .offset(pos)
+                        .offset(state.getOffset(world, pos));
+
+                double x = bounds.minX + (bounds.maxX - bounds.minX) * rand.nextFloat();
+                double y = bounds.minY;
+                double z = bounds.minZ + (bounds.maxZ - bounds.minZ) * rand.nextFloat();
+
+                world.spawnParticle(EnumParticleTypes.DRIP_LAVA, x, y, z, 0, 0, 0);
+            }
+        }
     }
 
     static enum Shape implements IStringSerializable {
