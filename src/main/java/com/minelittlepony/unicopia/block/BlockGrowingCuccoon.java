@@ -5,6 +5,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.init.UBlocks;
 import com.minelittlepony.unicopia.init.UMaterials;
 import com.minelittlepony.unicopia.init.USounds;
@@ -19,9 +20,14 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.IStringSerializable;
@@ -33,6 +39,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockGrowingCuccoon extends Block {
+
+    public static final DamageSource DAMAGE_SOURCE = new DamageSource("acid");
 
     public static final PropertyInteger AGE = PropertyInteger.create("age", 0, 7);
     public static final PropertyEnum<Shape> SHAPE = PropertyEnum.create("shape", Shape.class);
@@ -205,6 +213,40 @@ public class BlockGrowingCuccoon extends Block {
     @Override
     public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
         world.scheduleUpdate(pos, this, 10);
+    }
+
+    @Override
+    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
+        if (entity instanceof EntityLivingBase && !entity.isDead) {
+            EntityLivingBase living = (EntityLivingBase)entity;
+
+            if (!Predicates.BUGGY.test(living) && living.getHealth() > 0) {
+                living.attackEntityFrom(DAMAGE_SOURCE, 1);
+                living.setInWeb();
+
+                if (!world.isRemote) {
+                    if (living.getHealth() <= 0) {
+                        living.dropItem(Items.BONE, 3);
+
+                        if (living instanceof EntityPlayer) {
+                            ItemStack skull = new ItemStack(Items.SKULL, 1);
+
+                            if (world.rand.nextInt(13000) == 0) {
+                                EntityPlayer player = (EntityPlayer)living;
+
+                                skull.setTagCompound(new NBTTagCompound());
+                                skull.getTagCompound().setTag("SkullOwner", NBTUtil.writeGameProfile(new NBTTagCompound(), player.getGameProfile()));
+                                skull.setItemDamage(3);
+                            } else {
+                                living.dropItem(Items.SKULL, 1);
+                            }
+
+                            living.entityDropItem(skull, 0);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public boolean checkSupport(IBlockAccess world, BlockPos pos) {

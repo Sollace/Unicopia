@@ -31,6 +31,11 @@ public final class Predicates {
               );
     };
 
+    public static final Predicate<Entity> BUGGY = entity -> {
+        return entity instanceof EntityPlayer
+                && PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity).getPlayerSpecies() == Race.CHANGELING;
+    };
+
     public static EntityPlayer getPlayerFromEntity(Entity entity) {
         if (entity instanceof EntityPlayer) {
             return (EntityPlayer) entity;
