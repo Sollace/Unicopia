@@ -63,7 +63,6 @@ public class SpellDarkness extends AbstractAttachableSpell {
             EntitySpell living = (EntitySpell)caster.getEntity();
 
             living.tasks.addTask(1, new EntityAIAvoidEntity<>(living, EntityPlayer.class, 3, 4, 4));
-            living.height = 1.8F;
 
             living.setPosition(living.posX, living.posY, living.posZ);
         }

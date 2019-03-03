@@ -201,6 +201,7 @@ public class EntitySpell extends EntityCreature implements IMagicals, ICaster<En
             }
 
             if (getEffect().allowAI()) {
+                height = 1.5F;
                 super.onUpdate();
             }
         }
