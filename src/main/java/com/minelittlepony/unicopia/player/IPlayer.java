@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.enchanting.IPageOwner;
 import com.minelittlepony.unicopia.network.ITransmittable;
 import com.minelittlepony.unicopia.spell.ICaster;
+import com.minelittlepony.unicopia.spell.IHeldEffect;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
@@ -120,6 +121,15 @@ public interface IPlayer extends ICaster<EntityPlayer>, IRaceContainer<EntityPla
      * Called when this player falls.
      */
     void onFall(float distance, float damageMultiplier);
+
+    /**
+     * Gets the held effect for the given item.
+     * Updates it if the current held effect doesn't match or is empty.
+     *
+     * Returns null if the passed item has no held effect.
+     */
+    @Nullable
+    IHeldEffect getHeldEffect(ItemStack stack);
 
     /**
      * Event triggered when this player is hit by a projectile.

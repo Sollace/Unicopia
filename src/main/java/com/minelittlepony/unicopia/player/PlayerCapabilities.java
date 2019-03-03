@@ -12,9 +12,11 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.enchanting.PageState;
 import com.minelittlepony.unicopia.init.UEffects;
 import com.minelittlepony.unicopia.init.UItems;
+import com.minelittlepony.unicopia.item.ICastable;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.spell.IAttachedEffect;
+import com.minelittlepony.unicopia.spell.IHeldEffect;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.unicopia.spell.SpellDisguise;
@@ -34,6 +36,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketSetPassengers;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.StatList;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -52,6 +55,8 @@ class PlayerCapabilities implements IPlayer {
 
     private static final DataParameter<NBTTagCompound> EFFECT = EntityDataManager
             .createKey(EntityPlayer.class, DataSerializers.COMPOUND_TAG);
+    private static final DataParameter<NBTTagCompound> HELD_EFFECT = EntityDataManager
+            .createKey(EntityPlayer.class, DataSerializers.COMPOUND_TAG);
 
     private final Map<ResourceLocation, PageState> pageStates = Maps.newHashMap();
 
@@ -68,6 +73,7 @@ class PlayerCapabilities implements IPlayer {
     private final PlayerInventory inventory = new PlayerInventory(this);
 
     private final EffectSync<EntityPlayer> effectDelegate = new EffectSync<>(this, EFFECT);
+    private final EffectSync<EntityPlayer> heldEffectDelegate = new EffectSync<>(this, HELD_EFFECT);
 
     private final IInterpolator interpolator = new BasicEasingInterpolator();
 
@@ -86,6 +92,7 @@ class PlayerCapabilities implements IPlayer {
         player.getDataManager().register(EXERTION, 0F);
         player.getDataManager().register(ENERGY, 0F);
         player.getDataManager().register(EFFECT, new NBTTagCompound());
+        player.getDataManager().register(HELD_EFFECT, new NBTTagCompound());
     }
 
     @Override
@@ -140,6 +147,26 @@ class PlayerCapabilities implements IPlayer {
     @Override
     public void setInvisible(boolean invisible) {
         this.invisible = invisible;
+    }
+
+    @Nullable
+    @Override
+    public IHeldEffect getHeldEffect(ItemStack stack) {
+
+        if (!getPlayerSpecies().canCast()) {
+            heldEffectDelegate.set(null);
+
+            return null;
+        }
+
+        IHeldEffect heldEffect = heldEffectDelegate.get(IHeldEffect.class, true);
+
+        if (heldEffect == null || !heldEffect.getName().equals(SpellRegistry.getKeyFromStack(stack))) {
+            heldEffect = SpellRegistry.instance().getHeldFrom(stack);
+            heldEffectDelegate.set(heldEffect);
+        }
+
+        return heldEffect;
     }
 
     @Override
@@ -222,6 +249,16 @@ class PlayerCapabilities implements IPlayer {
                     setEffect(null);
                 }
             }
+        }
+
+        ItemStack stack = getOwner().getHeldItem(EnumHand.MAIN_HAND);
+
+        IHeldEffect effect = getHeldEffect(stack);
+
+        if (effect != null) {
+            SpellAffinity affinity = stack.getItem() instanceof ICastable ? ((ICastable)stack.getItem()).getAffinity(stack) : SpellAffinity.NEUTRAL;
+
+            effect.updateInHand(this, affinity);
         }
 
         addExertion(-1);
