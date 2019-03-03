@@ -46,7 +46,7 @@ public class SpellRegistry {
         registerSpell(SpellDarkness::new);
         registerSpell(SpellFlame::new);
         registerSpell(SpellSiphon::new);
-        registerSpell(GenericSpell.factory("light", 0xF7FACB, SpellAffinity.GOOD));
+        registerSpell(SpellLight::new);
     }
 
     @Nullable
