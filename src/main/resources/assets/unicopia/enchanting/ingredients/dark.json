@@ -4,6 +4,8 @@
 		{ "item": "minecraft:brick" },
 		{ "item": "minecraft:red_nether_brick" },
 		{ "item": "minecraft:coal_block" },
-		{ "item": "minecraft:coal", "data": 0 }
+		{ "item": "minecraft:coal", "data": 0 },
+		{ "item": "unicopia:chitin_shell" },
+		{ "item": "unicopia:cuccoon" }
 	]
 }

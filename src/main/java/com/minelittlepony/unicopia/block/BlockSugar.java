@@ -24,7 +24,6 @@ public class BlockSugar extends BlockFalling {
 
     @Override
     public int quantityDropped(Random random) {
-        setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
         return 9;
     }
 

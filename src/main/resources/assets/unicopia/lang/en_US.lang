@@ -15,7 +15,9 @@ tile.cloud_banister.name=Banister
 tile.cloud_farmland.name=Tilled Clouds
 
 tile.hive.name=Hive Wall
-tile.cuccoon.name=Changeling Cuccoon
+tile.chitin_block.name=Chitin Block
+tile.chitin_shell.name=Chitin Shell
+tile.cuccoon.name=Cocoon
 
 tile.apple_leaves.name=Apple Leaves
 tile.apple_sapling.name=Apple Seeds
