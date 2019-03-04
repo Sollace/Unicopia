@@ -1,0 +1,8 @@
+{
+    "parent": "block/cube_bottom_top",
+    "textures": {
+        "bottom": "unicopia:blocks/chitin_block_covered",
+        "top": "unicopia:blocks/chitin_block_top",
+        "side": "unicopia:blocks/chitin_block_snow_covered"
+    }
+}
