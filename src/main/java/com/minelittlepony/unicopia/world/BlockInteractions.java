@@ -79,6 +79,10 @@ public class BlockInteractions {
             if (world.rand.nextInt(5000) == 0) {
                 drops.add(SpellRegistry.instance().enchantStack(new ItemStack(UItems.spell), "awkward"));
             }
+        } else if (block == Blocks.DIRT || block == Blocks.CLAY || block == Blocks.GRASS_PATH || block == Blocks.GRASS || block == UBlocks.hive) {
+            if (world.rand.nextInt(25 / fortuneFactor) == 0) {
+                drops.add(new ItemStack(UItems.wheat_worms, 1 + fortune));
+            }
         } else if (block instanceof BlockTallGrass) {
             if (world.rand.nextInt(25 / fortuneFactor) == 0) {
                 for (int i = 0; i < 1 + fortune; i++) {
