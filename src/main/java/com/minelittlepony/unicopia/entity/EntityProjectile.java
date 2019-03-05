@@ -35,7 +35,7 @@ public class EntityProjectile extends EntitySnowball implements IMagicals, ICast
             .createKey(EntityProjectile.class, DataSerializers.BOOLEAN);
 
     private static final DataParameter<NBTTagCompound> EFFECT = EntityDataManager
-            .createKey(EntitySpell.class, DataSerializers.COMPOUND_TAG);
+            .createKey(EntityProjectile.class, DataSerializers.COMPOUND_TAG);
 
     private final EffectSync<EntityLivingBase> effectDelegate = new EffectSync<>(this, EFFECT);
 
