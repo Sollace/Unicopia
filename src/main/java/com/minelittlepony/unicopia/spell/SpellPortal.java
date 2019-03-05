@@ -4,7 +4,6 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.entity.EntitySpell;
@@ -127,7 +126,7 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseAc
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, @Nonnull Entity hitEntity) {
+    public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, @Nullable Entity hitEntity) {
         return SpellCastResult.NONE;
     }
 

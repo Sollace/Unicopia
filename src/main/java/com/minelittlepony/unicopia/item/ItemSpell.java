@@ -154,13 +154,7 @@ public class ItemSpell extends Item implements ICastable {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
 
-        Entity target = VecHelper.getLookedAtEntity(player, 5);
-
         ItemStack stack = player.getHeldItem(hand);
-
-        if (target == null) {
-            return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
-        }
 
         if (!SpellRegistry.stackHasEnchantment(stack)) {
             return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
@@ -169,7 +163,7 @@ public class ItemSpell extends Item implements ICastable {
         IUseAction effect = SpellRegistry.instance().getUseActionFrom(stack);
 
         if (effect != null) {
-            SpellCastResult result = effect.onUse(stack, getAffinity(stack), player, world, target);
+            SpellCastResult result = effect.onUse(stack, getAffinity(stack), player, world, VecHelper.getLookedAtEntity(player, 5));
 
             if (result != SpellCastResult.NONE) {
                 if (result == SpellCastResult.PLACE && !player.capabilities.isCreativeMode) {

@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.spell;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.entity.IMagicals;
@@ -114,7 +114,11 @@ public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseActi
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, @Nonnull Entity hitEntity) {
+    public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, @Nullable Entity hitEntity) {
+        if (hitEntity == null) {
+            return SpellCastResult.NONE;
+        }
+
         return applyEntitySingle(player, world, hitEntity) ? SpellCastResult.DEFAULT : SpellCastResult.NONE;
     }
 

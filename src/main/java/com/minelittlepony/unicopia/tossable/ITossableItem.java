@@ -1,43 +1,27 @@
-package com.minelittlepony.unicopia.item;
+package com.minelittlepony.unicopia.tossable;
 
 import com.minelittlepony.unicopia.entity.EntityProjectile;
 
 import net.minecraft.block.BlockDispenser;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
-import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public interface ITossable {
-    IBehaviorDispenseItem dispenserBehavior = new ITossable.DispenserBehaviour();
+public interface ITossableItem extends ITossable<ItemStack> {
+    IBehaviorDispenseItem dispenserBehavior = new DispenserBehaviour();
 
     boolean canBeThrown(ItemStack stack);
-
-    void onImpact(World world, BlockPos pos, IBlockState state);
 
     default Item setDispenseable() {
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject((Item)(Object)this, dispenserBehavior);
 
         return (Item)(Object)this;
-    }
-
-    default SoundEvent getThrowSound(ItemStack stack) {
-        return SoundEvents.ENTITY_SNOWBALL_THROW;
-    }
-
-    default int getThrowDamage(ItemStack stack) {
-        return 0;
     }
 
     default void toss(World world, ItemStack itemstack, EntityPlayer player) {
@@ -73,33 +57,5 @@ public interface ITossable {
         stack.shrink(1);
 
         return stack;
-    }
-
-    class DispenserBehaviour extends BehaviorDefaultDispenseItem {
-        @Override
-        public ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
-            ITossable tossable = (ITossable)stack.getItem();
-
-            if (tossable.canBeThrown(stack)) {
-                return shootStack(source, stack);
-            }
-
-            return super.dispenseStack(source, stack);
-        }
-
-        public ItemStack shootStack(IBlockSource source, ItemStack stack) {
-            return ((ITossable)stack.getItem()).toss(source.getWorld(),
-                    BlockDispenser.getDispensePosition(source),
-                    (EnumFacing)source.getBlockState().getValue(BlockDispenser.FACING),
-                    stack, getProjectileInaccuracy(), getProjectileVelocity());
-        }
-
-        protected float getProjectileInaccuracy() {
-            return 6.0F;
-        }
-
-        protected float getProjectileVelocity() {
-            return 1.1F;
-        }
     }
 }

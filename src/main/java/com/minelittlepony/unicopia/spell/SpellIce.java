@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.spell;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.init.UMaterials;
 import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.PosHelper;
@@ -96,7 +98,7 @@ public class SpellIce extends AbstractSpell.RangedAreaSpell implements IUseActio
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, Entity hitEntity) {
+    public SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, @Nullable Entity hitEntity) {
         if (hitEntity != null && applyEntitySingle(player, hitEntity)) {
             return SpellCastResult.DEFAULT;
         }

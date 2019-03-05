@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.spell;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -43,5 +43,5 @@ public interface IUseAction {
      *
      * @return    ActionResult for the type of action to perform
      */
-    SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, @Nonnull Entity hitEntity);
+    SpellCastResult onUse(ItemStack stack, SpellAffinity affinity, EntityPlayer player, World world, @Nullable Entity hitEntity);
 }

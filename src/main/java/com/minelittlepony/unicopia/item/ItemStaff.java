@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.tossable.ITossableItem;
 import com.minelittlepony.util.lang.ClientLocale;
 
 import net.minecraft.block.Block;
@@ -32,7 +33,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class ItemStaff extends ItemSword implements ITossable {
+public class ItemStaff extends ItemSword implements ITossableItem {
 
     protected static final UUID ATTACK_REACH_MODIFIER = UUID.fromString("FA235E1C-4280-A865-B01B-CBAE9985ACA3");
 

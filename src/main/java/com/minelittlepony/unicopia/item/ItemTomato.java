@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.forgebullshit.IMultiItem;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.tossable.ITossableItem;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -17,7 +19,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ItemTomato extends ItemFood implements ITossable, IMultiItem {
+public class ItemTomato extends ItemFood implements ITossableItem, IMultiItem {
 
     private final String name;
 
