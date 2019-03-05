@@ -97,6 +97,10 @@ public class EntityProjectile extends EntitySnowball implements IMagicals, ICast
     @Override
     public void setEffect(IMagicEffect effect) {
         effectDelegate.set(effect);
+
+        if (effect != null) {
+            effect.onPlaced(this);
+        }
     }
 
     @Override

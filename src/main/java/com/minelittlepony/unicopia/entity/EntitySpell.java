@@ -242,7 +242,6 @@ public class EntitySpell extends EntityCreature implements IMagicals, ICaster<En
     @Override
     protected void updateFallState(double y, boolean onGround, IBlockState state, BlockPos pos) {
         this.onGround = true;
-        //super.updateFallState(y, onGround = this.onGround = true, state, pos);
     }
 
     @Override
