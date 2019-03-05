@@ -54,9 +54,23 @@ repositories {
   flatDir {
     dir 'lib'
   }
+  maven {
+    // location of the maven that hosts JEI files
+    name = "Progwml6 maven"
+    url = "http://dvs1.progwml6.com/files/maven"
+  }
+  maven {
+    // location of a maven mirror for JEI files, as a fallback
+    name = "ModMaven"
+    url = "modmaven.k-4u.nl"
+  }
 }
 dependencies {
   deobfCompile('com.minelittlepony:jumpingcastle:1.12.2.1.0.0:universal')
+  // compile against the JEI API but do not include it at runtime
+  deobfProvided "mezz.jei:jei_${project.mcVersion}:${project.jeiVersion}:api"
+  // at runtime, use the full JEI jar
+  runtime "mezz.jei:jei_${project.mcVersion}:${project.jeiVersion}"
 }
 
 processResources {

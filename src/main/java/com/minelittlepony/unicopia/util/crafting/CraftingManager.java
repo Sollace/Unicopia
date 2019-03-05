@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.util.crafting;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -40,8 +41,6 @@ public class CraftingManager {
     public CraftingManager(@Nonnull ResourceLocation id) {
         crafting_id = id;
         assets = new AssetWalker(id, this::handleJson);
-
-        load();
     }
 
     protected void handleJson(ResourceLocation id, JsonObject json) throws JsonParseException {
@@ -87,13 +86,20 @@ public class CraftingManager {
     public IRecipe findMatchingRecipe(InventoryCrafting craftMatrix, World worldIn) {
         load();
 
-        for (IRecipe irecipe : REGISTRY.values()) {
+        for (IRecipe irecipe : getRecipes()) {
             if (irecipe.matches(craftMatrix, worldIn)) {
                 return irecipe;
             }
         }
 
         return null;
+    }
+
+    public Collection<IRecipe> getRecipes() {
+        if (REGISTRY.isEmpty()) {
+            load();
+        }
+        return REGISTRY.values();
     }
 
     public NonNullList<ItemStack> getRemainingItems(InventoryCrafting craftMatrix, World worldIn) {

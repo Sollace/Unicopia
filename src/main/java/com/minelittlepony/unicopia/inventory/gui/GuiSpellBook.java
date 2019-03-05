@@ -27,7 +27,7 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
 
     private static IPage currentIPage;
 
-    private static final ResourceLocation spellBookGuiTextures = new ResourceLocation("unicopia", "textures/gui/container/book.png");
+    public static final ResourceLocation spellBookGuiTextures = new ResourceLocation("unicopia", "textures/gui/container/book.png");
 
     private IPlayer playerExtension;
 

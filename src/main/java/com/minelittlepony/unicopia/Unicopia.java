@@ -57,7 +57,16 @@ public class Unicopia implements IGuiHandler {
 
     private static IChannel channel;
 
-    private static CraftingManager craftingManager;
+    private static CraftingManager craftingManager = new CraftingManager(MODID, "enchanting") {
+        @Override
+        protected void registerRecipeTypes(Map<String, Function<JsonObject, IRecipe>> types) {
+            super.registerRecipeTypes(types);
+
+            types.put("unicopia:crafting_spell", SpellRecipe::deserialize);
+
+            AffineIngredients.instance().load();
+        }
+    };
 
     public static CraftingManager getCraftingManager() {
         return craftingManager;
@@ -106,16 +115,7 @@ public class Unicopia implements IGuiHandler {
 
     @EventHandler
     public void posInit(FMLPostInitializationEvent event) {
-        craftingManager = new CraftingManager(MODID, "enchanting") {
-            @Override
-            protected void registerRecipeTypes(Map<String, Function<JsonObject, IRecipe>> types) {
-                super.registerRecipeTypes(types);
-
-                types.put("unicopia:crafting_spell", SpellRecipe::deserialize);
-
-                AffineIngredients.instance().load();
-            }
-        };
+        craftingManager.load();
 
         Pages.instance().load();
 
