@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.init.UItems;
 import com.minelittlepony.unicopia.tossable.ITossable;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
@@ -21,7 +22,9 @@ public interface ITossedEffect extends IMagicEffect, ITossable<ICaster<?>> {
         if (!world.isRemote) {
             EntityProjectile projectile = new EntityProjectile(world, caster.getOwner());
 
-            projectile.setItem(new ItemStack(UItems.spell));
+            Item item = this.getAffinity() == SpellAffinity.BAD ? UItems.curse : UItems.spell;
+
+            projectile.setItem(SpellRegistry.instance().enchantStack(new ItemStack(item), getName()));
             projectile.setThrowDamage(getThrowDamage(caster));
             projectile.setOwner(caster.getOwner());
             projectile.setEffect(this);
