@@ -116,7 +116,7 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
 
         if (ProjectileUtil.isProjectile(target)) {
             if (!ProjectileUtil.isProjectileThrownBy(target, source.getOwner())) {
-                if (distance < radius/2) {
+                if (distance < 1) {
                     target.playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 0.1F, 1);
                     target.setDead();
                 } else {
