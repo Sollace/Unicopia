@@ -8,6 +8,7 @@ import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 
 public class EntityType {
 
+    private int projectilNetworkId = 0;
     private final String modid;
 
     public EntityType(String modid) {
@@ -31,7 +32,7 @@ public class EntityType {
     public EntityEntry projectile(Class<? extends Entity> cls, String name, int range, int frequency, boolean includeVelocity) {
         return EntityEntryBuilder.create().entity(cls)
             .name(name)
-            .id(new ResourceLocation(modid, name), 0).tracker(range, frequency, includeVelocity)
+            .id(new ResourceLocation(modid, name), projectilNetworkId++).tracker(range, frequency, includeVelocity)
             .build();
     }
 
