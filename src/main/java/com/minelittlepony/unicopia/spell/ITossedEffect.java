@@ -28,6 +28,7 @@ public interface ITossedEffect extends IMagicEffect, ITossable<ICaster<?>> {
             projectile.setThrowDamage(getThrowDamage(caster));
             projectile.setOwner(caster.getOwner());
             projectile.setEffect(this);
+            projectile.setHydrophobic();
             projectile.shoot(entity, entity.rotationPitch, entity.rotationYaw, 0, 1.5F, 1);
 
             world.spawnEntity(projectile);

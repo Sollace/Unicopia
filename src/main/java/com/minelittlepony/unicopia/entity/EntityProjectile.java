@@ -31,6 +31,9 @@ public class EntityProjectile extends EntitySnowball implements IMagicals, ICast
     private static final DataParameter<Float> DAMAGE = EntityDataManager
             .createKey(EntityProjectile.class, DataSerializers.FLOAT);
 
+    private static final DataParameter<Boolean> HYDROPHOBIC = EntityDataManager
+            .createKey(EntityProjectile.class, DataSerializers.BOOLEAN);
+
     private static final DataParameter<NBTTagCompound> EFFECT = EntityDataManager
             .createKey(EntitySpell.class, DataSerializers.COMPOUND_TAG);
 
@@ -53,6 +56,7 @@ public class EntityProjectile extends EntitySnowball implements IMagicals, ICast
         getDataManager().register(ITEM, ItemStack.EMPTY);
         getDataManager().register(DAMAGE, (float)0);
         getDataManager().register(EFFECT, new NBTTagCompound());
+        getDataManager().register(HYDROPHOBIC, false);
     }
 
     public ItemStack getItem() {
@@ -118,6 +122,14 @@ public class EntityProjectile extends EntitySnowball implements IMagicals, ICast
         return getDataManager().get(DAMAGE);
     }
 
+    public void setHydrophobic() {
+        getDataManager().set(HYDROPHOBIC, true);
+    }
+
+    public boolean getHydrophobic() {
+        return getDataManager().get(HYDROPHOBIC);
+    }
+
     @Override
     public void readEntityFromNBT(NBTTagCompound compound) {
         super.readEntityFromNBT(compound);
@@ -148,6 +160,16 @@ public class EntityProjectile extends EntitySnowball implements IMagicals, ICast
 
             if (world.isRemote) {
                 getEffect().render(this);
+            }
+        }
+
+        if (getHydrophobic()) {
+            if (world.getBlockState(getPosition()).getMaterial().isLiquid()) {
+                motionY *= -1;
+
+                if (!hasNoGravity()) {
+                    motionY += 0.16;
+                }
             }
         }
     }
