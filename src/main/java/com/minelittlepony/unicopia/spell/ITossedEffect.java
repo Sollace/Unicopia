@@ -12,6 +12,12 @@ import net.minecraft.world.World;
 
 public interface ITossedEffect extends IMagicEffect, ITossable<ICaster<?>> {
 
+    default ItemStack getCastAppearance(ICaster<?> caster) {
+        Item item = this.getAffinity() == SpellAffinity.BAD ? UItems.curse : UItems.spell;
+
+        return SpellRegistry.instance().enchantStack(new ItemStack(item), getName());
+    }
+
     default void toss(ICaster<?> caster) {
         World world = caster.getWorld();
 
@@ -22,9 +28,7 @@ public interface ITossedEffect extends IMagicEffect, ITossable<ICaster<?>> {
         if (!world.isRemote) {
             EntityProjectile projectile = new EntityProjectile(world, caster.getOwner());
 
-            Item item = this.getAffinity() == SpellAffinity.BAD ? UItems.curse : UItems.spell;
-
-            projectile.setItem(SpellRegistry.instance().enchantStack(new ItemStack(item), getName()));
+            projectile.setItem(getCastAppearance(caster));
             projectile.setThrowDamage(getThrowDamage(caster));
             projectile.setOwner(caster.getOwner());
             projectile.setEffect(this);

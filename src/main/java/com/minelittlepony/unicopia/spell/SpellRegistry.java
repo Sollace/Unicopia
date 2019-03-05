@@ -47,6 +47,7 @@ public class SpellRegistry {
         registerSpell(SpellFlame::new);
         registerSpell(SpellSiphon::new);
         registerSpell(SpellLight::new);
+        registerSpell(SpellChangelingTrap::new);
     }
 
     @Nullable

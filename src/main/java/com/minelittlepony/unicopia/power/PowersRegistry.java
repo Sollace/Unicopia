@@ -33,6 +33,7 @@ public class PowersRegistry {
         registerPower(new PowerCarry());
         registerPower(new PowerDisguise());
         registerPower(new PowerCloudBase());
+        registerPower(new PowerEngulf());
     }
 
     public boolean hasRegisteredPower(int keyCode) {
