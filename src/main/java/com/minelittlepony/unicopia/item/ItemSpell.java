@@ -156,6 +156,10 @@ public class ItemSpell extends Item implements ICastable {
 
         ItemStack stack = player.getHeldItem(hand);
 
+        if (!Predicates.MAGI.test(player)) {
+            return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
+        }
+
         if (!SpellRegistry.stackHasEnchantment(stack)) {
             return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
         }
