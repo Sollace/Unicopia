@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.spell;
 
+import com.minelittlepony.unicopia.init.USounds;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.util.WorldEvent;
@@ -8,18 +9,19 @@ import com.minelittlepony.util.vector.VecHelper;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect, IAttachedEffect {
-
-
 
     private BlockPos previousTrappedPosition;
 
@@ -38,6 +40,16 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
     @Override
     public boolean isCraftable() {
         return false;
+    }
+
+    @Override
+    public SoundEvent getThrowSound(ICaster<?> caster) {
+        return USounds.SLIME_RETRACT;
+    }
+
+    @Override
+    public ItemStack getCastAppearance(ICaster<?> caster) {
+        return new ItemStack(Items.SLIME_BALL);
     }
 
     @Override
