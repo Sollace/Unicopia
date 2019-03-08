@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.item.ItemZapApple;
 import com.minelittlepony.unicopia.item.UItemBlock;
 import com.minelittlepony.unicopia.item.UItemDecoration;
 import com.minelittlepony.unicopia.item.UItemSlab;
+import com.minelittlepony.unicopia.item.URecord;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
 import net.minecraft.block.BlockDoublePlant;
@@ -94,6 +95,11 @@ public class UItems {
     public static final Item cloud_banister = new UItemBlock(UBlocks.cloud_banister, INTERACT_WITH_CLOUDS);
 
     public static final Item anvil = new UItemBlock(UBlocks.anvil, INTERACT_WITH_CLOUDS).setTranslationKey("cloud_anvil");
+
+    public static final Item record_crusade = new URecord(Unicopia.MODID, "crusade", USounds.RECORD_CRUSADE);
+    public static final Item record_pet = new URecord(Unicopia.MODID, "pet", USounds.RECORD_PET);
+    public static final Item record_popular = new URecord(Unicopia.MODID, "popular", USounds.RECORD_POPULAR);
+    public static final Item record_funk = new URecord(Unicopia.MODID, "funk", USounds.RECORD_FUNK);
 
     public static final Item hive = new ItemBlock(UBlocks.hive).setRegistryName(Unicopia.MODID, "hive");
     public static final Item chitin_shell = new Item()
@@ -245,7 +251,9 @@ public class UItems {
                 apple_seeds, apple_leaves,
 
                 daffodil_daisy_sandwich, hay_burger, hay_fries, salad, wheat_worms,
-                apple_cider, juice, burned_juice);
+                apple_cider, juice, burned_juice,
+
+                record_crusade, record_pet, record_popular, record_funk);
 
         if (UClient.isClientSide()) {
             ItemModels.registerAll(
@@ -277,7 +285,9 @@ public class UItems {
 
                     daffodil_daisy_sandwich, hay_burger, hay_fries, salad, wheat_worms,
 
-                    apple_cider, juice, burned_juice);
+                    apple_cider, juice, burned_juice,
+
+                    record_crusade, record_pet, record_popular, record_funk);
 
             BuildInTexturesBakery.getBuiltInTextures().add(new ResourceLocation(Unicopia.MODID, "items/empty_slot_gem"));
         }

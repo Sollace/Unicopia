@@ -154,6 +154,11 @@ item.mug.name=Mug
 item.juice.name=Juice
 item.burned_juice.name=Burned Juice
 
+item.record.pet.desc=Danial Ingram - pet
+item.record.popular.desc=Danial Ingram - popular
+item.record.crusade.desc=Danial Ingram - crusade
+item.record.funk.desc=funk, just funk
+
 entity.racing_cloud.name=Bucking Bronco
 entity.construction_cloud.name=Construction Cloud
 entity.cloud.name=Cloud
