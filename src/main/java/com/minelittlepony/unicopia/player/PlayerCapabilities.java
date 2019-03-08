@@ -10,6 +10,7 @@ import com.minelittlepony.model.anim.IInterpolator;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.enchanting.PageState;
+import com.minelittlepony.unicopia.entity.EntityCuccoon;
 import com.minelittlepony.unicopia.init.UEffects;
 import com.minelittlepony.unicopia.init.UItems;
 import com.minelittlepony.unicopia.item.ICastable;
@@ -221,10 +222,18 @@ class PlayerCapabilities implements IPlayer {
 
                 Entity ridee = entity.getRidingEntity();
 
-                entity.dismountRidingEntity();
+                if (ridee instanceof EntityCuccoon) {
+                    if (((EntityCuccoon)ridee).attemptDismount(entity)) {
+                        entity.dismountRidingEntity();
+                    } else {
+                        entity.setSneaking(false);
+                    }
+                } else {
+                    entity.dismountRidingEntity();
 
-                if (ridee instanceof EntityPlayerMP) {
-                    ((EntityPlayerMP)ridee).getServerWorld().getEntityTracker().sendToTrackingAndSelf(ridee, new SPacketSetPassengers(ridee));
+                    if (ridee instanceof EntityPlayerMP) {
+                        ((EntityPlayerMP)ridee).getServerWorld().getEntityTracker().sendToTrackingAndSelf(ridee, new SPacketSetPassengers(ridee));
+                    }
                 }
             }
         }
