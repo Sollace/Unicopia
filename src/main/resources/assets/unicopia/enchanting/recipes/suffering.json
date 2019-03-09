@@ -2,7 +2,7 @@
 	"type": "unicopia:crafting_spell",
 	"ingredients": [
         { "item": "minecraft:fire_charge" },
-        { "id": "unicopia:bloood" },
+        { "id": "unicopia:blood" },
         { "item": "unicopia:gem", "spell": "fire" }
     ],
 	"result": {
