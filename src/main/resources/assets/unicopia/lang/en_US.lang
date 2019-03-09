@@ -16,6 +16,7 @@ tile.cloud_farmland.name=Tilled Clouds
 
 tile.hive.name=Hive Wall
 tile.chitin_block.name=Chitin Block
+tile.chissled_chitin.name=Chiseled Chitin Block
 tile.chitin_shell.name=Chitin Shell
 tile.cuccoon.name=Cocoon
 tile.slime_layer.name=Slime

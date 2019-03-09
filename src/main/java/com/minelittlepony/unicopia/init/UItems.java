@@ -109,6 +109,8 @@ public class UItems {
             .setRegistryName(Unicopia.MODID, "chitin_shell");
     public static final Item chitin = new ItemBlock(UBlocks.chitin)
             .setRegistryName(Unicopia.MODID, "chitin_block");
+    public static final Item chissled_chitin = new ItemBlock(UBlocks.chissled_chitin)
+            .setRegistryName(Unicopia.MODID, "chissled_chitin");
     public static final Item cuccoon = new ItemBlock(UBlocks.cuccoon)
             .setRegistryName(Unicopia.MODID, "cuccoon");
     public static final Item slime_layer = new UnFuckedItemSnow(UBlocks.slime_layer)
@@ -249,7 +251,7 @@ public class UItems {
 
                 cloudsdale_tomato, tomato_seeds, tomato, moss,
 
-                hive, chitin_shell, chitin, cuccoon, slime_layer,
+                hive, chitin_shell, chitin, chissled_chitin, cuccoon, slime_layer,
 
                 apple_seeds, apple_leaves,
 
@@ -282,7 +284,7 @@ public class UItems {
                     cereal, sugar_cereal, sugar_block,
                     tomato_seeds,
 
-                    hive, chitin_shell, chitin, cuccoon, slime_layer,
+                    hive, chitin_shell, chitin, chissled_chitin, cuccoon, slime_layer,
 
                     apple_seeds, apple_leaves,
 
