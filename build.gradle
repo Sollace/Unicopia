@@ -43,13 +43,13 @@ targetCompatibility = 1.8
 sourceSets {
   jei {
     compileClasspath += main.compileClasspath
+    compileClasspath += main.output
   }
   external {
     compileClasspath += main.compileClasspath
   }
   main {
     compileClasspath += external.output
-    compileClasspath += jei.output
     ext.refMap = project.refCore
   }
 }
@@ -101,5 +101,6 @@ processResources {
 jar {
   from sourceSets.main.output
   from sourceSets.external.output
+  from sourceSets.jei.output
   baseName = "Unicopia-mc${project.mcVersion}"
 }
