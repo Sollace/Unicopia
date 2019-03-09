@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.init;
 import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.BlockAlfalfa;
+import com.minelittlepony.unicopia.block.BlockChiselledChitin;
 import com.minelittlepony.unicopia.block.BlockChitin;
 import com.minelittlepony.unicopia.block.BlockFruitLeaves;
 import com.minelittlepony.unicopia.block.BlockGlowingGem;
@@ -13,7 +14,6 @@ import com.minelittlepony.unicopia.block.BlockCloudAnvil;
 import com.minelittlepony.unicopia.block.BlockCloudBanister;
 import com.minelittlepony.unicopia.block.BlockCloudSlab;
 import com.minelittlepony.unicopia.block.BlockCloudStairs;
-import com.minelittlepony.unicopia.block.BlockDirected;
 import com.minelittlepony.unicopia.block.BlockDutchDoor;
 import com.minelittlepony.unicopia.block.BlockSugar;
 import com.minelittlepony.unicopia.block.BlockTomatoPlant;
@@ -32,7 +32,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -77,10 +76,7 @@ public class UBlocks {
 
     public static final BlockHiveWall hive = new BlockHiveWall(Unicopia.MODID, "hive");
     public static final BlockChitin chitin = new BlockChitin(Unicopia.MODID, "chitin_block");
-    public static final Block chissled_chitin = new BlockDirected(UMaterials.hive, Unicopia.MODID, "chissled_chitin")
-            .setCreativeTab(CreativeTabs.BUILDING_BLOCKS)
-            .setHardness(50)
-            .setResistance(2000);
+    public static final Block chissled_chitin = new BlockChiselledChitin(Unicopia.MODID, "chissled_chitin");
 
     public static final BlockGrowingCuccoon cuccoon = new BlockGrowingCuccoon(Unicopia.MODID, "cuccoon");
     public static final BlockSlimeLayer slime_layer = new BlockSlimeLayer(Unicopia.MODID, "slime_layer");
