@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BBB"
+  ],
+  "key": {
+    "B": [
+      { "item": "unicopia:enchanted_cloud_block" }
+    ]
+  },
+  "result": { "item": "unicopia:cloud_banister", "count": 3 }
+}
