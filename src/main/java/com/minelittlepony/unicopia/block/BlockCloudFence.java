@@ -46,7 +46,7 @@ public class BlockCloudFence extends BlockFence implements ICloudBlock {
 
     @Override
     public boolean isOpaqueCube(IBlockState state) {
-        return variant != CloudType.NORMAL;
+        return false;
     }
 
     @Override
