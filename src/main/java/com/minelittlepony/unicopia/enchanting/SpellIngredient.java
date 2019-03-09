@@ -16,6 +16,8 @@ import net.minecraft.item.ItemStack;
 
 public interface SpellIngredient {
 
+    static SpellIngredient EMPTY = new Single(ItemStack.EMPTY, false);
+
     @Nullable
     static SpellIngredient parse(JsonElement json) {
         if (json.isJsonArray()) {
@@ -27,11 +29,18 @@ public interface SpellIngredient {
 
     boolean matches(ItemStack other,  int materialMult);
 
+    ItemStack getStack();
+
     class Compound implements SpellIngredient {
         private final List<SpellIngredient> items;
 
         Compound(List<SpellIngredient> items) {
             this.items = items;
+        }
+
+        @Override
+        public ItemStack getStack() {
+            return items.get((int)(Math.random() * items.size())).getStack();
         }
 
         @Override
@@ -69,6 +78,11 @@ public interface SpellIngredient {
         Single(ItemStack stack, boolean meta) {
             contained = stack;
             ignoreMeta = meta;
+        }
+
+        @Override
+        public ItemStack getStack() {
+            return contained;
         }
 
         @Override

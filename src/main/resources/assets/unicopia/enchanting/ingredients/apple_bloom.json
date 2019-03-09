@@ -1,0 +1,8 @@
+{
+	"items": [
+		{  "id": "unicopia:regular_apples" },
+		{ "item": "unicopia:apple_cider" },
+		{ "item": "unicopia:apple_seeds" },
+		{ "item": "minecraft:dye", "data": 1 }
+	]
+}

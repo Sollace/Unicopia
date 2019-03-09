@@ -32,7 +32,14 @@ public class AffineIngredients {
     }
 
     public SpellIngredient getIngredient(ResourceLocation res) {
-        return storedIngredients.get(res);
+        SpellIngredient result = storedIngredients.get(res);
+
+        if (result == null) {
+            new RuntimeException("Ingredient `" + res + "` was not found.").printStackTrace();
+            return SpellIngredient.EMPTY;
+        }
+
+        return result;
     }
 
     protected void handleJson(ResourceLocation id, JsonObject json) throws JsonParseException {
@@ -49,6 +56,11 @@ public class AffineIngredients {
 
         AffineIngredient(ResourceLocation res) {
             this.res = res;
+        }
+
+        @Override
+        public ItemStack getStack() {
+            return instance().getIngredient(res).getStack();
         }
 
         @Override

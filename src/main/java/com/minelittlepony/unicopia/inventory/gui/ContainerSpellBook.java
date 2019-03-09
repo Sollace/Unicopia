@@ -8,9 +8,9 @@ import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
 import com.minelittlepony.unicopia.inventory.InventorySpellBook;
 import com.minelittlepony.unicopia.inventory.slot.SlotEnchanting;
 import com.minelittlepony.unicopia.inventory.slot.SlotEnchantingResult;
-import com.minelittlepony.unicopia.item.ItemSpell;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
+import com.minelittlepony.unicopia.world.UWorld;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -20,6 +20,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -76,9 +77,30 @@ public class ContainerSpellBook extends Container {
             ItemStack crafted = Unicopia.getCraftingManager().findMatchingResult(craftMatrix, worldObj);
 
             if (!crafted.isEmpty()) {
-                current = SpellRegistry.instance().enchantStack(current, crafted);
-
                 resultSlot.setCrafted(true);
+
+                if  (crafted.getItem() != current.getItem()) {
+
+                    craftResult.setInventorySlotContents(0, ItemStack.EMPTY);
+                    resultSlot.onTake(player, crafted);
+
+                    player.dropItem(crafted, true);
+
+                    player.playSound(SoundEvents.BLOCK_NOTE_SNARE, 1, 1);
+
+                    worldObj.newExplosion(null, player.posX, player.posY, player.posZ, 0, false, false);
+                    worldObj.newExplosion(null, player.posX, player.posY, player.posZ, 0, false, false);
+
+                    worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, player.posX, player.posY, player.posZ, 1, 0, 0);
+
+                    UWorld.enqueueTask(w -> {
+                        player.closeScreen();
+                    });
+
+                    return;
+                }
+
+                current = crafted;
                 player.playSound(SoundEvents.BLOCK_NOTE_CHIME, 1, 1);
             } else {
                 current = SpellRegistry.instance().disenchantStack(current);
@@ -102,7 +124,7 @@ public class ContainerSpellBook extends Container {
             stack = slotStack.copy();
 
             if (index > 5) {
-                if (stack.getItem() instanceof ItemSpell) {
+                if (!resultSlot.getHasStack() && resultSlot.isItemValid(stack)) {
                     if (!mergeItemStack(slotStack, 5, 6, false)) {
                         return ItemStack.EMPTY;
                     }
@@ -130,18 +152,14 @@ public class ContainerSpellBook extends Container {
 
     @Override
     public void onContainerClosed(EntityPlayer player) {
-        super.onContainerClosed(player);
+        clearContainer(player, worldObj, craftMatrix);
+        clearContainer(player, worldObj, craftResult);
 
-        for (int i = 0; i < craftMatrix.getSizeInventory(); i++) {
-            if (craftMatrix.getStackInSlot(i) != null) {
-                player.dropItem(craftMatrix.getStackInSlot(i), false);
-                craftMatrix.setInventorySlotContents(i, ItemStack.EMPTY);
-            }
-        }
+        ItemStack held = player.inventory.getItemStack();
 
-        if (craftResult.getStackInSlot(0) != null) {
-            player.dropItem(craftResult.getStackInSlot(0), false);
-            craftResult.setInventorySlotContents(0, ItemStack.EMPTY);
+        if (!held.isEmpty()) {
+            player.inventory.setItemStack(ItemStack.EMPTY);
+            player.inventory.placeItemBackInInventory(worldObj, held);
         }
     }
 

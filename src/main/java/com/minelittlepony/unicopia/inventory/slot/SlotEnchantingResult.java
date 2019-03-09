@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.spell.SpellRegistry;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemRecord;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -89,7 +90,8 @@ public class SlotEnchantingResult extends SlotEnchanting {
 
     @Override
     public boolean isItemValid(ItemStack stack) {
-        return stack.getItem() instanceof ItemSpell && !SpellRegistry.stackHasEnchantment(stack);
+        return (stack.getItem() instanceof ItemSpell || stack.getItem() instanceof ItemRecord)
+                && !SpellRegistry.stackHasEnchantment(stack);
     }
 
     @Override

@@ -1,0 +1,8 @@
+{
+	"items": [
+		{ "item": "minecraft:chicken" },
+		{ "item": "minecraft:cooked_chicken" },
+		{ "item": "minecraft:feather" },
+		{ "item": "minecraft:string" }
+	]
+}

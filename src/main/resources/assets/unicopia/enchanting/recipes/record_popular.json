@@ -1,0 +1,16 @@
+{
+	"type": "unicopia:crafting_special",
+	"ingredients": [
+        { "item": "minecraft:diamond" },
+		{ "item": "minecraft:diamond" },
+		{ "item": "minecraft:diamond" }
+    ],
+	"input": {
+		"item": [
+			{ "id": "unicopia:sound"}
+		]
+	},
+	"output": {
+		"item": { "item": "unicopia:record_popular" }
+	}
+}
