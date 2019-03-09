@@ -41,11 +41,15 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 sourceSets {
+  jei {
+    compileClasspath += main.compileClasspath
+  }
   external {
     compileClasspath += main.compileClasspath
   }
   main {
     compileClasspath += external.output
+    compileClasspath += jei.output
     ext.refMap = project.refCore
   }
 }

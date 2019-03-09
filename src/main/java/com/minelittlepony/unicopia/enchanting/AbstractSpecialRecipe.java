@@ -80,6 +80,7 @@ public abstract class AbstractSpecialRecipe extends Impl<IRecipe> implements IRe
                 }
             }
         }
+
         return toMatch.isEmpty();
     }
 
@@ -99,6 +100,14 @@ public abstract class AbstractSpecialRecipe extends Impl<IRecipe> implements IRe
     @Override
     public boolean canFit(int width, int height) {
         return width * height < ingredients.size();
+    }
+
+    public SpellIngredient getSpellItem() {
+        return spellitem;
+    }
+
+    public NonNullList<SpellIngredient> getSpellIngredients() {
+        return ingredients;
     }
 
     @Override

@@ -1,18 +1,23 @@
 package com.minelittlepony.unicopia.enchanting;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Streams;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.enchanting.AffineIngredients.AffineIngredient;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 public interface SpellIngredient {
 
@@ -31,11 +36,23 @@ public interface SpellIngredient {
 
     ItemStack getStack();
 
+    Stream<ItemStack> getStacks();
+
     class Compound implements SpellIngredient {
         private final List<SpellIngredient> items;
 
         Compound(List<SpellIngredient> items) {
             this.items = items;
+        }
+
+        public Stream<ItemStack> getStacks() {
+            Stream<ItemStack> stacks = Lists.<ItemStack>newArrayList().stream();
+
+            for (SpellIngredient i : items) {
+                stacks = Streams.concat(stacks, i.getStacks());
+            }
+
+            return stacks.distinct();
         }
 
         @Override
@@ -80,6 +97,17 @@ public interface SpellIngredient {
             ignoreMeta = meta;
         }
 
+        public Stream<ItemStack> getStacks() {
+            if (ignoreMeta && !contained.isEmpty()) {
+                NonNullList<ItemStack> subItems = NonNullList.create();
+                contained.getItem().getSubItems(CreativeTabs.SEARCH, subItems);
+
+                return subItems.stream();
+            }
+
+            return Streams.stream(Optional.ofNullable(contained));
+        }
+
         @Override
         public ItemStack getStack() {
             return contained;
@@ -121,7 +149,7 @@ public interface SpellIngredient {
                     stack = SpellRegistry.instance().enchantStack(stack, spell);
                 }
 
-                return new Single(stack, !json.has("data"));
+                return new Single(stack, !(json.has("spell") || json.has("data")));
             }
 
             if (json.has("id")) {

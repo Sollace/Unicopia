@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.enchanting;
 
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 
@@ -61,6 +62,11 @@ public class AffineIngredients {
         @Override
         public ItemStack getStack() {
             return instance().getIngredient(res).getStack();
+        }
+
+        @Override
+        public Stream<ItemStack> getStacks() {
+            return instance().getIngredient(res).getStacks();
         }
 
         @Override
