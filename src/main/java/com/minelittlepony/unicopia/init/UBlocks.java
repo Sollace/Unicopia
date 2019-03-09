@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.block.BlockFruitLeaves;
 import com.minelittlepony.unicopia.block.BlockGlowingGem;
 import com.minelittlepony.unicopia.block.BlockGrowingCuccoon;
 import com.minelittlepony.unicopia.block.BlockHiveWall;
+import com.minelittlepony.unicopia.block.BlockSlimeLayer;
 import com.minelittlepony.unicopia.block.BlockCloudAnvil;
 import com.minelittlepony.unicopia.block.BlockCloudBanister;
 import com.minelittlepony.unicopia.block.BlockCloudSlab;
@@ -75,6 +76,7 @@ public class UBlocks {
     public static final BlockHiveWall hive = new BlockHiveWall(Unicopia.MODID, "hive");
     public static final BlockChitin chitin = new BlockChitin(Unicopia.MODID, "chitin_block");
     public static final BlockGrowingCuccoon cuccoon = new BlockGrowingCuccoon(Unicopia.MODID, "cuccoon");
+    public static final BlockSlimeLayer slime_layer = new BlockSlimeLayer(Unicopia.MODID, "slime_layer");
 
     public static final Block sugar_block = new BlockSugar(Unicopia.MODID, "sugar_block");
     public static final UPot flower_pot = new UPot(Unicopia.MODID, "flower_pot");
@@ -95,7 +97,7 @@ public class UBlocks {
                              packed_cloud_slab, packed_cloud_slab.doubleSlab,
                              cloud_fence, cloud_banister,
                              mist_door, library_door, bakery_door,
-                             hive, chitin, cuccoon,
+                             hive, chitin, cuccoon, slime_layer,
                              anvil, cloud_farmland,
                              sugar_block, flower_pot,
                              alfalfa,

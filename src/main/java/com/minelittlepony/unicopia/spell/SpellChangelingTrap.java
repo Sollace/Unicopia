@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.spell;
 
+import com.minelittlepony.unicopia.init.UBlocks;
 import com.minelittlepony.unicopia.init.USounds;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
@@ -76,6 +77,10 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
 
                 setDirty(true);
             }
+        }
+
+        if (caster.getWorld().isAirBlock(origin) || caster.getWorld().getBlockState(origin).getBlock().isReplaceable(caster.getWorld(), origin)) {
+            caster.getWorld().setBlockState(origin, UBlocks.slime_layer.getDefaultState());
         }
 
         entity.motionX = 0;

@@ -58,6 +58,7 @@ import com.minelittlepony.unicopia.forgebullshit.BuildInTexturesBakery;
 import com.minelittlepony.unicopia.forgebullshit.ItemModels;
 import com.minelittlepony.unicopia.forgebullshit.OreReplacer;
 import com.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
+import com.minelittlepony.unicopia.forgebullshit.UnFuckedItemSnow;
 
 public class UItems {
     public static final ItemApple red_apple = new ItemApple("minecraft", "apple");
@@ -110,6 +111,8 @@ public class UItems {
             .setRegistryName(Unicopia.MODID, "chitin_block");
     public static final Item cuccoon = new ItemBlock(UBlocks.cuccoon)
             .setRegistryName(Unicopia.MODID, "cuccoon");
+    public static final Item slime_layer = new UnFuckedItemSnow(UBlocks.slime_layer)
+            .setRegistryName(Unicopia.MODID, "slime_layer");
 
     public static final Item mist_door = new ItemDoor(UBlocks.mist_door)
             .setTranslationKey("mist_door")
@@ -246,7 +249,7 @@ public class UItems {
 
                 cloudsdale_tomato, tomato_seeds, tomato, moss,
 
-                hive, chitin_shell, chitin, cuccoon,
+                hive, chitin_shell, chitin, cuccoon, slime_layer,
 
                 apple_seeds, apple_leaves,
 
@@ -279,7 +282,7 @@ public class UItems {
                     cereal, sugar_cereal, sugar_block,
                     tomato_seeds,
 
-                    hive, chitin_shell, chitin, cuccoon,
+                    hive, chitin_shell, chitin, cuccoon, slime_layer,
 
                     apple_seeds, apple_leaves,
 

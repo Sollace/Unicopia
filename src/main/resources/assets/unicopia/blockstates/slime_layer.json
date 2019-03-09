@@ -1,0 +1,12 @@
+{
+    "variants": {
+        "layers=1":  { "model": "unicopia:slime/layer_2" },
+        "layers=2":  { "model": "unicopia:slime/layer_4" },
+        "layers=3":  { "model": "unicopia:slime/layer_6" },
+        "layers=4":  { "model": "unicopia:slime/layer_8" },
+        "layers=5":  { "model": "unicopia:slime/layer_10" },
+        "layers=6":  { "model": "unicopia:slime/layer_12" },
+        "layers=7":  { "model": "unicopia:slime/layer_14" },
+        "layers=8":  { "model": "minecraft:slime" }
+    }
+}

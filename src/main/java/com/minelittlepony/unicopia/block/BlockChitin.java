@@ -32,10 +32,10 @@ public class BlockChitin extends Block {
 
         setTranslationKey(name);
         setRegistryName(domain, name);
+        setDefaultState(blockState.getBaseState().withProperty(COVERING, Covering.UNCOVERED));
         setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
         setHardness(50);
         setResistance(2000);
-        setDefaultState(blockState.getBaseState().withProperty(COVERING, Covering.UNCOVERED));
     }
 
     @Override
