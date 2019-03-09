@@ -25,12 +25,17 @@ import net.minecraft.world.World;
 public class EntitySpellbook extends EntityLiving implements IMagicals {
 
     private static final DataParameter<Boolean> OPENED = EntityDataManager.createKey(EntitySpellbook.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> ALTERED = EntityDataManager.createKey(EntitySpellbook.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Byte> OPENED_USER = EntityDataManager.createKey(EntitySpellbook.class, DataSerializers.BYTE);
 
     public EntitySpellbook(World worldIn) {
         super(worldIn);
         setSize(0.6f, 0.6f);
         enablePersistence();
+
+        if (world.rand.nextInt(3) == 0) {
+            setAltered();
+        }
     }
 
     @Override
@@ -38,6 +43,7 @@ public class EntitySpellbook extends EntityLiving implements IMagicals {
         super.entityInit();
         dataManager.register(OPENED, true);
         dataManager.register(OPENED_USER, (byte)1);
+        dataManager.register(ALTERED, false);
     }
 
     @Override
@@ -53,6 +59,14 @@ public class EntitySpellbook extends EntityLiving implements IMagicals {
     @Override
     public boolean canRenderOnFire() {
         return false;
+    }
+
+    public boolean getIsAltered() {
+        return dataManager.get(ALTERED);
+    }
+
+    public void setAltered() {
+        dataManager.set(ALTERED, true);
     }
 
     public boolean getIsOpen() {

@@ -11,7 +11,8 @@ import net.minecraft.util.ResourceLocation;
 
 public class RenderSpellbook extends RenderLiving<EntitySpellbook> {
 
-    private static final ResourceLocation texture = new ResourceLocation("textures/entity/enchanting_table_book.png");
+    private static final ResourceLocation BLUE = new ResourceLocation("unicopia", "textures/entity/enchanting_table_book_blue.png");
+    private static final ResourceLocation NORMAL = new ResourceLocation("unicopia", "textures/entity/enchanting_table_book.png");
 
     public RenderSpellbook(RenderManager rendermanagerIn) {
         super(rendermanagerIn, new ModelSpellbook(), 0);
@@ -19,7 +20,7 @@ public class RenderSpellbook extends RenderLiving<EntitySpellbook> {
 
     @Override
     protected ResourceLocation getEntityTexture(EntitySpellbook entity) {
-        return texture;
+        return entity.getIsAltered() ? BLUE : NORMAL;
     }
 
     @Override
