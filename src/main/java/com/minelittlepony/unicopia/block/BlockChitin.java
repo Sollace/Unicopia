@@ -56,8 +56,6 @@ public class BlockChitin extends Block {
     @Deprecated
     @Override
     public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos) {
-        setHardness(50);
-
         float hardness = super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
 
         IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(player);

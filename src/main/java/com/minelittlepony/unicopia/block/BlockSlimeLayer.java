@@ -23,7 +23,6 @@ public class BlockSlimeLayer extends BlockSnow {
         setRegistryName(domain, name);
 
         setSoundType(SoundType.SLIME);
-
         setCreativeTab(CreativeTabs.DECORATIONS);
     }
 

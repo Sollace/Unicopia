@@ -63,7 +63,6 @@ public class BlockGlowingGem extends BlockTorch implements ICloudBlock {
     );
 
     public BlockGlowingGem(String domain, String name) {
-        super();
         setTranslationKey(name);
         setRegistryName(domain, name);
 

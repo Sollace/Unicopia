@@ -34,11 +34,6 @@ public class BlockCloudDoor extends UDoor implements ICloudBlock {
     }
 
     @Override
-    public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
-        return super.isAir(state, world, pos);
-    }
-
-    @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (!getCanInteract(state, player)) {
             return false;

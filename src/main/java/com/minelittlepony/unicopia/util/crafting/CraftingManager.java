@@ -84,8 +84,6 @@ public class CraftingManager {
 
     @Nullable
     public IRecipe findMatchingRecipe(InventoryCrafting craftMatrix, World worldIn) {
-        load();
-
         for (IRecipe irecipe : getRecipes()) {
             if (irecipe.matches(craftMatrix, worldIn)) {
                 return irecipe;
