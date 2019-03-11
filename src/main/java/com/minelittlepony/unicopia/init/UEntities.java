@@ -44,7 +44,7 @@ public class UEntities {
                 builder.creature(EntityRainbow.Spawner.class, "rainbow_spawner"),
                 builder.creature(EntityCuccoon.class, "cuccoon").withEgg(0, 0),
                 builder.projectile(EntityRainbow.class, "rainbow", 500, 5),
-                builder.projectile(EntityProjectile.class, "thrown_item", 10, 5)
+                builder.projectile(EntityProjectile.class, "thrown_item", 100, 10)
         );
     }
 
