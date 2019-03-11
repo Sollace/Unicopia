@@ -4,8 +4,14 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.Predicates;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EntityRacingCloud extends EntityCloud {
@@ -30,6 +36,19 @@ public class EntityRacingCloud extends EntityCloud {
     public Entity getControllingPassenger() {
         List<Entity> list = getPassengers();
         return list.isEmpty() ? null : list.get(0);
+    }
+
+    @Override
+    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand) {
+        if (!(isBeingRidden() || isRidingOrBeingRiddenBy(player)) && hand == EnumHand.MAIN_HAND) {
+            if (Predicates.INTERACT_WITH_CLOUDS.test(player)) {
+                if (!getStationary()) {
+                    player.startRiding(this);
+                    return EnumActionResult.SUCCESS;
+                }
+            }
+        }
+        return EnumActionResult.FAIL;
     }
 
     @Override

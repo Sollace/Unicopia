@@ -16,14 +16,10 @@ import net.minecraft.block.BlockFarmland;
 import net.minecraft.block.BlockFire;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityFlying;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.effect.EntityLightningBolt;
@@ -32,10 +28,8 @@ import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
-import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
@@ -46,15 +40,11 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 
@@ -410,33 +400,6 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
     }
 
     @Override
-    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand) {
-        if (!(isBeingRidden() || isRidingOrBeingRiddenBy(player)) && hand == EnumHand.MAIN_HAND) {
-            if (Predicates.INTERACT_WITH_CLOUDS.test(player)) {
-
-                if (player.getItemInUseCount() > 0) {
-                    return EnumActionResult.FAIL;
-                }
-
-                ItemStack stack = player.getHeldItem(hand);
-
-                if (stack != null) {
-                    if (stack.getItem() instanceof ItemBlock || stack.getItem() == Items.SPAWN_EGG && stack.getItemDamage() == EntityList.getID(EntityCloud.class)) {
-                        placeBlock(player, stack, hand);
-                        return EnumActionResult.SUCCESS;
-                    }
-                }
-
-                if (!getStationary()) {
-                    player.startRiding(this);
-                    return EnumActionResult.SUCCESS;
-                }
-            }
-        }
-        return EnumActionResult.FAIL;
-    }
-
-    @Override
     public void handleStatusUpdate(byte type) {
         if (type == 2) {
             if (!isBurning()) {
@@ -480,50 +443,6 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
         }
 
         return source == DamageSource.IN_WALL || super.attackEntityFrom(source, amount);
-    }
-
-    private void placeBlock(EntityPlayer player, ItemStack stack, EnumHand hand) {
-        if (!world.isRemote || !(player instanceof EntityPlayerSP)) {
-            return;
-        }
-
-        Minecraft mc = Minecraft.getMinecraft();
-
-        double distance = mc.playerController.getBlockReachDistance();
-
-        float ticks = mc.getRenderPartialTicks();
-
-        Vec3d eye = player.getPositionEyes(ticks);
-        Vec3d look = player.getLook(ticks);
-        Vec3d ray = eye.add(look.x * distance, look.y * distance, look.z * distance);
-
-        AxisAlignedBB bounds = getEntityBoundingBox();
-
-        float s = 0.5F;
-        RayTraceResult trace = bounds
-                    .contract(0, s, 0).contract(0, -s, 0)
-                    .calculateIntercept(eye, ray);
-
-        if (trace == null) {
-            return;
-        }
-
-        EnumFacing direction = trace.sideHit;
-
-        BlockPos blockPos = new BlockPos(trace.hitVec);
-
-        mc.objectMouseOver = new RayTraceResult(trace.hitVec, direction, blockPos);
-
-        int oldCount = stack.getCount();
-        EnumActionResult result = mc.playerController.processRightClickBlock(((EntityPlayerSP)player), (WorldClient)player.world, blockPos, direction, trace.hitVec, hand);
-
-        if (result == EnumActionResult.SUCCESS) {
-            player.swingArm(hand);
-
-            if (!stack.isEmpty() && (stack.getCount() != oldCount || mc.playerController.isInCreativeMode())) {
-                mc.entityRenderer.itemRenderer.resetEquippedProgress(hand);
-            }
-        }
     }
 
     private boolean onAttackByPlayer(DamageSource source, float amount, EntityPlayer player) {
