@@ -71,7 +71,7 @@ public class SpellAwkward extends AbstractSpell implements ITossedEffect, IUseAc
     }
 
     @Override
-    public void onImpact(World world, BlockPos pos, IBlockState state) {
+    public void onImpact(ICaster<?> caster, BlockPos pos, IBlockState state) {
         // noop
     }
 

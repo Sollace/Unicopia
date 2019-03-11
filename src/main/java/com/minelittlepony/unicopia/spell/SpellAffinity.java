@@ -26,6 +26,10 @@ public enum SpellAffinity {
         return this == BAD ? "curse" : "spell";
     }
 
+    public String getUnlocalizedName() {
+        return "affinity." + getTranslationKey() + ".name";
+    }
+
     public int getCorruption() {
         return corruption;
     }

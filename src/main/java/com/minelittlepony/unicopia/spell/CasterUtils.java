@@ -3,10 +3,12 @@ package com.minelittlepony.unicopia.spell;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.entity.EntitySpell;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.entity.Entity;
@@ -69,6 +71,13 @@ public class CasterUtils {
         return Streams.stream(entity.getEquipmentAndArmor())
             .map(SpellRegistry::getKeyFromStack)
             .anyMatch(s -> s.equals(effectName));
+    }
+
+    public static ICaster<?> near(@Nonnull Entity entity) {
+        EntitySpell caster = new EntitySpell(entity.world);
+        caster.copyLocationAndAnglesFrom(entity);
+
+        return caster;
     }
 
     public static Optional<ICaster<?>> toCaster(@Nullable Entity entity) {

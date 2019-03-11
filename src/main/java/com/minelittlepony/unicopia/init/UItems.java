@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.item.ItemCereal;
 import com.minelittlepony.unicopia.item.ItemCloud;
 import com.minelittlepony.unicopia.item.ItemCurse;
 import com.minelittlepony.unicopia.item.ItemFruitLeaves;
+import com.minelittlepony.unicopia.item.ItemMagicStaff;
 import com.minelittlepony.unicopia.item.ItemMoss;
 import com.minelittlepony.unicopia.item.ItemOfHolding;
 import com.minelittlepony.unicopia.item.ItemRottenApple;
@@ -22,6 +23,7 @@ import com.minelittlepony.unicopia.item.UItemDecoration;
 import com.minelittlepony.unicopia.item.UItemSlab;
 import com.minelittlepony.unicopia.item.URecord;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
+import com.minelittlepony.unicopia.spell.SpellScorch;
 
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.BlockFlower;
@@ -140,6 +142,7 @@ public class UItems {
 
     public static final ItemSpellbook spellbook = new ItemSpellbook(Unicopia.MODID, "spellbook");
     public static final Item staff_meadow_brook = new ItemStaff(Unicopia.MODID, "staff_meadow_brook").setMaxDamage(2);
+    public static final Item staff_remembrance = new ItemMagicStaff(Unicopia.MODID, "staff_remembrance", new SpellScorch());
 
     public static final ItemMoss moss = new ItemMoss(Unicopia.MODID, "moss");
 
@@ -243,7 +246,7 @@ public class UItems {
                 cloud_farmland, mist_door, library_door, bakery_door, anvil,
 
                 bag_of_holding, spell, curse, spellbook, mug, enchanted_torch,
-                staff_meadow_brook, alicorn_amulet,
+                staff_meadow_brook, staff_remembrance, alicorn_amulet,
 
                 alfalfa_seeds, alfalfa_leaves,
                 cereal, sugar_cereal, sugar_block,
@@ -278,7 +281,7 @@ public class UItems {
                     cloud_farmland, mist_door, library_door, bakery_door, anvil,
 
                     bag_of_holding, spell, curse, spellbook, mug, enchanted_torch,
-                    staff_meadow_brook, alicorn_amulet,
+                    staff_meadow_brook, staff_remembrance, alicorn_amulet,
 
                     alfalfa_seeds, alfalfa_leaves,
                     cereal, sugar_cereal, sugar_block,

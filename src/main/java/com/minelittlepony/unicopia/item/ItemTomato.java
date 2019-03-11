@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.forgebullshit.IMultiItem;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.spell.ICaster;
 import com.minelittlepony.unicopia.tossable.ITossableItem;
 
 import net.minecraft.block.material.Material;
@@ -96,9 +97,9 @@ public class ItemTomato extends ItemFood implements ITossableItem, IMultiItem {
     }
 
     @Override
-    public void onImpact(World world, BlockPos pos, IBlockState state) {
-        if (!world.isRemote && state.getMaterial() == Material.GLASS) {
-            world.destroyBlock(pos, true);
+    public void onImpact(ICaster<?> caster, BlockPos pos, IBlockState state) {
+        if (caster.isLocal() && state.getMaterial() == Material.GLASS) {
+            caster.getWorld().destroyBlock(pos, true);
         }
     }
 }

@@ -5,7 +5,6 @@ import com.minelittlepony.unicopia.init.USounds;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.util.WorldEvent;
-import com.minelittlepony.util.vector.VecHelper;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,7 +19,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect, IAttachedEffect {
 
@@ -154,9 +152,9 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
     }
 
     @Override
-    public void onImpact(World world, BlockPos pos, IBlockState state) {
-        if (!world.isRemote) {
-            VecHelper.findAllEntitiesInRange(null, world, pos, 5)
+    public void onImpact(ICaster<?> caster, BlockPos pos, IBlockState state) {
+        if (caster.isLocal()) {
+            caster.findAllEntitiesInRange(5)
                 .filter(e -> e instanceof EntityPlayer)
                 .map(e -> PlayerSpeciesList.instance().getPlayer((EntityPlayer)e))
                 .forEach(this::entrap);

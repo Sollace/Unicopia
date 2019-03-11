@@ -153,7 +153,18 @@ public class EntityProjectile extends EntitySnowball implements IMagicals, ICast
 
     @Override
     public void onUpdate() {
+
+        if (!world.isRemote) {
+            if (Math.abs(motionX) < 0.01 && Math.abs(motionZ) < 0.01 && Math.abs(motionY) < 0.01) {
+                setDead();
+            }
+        }
+
         super.onUpdate();
+
+        if (ticksExisted % 1000 == 0) {
+            setNoGravity(false);
+        }
 
         if (hasEffect()) {
             if (getEffect().getDead()) {
@@ -211,13 +222,13 @@ public class EntityProjectile extends EntitySnowball implements IMagicals, ICast
                 Item item = getItem().getItem();
 
                 if (item instanceof ITossableItem) {
-                    ((ITossableItem)item).onImpact(world, result.getBlockPos(), world.getBlockState(result.getBlockPos()));
+                    ((ITossableItem)item).onImpact(this, result.getBlockPos(), world.getBlockState(result.getBlockPos()));
                 }
 
                 if (hasEffect()) {
                     IMagicEffect effect = this.getEffect();
                     if (effect instanceof ITossable) {
-                        ((ITossable<?>)effect).onImpact(world, result.getBlockPos(), world.getBlockState(result.getBlockPos()));
+                        ((ITossable<?>)effect).onImpact(this, result.getBlockPos(), world.getBlockState(result.getBlockPos()));
                     }
                 }
             }

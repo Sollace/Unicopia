@@ -8,11 +8,9 @@ import javax.annotation.Nullable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.Predicates;
-import com.minelittlepony.unicopia.tossable.ITossableItem;
 import com.minelittlepony.util.lang.ClientLocale;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -25,15 +23,11 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class ItemStaff extends ItemSword implements ITossableItem {
+public class ItemStaff extends ItemSword {
 
     protected static final UUID ATTACK_REACH_MODIFIER = UUID.fromString("FA235E1C-4280-A865-B01B-CBAE9985ACA3");
 
@@ -44,19 +38,6 @@ public class ItemStaff extends ItemSword implements ITossableItem {
         setRegistryName(domain, name);
 
         setMaxStackSize(1);
-    }
-
-    @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-        ItemStack itemstack = player.getHeldItem(hand);
-
-        if (canBeThrown(itemstack)) {
-            toss(world, itemstack, player);
-
-            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
-        }
-
-        return super.onItemRightClick(world, player, hand);
     }
 
     @Override
@@ -111,16 +92,6 @@ public class ItemStaff extends ItemSword implements ITossableItem {
     @Override
     public EnumAction getItemUseAction(ItemStack stack) {
         return EnumAction.BOW;
-    }
-
-    @Override
-    public boolean canBeThrown(ItemStack stack) {
-        return false;
-    }
-
-    @Override
-    public void onImpact(World world, BlockPos pos, IBlockState state) {
-
     }
 
     @Override

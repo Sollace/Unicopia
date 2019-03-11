@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.entity.EntitySpell;
 import com.minelittlepony.unicopia.player.IOwned;
 import com.minelittlepony.unicopia.power.IPower;
 import com.minelittlepony.util.shape.IShape;
@@ -60,10 +61,32 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelle
     }
 
     /**
+     * Returns true if we're executing on the client.
+     */
+    default boolean isRemote() {
+        return getWorld().isRemote;
+    }
+
+    /**
+     * Returns true if we're executing on the server.
+     */
+    default boolean isLocal() {
+        return !isRemote();
+    }
+
+    /**
      * Gets the center position where this caster is located.
      */
     default BlockPos getOrigin() {
         return getEntity().getPosition();
+    }
+
+    default ICaster<?> at(BlockPos newOrigin) {
+        EntitySpell spell = new EntitySpell(getWorld());
+        spell.setPosition(newOrigin.getX(), newOrigin.getY(), newOrigin.getZ());
+        spell.setOwner(getOwner());
+
+        return spell;
     }
 
     default Vec3d getOriginVector() {
@@ -99,6 +122,4 @@ public interface ICaster<E extends EntityLivingBase> extends IOwned<E>, ILevelle
     default Stream<Entity> findAllEntitiesInRange(double radius) {
         return VecHelper.findAllEntitiesInRange(getEntity(), getWorld(), getOrigin(), radius);
     }
-
-
 }

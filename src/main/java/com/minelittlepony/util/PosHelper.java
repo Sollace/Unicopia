@@ -12,9 +12,24 @@ import com.minelittlepony.util.shape.IShape;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
+import net.minecraft.world.World;
 
 public class PosHelper {
+
+    public static Vec3d offset(Vec3d a, Vec3i b) {
+        return a.add(b.getX(), b.getY(), b.getZ());
+    }
+
+    public static BlockPos findSolidGroundAt(World world, BlockPos pos) {
+        while ((pos.getY() > 0 || !world.isOutsideBuildHeight(pos))
+                && (world.isAirBlock(pos) || world.getBlockState(pos).getBlock().isReplaceable(world, pos))) {
+            pos = pos.down();
+        }
+
+        return pos;
+    }
 
     public static void all(BlockPos origin, Consumer<BlockPos> consumer, EnumFacing... directions) {
         for (EnumFacing facing : directions) {

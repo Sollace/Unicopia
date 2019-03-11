@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " /*",
+    " / ",
+    "/  "
+  ],
+  "key": {
+    "/": [
+      { "item": "minecraft:stick" }
+    ],
+    "*": [
+      {
+		"item": "unicopia:gem",
+		"nbt": {
+		  "spell": "fire"
+        }
+	  }
+    ]
+  },
+  "result": { "item": "unicopia:staff_remembrence", "count": 1 }
+}
