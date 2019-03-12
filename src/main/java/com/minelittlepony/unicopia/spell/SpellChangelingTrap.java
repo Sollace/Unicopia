@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.spell;
 
+import com.minelittlepony.unicopia.entity.EntityCuccoon;
 import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.init.UBlocks;
 import com.minelittlepony.unicopia.init.USounds;
@@ -7,6 +8,7 @@ import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.util.WorldEvent;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -142,8 +144,18 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
         return SpellAffinity.BAD;
     }
 
-    public void enforce() {
+    public void enforce(ICaster<?> caster) {
         struggleCounter = 10;
+
+        if (caster.isLocal() && caster.getWorld().rand.nextInt(3) == 0) {
+            setDead();
+
+            EntityCuccoon cuccoon = new EntityCuccoon(caster.getWorld());
+            cuccoon.copyLocationAndAnglesFrom(caster.getEntity());
+
+            caster.getWorld().spawnEntity(cuccoon);
+        }
+
         setDirty(true);
     }
 
@@ -154,15 +166,21 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
         if (existing == null) {
             e.setEffect(copy());
         } else {
-            existing.enforce();
+            existing.enforce(e);
         }
+    }
+
+    protected boolean canAffect(Entity e) {
+        return !(e instanceof IMagicals)
+            && e instanceof EntityLivingBase
+            && !e.isRiding();
     }
 
     @Override
     public void onImpact(ICaster<?> caster, BlockPos pos, IBlockState state) {
         if (caster.isLocal()) {
             caster.findAllEntitiesInRange(5)
-                .filter(e -> !(e instanceof IMagicals) && e instanceof EntityLivingBase)
+                .filter(this::canAffect)
                 .map(e -> PlayerSpeciesList.instance().getCaster((EntityLivingBase)e))
                 .forEach(this::entrap);
         }
