@@ -166,13 +166,13 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
                 spawnParticleRing(player, i);
             }
 
-            IPower.takeFromPlayer(player, rad);
+            iplayer.subtractEnergyCost(rad);
         } else if (data.hitType == 1) {
 
             boolean harmed = player.getHealth() < player.getMaxHealth();
 
             if (harmed && player.world.rand.nextInt(30) == 0) {
-                IPower.takeFromPlayer(player, 3);
+                iplayer.subtractEnergyCost(3);
                 return;
             }
 
@@ -182,12 +182,12 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
                     UWorld.enqueueTask(w -> removeTree(w, data.pos()));
                 }
 
-                IPower.takeFromPlayer(player, 3);
+                iplayer.subtractEnergyCost(3);
             } else {
                 int cost = dropApples(player.world, data.pos());
 
                 if (cost > 0) {
-                    IPower.takeFromPlayer(player, cost * 3);
+                    iplayer.subtractEnergyCost(cost * 3);
                 }
             }
         }

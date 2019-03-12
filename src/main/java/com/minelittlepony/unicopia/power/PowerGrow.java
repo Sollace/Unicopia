@@ -74,7 +74,7 @@ public class PowerGrow implements IPower<Location> {
         }
 
         if (count > 0) {
-            IPower.takeFromPlayer(player.getOwner(), count * 5);
+            player.subtractEnergyCost(count * 5);
         }
     }
 

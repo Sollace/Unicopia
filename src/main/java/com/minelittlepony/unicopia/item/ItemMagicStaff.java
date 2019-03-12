@@ -6,7 +6,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Predicates;
-import com.minelittlepony.unicopia.power.IPower;
+import com.minelittlepony.unicopia.player.IPlayer;
+import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.unicopia.spell.CasterUtils;
 import com.minelittlepony.unicopia.spell.IAligned;
 import com.minelittlepony.unicopia.spell.ICaster;
@@ -82,12 +83,10 @@ public class ItemMagicStaff extends ItemStaff implements IAligned, ITossableItem
         if (attacker.isSneaking()) {
             stack.damageItem(50, attacker);
 
-            if (attacker instanceof EntityPlayer) {
-                IPower.takeFromPlayer((EntityPlayer)attacker, 4);
-            }
+            CasterUtils.toCaster(attacker).ifPresent(c -> c.subtractEnergyCost(4));
 
             onImpact(
-                    CasterUtils.toCaster(target).orElseGet(() -> CasterUtils.near(target)),
+                    CasterUtils.near(target),
                     target.getPosition(),
                     target.getEntityWorld().getBlockState(target.getPosition())
             );
@@ -140,9 +139,10 @@ public class ItemMagicStaff extends ItemStaff implements IAligned, ITossableItem
 
     @Override
     public void toss(World world, ItemStack stack, EntityPlayer player) {
-        CasterUtils.toCaster(player).ifPresent(effect::toss);
+        IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(player);
 
-        IPower.takeFromPlayer(player, 4);
+        iplayer.subtractEnergyCost(4);
+        effect.toss(iplayer);
 
         stack.damageItem(1, player);
     }

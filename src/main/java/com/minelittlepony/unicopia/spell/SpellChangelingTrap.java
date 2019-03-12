@@ -1,12 +1,13 @@
 package com.minelittlepony.unicopia.spell;
 
+import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.init.UBlocks;
 import com.minelittlepony.unicopia.init.USounds;
-import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.util.WorldEvent;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -51,9 +52,14 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
         return new ItemStack(Items.SLIME_BALL);
     }
 
+    private boolean checkStruggleCondition(ICaster<?> caster) {
+        return !caster.getOrigin().equals(previousTrappedPosition)
+            || (!(caster.getOwner() instanceof EntityPlayer) && caster.getWorld().rand.nextInt(20) == 0);
+    }
+
     @Override
-    public boolean updateOnPerson(IPlayer caster) {
-        EntityPlayer entity = caster.getOwner();
+    public boolean updateOnPerson(ICaster<?> caster) {
+        EntityLivingBase entity = caster.getOwner();
 
         if (entity.motionY > 0) {
             entity.playSound(SoundEvents.BLOCK_SLIME_HIT, 1, 1);
@@ -67,14 +73,12 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
             setDirty(true);
         }
 
-        if (!caster.getWorld().isRemote) {
-            if (!origin.equals(previousTrappedPosition)) {
-                previousTrappedPosition = origin;
-                struggleCounter--;
-                WorldEvent.DESTROY_BLOCK.play(caster.getWorld(), origin, Blocks.SLIME_BLOCK.getDefaultState());
+        if (!caster.getWorld().isRemote && checkStruggleCondition(caster)) {
+            previousTrappedPosition = origin;
+            struggleCounter--;
+            WorldEvent.DESTROY_BLOCK.play(caster.getWorld(), origin, Blocks.SLIME_BLOCK.getDefaultState());
 
-                setDirty(true);
-            }
+            setDirty(true);
         }
 
         if (caster.getWorld().isAirBlock(origin) || caster.getWorld().getBlockState(origin).getBlock().isReplaceable(caster.getWorld(), origin)) {
@@ -97,7 +101,10 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
         entity.hurtTime = 2;
         entity.collidedHorizontally = true;
         entity.collided = true;
-        entity.capabilities.isFlying = false;
+
+        if (entity instanceof EntityPlayer) {
+            ((EntityPlayer)entity).capabilities.isFlying = false;
+        }
 
         PotionEffect SLIME_REGEN = new PotionEffect(MobEffects.REGENERATION, 0);
 
@@ -126,7 +133,7 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
     }
 
     @Override
-    public void renderOnPerson(IPlayer source) {
+    public void renderOnPerson(ICaster<?> source) {
         render(source);
     }
 
@@ -140,7 +147,7 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
         setDirty(true);
     }
 
-    protected void entrap(IPlayer e) {
+    protected void entrap(ICaster<?> e) {
 
         SpellChangelingTrap existing = e.getEffect(SpellChangelingTrap.class, true);
 
@@ -155,8 +162,8 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
     public void onImpact(ICaster<?> caster, BlockPos pos, IBlockState state) {
         if (caster.isLocal()) {
             caster.findAllEntitiesInRange(5)
-                .filter(e -> e instanceof EntityPlayer)
-                .map(e -> PlayerSpeciesList.instance().getPlayer((EntityPlayer)e))
+                .filter(e -> !(e instanceof IMagicals) && e instanceof EntityLivingBase)
+                .map(e -> PlayerSpeciesList.instance().getCaster((EntityLivingBase)e))
                 .forEach(this::entrap);
         }
     }

@@ -1,8 +1,10 @@
 package com.minelittlepony.unicopia.forgebullshit;
 
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.entity.IMagicals;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
@@ -28,9 +30,11 @@ public class FBS {
 
     @SubscribeEvent
     public static void attach(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof EntityPlayer
-         || event.getObject() instanceof EntityItem) {
-            event.addCapability(new ResourceLocation("unicopia", "race"), new Provider(event.getObject()));
+        Entity obj = event.getObject();
+
+        if ((obj instanceof EntityLivingBase && !(obj instanceof IMagicals))
+         || obj instanceof EntityItem) {
+            event.addCapability(new ResourceLocation("unicopia", "race"), new Provider(obj));
         }
     }
 

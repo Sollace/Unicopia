@@ -9,7 +9,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerFlyableFallEvent;
@@ -31,7 +31,12 @@ class Hooks {
     }
 
     @SubscribeEvent
-    public static void onPlayerJump(LivingJumpEvent event) {
+    public static void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
+        PlayerSpeciesList.instance().getEntity(event.getEntityLiving()).onUpdate();
+    }
+
+    @SubscribeEvent
+    public static void onPlayerJump(LivingEvent.LivingJumpEvent event) {
         if (event.getEntityLiving() instanceof EntityPlayer) {
             if (PlayerSpeciesList.instance().getPlayer((EntityPlayer)event.getEntityLiving()).getGravity().getGravitationConstant() < 0) {
                 event.getEntityLiving().motionY = -event.getEntityLiving().motionY;

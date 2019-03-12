@@ -9,7 +9,6 @@ import com.minelittlepony.unicopia.particle.ParticleConnection;
 import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
-import com.minelittlepony.unicopia.power.IPower;
 import com.minelittlepony.util.ProjectileUtil;
 import com.minelittlepony.util.shape.Sphere;
 
@@ -39,7 +38,7 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
     }
 
     @Override
-    public void renderOnPerson(IPlayer source) {
+    public void renderOnPerson(ICaster<?> source) {
         render(source);
     }
 
@@ -57,7 +56,7 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
     }
 
     @Override
-    public boolean updateOnPerson(IPlayer source) {
+    public boolean updateOnPerson(ICaster<?> source) {
         int costMultiplier = applyEntities(source);
         if (costMultiplier > 0) {
             if (source.getOwner().ticksExisted % 20 == 0) {
@@ -66,7 +65,7 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
                 cost *= costMultiplier / 5F;
                 System.out.println("Taking " + cost);
 
-                if (!IPower.takeFromPlayer(source.getOwner(), cost)) {
+                if (!source.subtractEnergyCost(cost)) {
                     setDead();
                 }
             }

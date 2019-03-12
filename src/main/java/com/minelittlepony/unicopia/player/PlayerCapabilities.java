@@ -37,6 +37,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketSetPassengers;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.StatList;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -308,6 +309,22 @@ class PlayerCapabilities implements IPlayer {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean subtractEnergyCost(double foodSubtract) {
+        if (!entity.capabilities.isCreativeMode) {
+            int food = (int)(entity.getFoodStats().getFoodLevel() - foodSubtract);
+
+            if (food < 0) {
+                entity.getFoodStats().addStats(-entity.getFoodStats().getFoodLevel(), 0);
+                entity.attackEntityFrom(DamageSource.MAGIC, -food/2);
+            } else {
+                entity.getFoodStats().addStats((int)-foodSubtract, 0);
+            }
+        }
+
+        return entity.getHealth() > 0;
     }
 
     @Override

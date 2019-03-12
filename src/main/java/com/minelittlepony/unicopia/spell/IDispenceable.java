@@ -6,7 +6,6 @@ import net.minecraft.util.EnumFacing;
 
 /**
  * Represents an object with an action to perform when dispensed from a dispenser.
- *
  */
 public interface IDispenceable extends IMagicEffect {
 

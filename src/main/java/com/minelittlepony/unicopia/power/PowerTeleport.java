@@ -128,7 +128,7 @@ public class PowerTeleport implements IPower<Location> {
         }
 
         player.setPositionAndUpdate(data.x + (player.posX - Math.floor(player.posX)), data.y, data.z + (player.posZ - Math.floor(player.posZ)));
-        IPower.takeFromPlayer(player, distance);
+        iplayer.subtractEnergyCost(distance);
 
         player.fallDistance /= distance;
 

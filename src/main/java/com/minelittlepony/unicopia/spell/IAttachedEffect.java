@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.spell;
 
-import com.minelittlepony.unicopia.player.IPlayer;
-
 public interface IAttachedEffect extends IMagicEffect {
     /**
      * Called every tick when attached to a player.
@@ -9,7 +7,7 @@ public interface IAttachedEffect extends IMagicEffect {
      * @param source    The entity we are currently attached to.
      * @return true to keep alive
      */
-    boolean updateOnPerson(IPlayer caster);
+    boolean updateOnPerson(ICaster<?> caster);
 
     /**
      * Called every tick when attached to a player. Used to apply particle effects.
@@ -17,5 +15,5 @@ public interface IAttachedEffect extends IMagicEffect {
      *
      * @param source    The entity we are currently attached to.
      */
-    default void renderOnPerson(IPlayer source) {}
+    default void renderOnPerson(ICaster<?> source) {}
 }

@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.entity.EntitySpell;
+import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.entity.Entity;
@@ -19,6 +20,9 @@ import net.minecraft.util.math.BlockPos;
 
 public class CasterUtils {
 
+    /**
+     * Finds all surrounding spells withing range from the given caster.
+     */
     public static Stream<ICaster<?>> findAllSpellsInRange(ICaster<?> source, double radius) {
 
         BlockPos origin = source.getOrigin();
@@ -41,6 +45,9 @@ public class CasterUtils {
             .map(Optional::get);
     }
 
+    /**
+     * Finds all magically capabable entities in the world.
+     */
     static Stream<ICaster<?>> findAllSpells(ICaster<?> source) {
         return source.getWorld().getEntities(EntityLivingBase.class, e -> {
             return e instanceof ICaster || e instanceof EntityPlayer;
@@ -67,29 +74,50 @@ public class CasterUtils {
                 .filter(e -> !e.getDead());
     }
 
+    /**
+     * Determines if the passed in entity is holding the named effect.
+     * By holding that meant the effect must be attached to the caster associated with the entity.
+     */
     public static boolean isHoldingEffect(String effectName, Entity entity) {
         return Streams.stream(entity.getEquipmentAndArmor())
             .map(SpellRegistry::getKeyFromStack)
             .anyMatch(s -> s.equals(effectName));
     }
 
+    /**
+     * Creates a new caster at the position of the given entity.
+     * First attempts to convert the passed entity into a caster.
+     */
+    @Nonnull
     public static ICaster<?> near(@Nonnull Entity entity) {
+        ICaster<?> result = toCasterRaw(entity);
+
+        if (result != null) {
+            return result;
+        }
+
         EntitySpell caster = new EntitySpell(entity.world);
         caster.copyLocationAndAnglesFrom(entity);
 
         return caster;
     }
 
+    /**
+     * Attempts to convert the passed entity into a caster using all the known methods.
+     */
     public static Optional<ICaster<?>> toCaster(@Nullable Entity entity) {
+        return Optional.ofNullable(toCasterRaw(entity));
+    }
 
+    private static ICaster<?> toCasterRaw(Entity entity) {
         if (entity instanceof ICaster<?>) {
-            return Optional.of((ICaster<?>)entity);
+            return (ICaster<?>)entity;
         }
 
-        if (entity instanceof EntityPlayer) {
-            return Optional.of(PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity));
+        if (entity instanceof EntityLivingBase && !(entity instanceof IMagicals)) {
+            return PlayerSpeciesList.instance().getCaster((EntityLivingBase)entity);
         }
 
-        return Optional.empty();
+        return null;
     }
 }

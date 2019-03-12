@@ -146,8 +146,6 @@ public class SpellDisguise extends AbstractSpell implements IAttachedEffect, ISu
         entity.setUniqueId(UUID.randomUUID());
         entity.extinguish();
 
-        PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity).setEffect(null);
-
         onEntityLoaded(source);
     }
 
@@ -178,6 +176,8 @@ public class SpellDisguise extends AbstractSpell implements IAttachedEffect, ISu
         if (entity == null) {
             return;
         }
+
+        CasterUtils.toCaster(entity).ifPresent(c -> c.setEffect(null));
 
         if (source.getWorld().isRemote) {
             source.getWorld().spawnEntity(entity);
@@ -289,7 +289,7 @@ public class SpellDisguise extends AbstractSpell implements IAttachedEffect, ISu
     }
 
     @Override
-    public boolean updateOnPerson(IPlayer caster) {
+    public boolean updateOnPerson(ICaster<?> caster) {
         return update(caster);
     }
 

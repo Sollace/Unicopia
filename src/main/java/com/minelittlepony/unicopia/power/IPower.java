@@ -10,37 +10,10 @@ import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public interface IPower<T extends IData> extends IKeyBind {
-
-    /**
-     * Subtracts a given food amount from the player.
-     * Harms the player if there is not enough hunger available.
-     */
-    static boolean takeFromPlayer(EntityPlayer player, double foodSubtract) {
-        if (!player.capabilities.isCreativeMode) {
-            int food = (int)(player.getFoodStats().getFoodLevel() - foodSubtract);
-            if (food < 0) {
-                player.getFoodStats().addStats(-player.getFoodStats().getFoodLevel(), 0);
-                player.attackEntityFrom(DamageSource.MAGIC, -food/2);
-            } else {
-                player.getFoodStats().addStats((int)-foodSubtract, 0);
-            }
-        }
-
-        return player.getHealth() > 0;
-    }
-
-    static double getPlayerEyeYPos(EntityPlayer player) {
-        if (player.getEntityWorld().isRemote) {
-            return player.posY + player.getEyeHeight() - player.getYOffset();
-        }
-        return player.posY + player.getEyeHeight() - 1;
-    }
 
     static void spawnParticles(int particleId, Entity entity, int count, int...args) {
         double halfDist = entity.getEyeHeight() / 1.5;
