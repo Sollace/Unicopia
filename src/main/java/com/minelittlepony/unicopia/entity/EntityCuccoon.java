@@ -14,14 +14,17 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -55,6 +58,27 @@ public class EntityCuccoon extends EntityLivingBase implements IMagicals, IInAni
 
     public void setStruggleCount(int count) {
         getDataManager().set(STRUGGLE_COUNT, count % 6);
+    }
+
+    @Override
+    @Nullable
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return SoundEvents.ENTITY_SLIME_SQUISH;
+    }
+
+    @Override
+    protected SoundEvent getFallSound(int heightIn) {
+        return SoundEvents.ENTITY_SLIME_SQUISH;
+    }
+
+    @Override
+    public boolean attackEntityFrom(DamageSource source, float amount) {
+
+        if (Predicates.BUGGY.test(source.getTrueSource())) {
+            amount = 0;
+        }
+
+        return super.attackEntityFrom(source, amount);
     }
 
     @Override
