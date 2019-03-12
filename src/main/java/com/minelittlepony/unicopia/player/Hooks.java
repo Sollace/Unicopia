@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.player;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.entity.IMagicals;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,10 +33,8 @@ class Hooks {
 
     @SubscribeEvent
     public static void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
-        IRaceContainer<?> caster = PlayerSpeciesList.instance().getEntity(event.getEntityLiving());
-
-        if (caster != null) {
-            caster.onUpdate();
+        if (!(event.getEntityLiving() instanceof IMagicals)) {
+            PlayerSpeciesList.instance().getEntity(event.getEntityLiving()).onUpdate();
         }
     }
 
