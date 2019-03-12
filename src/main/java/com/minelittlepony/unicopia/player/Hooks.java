@@ -32,7 +32,11 @@ class Hooks {
 
     @SubscribeEvent
     public static void onLivingUpdate(LivingEvent.LivingUpdateEvent event) {
-        PlayerSpeciesList.instance().getEntity(event.getEntityLiving()).onUpdate();
+        IRaceContainer<?> caster = PlayerSpeciesList.instance().getEntity(event.getEntityLiving());
+
+        if (caster != null) {
+            caster.onUpdate();
+        }
     }
 
     @SubscribeEvent
