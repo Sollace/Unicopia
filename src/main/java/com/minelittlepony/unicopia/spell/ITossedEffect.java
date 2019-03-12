@@ -14,18 +14,29 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.world.World;
 
+/**
+ * Magic effects that can be thrown.
+ */
 public interface ITossedEffect extends IMagicEffect, ITossable<ICaster<?>> {
 
     default SoundEvent getThrowSound(ICaster<?> caster) {
         return SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT;
     }
 
+    /**
+     * Gets the appearance to be used when projecting this spell.
+     */
     default ItemStack getCastAppearance(ICaster<?> caster) {
-        Item item = this.getAffinity() == SpellAffinity.BAD ? UItems.curse : UItems.spell;
+        Item item = getAffinity() == SpellAffinity.BAD ? UItems.curse : UItems.spell;
 
         return SpellRegistry.instance().enchantStack(new ItemStack(item), getName());
     }
 
+    /**
+     * Projects this spell.
+     *
+     * Returns the resulting projectile entity for customization (or null if on the client).
+     */
     @Nullable
     default EntityProjectile toss(ICaster<?> caster) {
         World world = caster.getWorld();
@@ -34,7 +45,7 @@ public interface ITossedEffect extends IMagicEffect, ITossable<ICaster<?>> {
 
         world.playSound(null, entity.posX, entity.posY, entity.posZ, getThrowSound(caster), SoundCategory.NEUTRAL, 0.7F, 0.4F / (world.rand.nextFloat() * 0.4F + 0.8F));
 
-        if (!world.isRemote) {
+        if (caster.isLocal()) {
             EntityProjectile projectile = new EntityProjectile(world, caster.getOwner());
 
             projectile.setItem(getCastAppearance(caster));

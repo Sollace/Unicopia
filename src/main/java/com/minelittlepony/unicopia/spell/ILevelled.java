@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.spell;
 
+/**
+ * Object with levelling capabilities.
+ */
 public interface ILevelled {
 
     /**

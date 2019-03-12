@@ -23,6 +23,11 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
+/**
+ * A generalised version of Mojang's projectile entity class with added support for a custom appearance and water phobia.
+ *
+ * Can also carry a spell if needed.
+ */
 public class EntityProjectile extends EntitySnowball implements IMagicals, ICaster<EntityLivingBase> {
 
     private static final DataParameter<ItemStack> ITEM = EntityDataManager
