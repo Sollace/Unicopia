@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.init.USounds;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.util.WorldEvent;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -75,20 +76,29 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
             setDirty(true);
         }
 
-        if (!caster.getWorld().isRemote && checkStruggleCondition(caster)) {
-            previousTrappedPosition = origin;
-            struggleCounter--;
-            WorldEvent.DESTROY_BLOCK.play(caster.getWorld(), origin, Blocks.SLIME_BLOCK.getDefaultState());
+        if (caster.isLocal()) {
+            if (checkStruggleCondition(caster)) {
+                previousTrappedPosition = origin;
+                struggleCounter--;
+                WorldEvent.DESTROY_BLOCK.play(caster.getWorld(), origin, Blocks.SLIME_BLOCK.getDefaultState());
 
-            setDirty(true);
-        }
+                setDirty(true);
+            }
 
-        if (caster.getWorld().isAirBlock(origin) || caster.getWorld().getBlockState(origin).getBlock().isReplaceable(caster.getWorld(), origin)) {
-            caster.getWorld().setBlockState(origin, UBlocks.slime_layer.getDefaultState());
+            Block block = caster.getWorld().getBlockState(origin).getBlock();
+
+            if (UBlocks.slime_layer.canPlaceBlockAt(caster.getWorld(), origin)) {
+                if (caster.getWorld().isAirBlock(origin) || (block != UBlocks.slime_layer && block.isReplaceable(caster.getWorld(), origin))) {
+                    caster.getWorld().setBlockState(origin, UBlocks.slime_layer.getDefaultState());
+                }
+            }
         }
 
         entity.motionX = 0;
-        entity.motionY = 0;
+
+        if (!entity.onGround && entity.motionY > 0) {
+            entity.motionY = 0;
+        }
         entity.motionZ = 0;
 
         entity.moveForward = 0;
@@ -112,7 +122,7 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
 
         entity.addPotionEffect(SLIME_REGEN);
 
-        if (caster.getWorld().isRemote) {
+        if (caster.isLocal()) {
             if (struggleCounter <= 0) {
                 setDead();
                 setDirty(true);
@@ -121,12 +131,12 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
             }
         }
 
-        return struggleCounter > 0;
+        return !entity.isRiding() && struggleCounter > 0;
     }
 
     @Override
     public boolean update(ICaster<?> source) {
-        return true;
+        return !source.getEntity().isRiding();
     }
 
     @Override
