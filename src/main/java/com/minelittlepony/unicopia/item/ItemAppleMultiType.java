@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.item;
 import com.minelittlepony.unicopia.forgebullshit.IMultiItem;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -58,6 +59,11 @@ public class ItemAppleMultiType extends ItemApple implements IMultiItem {
         }
 
         return super.getMetadata(stack);
+    }
+
+    @Override
+    public boolean onEntityItemUpdate(EntityItem item) {
+        return false;
     }
 
     @Override

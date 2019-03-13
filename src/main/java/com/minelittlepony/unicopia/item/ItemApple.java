@@ -14,9 +14,12 @@ import com.minelittlepony.util.collection.Weighted;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class ItemApple extends ItemFood implements IEdible {
@@ -65,6 +68,41 @@ public class ItemApple extends ItemFood implements IEdible {
         if (!"minecraft".contentEquals(domain)) {
             setRegistryName(domain, name);
         }
+    }
+
+    @Override
+    public boolean onEntityItemUpdate(EntityItem item) {
+
+            if (!item.isDead && item.ticksExisted > item.lifespan * 0.9) {
+
+                if (!item.world.isRemote) {
+                    item.setDead();
+
+                    EntityItem neu = new EntityItem(item.world);
+                    neu.copyLocationAndAnglesFrom(item);
+                    neu.setItem(new ItemStack(UItems.rotten_apple));
+
+                    item.world.spawnEntity(neu);
+
+                    EntityItem copy = new EntityItem(item.world);
+                    copy.copyLocationAndAnglesFrom(item);
+                    copy.setItem(item.getItem());
+                    copy.getItem().shrink(1);
+
+                    item.world.spawnEntity(copy);
+                } else {
+                    float bob = MathHelper.sin(((float)item.getAge() + 1) / 10F + item.hoverStart) * 0.1F + 0.1F;
+
+                    for (int i = 0; i < 3; i++) {
+                        item.world.spawnParticle(EnumParticleTypes.SPELL_MOB, item.posX, item.posY + bob, item.posZ,
+                                item.world.rand.nextGaussian() - 0.5F,
+                                item.world.rand.nextGaussian() - 0.5F,
+                                item.world.rand.nextGaussian() - 0.5F);
+                    }
+                }
+            }
+
+        return false;
     }
 
     @Override

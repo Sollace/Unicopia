@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -13,6 +14,11 @@ public class ItemRottenApple extends ItemApple {
     @Override
     public int getItemBurnTime(ItemStack stack) {
         return 150;
+    }
+
+    @Override
+    public boolean onEntityItemUpdate(EntityItem item) {
+        return false;
     }
 
     @Override
