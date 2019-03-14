@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.block.BlockGlowingGem;
 import com.minelittlepony.unicopia.block.BlockGrowingCuccoon;
 import com.minelittlepony.unicopia.block.BlockHiveWall;
 import com.minelittlepony.unicopia.block.BlockSlimeLayer;
+import com.minelittlepony.unicopia.block.BlockStick;
 import com.minelittlepony.unicopia.block.BlockCloudAnvil;
 import com.minelittlepony.unicopia.block.BlockCloudBanister;
 import com.minelittlepony.unicopia.block.BlockCloudSlab;
@@ -70,6 +71,7 @@ public class UBlocks {
 
     public static final BlockAlfalfa alfalfa = new BlockAlfalfa(Unicopia.MODID, "alfalfa");
 
+    public static final BlockStick stick = new BlockStick(Unicopia.MODID, "stick");
     public static final BlockTomatoPlant tomato_plant = new BlockTomatoPlant(Unicopia.MODID, "tomato_plant");
 
     public static final BlockCloudFarm cloud_farmland = new BlockCloudFarm(Unicopia.MODID, "cloud_farmland");
@@ -104,7 +106,7 @@ public class UBlocks {
                              anvil, cloud_farmland,
                              sugar_block, flower_pot,
                              alfalfa,
-                             tomato_plant,
+                             stick, tomato_plant,
                              enchanted_torch,
                              apple_tree, apple_leaves);
     }

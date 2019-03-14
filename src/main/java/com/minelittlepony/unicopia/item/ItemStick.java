@@ -33,9 +33,9 @@ public class ItemStick extends ItemSeeds {
         ItemStack itemstack = player.getHeldItem(hand);
         IBlockState state = worldIn.getBlockState(pos);
 
-        if (facing == EnumFacing.UP && player.canPlayerEdit(pos.offset(facing), facing, itemstack) && state.getBlock().canSustainPlant(state, worldIn, pos, EnumFacing.UP, this) && worldIn.isAirBlock(pos.up())) {
+        if (facing == EnumFacing.UP && player.canPlayerEdit(pos.offset(facing), facing, itemstack) && worldIn.isAirBlock(pos.up())) {
 
-            worldIn.setBlockState(pos.up(), UBlocks.tomato_plant.getPlacedState(state));
+            worldIn.setBlockState(pos.up(), UBlocks.stick.getDefaultState());
 
             SoundType sound = state.getBlock().getSoundType(state, worldIn, pos, player);
 

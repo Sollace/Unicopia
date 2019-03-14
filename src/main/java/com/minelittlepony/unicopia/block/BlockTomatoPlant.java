@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.minelittlepony.unicopia.init.UItems;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.properties.PropertyEnum;
@@ -30,11 +31,6 @@ public class BlockTomatoPlant extends BlockCrops {
 
     public static final PropertyEnum<Type> TYPE = PropertyEnum.create("type", Type.class);
 
-    private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(
-            7/16F, -1/16F, 7/16F,
-            9/16F, 15/16F, 9/16F
-    );
-
     public BlockTomatoPlant(String domain, String name) {
         setRegistryName(domain, name);
         setTranslationKey(name);
@@ -47,7 +43,7 @@ public class BlockTomatoPlant extends BlockCrops {
     @Deprecated
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        return BOUNDING_BOX.offset(state.getOffset(source, pos));
+        return BlockStick.BOUNDING_BOX.offset(state.getOffset(source, pos));
     }
 
     @Deprecated
@@ -96,10 +92,6 @@ public class BlockTomatoPlant extends BlockCrops {
 
     @Override
     public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
-        if (getAge(state) == 0) {
-            return;
-        }
-
         checkAndDropBlock(world, pos, state);
 
         if (world.isAreaLoaded(pos, 1) && world.getLightFromNeighbors(pos.up()) >= 9) {
@@ -108,18 +100,13 @@ public class BlockTomatoPlant extends BlockCrops {
             if (i < getMaxAge()) {
                 float f = getGrowthChance(this, world, pos);
 
-                if(ForgeHooks.onCropsGrowPre(world, pos, state, rand.nextInt((int)(25 / f) + 1) == 0)) {
+                if (ForgeHooks.onCropsGrowPre(world, pos, state, rand.nextInt((int)(25 / f) + 1) == 0)) {
                     world.setBlockState(pos, state.withProperty(getAgeProperty(), i + 1), 2);
 
                     ForgeHooks.onCropsGrowPost(world, pos, state, world.getBlockState(pos));
                 }
             }
         }
-    }
-
-    @Override
-    public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient) {
-        return getAge(state) > 0 && super.canGrow(worldIn, pos, state, isClient);
     }
 
     @Override
@@ -134,9 +121,6 @@ public class BlockTomatoPlant extends BlockCrops {
 
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        if (getAge(state) == 0) {
-            return Items.AIR;
-        }
 
         if (isMaxAge(state)) {
             return state.getValue(TYPE) == Type.CLOUDSDALE ? UItems.cloudsdale_tomato : UItems.tomato;
@@ -195,9 +179,11 @@ public class BlockTomatoPlant extends BlockCrops {
     }
 
     public boolean plant(World world, BlockPos pos, IBlockState state) {
-        if (getAge(state) == 0) {
+        Block block = state.getBlock();
 
-            world.setBlockState(pos, state.withProperty(getAgeProperty(), 1));
+        if (block instanceof BlockStick && ((BlockStick)block).canSustainPlant(world, pos, this)) {
+
+            world.setBlockState(pos, getPlacedState(world, pos, state).withProperty(getAgeProperty(), 1));
 
             SoundType sound = getSoundType(state, world, pos, null);
 
@@ -217,7 +203,12 @@ public class BlockTomatoPlant extends BlockCrops {
         return withAge(age).withProperty(TYPE, Type.values()[half]);
     }
 
-    public IBlockState getPlacedState(IBlockState state) {
+    public IBlockState getPlacedState(World world, BlockPos pos, IBlockState state) {
+        if (state.getBlock() instanceof BlockStick) {
+            pos = pos.down();
+            return getPlacedState(world, pos, world.getBlockState(pos));
+        }
+
         if (state.getBlock() instanceof BlockCloudFarm) {
             return getDefaultState().withProperty(TYPE, Type.CLOUDSDALE);
         }
