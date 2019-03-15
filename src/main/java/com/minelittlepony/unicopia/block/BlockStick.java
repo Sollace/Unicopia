@@ -8,11 +8,17 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemLead;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.common.EnumPlantType;
 import net.minecraftforge.common.IPlantable;
 
@@ -63,6 +69,17 @@ public class BlockStick extends Block implements IPlantable {
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return UItems.stick;
+    }
+
+    @Override
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float x, float y, float z) {
+        if (!world.isRemote) {
+            return ItemLead.attachToFence(player, world, pos);
+        }
+
+        ItemStack stack = player.getHeldItem(hand);
+
+        return stack.getItem() == Items.LEAD || stack.isEmpty();
     }
 
     public boolean canSustainPlant(IBlockAccess world, BlockPos pos, IPlantable plantable) {
