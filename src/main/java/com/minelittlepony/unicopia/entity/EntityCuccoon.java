@@ -7,13 +7,18 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.init.UParticles;
 import com.minelittlepony.unicopia.init.USounds;
+import com.minelittlepony.unicopia.power.IPower;
+import com.minelittlepony.util.MagicalDamageSource;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -21,12 +26,16 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.event.ForgeEventFactory;
 
@@ -124,6 +133,18 @@ public class EntityCuccoon extends EntityLivingBase implements IMagicals, IInAni
             }
 
             captiveLastSneakState = sneaking;
+
+            if (passenger instanceof EntityLivingBase) {
+                EntityLivingBase living = (EntityLivingBase)passenger;
+
+                if (!living.isPotionActive(MobEffects.REGENERATION) && living.getHealth() < living.getMaxHealth()) {
+                    living.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 20, 2));
+                }
+
+                if (!living.isPotionActive(MobEffects.SLOWNESS) && living.getHealth() < living.getMaxHealth()) {
+                    living.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 2000, 4));
+                }
+            }
         }
 
         if (world.isRemote) {
@@ -133,6 +154,50 @@ public class EntityCuccoon extends EntityLivingBase implements IMagicals, IInAni
 
             world.spawnParticle(EnumParticleTypes.DRIP_LAVA, x, y, z, 0, 0, 0);
         }
+    }
+
+    @Override
+    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand) {
+
+        if (hand == EnumHand.MAIN_HAND && Predicates.BUGGY.test(player)) {
+
+            if (isBeingRidden()) {
+                Entity passenger = getPassengers().get(0);
+
+                if (player.canEat(false) || player.getHealth() < player.getMaxHealth()) {
+                    DamageSource d = MagicalDamageSource.causePlayerDamage("feed", player);
+
+
+                    IPower.spawnParticles(UParticles.CHANGELING_MAGIC, this, 7);
+
+                    if (passenger instanceof EntityLivingBase) {
+                        if (player.isPotionActive(MobEffects.NAUSEA)) {
+                            ((EntityLivingBase)passenger).addPotionEffect(player.removeActivePotionEffect(MobEffects.NAUSEA));
+                        } else if (world.rand.nextInt(2300) == 0) {
+                            ((EntityLivingBase)passenger).addPotionEffect(new PotionEffect(MobEffects.WITHER, 20, 1));
+                        }
+                    }
+
+                    if (passenger instanceof EntityPlayer) {
+                        if (!player.isPotionActive(MobEffects.HEALTH_BOOST)) {
+                            player.addPotionEffect(new PotionEffect(MobEffects.HEALTH_BOOST, 13000, 1));
+                        }
+                    }
+
+                    passenger.attackEntityFrom(d, 5);
+
+                    if (player.canEat(false)) {
+                        player.getFoodStats().addStats(5, 0);
+                    } else {
+                        player.heal(5);
+                    }
+
+                    return EnumActionResult.SUCCESS;
+                }
+            }
+        }
+
+        return super.applyPlayerInteraction(player, vec, hand);
     }
 
     public float getBreatheAmount(float stutter) {

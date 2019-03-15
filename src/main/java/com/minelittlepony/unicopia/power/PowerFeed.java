@@ -124,7 +124,7 @@ public class PowerFeed implements IPower<Hit> {
         }
     }
 
-    protected float drainFrom(EntityPlayer changeling, EntityLivingBase living) {
+    public float drainFrom(EntityPlayer changeling, EntityLivingBase living) {
         DamageSource d = MagicalDamageSource.causePlayerDamage("feed", changeling);
 
         float damage = living.getHealth()/2;
