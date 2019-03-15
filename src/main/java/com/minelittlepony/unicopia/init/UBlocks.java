@@ -23,6 +23,7 @@ import com.minelittlepony.unicopia.block.UPot;
 import com.minelittlepony.unicopia.block.USapling;
 import com.minelittlepony.unicopia.item.ItemApple;
 import com.minelittlepony.unicopia.block.BlockCloudDoor;
+import com.minelittlepony.unicopia.block.BlockDiamondDoor;
 import com.minelittlepony.unicopia.block.BlockCloudFarm;
 import com.minelittlepony.unicopia.block.BlockCloudFence;
 import com.minelittlepony.unicopia.block.BlockCloud;
@@ -61,6 +62,7 @@ public class UBlocks {
     public static final Block bakery_door = new BlockDutchDoor(Material.WOOD, Unicopia.MODID, "bakery_door", () -> UItems.bakery_door)
             .setSoundType(SoundType.WOOD)
             .setHardness(3);
+    public static final Block diamond_door = new BlockDiamondDoor(Unicopia.MODID, "diamond_door", () -> UItems.diamond_door);
 
     public static final BlockGlowingGem enchanted_torch = new BlockGlowingGem(Unicopia.MODID, "enchanted_torch");
 
@@ -101,7 +103,7 @@ public class UBlocks {
                              enchanted_cloud_slab, enchanted_cloud_slab.doubleSlab,
                              packed_cloud_slab, packed_cloud_slab.doubleSlab,
                              cloud_fence, cloud_banister,
-                             mist_door, library_door, bakery_door,
+                             mist_door, library_door, bakery_door, diamond_door,
                              hive, chitin, chissled_chitin, cuccoon, slime_layer,
                              anvil, cloud_farmland,
                              sugar_block, flower_pot,

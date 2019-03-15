@@ -54,11 +54,11 @@ public abstract class UDoor extends BlockDoor {
     }
 
     protected WorldEvent getCloseSound() {
-        return material == Material.IRON ? WorldEvent.IRON_DOOR_SLAM : WorldEvent.WOODEN_DOOR_SLAM;
+        return isLockable() ? WorldEvent.IRON_DOOR_SLAM : WorldEvent.WOODEN_DOOR_SLAM;
     }
 
     protected WorldEvent getOpenSound() {
-        return material == Material.IRON ? WorldEvent.IRON_DOOR_OPEN : WorldEvent.WOODEN_DOOR_OPEN;
+        return isLockable() ? WorldEvent.IRON_DOOR_OPEN : WorldEvent.WOODEN_DOOR_OPEN;
     }
 
     @Override
@@ -71,8 +71,20 @@ public abstract class UDoor extends BlockDoor {
         toggleDoor(world, pos, open, false, null);
     }
 
+    protected boolean isLockable() {
+        return material == Material.IRON;
+    }
+
+    protected boolean canBePowered() {
+        return true;
+    }
+
+    protected boolean canOpen(@Nullable EntityPlayer player) {
+        return player == null || material != Material.IRON;
+    }
+
     protected boolean toggleDoor(World world, BlockPos pos, boolean open, boolean force, @Nullable EntityPlayer player) {
-        if (player != null && material == Material.IRON) {
+        if (!canOpen(player)) {
             return false;
         }
 
@@ -154,7 +166,7 @@ public abstract class UDoor extends BlockDoor {
             if (!world.isRemote) {
                 dropBlockAsItem(world, pos, state, 0);
             }
-        } else {
+        } else if (canBePowered()) {
             boolean powered = world.isBlockPowered(pos) || world.isBlockPowered(upper);
 
             if (sender != this && (powered || sender.getDefaultState().canProvidePower()) && powered != upperDoor.getValue(POWERED)) {

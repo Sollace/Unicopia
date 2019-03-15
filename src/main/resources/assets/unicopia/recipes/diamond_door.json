@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "##",
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": [
+      { "item": "minecraft:diamond" }
+    ]
+  },
+  "result": { "item": "unicopia:diamond_door", "count": 3 }
+}
