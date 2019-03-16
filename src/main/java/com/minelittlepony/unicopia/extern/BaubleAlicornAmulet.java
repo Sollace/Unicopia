@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.extern;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.item.ItemAlicornAmulet;
 
 import baubles.api.BaubleType;
@@ -16,7 +17,11 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
-public class BaubleAlicornAmulet extends ItemAlicornAmulet implements IBauble {
+class BaubleAlicornAmulet extends ItemAlicornAmulet implements IBauble {
+
+    static {
+        Unicopia.log.warn("Loaded BaubleAlicornAmulet.class If this is called, baubles must be present. Otherwise the game has probably already crashed...");
+    }
 
     public BaubleAlicornAmulet(String domain, String name) {
         super(domain, name);
