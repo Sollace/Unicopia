@@ -6,9 +6,8 @@ import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.util.ResourceLocation;
 
 /**
- * Provides access the the built in texture locations.
+ * Provides access to the built in texture locations.
  * This is needed to add things like custom backgrounds for slots.
- * @author Chris Albers
  *
  */
 @FUF(reason = "Forge doesn't provide this, for some unknown reason...")
