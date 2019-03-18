@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.world;
 
+import com.minelittlepony.unicopia.Unicopia;
+
 import net.minecraft.util.EnumActionResult;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.UseHoeEvent;
@@ -12,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
-@EventBusSubscriber
+@EventBusSubscriber(modid = Unicopia.MODID)
 public class Hooks {
 
     @SubscribeEvent

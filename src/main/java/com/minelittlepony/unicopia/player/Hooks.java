@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.player;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.IMagicals;
 
 import net.minecraft.entity.Entity;
@@ -20,7 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 
-@EventBusSubscriber
+@EventBusSubscriber(modid = Unicopia.MODID)
 class Hooks {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {

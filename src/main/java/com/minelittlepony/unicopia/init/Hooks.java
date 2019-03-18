@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.init;
 
+import com.minelittlepony.unicopia.Unicopia;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;
@@ -9,7 +11,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 
-@EventBusSubscriber
+@EventBusSubscriber(modid = Unicopia.MODID)
 class Hooks {
 
     @SubscribeEvent

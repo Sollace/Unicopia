@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
 
-@EventBusSubscriber(Side.CLIENT)
+@EventBusSubscriber(value = Side.CLIENT, modid = Unicopia.MODID)
 class ClientHooks {
     // This fixes lighting errors on the armour slots.
     // #MahjongPls
