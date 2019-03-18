@@ -12,9 +12,10 @@ import net.minecraft.block.BlockTallGrass;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -38,23 +39,21 @@ public class BlockInteractions {
         return true;
     }
 
-    public EnumActionResult onBlockInteract(World world, IBlockState state, BlockPos pos, EntityPlayer player, ItemStack stack, EnumHand hand) {
+    public EnumActionResult onBlockInteract(World world, IBlockState state, BlockPos pos, EntityPlayer player, ItemStack stack, EnumFacing facing, EnumHand hand) {
+        Item shill = UItems.Shills.getShill(stack.getItem());
 
-        if (stack.getItem() == Items.SHEARS) {
-            if (UItems.moss.tryConvert(world, state, pos, player)) {
+        if (shill != null) {
+            EnumActionResult result = shill.onItemUse(player, world, pos, hand, facing, 0, 0, 0);
 
-                if (!player.isCreative()) {
-                    stack.damageItem(1, player);
-                }
-
-                return EnumActionResult.SUCCESS;
+            if (result == EnumActionResult.SUCCESS) {
+                return result;
             }
         }
 
-        if (state.getBlock() == Blocks.FLOWER_POT) {
-            if (UBlocks.flower_pot.onBlockActivated(world, pos, state, player, hand, player.getHorizontalFacing(), 0.5F, 0.5F, 0.5F)) {
-                return EnumActionResult.SUCCESS;
-            }
+        Block shillBlock = UBlocks.Shills.getShill(state.getBlock());
+
+        if (shillBlock != null && shillBlock.onBlockActivated(world, pos, state, player, hand, player.getHorizontalFacing(), 0.5F, 0.5F, 0.5F)) {
+            return EnumActionResult.SUCCESS;
         }
 
         return EnumActionResult.PASS;

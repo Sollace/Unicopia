@@ -14,7 +14,6 @@ import com.minelittlepony.unicopia.item.ItemRottenApple;
 import com.minelittlepony.unicopia.item.ItemSpell;
 import com.minelittlepony.unicopia.item.ItemSpellbook;
 import com.minelittlepony.unicopia.item.ItemStaff;
-import com.minelittlepony.unicopia.item.ItemStick;
 import com.minelittlepony.unicopia.item.ItemTomato;
 import com.minelittlepony.unicopia.item.ItemTomatoSeeds;
 import com.minelittlepony.unicopia.item.ItemZapApple;
@@ -22,6 +21,8 @@ import com.minelittlepony.unicopia.item.UItemBlock;
 import com.minelittlepony.unicopia.item.UItemDecoration;
 import com.minelittlepony.unicopia.item.UItemSlab;
 import com.minelittlepony.unicopia.item.URecord;
+import com.minelittlepony.unicopia.item.override.ItemShear;
+import com.minelittlepony.unicopia.item.override.ItemStick;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 import com.minelittlepony.unicopia.spell.SpellScorch;
 
@@ -46,6 +47,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 
 import static com.minelittlepony.unicopia.Predicates.*;
+
+import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.Unicopia;
@@ -155,7 +158,6 @@ public class UItems {
             .setRegistryName(Unicopia.MODID, "alfalfa_seeds")
             .setCreativeTab(CreativeTabs.MATERIALS);
 
-    public static final ItemStick stick = new ItemStick();
     public static final Item enchanted_torch = new ItemBlock(UBlocks.enchanted_torch)
             .setRegistryName(Unicopia.MODID, "enchanted_torch");
 
@@ -236,7 +238,6 @@ public class UItems {
     static void init(IForgeRegistry<Item> registry) {
         RegistryLockSpinner.open(Item.REGISTRY, Items.class, r -> r
                 .replace(Items.APPLE, red_apple)
-                .replace(Items.STICK, stick)
                 .replace(Item.getItemFromBlock(Blocks.TALLGRASS), tall_grass)
                 .replace(Item.getItemFromBlock(Blocks.DOUBLE_PLANT), double_plant)
                 .replace(Item.getItemFromBlock(Blocks.YELLOW_FLOWER), yellow_flower)
@@ -329,5 +330,23 @@ public class UItems {
 
             return 0xffffff;
         }, spell, curse);
+    }
+
+    public static class Shills {
+        private static final ItemStick stick = new ItemStick();
+        private static final ItemShear shears = new ItemShear();
+
+        @Nullable
+        public static Item getShill(Item itemIn) {
+            if (itemIn == Items.SHEARS) {
+                return shears;
+            }
+
+            if (itemIn == Items.STICK) {
+                return stick;
+            }
+
+            return null;
+        }
     }
 }

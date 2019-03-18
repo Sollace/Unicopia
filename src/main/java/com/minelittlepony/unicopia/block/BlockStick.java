@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.block;
 
 import java.util.Random;
 
-import com.minelittlepony.unicopia.init.UItems;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -68,7 +66,7 @@ public class BlockStick extends Block implements IPlantable {
 
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return UItems.stick;
+        return Items.STICK;
     }
 
     @Override

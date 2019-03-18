@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.init;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.BlockAlfalfa;
@@ -134,5 +136,16 @@ public class UBlocks {
 
             return ColorizerFoliage.getFoliageColorBasic();
         }, apple_leaves);
+    }
+
+    public static class Shills {
+        @Nullable
+        public static Block getShill(Block blockIn) {
+            if (blockIn == Blocks.FLOWER_POT) {
+                return flower_pot;
+            }
+
+            return null;
+        }
     }
 }

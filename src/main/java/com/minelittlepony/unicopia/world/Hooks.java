@@ -23,7 +23,7 @@ public class Hooks {
         }
 
         EnumActionResult result = UWorld.instance().getBlocks().onBlockInteract(
-                event.getWorld(), event.getWorld().getBlockState(event.getPos()), event.getPos(), event.getEntityPlayer(), event.getItemStack(), event.getHand());
+                event.getWorld(), event.getWorld().getBlockState(event.getPos()), event.getPos(), event.getEntityPlayer(), event.getItemStack(), event.getFace(), event.getHand());
 
         if (result != EnumActionResult.PASS) {
             event.setCanceled(true);

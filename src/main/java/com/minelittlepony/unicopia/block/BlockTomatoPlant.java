@@ -133,7 +133,7 @@ public class BlockTomatoPlant extends BlockCrops {
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         Random rand = world instanceof World ? ((World)world).rand : RANDOM;
 
-        drops.add(new ItemStack(UItems.stick, 1, 0));
+        drops.add(new ItemStack(Items.STICK, 1, 0));
 
         Item item = getItemDropped(state, rand, fortune);
         if (item != Items.AIR) {
