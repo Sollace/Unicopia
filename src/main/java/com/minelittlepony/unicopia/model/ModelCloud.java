@@ -6,15 +6,9 @@ import net.minecraft.entity.Entity;
 
 public class ModelCloud extends ModelBase {
 
-    ModelRenderer body;
+    private final ModelRenderer body;
 
     public ModelCloud() {
-        init();
-    }
-
-    private void init() {
-        boxList.clear();
-
         body = new ModelRenderer(this, 0, 0);
         body.setTextureSize(250, 90);
 
