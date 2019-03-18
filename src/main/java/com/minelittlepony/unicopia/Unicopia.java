@@ -116,13 +116,13 @@ public class Unicopia implements IGuiHandler {
     }
 
     @EventHandler
-    public void posInit(FMLPostInitializationEvent event) {
+    public void postInit(FMLPostInitializationEvent event) {
         craftingManager.load();
 
         Pages.instance().load();
 
         Biome.REGISTRY.forEach(UEntities::registerSpawnEntries);
-        UClient.instance().posInit();
+        UClient.instance().postInit();
 
         UItems.fixRecipes();
     }

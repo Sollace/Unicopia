@@ -92,5 +92,5 @@ public class UClient {
 
     public void init() {}
 
-    public void posInit() {}
+    public void postInit() {}
 }
