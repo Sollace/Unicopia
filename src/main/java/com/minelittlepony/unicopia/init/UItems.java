@@ -60,7 +60,7 @@ import com.minelittlepony.unicopia.edibles.Toxicity;
 import com.minelittlepony.unicopia.edibles.UItemFoodDelegate;
 import com.minelittlepony.unicopia.extern.Baubles;
 import com.minelittlepony.unicopia.forgebullshit.BuildInTexturesBakery;
-import com.minelittlepony.unicopia.forgebullshit.ItemModels;
+import com.minelittlepony.unicopia.forgebullshit.ItemRegistrar;
 import com.minelittlepony.unicopia.forgebullshit.OreReplacer;
 import com.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
 import com.minelittlepony.unicopia.forgebullshit.UnFuckedItemSnow;
@@ -243,9 +243,17 @@ public class UItems {
                 .replace(Item.getItemFromBlock(Blocks.YELLOW_FLOWER), yellow_flower)
                 .replace(Item.getItemFromBlock(Blocks.RED_FLOWER), red_flower));
 
-        registry.registerAll(
+        ItemRegistrar.registerAll(registry,
+                cloud_spawner,
                 green_apple, sweet_apple, sour_apple,
-                cloud_spawner, dew_drop, cloud_matter, cloud_block, enchanted_cloud, packed_cloud,
+                zap_apple, rotten_apple, cooked_zap_apple,
+                apple_seeds, apple_leaves,
+
+                dew_drop,
+
+                tomato, cloudsdale_tomato, tomato_seeds, moss,
+
+                cloud_matter, cloud_block, enchanted_cloud, packed_cloud,
                 cloud_stairs,
                 cloud_slab, enchanted_cloud_slab, packed_cloud_slab,
                 cloud_fence, cloud_banister,
@@ -256,13 +264,8 @@ public class UItems {
 
                 alfalfa_seeds, alfalfa_leaves,
                 cereal, sugar_cereal, sugar_block,
-                rotten_apple, zap_apple, cooked_zap_apple,
-
-                cloudsdale_tomato, tomato_seeds, tomato, moss,
 
                 hive, chitin_shell, chitin, chissled_chitin, cuccoon, slime_layer,
-
-                apple_seeds, apple_leaves,
 
                 daffodil_daisy_sandwich, hay_burger, hay_fries, salad, wheat_worms,
                 apple_cider, juice, burned_juice,
@@ -270,46 +273,9 @@ public class UItems {
                 record_crusade, record_pet, record_popular, record_funk);
 
         if (UClient.isClientSide()) {
-            ItemModels.registerAll(
-                    cloud_spawner,
-
-                    green_apple, sweet_apple, sour_apple,
-
-                    zap_apple,
-                    rotten_apple, cooked_zap_apple, dew_drop,
-
-                    tomato, cloudsdale_tomato, moss,
-
-                    cloud_spawner, cloud_matter, cloud_block, enchanted_cloud, packed_cloud,
-                    cloud_stairs,
-                    cloud_slab, enchanted_cloud_slab, packed_cloud_slab,
-                    cloud_fence, cloud_banister,
-                    cloud_farmland, mist_door, library_door, bakery_door, diamond_door, anvil,
-
-                    bag_of_holding, spell, curse, spellbook, mug, enchanted_torch,
-                    staff_meadow_brook, staff_remembrance, alicorn_amulet,
-
-                    alfalfa_seeds, alfalfa_leaves,
-                    cereal, sugar_cereal, sugar_block,
-                    tomato_seeds,
-
-                    hive, chitin_shell, chitin, chissled_chitin, cuccoon, slime_layer,
-
-                    apple_seeds, apple_leaves,
-
-                    daffodil_daisy_sandwich, hay_burger, hay_fries, salad, wheat_worms,
-
-                    apple_cider, juice, burned_juice,
-
-                    record_crusade, record_pet, record_popular, record_funk);
-
             BuildInTexturesBakery.getBuiltInTextures().add(new ResourceLocation(Unicopia.MODID, "items/empty_slot_gem"));
         }
 
-        registerFuels();
-    }
-
-    static void registerFuels() {
         FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(zap_apple), new ItemStack(cooked_zap_apple), 0.1F);
         FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(juice), new ItemStack(burned_juice), 0);
         FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(cuccoon), new ItemStack(chitin_shell), 0.3F);
