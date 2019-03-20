@@ -123,7 +123,7 @@ public class BlockTomatoPlant extends BlockCrops {
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
 
         if (isMaxAge(state)) {
-            return state.getValue(TYPE) == Type.CLOUDSDALE ? UItems.cloudsdale_tomato : UItems.tomato;
+            return state.getValue(TYPE).getCrop();
         }
 
         return getSeed();
@@ -148,18 +148,16 @@ public class BlockTomatoPlant extends BlockCrops {
             if (player.getHeldItem(hand).isEmpty()) {
                 Type type = state.getValue(TYPE);
 
-                Item crop = type == Type.CLOUDSDALE ? UItems.cloudsdale_tomato : UItems.tomato;
-
                 int good = getAge(state);
                 int rotten = world.rand.nextInt(good);
 
                 good -= rotten;
 
                 if (good > 0) {
-                    spawnAsEntity(world, pos, new ItemStack(crop, good, 0));
+                    spawnAsEntity(world, pos, new ItemStack(type.getCrop(), good));
                 }
                 if (rotten > 0) {
-                    spawnAsEntity(world, pos, new ItemStack(crop, rotten, 1));
+                    spawnAsEntity(world, pos, new ItemStack(type.getWaste(), rotten));
                 }
 
                 world.setBlockState(pos, state.withProperty(getAgeProperty(), 0));
@@ -238,6 +236,14 @@ public class BlockTomatoPlant extends BlockCrops {
 
         public String getName() {
             return this == NORMAL ? "normal" : "cloudsdale";
+        }
+
+        public Item getCrop() {
+            return this == CLOUDSDALE ? UItems.cloudsdale_tomato : UItems.tomato;
+        }
+
+        public Item getWaste() {
+            return this == CLOUDSDALE ? UItems.rotten_cloudsdale_tomato : UItems.rotten_tomato;
         }
     }
 }

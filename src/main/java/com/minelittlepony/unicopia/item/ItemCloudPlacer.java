@@ -1,10 +1,14 @@
 package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.CloudSize;
-import com.minelittlepony.unicopia.entity.EntityCloud;
-import com.minelittlepony.unicopia.forgebullshit.IMultiItem;
+import java.util.function.Function;
 
+import com.minelittlepony.unicopia.entity.EntityCloud;
+import com.minelittlepony.unicopia.init.UItems;
+
+import net.minecraft.block.BlockDispenser;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.dispenser.IBlockSource;
+import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -16,24 +20,36 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
-public class ItemCloud extends Item implements IMultiItem {
+public class ItemCloudPlacer extends Item implements IDispensable {
 
-    private static final String[] variants = new String[] {"cloud_small", "cloud_medium", "cloud_large"};
+    private final Function<World, EntityCloud> cloudSupplier;
 
-    public ItemCloud(String domain, String name) {
+    public ItemCloudPlacer(Function<World, EntityCloud> cloudSupplier, String domain, String name) {
         super();
-        setHasSubtypes(true);
-        setMaxDamage(0);
         setTranslationKey(name);
         setRegistryName(domain, name);
         setCreativeTab(CreativeTabs.MATERIALS);
 
         maxStackSize = 16;
+
+        this.cloudSupplier = cloudSupplier;
+
+        setDispenseable();
     }
 
     @Override
-    public String[] getVariants() {
-        return variants;
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+        if (this == UItems.racing_cloud_spawner && isInCreativeTab(tab)) {
+            items.add(new ItemStack(this));
+            items.add(new ItemStack(UItems.construction_cloud_spawner));
+            items.add(new ItemStack(UItems.wild_cloud_spawner));
+        }
+    }
+
+    public void placeCloud(World world, BlockPos pos) {
+        EntityCloud cloud = cloudSupplier.apply(world);
+        cloud.moveToBlockPosAndAngles(pos, 0, 0);
+        world.spawnEntity(cloud);
     }
 
     @Override
@@ -51,9 +67,7 @@ public class ItemCloud extends Item implements IMultiItem {
                 pos = player.getPosition();
             }
 
-            EntityCloud cloud = CloudSize.byMetadata(stack.getItemDamage()).createEntity(world);
-            cloud.moveToBlockPosAndAngles(pos, 0, 0);
-            world.spawnEntity(cloud);
+            placeCloud(world, pos);
 
             if (!player.capabilities.isCreativeMode) {
                 stack.shrink(1);
@@ -64,16 +78,13 @@ public class ItemCloud extends Item implements IMultiItem {
     }
 
     @Override
-    public String getTranslationKey(ItemStack stack) {
-        return super.getTranslationKey(stack) + "." + CloudSize.byMetadata(stack.getItemDamage()).getName();
-    }
+    public ActionResult<ItemStack> dispenseStack(IBlockSource source, ItemStack stack) {
+        IPosition pos = BlockDispenser.getDispensePosition(source);
 
-    @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> subs) {
-        if (isInCreativeTab(tab)) {
-            for (CloudSize i : CloudSize.values()) {
-                subs.add(new ItemStack(this, 1, i.getMetadata()));
-            }
-        }
+        placeCloud(source.getWorld(), new BlockPos(pos.getX(), pos.getY(), pos.getZ()));
+
+        stack.shrink(1);
+
+        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
     }
 }

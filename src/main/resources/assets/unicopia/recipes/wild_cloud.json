@@ -10,5 +10,5 @@
       { "item": "unicopia:cloud_block" }
     ]
   },
-  "result": { "item": "unicopia:cloud", "data": 2, "count": 1 }
+  "result": { "item": "unicopia:wild_cloud_spawner", "count": 1 }
 }

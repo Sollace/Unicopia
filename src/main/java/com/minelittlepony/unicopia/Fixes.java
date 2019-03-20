@@ -19,15 +19,60 @@ public class Fixes {
         CompoundDataFixer forgeDataFixer = (CompoundDataFixer)fixer;
 
         try {
-            ModFixs modfix = forgeDataFixer.init(Unicopia.MODID, 1342);
+            ModFixs modfix = forgeDataFixer.init(Unicopia.MODID, 1343);
 
             modfix.registerFix(FixTypes.CHUNK, new FixCloudBlocks());
             modfix.registerFix(FixTypes.ITEM_INSTANCE, new FixCloudItems());
+            modfix.registerFix(FixTypes.ITEM_INSTANCE, new FixItems());
+
         } catch (Throwable ignored) {
             // no way to check if our fixer is already registered.
             // so just do it anyway and ignore the error.
             // @FUF(reason = "FUF")
         }
+    }
+
+    static class FixItems implements IFixableData {
+
+        private final String[] cloud_spawners = new String[] {
+                "unicopia:racing_cloud_spawner",
+                "unicopia:construction_cloud_spawner",
+                "unicopia:wild_cloud_spawner"
+        };
+
+        @Override
+        public int getFixVersion() {
+            return 1343;
+        }
+
+        @Override
+        public NBTTagCompound fixTagCompound(NBTTagCompound compound) {
+            if (compound.hasKey("id", 8)) {
+                String id = compound.getString("id");
+                int damage = compound.hasKey("Damage", 3) ? compound.getInteger("Damage") : 0;
+
+                if (id == "unicopia:cloud") {
+                    id = cloud_spawners[damage % cloud_spawners.length];
+                    damage = 0;
+                }
+
+                if (id == "unicopia:tomato" && damage == 1) {
+                    id = "unicopia:rotten_tomato";
+                    damage = 0;
+                }
+
+                if (id == "unicopia:cloudsdale_tomato" && damage == 1) {
+                    id = "unicopia:rotten_cloudsdale_tomato";
+                    damage = 0;
+                }
+
+                compound.setString("id", id);
+                compound.setInteger("Damage", 0);
+            }
+
+            return compound;
+        }
+
     }
 
     static class FixCloudItems implements IFixableData {

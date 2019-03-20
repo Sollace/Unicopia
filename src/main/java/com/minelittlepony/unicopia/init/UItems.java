@@ -4,13 +4,14 @@ import com.minelittlepony.unicopia.item.ItemAlicornAmulet;
 import com.minelittlepony.unicopia.item.ItemApple;
 import com.minelittlepony.unicopia.item.ItemAppleMultiType;
 import com.minelittlepony.unicopia.item.ItemCereal;
-import com.minelittlepony.unicopia.item.ItemCloud;
+import com.minelittlepony.unicopia.item.ItemCloudPlacer;
 import com.minelittlepony.unicopia.item.ItemCurse;
 import com.minelittlepony.unicopia.item.ItemFruitLeaves;
 import com.minelittlepony.unicopia.item.ItemMagicStaff;
 import com.minelittlepony.unicopia.item.ItemMoss;
 import com.minelittlepony.unicopia.item.ItemOfHolding;
 import com.minelittlepony.unicopia.item.ItemRottenApple;
+import com.minelittlepony.unicopia.item.ItemRottenTomato;
 import com.minelittlepony.unicopia.item.ItemSpell;
 import com.minelittlepony.unicopia.item.ItemSpellbook;
 import com.minelittlepony.unicopia.item.ItemStaff;
@@ -58,6 +59,9 @@ import com.minelittlepony.unicopia.edibles.FlowerToxicityDeterminent;
 import com.minelittlepony.unicopia.edibles.MultiItemEdible;
 import com.minelittlepony.unicopia.edibles.Toxicity;
 import com.minelittlepony.unicopia.edibles.UItemFoodDelegate;
+import com.minelittlepony.unicopia.entity.EntityConstructionCloud;
+import com.minelittlepony.unicopia.entity.EntityRacingCloud;
+import com.minelittlepony.unicopia.entity.EntityWildCloud;
 import com.minelittlepony.unicopia.extern.Baubles;
 import com.minelittlepony.unicopia.forgebullshit.BuildInTexturesBakery;
 import com.minelittlepony.unicopia.forgebullshit.ItemRegistrar;
@@ -87,7 +91,9 @@ public class UItems {
             .setTranslationKey("dew_drop")
             .setRegistryName(Unicopia.MODID, "dew_drop");
 
-    public static final ItemCloud cloud_spawner = new ItemCloud(Unicopia.MODID, "cloud");
+    public static final ItemCloudPlacer racing_cloud_spawner = new ItemCloudPlacer(EntityRacingCloud::new, Unicopia.MODID, "racing_cloud_spawner");
+    public static final ItemCloudPlacer construction_cloud_spawner = new ItemCloudPlacer(EntityConstructionCloud::new, Unicopia.MODID, "construction_cloud_spawner");
+    public static final ItemCloudPlacer wild_cloud_spawner = new ItemCloudPlacer(EntityWildCloud::new, Unicopia.MODID, "wild_cloud_spawner");
 
     public static final Item cloud_block = new UItemBlock(UBlocks.normal_cloud, INTERACT_WITH_CLOUDS);
     public static final Item enchanted_cloud = new UItemBlock(UBlocks.enchanted_cloud, INTERACT_WITH_CLOUDS);
@@ -169,7 +175,11 @@ public class UItems {
     public static final Item sugar_cereal = new ItemCereal(Unicopia.MODID, "sugar_cereal", 20, -2).setSugarAmount(110).setAlwaysEdible();
 
     public static final ItemTomato tomato = new ItemTomato(Unicopia.MODID, "tomato", 4, 34);
+    public static final ItemRottenTomato rotten_tomato = new ItemRottenTomato(Unicopia.MODID, "rotten_tomato", 4, 34);
+
     public static final ItemTomato cloudsdale_tomato = new ItemTomato(Unicopia.MODID, "cloudsdale_tomato", 16, 4);
+    public static final ItemRottenTomato rotten_cloudsdale_tomato = new ItemRottenTomato(Unicopia.MODID, "rotten_cloudsdale_tomato", 4, 34);
+
     public static final ItemTomatoSeeds tomato_seeds = new ItemTomatoSeeds(Unicopia.MODID, "tomato_seeds");
 
     public static final Item apple_seeds = new UItemDecoration(UBlocks.apple_tree, Unicopia.MODID, "apple_seeds");
@@ -244,14 +254,16 @@ public class UItems {
                 .replace(Item.getItemFromBlock(Blocks.RED_FLOWER), red_flower));
 
         ItemRegistrar.registerAll(registry,
-                cloud_spawner,
+                racing_cloud_spawner, construction_cloud_spawner, wild_cloud_spawner,
                 green_apple, sweet_apple, sour_apple,
                 zap_apple, rotten_apple, cooked_zap_apple,
                 apple_seeds, apple_leaves,
 
                 dew_drop,
 
-                tomato, cloudsdale_tomato, tomato_seeds, moss,
+                tomato, rotten_tomato,
+                cloudsdale_tomato, rotten_cloudsdale_tomato,
+                tomato_seeds, moss,
 
                 cloud_matter, cloud_block, enchanted_cloud, packed_cloud,
                 cloud_stairs,

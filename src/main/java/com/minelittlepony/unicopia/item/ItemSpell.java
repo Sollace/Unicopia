@@ -18,8 +18,6 @@ import com.minelittlepony.util.vector.VecHelper;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
-import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,35 +33,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
 public class ItemSpell extends Item implements ICastable {
-    private static final IBehaviorDispenseItem dispenserBehavior = new BehaviorDefaultDispenseItem() {
-        @Override
-        protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
-
-            IDispenceable effect = SpellRegistry.instance().getDispenseActionFrom(stack);
-
-            if (effect == null) {
-                return super.dispenseStack(source, stack);
-            }
-
-            if (stack.getItem() instanceof ICastable) {
-                ICastable castable = (ICastable)stack.getItem();
-
-                SpellCastResult dispenceResult = castable.onDispenseSpell(source, stack, effect);
-
-                if (dispenceResult == SpellCastResult.DEFAULT) {
-                    return super.dispenseStack(source, stack);
-                }
-
-                if (dispenceResult == SpellCastResult.PLACE) {
-                    castable.castContainedSpell(source.getWorld(), source.getBlockPos(), stack, effect);
-
-                    stack.shrink(1);
-                }
-            }
-
-            return stack;
-        }
-    };
 
     protected String translationKey;
 

@@ -29,9 +29,9 @@ tile.sugar_block.name=Block of Sugar
 tile.enchanted_torch.name=Stone Lamp
 
 item.cloud_matter.name=Lump of Cloud
-item.cloud.small.name=Bucking Bronco
-item.cloud.medium.name=Construction Cloud
-item.cloud.large.name=Wild Cloud
+item.racing_cloud_spawner.name=Racing Cloud
+item.construction_cloud_spawner.name=Construction Cloud
+item.wild_cloud_spawner.name=Wild Cloud
 
 item.mist_door.name=Cloud Door
 item.library_door.name=Dutch Library Door
@@ -140,11 +140,11 @@ item.zap_apple.zap.name=Cooked Zap Apple
 item.apple_seeds.name=Apple Seeds
 
 item.tomato.name=Tomato
-item.tomato.rotten.name=Rotten Tomato
+item.rotten_tomato.name=Rotten Tomato
 item.tomato_seeds.name=Tomato Seeds
 
 item.cloudsdale_tomato.name=Cloudsdale Tomato
-item.cloudsdale_tomato.rotten.name=Rotten Cloudsdale Tomato
+item.rotten_cloudsdale_tomato.name=Rotten Cloudsdale Tomato
 
 item.alfalfa_leaves.name=Alfalfa
 item.alfalfa_seeds.name=Grain

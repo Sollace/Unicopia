@@ -128,13 +128,9 @@ public class ItemMagicStaff extends ItemStaff implements IAligned, ITossableItem
 
     }
 
+    @Override
     public int getMaxItemUseDuration(ItemStack stack) {
         return 72000;
-    }
-
-    @Override
-    public boolean canBeThrown(ItemStack stack) {
-        return true;
     }
 
     @Override

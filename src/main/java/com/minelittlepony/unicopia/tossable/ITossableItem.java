@@ -1,27 +1,36 @@
 package com.minelittlepony.unicopia.tossable;
 
 import com.minelittlepony.unicopia.entity.EntityProjectile;
+import com.minelittlepony.unicopia.item.IDispensable;
 
 import net.minecraft.block.BlockDispenser;
-import net.minecraft.dispenser.IBehaviorDispenseItem;
+import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.dispenser.IPosition;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 
-public interface ITossableItem extends ITossable<ItemStack> {
-    IBehaviorDispenseItem dispenserBehavior = new DispenserBehaviour();
+public interface ITossableItem extends ITossable<ItemStack>, IDispensable {
 
-    boolean canBeThrown(ItemStack stack);
+    default boolean canBeThrown(ItemStack stack) {
+        return true;
+    }
 
-    default Item setDispenseable() {
-        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject((Item)(Object)this, dispenserBehavior);
+    @Override
+    default ActionResult<ItemStack> dispenseStack(IBlockSource source, ItemStack stack) {
 
-        return (Item)(Object)this;
+        if (canBeThrown(stack)) {
+            stack = toss(source.getWorld(), BlockDispenser.getDispensePosition(source), (EnumFacing)source.getBlockState().getValue(BlockDispenser.FACING), stack);
+
+            return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+        }
+
+        return new ActionResult<>(EnumActionResult.PASS, stack);
     }
 
     default void toss(World world, ItemStack itemstack, EntityPlayer player) {
@@ -44,13 +53,13 @@ public interface ITossableItem extends ITossable<ItemStack> {
         player.addStat(StatList.getObjectUseStats(itemstack.getItem()));
     }
 
-    default ItemStack toss(World world, IPosition pos, EnumFacing facing, ItemStack stack, float velocity, float inaccuracy) {
+    default ItemStack toss(World world, IPosition pos, EnumFacing facing, ItemStack stack) {
         EntityProjectile iprojectile = new EntityProjectile(world, pos.getX(), pos.getY(), pos.getZ());
 
         iprojectile.setItem(stack);
         iprojectile.setThrowDamage(getThrowDamage(stack));
 
-        iprojectile.shoot(facing.getXOffset(), facing.getYOffset() + 0.1F, facing.getZOffset(), velocity, inaccuracy);
+        iprojectile.shoot(facing.getXOffset(), facing.getYOffset() + 0.1F, facing.getZOffset(), 1.1F, 6);
 
         world.spawnEntity(iprojectile);
 

@@ -13,5 +13,5 @@
       { "item": "unicopia:cloud_matter" }
     ]
   },
-  "result": { "item": "unicopia:cloud", "data": 1, "count": 1 }
+  "result": { "item": "unicopia:construction_cloud_spawner", "count": 1 }
 }
