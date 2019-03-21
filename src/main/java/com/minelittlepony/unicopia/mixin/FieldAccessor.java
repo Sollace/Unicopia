@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.mixin;
 
 import java.lang.reflect.Field;
 
-public class FieldAccessor<Owner, Type> {
+class FieldAccessor<Owner, Type> {
 
     private boolean init;
     private Field field;

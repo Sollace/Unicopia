@@ -172,6 +172,7 @@ entity.construction_cloud.name=Construction Cloud
 entity.cloud.name=Cloud
 entity.spell.name=Magic
 entity.spellbook.name=Spellbook
+entity.butterfly.name=Butterfly
 
 toxicity.safe.name=Safe
 toxicity.mild.name=Mildly Toxic

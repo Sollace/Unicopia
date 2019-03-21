@@ -18,6 +18,7 @@ public interface MixinEntity {
             return PLAYER_MODEL_FLAG;
         }
     }
+
     abstract class Shulker {
         private static final FieldAccessor<EntityShulker, Float> __peekAmount = new FieldAccessor<>(EntityShulker.class, 8);
 
