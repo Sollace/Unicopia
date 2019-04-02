@@ -97,14 +97,14 @@ public class BlockHiveWall extends BlockFalling {
                 }
             }
         } else if (type == State.DYING) {
-            if (matchedNeighbours > 1 && matchedNeighbours < 27) {
+            if (matchedNeighbours > 1 && matchedNeighbours < 17) {
                 world.setBlockState(pos, state.withProperty(STATE, State.STABLE));
             } else {
                 die(world, pos, rand);
             }
         } else {
 
-            if (pos.getX() % 3 == 0 && pos.getZ() % 4 == 0 && world.isAirBlock(pos.down()) && UBlocks.cuccoon.canPlaceBlockAt(world, pos.down())) {
+            if (pos.getX() % 3 == 0 && pos.getZ() % 4 == 0 && isEmptySpace(world, pos.down()) && UBlocks.cuccoon.canPlaceBlockAt(world, pos.down())) {
                 world.setBlockState(pos.down(), UBlocks.cuccoon.getDefaultState());
             } else if (!testForAxis(world, pos, axis)) {
                 world.setBlockState(pos, state.withProperty(STATE, State.GROWING));
@@ -134,7 +134,22 @@ public class BlockHiveWall extends BlockFalling {
     }
 
     protected boolean testForAxis(World world, BlockPos pos, Axis axis) {
-        return !PosHelper.some(pos, world::isAirBlock, axis.getFacings());
+        return !PosHelper.some(pos, p -> isEmptySpace(world, p), axis.getFacings());
+    }
+
+    protected boolean isEmptySpace(World world, BlockPos pos) {
+
+        if (world.isAirBlock(pos)) {
+            return true;
+        }
+
+        IBlockState state = world.getBlockState(pos);
+
+        return !(state.getMaterial().isLiquid()
+                || state.isBlockNormalCube()
+                || state.isNormalCube()
+                || state.isFullCube()
+                || state.isOpaqueCube());
     }
 
     protected void die(World world, BlockPos pos, Random rand) {
@@ -167,7 +182,7 @@ public class BlockHiveWall extends BlockFalling {
 
             if (player.getPlayerSpecies() != Race.CHANGELING) {
                 if (!world.isRemote) {
-                    if (((world.isAirBlock(pos.down()) || canFallThrough(world.getBlockState(pos.down()))) && pos.getY() >= 0)) {
+                    if (((isEmptySpace(world, pos.down()) || canFallThrough(world.getBlockState(pos.down()))) && pos.getY() >= 0)) {
                         EntityFallingBlock faller = new EntityFallingBlock(world, pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, state);
                         onStartFalling(faller);
                         world.spawnEntity(faller);
@@ -175,6 +190,11 @@ public class BlockHiveWall extends BlockFalling {
                 }
             }
         }
+    }
+
+    @Override
+    public void onEndFalling(World world, BlockPos pos, IBlockState fallingState, IBlockState hitState) {
+        world.destroyBlock(pos, true);
     }
 
     @Override
@@ -234,17 +254,17 @@ public class BlockHiveWall extends BlockFalling {
     }
 
     protected boolean exposed(World world, BlockPos pos) {
-        return PosHelper.some(pos, world::isAirBlock, EnumFacing.VALUES);
+        return PosHelper.some(pos, p -> isEmptySpace(world, p), EnumFacing.VALUES);
     }
 
     protected boolean canSpreadInto(World world, BlockPos pos, Axis axis) {
-        if (world.isBlockLoaded(pos) && world.isAirBlock(pos)) {
+        if (world.isBlockLoaded(pos) && isEmptySpace(world, pos)) {
             boolean one = false;
 
             for (EnumFacing facing : axis.getFacings()) {
                 BlockPos op = pos.offset(facing);
 
-                if (!world.isAirBlock(op) && !world.getBlockState(op).getMaterial().isLiquid()) {
+                if (world.getBlockState(op).getMaterial() == UMaterials.hive) {
                     if (one) {
                         return true;
                     }
