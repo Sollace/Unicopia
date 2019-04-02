@@ -12,6 +12,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
 public class UHud extends Gui {
 
@@ -29,6 +30,8 @@ public class UHud extends Gui {
 
     int height;
 
+    boolean begin;
+
     private UHud() {
         elements.add(new FlightExperienceBar());
     }
@@ -37,8 +40,42 @@ public class UHud extends Gui {
         this.width = resolution.getScaledWidth();
         this.height = resolution.getScaledHeight();
         this.player = player;
+        this.begin = true;
 
         elements.forEach(this::renderElement);
+    }
+
+    public void repositionElements(IPlayer player, ScaledResolution resolution, ElementType type, boolean begin) {
+        this.width = resolution.getScaledWidth();
+        this.height = resolution.getScaledHeight();
+        this.player = player;
+        this.begin = begin;
+
+        if (isSurvivalElement(type)) {
+            elements.forEach(this::positionElement);
+        }
+    }
+
+    protected boolean isSurvivalElement(ElementType type) {
+        switch (type) {
+            case ARMOR:
+            case HEALTH:
+            case FOOD:
+            case AIR:
+            case EXPERIENCE:
+            case HEALTHMOUNT:
+            case JUMPBAR:
+                return true;
+            default: return false;
+        }
+    }
+
+    private void positionElement(IHudElement element) {
+        if (!element.shouldRender(player)) {
+            return;
+        }
+
+        element.repositionHud(this);
     }
 
     private void renderElement(IHudElement element) {

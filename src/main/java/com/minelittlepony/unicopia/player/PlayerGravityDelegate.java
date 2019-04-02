@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.player;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.init.UParticles;
 import com.minelittlepony.unicopia.init.USounds;
 import com.minelittlepony.unicopia.mixin.MixinEntity;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
@@ -26,12 +27,13 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
     private final IPlayer player;
 
-    private static final float MAXIMUM_FLIGHT_EXPERIENCE = 500;
+    private static final float MAXIMUM_FLIGHT_EXPERIENCE = 1500;
 
-    public int ticksInAir = 0;
+    public int ticksNextLevel = 0;
     public float flightExperience = 0;
 
     public boolean isFlying = false;
+    public boolean isRainbooming = false;
 
     private float gravity = 0;
 
@@ -110,6 +112,11 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
     }
 
     @Override
+    public boolean isExperienceCritical() {
+        return isRainbooming || flightExperience > MAXIMUM_FLIGHT_EXPERIENCE * 0.8;
+    }
+
+    @Override
     public void onUpdate() {
         EntityPlayer entity = player.getOwner();
 
@@ -158,37 +165,80 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
         if (!entity.capabilities.isCreativeMode && !entity.isElytraFlying()) {
             if (isFlying && !entity.isRiding()) {
 
+                if (!isRainbooming && entity.moveForward != 0 && flightExperience < MAXIMUM_FLIGHT_EXPERIENCE) {
+                    flightExperience++;
+                }
+
                 entity.fallDistance = 0;
 
                 if (player.getPlayerSpecies() != Race.CHANGELING && entity.world.rand.nextInt(100) == 0) {
-                    float exhaustion = (0.3F * ticksInAir) / 70;
+                    float exhaustion = (0.3F * ticksNextLevel) / 70;
                     if (entity.isSprinting()) {
                         exhaustion *= 3.11F;
                     }
 
-                    exhaustion *= (1 - flightExperience/MAXIMUM_FLIGHT_EXPERIENCE);
+                    exhaustion *= (1 - flightExperience / MAXIMUM_FLIGHT_EXPERIENCE);
 
                     entity.addExhaustion(exhaustion);
                 }
 
-                if (ticksInAir++ >= MAXIMUM_FLIGHT_EXPERIENCE) {
-                    ticksInAir = 0;
-                    addFlightExperience(entity);
+                if (ticksNextLevel++ >= MAXIMUM_FLIGHT_EXPERIENCE) {
+                    ticksNextLevel = 0;
+
+                    entity.addExperience(1);
+                    addFlightExperience(entity, 1);
                     entity.playSound(SoundEvents.ENTITY_GUARDIAN_FLOP, 1, 1);
                 }
 
                 moveFlying(entity);
 
-                if (ticksInAir > 0 && ticksInAir % 12 == 0) {
+                if (isExperienceCritical()) {
+
+                    if (player.getEnergy() <= 0.25F) {
+                        player.addEnergy(2);
+                    }
+
+                    if (isRainbooming || (entity.isSneaking() && isRainboom(player))) {
+                        float forward = 0.5F * flightExperience / MAXIMUM_FLIGHT_EXPERIENCE;
+
+                        entity.motionX += - forward * MathHelper.sin(entity.rotationYaw * 0.017453292F);
+                        entity.motionZ += forward * MathHelper.cos(entity.rotationYaw * 0.017453292F);
+                        entity.motionY += 0.3;
+
+                        if (!isRainbooming || entity.world.rand.nextInt(5) == 0) {
+                            entity.playSound(SoundEvents.ENTITY_LIGHTNING_THUNDER, 1, 1);
+                        }
+
+                        player.spawnParticles(UParticles.UNICORN_MAGIC, 20);
+
+                        if (flightExperience > 0) {
+                            flightExperience -= 13;
+                            isRainbooming = true;
+                        } else {
+                            isRainbooming = false;
+                        }
+                    }
+                }
+
+                if (ticksNextLevel > 0 && ticksNextLevel % 30 == 0) {
                     entity.playSound(getWingSound(), 0.5F, 1);
                 }
             } else {
-                if (ticksInAir != 0) {
+                if (ticksNextLevel != 0) {
                     entity.playSound(getWingSound(), 0.4F, 1);
                 }
 
-                ticksInAir = 0;
-                flightExperience *= 0.9991342;
+                ticksNextLevel = 0;
+
+                if (isExperienceCritical()) {
+                    addFlightExperience(entity, -0.39991342F);
+                } else {
+                    addFlightExperience(entity, -0.019991342F);
+                }
+
+                if (flightExperience < 0.02) {
+                    isRainbooming = false;
+                }
             }
         }
     }
@@ -199,7 +249,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
     protected void moveFlying(EntityPlayer player) {
 
-        float forward = 0.00015F * flightExperience * player.moveForward;
+        float forward = 0.000015F * flightExperience * player.moveForward;
         int factor = gravity < 0 ? -1 : 1;
         boolean sneak = !player.isSneaking();
 
@@ -288,10 +338,11 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
         return distance > 4 ? SoundEvents.ENTITY_PLAYER_BIG_FALL : SoundEvents.ENTITY_PLAYER_SMALL_FALL;
     }
 
-    private void addFlightExperience(EntityPlayer entity) {
-        entity.addExperience(1);
+    private void addFlightExperience(EntityPlayer entity, float factor) {
+        float maximumGain = MAXIMUM_FLIGHT_EXPERIENCE - flightExperience;
+        float gainSteps = 20;
 
-        flightExperience += (MAXIMUM_FLIGHT_EXPERIENCE - flightExperience) / 20;
+        flightExperience = Math.max(0, flightExperience + factor * maximumGain / gainSteps);
     }
 
     public void updateFlightStat(EntityPlayer entity, boolean flying) {
@@ -304,7 +355,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
                 isFlying = entity.capabilities.isFlying;
 
                 if (isFlying) {
-                    ticksInAir = 0;
+                    ticksNextLevel = 0;
                 }
 
             } else {
@@ -316,7 +367,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
     @Override
     public void writeToNBT(NBTTagCompound compound) {
-        compound.setInteger("flightDuration", ticksInAir);
+        compound.setInteger("flightDuration", ticksNextLevel);
         compound.setFloat("flightExperience", flightExperience);
         compound.setBoolean("isFlying", isFlying);
 
@@ -327,7 +378,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
-        ticksInAir = compound.getInteger("flightDuration");
+        ticksNextLevel = compound.getInteger("flightDuration");
         flightExperience = compound.getFloat("flightExperience");
         isFlying = compound.getBoolean("isFlying");
 
@@ -350,6 +401,6 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
     @Override
     public float getFlightDuration() {
-        return ticksInAir / MAXIMUM_FLIGHT_EXPERIENCE;
+        return ticksNextLevel / MAXIMUM_FLIGHT_EXPERIENCE;
     }
 }

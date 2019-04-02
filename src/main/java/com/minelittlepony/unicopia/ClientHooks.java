@@ -56,14 +56,26 @@ class ClientHooks {
     }
 
     @SubscribeEvent
-    public static void onRenderHud(RenderGameOverlayEvent.Post event) {
+    public static void onRenderHud(RenderGameOverlayEvent.Pre event) {
         if (event.getType() != ElementType.ALL) {
-            return;
-        }
+            IPlayer player = UClient.instance().getIPlayer();
 
+            if (player != null && Minecraft.getMinecraft().world != null) {
+                UHud.instance.repositionElements(player, event.getResolution(), event.getType(), true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRenderHud(RenderGameOverlayEvent.Post event) {
         IPlayer player = UClient.instance().getIPlayer();
+
         if (player != null && Minecraft.getMinecraft().world != null) {
-            UHud.instance.renderHud(player, event.getResolution());
+            if (event.getType() == ElementType.ALL) {
+                UHud.instance.renderHud(player, event.getResolution());
+            } else {
+                UHud.instance.repositionElements(player, event.getResolution(), event.getType(), false);
+            }
         }
     }
 

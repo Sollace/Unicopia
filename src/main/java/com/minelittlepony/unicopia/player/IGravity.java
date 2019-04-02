@@ -7,6 +7,8 @@ public interface IGravity {
 
     float getFlightDuration();
 
+    boolean isExperienceCritical();
+
     void setGraviationConstant(float constant);
 
     float getGravitationConstant();
