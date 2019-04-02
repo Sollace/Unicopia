@@ -1,9 +1,12 @@
 package com.minelittlepony.unicopia.player;
 
+import java.util.Random;
+
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.init.UParticles;
 import com.minelittlepony.unicopia.init.USounds;
 import com.minelittlepony.unicopia.mixin.MixinEntity;
+import com.minelittlepony.unicopia.particle.Particles;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.util.serialisation.InbtSerialisable;
 
@@ -22,6 +25,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, IFlyingPredicate, IPlayerHeightPredicate {
 
@@ -34,6 +38,9 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
     public boolean isFlying = false;
     public boolean isRainbooming = false;
+
+    private double lastTickPosX = 0;
+    private double lastTickPosZ = 0;
 
     private float gravity = 0;
 
@@ -118,7 +125,25 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
     @Override
     public void onUpdate() {
+
         EntityPlayer entity = player.getOwner();
+
+        System.out.println(isExperienceCritical() && player.isRemote());
+
+        if (isExperienceCritical() && player.isRemote()) {
+            Random rnd = player.getWorld().rand;
+
+            for (int i = 0; i < 360 + getHorizontalMotion(entity); i += 10) {
+                Vec3d pos = player.getOriginVector().add(
+                        rnd.nextGaussian() * entity.width,
+                        rnd.nextGaussian() * entity.height/2,
+                        rnd.nextGaussian() * entity.width
+                );
+                Vec3d vel = new Vec3d(entity.motionX, entity.motionY, entity.motionZ);
+
+                Particles.instance().spawnParticle(UParticles.UNICORN_MAGIC, true, pos, vel);
+            }
+        }
 
         entity.capabilities.allowFlying = checkCanFly(player);
 
@@ -165,7 +190,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
         if (!entity.capabilities.isCreativeMode && !entity.isElytraFlying()) {
             if (isFlying && !entity.isRiding()) {
 
-                if (!isRainbooming && entity.moveForward != 0 && flightExperience < MAXIMUM_FLIGHT_EXPERIENCE) {
+                if (!isRainbooming && getHorizontalMotion(entity) > 0.2 && flightExperience < MAXIMUM_FLIGHT_EXPERIENCE) {
                     flightExperience++;
                 }
 
@@ -209,8 +234,6 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
                             entity.playSound(SoundEvents.ENTITY_LIGHTNING_THUNDER, 1, 1);
                         }
 
-                        player.spawnParticles(UParticles.UNICORN_MAGIC, 20);
-
                         if (flightExperience > 0) {
                             flightExperience -= 13;
                             isRainbooming = true;
@@ -241,6 +264,9 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
                 }
             }
         }
+
+        lastTickPosX = entity.posX;
+        lastTickPosZ = entity.posZ;
     }
 
     public SoundEvent getWingSound() {
@@ -249,7 +275,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
     protected void moveFlying(EntityPlayer player) {
 
-        float forward = 0.000015F * flightExperience * player.moveForward;
+        float forward = 0.000015F * flightExperience * (float)Math.sqrt(getHorizontalMotion(player));
         int factor = gravity < 0 ? -1 : 1;
         boolean sneak = !player.isSneaking();
 
@@ -330,8 +356,11 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
     }
 
     protected double getHorizontalMotion(Entity e) {
-        return (e.motionX * e.motionX)
-               + (e.motionZ * e.motionZ);
+        double motionX = e.posX - lastTickPosX;
+        double motionZ = e.posZ - lastTickPosZ;
+
+        return (motionX * motionX)
+               + (motionZ * motionZ);
     }
 
     protected SoundEvent getFallSound(int distance) {
@@ -370,6 +399,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
         compound.setInteger("flightDuration", ticksNextLevel);
         compound.setFloat("flightExperience", flightExperience);
         compound.setBoolean("isFlying", isFlying);
+        compound.setBoolean("isRainbooming", isRainbooming);
 
         if (gravity != 0) {
             compound.setFloat("gravity", gravity);
@@ -381,6 +411,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
         ticksNextLevel = compound.getInteger("flightDuration");
         flightExperience = compound.getFloat("flightExperience");
         isFlying = compound.getBoolean("isFlying");
+        isRainbooming = compound.getBoolean("isRainbooming");
 
         if (compound.hasKey("gravity")) {
             gravity = compound.getFloat("gravity");
