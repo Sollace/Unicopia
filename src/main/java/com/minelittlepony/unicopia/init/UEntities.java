@@ -67,7 +67,7 @@ public class UEntities {
         if (!(biome instanceof BiomeHell || biome instanceof BiomeEnd)) {
 
             BiomeBS.addSpawnEntry(biome, EnumCreatureType.AMBIENT, EntityWildCloud.class, b ->
-                BiomeManager.oceanBiomes.contains(b) ? EntityWildCloud.SPAWN_ENTRY_LAND : EntityWildCloud.SPAWN_ENTRY_OCEAN
+                BiomeManager.oceanBiomes.contains(b) ? EntityWildCloud.SPAWN_ENTRY_OCEAN : EntityWildCloud.SPAWN_ENTRY_LAND
             );
 
             BiomeBS.addSpawnEntry(biome, EnumCreatureType.CREATURE, EntityRainbow.Spawner.class, b -> EntityRainbow.SPAWN_ENTRY);
