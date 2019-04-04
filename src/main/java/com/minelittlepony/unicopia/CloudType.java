@@ -27,7 +27,7 @@ public enum CloudType {
             }
 
             return Predicates.INTERACT_WITH_CLOUDS.test((EntityPlayer)e)
-                || EntityCloud.getFeatherEnchantStrength((EntityPlayer)e) > 0;
+                || (Predicates.MAGI.test(e) && EntityCloud.getFeatherEnchantStrength((EntityPlayer)e) > 0);
         }
 
         if (e instanceof EntityItem) {
