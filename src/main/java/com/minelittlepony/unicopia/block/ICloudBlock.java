@@ -50,24 +50,20 @@ public interface ICloudBlock {
                     return false;
                 }
 
-                if (isPlacementExcempt(block)) {
+                if (block instanceof ICloudBlock) {
+                    CloudType other = ((ICloudBlock)block).getCloudMaterialType(block.getDefaultState());
 
-                    if (block instanceof ICloudBlock) {
-                        CloudType other = ((ICloudBlock)block).getCloudMaterialType(block.getDefaultState());
-
-                        if (other.canInteract(player)) {
-                            return false;
-                        }
+                    if (other.canInteract(player)) {
+                        return false;
                     }
+                }
 
-                    if (Predicates.INTERACT_WITH_CLOUDS.apply(player)) {
-                        return type == CloudType.NORMAL;
-                    }
+                if (!Predicates.INTERACT_WITH_CLOUDS.apply(player)) {
                     return type != CloudType.ENCHANTED;
                 }
 
-                if (!(block instanceof ICloudBlock)) {
-                    return type != CloudType.ENCHANTED;
+                if (type == CloudType.NORMAL) {
+                    return !isPlacementExcempt(block);
                 }
             }
         }
