@@ -12,6 +12,8 @@ public class USounds {
     public static final SoundEvent WIND_RUSH = new USound(Unicopia.MODID, "wind_rush");
 
     public static final SoundEvent INSECT = new USound(Unicopia.MODID, "insect");
+    public static final SoundEvent CHANGELING_BUZZ = new USound(Unicopia.MODID, "changeling_buzz");
+
     public static final SoundEvent SLIME_ADVANCE = new USound(Unicopia.MODID, "slime_advance");
     public static final SoundEvent SLIME_RETRACT = new USound(Unicopia.MODID, "slime_retract");
 
@@ -22,7 +24,7 @@ public class USounds {
 
     static void init(IForgeRegistry<SoundEvent> registry) {
         registry.registerAll(WING_FLAP, WIND_RUSH,
-                INSECT, SLIME_ADVANCE, SLIME_RETRACT,
+                CHANGELING_BUZZ, INSECT, SLIME_ADVANCE, SLIME_RETRACT,
                 RECORD_CRUSADE, RECORD_PET, RECORD_POPULAR, RECORD_FUNK);
     }
 

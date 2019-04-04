@@ -126,6 +126,8 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
     @Override
     public void onUpdate() {
 
+        gravity = -0.008F;
+
         EntityPlayer entity = player.getOwner();
 
         if (isExperienceCritical() && player.isRemote()) {
@@ -268,7 +270,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
     }
 
     public SoundEvent getWingSound() {
-        return player.getPlayerSpecies() == Race.CHANGELING ? USounds.INSECT : USounds.WING_FLAP;
+        return player.getPlayerSpecies() == Race.CHANGELING ? USounds.CHANGELING_BUZZ : USounds.WING_FLAP;
     }
 
     protected void moveFlying(EntityPlayer player) {

@@ -9,6 +9,15 @@
        "unicopia:wing/wing3"
      ]
   },
+  "changeling_buzz": {
+    "category": "player",
+    "subtitle": "unicopia.subtitle.changeling_buzz",
+    "sounds": [
+      "unicopia:cicada/cicada_4",
+      "unicopia:cicada/cicada_5",
+      "unicopia:cicada/cicada_6"
+    ]
+  },
   "wind_rush": {
     "category": "ambient",
     "subtitle": "unicopia.subtitle.wind_rush",
