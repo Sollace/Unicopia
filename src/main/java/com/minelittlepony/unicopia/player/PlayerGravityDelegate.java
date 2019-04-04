@@ -128,8 +128,6 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
         EntityPlayer entity = player.getOwner();
 
-        System.out.println(isExperienceCritical() && player.isRemote());
-
         if (isExperienceCritical() && player.isRemote()) {
             Random rnd = player.getWorld().rand;
 
@@ -281,10 +279,10 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
         // vertical drop due to gravity
         if (sneak) {
-            player.motionY -= (0.05F - getHorizontalMotion(player) / 100) * factor;
+            player.motionY -= (0.005F - getHorizontalMotion(player) / 100) * factor;
         } else {
             forward += 0.005F;
-            player.motionY -= 0.0005F * factor;
+            player.motionY -= 0.0001F * factor;
         }
 
         player.motionX += - forward * MathHelper.sin(player.rotationYaw * 0.017453292F);
