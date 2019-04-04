@@ -9,6 +9,7 @@ public class Commands {
         event.registerServerCommand(new CommandSpecies());
         event.registerServerCommand(new CommandRacelist());
         event.registerServerCommand(new CommandDisguise());
+        event.registerServerCommand(new CommandGravity());
 
         event.getServer().setAllowFlight(true);
     }

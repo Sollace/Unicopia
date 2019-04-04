@@ -237,6 +237,12 @@ commands.disguise.success.other=%1$s is now disguised as %2$s
 commands.disguise.success.self=Updated disguise to %s
 commands.disguise.success.otherself=%1$s changed their disguise to %2$s
 
+commands.gravity.usage=/gravity <get|set> <player> <gravity>
+commands.gravity.get=Your gravity is %f
+commands.gravity.get.other=%1$s has a gravity of %f
+commands.gravity.set=Your gravity was set to %f
+commands.gravity.set.other=Set %1$s's gravity to %f
+
 unicopia.race.human=Human
 unicopia.race.human.alt=Humans
 unicopia.race.earth=Earth Pony

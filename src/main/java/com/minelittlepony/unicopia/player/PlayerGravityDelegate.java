@@ -125,9 +125,6 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
     @Override
     public void onUpdate() {
-
-        gravity = -0.008F;
-
         EntityPlayer entity = player.getOwner();
 
         if (isExperienceCritical() && player.isRemote()) {
@@ -155,14 +152,16 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
         if (gravity != 0) {
             if (!entity.capabilities.isFlying) {
-                entity.motionY += 0.08;
+                entity.motionY += 0.038;
                 entity.motionY -= gravity;
             }
 
-            entity.onGround = !entity.world.isAirBlock(new BlockPos(entity.posX, entity.posY + entity.height + 0.5F, entity.posZ));
+            if (gravity < 0) {
+                entity.onGround = !entity.world.isAirBlock(new BlockPos(entity.posX, entity.posY + entity.height + 0.5F, entity.posZ));
 
-            if (entity.onGround) {
-                entity.capabilities.isFlying = isFlying = false;
+                if (entity.onGround) {
+                    entity.capabilities.isFlying = isFlying = false;
+                }
             }
         }
 
