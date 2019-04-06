@@ -227,7 +227,7 @@ class PlayerGravityDelegate implements IUpdatable, IGravity, InbtSerialisable, I
 
                         entity.motionX += - forward * MathHelper.sin(entity.rotationYaw * 0.017453292F);
                         entity.motionZ += forward * MathHelper.cos(entity.rotationYaw * 0.017453292F);
-                        entity.motionY += 0.3;
+                        entity.motionY += forward * MathHelper.sin(entity.rotationPitch * 0.017453292F);
 
                         if (!isRainbooming || entity.world.rand.nextInt(5) == 0) {
                             entity.playSound(SoundEvents.ENTITY_LIGHTNING_THUNDER, 1, 1);
