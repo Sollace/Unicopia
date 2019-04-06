@@ -22,10 +22,10 @@ class FlightExperienceBar implements IHudElement {
         float length = context.player.getGravity().getFlightDuration();
 
         context.mc.getTextureManager().bindTexture(TEXTURE);
-        int x = (context.width - 183) / 2;
+        int x = (context.width - 182) / 2;
         int y = context.height - 29;
 
-        int xpFill = (int)Math.floor(xp * 183);
+        int xpFill = (int)Math.floor(xp * 182);
         int xpBuff = (int)Math.floor((183 - xpFill) * length);
 
         int baseV = 0;
