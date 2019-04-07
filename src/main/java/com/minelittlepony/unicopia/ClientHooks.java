@@ -17,6 +17,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
@@ -55,8 +56,10 @@ class ClientHooks {
         }
     }
 
-    @SubscribeEvent
-    public static void onRenderHud(RenderGameOverlayEvent.Pre event) {
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void beforePreRenderHud(RenderGameOverlayEvent.Pre event) {
+        GlStateManager.pushMatrix();
+
         if (event.getType() != ElementType.ALL) {
             IPlayer player = UClient.instance().getIPlayer();
 
@@ -66,17 +69,25 @@ class ClientHooks {
         }
     }
 
-    @SubscribeEvent
-    public static void onRenderHud(RenderGameOverlayEvent.Post event) {
-        IPlayer player = UClient.instance().getIPlayer();
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+    public static void afterPreRenderHud(RenderGameOverlayEvent.Pre event) {
+        if (event.isCanceled()) {
+            GlStateManager.popMatrix();
+        }
+    }
 
-        if (player != null && Minecraft.getMinecraft().world != null) {
-            if (event.getType() == ElementType.ALL) {
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void postRenderHud(RenderGameOverlayEvent.Post event) {
+
+        if (event.getType() == ElementType.ALL) {
+            IPlayer player = UClient.instance().getIPlayer();
+
+            if (player != null && Minecraft.getMinecraft().world != null) {
                 UHud.instance.renderHud(player, event.getResolution());
-            } else {
-                UHud.instance.repositionElements(player, event.getResolution(), event.getType(), false);
             }
         }
+
+        GlStateManager.popMatrix();
     }
 
     @SubscribeEvent
