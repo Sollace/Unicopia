@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.item.ItemMoss;
 import com.minelittlepony.unicopia.item.ItemOfHolding;
 import com.minelittlepony.unicopia.item.ItemRottenApple;
 import com.minelittlepony.unicopia.item.ItemRottenTomato;
+import com.minelittlepony.unicopia.item.ItemSpear;
 import com.minelittlepony.unicopia.item.ItemSpell;
 import com.minelittlepony.unicopia.item.ItemSpellbook;
 import com.minelittlepony.unicopia.item.ItemStaff;
@@ -157,6 +158,8 @@ public class UItems {
     public static final Item staff_meadow_brook = new ItemStaff(Unicopia.MODID, "staff_meadow_brook").setMaxDamage(2);
     public static final Item staff_remembrance = new ItemMagicStaff(Unicopia.MODID, "staff_remembrance", new SpellScorch());
 
+    public static final Item spear = new ItemSpear(Unicopia.MODID, "spear");
+
     public static final ItemMoss moss = new ItemMoss(Unicopia.MODID, "moss");
 
     public static final Item alfalfa_seeds = new ItemSeedFood(1, 4, UBlocks.alfalfa, Blocks.FARMLAND)
@@ -259,7 +262,7 @@ public class UItems {
                 zap_apple, rotten_apple, cooked_zap_apple,
                 apple_seeds, apple_leaves,
 
-                dew_drop,
+                dew_drop, spear,
 
                 tomato, rotten_tomato,
                 cloudsdale_tomato, rotten_cloudsdale_tomato,

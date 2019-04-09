@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.entity.EntityConstructionCloud;
 import com.minelittlepony.unicopia.entity.EntityCuccoon;
 import com.minelittlepony.unicopia.entity.EntityRacingCloud;
 import com.minelittlepony.unicopia.entity.EntityRainbow;
+import com.minelittlepony.unicopia.entity.EntitySpear;
 import com.minelittlepony.unicopia.entity.EntitySpell;
 import com.minelittlepony.unicopia.entity.EntitySpellbook;
 import com.minelittlepony.unicopia.entity.EntityProjectile;
@@ -19,6 +20,7 @@ import com.minelittlepony.unicopia.render.RenderCuccoon;
 import com.minelittlepony.unicopia.render.RenderGem;
 import com.minelittlepony.unicopia.render.RenderProjectile;
 import com.minelittlepony.unicopia.render.RenderRainbow;
+import com.minelittlepony.unicopia.render.RenderSpear;
 import com.minelittlepony.unicopia.render.RenderSpellbook;
 
 import net.minecraft.entity.EnumCreatureType;
@@ -49,7 +51,8 @@ public class UEntities {
                 builder.creature(EntityCuccoon.class, "cuccoon"),
                 builder.creature(EntityButterfly.class, "butterfly").withEgg(0x222200, 0xaaeeff),
                 builder.projectile(EntityRainbow.class, "rainbow", 500, 5),
-                builder.projectile(EntityProjectile.class, "thrown_item", 100, 10)
+                builder.projectile(EntityProjectile.class, "thrown_item", 100, 10),
+                builder.projectile(EntitySpear.class, "spear", 100, 10)
         );
     }
 
@@ -61,6 +64,7 @@ public class UEntities {
         RenderingRegistry.registerEntityRenderingHandler(EntityRainbow.class, RenderRainbow::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityButterfly.class, RenderButterfly::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityCuccoon.class, RenderCuccoon::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntitySpear.class, RenderSpear::new);
     }
 
     public static void registerSpawnEntries(Biome biome) {

@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 import com.minelittlepony.unicopia.tossable.ITossable;
 import com.minelittlepony.unicopia.tossable.ITossableItem;
+import com.minelittlepony.unicopia.tossable.ITossed;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -28,7 +29,7 @@ import net.minecraft.world.World;
  *
  * Can also carry a spell if needed.
  */
-public class EntityProjectile extends EntitySnowball implements IMagicals, ICaster<EntityLivingBase> {
+public class EntityProjectile extends EntitySnowball implements IMagicals, ITossed, ICaster<EntityLivingBase> {
 
     private static final DataParameter<ItemStack> ITEM = EntityDataManager
             .createKey(EntityProjectile.class, DataSerializers.ITEM_STACK);
@@ -118,23 +119,28 @@ public class EntityProjectile extends EntitySnowball implements IMagicals, ICast
         return effectDelegate.has();
     }
 
+    @Override
     public void setItem(ItemStack stack) {
         getDataManager().set(ITEM, stack);
         getDataManager().setDirty(ITEM);
     }
 
+    @Override
     public void setThrowDamage(float damage) {
         getDataManager().set(DAMAGE, Math.max(0, damage));
     }
 
+    @Override
     public float getThrowDamage() {
         return getDataManager().get(DAMAGE);
     }
 
+    @Override
     public void setHydrophobic() {
         getDataManager().set(HYDROPHOBIC, true);
     }
 
+    @Override
     public boolean getHydrophobic() {
         return getDataManager().get(HYDROPHOBIC);
     }
@@ -192,6 +198,11 @@ public class EntityProjectile extends EntitySnowball implements IMagicals, ICast
                 }
             }
         }
+    }
+
+    @Override
+    public void launch(Entity entityThrower, float rotationPitchIn, float rotationYawIn, float pitchOffset, float velocity, float inaccuracy) {
+        shoot(entityThrower, rotationPitchIn, rotationYawIn, pitchOffset, velocity, inaccuracy);
     }
 
     @Override

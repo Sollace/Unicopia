@@ -45,6 +45,7 @@ item.moss.name=Moss
 item.staff_meadow_brook.name=Meadow Brook's Staff
 item.staff_meadow_brook.tagline=It's a big stick
 item.staff_remembrance.name=Staff of Remembrance
+item.spear.name=Spear
 item.alicorn_amulet.name=The Alicorn Amulet
 item.alicorn_amulet.tagline=Time Worn: %s
 
@@ -173,6 +174,7 @@ entity.cloud.name=Cloud
 entity.spell.name=Magic
 entity.spellbook.name=Spellbook
 entity.butterfly.name=Butterfly
+entity.spear.name=Spear
 
 toxicity.safe.name=Safe
 toxicity.mild.name=Mildly Toxic

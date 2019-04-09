@@ -1,11 +1,14 @@
 package com.minelittlepony.unicopia.tossable;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.entity.EntityProjectile;
 import com.minelittlepony.unicopia.item.IDispensable;
 
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.dispenser.IPosition;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
@@ -33,6 +36,16 @@ public interface ITossableItem extends ITossable<ItemStack>, IDispensable {
         return new ActionResult<>(EnumActionResult.PASS, stack);
     }
 
+    @Nullable
+    default ITossed createProjectile(World world, EntityPlayer player) {
+        return new EntityProjectile(world, player);
+    }
+
+    @Nullable
+    default ITossed createProjectile(World world, IPosition pos) {
+        return new EntityProjectile(world, pos.getX(), pos.getY(), pos.getZ());
+    }
+
     default void toss(World world, ItemStack itemstack, EntityPlayer player) {
         if (!player.capabilities.isCreativeMode) {
             itemstack.shrink(1);
@@ -41,27 +54,34 @@ public interface ITossableItem extends ITossable<ItemStack>, IDispensable {
         world.playSound(null, player.posX, player.posY, player.posZ, getThrowSound(itemstack), SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.rand.nextFloat() * 0.4F + 0.8F));
 
         if (!world.isRemote) {
-            EntityProjectile projectile = new EntityProjectile(world, player);
+            ITossed projectile = createProjectile(world, player);
+
+            if (projectile == null) {
+                return;
+            }
 
             projectile.setItem(itemstack);
             projectile.setThrowDamage(getThrowDamage(itemstack));
-            projectile.shoot(player, player.rotationPitch, player.rotationYaw, 0, 1.5F, 1);
+            projectile.launch(player, player.rotationPitch, player.rotationYaw, 0, 1.5F, 1);
 
-            world.spawnEntity(projectile);
+            world.spawnEntity((Entity)projectile);
         }
 
         player.addStat(StatList.getObjectUseStats(itemstack.getItem()));
     }
 
     default ItemStack toss(World world, IPosition pos, EnumFacing facing, ItemStack stack) {
-        EntityProjectile iprojectile = new EntityProjectile(world, pos.getX(), pos.getY(), pos.getZ());
+        ITossed projectile = createProjectile(world, pos);
 
-        iprojectile.setItem(stack);
-        iprojectile.setThrowDamage(getThrowDamage(stack));
+        if (projectile == null) {
+            return stack;
+        }
 
-        iprojectile.shoot(facing.getXOffset(), facing.getYOffset() + 0.1F, facing.getZOffset(), 1.1F, 6);
+        projectile.setItem(stack);
+        projectile.setThrowDamage(getThrowDamage(stack));
+        projectile.launch(facing.getXOffset(), facing.getYOffset() + 0.1F, facing.getZOffset(), 1.1F, 6);
 
-        world.spawnEntity(iprojectile);
+        world.spawnEntity((Entity)projectile);
 
         stack.shrink(1);
 

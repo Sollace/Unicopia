@@ -1,0 +1,163 @@
+Wishlist:
+
+	Unicorn:
+
+		locate (highlights nearest gem, fire, metal, wood, or water)
+			- Use a sound indicator and particle effects to point in the direction of nearby ores
+
+		fire control lets you use telekinesis to control flames, and theres water control for doing it with water and ice
+			- Staffs for the fire and ice gems
+
+		- Air gem (Neutral)
+			Level 1 (Gem of Air) (Neutral): No effects
+			Level 2 (Gem of Space) (Dark): No effects
+
+		- Gravity Gems (Solaris)
+			Level 1 (Gem of Slowfall): Reduces the gravity for the holder, allows hor higher jumping
+			Level 2 (Gem of Inversion) (Dark): Inverts the gravity for the holder and nearby players when placed
+			Level 3 (Gem of Harshness) (Dark): Increases gravity for the holder
+
+		- Earth gems (Excavation)
+			Level 1 (Gem of Cleansing) (Good): Clears nearby dirt when used
+			Level 2 (Gem of Harkness) (Neutral): Clears a small path through dirt when used (+Staff)
+			Level 3 (Gem of Crisis) (Dark): Clears a path through stone (+Staff)
+			Level 4 (Gem of Hiking) (Dark): Ascends surrounding blocks
+
+		- Water Gems (Hydrology)
+			Level 1: No effect
+			Level 2: (Gem of Subnautica) (Neutral):
+				(light gem + air gem + materials)
+				Grants nearby (or holding) player with the ability to breath under water
+			Level 3: (Gem of Unfelling) (Neutral)
+				When placed collects energy from nearby water to produce clouds
+				+ Deals heat damage to nearby entities
+			Level 4: (Gem of Felling) (Dark)
+				Drains moisture from nearby clouds to extract dew drops and matter
+
+		- Mixed (Fire + Water) Gems
+			Level 3+2: (Gem of The Submariner) (Dark)
+				(inferno gem + air gem + materials)
+				Grants nearby (or holding) player with the ability to breath under lava
+
+			Level 4+2: (Gem of Subhardina) (submariner + flame + materials)
+				Grants abilities of Submariner with added fire immunity
+
+				- Apply to boats to harden them against heat and lava
+				- Hardened boats melt nearby ice when in water
+
+	Earth:
+		tremor sense (which includes tapping the ground to hear through metal, rock, water, wood, and even web)
+			- Tap the ground with a gem and it produces a different sound depending what is underneath
+
+		Loved
+			- Butterflies are normally timid, but will follow an Earth Pony when one is close
+			- If an Earth Pony is attached butterflies will come to their defense
+				- Killing Butterflies increases your corruption* level
+			- Wolves do not attach Earth Ponies, ever
+
+	Pegasus
+		Molting
+			- As pegasi fly they will randomly leave a special feather in their wake.
+			- These feathers can be taken to the the Ceremonial Slab with cloud materials to create special cloud
+				blocks with intricate carvings
+
+	Magic:
+		Corruption
+			Using/Unlocking dark magic increases your player's corruption.
+			Dark spells become more powerful as your corruption increases
+				- But a higher corruption makes you weaker against mobs
+				- Undead mobs will be more likely to spawn around the bed of a player who is corrupted
+				- The Anvil Head is only useable by corrupted pegasi
+
+			Light spells become harder to use as your corruption increases
+				- Corrupted Pegasi cannot perform Sonic Rainbooms
+				- Corrupted players cannot see rainbows
+				- Butterflies fear corrupted players and will die in their presence
+				- Farm animals run from corrupted players and will die in their presence
+				- Corrupted pegasi cannot harvest cloudsdale tomatoes (they'll just be regular tomatoes)
+
+	Objects:
+
+		Ceremonial Slab
+			- It's a slab made of clouds
+			- That's about it.
+
+		Heavenly Cloud Beds
+			- There's nothing like sleeping on a matress made of clouds
+
+		Jars
+
+		Lightning in a Jar
+			- Pegasi can collect lightning bolts from clouds
+			- Dropping the jar will cause it to break and unleash the thunder
+
+		Banners for each major Equestrian Race
+			- Equestrian Flag (with Celestia and Luna)
+			- Old Equestrian Alliance
+			- Earth Tribe
+			- Unicorn Tribe
+			- Pegasus Tribe
+
+		Major Hurricane's Shield
+			- A golden shield
+			- Grants the user immunity to blast damage
+
+		6 lock box
+			- A magical chest that requires 6 keys to unlock
+
+		Mane 6 keys
+			- Keys for the 6 lock box forged using the spellbook
+
+		Saddlebags
+			- Regular item that lets you carry an extra 18 slots
+			- Can be enchanted by unicorns to make the Bag o Holding
+
+		The Crystal Heart
+			- It looks pretty
+			- Doesn't do much
+
+		Medallion of Discord
+			- Discord's friendship medallion
+			- Offers protection from most direct physical damage
+
+		Zap Apple Trees
+			- Seeds obtained from zap apples
+			- Will randomly spawn lightning bolts, thus dangerous to be around
+
+		Carved Cloud Blocks
+			- Cloud blocks with patterns
+			- Same material as packed clouds
+
+		Cloud pillars
+			- Pillar clouds with trimming
+
+		Spikes for changeling hives
+			- Harm the player when touched
+
+		Spears
+			- Thrown by pegasi.
+			- Will stick in the ground where they land, simillar to arrows.
+			- Deals damage to any entity near where it lands proportional to the distance it travelled.
+			- Supports vanilla enchants
+
+		Moon Stone
+			- Grows during a full moon
+			- Looks like blue mossy stone
+			- Can be ground up into Moon Dust and mixed with water under the light of a full moon to create Princess Luna's favourite drink (Moonshine)
+
+		Moonshine
+			- A temporary effect that alters the drinker's gravity
+			- Allows higher jumps and slower descents
+			- Used to craft the air gem
+
+	Foods:
+		Mangoes (DEADLY) (by request)
+		Bananas (Toxic)
+		Oranges (Safe)
+		Strawberries (Toxic)
+		Pineapples (Safe)
+		Coconut (Safe)
+		Kiwis (Safe)
+		Lychee (Safe)
+
+		Chocolate (Toxic)
