@@ -1,9 +1,7 @@
 package com.minelittlepony.unicopia.command;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.player.IPlayer;
 import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
