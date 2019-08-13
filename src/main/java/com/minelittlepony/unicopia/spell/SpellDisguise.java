@@ -395,7 +395,7 @@ public class SpellDisguise extends AbstractSpell implements IAttachedEffect, ISu
 
             if (player.isClientPlayer() && UClient.instance().getViewMode() == 0) {
                 entity.setInvisible(true);
-                entity.posY = -Integer.MIN_VALUE;
+                entity.posY = Integer.MIN_VALUE;
             }
 
             return player.getPlayerSpecies() == Race.CHANGELING;
