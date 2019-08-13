@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.entity;
 
-import com.minelittlepony.unicopia.init.UItems;
 import com.minelittlepony.unicopia.tossable.ITossed;
 import com.minelittlepony.util.MagicalDamageSource;
 
@@ -14,6 +13,9 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.network.play.server.SPacketChangeGameState;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
@@ -22,7 +24,11 @@ import net.minecraft.world.World;
 
 public class EntitySpear extends EntityArrow implements ITossed {
 
-    private int knockback;
+    private static final DataParameter<ItemStack> ITEM = EntityDataManager
+            .createKey(EntitySpear.class, DataSerializers.ITEM_STACK);
+
+    private static final DataParameter<Integer> KNOCKBACK = EntityDataManager
+            .createKey(EntitySpear.class, DataSerializers.VARINT);
 
     public EntitySpear(World world) {
         super(world);
@@ -34,6 +40,13 @@ public class EntitySpear extends EntityArrow implements ITossed {
 
     public EntitySpear(World world, EntityLivingBase shooter) {
         super(world, shooter);
+    }
+
+    @Override
+    protected void entityInit() {
+        super.entityInit();
+        getDataManager().register(ITEM, ItemStack.EMPTY);
+        getDataManager().register(KNOCKBACK, 0);
     }
 
     @Override
@@ -54,7 +67,7 @@ public class EntitySpear extends EntityArrow implements ITossed {
 
     public void setKnockbackStrength(int amount) {
         super.setKnockbackStrength(amount);
-        knockback = amount;
+        getDataManager().set(KNOCKBACK, amount);
     }
 
     @Override
@@ -82,6 +95,8 @@ public class EntitySpear extends EntityArrow implements ITossed {
                     if (!world.isRemote) {
                         entitylivingbase.setArrowCountInEntity(entitylivingbase.getArrowCountInEntity() + 1);
                     }
+
+                    int knockback = getDataManager().get(KNOCKBACK);
 
                     if (knockback > 0) {
                         float f1 = MathHelper.sqrt(motionX * motionX + motionZ * motionZ);
@@ -121,12 +136,12 @@ public class EntitySpear extends EntityArrow implements ITossed {
 
     @Override
     protected ItemStack getArrowStack() {
-        return new ItemStack(UItems.spear);
+        return getDataManager().get(ITEM);
     }
 
     @Override
     public void setItem(ItemStack stack) {
-
+        getDataManager().set(ITEM, new ItemStack(stack.getItem(), 1, stack.getMetadata()));
     }
 
     @Override

@@ -24,7 +24,7 @@ import net.minecraft.nbt.NBTTagCompound;
 @IMessage.Id(1)
 public class MsgPlayerCapabilities implements IMessage, IMessageHandler<MsgPlayerCapabilities> {
     @Expose
-    public Race newRace;
+    Race newRace;
 
     @Expose
     UUID senderId;

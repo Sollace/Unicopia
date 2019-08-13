@@ -47,9 +47,6 @@ public interface ITossableItem extends ITossable<ItemStack>, IDispensable {
     }
 
     default void toss(World world, ItemStack itemstack, EntityPlayer player) {
-        if (!player.capabilities.isCreativeMode) {
-            itemstack.shrink(1);
-        }
 
         world.playSound(null, player.posX, player.posY, player.posZ, getThrowSound(itemstack), SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.rand.nextFloat() * 0.4F + 0.8F));
 
@@ -65,6 +62,10 @@ public interface ITossableItem extends ITossable<ItemStack>, IDispensable {
             projectile.launch(player, player.rotationPitch, player.rotationYaw, 0, 1.5F, 1);
 
             world.spawnEntity((Entity)projectile);
+        }
+
+        if (!player.capabilities.isCreativeMode) {
+            itemstack.shrink(1);
         }
 
         player.addStat(StatList.getObjectUseStats(itemstack.getItem()));

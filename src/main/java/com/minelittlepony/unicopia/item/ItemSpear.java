@@ -9,7 +9,9 @@ import com.minelittlepony.unicopia.tossable.ITossed;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.dispenser.IPosition;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -24,19 +26,54 @@ public class ItemSpear extends Item implements ITossableItem {
         setFull3D();
         setTranslationKey(name);
         setRegistryName(domain, name);
+        setMaxStackSize(1);
+        setMaxDamage(500);
+    }
+
+    @Override
+    public EnumAction getItemUseAction(ItemStack stack) {
+        return EnumAction.BOW;
+    }
+
+    @Override
+    public boolean isFull3D() {
+        return true;
+    }
+
+    @Override
+    public int getMaxItemUseDuration(ItemStack stack) {
+        return 440;
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-        ItemStack itemstack = player.getHeldItem(hand);
+        if (!world.isRemote) {
+            ItemStack itemstack = player.getHeldItem(hand);
 
-        if (canBeThrown(itemstack)) {
-            toss(world, itemstack, player);
+            if (canBeThrown(itemstack)) {
+                player.setActiveHand(hand);
 
-            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+                return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+            }
+
         }
 
         return super.onItemRightClick(world, player, hand);
+    }
+
+    @Override
+    public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entity, int timeLeft) {
+        if (entity instanceof EntityPlayer) {
+
+            int i = getMaxItemUseDuration(itemstack) - timeLeft;
+
+            if (i > 10) {
+                if (canBeThrown(itemstack)) {
+                    itemstack.damageItem(1, entity);
+                    toss(world, itemstack, (EntityPlayer)entity);
+                }
+            }
+        }
     }
 
     @Override
