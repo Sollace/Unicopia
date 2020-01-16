@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.edibles;
 
 import net.minecraft.block.BlockFlower;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
@@ -38,7 +38,7 @@ public class FlowerToxicityDeterminent implements IEdible {
     }
 
     @Override
-    public void addSecondaryEffects(EntityPlayer player, Toxicity toxicity, ItemStack stack) {
+    public void addSecondaryEffects(PlayerEntity player, Toxicity toxicity, ItemStack stack) {
         BlockFlower.EnumFlowerType type = getType(stack);
 
         if (type == HOUSTONIA && player.world.rand.nextInt(30) == 0) {

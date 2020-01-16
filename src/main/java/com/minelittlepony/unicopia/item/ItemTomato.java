@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.item;
 import com.minelittlepony.unicopia.UItems;
 
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -32,7 +32,7 @@ public class ItemTomato extends ItemFood {
     }
 
     @Override
-    protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
+    protected void onFoodEaten(ItemStack stack, World worldIn, PlayerEntity player) {
 
         PotionEffect effect = player.getActivePotionEffect(MobEffects.NAUSEA);
 

@@ -21,13 +21,13 @@ import com.minelittlepony.util.shape.Sphere;
 
 import net.fabricmc.fabric.api.particles.ParticleTypeRegistry;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -50,7 +50,7 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseab
     @Nullable
     private BlockPos destinationPos = null;
 
-    private EnumFacing.Axis axis = EnumFacing.Axis.Y;
+    private Direction.Axis axis = Direction.Axis.Y;
 
     @Nullable
     private UUID casterId;
@@ -105,9 +105,9 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseab
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, Affinity affinity, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ) {
         position = pos.offset(side);
-        axis = EnumFacing.getDirectionFromEntityLiving(position, player).getAxis();
+        axis = Direction.getDirectionFromEntityLiving(position, player).getAxis();
 
         IPlayer prop = SpeciesList.instance().getPlayer(player);
 
@@ -130,7 +130,7 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseab
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, Affinity affinity, EntityPlayer player, World world, @Nullable Entity hitEntity) {
+    public SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, @Nullable Entity hitEntity) {
         return SpellCastResult.NONE;
     }
 
@@ -176,7 +176,7 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseab
     }
 
     public Box getTeleportBounds() {
-        if (axis == EnumFacing.Axis.Y) {
+        if (axis == Direction.Axis.Y) {
             return TELEPORT_BOUNDS_VERT;
         }
 
@@ -188,19 +188,19 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseab
     }
 
     protected void teleportEntity(ICaster<?> source, SpellPortal dest, Entity i) {
-        EnumFacing.Axis xi = i.getHorizontalFacing().getAxis();
+        Direction.Axis xi = i.getHorizontalFacing().getAxis();
 
-        if (axis != EnumFacing.Axis.Y && xi != axis) {
+        if (axis != Direction.Axis.Y && xi != axis) {
             return;
         }
 
-        EnumFacing offset = i.getHorizontalFacing();
+        Direction offset = i.getHorizontalFacing();
 
         double destX = dest.position.getX() + (i.posX - source.getOrigin().getX());
         double destY = dest.position.getY() + (i.posY - source.getOrigin().getY());
         double destZ = dest.position.getZ() + (i.posZ - source.getOrigin().getZ());
 
-        if (axis != EnumFacing.Axis.Y) {
+        if (axis != Direction.Axis.Y) {
             destX += offset.getXOffset();
             destY++;
             destZ += offset.getZOffset();
@@ -325,13 +325,13 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseab
         }
 
         if (compound.hasKey("axis")) {
-            axis = EnumFacing.Axis.byName(compound.getString("axis").toLowerCase(Locale.ROOT));
+            axis = Direction.Axis.byName(compound.getString("axis").toLowerCase(Locale.ROOT));
 
             if (axis == null) {
-                axis = EnumFacing.Axis.Y;
+                axis = Direction.Axis.Y;
             }
         } else {
-            axis = EnumFacing.Axis.Y;
+            axis = Direction.Axis.Y;
         }
     }
 }

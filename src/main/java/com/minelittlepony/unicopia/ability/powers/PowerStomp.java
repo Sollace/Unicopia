@@ -13,7 +13,7 @@ import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.ability.IPower;
 import com.minelittlepony.unicopia.ability.Location;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
-import com.minelittlepony.unicopia.item.ItemApple;
+import com.minelittlepony.unicopia.item.AppleItem;
 import com.minelittlepony.unicopia.world.UWorld;
 import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.PosHelper;
@@ -367,7 +367,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
     }
 
     private ItemStack getApple(World w, BlockState log) {
-        return ItemApple.getRandomItemStack(getVariant(log));
+        return AppleItem.getRandomItemStack(getVariant(log));
     }
 
     private int measureTree(World w, BlockState log, BlockPos pos) {

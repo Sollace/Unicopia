@@ -28,7 +28,7 @@ public class BlockCloudFarm extends UFarmland implements ICloudBlock {
     }
 
     @Override
-    public boolean isAir(BlockState state, IBlockAccess world, BlockPos pos) {
+    public boolean isAir(BlockState state, BlockView world, BlockPos pos) {
         return allowsFallingBlockToPass(state, world, pos);
     }
 
@@ -81,7 +81,7 @@ public class BlockCloudFarm extends UFarmland implements ICloudBlock {
 
     @Deprecated
     @Override
-    public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
+    public RayTraceResult collisionRayTrace(BlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
         if (!handleRayTraceSpecialCases(worldIn, pos, blockState)) {
             return super.collisionRayTrace(blockState, worldIn, pos, start, end);
         }

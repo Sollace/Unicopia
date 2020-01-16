@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.world.structure;
 import java.util.Random;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.World;
@@ -33,9 +33,9 @@ public abstract class AbstractFeature extends StructureComponent {
         height = sizeY;
         depth = sizeZ;
 
-        setCoordBaseMode(EnumFacing.Plane.HORIZONTAL.random(rand));
+        setCoordBaseMode(Direction.Plane.HORIZONTAL.random(rand));
 
-        if (getCoordBaseMode().getAxis() == EnumFacing.Axis.Z) {
+        if (getCoordBaseMode().getAxis() == Direction.Axis.Z) {
             boundingBox = new StructureBoundingBox(x, y, z, x + sizeX - 1, y + sizeY - 1, z + sizeZ - 1);
         } else {
             boundingBox = new StructureBoundingBox(x, y, z, x + sizeZ - 1, y + sizeY - 1, z + sizeX - 1);

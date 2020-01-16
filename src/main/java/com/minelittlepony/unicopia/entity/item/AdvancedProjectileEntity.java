@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.entity.item;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.entity.IMagicals;
-import com.minelittlepony.unicopia.item.ITossableItem;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.ICaster;
 import com.minelittlepony.unicopia.magic.IMagicEffect;
@@ -12,6 +11,7 @@ import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.projectile.IAdvancedProjectile;
 import com.minelittlepony.unicopia.projectile.ITossable;
+import com.minelittlepony.unicopia.projectile.ITossableItem;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

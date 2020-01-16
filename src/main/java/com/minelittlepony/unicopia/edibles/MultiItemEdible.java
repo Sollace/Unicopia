@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.edibles;
 
 import javax.annotation.Nonnull;
 import com.minelittlepony.unicopia.forgebullshit.IMultiItem;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -31,7 +31,7 @@ public class MultiItemEdible extends ItemEdible implements IMultiItem {
     }
 
     @Override
-    public void addSecondaryEffects(EntityPlayer player, Toxicity toxicity, ItemStack stack) {
+    public void addSecondaryEffects(PlayerEntity player, Toxicity toxicity, ItemStack stack) {
         super.addSecondaryEffects(player, toxicity, stack);
 
         toxicityDeterminant.addSecondaryEffects(player, toxicity, stack);

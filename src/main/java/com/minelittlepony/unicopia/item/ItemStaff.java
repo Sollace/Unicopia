@@ -16,7 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -41,7 +41,7 @@ public class ItemStaff extends ItemSword {
     }
 
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity target) {
+    public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity target) {
         World w = player.getEntityWorld();
 
         for (int i = 0; i < 130; i++) {
@@ -100,7 +100,7 @@ public class ItemStaff extends ItemSword {
 
         if (slot == EntityEquipmentSlot.MAINHAND) {
             multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", getAttackDamage(), 0));
-            multimap.put(EntityPlayer.REACH_DISTANCE.getName(), new AttributeModifier(ATTACK_REACH_MODIFIER, "Weapon modifier", 3, 0));
+            multimap.put(PlayerEntity.REACH_DISTANCE.getName(), new AttributeModifier(ATTACK_REACH_MODIFIER, "Weapon modifier", 3, 0));
         }
 
         return multimap;

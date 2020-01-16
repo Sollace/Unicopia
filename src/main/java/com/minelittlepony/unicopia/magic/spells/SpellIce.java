@@ -21,15 +21,15 @@ import net.minecraft.block.BlockLeaves;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.BlockSnow;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityTNTPrimed;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 
@@ -86,12 +86,12 @@ public class SpellIce extends AbstractSpell.RangedAreaSpell implements IUseable,
     }
 
     @Override
-    public SpellCastResult onDispenced(BlockPos pos, EnumFacing facing, IBlockSource source, Affinity affinity) {
+    public SpellCastResult onDispenced(BlockPos pos, Direction facing, IBlockSource source, Affinity affinity) {
         return applyBlocks(null, source.getWorld(), pos.offset(facing, rad)) ? SpellCastResult.NONE : SpellCastResult.DEFAULT;
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, Affinity affinity, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ) {
         if (player != null && player.isSneaking()) {
             applyBlockSingle(world, pos);
         } else {
@@ -102,7 +102,7 @@ public class SpellIce extends AbstractSpell.RangedAreaSpell implements IUseable,
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, Affinity affinity, EntityPlayer player, World world, @Nullable Entity hitEntity) {
+    public SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, @Nullable Entity hitEntity) {
         if (hitEntity != null && applyEntitySingle(player, hitEntity)) {
             return SpellCastResult.DEFAULT;
         }
@@ -110,7 +110,7 @@ public class SpellIce extends AbstractSpell.RangedAreaSpell implements IUseable,
         return SpellCastResult.NONE;
     }
 
-    private boolean applyBlocks(EntityPlayer owner, World world, BlockPos pos) {
+    private boolean applyBlocks(PlayerEntity owner, World world, BlockPos pos) {
 
         for (BlockPos i : PosHelper.getAllInRegionMutable(pos, effect_range)) {
             applyBlockSingle(world, i);
@@ -119,13 +119,13 @@ public class SpellIce extends AbstractSpell.RangedAreaSpell implements IUseable,
         return applyEntities(owner, world, pos);
     }
 
-    protected boolean applyEntities(EntityPlayer owner, World world, BlockPos pos) {
+    protected boolean applyEntities(PlayerEntity owner, World world, BlockPos pos) {
         return VecHelper.findAllEntitiesInRange(owner, world, pos, 3).filter(i ->
             applyEntitySingle(owner, i)
         ).count() > 0;
     }
 
-    protected boolean applyEntitySingle(EntityPlayer owner, Entity e) {
+    protected boolean applyEntitySingle(PlayerEntity owner, Entity e) {
         if (e instanceof EntityTNTPrimed) {
             e.setDead();
             e.getEntityWorld().setBlockState(e.getPosition(), Blocks.TNT.getDefaultState());
@@ -139,14 +139,14 @@ public class SpellIce extends AbstractSpell.RangedAreaSpell implements IUseable,
     }
 
     private void applyBlockSingle(World world, BlockPos pos) {
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
         Block id = state.getBlock();
 
-        IBlockState converted = affected.getConverted(state);
+        BlockState converted = affected.getConverted(state);
 
         if (!state.equals(converted)) {
             world.setBlockState(pos, converted, 3);
-        } else if (state.getMaterial() != UMaterials.cloud && state.isSideSolid(world, pos, EnumFacing.UP)
+        } else if (state.getMaterial() != UMaterials.cloud && state.isSideSolid(world, pos, Direction.UP)
                 || (id == Blocks.SNOW)
                 || (id instanceof BlockLeaves)) {
             incrementIce(world, pos.up());
@@ -166,7 +166,7 @@ public class SpellIce extends AbstractSpell.RangedAreaSpell implements IUseable,
     }
 
     private void incrementIce(World world, BlockPos pos) {
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
         Block id = state.getBlock();
 
         if (id == Blocks.AIR || (id instanceof BlockBush)) {

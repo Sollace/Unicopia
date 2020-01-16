@@ -1,14 +1,13 @@
 package com.minelittlepony.unicopia.item;
 
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 
-public class ItemRottenApple extends ItemApple {
+public class ItemRottenApple extends AppleItem {
 
-    public ItemRottenApple(String domain, String name) {
-        super(domain, name);
+    public ItemRottenApple(FoodComponent components) {
+        super(components);
     }
 
     @Override
@@ -17,14 +16,7 @@ public class ItemRottenApple extends ItemApple {
     }
 
     @Override
-    public boolean onEntityItemUpdate(EntityItem item) {
+    public boolean onEntityItemUpdate(ItemEntity item) {
         return false;
-    }
-
-    @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
-        if (isInCreativeTab(tab)) {
-            items.add(new ItemStack(this));
-        }
     }
 }

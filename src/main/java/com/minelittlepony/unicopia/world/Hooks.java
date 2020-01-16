@@ -14,7 +14,7 @@ public class Hooks {
         }
 
         ActionResult result = UWorld.instance().getBlocks().onBlockInteract(
-                event.getWorld(), event.getWorld().getBlockState(event.getPos()), event.getPos(), event.getEntityPlayer(), event.getItemStack(), event.getFace(), event.getHand());
+                event.getWorld(), event.getWorld().getBlockState(event.getPos()), event.getPos(), event.getPlayerEntity(), event.getItemStack(), event.getFace(), event.getHand());
 
         if (result != ActionResult.PASS) {
             event.setCanceled(true);
@@ -27,7 +27,7 @@ public class Hooks {
     }
 
     public static void onBlockTilled(UseHoeEvent event) {
-        if (UWorld.instance().getBlocks().onBlockTilled(event.getWorld(), event.getPos(), event.getEntityPlayer(), event.getCurrent())) {
+        if (UWorld.instance().getBlocks().onBlockTilled(event.getWorld(), event.getPos(), event.getPlayerEntity(), event.getCurrent())) {
             event.setResult(Result.ALLOW);
         }
     }

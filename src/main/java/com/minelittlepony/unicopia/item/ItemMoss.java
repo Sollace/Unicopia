@@ -14,17 +14,17 @@ import net.minecraft.block.BlockDispenser;
 import net.minecraft.block.BlockSilverfish;
 import net.minecraft.block.BlockStoneBrick;
 import net.minecraft.block.BlockWall;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -48,7 +48,7 @@ public class ItemMoss extends ItemEdible {
         @Override
         protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
 
-            EnumFacing facing = source.getBlockState().getValue(BlockDispenser.FACING);
+            Direction facing = source.getBlockState().getValue(BlockDispenser.FACING);
             BlockPos pos = source.getBlockPos().offset(facing);
             World w = source.getWorld();
 
@@ -58,7 +58,7 @@ public class ItemMoss extends ItemEdible {
                 return stack;
             }
 
-            EntityPlayer player = null;
+            PlayerEntity player = null;
 
             for (LivingEntity e : w.getEntitiesWithinAABB(LivingEntity.class, Block.FULL_BLOCK_AABB.offset(pos), e ->
                     e instanceof IShearable && ((IShearable)e).isShearable(stack, w, pos)
@@ -92,8 +92,8 @@ public class ItemMoss extends ItemEdible {
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(Items.SHEARS, dispenserBehavior);
     }
 
-    public boolean tryConvert(World world, IBlockState state, BlockPos pos, @Nullable EntityPlayer player) {
-        IBlockState converted = affected.getConverted(state);
+    public boolean tryConvert(World world, BlockState state, BlockPos pos, @Nullable PlayerEntity player) {
+        BlockState converted = affected.getConverted(state);
 
         if (!state.equals(converted)) {
             world.setBlockState(pos, converted, 3);

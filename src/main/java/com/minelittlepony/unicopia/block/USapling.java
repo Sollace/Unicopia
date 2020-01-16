@@ -10,7 +10,7 @@ import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.BlockSapling;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -38,7 +38,7 @@ public class USapling extends BlockSapling implements ITreeGen {
     }
 
     @Override
-    public void generateTree(World world, BlockPos pos, IBlockState state, Random rand) {
+    public void generateTree(World world, BlockPos pos, BlockState state, Random rand) {
 
         boolean massive = canGrowMassive();
 
@@ -63,7 +63,7 @@ public class USapling extends BlockSapling implements ITreeGen {
         items.add(new ItemStack(this));
     }
 
-    protected void setSaplingsState(World world, IBlockState state, boolean massive, BlockPos pos) {
+    protected void setSaplingsState(World world, BlockState state, boolean massive, BlockPos pos) {
         if (massive) {
             world.setBlockState(pos             , state, 4);
             world.setBlockState(pos.add(1, 0, 0), state, 4);
@@ -75,7 +75,7 @@ public class USapling extends BlockSapling implements ITreeGen {
     }
 
     @Override
-    public WorldGenAbstractTree getTreeGen(World world, IBlockState state, boolean massive) {
+    public WorldGenAbstractTree getTreeGen(World world, BlockState state, boolean massive) {
         return treeGen.getTreeGen(world, state, massive);
     }
 
@@ -89,7 +89,7 @@ public class USapling extends BlockSapling implements ITreeGen {
      * Returns null if no such spaces were found.
      */
     @Nullable
-    public BlockPos findTwoByTwoSpace(World world, BlockPos pos, IBlockState state) {
+    public BlockPos findTwoByTwoSpace(World world, BlockPos pos, BlockState state) {
         BlockPos xNegP = pos.add(-1, 0,  0);
         BlockPos xPosP = pos.add( 1, 0,  0);
 
@@ -125,7 +125,7 @@ public class USapling extends BlockSapling implements ITreeGen {
         return null;
     }
 
-    protected boolean isMatch(IBlockState state, IBlockState other) {
+    protected boolean isMatch(BlockState state, BlockState other) {
         return other.getBlock() == this;
     }
 
@@ -136,17 +136,17 @@ public class USapling extends BlockSapling implements ITreeGen {
     }
 
     @Override
-    public int damageDropped(IBlockState state) {
+    public int damageDropped(BlockState state) {
         return 0;
     }
 
     @Override
-    public IBlockState getStateFromMeta(int meta) {
+    public BlockState getStateFromMeta(int meta) {
         return getDefaultState().with(STAGE, (meta & 8) >> 3);
     }
 
     @Override
-    public int getMetaFromState(IBlockState state) {
+    public int getMetaFromState(BlockState state) {
         int i = 0;
         i |= state.getValue(STAGE) << 3;
         return i;

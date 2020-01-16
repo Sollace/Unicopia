@@ -16,17 +16,17 @@ import net.minecraft.world.World;
 public interface ICastable extends IMagicalItem, IDispensable {
 
     @Override
-    default ActionResult<ItemStack> dispenseStack(IBlockSource source, ItemStack stack) {
+    default TypedActionResult<ItemStack> dispenseStack(IBlockSource source, ItemStack stack) {
         IDispenceable effect = SpellRegistry.instance().getDispenseActionFrom(stack);
 
         if (effect == null) {
-            return new ActionResult<>(ActionResult.FAIL, stack);
+            return new TypedActionResult<>(ActionResult.FAIL, stack);
         }
 
         SpellCastResult dispenceResult = onDispenseSpell(source, stack, effect);
 
         if (dispenceResult == SpellCastResult.DEFAULT) {
-            return new ActionResult<>(ActionResult.PASS, stack);
+            return new TypedActionResult<>(ActionResult.PASS, stack);
         }
 
         if (dispenceResult == SpellCastResult.PLACE) {

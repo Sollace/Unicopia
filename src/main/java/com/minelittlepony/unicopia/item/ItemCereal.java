@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.item;
 import com.minelittlepony.unicopia.SpeciesList;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -29,7 +29,7 @@ public class ItemCereal extends ItemFood {
     }
 
     @Override
-    protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
+    protected void onFoodEaten(ItemStack stack, World worldIn, PlayerEntity player) {
         super.onFoodEaten(stack, worldIn, player);
 
         if (sugarAmount != 0) {

@@ -30,7 +30,7 @@ public class StickBlock extends Block {
             9/16F, 15/16F, 9/16F
     ));
 
-    public StickBlock(String domain, String name) {
+    public StickBlock() {
         super(FabricBlockSettings.of(Material.PLANT)
                 .noCollision()
                 .strength(0.2F, 0.2F)

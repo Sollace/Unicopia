@@ -35,32 +35,32 @@ public class BlockCloudFence extends FenceBlock implements ICloudBlock {
     }
 
     @Override
-    public boolean isTranslucent(IBlockState state) {
+    public boolean isTranslucent(BlockState state) {
         return variant == CloudType.NORMAL;
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube(BlockState state) {
         return false;
     }
 
     @Override
-    public boolean isFullCube(IBlockState state) {
+    public boolean isFullCube(BlockState state) {
         return false;
     }
 
     @Override
-    public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public boolean isAir(BlockState state, BlockView world, BlockPos pos) {
         return allowsFallingBlockToPass(state, world, pos);
     }
 
     @Override
-    public boolean isNormalCube(IBlockState state) {
+    public boolean isNormalCube(BlockState state) {
         return false;
     }
 
     @Override
-    public CloudType getCloudMaterialType(IBlockState blockState) {
+    public CloudType getCloudMaterialType(BlockState blockState) {
         return variant;
     }
 
@@ -83,8 +83,8 @@ public class BlockCloudFence extends FenceBlock implements ICloudBlock {
         }
     }
 
-    public boolean canConnectTo(IBlockAccess world, BlockPos pos, EnumFacing facing) {
-        IBlockState myState = world.getBlockState(pos);
+    public boolean canConnectTo(BlockView world, BlockPos pos, Direction facing) {
+        BlockState myState = world.getBlockState(pos);
 
         return !(myState.getBlock() instanceof BlockCloudBanister)
                 && super.canConnectTo(world, pos, facing);
@@ -98,12 +98,12 @@ public class BlockCloudFence extends FenceBlock implements ICloudBlock {
     }
 
     @Override
-    public boolean canEntityDestroy(IBlockState state, IBlockAccess world, BlockPos pos, Entity entity) {
+    public boolean canEntityDestroy(BlockState state, BlockView world, BlockPos pos, Entity entity) {
         return getCanInteract(state, entity) && super.canEntityDestroy(state, world, pos, entity);
     }
 
     @Deprecated
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
+    public void addCollisionBoxToList(BlockState state, World worldIn, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
         if (getCanInteract(state, entity)) {
             super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, isActualState);
         }
@@ -120,7 +120,7 @@ public class BlockCloudFence extends FenceBlock implements ICloudBlock {
 
     @Deprecated
     @Override
-    public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end) {
+    public RayTraceResult collisionRayTrace(BlockState state, World world, BlockPos pos, Vec3d start, Vec3d end) {
         if (!handleRayTraceSpecialCases(world, pos, state)) {
             return super.collisionRayTrace(state, world, pos, start, end);
         }

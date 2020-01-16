@@ -5,7 +5,7 @@ import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.ICaster;
 import com.minelittlepony.unicopia.magic.IHeldEffect;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.DamageSource;
 
@@ -37,7 +37,7 @@ public class SpellFlame extends AbstractSpell implements IHeldEffect {
 
     @Override
     public void updateInHand(IPlayer caster, Affinity affinity) {
-        EntityPlayer player = caster.getOwner();
+        PlayerEntity player = caster.getOwner();
 
         if (player.ticksExisted % 15 == 0) {
             player.attackEntityFrom(DamageSource.ON_FIRE, 1);

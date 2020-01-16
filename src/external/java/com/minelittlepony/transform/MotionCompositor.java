@@ -1,6 +1,6 @@
 package com.minelittlepony.transform;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 
 import com.minelittlepony.util.math.MathUtil;
@@ -8,7 +8,7 @@ import com.minelittlepony.util.math.MathUtil;
 //#MineLittlePony#
 public abstract class MotionCompositor {
 
-    protected double calculateRoll(EntityPlayer player, double motionX, double motionY, double motionZ) {
+    protected double calculateRoll(PlayerEntity player, double motionX, double motionY, double motionZ) {
 
         // since model roll should probably be calculated from model rotation rather than entity rotation...
         double roll = MathUtil.sensibleAngle(player.prevRenderYawOffset - player.renderYawOffset);
@@ -32,7 +32,7 @@ public abstract class MotionCompositor {
         return MathHelper.clamp(roll, -54, 54);
     }
 
-    protected double calculateIncline(EntityPlayer player, double motionX, double motionY, double motionZ) {
+    protected double calculateIncline(PlayerEntity player, double motionX, double motionY, double motionZ) {
         double dist = Math.sqrt(motionX * motionX + motionZ * motionZ);
         double angle = Math.atan2(motionY, dist);
 

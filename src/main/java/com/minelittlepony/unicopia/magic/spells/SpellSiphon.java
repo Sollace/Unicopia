@@ -12,7 +12,7 @@ import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.shape.Sphere;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -56,8 +56,8 @@ public class SpellSiphon extends AbstractSpell.RangedAreaSpell {
                         if (!e.equals(owner)) {
                             float dealt = Math.min(e.getHealth(), attackAmount);
 
-                            if (e instanceof EntityPlayer) {
-                                IPlayer player = SpeciesList.instance().getPlayer((EntityPlayer)e);
+                            if (e instanceof PlayerEntity) {
+                                IPlayer player = SpeciesList.instance().getPlayer((PlayerEntity)e);
 
                                 Race race = player.getSpecies();
 

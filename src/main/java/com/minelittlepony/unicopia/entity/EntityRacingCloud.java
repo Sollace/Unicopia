@@ -8,7 +8,7 @@ import com.minelittlepony.unicopia.Predicates;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.Vec3d;
@@ -39,7 +39,7 @@ public class EntityRacingCloud extends EntityCloud {
     }
 
     @Override
-    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand) {
+    public EnumActionResult applyPlayerInteraction(PlayerEntity player, Vec3d vec, EnumHand hand) {
         if (!(isBeingRidden() || isRidingOrBeingRiddenBy(player)) && hand == EnumHand.MAIN_HAND) {
             if (Predicates.INTERACT_WITH_CLOUDS.test(player)) {
                 if (!getStationary()) {

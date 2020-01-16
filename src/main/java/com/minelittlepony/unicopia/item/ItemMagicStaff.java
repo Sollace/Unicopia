@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.projectile.ITossableItem;
 import com.minelittlepony.unicopia.spell.CasterUtils;
 import com.minelittlepony.unicopia.spell.IAligned;
 import com.minelittlepony.unicopia.spell.ICaster;
@@ -15,11 +16,11 @@ import com.minelittlepony.unicopia.spell.ITossedEffect;
 import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.util.lang.ClientLocale;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -51,13 +52,13 @@ public class ItemMagicStaff extends ItemStaff implements IAligned, ITossableItem
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+    public TypedActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, EnumHand hand) {
         if (Predicates.MAGI.test(player) && hand == EnumHand.MAIN_HAND) {
             ItemStack itemstack =  player.getStackInHand(hand);
 
             player.setActiveHand(hand);
 
-            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+            return new TypedActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
         }
 
         return super.onItemRightClick(world, player, hand);
@@ -65,13 +66,13 @@ public class ItemMagicStaff extends ItemStaff implements IAligned, ITossableItem
 
     @Override
     public void onPlayerStoppedUsing(ItemStack itemstack, World world, LivingEntity entity, int timeLeft) {
-        if (Predicates.MAGI.test(entity) && entity instanceof EntityPlayer) {
+        if (Predicates.MAGI.test(entity) && entity instanceof PlayerEntity) {
 
             int i = getMaxItemUseDuration(itemstack) - timeLeft;
 
             if (i > 10) {
                 if (canBeThrown(itemstack)) {
-                    toss(world, itemstack, (EntityPlayer)entity);
+                    toss(world, itemstack, (PlayerEntity)entity);
                 }
             }
         }
@@ -133,7 +134,7 @@ public class ItemMagicStaff extends ItemStaff implements IAligned, ITossableItem
     }
 
     @Override
-    public void toss(World world, ItemStack stack, EntityPlayer player) {
+    public void toss(World world, ItemStack stack, PlayerEntity player) {
         IPlayer iplayer = SpeciesList.instance().getPlayer(player);
 
         iplayer.subtractEnergyCost(4);
@@ -143,7 +144,7 @@ public class ItemMagicStaff extends ItemStaff implements IAligned, ITossableItem
     }
 
     @Override
-    public void onImpact(ICaster<?> caster, BlockPos pos, IBlockState state) {
+    public void onImpact(ICaster<?> caster, BlockPos pos, BlockState state) {
         effect.onImpact(caster, pos, state);
     }
 

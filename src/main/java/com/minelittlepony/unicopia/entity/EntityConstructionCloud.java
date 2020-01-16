@@ -3,15 +3,15 @@ package com.minelittlepony.unicopia.entity;
 import com.minelittlepony.unicopia.Predicates;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.PlayerEntitySP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.BlockPos;
@@ -36,7 +36,7 @@ public class EntityConstructionCloud extends EntityCloud {
     }
 
     @Override
-    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand) {
+    public EnumActionResult applyPlayerInteraction(PlayerEntity player, Vec3d vec, EnumHand hand) {
         if (!(isBeingRidden() || isRidingOrBeingRiddenBy(player)) && hand == EnumHand.MAIN_HAND) {
             if (Predicates.INTERACT_WITH_CLOUDS.test(player)) {
 
@@ -58,8 +58,8 @@ public class EntityConstructionCloud extends EntityCloud {
         return EnumActionResult.FAIL;
     }
 
-    private void placeBlock(EntityPlayer player, ItemStack stack, EnumHand hand) {
-        if (!world.isClient || !(player instanceof EntityPlayerSP)) {
+    private void placeBlock(PlayerEntity player, ItemStack stack, EnumHand hand) {
+        if (!world.isClient || !(player instanceof PlayerEntitySP)) {
             return;
         }
 
@@ -84,14 +84,14 @@ public class EntityConstructionCloud extends EntityCloud {
             return;
         }
 
-        EnumFacing direction = trace.sideHit;
+        Direction direction = trace.sideHit;
 
         BlockPos blockPos = new BlockPos(trace.hitVec);
 
         mc.objectMouseOver = new RayTraceResult(trace.hitVec, direction, blockPos);
 
         int oldCount = stack.getCount();
-        EnumActionResult result = mc.playerController.processRightClickBlock(((EntityPlayerSP)player), (WorldClient)player.world, blockPos, direction, trace.hitVec, hand);
+        EnumActionResult result = mc.playerController.processRightClickBlock(((PlayerEntitySP)player), (WorldClient)player.world, blockPos, direction, trace.hitVec, hand);
 
         if (result == EnumActionResult.SUCCESS) {
             player.swingArm(hand);

@@ -17,7 +17,7 @@ import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -32,7 +32,7 @@ public class MsgPlayerCapabilities implements IMessage, IMessageHandler<MsgPlaye
     @Expose
     byte[] compoundTag;
 
-    public MsgPlayerCapabilities(Race race, EntityPlayer player) {
+    public MsgPlayerCapabilities(Race race, PlayerEntity player) {
         newRace = race;
         senderId = player.getUniqueID();
         compoundTag = new byte[0];
@@ -54,7 +54,7 @@ public class MsgPlayerCapabilities implements IMessage, IMessageHandler<MsgPlaye
 
     @Override
     public void onPayload(MsgPlayerCapabilities message, IChannel channel) {
-        EntityPlayer self = UClient.instance().getPlayerByUUID(senderId);
+        PlayerEntity self = UClient.instance().getPlayerByUUID(senderId);
 
         if (self == null) {
             Unicopia.log.warn("[Unicopia] [CLIENT] [MsgPlayerCapabilities] Player with id %s was not found!\n", senderId.toString());

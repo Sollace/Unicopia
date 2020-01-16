@@ -26,18 +26,18 @@ import net.minecraft.block.BlockSilverfish;
 import net.minecraft.block.BlockStoneBrick;
 import net.minecraft.block.BlockWall;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
@@ -98,7 +98,7 @@ public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseable
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, Affinity affinity, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ) {
         boolean result = false;
 
         if (player == null || player.isSneaking()) {
@@ -118,7 +118,7 @@ public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseable
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, Affinity affinity, EntityPlayer player, World world, @Nullable Entity hitEntity) {
+    public SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, @Nullable Entity hitEntity) {
         if (hitEntity == null) {
             return SpellCastResult.NONE;
         }
@@ -127,7 +127,7 @@ public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseable
     }
 
     @Override
-    public SpellCastResult onDispenced(BlockPos pos, EnumFacing facing, IBlockSource source, Affinity affinity) {
+    public SpellCastResult onDispenced(BlockPos pos, Direction facing, IBlockSource source, Affinity affinity) {
         pos = pos.offset(facing, 4);
 
         boolean result = false;
@@ -144,7 +144,7 @@ public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseable
     }
 
     protected boolean applyBlocks(World world, BlockPos pos) {
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
         Block id = state.getBlock();
 
         if (id != Blocks.AIR) {
@@ -183,7 +183,7 @@ public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseable
                     return true;
                 }
             } else {
-                IBlockState newState = affected.getConverted(state);
+                BlockState newState = affected.getConverted(state);
 
                 if (!state.equals(newState)) {
                     world.setBlockState(pos, newState, 3);
@@ -206,7 +206,7 @@ public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseable
 
     protected boolean applyEntitySingle(Entity owner, World world, Entity e) {
         if ((!e.equals(owner) ||
-                (owner instanceof EntityPlayer && !Predicates.MAGI.test(owner))) && !(e instanceof EntityItem)
+                (owner instanceof PlayerEntity && !Predicates.MAGI.test(owner))) && !(e instanceof EntityItem)
         && !(e instanceof IMagicals)) {
             e.setFire(60);
             e.attackEntityFrom(getDamageCause(e, (LivingEntity)owner), 0.1f);
@@ -225,7 +225,7 @@ public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseable
      * Transmists power to a piece of redstone
      */
     private void sendPower(World w, BlockPos pos, int power, int max, int i) {
-        IBlockState state = w.getBlockState(pos);
+        BlockState state = w.getBlockState(pos);
         Block id = state.getBlock();
 
         if (i < max && id == Blocks.REDSTONE_WIRE) {

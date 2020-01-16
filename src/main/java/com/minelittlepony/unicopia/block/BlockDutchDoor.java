@@ -4,11 +4,11 @@ import java.util.function.Supplier;
 
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.item.Item;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BlockDutchDoor extends UDoor {
@@ -18,20 +18,20 @@ public class BlockDutchDoor extends UDoor {
     }
 
     @Override
-    protected BlockPos getPrimaryDoorPos(IBlockState state, BlockPos pos) {
+    protected BlockPos getPrimaryDoorPos(BlockState state, BlockPos pos) {
         return pos;
     }
 
     @Override
-    public boolean isPassable(IBlockAccess world, BlockPos pos) {
+    public boolean isPassable(BlockView world, BlockPos pos) {
         return world.getBlockState(pos).getValue(OPEN);
     }
 
     @Override
-    protected boolean onPowerStateChanged(World world, IBlockState state, BlockPos pos, boolean powered) {
+    protected boolean onPowerStateChanged(World world, BlockState state, BlockPos pos, boolean powered) {
         boolean result = super.onPowerStateChanged(world, state, pos, powered);
 
-        IBlockState upper = world.getBlockState(pos.up());
+        BlockState upper = world.getBlockState(pos.up());
         if (upper.getBlock() == this && upper.getValue(OPEN) != powered) {
             world.setBlockState(pos.up(), upper.with(OPEN, powered));
 
@@ -45,18 +45,18 @@ public class BlockDutchDoor extends UDoor {
     // LOWER - HALF/FACING/FACING/OPEN
 
     @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public BlockState getActualState(BlockState state, BlockView world, BlockPos pos) {
 
         // copy properties in stored by the sibling block
         if (state.getValue(HALF) == BlockDoor.EnumDoorHalf.LOWER) {
-            IBlockState other = world.getBlockState(pos.up());
+            BlockState other = world.getBlockState(pos.up());
 
             if (other.getBlock() == this) {
                 return state.with(HINGE, other.getValue(HINGE))
                     .with(POWERED, other.getValue(POWERED));
             }
         } else {
-            IBlockState other = world.getBlockState(pos.down());
+            BlockState other = world.getBlockState(pos.down());
 
             if (other.getBlock() == this) {
                 return state.with(FACING, other.getValue(FACING));
@@ -68,10 +68,10 @@ public class BlockDutchDoor extends UDoor {
     }
 
     @Override
-    public IBlockState getStateFromMeta(int meta) {
+    public BlockState getStateFromMeta(int meta) {
         boolean upper = (meta & 8) != 0;
 
-        IBlockState state = getDefaultState()
+        BlockState state = getDefaultState()
                 .with(HALF, upper ? EnumDoorHalf.UPPER : EnumDoorHalf.LOWER)
                 .with(OPEN, (meta & 4) != 0);
 
@@ -80,11 +80,11 @@ public class BlockDutchDoor extends UDoor {
                     .with(HINGE, (meta & 2) != 0 ? EnumHingePosition.RIGHT : EnumHingePosition.LEFT);
         }
 
-        return state.with(FACING, EnumFacing.byHorizontalIndex(meta & 3).rotateYCCW());
+        return state.with(FACING, Direction.byHorizontalIndex(meta & 3).rotateYCCW());
     }
 
     @Override
-    public int getMetaFromState(IBlockState state) {
+    public int getMetaFromState(BlockState state) {
         int i = 0;
 
         if (state.getValue(HALF) == BlockDoor.EnumDoorHalf.UPPER) {

@@ -1,40 +1,36 @@
 package com.minelittlepony.unicopia.magic.items;
 
-import net.minecraft.block.BlockDispenser;
-import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
-import net.minecraft.dispenser.IBehaviorDispenseItem;
-import net.minecraft.dispenser.IBlockSource;
+import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.BlockPointer;
 
 public interface IDispensable {
-    IBehaviorDispenseItem dispenserBehavior = new BehaviorDefaultDispenseItem() {
-        @Override
-        protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
-
-            ActionResult<ItemStack> result = ((IDispensable)stack.getItem()).dispenseStack(source, stack);
-
-            if (result.getType() != EnumActionResult.SUCCESS) {
-                return super.dispense(source, stack);
-            }
-
-            return result.getResult();
-        }
-    };
-
     /**
      * Enables dispensing behaviours for this item.
      */
     default Item setDispenseable() {
-        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject((Item)(Object)this, dispenserBehavior);
+        DispenserBlock.registerBehavior((Item)this, new ItemDispenserBehavior() {
+            @Override
+            protected ItemStack dispenseSilently(BlockPointer source, ItemStack stack) {
+                TypedActionResult<ItemStack> result = dispenseStack(source, stack);
 
-        return (Item)(Object)this;
+                if (result.getResult() != ActionResult.SUCCESS) {
+                    return super.dispense(source, stack);
+                }
+
+                return result.getValue();
+            }
+        });
+
+        return (Item)this;
     }
 
     /**
      * Called to dispense this stack.
      */
-    ActionResult<ItemStack> dispenseStack(IBlockSource source, ItemStack stack);
+    TypedActionResult<ItemStack> dispenseStack(BlockPointer source, ItemStack stack);
 }

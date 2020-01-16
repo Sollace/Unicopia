@@ -16,7 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.EntityXPOrb;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
@@ -157,7 +157,7 @@ public class EntityCuccoon extends LivingEntity implements IMagicals, IInAnimate
     }
 
     @Override
-    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand) {
+    public EnumActionResult applyPlayerInteraction(PlayerEntity player, Vec3d vec, EnumHand hand) {
 
         if (hand == EnumHand.MAIN_HAND && Predicates.BUGGY.test(player)) {
 
@@ -178,7 +178,7 @@ public class EntityCuccoon extends LivingEntity implements IMagicals, IInAnimate
                         }
                     }
 
-                    if (passenger instanceof EntityPlayer) {
+                    if (passenger instanceof PlayerEntity) {
                         if (!player.isPotionActive(MobEffects.HEALTH_BOOST)) {
                             player.addPotionEffect(new PotionEffect(MobEffects.HEALTH_BOOST, 13000, 1));
                         }

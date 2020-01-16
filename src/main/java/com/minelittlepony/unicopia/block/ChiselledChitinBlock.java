@@ -23,7 +23,7 @@ import net.minecraft.world.BlockView;
 
 public class ChiselledChitinBlock extends Block {
 
-    public ChiselledChitinBlock(String domain, String name) {
+    public ChiselledChitinBlock() {
         super(FabricBlockSettings.of(UMaterials.hive)
                 .strength(50, 2000)
                 .materialColor(MaterialColor.BLACK)
@@ -32,9 +32,6 @@ public class ChiselledChitinBlock extends Block {
         setDefaultState(stateFactory.getDefaultState()
                 .with(Properties.FACING, Direction.UP)
         );
-
-        // TODO:
-        // setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     @Override

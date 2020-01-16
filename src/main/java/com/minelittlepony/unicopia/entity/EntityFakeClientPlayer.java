@@ -9,16 +9,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
-public class EntityFakeClientPlayer extends AbstractClientPlayer implements IOwned<EntityPlayer> {
+public class EntityFakeClientPlayer extends AbstractClientPlayer implements IOwned<PlayerEntity> {
 
     private NetworkPlayerInfo playerInfo;
 
-    private EntityPlayer owner;
+    private PlayerEntity owner;
 
     public EntityFakeClientPlayer(World world, GameProfile profile) {
         super(world, profile);
@@ -66,12 +66,12 @@ public class EntityFakeClientPlayer extends AbstractClientPlayer implements IOwn
     }
 
     @Override
-    public EntityPlayer getOwner() {
+    public PlayerEntity getOwner() {
         return owner;
     }
 
     @Override
-    public void setOwner(EntityPlayer owner) {
+    public void setOwner(PlayerEntity owner) {
         this.owner = owner;
     }
 

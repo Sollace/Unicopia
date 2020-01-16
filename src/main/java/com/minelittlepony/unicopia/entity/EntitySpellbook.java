@@ -6,7 +6,7 @@ import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -150,7 +150,7 @@ public class EntitySpellbook extends EntityLiving implements IMagicals {
     }
 
     @Override
-    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, EnumHand hand) {
+    public EnumActionResult applyPlayerInteraction(PlayerEntity player, Vec3d vec, EnumHand hand) {
         if (player.isSneaking()) {
             boolean open = !getIsOpen();
 

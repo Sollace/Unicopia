@@ -56,7 +56,6 @@ public class BlockGrowingCuccoon extends Block {
         setRegistryName(domain, name);
         setResistance(0);
         setSoundType(SoundType.SLIME);
-        setCreativeTab(CreativeTabs.MATERIALS);
         setDefaultSlipperiness(0.5F);
         setHarvestLevel("shovel", 2);
         setLightLevel(0.6F);
@@ -70,23 +69,23 @@ public class BlockGrowingCuccoon extends Block {
     }
 
     @Override
-    public boolean isTranslucent(IBlockState state) {
+    public boolean isTranslucent(BlockState state) {
         return true;
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube(BlockState state) {
         return false;
     }
 
     @Override
     //Push player out of block
-    public boolean isFullCube(IBlockState state) {
+    public boolean isFullCube(BlockState state) {
         return false;
     }
 
     @Override
-    public boolean isNormalCube(IBlockState state) {
+    public boolean isNormalCube(BlockState state) {
         return false;
     }
 
@@ -97,7 +96,7 @@ public class BlockGrowingCuccoon extends Block {
 
     @Deprecated
     @Override
-    public Box getCollisionBoundingBox(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public Box getCollisionBoundingBox(BlockState state, BlockView world, BlockPos pos) {
         return getBoundingBox(state, world, pos);
     }
 
@@ -107,7 +106,7 @@ public class BlockGrowingCuccoon extends Block {
     }
 
     @Override
-    public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
+    public void updateTick(World world, BlockPos pos, BlockState state, Random rand) {
         if (!checkSupport(world, pos)) {
             breakConnected(world, pos);
             return;
@@ -153,9 +152,9 @@ public class BlockGrowingCuccoon extends Block {
         }
     }
 
-    protected int getMaximumAge(World world, BlockPos pos, IBlockState state, boolean spaceBelow) {
+    protected int getMaximumAge(World world, BlockPos pos, BlockState state, boolean spaceBelow) {
         if (state.get(SHAPE) == Shape.STRING) {
-            IBlockState higher = world.getBlockState(pos.up());
+            BlockState higher = world.getBlockState(pos.up());
 
             if (higher.getBlock() != this) {
                 return 7;
@@ -174,12 +173,12 @@ public class BlockGrowingCuccoon extends Block {
     }
 
     @Override
-    public int quantityDropped(IBlockState state, int fortune, Random random) {
+    public int quantityDropped(BlockState state, int fortune, Random random) {
         return random.nextInt(3) == 0 ? state.get(AGE) : 0;
     }
 
     @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+    public Item getItemDropped(BlockState state, Random rand, int fortune) {
         return Items.SLIME_BALL;
     }
 
@@ -189,25 +188,25 @@ public class BlockGrowingCuccoon extends Block {
     }
 
     @Override
-    public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor) {
+    public void onNeighborChange(BlockView world, BlockPos pos, BlockPos neighbor) {
         if (world instanceof World && !checkSupport(world, pos)) {
             breakConnected((World)world, pos);
         }
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, IBlockState state) {
+    public void breakBlock(World world, BlockPos pos, BlockState state) {
         world.notifyNeighborsOfStateChange(pos, this, true);
         super.breakBlock(world, pos, state);
     }
 
     @Override
-    public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
+    public void onBlockAdded(World world, BlockPos pos, BlockState state) {
         world.scheduleUpdate(pos, this, 10);
     }
 
     @Override
-    public void onEntityCollision(World world, BlockPos pos, IBlockState state, Entity entity) {
+    public void onEntityCollision(World world, BlockPos pos, BlockState state, Entity entity) {
         if (entity instanceof LivingEntity && !entity.isDead) {
             LivingEntity living = (LivingEntity)entity;
 
@@ -219,11 +218,11 @@ public class BlockGrowingCuccoon extends Block {
                     if (living.getHealth() <= 0) {
                         living.dropItem(Items.BONE, 3);
 
-                        if (living instanceof EntityPlayer) {
+                        if (living instanceof PlayerEntity) {
                             ItemStack skull = new ItemStack(Items.SKULL, 1);
 
                             if (world.rand.nextInt(13000) == 0) {
-                                EntityPlayer player = (EntityPlayer)living;
+                                PlayerEntity player = (PlayerEntity)living;
 
                                 skull.setTagCompound(new NBTTagCompound());
                                 skull.getTagCompound().setTag("SkullOwner", NBTUtil.writeGameProfile(new NBTTagCompound(), player.getGameProfile()));
@@ -240,21 +239,21 @@ public class BlockGrowingCuccoon extends Block {
         }
     }
 
-    public boolean checkSupport(IBlockAccess world, BlockPos pos) {
+    public boolean checkSupport(BlockView world, BlockPos pos) {
 
-        if (PosHelper.some(pos, p -> !world.isAirBlock(p), EnumFacing.HORIZONTALS)) {
+        if (PosHelper.some(pos, p -> !world.isAirBlock(p), Direction.HORIZONTALS)) {
             return false;
         }
 
         pos = pos.up();
 
-        IBlockState above = world.getBlockState(pos);
+        BlockState above = world.getBlockState(pos);
 
         if (above.getBlock() == this || above.getBlock() == UBlocks.hive) {
             return true;
         }
 
-        switch (above.getBlockFaceShape(world, pos, EnumFacing.DOWN)) {
+        switch (above.getBlockFaceShape(world, pos, Direction.DOWN)) {
             case SOLID:
             case CENTER:
             case CENTER_BIG:
@@ -265,7 +264,7 @@ public class BlockGrowingCuccoon extends Block {
 
     @Deprecated
     @Override
-    public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
+    public void addCollisionBoxToList(BlockState state, World world, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
         if (!isActualState) {
             state = state.getActualState(world, pos);
         }
@@ -283,7 +282,7 @@ public class BlockGrowingCuccoon extends Block {
 
     @Deprecated
     @Override
-    public Box getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    public Box getBoundingBox(BlockState state, BlockView source, BlockPos pos) {
         state = state.getActualState(source, pos);
 
         if (state.get(SHAPE) == Shape.BULB) {

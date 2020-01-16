@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 
 public class SlimeLayerBlock extends SnowBlock {
 
-    public SlimeLayerBlock(String domain, String name) {
+    public SlimeLayerBlock() {
         super(FabricBlockSettings.of(Material.CLAY)
                 .sounds(BlockSoundGroup.SLIME)
                 .materialColor(MaterialColor.GRASS)
@@ -22,7 +22,6 @@ public class SlimeLayerBlock extends SnowBlock {
 
         // TODO:
         // drops Items.SLIME_BALL x1
-        // setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
     @Override

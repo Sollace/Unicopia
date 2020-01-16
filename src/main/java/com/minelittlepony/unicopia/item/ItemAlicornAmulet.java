@@ -23,7 +23,7 @@ import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
@@ -89,15 +89,15 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
 
         Vec3d position = entity.getPositionVector();
         VecHelper.findAllEntitiesInRange(entity, world, entity.getPosition(), 10)
-            .filter(e -> e instanceof EntityPlayer)
+            .filter(e -> e instanceof PlayerEntity)
             .sorted((a, b) -> (int)(a.getPositionVector().distanceTo(position) - b.getPositionVector().distanceTo(position)))
             .findFirst()
-            .ifPresent(player -> interactWithPlayer(entity, (EntityPlayer)player));
+            .ifPresent(player -> interactWithPlayer(entity, (PlayerEntity)player));
 
         return false;
     }
 
-    protected void interactWithPlayer(EntityItem entity, EntityPlayer player) {
+    protected void interactWithPlayer(EntityItem entity, PlayerEntity player) {
         double diffX = player.posX - entity.posX;
         double diffY = player.posY - entity.posY;
         double diffZ = player.posZ - entity.posZ;
@@ -108,7 +108,7 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
             if (player.getPositionVector().distanceTo(entity.getPositionVector()) < 3) {
                if (entity.world.rand.nextInt(150) == 0) {
 
-                   ActionResult<ItemStack> result = onItemRightClick(player.world, player, EnumHand.MAIN_HAND);
+                   TypedActionResult<ItemStack> result = onItemRightClick(player.world, player, EnumHand.MAIN_HAND);
 
                    if (result.getType() == EnumActionResult.SUCCESS) {
                        entity.setPickupDelay(1000);
@@ -150,7 +150,7 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
     }
 
     @Override
-    public void onArmorTick(World world, EntityPlayer player, ItemStack itemStack) {
+    public void onArmorTick(World world, PlayerEntity player, ItemStack itemStack) {
         if (player.getHealth() < player.getMaxHealth()) {
             player.heal(0.5F);
         } else if (player.canEat(false)) {

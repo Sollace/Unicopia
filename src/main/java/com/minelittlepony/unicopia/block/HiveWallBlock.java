@@ -45,7 +45,7 @@ public class HiveWallBlock extends FallingBlock {
 
     private static final IShape shape = new Sphere(false, 1.5);
 
-    public HiveWallBlock(String domain, String name) {
+    public HiveWallBlock() {
         super(FabricBlockSettings.of(UMaterials.hive)
                 .noCollision()
                 .strength(10, 10)
@@ -60,7 +60,6 @@ public class HiveWallBlock extends FallingBlock {
         );
 
         // TODO:
-       // setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
        // setHarvestLevel("pickaxe", 1);
     }
 

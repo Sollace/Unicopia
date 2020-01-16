@@ -19,7 +19,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Container;
@@ -70,7 +70,7 @@ public class ItemOfHolding extends Item implements IMagicalItem {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+    public TypedActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, EnumHand hand) {
 
         if (!Predicates.MAGI.test(player)) {
             return super.onItemRightClick(world, player, hand);
@@ -94,7 +94,7 @@ public class ItemOfHolding extends Item implements IMagicalItem {
                         inventory.writeTostack(stack);
                         inventory.closeInventory(player);
 
-                        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+                        return new TypedActionResult<>(EnumActionResult.SUCCESS, stack);
                     }
 
                     Box box = new Box(pos.offset(hit.sideHit)).grow(0.5);
@@ -108,19 +108,19 @@ public class ItemOfHolding extends Item implements IMagicalItem {
                         inventory.writeTostack(stack);
                         inventory.closeInventory(player);
 
-                        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+                        return new TypedActionResult<>(EnumActionResult.SUCCESS, stack);
                     }
                 }
             }
 
-            return new ActionResult<>(EnumActionResult.FAIL, stack);
+            return new TypedActionResult<>(EnumActionResult.FAIL, stack);
         }
 
         UClient.instance().displayGuiToPlayer(player, new Inventory(stack));
 
         player.playSound(SoundEvents.BLOCK_ENDERCHEST_OPEN, 0.5F, 1);
 
-        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+        return new TypedActionResult<>(EnumActionResult.SUCCESS, stack);
     }
 
     @Override
@@ -162,7 +162,7 @@ public class ItemOfHolding extends Item implements IMagicalItem {
         }
 
         @Override
-        public Container createContainer(InventoryPlayer playerInventory, EntityPlayer player) {
+        public Container createContainer(InventoryPlayer playerInventory, PlayerEntity player) {
             return new ContainerOfHolding(player);
         }
 

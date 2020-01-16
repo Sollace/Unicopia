@@ -11,7 +11,7 @@ import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 
 @IMessage.Id(0)
 public class MsgRequestCapabilities implements IMessage, IMessageHandler<MsgRequestCapabilities> {
@@ -21,7 +21,7 @@ public class MsgRequestCapabilities implements IMessage, IMessageHandler<MsgRequ
     @Expose
     public Race race;
 
-    public MsgRequestCapabilities(EntityPlayer player, Race preferredRace) {
+    public MsgRequestCapabilities(PlayerEntity player, Race preferredRace) {
         senderId = player.getGameProfile().getId();
         race = preferredRace;
     }

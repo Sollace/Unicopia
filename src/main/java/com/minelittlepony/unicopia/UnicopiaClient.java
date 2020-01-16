@@ -48,8 +48,8 @@ public class UnicopiaClient extends UClient {
     }
 
     @Override
-    public void displayGuiToPlayer(EntityPlayer player, IInteractionObject inventory) {
-        if (player instanceof EntityPlayerSP) {
+    public void displayGuiToPlayer(PlayerEntity player, IInteractionObject inventory) {
+        if (player instanceof PlayerEntitySP) {
             if ("unicopia:itemofholding".equals(inventory.getGuiID())) {
                 MinecraftClient.getInstance().displayGuiScreen(new GuiOfHolding(inventory));
             }
@@ -60,13 +60,13 @@ public class UnicopiaClient extends UClient {
 
     @Override
     @Nullable
-    public EntityPlayer getPlayer() {
+    public PlayerEntity getPlayer() {
         return MinecraftClient.getInstance().player;
     }
 
     @Override
     @Nullable
-    public EntityPlayer getPlayerByUUID(UUID playerId) {
+    public PlayerEntity getPlayerByUUID(UUID playerId) {
         Minecraft mc = MinecraftClient.getInstance();
 
         if (mc.player.getUniqueID().equals(playerId)) {
@@ -78,12 +78,12 @@ public class UnicopiaClient extends UClient {
 
     @Override
     @Nonnull
-    public EntityPlayer createPlayer(Entity observer, GameProfile profile) {
+    public PlayerEntity createPlayer(Entity observer, GameProfile profile) {
         return new EntityFakeClientPlayer(observer.world, profile);
     }
 
     @Override
-    public boolean isClientPlayer(@Nullable EntityPlayer player) {
+    public boolean isClientPlayer(@Nullable PlayerEntity player) {
         if (getPlayer() == player) {
             return true;
         }
@@ -102,8 +102,8 @@ public class UnicopiaClient extends UClient {
 
     @Override
     public void postRenderEntity(Entity entity) {
-        if (entity instanceof EntityPlayer) {
-            IPlayer iplayer = SpeciesList.instance().getPlayer((EntityPlayer)entity);
+        if (entity instanceof PlayerEntity) {
+            IPlayer iplayer = SpeciesList.instance().getPlayer((PlayerEntity)entity);
 
             if (iplayer.getGravity().getGravitationConstant() < 0) {
                 GlStateManager.translate(0, entity.height, 0);
@@ -121,8 +121,8 @@ public class UnicopiaClient extends UClient {
             return true;
         }
 
-        if (entity instanceof EntityPlayer) {
-            IPlayer iplayer = SpeciesList.instance().getPlayer((EntityPlayer)entity);
+        if (entity instanceof PlayerEntity) {
+            IPlayer iplayer = SpeciesList.instance().getPlayer((PlayerEntity)entity);
 
             if (iplayer.getGravity().getGravitationConstant() < 0) {
                 GlStateManager.scale(1, -1, 1);

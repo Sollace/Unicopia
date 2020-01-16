@@ -9,11 +9,11 @@ import com.minelittlepony.unicopia.Predicates;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BlockDiamondDoor extends UDoor {
@@ -26,17 +26,17 @@ public class BlockDiamondDoor extends UDoor {
 
     @Override
     @Deprecated
-    public MapColor getMapColor(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+    public MapColor getMapColor(BlockState state, BlockView worldIn, BlockPos pos) {
         return MapColor.DIAMOND;
     }
 
     @Override
-    protected boolean canOpen(@Nullable EntityPlayer player) {
+    protected boolean canOpen(@Nullable PlayerEntity player) {
         return Predicates.MAGI.test(player);
     }
 
     @Override
-    protected boolean onPowerStateChanged(World world, IBlockState state, BlockPos pos, boolean powered) {
+    protected boolean onPowerStateChanged(World world, BlockState state, BlockPos pos, boolean powered) {
         if (state.getValue(OPEN)) {
             world.setBlockState(pos, state.with(OPEN, false), 2);
 

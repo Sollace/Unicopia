@@ -6,14 +6,12 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.CloudType;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BlockCloudBanister extends BlockCloudFence {
@@ -56,16 +54,16 @@ public class BlockCloudBanister extends BlockCloudFence {
     }
 
     @Override
-    public boolean canConnectTo(IBlockAccess world, BlockPos pos, EnumFacing facing) {
-        IBlockState myState = world.getBlockState(pos);
+    public boolean canConnectTo(BlockView world, BlockPos pos, Direction facing) {
+        BlockState myState = world.getBlockState(pos);
 
         return myState.getBlock() instanceof BlockCloudBanister
                 && super.canConnectTo(world, pos, facing);
     }
 
     @Override
-    public boolean canBeConnectedTo(IBlockAccess world, BlockPos pos, EnumFacing facing) {
-        IBlockState state = world.getBlockState(pos.offset(facing));
+    public boolean canBeConnectedTo(BlockView world, BlockPos pos, Direction facing) {
+        BlockState state = world.getBlockState(pos.offset(facing));
 
         return state.getBlock() instanceof BlockCloudBanister
                 && state.getMaterial() == world.getBlockState(pos).getMaterial();
@@ -73,7 +71,7 @@ public class BlockCloudBanister extends BlockCloudFence {
 
     @Deprecated
     @Override
-    public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
+    public void addCollisionBoxToList(BlockState state, World world, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
         if (!getCanInteract(state, entity)) {
             return;
         }
@@ -100,38 +98,38 @@ public class BlockCloudBanister extends BlockCloudFence {
     }
 
     @Override
-    public boolean isTopSolid(IBlockState state) {
+    public boolean isTopSolid(BlockState state) {
         return false;
     }
 
     @Override
-    public boolean canPlaceTorchOnTop(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public boolean canPlaceTorchOnTop(BlockState state, BlockView world, BlockPos pos) {
         return false;
     }
 
     @Override
-    public Box getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    public Box getBoundingBox(BlockState state, BlockView source, BlockPos pos) {
         state = state.getActualState(source, pos);
         return BOUNDING_BOXES[getBoundingBoxIdx(state)];
     }
 
-    public static int getBoundingBoxIdx(IBlockState state) {
+    public static int getBoundingBoxIdx(BlockState state) {
         int i = 0;
 
         if (state.getValue(NORTH)) {
-            i |= 1 << EnumFacing.NORTH.getHorizontalIndex();
+            i |= 1 << Direction.NORTH.getHorizontalIndex();
         }
 
         if (state.getValue(EAST)) {
-            i |= 1 << EnumFacing.EAST.getHorizontalIndex();
+            i |= 1 << Direction.EAST.getHorizontalIndex();
         }
 
         if (state.getValue(SOUTH)) {
-            i |= 1 << EnumFacing.SOUTH.getHorizontalIndex();
+            i |= 1 << Direction.SOUTH.getHorizontalIndex();
         }
 
         if (state.getValue(WEST)) {
-            i |= 1 << EnumFacing.WEST.getHorizontalIndex();
+            i |= 1 << Direction.WEST.getHorizontalIndex();
         }
 
         return i;

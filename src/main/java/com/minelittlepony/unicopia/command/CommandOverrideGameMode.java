@@ -7,7 +7,7 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandGameMode;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -24,7 +24,7 @@ class CommandOverrideGameMode extends CommandGameMode {
 
         GameType gametype = getGameModeFromCommand(sender, params[0]);
 
-        EntityPlayer player = params.length >= 2 ? getPlayer(server, sender, params[1]) : getCommandSenderAsPlayer(sender);
+        PlayerEntity player = params.length >= 2 ? getPlayer(server, sender, params[1]) : getCommandSenderAsPlayer(sender);
 
         updateGameMode(player, gametype);
 
@@ -41,7 +41,7 @@ class CommandOverrideGameMode extends CommandGameMode {
         }
     }
 
-    protected void updateGameMode(EntityPlayer player, GameType m) {
+    protected void updateGameMode(PlayerEntity player, GameType m) {
         player.setGameType(m);
 
         IPlayer iplayer = SpeciesList.instance().getPlayer(player);

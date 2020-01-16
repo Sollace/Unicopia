@@ -17,7 +17,7 @@ import com.minelittlepony.util.shape.Sphere;
 import net.fabricmc.fabric.api.particles.ParticleTypeRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
@@ -128,8 +128,8 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
         } else if (target instanceof LivingEntity) {
             double force = Math.max(0.1, radius / 4);
 
-            if (source.getAffinity() != Affinity.BAD && target instanceof EntityPlayer) {
-                force *= calculateAdjustedForce(SpeciesList.instance().getPlayer((EntityPlayer)target));
+            if (source.getAffinity() != Affinity.BAD && target instanceof PlayerEntity) {
+                force *= calculateAdjustedForce(SpeciesList.instance().getPlayer((PlayerEntity)target));
             } else {
                 force *= 0.75;
             }

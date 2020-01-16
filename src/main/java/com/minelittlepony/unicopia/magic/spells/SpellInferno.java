@@ -11,14 +11,14 @@ import com.minelittlepony.util.shape.Sphere;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockOre;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -64,7 +64,7 @@ public class SpellInferno extends SpellFire {
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, Affinity affinity, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ) {
         return SpellCastResult.PLACE;
     }
 
@@ -81,8 +81,8 @@ public class SpellInferno extends SpellFire {
             for (int i = 0; i < radius; i++) {
                 BlockPos pos = new BlockPos(shape.computePoint(w.rand).add(origin));
 
-                IBlockState state = w.getBlockState(pos);
-                IBlockState newState = hellFireAffected.getConverted(state);
+                BlockState state = w.getBlockState(pos);
+                BlockState newState = hellFireAffected.getConverted(state);
 
                 if (!state.equals(newState)) {
                     w.setBlockState(pos, newState, 3);

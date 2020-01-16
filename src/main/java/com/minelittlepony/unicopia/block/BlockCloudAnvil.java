@@ -8,26 +8,17 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.util.WorldEvent;
 
-import net.minecraft.block.BlockAnvil;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.block.AnvilBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityFallingBlock;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class BlockCloudAnvil extends BlockAnvil implements ICloudBlock {
+public class BlockCloudAnvil extends AnvilBlock implements ICloudBlock {
     public BlockCloudAnvil(String domain, String name) {
         super();
 
@@ -44,12 +35,12 @@ public class BlockCloudAnvil extends BlockAnvil implements ICloudBlock {
     }
 
     @Override
-    public String getHarvestTool(IBlockState state) {
+    public String getHarvestTool(BlockState state) {
         return "shovel";
     }
 
     @Override
-    public int getHarvestLevel(IBlockState state) {
+    public int getHarvestLevel(BlockState state) {
         return 0;
     }
 
@@ -61,7 +52,7 @@ public class BlockCloudAnvil extends BlockAnvil implements ICloudBlock {
     }
 
     @Override
-    public void onEndFalling(World world, BlockPos pos, IBlockState fallingState, IBlockState hitState) {
+    public void onEndFalling(World world, BlockPos pos, BlockState fallingState, BlockState hitState) {
         WorldEvent.ENTITY_TAKEOFF.play(world, pos);
     }
 
@@ -71,7 +62,7 @@ public class BlockCloudAnvil extends BlockAnvil implements ICloudBlock {
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World worldIn, BlockPos pos, BlockState state, PlayerEntity playerIn, EnumHand hand, Direction facing, float hitX, float hitY, float hitZ) {
         return false;
     }
 
@@ -88,13 +79,13 @@ public class BlockCloudAnvil extends BlockAnvil implements ICloudBlock {
     }
 
     @Override
-    public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public boolean isAir(BlockState state, BlockView world, BlockPos pos) {
         return allowsFallingBlockToPass(state, world, pos);
     }
 
     @Override
-    public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
-        IBlockState below = world.getBlockState(pos.down());
+    public void updateTick(World world, BlockPos pos, BlockState state, Random rand) {
+        BlockState below = world.getBlockState(pos.down());
 
         if (below.getBlock() instanceof ICloudBlock) {
             if (((ICloudBlock)below.getBlock()).isDense(below)) {
@@ -106,14 +97,14 @@ public class BlockCloudAnvil extends BlockAnvil implements ICloudBlock {
     }
 
     @Override
-    public void onEntityCollision(World w, BlockPos pos, IBlockState state, Entity entity) {
+    public void onEntityCollision(World w, BlockPos pos, BlockState state, Entity entity) {
         if (!applyBouncyness(state, entity)) {
             super.onEntityCollision(w, pos, state, entity);
         }
     }
 
     @Override
-    public boolean canHarvestBlock(IBlockAccess world, BlockPos pos, EntityPlayer player) {
+    public boolean canHarvestBlock(BlockView world, BlockPos pos, PlayerEntity player) {
         return getCanInteract(world.getBlockState(pos), player);
     }
 
@@ -123,12 +114,12 @@ public class BlockCloudAnvil extends BlockAnvil implements ICloudBlock {
     }
 
     @Override
-    public boolean canEntityDestroy(IBlockState state, IBlockAccess world, BlockPos pos, Entity entity) {
+    public boolean canEntityDestroy(BlockState state, BlockView world, BlockPos pos, Entity entity) {
         return getCanInteract(state, entity) && super.canEntityDestroy(state, world, pos, entity);
     }
 
     @Deprecated
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
+    public void addCollisionBoxToList(BlockState state, World worldIn, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
         if (getCanInteract(state, entity)) {
             super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, p_185477_7_);
         }
@@ -136,7 +127,7 @@ public class BlockCloudAnvil extends BlockAnvil implements ICloudBlock {
 
     @Deprecated
     @Override
-    public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
+    public RayTraceResult collisionRayTrace(BlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
         if (!handleRayTraceSpecialCases(worldIn, pos, blockState)) {
             return super.collisionRayTrace(blockState, worldIn, pos, start, end);
         }
@@ -145,7 +136,7 @@ public class BlockCloudAnvil extends BlockAnvil implements ICloudBlock {
 
     @Deprecated
     @Override
-    public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos) {
+    public float getPlayerRelativeBlockHardness(BlockState state, PlayerEntity player, World worldIn, BlockPos pos) {
         if (!CloudType.NORMAL.canInteract(player)) {
             return -1;
         }
@@ -154,7 +145,7 @@ public class BlockCloudAnvil extends BlockAnvil implements ICloudBlock {
 
 
     @Override
-    public CloudType getCloudMaterialType(IBlockState blockState) {
+    public CloudType getCloudMaterialType(BlockState blockState) {
         return CloudType.NORMAL;
     }
 }

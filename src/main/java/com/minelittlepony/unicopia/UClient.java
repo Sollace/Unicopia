@@ -62,7 +62,7 @@ public class UClient {
     /**
      * Side-independent method to create a new player.
      *
-     * Returns an implementation of EntityPlayer appropriate to the side being called on.
+     * Returns an implementation of PlayerEntity appropriate to the side being called on.
      */
     @Nonnull
     public PlayerEntity createPlayer(Entity observer, GameProfile profile) {

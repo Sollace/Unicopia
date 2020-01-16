@@ -1,46 +1,58 @@
 package com.minelittlepony.unicopia.item.override;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.UBlocks;
 
-import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class ItemStick extends Item {
+    public ItemStick(Settings settings) {
+        super(settings);
+    }
+
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        ItemStack itemstack = player.getStackInHand(hand);
-        IBlockState state = worldIn.getBlockState(pos);
+    public ActionResult useOnBlock(ItemUsageContext context) {
 
-        if (facing == EnumFacing.UP && player.canPlayerEdit(pos.offset(facing), facing, itemstack) && worldIn.isAirBlock(pos.up())) {
+        World world = context.getWorld();
+        BlockPos pos = context.getBlockPos();
+        Direction facing = context.getSide();
 
-            worldIn.setBlockState(pos.up(), UBlocks.stick.getDefaultState());
+        @Nullable
+        PlayerEntity player = context.getPlayer();
 
-            SoundType sound = state.getBlock().getSoundType(state, worldIn, pos, player);
+        if (facing == Direction.UP && world.isAir(pos.up()) && (player == null || world.canPlayerModifyAt(player, pos.offset(facing)))) {
 
-            worldIn.playSound(null, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1) / 2, sound.getPitch());
+            world.setBlockState(pos.up(), UBlocks.stick.getDefaultState());
+
+            BlockSoundGroup sound = world.getBlockState(pos).getSoundGroup();
+
+            world.playSound(null, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1) / 2, sound.getPitch());
+
+            ItemStack itemstack = context.getStack();
 
             if (player instanceof ServerPlayerEntity) {
-                CriteriaTriggers.PLACED_BLOCK.trigger((ServerPlayerEntity)player, pos.up(), itemstack);
+                Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)player, pos.up(), itemstack);
             }
 
-            if (!(player instanceof EntityPlayer && ((EntityPlayer)player).capabilities.isCreativeMode)) {
-                itemstack.shrink(1);
+            if (player == null || !player.abilities.creativeMode) {
+                itemstack.decrement(1);
             }
 
-            return EnumActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
-        return EnumActionResult.FAIL;
+        return ActionResult.FAIL;
     }
 }

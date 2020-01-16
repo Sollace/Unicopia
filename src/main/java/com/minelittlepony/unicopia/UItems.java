@@ -1,10 +1,10 @@
 package com.minelittlepony.unicopia;
 
 import com.minelittlepony.unicopia.item.ItemAlicornAmulet;
-import com.minelittlepony.unicopia.item.ItemApple;
 import com.minelittlepony.unicopia.item.ItemAppleMultiType;
 import com.minelittlepony.unicopia.item.ItemCereal;
-import com.minelittlepony.unicopia.item.ItemCloudPlacer;
+import com.minelittlepony.unicopia.item.AppleItem;
+import com.minelittlepony.unicopia.item.CloudPlacerItem;
 import com.minelittlepony.unicopia.item.ItemCurse;
 import com.minelittlepony.unicopia.item.ItemFruitLeaves;
 import com.minelittlepony.unicopia.item.ItemMagicStaff;
@@ -19,34 +19,26 @@ import com.minelittlepony.unicopia.item.ItemStaff;
 import com.minelittlepony.unicopia.item.ItemTomato;
 import com.minelittlepony.unicopia.item.ItemTomatoSeeds;
 import com.minelittlepony.unicopia.item.ItemZapApple;
-import com.minelittlepony.unicopia.item.UItemBlock;
-import com.minelittlepony.unicopia.item.UItemDecoration;
-import com.minelittlepony.unicopia.item.UItemSlab;
+import com.minelittlepony.unicopia.item.PredicatedBlockItem;
 import com.minelittlepony.unicopia.item.URecord;
 import com.minelittlepony.unicopia.item.override.ItemShear;
 import com.minelittlepony.unicopia.item.override.ItemStick;
-import com.minelittlepony.unicopia.spell.SpellRegistry;
-import com.minelittlepony.unicopia.spell.SpellScorch;
+import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 
-import net.minecraft.block.BlockDoublePlant;
-import net.minecraft.block.BlockFlower;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.color.ItemColors;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemDoor;
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemSeedFood;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.color.item.ItemColors;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.FoodComponents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.item.Items;
+import net.minecraft.item.TallBlockItem;
+import net.minecraft.item.Item.Settings;
 import net.minecraft.util.Identifier;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraft.util.registry.Registry;
 
 import static com.minelittlepony.unicopia.Predicates.*;
 
@@ -63,96 +55,72 @@ import com.minelittlepony.unicopia.edibles.UItemFoodDelegate;
 import com.minelittlepony.unicopia.entity.EntityConstructionCloud;
 import com.minelittlepony.unicopia.entity.EntityRacingCloud;
 import com.minelittlepony.unicopia.entity.EntityWildCloud;
-import com.minelittlepony.unicopia.extern.Baubles;
 import com.minelittlepony.unicopia.forgebullshit.BuildInTexturesBakery;
-import com.minelittlepony.unicopia.forgebullshit.ItemRegistrar;
 import com.minelittlepony.unicopia.forgebullshit.OreReplacer;
-import com.minelittlepony.unicopia.forgebullshit.RegistryLockSpinner;
 import com.minelittlepony.unicopia.forgebullshit.UnFuckedItemSnow;
 
 public class UItems {
-    public static final ItemApple red_apple = new ItemApple("minecraft", "apple");
-    public static final ItemApple green_apple = new ItemApple(Unicopia.MODID, "apple_green");
-    public static final ItemApple sweet_apple = new ItemApple(Unicopia.MODID, "apple_sweet");
-    public static final ItemApple sour_apple = new ItemApple(Unicopia.MODID, "apple_sour");
+
+    private static final ItemStick stick = register(new ItemStick(new Item.Settings()), "minecraft", "stick");
+    private static final ItemShear shears = register(new ItemShear(), "minecraft", "shears");
+
+    public static final AppleItem red_apple = register(new AppleItem(FoodComponents.APPLE), "minecraft", "apple");
+    public static final AppleItem green_apple = register(new AppleItem(FoodComponents.APPLE), "apple_green");
+    public static final AppleItem sweet_apple = register(new AppleItem(FoodComponents.APPLE), "apple_sweet");
+    public static final AppleItem sour_apple = register(new AppleItem(FoodComponents.APPLE), "apple_sour");
 
     public static final ItemAppleMultiType zap_apple = new ItemZapApple(Unicopia.MODID, "zap_apple")
             .setSubTypes("zap_apple", "red", "green", "sweet", "sour", "zap");
 
-    public static final ItemApple rotten_apple = new ItemRottenApple(Unicopia.MODID, "rotten_apple");
-    public static final ItemApple cooked_zap_apple = new ItemApple(Unicopia.MODID, "cooked_zap_apple");
+    public static final AppleItem rotten_apple = new ItemRottenApple(Unicopia.MODID, "rotten_apple");
+    public static final AppleItem cooked_zap_apple = register(new AppleItem(FoodComponents.APPLE), "cooked_zap_apple");
 
-    public static final Item cloud_matter = new Item()
-            .setCreativeTab(CreativeTabs.MATERIALS)
-            .setTranslationKey("cloud_matter")
-            .setRegistryName(Unicopia.MODID, "cloud_matter");
+    public static final Item cloud_matter = register(new Item(new Item.Settings().group(ItemGroup.MATERIALS)), "cloud_matter");
+    public static final Item dew_drop = register(new Item(new Item.Settings().group(ItemGroup.MATERIALS)), "dew_drop");
 
-    public static final Item dew_drop = new Item()
-            .setCreativeTab(CreativeTabs.MATERIALS)
-            .setTranslationKey("dew_drop")
-            .setRegistryName(Unicopia.MODID, "dew_drop");
+    public static final CloudPlacerItem racing_cloud_spawner = register(new CloudPlacerItem(EntityRacingCloud::new), "racing_cloud_spawner");
+    public static final CloudPlacerItem construction_cloud_spawner = register(new CloudPlacerItem(EntityConstructionCloud::new), "construction_cloud_spawner");
+    public static final CloudPlacerItem wild_cloud_spawner = register(new CloudPlacerItem(EntityWildCloud::new), "wild_cloud_spawner");
 
-    public static final ItemCloudPlacer racing_cloud_spawner = new ItemCloudPlacer(EntityRacingCloud::new, Unicopia.MODID, "racing_cloud_spawner");
-    public static final ItemCloudPlacer construction_cloud_spawner = new ItemCloudPlacer(EntityConstructionCloud::new, Unicopia.MODID, "construction_cloud_spawner");
-    public static final ItemCloudPlacer wild_cloud_spawner = new ItemCloudPlacer(EntityWildCloud::new, Unicopia.MODID, "wild_cloud_spawner");
+    public static final Item cloud_block = register(new PredicatedBlockItem(UBlocks.normal_cloud, new Item.Settings().group(ItemGroup.MATERIALS), INTERACT_WITH_CLOUDS), "cloud_block");
+    public static final Item enchanted_cloud = register(new PredicatedBlockItem(UBlocks.enchanted_cloud, new Item.Settings().group(ItemGroup.MATERIALS), INTERACT_WITH_CLOUDS), "enchanted_cloud_block");
+    public static final Item packed_cloud = register(new PredicatedBlockItem(UBlocks.packed_cloud, new Item.Settings().group(ItemGroup.MATERIALS), INTERACT_WITH_CLOUDS), "packed_cloud_block");
 
-    public static final Item cloud_block = new UItemBlock(UBlocks.normal_cloud, INTERACT_WITH_CLOUDS);
-    public static final Item enchanted_cloud = new UItemBlock(UBlocks.enchanted_cloud, INTERACT_WITH_CLOUDS);
-    public static final Item packed_cloud = new UItemBlock(UBlocks.packed_cloud, INTERACT_WITH_CLOUDS);
+    public static final Item cloud_stairs = register(new PredicatedBlockItem(UBlocks.cloud_stairs, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS), INTERACT_WITH_CLOUDS), "cloud_stairs");
 
-    public static final Item cloud_stairs = new UItemBlock(UBlocks.cloud_stairs, INTERACT_WITH_CLOUDS);
+    public static final Item cloud_fence = register(new PredicatedBlockItem(UBlocks.cloud_fence, new Item.Settings().group(ItemGroup.DECORATIONS), INTERACT_WITH_CLOUDS), "cloud_fence");
+    public static final Item cloud_banister = register(new PredicatedBlockItem(UBlocks.cloud_banister, new Item.Settings().group(ItemGroup.DECORATIONS), INTERACT_WITH_CLOUDS), "cloud_banister");
 
-    public static final Item cloud_farmland = new UItemBlock(UBlocks.cloud_farmland, INTERACT_WITH_CLOUDS);
+    public static final Item anvil = register(new PredicatedBlockItem(UBlocks.anvil, new Item.Settings().group(ItemGroup.DECORATIONS), INTERACT_WITH_CLOUDS), "cloud_anvil");
 
-    public static final Item cloud_fence = new UItemBlock(UBlocks.cloud_fence, INTERACT_WITH_CLOUDS);
-    public static final Item cloud_banister = new UItemBlock(UBlocks.cloud_banister, INTERACT_WITH_CLOUDS);
+    public static final Item record_crusade = register(new URecord(USounds.RECORD_CRUSADE), "crusade");
+    public static final Item record_pet = register(new URecord(USounds.RECORD_PET, "pet");
+    public static final Item record_popular = register(new URecord(USounds.RECORD_POPULAR), "popular");
+    public static final Item record_funk = register(new URecord(USounds.RECORD_FUNK), "funk");
 
-    public static final Item anvil = new UItemBlock(UBlocks.anvil, INTERACT_WITH_CLOUDS).setTranslationKey("cloud_anvil");
+    public static final Item hive = register(new BlockItem(UBlocks.hive, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)), "hive");
+    public static final Item chitin_shell = register(new Item(new Item.Settings().group(ItemGroup.MATERIALS)), "chitin_shell");
+    public static final Item chitin = register(new BlockItem(UBlocks.chitin, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)), "chitin_block");
+    public static final Item chissled_chitin = register(new BlockItem(UBlocks.chissled_chitin, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)), "chissled_chitin");
+    public static final Item cuccoon = register(new BlockItem(UBlocks.cuccoon, new Item.Settings().group(ItemGroup.MATERIALS)), "cuccoon");
+    public static final Item slime_layer = register(new BlockItem(UBlocks.slime_layer, new Item.Settings().group(ItemGroup.DECORATIONS)), "slime_layer");
 
-    public static final Item record_crusade = new URecord(Unicopia.MODID, "crusade", USounds.RECORD_CRUSADE);
-    public static final Item record_pet = new URecord(Unicopia.MODID, "pet", USounds.RECORD_PET);
-    public static final Item record_popular = new URecord(Unicopia.MODID, "popular", USounds.RECORD_POPULAR);
-    public static final Item record_funk = new URecord(Unicopia.MODID, "funk", USounds.RECORD_FUNK);
+    public static final Item mist_door = register(new TallBlockItem(UBlocks.mist_door, new Item.Settings().group(ItemGroup.REDSTONE)), "mist_door");
+    public static final Item library_door = register(new TallBlockItem(UBlocks.library_door, new Item.Settings().group(ItemGroup.REDSTONE)), "library_door");
+    public static final Item bakery_door = register(new TallBlockItem(UBlocks.bakery_door, new Item.Settings().group(ItemGroup.REDSTONE)), "bakery_door");
+    public static final Item diamond_door = register(new TallBlockItem(UBlocks.diamond_door, new Item.Settings().group(ItemGroup.REDSTONE)), "diamond_door");
 
-    public static final Item hive = new ItemBlock(UBlocks.hive).setRegistryName(Unicopia.MODID, "hive");
-    public static final Item chitin_shell = new Item()
-            .setCreativeTab(CreativeTabs.MATERIALS)
-            .setTranslationKey("chitin_shell")
-            .setRegistryName(Unicopia.MODID, "chitin_shell");
-    public static final Item chitin = new ItemBlock(UBlocks.chitin)
-            .setRegistryName(Unicopia.MODID, "chitin_block");
-    public static final Item chissled_chitin = new ItemBlock(UBlocks.chissled_chitin)
-            .setRegistryName(Unicopia.MODID, "chissled_chitin");
-    public static final Item cuccoon = new ItemBlock(UBlocks.cuccoon)
-            .setRegistryName(Unicopia.MODID, "cuccoon");
-    public static final Item slime_layer = new UnFuckedItemSnow(UBlocks.slime_layer)
-            .setRegistryName(Unicopia.MODID, "slime_layer");
+    public static final Item sugar_block = register(new BlockItem(UBlocks.sugar_block, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)), "sugar_block");
 
-    public static final Item mist_door = new ItemDoor(UBlocks.mist_door)
-            .setTranslationKey("mist_door")
-            .setRegistryName(Unicopia.MODID, "mist_door");
-    public static final Item library_door = new ItemDoor(UBlocks.library_door)
-            .setTranslationKey("library_door")
-            .setRegistryName(Unicopia.MODID, "library_door");
-    public static final Item bakery_door = new ItemDoor(UBlocks.bakery_door)
-            .setTranslationKey("bakery_door")
-            .setRegistryName(Unicopia.MODID, "bakery_door");
-    public static final Item diamond_door = new ItemDoor(UBlocks.diamond_door)
-            .setTranslationKey("diamond_door")
-            .setRegistryName(Unicopia.MODID, "diamond_door");
-
-    public static final Item sugar_block = new UItemDecoration(UBlocks.sugar_block);
-
-    public static final Item cloud_slab = new UItemSlab(UBlocks.cloud_slab, UBlocks.cloud_slab.doubleSlab, INTERACT_WITH_CLOUDS);
-    public static final Item enchanted_cloud_slab = new UItemSlab(UBlocks.enchanted_cloud_slab, UBlocks.enchanted_cloud_slab.doubleSlab, INTERACT_WITH_CLOUDS);
-    public static final Item packed_cloud_slab = new UItemSlab(UBlocks.packed_cloud_slab, UBlocks.packed_cloud_slab.doubleSlab, INTERACT_WITH_CLOUDS);
+    public static final Item cloud_slab = new PredicatedBlockItem(UBlocks.cloud_slab, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS), INTERACT_WITH_CLOUDS);
+    public static final Item enchanted_cloud_slab = new PredicatedBlockItem(UBlocks.enchanted_cloud_slab, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS), INTERACT_WITH_CLOUDS);
+    public static final Item packed_cloud_slab = new PredicatedBlockItem(UBlocks.packed_cloud_slab, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS), INTERACT_WITH_CLOUDS);
 
     public static final ItemSpell spell = new ItemSpell(Unicopia.MODID, "gem");
     public static final ItemSpell curse = new ItemCurse(Unicopia.MODID, "corrupted_gem");
 
     public static final ItemOfHolding bag_of_holding = new ItemOfHolding(Unicopia.MODID, "bag_of_holding");
-    public static final ItemAlicornAmulet alicorn_amulet = Baubles.isModActive()
-            ? Baubles.alicornAmulet() : new ItemAlicornAmulet(Unicopia.MODID, "alicorn_amulet");
+    public static final ItemAlicornAmulet alicorn_amulet = new ItemAlicornAmulet(Unicopia.MODID, "alicorn_amulet");
 
     public static final ItemSpellbook spellbook = new ItemSpellbook(Unicopia.MODID, "spellbook");
     public static final Item staff_meadow_brook = new ItemStaff(Unicopia.MODID, "staff_meadow_brook").setMaxDamage(2);
@@ -167,10 +135,9 @@ public class UItems {
             .setRegistryName(Unicopia.MODID, "alfalfa_seeds")
             .setCreativeTab(CreativeTabs.MATERIALS);
 
-    public static final Item enchanted_torch = new ItemBlock(UBlocks.enchanted_torch)
-            .setRegistryName(Unicopia.MODID, "enchanted_torch");
+    public static final Item enchanted_torch = register(new BlockItem(UBlocks.enchanted_torch), "enchanted_torch");
 
-    public static final Item alfalfa_leaves = new ItemFood(1, 3, false)
+    public static final Item alfalfa_leaves = new FoodItem(1, 3, false)
             .setTranslationKey("alfalfa_leaves")
             .setRegistryName(Unicopia.MODID, "alfalfa_leaves");
 
@@ -256,37 +223,6 @@ public class UItems {
                 .replace(Item.getItemFromBlock(Blocks.YELLOW_FLOWER), yellow_flower)
                 .replace(Item.getItemFromBlock(Blocks.RED_FLOWER), red_flower));
 
-        ItemRegistrar.registerAll(registry,
-                racing_cloud_spawner, construction_cloud_spawner, wild_cloud_spawner,
-                green_apple, sweet_apple, sour_apple,
-                zap_apple, rotten_apple, cooked_zap_apple,
-                apple_seeds, apple_leaves,
-
-                dew_drop, spear,
-
-                tomato, rotten_tomato,
-                cloudsdale_tomato, rotten_cloudsdale_tomato,
-                tomato_seeds, moss,
-
-                cloud_matter, cloud_block, enchanted_cloud, packed_cloud,
-                cloud_stairs,
-                cloud_slab, enchanted_cloud_slab, packed_cloud_slab,
-                cloud_fence, cloud_banister,
-                cloud_farmland, mist_door, library_door, bakery_door, diamond_door, anvil,
-
-                bag_of_holding, spell, curse, spellbook, mug, enchanted_torch,
-                staff_meadow_brook, staff_remembrance, alicorn_amulet,
-
-                alfalfa_seeds, alfalfa_leaves,
-                cereal, sugar_cereal, sugar_block,
-
-                hive, chitin_shell, chitin, chissled_chitin, cuccoon, slime_layer,
-
-                daffodil_daisy_sandwich, hay_burger, hay_fries, salad, wheat_worms,
-                apple_cider, juice, burned_juice,
-
-                record_crusade, record_pet, record_popular, record_funk);
-
         if (UClient.isClientSide()) {
             BuildInTexturesBakery.getBuiltInTextures().add(new Identifier(Unicopia.MODID, "items/empty_slot_gem"));
         }
@@ -302,32 +238,20 @@ public class UItems {
             .done();
     }
 
-    @SideOnly(Side.CLIENT)
+    private static <T extends Item> T register(T item, String namespace, String name) {
+        return Registry.ITEM.add(new Identifier(namespace, name), item);
+    }
+    private static <T extends Item> T register(T item, String name) {
+        return register(item, name);
+    }
+
     static void registerColors(ItemColors registry) {
-        registry.registerItemColorHandler((stack, tint) -> {
+        registry.register((stack, tint) -> {
             if (MAGI.test(MinecraftClient.getInstance().player)) {
-                return SpellRegistry.getInstance().getSpellTintFromStack(stack);
+                return SpellRegistry.instance().getSpellTintFromStack(stack);
             }
 
             return 0xffffff;
         }, spell, curse);
-    }
-
-    public static class Shills {
-        private static final ItemStick stick = new ItemStick();
-        private static final ItemShear shears = new ItemShear();
-
-        @Nullable
-        public static Item getShill(Item itemIn) {
-            if (itemIn == Items.SHEARS) {
-                return shears;
-            }
-
-            if (itemIn == Items.STICK) {
-                return stick;
-            }
-
-            return null;
-        }
     }
 }

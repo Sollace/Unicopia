@@ -146,7 +146,7 @@ public class EntityCloud extends FlyingEntity implements ICloudEntity, IAnimals,
 
     @Override
     protected void collideWithEntity(Entity other) {
-        if (other instanceof EntityCloud || other instanceof EntityPlayer) {
+        if (other instanceof EntityCloud || other instanceof PlayerEntity) {
             if (other.posY > posY) {
                 return;
             }
@@ -157,8 +157,8 @@ public class EntityCloud extends FlyingEntity implements ICloudEntity, IAnimals,
 
     @Override
     public void applyEntityCollision(Entity other) {
-        if (other instanceof EntityPlayer) {
-            if (Predicates.INTERACT_WITH_CLOUDS.test((EntityPlayer)other)) {
+        if (other instanceof PlayerEntity) {
+            if (Predicates.INTERACT_WITH_CLOUDS.test((PlayerEntity)other)) {
                 super.applyEntityCollision(other);
             }
         } else if (other instanceof EntityCloud) {
@@ -313,7 +313,7 @@ public class EntityCloud extends FlyingEntity implements ICloudEntity, IAnimals,
     }
 
     @Override
-    public void onCollideWithPlayer(EntityPlayer player) {
+    public void onCollideWithPlayer(PlayerEntity player) {
         if (player.posY >= posY) {
             if (applyGravityCompensation(player)) {
                 double difX = player.posX - player.lastTickPosX;
@@ -617,7 +617,7 @@ public class EntityCloud extends FlyingEntity implements ICloudEntity, IAnimals,
         if (pos.getY() >= posY) {
             while (world.isValid(pos)) {
                 pos = pos.down();
-                if (world.getBlockState(pos).isSideSolid(world, pos, EnumFacing.UP)) {
+                if (world.getBlockState(pos).isSideSolid(world, pos, Direction.UP)) {
                     return pos.up();
                 }
             }

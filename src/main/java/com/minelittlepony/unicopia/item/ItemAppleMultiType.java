@@ -7,7 +7,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
-public class ItemAppleMultiType extends ItemApple implements IMultiItem {
+public class ItemAppleMultiType extends AppleItem implements IMultiItem {
 
     private String[] subTypes = new String[0];
 

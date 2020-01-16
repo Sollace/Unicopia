@@ -1,77 +1,53 @@
 package com.minelittlepony.unicopia.block;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockStairs;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.StairsBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class UStairs extends BlockStairs {
+public class UStairs extends StairsBlock {
 
-    protected Block theBlock;
-    protected IBlockState theState;
+    protected final Block baseBlock;
+    protected final BlockState baseBlockState;
 
-    @SuppressWarnings("deprecation")
-    public UStairs(IBlockState inherited, String domain, String name) {
-        super(inherited);
-        setTranslationKey(name);
-        setRegistryName(domain, name);
-        theBlock = inherited.getBlock();
-        theState = inherited;
-
-        setTickRandomly(theBlock.getTickRandomly());
-
-        useNeighborBrightness = true;
+    public UStairs(BlockState inherited, Block.Settings settings) {
+        super(inherited, settings);
+        baseBlock = inherited.getBlock();
+        baseBlockState = inherited;
     }
 
     @Override
-    @Deprecated
-    public boolean isTranslucent(IBlockState state) {
-        return theBlock.isTranslucent(state);
+    public boolean canSuffocate(BlockState state, BlockView world, BlockPos pos) {
+        return baseBlock.canSuffocate(baseBlockState, world, pos);
     }
 
     @Override
-    @Deprecated
-    public boolean isNormalCube(IBlockState state) {
-        return theBlock.isNormalCube(state);
+    public void onLandedUpon(World w, BlockPos pos, Entity entity, float fallDistance) {
+        baseBlock.onLandedUpon(w, pos, entity, fallDistance);
     }
 
     @Override
-    public boolean isPassable(IBlockAccess worldIn, BlockPos pos) {
-        return theBlock.isPassable(worldIn, pos);
+    public void onEntityLand(BlockView w, Entity entity) {
+        baseBlock.onEntityLand(w, entity);
     }
 
     @Override
-    public void onFallenUpon(World w, BlockPos pos, Entity entity, float fallDistance) {
-        theBlock.onFallenUpon(w, pos, entity, fallDistance);
+    public void onEntityCollision(BlockState state, World w, BlockPos pos, Entity entity) {
+        baseBlockState.onEntityCollision(w, pos, entity);
     }
 
     @Override
-    public void onLanded(World w, Entity entity) {
-        theBlock.onLanded(w, entity);
-    }
-
-    @Override
-    public void onEntityCollision(World w, BlockPos pos, IBlockState state, Entity entity) {
-        theBlock.onEntityCollision(w, pos, theState, entity);
-    }
-
-    @Override
-    public void onEntityWalk(World w, BlockPos pos, Entity entity) {
-        theBlock.onEntityWalk(w, pos, entity);
-    }
-
-    @Override
-    public boolean canEntityDestroy(IBlockState state, IBlockAccess world, BlockPos pos, Entity entity) {
-        return theBlock.canEntityDestroy(state, world, pos, entity);
+    public void onSteppedOn(World w, BlockPos pos, Entity entity) {
+        baseBlock.onSteppedOn(w, pos, entity);
     }
 
     @Deprecated
     @Override
-    public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos) {
-        return theBlock.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
+    public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
+        return baseBlock.calcBlockBreakingDelta(state, player, world, pos);
     }
 }

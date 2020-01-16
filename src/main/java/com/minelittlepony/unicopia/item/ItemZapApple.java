@@ -5,20 +5,11 @@ import com.minelittlepony.unicopia.edibles.Toxicity;
 import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.VecHelper;
 
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.passive.EntityPig;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumRarity;
+import net.minecraft.entity.LightningEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.DefaultedList;
 import net.minecraft.world.World;
 
 public class ItemZapApple extends ItemAppleMultiType {
@@ -29,7 +20,7 @@ public class ItemZapApple extends ItemAppleMultiType {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+    public TypedActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, EnumHand hand) {
         RayTraceResult mop = VecHelper.getObjectMouseOver(player, 5, 0);
 
         if (mop != null && mop.typeOfHit == RayTraceResult.Type.ENTITY) {
@@ -44,7 +35,7 @@ public class ItemZapApple extends ItemAppleMultiType {
     }
 
     @Override
-    protected void onFoodEaten(ItemStack stack, World w, EntityPlayer player) {
+    protected void onFoodEaten(ItemStack stack, World w, PlayerEntity player) {
         super.onFoodEaten(stack, w, player);
 
         player.attackEntityFrom(MagicalDamageSource.create("zap"), 120);
@@ -58,18 +49,18 @@ public class ItemZapApple extends ItemAppleMultiType {
                 || e instanceof EntityPig;
     }
 
-    public ActionResult<ItemStack> onFedTo(ItemStack stack, EntityPlayer player, Entity e) {
-        e.onStruckByLightning(new EntityLightningBolt(e.world, e.posX, e.posY, e.posZ, false));
+    public TypedActionResult<ItemStack> onFedTo(ItemStack stack, PlayerEntity player, Entity e) {
+        e.onStruckByLightning(new LightningEntity(e.world, e.posX, e.posY, e.posZ, false));
 
         if (!player.capabilities.isCreativeMode) {
             stack.shrink(1);
         }
 
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+        return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, stack);
     }
 
     @Override
-    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+    public void getSubItems(CreativeTabs tab, DefaultedList<ItemStack> items) {
         if (isInCreativeTab(tab)) {
             items.add(new ItemStack(this, 1, 0));
         }

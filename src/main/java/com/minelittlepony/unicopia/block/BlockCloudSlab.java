@@ -48,7 +48,7 @@ public abstract class BlockCloudSlab<T extends Block & ICloudBlock> extends USla
 
     @Deprecated
     @Override
-    public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
+    public RayTraceResult collisionRayTrace(BlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
         if (handleRayTraceSpecialCases(worldIn, pos, blockState)) {
             return null;
         }
@@ -124,9 +124,9 @@ public abstract class BlockCloudSlab<T extends Block & ICloudBlock> extends USla
         }
 
         @Override
-        public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
+        public boolean doesSideBlockRendering(BlockState state, BlockView world, BlockPos pos, Direction face) {
 
-            IBlockState beside = world.getBlockState(pos.offset(face));
+            BlockState beside = world.getBlockState(pos.offset(face));
 
             if (beside.getBlock() instanceof ICloudBlock) {
                 ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
@@ -140,7 +140,7 @@ public abstract class BlockCloudSlab<T extends Block & ICloudBlock> extends USla
         }
 
         @Override
-        public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+        public Item getItemDropped(BlockState state, Random rand, int fortune) {
             return Item.getItemFromBlock(singleSlab);
         }
     }

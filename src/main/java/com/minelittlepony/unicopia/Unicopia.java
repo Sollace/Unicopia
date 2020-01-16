@@ -98,7 +98,7 @@ public class Unicopia implements IGuiHandler {
     }
 
     @Override
-    public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getServerGuiElement(int ID, PlayerEntity player, World world, int x, int y, int z) {
         switch (ID) {
             case 0: return new SpellBookContainer(player.inventory, world, new BlockPos(x, y, z));
             default: return null;
@@ -106,7 +106,7 @@ public class Unicopia implements IGuiHandler {
     }
 
     @Override
-    public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+    public Object getClientGuiElement(int ID, PlayerEntity player, World world, int x, int y, int z) {
         switch (ID) {
             case 0: return new GuiSpellBook(player);
             default: return null;

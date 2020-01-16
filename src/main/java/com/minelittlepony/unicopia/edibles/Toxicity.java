@@ -1,10 +1,8 @@
 package com.minelittlepony.unicopia.edibles;
 
-import com.minelittlepony.util.lang.ServerLocale;
-
-import net.minecraft.init.MobEffects;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
 public enum Toxicity {
     SAFE(0, 0),
@@ -47,10 +45,10 @@ public enum Toxicity {
         return String.format("toxicity.%s.name", name().toLowerCase());
     }
 
-    public String getTooltip() {
-        TextFormatting color = toxicWhenCooked() ? TextFormatting.RED : toxicWhenRaw() ? TextFormatting.DARK_PURPLE : TextFormatting.GRAY;
-
-        return color + ServerLocale.format(getTranslationKey());
+    public Text getTooltip() {
+        Text text = new TranslatableText(getTranslationKey());
+        text.getStyle().setColor(toxicWhenCooked() ? Formatting.RED : toxicWhenRaw() ? Formatting.DARK_PURPLE : Formatting.GRAY);
+        return text;
     }
 
     public static Toxicity byMetadata(int metadata) {

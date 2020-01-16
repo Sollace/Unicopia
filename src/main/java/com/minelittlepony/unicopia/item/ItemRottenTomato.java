@@ -1,11 +1,12 @@
 package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.projectile.ITossableItem;
 import com.minelittlepony.unicopia.spell.ICaster;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
@@ -24,25 +25,25 @@ public class ItemRottenTomato extends ItemTomato implements ITossableItem {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+    public TypedActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, EnumHand hand) {
         ItemStack itemstack = player.getStackInHand(hand);
 
         if (canBeThrown(itemstack) && !player.canEat(false)) {
             toss(world, itemstack, player);
 
-            return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
+            return new TypedActionResult<ItemStack>(EnumActionResult.SUCCESS, itemstack);
         }
 
         return super.onItemRightClick(world, player, hand);
     }
 
-    protected boolean isSickening(ItemStack stack, EntityPlayer player) {
+    protected boolean isSickening(ItemStack stack, PlayerEntity player) {
         return canBeThrown(stack)
                 && !SpeciesList.instance().getPlayer(player).getSpecies().canUseEarth();
     }
 
     @Override
-    protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
+    protected void onFoodEaten(ItemStack stack, World worldIn, PlayerEntity player) {
         if (isSickening(stack, player)) {
             int duration = 7000;
 
@@ -57,7 +58,7 @@ public class ItemRottenTomato extends ItemTomato implements ITossableItem {
     }
 
     @Override
-    public void onImpact(ICaster<?> caster, BlockPos pos, IBlockState state) {
+    public void onImpact(ICaster<?> caster, BlockPos pos, BlockState state) {
         if (caster.isLocal() && state.getMaterial() == Material.GLASS) {
             caster.getWorld().destroyBlock(pos, true);
         }

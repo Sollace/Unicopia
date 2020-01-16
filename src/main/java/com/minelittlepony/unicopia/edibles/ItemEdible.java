@@ -11,7 +11,7 @@ import com.minelittlepony.unicopia.UEffects;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
@@ -52,7 +52,7 @@ public abstract class ItemEdible extends ItemFood implements IEdible {
         return useAction;
     }
 
-    protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
+    protected void onFoodEaten(ItemStack stack, World worldIn, PlayerEntity player) {
         Race race = SpeciesList.instance().getPlayer(player).getSpecies();
         Toxicity toxicity = (race.isDefault() || race == Race.CHANGELING) ? Toxicity.LETHAL : getToxicityLevel(stack);
 
@@ -67,7 +67,7 @@ public abstract class ItemEdible extends ItemFood implements IEdible {
     @Override
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
 
-        EntityPlayer entityplayer = entityLiving instanceof EntityPlayer ? (EntityPlayer)entityLiving : null;
+        PlayerEntity entityplayer = entityLiving instanceof PlayerEntity ? (PlayerEntity)entityLiving : null;
 
         if (entityplayer != null) {
             entityplayer.getFoodStats().addStats(this, stack);
@@ -102,18 +102,18 @@ public abstract class ItemEdible extends ItemFood implements IEdible {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+    public TypedActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, EnumHand hand) {
         Race race = SpeciesList.instance().getPlayer(player).getSpecies();
 
         if (race.isDefault() || race == Race.CHANGELING) {
-            return new ActionResult<ItemStack>(EnumActionResult.FAIL, player.getStackInHand(hand));
+            return new TypedActionResult<ItemStack>(EnumActionResult.FAIL, player.getStackInHand(hand));
         }
 
         return super.onItemRightClick(world, player, hand);
     }
 
     @Override
-    public void addSecondaryEffects(EntityPlayer player, Toxicity toxicity, ItemStack stack) {
+    public void addSecondaryEffects(PlayerEntity player, Toxicity toxicity, ItemStack stack) {
 
         if (toxicity.toxicWhenRaw()) {
             player.addPotionEffect(toxicity.getPoisonEffect());

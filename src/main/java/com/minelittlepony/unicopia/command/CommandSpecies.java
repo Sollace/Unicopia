@@ -10,7 +10,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -81,7 +81,7 @@ class CommandSpecies extends CommandBase {
         }
     }
 
-    protected boolean updateSpecies(ICommandSender sender, EntityPlayer player, String[] args) {
+    protected boolean updateSpecies(ICommandSender sender, PlayerEntity player, String[] args) {
         Race species = Race.fromName(args[1], Race.HUMAN);
 
         if (species.isDefault()) {
@@ -111,7 +111,7 @@ class CommandSpecies extends CommandBase {
         return true;
     }
 
-    protected boolean printSpecies(ICommandSender sender, EntityPlayer player) {
+    protected boolean printSpecies(ICommandSender sender, PlayerEntity player) {
         Race spec = SpeciesList.instance().getPlayer(player).getSpecies();
 
         String name = "commands.race.tell.";
@@ -129,7 +129,7 @@ class CommandSpecies extends CommandBase {
         return true;
     }
 
-    protected boolean list(EntityPlayer player) {
+    protected boolean list(PlayerEntity player) {
         player.sendMessage(new TextComponentTranslation("commands.race.list"));
 
         ITextComponent message = new TextComponentString("");
@@ -149,7 +149,7 @@ class CommandSpecies extends CommandBase {
         return true;
     }
 
-    protected boolean describeSpecies(EntityPlayer player, String[] args) {
+    protected boolean describeSpecies(PlayerEntity player, String[] args) {
         Race species = Race.fromName(args[1], null);
 
         if (species == null) {
@@ -188,7 +188,7 @@ class CommandSpecies extends CommandBase {
         if (args.length == 2 && (args[0].contentEquals("set") || args[0].contentEquals("describe"))) {
             ArrayList<String> names = new ArrayList<String>();
 
-            EntityPlayer player = sender instanceof EntityPlayer ? (EntityPlayer)sender : null;
+            PlayerEntity player = sender instanceof PlayerEntity ? (PlayerEntity)sender : null;
 
             for (Race i : Race.values()) {
                 if (args[0].contentEquals("describe") || (!i.isDefault() && SpeciesList.instance().speciesPermitted(i, player))) {

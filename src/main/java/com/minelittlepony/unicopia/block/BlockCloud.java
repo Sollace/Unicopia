@@ -10,21 +10,20 @@ import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.item.ItemMoss;
 
+import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BlockCloud extends Block implements ICloudBlock, ITillable {
@@ -32,60 +31,37 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
     private final CloudType variant;
 
     public BlockCloud(Material material, CloudType variant, String domain, String name) {
-        super(material);
-        setRegistryName(domain, name);
-        setTranslationKey(name);
-
-        setCreativeTab(CreativeTabs.MATERIALS);
-        setHardness(0.5f);
-        setResistance(1.0F);
-        setSoundType(SoundType.CLOTH);
-        setLightOpacity(20);
-        setTickRandomly(true);
-
-        useNeighborBrightness = true;
-
+        super(FabricBlockSettings.of(material)
+                .strength(0.5F, 1)
+                .sounds(BlockSoundGroup.WOOL)
+                .ticksRandomly()
+                .build()
+        );
         this.variant = variant;
     }
 
     @Override
-    public boolean isTranslucent(IBlockState state) {
+    public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
         return variant == CloudType.NORMAL;
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaque(BlockState state) {
         return variant != CloudType.NORMAL;
     }
 
     @Override
-    public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
+    public void onScheduledTick(BlockState state, World world, BlockPos pos, Random rand) {
         if (rand.nextInt(10) == 0) {
-            pos = pos.offset(EnumFacing.random(rand), 1 + rand.nextInt(2));
+            pos = pos.offset(Direction.random(rand), 1 + rand.nextInt(2));
             state = world.getBlockState(pos);
 
-            IBlockState converted = ItemMoss.affected.getInverse().getConverted(state);
+            BlockState converted = ItemMoss.affected.getInverse().getConverted(state);
 
             if (!state.equals(converted)) {
                 world.setBlockState(pos, converted);
             }
         }
-    }
-
-    @Override
-    //Push player out of block
-    public boolean isFullCube(IBlockState state) {
-        return false;
-    }
-
-    @Override
-    public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
-        return allowsFallingBlockToPass(state, world, pos);
-    }
-
-    @Override
-    public boolean isNormalCube(IBlockState state) {
-        return false;
     }
 
     @Override
@@ -95,8 +71,8 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
 
     @Deprecated
     @Override
-    public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side) {
-        if (side == EnumFacing.UP && (variant == CloudType.ENCHANTED || world.getBlockState(pos.up()).getBlock() instanceof ICloudBlock)) {
+    public boolean isSideSolid(BlockState base_state, BlockView world, BlockPos pos, Direction side) {
+        if (side == Direction.UP && (variant == CloudType.ENCHANTED || world.getBlockState(pos.up()).getBlock() instanceof ICloudBlock)) {
             return true;
         }
 
@@ -104,9 +80,9 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
     }
 
     @Override
-    public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
+    public boolean doesSideBlockRendering(BlockState state, BlockView world, BlockPos pos, Direction face) {
 
-        IBlockState beside = world.getBlockState(pos.offset(face));
+        BlockState beside = world.getBlockState(pos.offset(face));
 
         if (beside.getBlock() instanceof ICloudBlock) {
             ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
@@ -134,19 +110,19 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
     }
 
     @Override
-    public void onEntityCollision(World w, BlockPos pos, IBlockState state, Entity entity) {
+    public void onEntityCollision(World w, BlockPos pos, BlockState state, Entity entity) {
         if (!applyBouncyness(state, entity)) {
             super.onEntityCollision(w, pos, state, entity);
         }
     }
 
     @Override
-    public boolean canEntityDestroy(IBlockState state, IBlockAccess world, BlockPos pos, Entity entity) {
+    public boolean canEntityDestroy(BlockState state, BlockView world, BlockPos pos, Entity entity) {
         return getCanInteract(state, entity) && super.canEntityDestroy(state, world, pos, entity);
     }
 
     @Deprecated
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
+    public void addCollisionBoxToList(BlockState state, World worldIn, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
         if (getCanInteract(state, entity)) {
             super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, p_185477_7_);
         }
@@ -154,7 +130,7 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
 
     @Deprecated
     @Override
-    public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos) {
+    public float getPlayerRelativeBlockHardness(BlockState state, PlayerEntity player, World worldIn, BlockPos pos) {
         if (CloudType.NORMAL.canInteract(player)) {
             return super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
         }
@@ -162,13 +138,13 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
     }
 
     @Override
-    public CloudType getCloudMaterialType(IBlockState blockState) {
+    public CloudType getCloudMaterialType(BlockState blockState) {
         return variant;
     }
 
     @Deprecated
     @Override
-    public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
+    public RayTraceResult collisionRayTrace(BlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
         if (!handleRayTraceSpecialCases(worldIn, pos, blockState)) {
             return super.collisionRayTrace(blockState, worldIn, pos, start, end);
         }
@@ -176,13 +152,13 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
     }
 
     @Override
-    public boolean canBeTilled(ItemStack hoe, EntityPlayer player, World world, IBlockState state, BlockPos pos) {
+    public boolean canBeTilled(ItemStack hoe, PlayerEntity player, World world, BlockState state, BlockPos pos) {
         return SpeciesList.instance().getPlayer(player).getSpecies().canInteractWithClouds()
                 && ITillable.super.canBeTilled(hoe, player, world, state, pos);
     }
 
     @Override
-    public IBlockState getFarmlandState(ItemStack hoe, EntityPlayer player, World world, IBlockState state, BlockPos pos) {
+    public BlockState getFarmlandState(ItemStack hoe, PlayerEntity player, World world, BlockState state, BlockPos pos) {
         return UBlocks.cloud_farmland.getDefaultState();
     }
 

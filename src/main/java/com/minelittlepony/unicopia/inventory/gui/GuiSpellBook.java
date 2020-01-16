@@ -17,7 +17,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.Identifier;
@@ -33,7 +33,7 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
     private PageButton nextPage;
     private PageButton prevPage;
 
-    public GuiSpellBook(EntityPlayer player) {
+    public GuiSpellBook(PlayerEntity player) {
         super(new SpellBookContainer(player.inventory, player.world, new BlockPos(player)));
         player.openContainer = inventorySlots;
 

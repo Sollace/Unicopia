@@ -21,14 +21,14 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.dispenser.IBlockSource;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
@@ -47,7 +47,7 @@ public class ItemSpell extends Item implements ICastable {
 
         setCreativeTab(CreativeTabs.BREWING);
 
-        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, dispenserBehavior);
+        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, DISPENSER_BEHAVIOUR);
     }
 
     public void onUpdate(ItemStack stack, World world, Entity entity, int slot, boolean isSelected) {
@@ -66,14 +66,14 @@ public class ItemSpell extends Item implements ICastable {
 
     @Override
     public SpellCastResult onDispenseSpell(IBlockSource source, ItemStack stack, IDispenceable effect) {
-        EnumFacing facing = source.getBlockState().getValue(BlockDispenser.FACING);
+        Direction facing = source.getBlockState().getValue(BlockDispenser.FACING);
         BlockPos pos = source.getBlockPos().offset(facing);
 
         return effect.onDispenced(pos, facing, source, getAffinity(stack));
     }
 
     @Override
-    public SpellCastResult onCastSpell(EntityPlayer player, World world, BlockPos pos, ItemStack stack, IMagicEffect effect, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public SpellCastResult onCastSpell(PlayerEntity player, World world, BlockPos pos, ItemStack stack, IMagicEffect effect, Direction side, float hitX, float hitY, float hitZ) {
         if (effect instanceof IUseAction) {
             return ((IUseAction)effect).onUse(stack, getAffinity(stack), player, world, pos, side, hitX, hitY, hitZ);
         }
@@ -82,7 +82,7 @@ public class ItemSpell extends Item implements ICastable {
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public EnumActionResult onItemUse(PlayerEntity player, World world, BlockPos pos, EnumHand hand, Direction side, float hitX, float hitY, float hitZ) {
 
         if (hand != EnumHand.MAIN_HAND || !Predicates.MAGI.test(player)) {
             return EnumActionResult.PASS;
@@ -122,16 +122,16 @@ public class ItemSpell extends Item implements ICastable {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+    public TypedActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, EnumHand hand) {
 
         ItemStack stack = player.getStackInHand(hand);
 
         if (!Predicates.MAGI.test(player)) {
-            return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
+            return new TypedActionResult<ItemStack>(EnumActionResult.PASS, stack);
         }
 
         if (!SpellRegistry.stackHasEnchantment(stack)) {
-            return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
+            return new TypedActionResult<ItemStack>(EnumActionResult.FAIL, stack);
         }
 
         IUseAction effect = SpellRegistry.getInstance().getUseActionFrom(stack);
@@ -144,11 +144,11 @@ public class ItemSpell extends Item implements ICastable {
                     stack.shrink(1);
                 }
 
-                return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+                return new TypedActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
             }
         }
 
-        return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
+        return new TypedActionResult<ItemStack>(EnumActionResult.PASS, stack);
     }
 
     @Override

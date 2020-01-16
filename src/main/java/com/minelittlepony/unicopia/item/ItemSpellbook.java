@@ -8,12 +8,12 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemBook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
@@ -21,7 +21,7 @@ public class ItemSpellbook extends ItemBook {
     private static final IBehaviorDispenseItem dispenserBehavior = new BehaviorDefaultDispenseItem() {
         @Override
         protected ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
-            EnumFacing facing = source.getBlockState().getValue(BlockDispenser.FACING);
+            Direction facing = source.getBlockState().getValue(BlockDispenser.FACING);
             BlockPos pos = source.getBlockPos().offset(facing);
             int yaw = 0;
 
@@ -56,7 +56,7 @@ public class ItemSpellbook extends ItemBook {
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, dispenserBehavior);
     }
 
-    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public EnumActionResult onItemUse(PlayerEntity player, World world, BlockPos pos, EnumHand hand, Direction side, float hitX, float hitY, float hitZ) {
 
         if (!world.isClient && Predicates.MAGI.test(player)) {
             pos = pos.offset(side);

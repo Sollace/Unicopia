@@ -10,7 +10,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -36,7 +36,7 @@ class CommandRacelist extends CommandBase {
             throw new WrongUsageException(getUsage(sender));
         }
 
-        EntityPlayer player = getCommandSenderAsPlayer(sender);
+        PlayerEntity player = getCommandSenderAsPlayer(sender);
 
         Race race = Race.fromName(args[1], Race.EARTH);
 

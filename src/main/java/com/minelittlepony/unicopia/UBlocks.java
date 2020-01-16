@@ -23,7 +23,6 @@ import com.minelittlepony.unicopia.block.SugarBlock;
 import com.minelittlepony.unicopia.block.UPot;
 import com.minelittlepony.unicopia.block.USapling;
 import com.minelittlepony.unicopia.block.BlockTomatoPlant;
-import com.minelittlepony.unicopia.item.ItemApple;
 import com.minelittlepony.unicopia.block.BlockCloudDoor;
 import com.minelittlepony.unicopia.block.BlockDiamondDoor;
 import com.minelittlepony.unicopia.block.BlockCloudFarm;
@@ -40,11 +39,13 @@ import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class UBlocks {
-    public static final BlockCloud normal_cloud = register(new BlockCloud(UMaterials.cloud, CloudType.NORMAL, Unicopia.MODID, "cloud_block"));
-    public static final BlockCloud enchanted_cloud = register(new BlockCloud(UMaterials.cloud, CloudType.ENCHANTED, Unicopia.MODID, "enchanted_cloud_block"));
-    public static final BlockCloud packed_cloud = register(new BlockCloud(UMaterials.cloud, CloudType.PACKED, Unicopia.MODID, "packed_cloud_block"));
+    public static final BlockCloud normal_cloud = register(new BlockCloud(UMaterials.cloud, CloudType.NORMAL), "cloud_block");
+    public static final BlockCloud enchanted_cloud = register(new BlockCloud(UMaterials.cloud, CloudType.ENCHANTED), "enchanted_cloud_block");
+    public static final BlockCloud packed_cloud = register(new BlockCloud(UMaterials.cloud, CloudType.PACKED), "packed_cloud_block");
 
     public static final BlockCloudStairs cloud_stairs = register(new BlockCloudStairs(normal_cloud.getDefaultState(), Unicopia.MODID, "cloud_stairs"));
 
@@ -70,19 +71,19 @@ public class UBlocks {
 
     public static final BlockAlfalfa alfalfa = register(new BlockAlfalfa(Unicopia.MODID, "alfalfa"));
 
-    public static final StickBlock stick = register(new StickBlock(Unicopia.MODID, "stick"));
+    public static final StickBlock stick = register(new StickBlock(), "stick");
     public static final BlockTomatoPlant tomato_plant = register(new BlockTomatoPlant(Unicopia.MODID, "tomato_plant"));
 
     public static final BlockCloudFarm cloud_farmland = register(new BlockCloudFarm(Unicopia.MODID, "cloud_farmland"));
 
-    public static final HiveWallBlock hive = register(new HiveWallBlock(Unicopia.MODID, "hive"));
-    public static final ChitinBlock chitin = register(new ChitinBlock(Unicopia.MODID, "chitin_block"));
-    public static final Block chissled_chitin = register(new ChiselledChitinBlock(Unicopia.MODID, "chissled_chitin"));
+    public static final HiveWallBlock hive = register(new HiveWallBlock(), "hive");
+    public static final ChitinBlock chitin = register(new ChitinBlock(), "chitin_block");
+    public static final Block chissled_chitin = register(new ChiselledChitinBlock(), "chissled_chitin");
 
     public static final BlockGrowingCuccoon cuccoon = register(new BlockGrowingCuccoon(Unicopia.MODID, "cuccoon"));
-    public static final SlimeLayerBlock slime_layer = register(new SlimeLayerBlock(Unicopia.MODID, "slime_layer"));
+    public static final SlimeLayerBlock slime_layer = register(new SlimeLayerBlock(), "slime_layer");
 
-    public static final Block sugar_block = register(new SugarBlock(Unicopia.MODID, "sugar_block"));
+    public static final Block sugar_block = register(new SugarBlock(), "sugar_block");
     public static final UPot flower_pot = register(new UPot(), "flower_pot");
 
     public static final USapling apple_tree = register(new USapling(Unicopia.MODID, "apple_sapling")
@@ -91,17 +92,16 @@ public class UBlocks {
             .growthChance(1200)
             .tint(0xFFEE81)
             .fruit(ItemApple::getRandomItemStack)
-            .compost(w -> new ItemStack(UItems.rotten_apple))), "apple_leaves");
+            .compost(w -> new ItemStack(UItems.rotten_apple)), "apple_leaves");
 
 
-    private static <T extends Block> T register(T block) {
-        return block;
+    private static <T extends Block> T register(T block, String name) {
+        return Registry.BLOCK.add(new Identifier(Unicopia.MODID, name), block);
     }
 
     static void registerColors(ItemColors items, BlockColors blocks) {
         items.register((stack, tint) -> {
-            @SuppressWarnings("deprecation")
-            BlockState state = ((BlockItem)stack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
+            BlockState state = ((BlockItem)stack.getItem()).getBlock().getDefaultState();
 
             return blocks.getColorMultiplier(state, null, null, tint);
         }, apple_leaves);
@@ -120,5 +120,7 @@ public class UBlocks {
         }, apple_leaves);
     }
 
-    static void bootstrap() { }
+    static void bootstrap() {
+
+    }
 }

@@ -3,15 +3,15 @@ package com.minelittlepony.unicopia.entity;
 import com.minelittlepony.unicopia.UClient;
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
 
-public class EntityFakeServerPlayer extends FakePlayer implements IOwned<EntityPlayer> {
+public class EntityFakeServerPlayer extends FakePlayer implements IOwned<PlayerEntity> {
 
-    private EntityPlayer owner;
+    private PlayerEntity owner;
 
     public EntityFakeServerPlayer(WorldServer world, GameProfile profile) {
         super(world, profile);
@@ -28,12 +28,12 @@ public class EntityFakeServerPlayer extends FakePlayer implements IOwned<EntityP
     }
 
     @Override
-    public EntityPlayer getOwner() {
+    public PlayerEntity getOwner() {
         return owner;
     }
 
     @Override
-    public void setOwner(EntityPlayer owner) {
+    public void setOwner(PlayerEntity owner) {
         this.owner = owner;
     }
 
