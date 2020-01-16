@@ -2,10 +2,10 @@ package com.minelittlepony.unicopia.item;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.edibles.ItemEdible;
 import com.minelittlepony.unicopia.edibles.Toxicity;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 import com.minelittlepony.util.collection.ReversableStateMapList;
 import com.mojang.authlib.GameProfile;
 
@@ -18,7 +18,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -60,7 +60,7 @@ public class ItemMoss extends ItemEdible {
 
             EntityPlayer player = null;
 
-            for (EntityLivingBase e : w.getEntitiesWithinAABB(EntityLivingBase.class, Block.FULL_BLOCK_AABB.offset(pos), e ->
+            for (LivingEntity e : w.getEntitiesWithinAABB(LivingEntity.class, Block.FULL_BLOCK_AABB.offset(pos), e ->
                     e instanceof IShearable && ((IShearable)e).isShearable(stack, w, pos)
             )) {
                 if (player == null) {
@@ -102,7 +102,7 @@ public class ItemMoss extends ItemEdible {
 
             int amount = 1;
 
-            if (player != null && PlayerSpeciesList.instance().getPlayer(player).getPlayerSpecies().canUseEarth()) {
+            if (player != null && SpeciesList.instance().getPlayer(player).getSpecies().canUseEarth()) {
                 amount = world.rand.nextInt(4);
             }
 

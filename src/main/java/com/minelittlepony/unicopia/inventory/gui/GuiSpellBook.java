@@ -4,14 +4,13 @@ import java.io.IOException;
 
 import org.lwjgl.opengl.GL11;
 
+import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.enchanting.IPage;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
 import com.minelittlepony.unicopia.enchanting.PageState;
 import com.minelittlepony.unicopia.enchanting.Pages;
-import com.minelittlepony.unicopia.inventory.slot.SlotEnchanting;
-import com.minelittlepony.unicopia.player.IPlayer;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.entity.player.IPlayer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -21,13 +20,13 @@ import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
 
     private static IPage currentIPage;
 
-    public static final ResourceLocation spellBookGuiTextures = new ResourceLocation("unicopia", "textures/gui/container/book.png");
+    public static final Identifier spellBookGuiTextures = new Identifier("unicopia", "textures/gui/container/book.png");
 
     private IPlayer playerExtension;
 
@@ -35,13 +34,13 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
     private PageButton prevPage;
 
     public GuiSpellBook(EntityPlayer player) {
-        super(new ContainerSpellBook(player.inventory, player.world, new BlockPos(player)));
+        super(new SpellBookContainer(player.inventory, player.world, new BlockPos(player)));
         player.openContainer = inventorySlots;
 
         xSize = 405;
         ySize = 219;
         allowUserInput = true;
-        playerExtension = PlayerSpeciesList.instance().getPlayer(player);
+        playerExtension = SpeciesList.instance().getPlayer(player);
     }
 
     @Override
@@ -115,7 +114,7 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
     }
 
     protected boolean drawSlotOverlay(Slot slot) {
-        if (slot instanceof SlotEnchanting) {
+        if (slot instanceof SpellbookSlot) {
             GlStateManager.enableBlend();
             GL11.glDisable(GL11.GL_ALPHA_TEST);
 
@@ -163,7 +162,7 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
         drawModalRectWithCustomSizedTexture(left + 147, top + 49, 407, 2, 100, 101, 512, 256);
 
         if (playerExtension.getPageState(currentIPage) != PageState.LOCKED) {
-            ResourceLocation texture = currentIPage.getTexture();
+            Identifier texture = currentIPage.getTexture();
 
             if (mc.getTextureManager().getTexture(texture) != TextureUtil.MISSING_TEXTURE) {
                 GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

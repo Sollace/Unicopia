@@ -2,11 +2,11 @@ package com.minelittlepony.unicopia.enchanting;
 
 import com.google.gson.JsonObject;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 public class PageStateCondition implements IUnlockCondition<IUnlockEvent> {
 
-    ResourceLocation page;
+    Identifier page;
 
     PageState state;
 
@@ -14,7 +14,7 @@ public class PageStateCondition implements IUnlockCondition<IUnlockEvent> {
         require(json, "page");
         require(json, "state");
 
-        page = new ResourceLocation(json.get("page").getAsString());
+        page = new Identifier(json.get("page").getAsString());
         state = PageState.of(json.get("state").getAsString());
     }
 

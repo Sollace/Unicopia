@@ -2,21 +2,20 @@ package com.minelittlepony.unicopia.forgebullshit;
 
 import java.util.Set;
 
-import net.minecraft.client.renderer.block.model.ModelBakery;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 /**
  * Provides access to the built in texture locations.
  * This is needed to add things like custom backgrounds for slots.
  *
  */
-@FUF(reason = "Forge doesn't provide this, for some unknown reason...")
+@Deprecated
 public final class BuildInTexturesBakery extends ModelBakery {
     private BuildInTexturesBakery() {
         super(null, null, null);
     }
 
-    public static Set<ResourceLocation> getBuiltInTextures() {
+    public static Set<Identifier> getBuiltInTextures() {
         return LOCATIONS_BUILTIN_TEXTURES;
     }
 }

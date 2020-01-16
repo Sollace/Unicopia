@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.entity;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.UClient;
-import com.minelittlepony.unicopia.player.IOwned;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.client.Minecraft;
@@ -29,7 +28,7 @@ public class EntityFakeClientPlayer extends AbstractClientPlayer implements IOwn
     @Nullable
     protected NetworkPlayerInfo getPlayerInfo() {
         if (playerInfo == null) {
-            NetHandlerPlayClient connection = Minecraft.getMinecraft().getConnection();
+            NetHandlerPlayClient connection = MinecraftClient.getInstance().getConnection();
 
             playerInfo = connection.getPlayerInfo(getGameProfile().getId());
 

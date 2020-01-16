@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.Predicates;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
@@ -56,7 +56,7 @@ public class EntityRacingCloud extends EntityCloud {
         Entity riddenByEntity = getControllingPassenger();
 
         if (riddenByEntity != null && canPassengerSteer()) {
-            EntityLivingBase rider = (EntityLivingBase)riddenByEntity;
+            LivingEntity rider = (LivingEntity)riddenByEntity;
 
             double speed = 1.5F * rider.moveForward / 5;
             double horizontalDriving = (riddenByEntity.rotationYaw - rider.moveStrafing * 90) * Math.PI / 180;

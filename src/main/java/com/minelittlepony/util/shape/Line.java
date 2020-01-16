@@ -60,46 +60,62 @@ public class Line implements IShape {
         dZ = lenV.z / len;
     }
 
+    @Override
     public double getVolumeOfSpawnableSpace() {
         return len;
     }
 
+    @Override
     public double getXOffset() {
         return sX;
     }
 
+    @Override
     public double getYOffset() {
         return sY;
     }
 
+    @Override
     public double getZOffset() {
         return sZ;
     }
 
+    @Override
     public Vec3d computePoint(Random rand) {
         double distance = MathHelper.nextDouble(rand, 0, len);
-        return new Vec3d(dX, dY, dZ).scale(distance).add(sX, sY, sZ).rotateYaw(yaw).rotatePitch(pitch);
+        return new Vec3d(dX, dY, dZ)
+                .multiply(distance)
+                .add(sX, sY, sZ)
+                .rotateY(yaw)
+                .rotateX(pitch);
     }
 
+    @Override
     public Line setRotation(float u, float v) {
         yaw = u;
         pitch = v;
         return this;
     }
 
+    @Override
     public boolean isPointInside(Vec3d point) {
-        point = point.rotateYaw(-yaw).rotatePitch(-pitch);
+        point = point.rotateY(-yaw).rotateX(-pitch);
 
         return point.x/dX == point.y/dY && point.x/dX == point.z/dZ;
     }
 
     @Override
     public Vec3d getLowerBound() {
-        return new Vec3d(sX, sY, sZ).rotateYaw(yaw).rotatePitch(pitch);
+        return new Vec3d(sX, sY, sZ)
+                .rotateY(yaw)
+                .rotateX(pitch);
     }
 
     @Override
     public Vec3d getUpperBound() {
-        return new Vec3d(sX + dX, sY + dY, sZ + dZ).scale(len).rotateYaw(yaw).rotatePitch(pitch);
+        return new Vec3d(sX + dX, sY + dY, sZ + dZ)
+                .multiply(len)
+                .rotateY(yaw)
+                .rotateX(pitch);
     }
 }

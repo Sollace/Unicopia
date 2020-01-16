@@ -6,16 +6,12 @@ import java.util.function.Function;
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biome.SpawnListEntry;
-import net.minecraftforge.common.BiomeManager;
-import net.minecraftforge.common.BiomeManager.BiomeType;
 
 /**
  * Provides methods and apis that forge seems to be sorely lacking.
  */
+@Deprecated
 public class BiomeBS {
 
     /**
@@ -33,7 +29,7 @@ public class BiomeBS {
     /**
      * Adds a spawn entry for the specified entity if one does not already exist.
      */
-    public static void addSpawnEntry(Biome biome, EnumCreatureType list, Class<? extends EntityLivingBase> type, Function<Biome, SpawnListEntry> func) {
+    public static void addSpawnEntry(Biome biome, EnumCreatureType list, Class<? extends LivingEntity> type, Function<Biome, SpawnListEntry> func) {
         List<SpawnListEntry> entries = biome.getSpawnableList(list);
 
         entries.stream().filter(p -> p.entityClass == type).findFirst().orElseGet(() -> {

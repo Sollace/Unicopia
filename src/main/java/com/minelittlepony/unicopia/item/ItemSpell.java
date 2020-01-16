@@ -5,15 +5,16 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Predicates;
-import com.minelittlepony.unicopia.entity.EntitySpell;
+import com.minelittlepony.unicopia.entity.SpellcastEntity;
+import com.minelittlepony.unicopia.magic.items.ICastable;
 import com.minelittlepony.unicopia.spell.IMagicEffect;
 import com.minelittlepony.unicopia.spell.IUseAction;
 import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.unicopia.spell.SpellCastResult;
 import com.minelittlepony.unicopia.spell.IDispenceable;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
+import com.minelittlepony.util.VecHelper;
 import com.minelittlepony.util.lang.ClientLocale;
-import com.minelittlepony.util.vector.VecHelper;
 
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.client.util.ITooltipFlag;
@@ -87,13 +88,13 @@ public class ItemSpell extends Item implements ICastable {
             return EnumActionResult.PASS;
         }
 
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getStackInHand(hand);
 
         if (!SpellRegistry.stackHasEnchantment(stack)) {
             return EnumActionResult.FAIL;
         }
 
-        IMagicEffect effect = SpellRegistry.instance().getSpellFrom(stack);
+        IMagicEffect effect = SpellRegistry.getInstance().getSpellFrom(stack);
 
         if (effect == null) {
             return EnumActionResult.FAIL;
@@ -101,7 +102,7 @@ public class ItemSpell extends Item implements ICastable {
 
         SpellCastResult result = onCastSpell(player, world, pos, stack, effect, side, hitX, hitY, hitZ);
 
-        if (!world.isRemote) {
+        if (!world.isClient) {
             pos = pos.offset(side);
 
             if (result == SpellCastResult.PLACE) {
@@ -123,7 +124,7 @@ public class ItemSpell extends Item implements ICastable {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
 
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getStackInHand(hand);
 
         if (!Predicates.MAGI.test(player)) {
             return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
@@ -133,7 +134,7 @@ public class ItemSpell extends Item implements ICastable {
             return new ActionResult<ItemStack>(EnumActionResult.FAIL, stack);
         }
 
-        IUseAction effect = SpellRegistry.instance().getUseActionFrom(stack);
+        IUseAction effect = SpellRegistry.getInstance().getUseActionFrom(stack);
 
         if (effect != null) {
             SpellCastResult result = effect.onUse(stack, getAffinity(stack), player, world, VecHelper.getLookedAtEntity(player, 5));
@@ -184,8 +185,8 @@ public class ItemSpell extends Item implements ICastable {
         super.getSubItems(tab, subItems);
 
         if (isInCreativeTab(tab)) {
-            for (String name : SpellRegistry.instance().getAllNames(getAffinity())) {
-                subItems.add(SpellRegistry.instance().enchantStack(new ItemStack(this, 1), name));
+            for (String name : SpellRegistry.getInstance().getAllNames(getAffinity())) {
+                subItems.add(SpellRegistry.getInstance().enchantStack(new ItemStack(this, 1), name));
             }
         }
     }
@@ -200,7 +201,7 @@ public class ItemSpell extends Item implements ICastable {
     }
 
     @Override
-    public boolean canFeed(EntitySpell entity, ItemStack stack) {
+    public boolean canFeed(SpellcastEntity entity, ItemStack stack) {
         IMagicEffect effect = entity.getEffect();
 
         return effect != null

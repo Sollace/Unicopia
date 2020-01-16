@@ -7,7 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.minelittlepony.unicopia.inventory.InventorySpellBook;
+import com.minelittlepony.unicopia.inventory.gui.SpellBookInventory;
 
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
@@ -57,7 +57,7 @@ public abstract class AbstractSpecialRecipe extends Impl<IRecipe> implements IRe
 
     @Override
     public boolean matches(InventoryCrafting inv, World worldIn) {
-        ItemStack enchantedStack = ((InventorySpellBook)inv).getCraftResultMatrix().getStackInSlot(0);
+        ItemStack enchantedStack = ((SpellBookInventory)inv).getCraftResultMatrix().getStackInSlot(0);
 
         if (enchantedStack.isEmpty() || enchantedStack.getItem() == null) {
             return false;

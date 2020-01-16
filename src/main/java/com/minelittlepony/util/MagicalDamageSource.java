@@ -2,35 +2,38 @@ package com.minelittlepony.util;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.util.lang.ServerLocale;
-
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.EntityDamageSource;
+import net.minecraft.entity.damage.ProjectileDamageSource;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSource;
-import net.minecraft.util.EntityDamageSourceIndirect;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Language;
 
 public class MagicalDamageSource extends EntityDamageSource {
+
+    public static DamageSource mundane(String type) {
+        return new DamageSource(type) {};
+    }
 
     public static DamageSource create(String type) {
         return new MagicalDamageSource(type);
     }
 
-    public static DamageSource causePlayerDamage(String type, EntityPlayer player) {
+    public static DamageSource causePlayerDamage(String type, PlayerEntity player) {
         return causeMobDamage(type, player);
     }
 
-    public static DamageSource causeMobDamage(String type, EntityLivingBase source) {
+    public static DamageSource causeMobDamage(String type, LivingEntity source) {
         return new MagicalDamageSource(type, source);
     }
 
-    public static DamageSource causeIndirect(String type, EntityArrow source, @Nullable Entity instigator) {
-        return new EntityDamageSourceIndirect(type, source, instigator).setProjectile();
+    public static DamageSource causeIndirect(String type, ArrowEntity source, @Nullable Entity instigator) {
+        return new ProjectileDamageSource(type, source, instigator).setProjectile();
     }
 
     protected MagicalDamageSource(String type) {
@@ -39,27 +42,27 @@ public class MagicalDamageSource extends EntityDamageSource {
 
     protected MagicalDamageSource(String type, Entity source) {
         super(type, source);
-        setMagicDamage();
+        setUsesMagic();
     }
 
-    public ITextComponent getDeathMessage(EntityLivingBase target) {
-        Entity attacker = damageSourceEntity instanceof EntityLivingBase ? (EntityLivingBase)damageSourceEntity : target.getRidingEntity();
-        String basic = "death.attack." + this.damageType;
+    @Override
+    public Text getDeathMessage(LivingEntity target) {
+        Entity attacker = source instanceof LivingEntity ? (LivingEntity)source : target.getVehicle();
+        String basic = "death.attack." + name;
 
-        if (attacker != null && attacker instanceof EntityLivingBase) {
+        if (attacker != null && attacker instanceof LivingEntity) {
             String withAttecker = basic + ".player";
-            ItemStack held = attacker instanceof EntityLivingBase ? ((EntityLivingBase)attacker).getHeldItemMainhand() : ItemStack.EMPTY;
+            ItemStack held = ((LivingEntity)attacker).getMainHandStack();
 
-            String withItem = withAttecker + ".item";
-            if (held != null && held.hasDisplayName() && ServerLocale.hasKey(withItem)) {
-                return new TextComponentTranslation(withItem, target.getDisplayName(), attacker.getDisplayName(), held.getTextComponent());
+            if (!held.isEmpty() && held.hasCustomName()) {
+                return new TranslatableText(withAttecker + ".item", target.getDisplayName(), attacker.getDisplayName(), held.toHoverableText());
             }
 
-            if (ServerLocale.hasKey(withAttecker)) {
-                return new TextComponentTranslation(withAttecker, target.getDisplayName(), attacker.getDisplayName());
+            if (Language.getInstance().hasTranslation(withAttecker)) {
+                return new TranslatableText(withAttecker, target.getDisplayName(), attacker.getDisplayName());
             }
         }
 
-        return new TextComponentTranslation(basic, target.getDisplayName());
+        return new TranslatableText(basic, target.getDisplayName(), source.getDisplayName());
     }
 }

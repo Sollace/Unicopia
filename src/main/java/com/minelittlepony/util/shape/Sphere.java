@@ -50,6 +50,7 @@ public class Sphere implements IShape {
         volume = computeSpawnableSpace();
     }
 
+    @Override
     public double getVolumeOfSpawnableSpace() {
         return volume;
     }
@@ -82,18 +83,22 @@ public class Sphere implements IShape {
         return result;
     }
 
+    @Override
     public double getXOffset() {
         return 0;
     }
 
+    @Override
     public double getYOffset() {
         return 0;
     }
 
+    @Override
     public double getZOffset() {
         return 0;
     }
 
+    @Override
     public Vec3d computePoint(Random rand) {
         double rad = this.rad;
 
@@ -105,17 +110,21 @@ public class Sphere implements IShape {
         double phi = MathHelper.nextDouble(rand, 0, Math.PI * 2);
         double theta = Math.asin(z / rad);
 
-        return new Vec3d(rad * Math.cos(theta) * Math.cos(phi) * stretch.x, rad * Math.cos(theta) * Math.sin(phi) * stretch.y, z * stretch.z).rotateYaw(yaw).rotatePitch(pitch);
+        return new Vec3d(rad * Math.cos(theta) * Math.cos(phi) * stretch.x, rad * Math.cos(theta) * Math.sin(phi) * stretch.y, z * stretch.z)
+                .rotateY(yaw)
+                .rotateX(pitch);
     }
 
+    @Override
     public Sphere setRotation(float u, float v) {
         yaw = u;
         pitch = v;
         return this;
     }
 
+    @Override
     public boolean isPointInside(Vec3d point) {
-        point = point.rotateYaw(-yaw).rotatePitch(-pitch);
+        point = point.rotateY(-yaw).rotateX(-pitch);
         point = new Vec3d(point.x / stretch.x, point.y / stretch.y, point.z / stretch.z);
 
         double dist = point.length();
@@ -125,11 +134,15 @@ public class Sphere implements IShape {
 
     @Override
     public Vec3d getLowerBound() {
-        return new Vec3d(-rad * stretch.x, -rad * stretch.y, -rad * stretch.z).rotateYaw(yaw).rotatePitch(pitch);
+        return new Vec3d(-rad * stretch.x, -rad * stretch.y, -rad * stretch.z)
+                .rotateY(yaw)
+                .rotateX(pitch);
     }
 
     @Override
     public Vec3d getUpperBound() {
-        return new Vec3d(rad * stretch.x, rad * stretch.y, rad * stretch.z).rotateYaw(yaw).rotatePitch(pitch);
+        return new Vec3d(rad * stretch.x, rad * stretch.y, rad * stretch.z)
+                .rotateY(yaw)
+                .rotateX(pitch);
     }
 }

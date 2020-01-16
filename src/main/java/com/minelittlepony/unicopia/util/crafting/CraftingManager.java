@@ -13,41 +13,39 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import com.minelittlepony.util.AssetWalker;
 
-import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraft.util.JsonUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.util.DefaultedList;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import net.minecraft.world.World;
 
 public class CraftingManager {
 
-    private final Map<ResourceLocation, IRecipe> REGISTRY = Maps.newHashMap();
+    private final Map<Identifier, Recipe<? super CraftingInventory>> REGISTRY = Maps.newHashMap();
 
-    private final Map<String, Function<JsonObject, IRecipe>> JSON_PARSERS = Maps.newHashMap();
+    private final Map<String, Function<JsonObject, Recipe<? super CraftingInventory>>> JSON_PARSERS = Maps.newHashMap();
 
     @Nonnull
-    private final ResourceLocation crafting_id;
+    private final Identifier crafting_id;
 
     private final AssetWalker assets;
 
     public CraftingManager(String modid, String resourcename) {
-        this(new ResourceLocation(modid, resourcename + "/recipes"));
+        this(new Identifier(modid, resourcename + "/recipes"));
     }
 
-    public CraftingManager(@Nonnull ResourceLocation id) {
+    public CraftingManager(@Nonnull Identifier id) {
         crafting_id = id;
         assets = new AssetWalker(id, this::handleJson);
     }
 
-    protected void handleJson(ResourceLocation id, JsonObject json) throws JsonParseException {
+    protected void handleJson(Identifier id, JsonObject json) throws JsonParseException {
         REGISTRY.put(id, parseRecipeJson(json));
     }
 
-    protected void registerRecipeTypes(Map<String, Function<JsonObject, IRecipe>> types) {
+    protected void registerRecipeTypes(Map<String, Function<JsonObject, Recipe<? super CraftingInventory>>> types) {
         types.put("crafting_shaped", ShapedRecipes::deserialize);
         types.put("crafting_shapeless", ShapelessRecipes::deserialize);
     }
@@ -61,8 +59,8 @@ public class CraftingManager {
         assets.walk();
     }
 
-    protected IRecipe parseRecipeJson(JsonObject json) {
-        String s = JsonUtils.getString(json, "type");
+    protected Recipe<? super CraftingInventory> parseRecipeJson(JsonObject json) {
+        String s = JsonHelper.getString(json, "type");
 
         if (!JSON_PARSERS.containsKey(s)) {
             throw new JsonSyntaxException("Invalid or unsupported recipe type '" + s + "'");
@@ -71,9 +69,10 @@ public class CraftingManager {
         return JSON_PARSERS.get(s).apply(json);
     }
 
+    @Deprecated
     @Nonnull
-    public ItemStack findMatchingResult(InventoryCrafting craftMatrix, World worldIn) {
-        IRecipe recipe = findMatchingRecipe(craftMatrix, worldIn);
+    public ItemStack findMatchingResult(CraftingInventory craftMatrix, World worldIn) {
+        Recipe<? super CraftingInventory> recipe = findMatchingRecipe(craftMatrix, worldIn);
 
         if (recipe != null) {
             return recipe.getCraftingResult(craftMatrix);
@@ -82,10 +81,11 @@ public class CraftingManager {
         return ItemStack.EMPTY;
     }
 
+    @Deprecated
     @Nullable
-    public IRecipe findMatchingRecipe(InventoryCrafting craftMatrix, World worldIn) {
-        for (IRecipe irecipe : getRecipes()) {
-            if (irecipe.matches(craftMatrix, worldIn)) {
+    public Recipe<? super CraftingInventory> findMatchingRecipe(CraftingInventory craftMatrix, World world) {
+        for (Recipe<? super CraftingInventory> irecipe : getRecipes()) {
+            if (irecipe.matches(craftMatrix, world)) {
                 return irecipe;
             }
         }
@@ -93,15 +93,17 @@ public class CraftingManager {
         return null;
     }
 
-    public Collection<IRecipe> getRecipes() {
+    @Deprecated
+    public Collection<Recipe<? super CraftingInventory>> getRecipes() {
         if (REGISTRY.isEmpty()) {
             load();
         }
         return REGISTRY.values();
     }
 
-    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting craftMatrix, World worldIn) {
-        IRecipe recipe = findMatchingRecipe(craftMatrix, worldIn);
+    @Deprecated
+    public DefaultedList<ItemStack> getRemainingItems(CraftingInventory craftMatrix, World worldIn) {
+        Recipe<? super CraftingInventory> recipe = findMatchingRecipe(craftMatrix, worldIn);
 
         if (recipe != null) {
             return recipe.getRemainingItems(craftMatrix);
@@ -110,11 +112,11 @@ public class CraftingManager {
         return cloneInventoryContents(craftMatrix);
     }
 
-    public static NonNullList<ItemStack> cloneInventoryContents(InventoryCrafting craftMatrix) {
-        NonNullList<ItemStack> result = NonNullList.withSize(craftMatrix.getSizeInventory(), ItemStack.EMPTY);
+    public static DefaultedList<ItemStack> cloneInventoryContents(CraftingInventory craftMatrix) {
+        DefaultedList<ItemStack> result = DefaultedList.ofSize(craftMatrix.getInvSize(), ItemStack.EMPTY);
 
         for (int i = 0; i < result.size(); ++i) {
-            result.set(i, craftMatrix.getStackInSlot(i));
+            result.set(i, craftMatrix.getInvStack(i));
         }
 
         return result;

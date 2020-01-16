@@ -6,14 +6,12 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Streams;
 import com.minelittlepony.util.shape.IShape;
 
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.World;
 
 public class PosHelper {
@@ -23,22 +21,22 @@ public class PosHelper {
     }
 
     public static BlockPos findSolidGroundAt(World world, BlockPos pos) {
-        while ((pos.getY() > 0 || !world.isOutsideBuildHeight(pos))
-                && (world.isAirBlock(pos) || world.getBlockState(pos).getBlock().isReplaceable(world, pos))) {
+        while ((pos.getY() > 0 || !World.isHeightInvalid(pos))
+                && (world.isAir(pos) || world.getBlockState(pos).canPlaceAt(world, pos))) {
             pos = pos.down();
         }
 
         return pos;
     }
 
-    public static void all(BlockPos origin, Consumer<BlockPos> consumer, EnumFacing... directions) {
-        for (EnumFacing facing : directions) {
+    public static void all(BlockPos origin, Consumer<BlockPos> consumer, Direction... directions) {
+        for (Direction facing : directions) {
             consumer.accept(origin.offset(facing));
         }
     }
 
-    public static boolean some(BlockPos origin, Predicate<BlockPos> consumer, EnumFacing... directions) {
-        for (EnumFacing facing : directions) {
+    public static boolean some(BlockPos origin, Predicate<BlockPos> consumer, Direction... directions) {
+        for (Direction facing : directions) {
             if (consumer.test(origin.offset(facing))) {
                 return true;
             }
@@ -46,15 +44,15 @@ public class PosHelper {
         return false;
     }
 
-    public static Iterators<MutableBlockPos> adjacentNeighbours(BlockPos origin) {
-        MutableBlockPos pos = new MutableBlockPos(origin);
-        Iterator<EnumFacing> directions = Lists.newArrayList(EnumFacing.VALUES).iterator();
+    public static Iterators<BlockPos> adjacentNeighbours(BlockPos origin) {
+        BlockPos.Mutable pos = new BlockPos.Mutable(origin);
+        Iterator<Direction> directions = Lists.newArrayList(Direction.values()).iterator();
 
         return Iterators.iterate(() -> {
             if (directions.hasNext()) {
-                EnumFacing next = directions.next();
+                Direction next = directions.next();
 
-                pos.setPos(origin.getX() + next.getXOffset(), origin.getY() + next.getYOffset(), origin.getZ() + next.getZOffset());
+                pos.set(origin.getX() + next.getOffsetX(), origin.getY() + next.getOffsetY(), origin.getZ() + next.getOffsetZ());
                 return pos;
             }
 
@@ -62,15 +60,15 @@ public class PosHelper {
         });
     }
 
-    public static Iterators<MutableBlockPos> getAllInRegionMutable(BlockPos origin, IShape shape) {
-        Iterator<MutableBlockPos> iter = BlockPos.getAllInBoxMutable(
+    public static Iterators<BlockPos> getAllInRegionMutable(BlockPos origin, IShape shape) {
+        Iterator<BlockPos> iter = BlockPos.iterate(
                 origin.add(new BlockPos(shape.getLowerBound())),
                 origin.add(new BlockPos(shape.getUpperBound()))
             ).iterator();
 
         return Iterators.iterate(() -> {
             while (iter.hasNext()) {
-                MutableBlockPos pos = iter.next();
+                BlockPos pos = iter.next();
 
                 if (shape.isPointInside(new Vec3d(pos.subtract(origin)))) {
                     return pos;
@@ -84,7 +82,7 @@ public class PosHelper {
     /**
      * Creates a stream of mutable block positions ranging from the beginning position to end.
      */
-    public static Stream<MutableBlockPos> inRegion(BlockPos from, BlockPos to) {
-        return Streams.stream(BlockPos.getAllInBoxMutable(from, to));
+    public static Stream<BlockPos> inRegion(BlockPos from, BlockPos to) {
+        return BlockPos.stream(from, to);
     }
 }

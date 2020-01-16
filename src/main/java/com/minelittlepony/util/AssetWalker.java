@@ -25,8 +25,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.minelittlepony.unicopia.util.crafting.CraftingManager;
 
-import net.minecraft.util.JsonUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 public class AssetWalker {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -42,7 +41,7 @@ public class AssetWalker {
 
     private final JsonConsumer consumer;
 
-    public AssetWalker(ResourceLocation assetLocation, JsonConsumer consumer) {
+    public AssetWalker(Identifier assetLocation, JsonConsumer consumer) {
         this.consumer = consumer;
         this.namespace = assetLocation.getNamespace();
 
@@ -89,10 +88,10 @@ public class AssetWalker {
             Path i = iterator.next();
 
             if ("json".equals(FilenameUtils.getExtension(i.toString()))) {
-                ResourceLocation id = new ResourceLocation(namespace, FilenameUtils.removeExtension(path.relativize(i).toString()).replaceAll("\\\\", "/"));
+                Identifier id = new Identifier(namespace, FilenameUtils.removeExtension(path.relativize(i).toString()).replaceAll("\\\\", "/"));
 
                 try(BufferedReader bufferedreader = Files.newBufferedReader(i)) {
-                    consumer.accept(id, JsonUtils.fromJson(GSON, bufferedreader, JsonObject.class));
+                    consumer.accept(id, GSON.fromJson(bufferedreader, JsonObject.class));
                 } catch (JsonParseException e) {
                     LOGGER.error("Parsing error loading recipe " + id, e);
 
@@ -108,6 +107,6 @@ public class AssetWalker {
 
     @FunctionalInterface
     public interface JsonConsumer {
-        void accept(ResourceLocation id, JsonObject json) throws JsonParseException;
+        void accept(Identifier id, JsonObject json) throws JsonParseException;
     }
 }

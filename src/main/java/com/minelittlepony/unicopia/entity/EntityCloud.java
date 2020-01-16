@@ -4,57 +4,48 @@ import java.util.Map;
 
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.forgebullshit.FUF;
-import com.minelittlepony.unicopia.init.UBlocks;
-import com.minelittlepony.unicopia.init.UItems;
-import com.minelittlepony.unicopia.init.UParticles;
-import com.minelittlepony.unicopia.particle.Particles;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.UBlocks;
+import com.minelittlepony.unicopia.UItems;
+import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.ability.powers.PowerCloudBase.ICloudEntity;
 
-import net.minecraft.block.BlockCrops;
-import net.minecraft.block.BlockFarmland;
-import net.minecraft.block.BlockFire;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CropBlock;
+import net.minecraft.block.FarmlandBlock;
+import net.minecraft.block.FireBlock;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityFlying;
-import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.entity.MoverType;
-import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.passive.IAnimals;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Enchantments;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.FlyingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 
-public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
+public class EntityCloud extends FlyingEntity implements ICloudEntity, IAnimals, IInAnimate {
 
-    private static final DataParameter<Integer> RAINTIMER = EntityDataManager.createKey(EntityCloud.class, DataSerializers.VARINT);
-    private static final DataParameter<Boolean> THUNDERING = EntityDataManager.createKey(EntityCloud.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<Integer> SCALE = EntityDataManager.createKey(EntityCloud.class, DataSerializers.VARINT);
+    private static final TrackedData<Integer> RAINTIMER = DataTracker.registerData(EntityCloud.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Boolean> THUNDERING = DataTracker.registerData(EntityCloud.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Integer> SCALE = DataTracker.registerData(EntityCloud.class, TrackedDataHandlerRegistry.INTEGER);
 
-    private static final DataParameter<Boolean> STATIONARY = EntityDataManager.createKey(EntityCloud.class, DataSerializers.BOOLEAN);
+    private static final TrackedData<Boolean> STATIONARY = DataTracker.registerData(EntityCloud.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     protected double targetAltitude;
 
@@ -64,29 +55,29 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
     private final double baseWidth = 3f;
     private final double baseHeight = 0.8f;
 
-    public EntityCloud(World world) {
-        super(world);
-        ignoreFrustumCheck = true;
+    public EntityCloud(EntityType<EntityCloud> type, World world) {
+        super(type, world);
+        ignoreCameraFrustum = true;
         targetAltitude = getRandomFlyingHeight();
     }
 
     @Override
-    protected void entityInit() {
-        super.entityInit();
-        dataManager.register(RAINTIMER, 0);
-        dataManager.register(THUNDERING, false);
-        dataManager.register(STATIONARY, false);
-        dataManager.register(SCALE, 1);
+    protected void initDataTracker() {
+        super.initDataTracker();
+        dataTracker.startTracking(RAINTIMER, 0);
+        dataTracker.startTracking(THUNDERING, false);
+        dataTracker.startTracking(STATIONARY, false);
+        dataTracker.startTracking(SCALE, 1);
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSource) {
-        return SoundEvents.BLOCK_CLOTH_HIT;
+        return SoundEvents.BLOCK_WOOL_HIT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.BLOCK_CLOTH_STEP;
+        return SoundEvents.BLOCK_WOOL_BREAK;
     }
 
     @Override
@@ -105,33 +96,27 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
     }
 
     @Override
-    public boolean canRenderOnFire() {
+    public boolean doesRenderOnFire() {
         return false;
     }
 
-    /**
-     * Gets the render brightness of this entity based on the surrounding world light values.
-     */
     @Override
-    public int getBrightnessForRender() {
+    public int getLightmapCoordinates() {
         return 0xF000F0;
     }
 
-    /**
-     * Gets the brightness percentage for this entity based on the surrounding world light values.
-     */
     @Override
-    public float getBrightness() {
-        return 1;
+    public float getBrightnessAtEyes() {
+        return 0xF000F0;
     }
 
     @Override
-    protected boolean canDespawn() {
-        return !hasCustomName() && !getStationary() && !getOpaque();
+    public boolean cannotDespawn() {
+        return hasCustomName() || getStationary() || getOpaque();
     }
 
     @Override
-    public int getMaxSpawnedInChunk() {
+    public int getLimitPerChunk() {
         return 6;
     }
 
@@ -147,14 +132,14 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
 
     @Override
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData pack) {
-        if (world.rand.nextInt(20) == 0 && canRainHere()) {
+        if (world.random.nextInt(20) == 0 && canRainHere()) {
             setRaining();
-            if (world.rand.nextInt(20) == 0) {
+            if (world.random.nextInt(20) == 0) {
                 setIsThundering(true);
             }
         }
 
-        setCloudSize(1 + rand.nextInt(4));
+        setCloudSize(1 + random.nextInt(4));
 
         return super.onInitialSpawn(difficulty, pack);
     }
@@ -183,50 +168,50 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
 
     @Override
     public void onUpdate() {
-        AxisAlignedBB boundingbox = getEntityBoundingBox();
+        Box boundingbox = getBoundingBox();
 
         if (getIsRaining()) {
-            if (world.isRemote) {
+            if (world.isClient) {
                 for (int i = 0; i < 30 * getCloudSize(); i++) {
-                    double x = MathHelper.nextDouble(rand, boundingbox.minX, boundingbox.maxX);
-                    double y = getEntityBoundingBox().minY + height/2;
+                    double x = MathHelper.nextDouble(random, boundingbox.minX, boundingbox.maxX);
+                    double y = getBoundingBox().minY + getHeight()/2;
                     double z = MathHelper.nextDouble(rand, boundingbox.minZ, boundingbox.maxZ);
 
-                    int particleId = canSnowHere(new BlockPos(x, y, z)) ? EnumParticleTypes.SNOW_SHOVEL.getParticleID() : UParticles.RAIN_DROPS;
+                    int particleId = canSnowHere(new BlockPos(x, y, z)) ? ParticleTypes.ITEM_SNOWBALL.getType() : UParticles.RAIN_DROPS;
 
-                    Particles.instance().spawnParticle(particleId, false, x, y, z, 0, 0, 0);
+                    ParticleTypeRegistry.getTnstance().spawnParticle(particleId, false, x, y, z, 0, 0, 0);
                 }
 
-                AxisAlignedBB rainedArea = boundingbox
+                Box rainedArea = boundingbox
                         .expand(1, 0, 1)
-                        .expand(0, -(posY - getGroundPosition(posX, posZ).getY()), 0);
+                        .expand(0, -(y - getGroundPosition(x, z).getY()), 0);
 
 
-                for (EntityPlayer j : world.getEntitiesWithinAABB(EntityPlayer.class, rainedArea)) {
-                    if (!canSnowHere(j.getPosition())) {
-                        j.world.playSound(j, j.getPosition(), SoundEvents.WEATHER_RAIN, SoundCategory.AMBIENT, 0.1F, 0.6F);
+                for (PlayerEntity j : world.getEntities(PlayerEntity.class, rainedArea)) {
+                    if (!canSnowHere(j.getBlockPos())) {
+                        j.world.playSound(j, j.getBlockPos(), SoundEvents.WEATHER_RAIN, SoundCategory.AMBIENT, 0.1F, 0.6F);
                     }
                 }
             }
 
             BlockPos pos = getGroundPosition(
-                posX + rand.nextFloat() * width,
-                posZ + rand.nextFloat() * width
+                x + random.nextFloat() * width,
+                z + random.nextFloat() * width
             );
 
             if (getIsThundering()) {
-                if (rand.nextInt(3000) == 0) {
+                if (random.nextInt(3000) == 0) {
                     spawnThunderbolt(pos);
                 }
 
-                if (rand.nextInt(200) == 0) {
+                if (random.nextInt(200) == 0) {
                     setIsThundering(false);
                 }
             }
 
-            IBlockState state = world.getBlockState(pos);
+            BlockState state = world.getBlockState(pos);
 
-            if (state.getBlock() instanceof BlockFire) {
+            if (state.getBlock() instanceof FireBlock) {
                 world.setBlockState(pos, Blocks.AIR.getDefaultState());
             }
 
@@ -239,20 +224,20 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
                     }
 
                     if (world.canSnowAt(pos, false)) {
-                        world.setBlockState(pos, Blocks.SNOW_LAYER.getDefaultState());
+                        world.setBlockState(pos, Blocks.SNOW.getDefaultState());
                     }
 
-                    if (state.getBlock() instanceof BlockFarmland) {
-                        int moisture = state.getValue(BlockFarmland.MOISTURE);
+                    if (state.getBlock() instanceof FarmlandBlock) {
+                        int moisture = state.getValue(FarmlandBlock.MOISTURE);
 
                         if (moisture < 7) {
-                            world.setBlockState(below, state.withProperty(BlockFarmland.MOISTURE, moisture + 1));
+                            world.setBlockState(below, state.with(FarmlandBlock.MOISTURE, moisture + 1));
                         }
-                    } else if (state.getBlock() instanceof BlockCrops) {
-                        int age = state.getValue(BlockCrops.AGE);
+                    } else if (state.getBlock() instanceof CropBlock) {
+                        int age = state.getValue(CropBlock.AGE);
 
                         if (age < 7) {
-                            world.setBlockState(below, state.withProperty(BlockCrops.AGE, age + 1), 2);
+                            world.setBlockState(below, state.with(CropBlock.AGE, age + 1), 2);
                         }
                     }
 
@@ -268,14 +253,14 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
                         setIsRaining(false);
                         setCloudSize(getCloudSize() - 1);
                     } else {
-                        setDead();
+                        remove();
                     }
                 }
             }
         } else {
-            if (rand.nextInt(8000) == 0 && canRainHere()) {
+            if (random.nextInt(8000) == 0 && canRainHere()) {
                 setRaining();
-                if (rand.nextInt(7000) == 0) {
+                if (random.nextInt(7000) == 0) {
                     setIsThundering(true);
                 }
             }
@@ -294,17 +279,15 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
 
         if (isBurning() && !dead) {
             for (int i = 0; i < 5; i++) {
-                world.spawnParticle(EnumParticleTypes.CLOUD,
-                        MathHelper.nextDouble(rand, boundingbox.minX, boundingbox.maxX),
-                        MathHelper.nextDouble(rand, boundingbox.minY, boundingbox.maxY),
-                        MathHelper.nextDouble(rand, boundingbox.minZ, boundingbox.maxZ), 0, 0.25, 0);
+                world.spawnParticle(ParticleTypes.CLOUD,
+                        MathHelper.nextDouble(random, boundingbox.minX, boundingbox.maxX),
+                        MathHelper.nextDouble(random, boundingbox.minY, boundingbox.maxY),
+                        MathHelper.nextDouble(random, boundingbox.minZ, boundingbox.maxZ), 0, 0.25, 0);
             }
         }
 
         if (getStationary()) {
-            motionX = 0;
-            motionY = 0;
-            motionZ = 0;
+            setVelocity(0, 0, 0);
         }
 
         super.onUpdate();
@@ -340,7 +323,7 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
                 player.distanceWalkedModified = (float)(player.distanceWalkedModified + MathHelper.sqrt(difX * difX + difZ * difZ) * 0.6);
                 player.distanceWalkedOnStepModified = (float)(player.distanceWalkedOnStepModified + MathHelper.sqrt(difX * difX + difY * difY + difZ * difZ) * 0.6);
 
-                if (PlayerSpeciesList.instance().getPlayer(player).stepOnCloud()) {
+                if (SpeciesList.instance().getPlayer(player).stepOnCloud()) {
                     SoundType soundtype = SoundType.CLOTH;
                     player.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
                 }
@@ -351,26 +334,26 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
     }
 
     @Override
-    protected void updateAITasks() {
+    protected void mobTick() {
         if (!getStationary()) {
-            if (!isBeingRidden()) {
-                double distance = targetAltitude - posY;
+            if (!hasVehicle()) {
+                double distance = targetAltitude - y;
 
-                if (targetAltitude < posY && !world.isAirBlock(getPosition())) {
+                if (targetAltitude < y && !world.isAir(getBlockPos())) {
                     distance = 0;
                 }
 
-                if (Math.abs(distance) < 1 && rand.nextInt(7000) == 0) {
+                if (Math.abs(distance) < 1 && random.nextInt(7000) == 0) {
                     targetAltitude = getRandomFlyingHeight();
-                    distance = targetAltitude - posY;
+                    distance = targetAltitude - y;
                 }
 
                 if (Math.abs(distance) < 1) {
                     distance = 0;
                 }
 
-                motionX -= 0.002;
-                motionY += (Math.signum(distance) * 0.699999988079071D - motionY) * 0.10000000149011612D;
+                getVelocity().y -= 0.002;
+                getVelocity().y += (Math.signum(distance) * 0.699999988079071D - getVelocity().y) * 0.10000000149011612D;
             }
         }
     }
@@ -382,12 +365,12 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
         float min = Math.min(a, b);
         float max = Math.max(a, b);
 
-        return min + world.rand.nextFloat() * (max - min);
+        return min + world.random.nextFloat() * (max - min);
     }
 
     protected float getMinimumFlyingHeight() {
-        float ground = world.provider.getAverageGroundLevel();
-        float cloud = world.getWorldType().getCloudHeight();
+        float ground = world.getDimension().getAverageGroundLevel();
+        float cloud = world.getDimension().getCloudHeight();
 
         float min = Math.min(ground, cloud);
         float max = Math.max(ground, cloud);
@@ -396,23 +379,24 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
     }
 
     protected float getMaximumFlyingHeight() {
-        return world.provider.getActualHeight() - 5;
+        return world.getDimension().getCloudHeight() - 5;
     }
 
     @Override
-    public void handleStatusUpdate(byte type) {
+    public void handleStatus(byte type) {
         if (type == 2) {
-            if (!isBurning()) {
+            if (!isOnFire()) {
                 for (int i = 0; i < 50 * getCloudSize(); i++) {
-                    Particles.instance().getEntityEmitter().emitDiggingParticles(this, UBlocks.normal_cloud.getDefaultState());
+                    ParticleTypeRegistry.getTnstance().getEmitter().emitDiggingParticles(this, UBlocks.normal_cloud.getDefaultState());
                 }
             }
         }
-        super.handleStatusUpdate(type);
+        super.handleStatus(type);
     }
 
+    @Override
     public void handlePegasusInteration(int interationType) {
-        if (!world.isRemote) {
+        if (!world.isClient) {
             switch (interationType) {
                 case 1:
                     setIsRaining(!getIsRaining());
@@ -428,35 +412,35 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
 
     public void pomf() {
         for (int i = 0; i < 50 * getCloudSize(); i++) {
-            Particles.instance().getEntityEmitter().emitDiggingParticles(this, UBlocks.normal_cloud.getDefaultState());
+            ParticleTypeRegistry.getTnstance().getEmitter().emitDiggingParticles(this, UBlocks.normal_cloud.getDefaultState());
         }
 
         playHurtSound(DamageSource.GENERIC);
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        Entity attacker = source.getImmediateSource();
+    public boolean damage(DamageSource source, float amount) {
+        Entity attacker = source.getAttacker();
 
-        if (attacker instanceof EntityPlayer) {
-            return onAttackByPlayer(source, amount, (EntityPlayer)attacker);
+        if (attacker instanceof PlayerEntity) {
+            return onAttackByPlayer(source, amount, (PlayerEntity)attacker);
         }
 
-        return source == DamageSource.IN_WALL || super.attackEntityFrom(source, amount);
+        return source == DamageSource.IN_WALL || super.damage(source, amount);
     }
 
-    private boolean onAttackByPlayer(DamageSource source, float amount, EntityPlayer player) {
+    private boolean onAttackByPlayer(DamageSource source, float amount, PlayerEntity player) {
 
-        ItemStack stack = player.getHeldItemMainhand();
+        ItemStack stack = player.getMainHandStack();
 
         boolean canFly = EnchantmentHelper.getEnchantments(stack).containsKey(Enchantments.FEATHER_FALLING)
                 || Predicates.INTERACT_WITH_CLOUDS.test(player);
         boolean stat = getStationary();
 
         if (stat || canFly) {
-            if (!isBurning()) {
+            if (!isOnFire()) {
                 for (int i = 0; i < 50 * getCloudSize(); i++) {
-                    Particles.instance().getEntityEmitter().emitDiggingParticles(this, UBlocks.normal_cloud.getDefaultState());
+                    ParticleTypeRegistry.getTnstance().getEmitter().emitDiggingParticles(this, UBlocks.normal_cloud.getDefaultState());
                 }
             }
 
@@ -465,10 +449,10 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
             } else if (stack != null && stack.getItem() instanceof ItemSpade) {
                 return super.attackEntityFrom(source, amount * 1.5f);
             } else if (canFly) {
-                if (player.posY < posY || !world.isAirBlock(getPosition())) {
-                    targetAltitude = posY + 5;
-                } else if (player.posY > posY) {
-                    targetAltitude = posY - 5;
+                if (player.y < y || !world.isAirBlock(getPosition())) {
+                    targetAltitude = y + 5;
+                } else if (player.y > y) {
+                    targetAltitude = y - 5;
                 }
             }
         }
@@ -477,8 +461,8 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
 
     @Override
     public void onDeath(DamageSource s) {
-        if (s == DamageSource.GENERIC || (s.getTrueSource() != null && s.getTrueSource() instanceof EntityPlayer)) {
-            setDead();
+        if (s == DamageSource.GENERIC || (s.getSource() != null && s.getSource() instanceof PlayerEntity)) {
+            remove();
         }
 
         super.onDeath(s);
@@ -486,14 +470,14 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
     }
 
     @Override
-    public void setDead() {
-        super.setDead();
+    public void remove() {
+        super.remove();
         clearItemFloatingState();
     }
 
     @FUF(reason = "There is no TickEvent.EntityTickEvent. Waiting on mixins...")
     protected void clearItemFloatingState() {
-        AxisAlignedBB bounds = getEntityBoundingBox().grow(1 / (1 + getCloudSize())).grow(5);
+        Box bounds = getEntityBoundingBox().grow(1 / (1 + getCloudSize())).grow(5);
 
         for (Entity i : world.getEntitiesInAABBexcluding(this, bounds, this::entityIsFloatingItem)) {
             i.setNoGravity(false);
@@ -501,8 +485,8 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
     }
 
     private boolean entityIsFloatingItem(Entity e) {
-        return e instanceof EntityItem
-                && Predicates.ITEM_INTERACT_WITH_CLOUDS.test((EntityItem)e);
+        return e instanceof ItemEntity
+                && Predicates.ITEM_INTERACT_WITH_CLOUDS.test((ItemEntity)e);
     }
 
     @Override
@@ -523,7 +507,7 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
     public EntityItem entityDropItem(ItemStack stack, float offsetY) {
         EntityItem item = super.entityDropItem(stack, offsetY);
 
-        PlayerSpeciesList.instance().getEntity(item).setPlayerSpecies(Race.PEGASUS);
+        SpeciesList.instance().getEntity(item).setSpecies(Race.PEGASUS);
         item.setNoGravity(true);
         item.motionY = 0;
 
@@ -592,19 +576,19 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
             return 3;
         }
 
-        if (entity instanceof EntityPlayer) {
-            return getFeatherEnchantStrength((EntityPlayer)entity);
+        if (entity instanceof PlayerEntity) {
+            return getFeatherEnchantStrength((PlayerEntity)entity);
         }
 
         return 0;
     }
 
-    public static int getFeatherEnchantStrength(EntityPlayer player) {
-        for (ItemStack stack : player.getArmorInventoryList()) {
+    public static int getFeatherEnchantStrength(PlayerEntity player) {
+        for (ItemStack stack : player.getArmorItems()) {
             if (stack != null) {
                 Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
                 if (enchantments.containsKey(Enchantments.FEATHER_FALLING)) {
-                    return (Integer)enchantments.get(Enchantments.FEATHER_FALLING);
+                    return enchantments.get(Enchantments.FEATHER_FALLING);
                 }
             }
         }
@@ -612,23 +596,23 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
     }
 
     private boolean canRainHere() {
-        return world.getBiome(new BlockPos(posX, posY, posZ)).canRain();
+        return world.getBiome(getBlockPos()).canRain();
     }
 
     private boolean canSnowHere(BlockPos pos) {
-        return world.getBiome(pos).getTemperature(pos) <= 0.15f;
+        return world.getBiome(pos).canSetSnow(world, pos);
     }
 
     public void spawnThunderbolt() {
-        spawnThunderbolt(getGroundPosition(posX, posZ));
+        spawnThunderbolt(getGroundPosition(x, z));
     }
 
     public void spawnThunderbolt(BlockPos pos) {
-        world.addWeatherEffect(new EntityLightningBolt(world, pos.getX(), pos.getY(), pos.getZ(), false));
+        world.addWeatherEffect(new LightningEntity(world, pos.getX(), pos.getY(), pos.getZ(), false));
     }
 
     private BlockPos getGroundPosition(double x, double z) {
-        BlockPos pos = world.getTopSolidOrLiquidBlock(new BlockPos(x, posY, z));
+        BlockPos pos = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, new BlockPos(x, y, z));
 
         if (pos.getY() >= posY) {
             while (world.isValid(pos)) {
@@ -643,17 +627,17 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
     }
 
     public int getRainTimer() {
-        return dataManager.get(RAINTIMER);
+        return dataTracker.get(RAINTIMER);
     }
 
     public int setRainTimer(int val) {
         val = Math.max(0, val);
-        dataManager.set(RAINTIMER, val);
+        dataTracker.set(RAINTIMER, val);
         return val;
     }
 
     private void setRaining() {
-        setRainTimer(700 + rand.nextInt(20));
+        setRainTimer(700 + random.nextInt(20));
     }
 
     public void setIsRaining(boolean val) {
@@ -669,19 +653,19 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
     }
 
     public boolean getIsThundering() {
-        return dataManager.get(THUNDERING);
+        return dataTracker.get(THUNDERING);
     }
 
     public void setIsThundering(boolean val) {
-        dataManager.set(THUNDERING, val);
+        dataTracker.set(THUNDERING, val);
     }
 
     public boolean getStationary() {
-        return dataManager.get(STATIONARY);
+        return dataTracker.get(STATIONARY);
     }
 
     public void setStationary(boolean val) {
-        dataManager.set(STATIONARY, val);
+        dataTracker.set(STATIONARY, val);
     }
 
     public boolean getOpaque() {
@@ -689,7 +673,7 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
     }
 
     public int getCloudSize() {
-        int size = dataManager.get(SCALE);
+        int size = dataTracker.get(SCALE);
         updateSize(size);
         return size;
     }
@@ -709,6 +693,6 @@ public class EntityCloud extends EntityFlying implements IAnimals, IInAnimate {
     public void setCloudSize(int val) {
         val = Math.max(1, val);
         updateSize(val);
-        dataManager.set(SCALE, val);
+        dataTracker.set(SCALE, val);
     }
 }

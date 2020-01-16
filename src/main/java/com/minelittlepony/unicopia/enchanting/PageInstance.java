@@ -6,20 +6,20 @@ import javax.annotation.Nullable;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 class PageInstance implements IPage {
 
     int index;
 
     @Nullable
-    ResourceLocation parent;
+    Identifier parent;
 
     @Nonnull
-    ResourceLocation name;
+    Identifier name;
 
     @Nonnull
-    ResourceLocation texture;
+    Identifier texture;
 
     @Nullable
     IUnlockCondition<IUnlockEvent> condition;
@@ -27,11 +27,11 @@ class PageInstance implements IPage {
     @Expose
     PageState state = PageState.LOCKED;
 
-    PageInstance(ResourceLocation id, JsonObject json) {
+    PageInstance(Identifier id, JsonObject json) {
         this.name = id;
 
         if (json.has("parent")) {
-            parent = new ResourceLocation(json.get("parent").getAsString());
+            parent = new Identifier(json.get("parent").getAsString());
         }
 
         if (json.has("state")) {
@@ -52,7 +52,7 @@ class PageInstance implements IPage {
             loc[0] = id.getNamespace();
         }
 
-        texture = new ResourceLocation(loc[0], String.format("textures/pages/%s.png", loc[1]));
+        texture = new Identifier(loc[0], String.format("textures/pages/%s.png", loc[1]));
     }
 
     @Override
@@ -61,12 +61,12 @@ class PageInstance implements IPage {
     }
 
     @Override
-    public ResourceLocation getName() {
+    public Identifier getName() {
         return name;
     }
 
     @Override
-    public ResourceLocation getTexture() {
+    public Identifier getTexture() {
         return texture;
     }
 

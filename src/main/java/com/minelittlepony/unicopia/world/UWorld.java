@@ -10,8 +10,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.minelittlepony.jumpingcastle.Exceptions;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.structure.CloudDungeon;
-import com.minelittlepony.unicopia.structure.GroundDungeon;
+import com.minelittlepony.unicopia.world.structure.CloudDungeon;
+import com.minelittlepony.unicopia.world.structure.GroundDungeon;
 
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;

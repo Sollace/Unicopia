@@ -5,7 +5,7 @@ import java.util.Iterator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.util.ClassInheritanceMultiMap;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.DifficultyInstance;
@@ -26,7 +26,7 @@ public class EntityWildCloud extends EntityCloud {
 
     @Override
     public boolean isNotColliding() {
-        AxisAlignedBB boundingbox = getEntityBoundingBox();
+        Box boundingbox = getEntityBoundingBox();
 
         return checkNoEntityCollision(boundingbox, this)
                 && world.canBlockSeeSky(new BlockPos(this))
@@ -35,11 +35,11 @@ public class EntityWildCloud extends EntityCloud {
     }
 
     /**
-     * Returns true if there are no solid, live entities in the specified AxisAlignedBB, excluding the given entity
+     * Returns true if there are no solid, live entities in the specified Box, excluding the given entity
      *
-     * @ref World.checkNoEntityCollision(AxisAlignedBB area, Entity entity)
+     * @ref World.checkNoEntityCollision(Box area, Entity entity)
      */
-    public boolean checkNoEntityCollision(AxisAlignedBB area, Entity entity) {
+    public boolean checkNoEntityCollision(Box area, Entity entity) {
 
         for (Entity i : world.getEntitiesWithinAABBExcludingEntity(entity, area)) {
             if (!i.isDead && (i.preventEntitySpawning || i instanceof EntityCloud) && (!entity.isRiding() || !entity.isRidingOrBeingRiddenBy(i))) {

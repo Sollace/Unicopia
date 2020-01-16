@@ -11,7 +11,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -22,28 +22,28 @@ public class BlockCloudBanister extends BlockCloudFence {
     public static final double d = 5/16D;
     public static final double h = 2/16D;
 
-    public static final AxisAlignedBB SOUTH_AABB = new AxisAlignedBB(d, 0, l, l, h, 1);
-    public static final AxisAlignedBB WEST_AABB = new AxisAlignedBB(0, 0, d, d, h, l);
-    public static final AxisAlignedBB NORTH_AABB = new AxisAlignedBB(d, 0, 0, l, h, d);
-    public static final AxisAlignedBB EAST_AABB = new AxisAlignedBB(l, 0, d, 1, h, l);
+    public static final Box SOUTH_AABB = new Box(d, 0, l, l, h, 1);
+    public static final Box WEST_AABB = new Box(0, 0, d, d, h, l);
+    public static final Box NORTH_AABB = new Box(d, 0, 0, l, h, d);
+    public static final Box EAST_AABB = new Box(l, 0, d, 1, h, l);
 
-    public static final AxisAlignedBB[] BOUNDING_BOXES = new AxisAlignedBB[] {
-            new AxisAlignedBB(d, 0, d, l, h, l),
-            new AxisAlignedBB(d, 0, d, l, h, 1),
-            new AxisAlignedBB(0, 0, d, l, h, l),
-            new AxisAlignedBB(0, 0, d, l, h, 1),
-            new AxisAlignedBB(d, 0, 0, l, h, l),
-            new AxisAlignedBB(d, 0, 0, l, h, 1),
-            new AxisAlignedBB(0, 0, 0, l, h, l),
-            new AxisAlignedBB(0, 0, 0, l, h, 1),
-            new AxisAlignedBB(d, 0, d, 1, h, l),
-            new AxisAlignedBB(d, 0, d, 1, h, 1),
-            new AxisAlignedBB(0, 0, d, 1, h, l),
-            new AxisAlignedBB(0, 0, d, 1, h, 1),
-            new AxisAlignedBB(d, 0, 0, 1, h, l),
-            new AxisAlignedBB(d, 0, 0, 1, h, 1),
-            new AxisAlignedBB(0, 0, 0, 1, h, l),
-            new AxisAlignedBB(0, 0, 0, 1, h, 1)
+    public static final Box[] BOUNDING_BOXES = new Box[] {
+            new Box(d, 0, d, l, h, l),
+            new Box(d, 0, d, l, h, 1),
+            new Box(0, 0, d, l, h, l),
+            new Box(0, 0, d, l, h, 1),
+            new Box(d, 0, 0, l, h, l),
+            new Box(d, 0, 0, l, h, 1),
+            new Box(0, 0, 0, l, h, l),
+            new Box(0, 0, 0, l, h, 1),
+            new Box(d, 0, d, 1, h, l),
+            new Box(d, 0, d, 1, h, 1),
+            new Box(0, 0, d, 1, h, l),
+            new Box(0, 0, d, 1, h, 1),
+            new Box(d, 0, 0, 1, h, l),
+            new Box(d, 0, 0, 1, h, 1),
+            new Box(0, 0, 0, 1, h, l),
+            new Box(0, 0, 0, 1, h, 1)
     };
 
     public BlockCloudBanister(Material material, String domain, String name) {
@@ -73,7 +73,7 @@ public class BlockCloudBanister extends BlockCloudFence {
 
     @Deprecated
     @Override
-    public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
+    public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
         if (!getCanInteract(state, entity)) {
             return;
         }
@@ -110,7 +110,7 @@ public class BlockCloudBanister extends BlockCloudFence {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+    public Box getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         state = state.getActualState(source, pos);
         return BOUNDING_BOXES[getBoundingBoxIdx(state)];
     }

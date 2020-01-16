@@ -12,7 +12,7 @@ public final class WorldHelper {
      * Nighttime = 0
      */
     public static float getDaylightBrightness(World w, float partialTicks) {
-        float celst = w.getCelestialAngle(partialTicks);
+        float celst = w.getSkyAngle(partialTicks);
 
         // ----------------------------
         // 0 |          0.5      |      1
@@ -53,7 +53,7 @@ public final class WorldHelper {
      * Daytime = 0
      */
     public static float getLunarBrightness(World w, float partialTicks) {
-        float celst = w.getCelestialAngle(partialTicks);
+        float celst = w.getSkyAngle(partialTicks);
 
         // ----------------------------
         // 0 |          0.5      |      1

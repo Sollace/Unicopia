@@ -6,9 +6,9 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.init.UBlocks;
+import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.item.ItemMoss;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -20,7 +20,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -146,7 +146,7 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
     }
 
     @Deprecated
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
         if (getCanInteract(state, entity)) {
             super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, p_185477_7_);
         }
@@ -177,7 +177,7 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
 
     @Override
     public boolean canBeTilled(ItemStack hoe, EntityPlayer player, World world, IBlockState state, BlockPos pos) {
-        return PlayerSpeciesList.instance().getPlayer(player).getPlayerSpecies().canInteractWithClouds()
+        return SpeciesList.instance().getPlayer(player).getSpecies().canInteractWithClouds()
                 && ITillable.super.canBeTilled(hoe, player, world, state, pos);
     }
 

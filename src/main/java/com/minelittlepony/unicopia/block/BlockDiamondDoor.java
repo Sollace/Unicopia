@@ -38,7 +38,7 @@ public class BlockDiamondDoor extends UDoor {
     @Override
     protected boolean onPowerStateChanged(World world, IBlockState state, BlockPos pos, boolean powered) {
         if (state.getValue(OPEN)) {
-            world.setBlockState(pos, state.withProperty(OPEN, false), 2);
+            world.setBlockState(pos, state.with(OPEN, false), 2);
 
             return true;
         }

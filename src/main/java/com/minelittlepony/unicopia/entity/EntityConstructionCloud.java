@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -44,7 +44,7 @@ public class EntityConstructionCloud extends EntityCloud {
                     return EnumActionResult.FAIL;
                 }
 
-                ItemStack stack = player.getHeldItem(hand);
+                ItemStack stack = player.getStackInHand(hand);
 
                 if (stack != null) {
                     if (stack.getItem() instanceof ItemBlock || stack.getItem() == Items.SPAWN_EGG && stack.getItemDamage() == EntityList.getID(EntityCloud.class)) {
@@ -59,11 +59,11 @@ public class EntityConstructionCloud extends EntityCloud {
     }
 
     private void placeBlock(EntityPlayer player, ItemStack stack, EnumHand hand) {
-        if (!world.isRemote || !(player instanceof EntityPlayerSP)) {
+        if (!world.isClient || !(player instanceof EntityPlayerSP)) {
             return;
         }
 
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = MinecraftClient.getInstance();
 
         double distance = mc.playerController.getBlockReachDistance();
 
@@ -73,7 +73,7 @@ public class EntityConstructionCloud extends EntityCloud {
         Vec3d look = player.getLook(ticks);
         Vec3d ray = eye.add(look.x * distance, look.y * distance, look.z * distance);
 
-        AxisAlignedBB bounds = getEntityBoundingBox();
+        Box bounds = getEntityBoundingBox();
 
         float s = 0.5F;
         RayTraceResult trace = bounds

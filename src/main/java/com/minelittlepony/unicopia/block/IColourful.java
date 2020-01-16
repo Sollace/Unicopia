@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.block;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 
 @FunctionalInterface
 public interface IColourful {
-    int getCustomTint(IBlockState state, int tint);
+    int getCustomTint(BlockState state, int tint);
 }

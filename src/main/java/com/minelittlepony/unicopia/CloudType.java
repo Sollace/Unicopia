@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia;
 import com.minelittlepony.unicopia.entity.EntityCloud;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 
 public enum CloudType {
     NORMAL,
@@ -20,22 +20,22 @@ public enum CloudType {
             return true;
         }
 
-        if (e instanceof EntityPlayer) {
+        if (e instanceof PlayerEntity) {
 
             if (this == PACKED) {
                 return true;
             }
 
-            return Predicates.INTERACT_WITH_CLOUDS.test((EntityPlayer)e)
-                || (Predicates.MAGI.test(e) && EntityCloud.getFeatherEnchantStrength((EntityPlayer)e) > 0);
+            return Predicates.INTERACT_WITH_CLOUDS.test((PlayerEntity)e)
+                || (Predicates.MAGI.test(e) && EntityCloud.getFeatherEnchantStrength((PlayerEntity)e) > 0);
         }
 
-        if (e instanceof EntityItem) {
-            return Predicates.ITEM_INTERACT_WITH_CLOUDS.test((EntityItem)e);
+        if (e instanceof ItemEntity) {
+            return Predicates.ITEM_INTERACT_WITH_CLOUDS.test((ItemEntity)e);
         }
 
-        if (e instanceof EntityCloud && e.isRiding()) {
-            return canInteract(e.getRidingEntity());
+        if (e instanceof EntityCloud && e.hasVehicle()) {
+            return canInteract(e.getVehicle());
         }
 
         return false;

@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.UClient;
-import com.minelittlepony.unicopia.player.IOwned;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.player.EntityPlayer;

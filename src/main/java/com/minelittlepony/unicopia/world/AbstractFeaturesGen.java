@@ -10,7 +10,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.structure.MapGenStructure;
 
 public abstract class AbstractFeaturesGen extends MapGenStructure {
 
@@ -26,10 +25,10 @@ public abstract class AbstractFeaturesGen extends MapGenStructure {
     public AbstractFeaturesGen(Map<String, String> properties) {
         for (Entry<String, String> entry : properties.entrySet()) {
             if (entry.getKey().equals("distance")) {
-                maxDistance = MathHelper.getInt(entry.getValue(), maxDistance, 9);
+                maxDistance = MathHelper.parseInt(entry.getValue(), maxDistance, 9);
             }
             if (entry.getKey().equals("MinDistance")) {
-                minDistance = MathHelper.getInt(entry.getValue(), minDistance, 9);
+                minDistance = MathHelper.parseInt(entry.getValue(), minDistance, 9);
             }
         }
     }

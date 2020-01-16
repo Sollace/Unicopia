@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.init.UItems;
 
 import net.minecraft.block.SoundType;
 import net.minecraft.entity.EntityLiving;
@@ -10,8 +10,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.TrackedData;
+import net.minecraft.network.datasync.TrackedDataHandlerRegistry;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
@@ -24,9 +24,9 @@ import net.minecraft.world.World;
 
 public class EntitySpellbook extends EntityLiving implements IMagicals {
 
-    private static final DataParameter<Boolean> OPENED = EntityDataManager.createKey(EntitySpellbook.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<Boolean> ALTERED = EntityDataManager.createKey(EntitySpellbook.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<Byte> OPENED_USER = EntityDataManager.createKey(EntitySpellbook.class, DataSerializers.BYTE);
+    private static final TrackedData<Boolean> OPENED = DataTracker.registerData(EntitySpellbook.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> ALTERED = DataTracker.registerData(EntitySpellbook.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Byte> OPENED_USER = DataTracker.registerData(EntitySpellbook.class, TrackedDataHandlerRegistry.BYTE);
 
     public EntitySpellbook(World worldIn) {
         super(worldIn);
@@ -39,8 +39,8 @@ public class EntitySpellbook extends EntityLiving implements IMagicals {
     }
 
     @Override
-    protected void entityInit() {
-        super.entityInit();
+    protected void initDataTracker() {
+        super.initDataTracker();
         dataManager.register(OPENED, true);
         dataManager.register(OPENED_USER, (byte)1);
         dataManager.register(ALTERED, false);
@@ -91,7 +91,7 @@ public class EntitySpellbook extends EntityLiving implements IMagicals {
         boolean open = getIsOpen();
         this.isJumping = open && isInWater();
         super.onUpdate();
-        if (open && world.isRemote) {
+        if (open && world.isClient) {
 
             for (int offX = -2; offX <= 1; ++offX) {
                 for (int offZ = -2; offZ <= 1; ++offZ) {
@@ -135,7 +135,7 @@ public class EntitySpellbook extends EntityLiving implements IMagicals {
 
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
-        if (!world.isRemote) {
+        if (!world.isClient) {
             setDead();
 
             SoundType sound = SoundType.WOOD;

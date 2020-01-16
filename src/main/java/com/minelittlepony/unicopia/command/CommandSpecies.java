@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.SpeciesList;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -56,7 +56,7 @@ class CommandSpecies extends CommandBase {
 
         int playerIndex = this.getPlayerIndex(args);
 
-        EntityPlayerMP player = args.length > playerIndex ? getPlayer(server, sender, args[playerIndex]) : getCommandSenderAsPlayer(sender);
+        ServerPlayerEntity player = args.length > playerIndex ? getPlayer(server, sender, args[playerIndex]) : getCommandSenderAsPlayer(sender);
 
         if (args.length >= 2) {
             switch (args[0]) {
@@ -91,8 +91,8 @@ class CommandSpecies extends CommandBase {
 
                 player.sendMessage(message);
             }
-        } else if (PlayerSpeciesList.instance().speciesPermitted(species, player)) {
-            PlayerSpeciesList.instance().getPlayer(player).setPlayerSpecies(species);
+        } else if (SpeciesList.instance().speciesPermitted(species, player)) {
+            SpeciesList.instance().getPlayer(player).setSpecies(species);
 
             ITextComponent formattedName = new TextComponentTranslation(species.name().toLowerCase());
 
@@ -112,7 +112,7 @@ class CommandSpecies extends CommandBase {
     }
 
     protected boolean printSpecies(ICommandSender sender, EntityPlayer player) {
-        Race spec = PlayerSpeciesList.instance().getPlayer(player).getPlayerSpecies();
+        Race spec = SpeciesList.instance().getPlayer(player).getSpecies();
 
         String name = "commands.race.tell.";
         name += player == sender ? "self" : "other";
@@ -136,7 +136,7 @@ class CommandSpecies extends CommandBase {
 
         boolean first = true;
         for (Race i : Race.values()) {
-            if (!i.isDefault() && PlayerSpeciesList.instance().speciesPermitted(i, player)) {
+            if (!i.isDefault() && SpeciesList.instance().speciesPermitted(i, player)) {
                 message.appendSibling(new TextComponentString((!first ? "\n" : "") + " - " + i.name().toLowerCase()));
                 first = false;
             }
@@ -191,7 +191,7 @@ class CommandSpecies extends CommandBase {
             EntityPlayer player = sender instanceof EntityPlayer ? (EntityPlayer)sender : null;
 
             for (Race i : Race.values()) {
-                if (args[0].contentEquals("describe") || (!i.isDefault() && PlayerSpeciesList.instance().speciesPermitted(i, player))) {
+                if (args[0].contentEquals("describe") || (!i.isDefault() && SpeciesList.instance().speciesPermitted(i, player))) {
                     names.add(i.name().toLowerCase());
                 }
             }

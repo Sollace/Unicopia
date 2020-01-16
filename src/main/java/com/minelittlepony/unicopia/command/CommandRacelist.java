@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.SpeciesList;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -48,7 +48,7 @@ class CommandRacelist extends CommandBase {
         } else if (args[0].contentEquals("allow")) {
             String translationKey = "commands.racelist.allowed";
 
-            if (!PlayerSpeciesList.instance().whiteListRace(race)) {
+            if (!SpeciesList.instance().whiteListRace(race)) {
                 translationKey += ".failed";
             }
 
@@ -62,7 +62,7 @@ class CommandRacelist extends CommandBase {
         } else if (args[0].contentEquals("disallow")) {
             String translationKey = "commands.racelist.disallowed";
 
-            if (!PlayerSpeciesList.instance().unwhiteListRace(race)) {
+            if (!SpeciesList.instance().unwhiteListRace(race)) {
                 translationKey += ".failed";
             }
 

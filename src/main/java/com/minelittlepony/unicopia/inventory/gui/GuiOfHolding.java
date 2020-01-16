@@ -2,17 +2,14 @@ package com.minelittlepony.unicopia.inventory.gui;
 
 import java.io.IOException;
 
-import com.minelittlepony.unicopia.inventory.ContainerOfHolding;
+import com.mojang.blaze3d.platform.GlStateManager;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.IInteractionObject;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen9;
+import net.minecraft.util.Identifier;
 
-public class GuiOfHolding extends GuiContainer {
-    private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
+public class GuiOfHolding extends ContainerScreen9 {
+    private static final Identifier CHEST_GUI_TEXTURE = new Identifier("textures/gui/container/generic_54.png");
 
     private final int inventoryRows;
     private final int playerRows;
@@ -20,9 +17,9 @@ public class GuiOfHolding extends GuiContainer {
     private final Scrollbar scrollbar = new Scrollbar();
 
     public GuiOfHolding(IInteractionObject interaction) {
-        super(interaction.createContainer(Minecraft.getMinecraft().player.inventory, Minecraft.getMinecraft().player));
+        super(interaction.createContainer(MinecraftClient.getInstance().player.inventory, MinecraftClient.getInstance().player));
 
-        playerRows = Minecraft.getMinecraft().player.inventory.getSizeInventory() / 9;
+        playerRows = MinecraftClient.getInstance().player.inventory.getSizeInventory() / 9;
         inventoryRows = (inventorySlots.inventorySlots.size() / 9) - 1;
     }
 
@@ -53,7 +50,7 @@ public class GuiOfHolding extends GuiContainer {
         int scroll = -scrollbar.getScrollAmount();
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(0, scroll, 0);
+        GlStateManager.translatef(0, scroll, 0);
 
         super.drawScreen(mouseX, mouseY - scroll, partialTicks);
 
@@ -95,7 +92,7 @@ public class GuiOfHolding extends GuiContainer {
 
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        GlStateManager.color(1, 1, 1, 1);
+        GlStateManager.color4f(1, 1, 1, 1);
 
         mc.getTextureManager().bindTexture(CHEST_GUI_TEXTURE);
 

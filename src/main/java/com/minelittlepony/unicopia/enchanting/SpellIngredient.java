@@ -146,7 +146,7 @@ public interface SpellIngredient {
                 ItemStack stack = new ItemStack(item, size, metadata);
 
                 if (spell != null) {
-                    stack = SpellRegistry.instance().enchantStack(stack, spell);
+                    stack = SpellRegistry.getInstance().enchantStack(stack, spell);
                 }
 
                 return new Single(stack, !(json.has("spell") || json.has("data")));

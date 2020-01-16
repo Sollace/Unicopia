@@ -3,32 +3,31 @@ package com.minelittlepony.unicopia.block;
 import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.UClient;
-import com.minelittlepony.unicopia.forgebullshit.FUF;
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockBed;
-import net.minecraft.block.BlockChest;
-import net.minecraft.block.BlockFalling;
-import net.minecraft.block.BlockTorch;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ChestBlock;
+import net.minecraft.block.FallingBlock;
+import net.minecraft.block.TorchBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public interface ICloudBlock {
 
-    CloudType getCloudMaterialType(IBlockState blockState);
+    CloudType getCloudMaterialType(BlockState blockState);
 
-    default boolean handleRayTraceSpecialCases(World world, BlockPos pos, IBlockState state) {
-        if (world.isRemote) {
-            EntityPlayer player = UClient.instance().getPlayer();
+    default boolean handleRayTraceSpecialCases(World world, BlockPos pos, BlockState state) {
+        if (world.isClient) {
+            PlayerEntity player = UClient.instance().getPlayer();
 
-            if (player.capabilities.isCreativeMode) {
+            if (player.abilities.creativeMode) {
                 return false;
             }
 
@@ -38,20 +37,21 @@ public interface ICloudBlock {
 
             CloudType type = getCloudMaterialType(state);
 
-            ItemStack main = player.getHeldItemMainhand();
+            ItemStack main = player.getMainHandStack();
             if (main.isEmpty()) {
-                main = player.getHeldItemOffhand();
+                main = player.getOffHandStack();
             }
 
-            if (!main.isEmpty() && main.getItem() instanceof ItemBlock) {
-                Block block = ((ItemBlock)main.getItem()).getBlock();
+            if (!main.isEmpty() && main.getItem() instanceof BlockItem) {
+                Block block = ((BlockItem)main.getItem()).getBlock();
+                BlockState heldState = block.getDefaultState();
 
-                if (block == null || block == Blocks.AIR) {
+                if (block == null || block.isAir(heldState)) {
                     return false;
                 }
 
                 if (block instanceof ICloudBlock) {
-                    CloudType other = ((ICloudBlock)block).getCloudMaterialType(block.getDefaultState());
+                    CloudType other = ((ICloudBlock)block).getCloudMaterialType(heldState);
 
                     if (other.canInteract(player)) {
                         return false;
@@ -72,14 +72,14 @@ public interface ICloudBlock {
     }
 
     default boolean isPlacementExcempt(Block block) {
-        return block instanceof BlockTorch
-            || block instanceof BlockBed
-            || block instanceof BlockChest;
+        return block instanceof TorchBlock
+            || block instanceof BedBlock
+            || block instanceof ChestBlock;
     }
 
     default boolean applyLanding(Entity entity, float fallDistance) {
         if (!entity.isSneaking()) {
-            entity.fall(fallDistance, 0);
+            entity.handleFallDamage(fallDistance, 0);
 
             return false;
         }
@@ -88,12 +88,17 @@ public interface ICloudBlock {
     }
 
     default boolean applyRebound(Entity entity) {
-        if (!entity.isSneaking() && entity.motionY < 0) {
-            if (Math.abs(entity.motionY) >= 0.25) {
-                entity.motionY = -entity.motionY * 1.2;
+
+        Vec3d vel = entity.getVelocity();
+        double y = vel.y;
+
+        if (!entity.isSneaking() && y < 0) {
+            if (Math.abs(y) >= 0.25) {
+                y = -y * 1.2;
             } else {
-                entity.motionY = 0;
+                y = 0;
             }
+            entity.setVelocity(vel.x, y, vel.z);
 
             return true;
         }
@@ -101,13 +106,17 @@ public interface ICloudBlock {
         return false;
     }
 
-    default boolean applyBouncyness(IBlockState state, Entity entity) {
+    default boolean applyBouncyness(BlockState state, Entity entity) {
         if (getCanInteract(state, entity)) {
-            if (!entity.isSneaking() && Math.abs(entity.motionY) >= 0.25) {
-                entity.motionY += 0.0155 * (entity.fallDistance < 1 ? 1 : entity.fallDistance);
+            Vec3d vel = entity.getVelocity();
+            double y = vel.y;
+
+            if (!entity.isSneaking() && Math.abs(y) >= 0.25) {
+                y += 0.0155 * (entity.fallDistance < 1 ? 1 : entity.fallDistance);
             } else {
-                entity.motionY = 0;
+                y = 0;
             }
+            entity.setVelocity(vel.x, y, vel.z);
 
             return true;
         }
@@ -116,9 +125,9 @@ public interface ICloudBlock {
     }
 
 
-    default boolean getCanInteract(IBlockState state, Entity e) {
+    default boolean getCanInteract(BlockState state, Entity e) {
         if (getCloudMaterialType(state).canInteract(e)) {
-            if (e instanceof EntityItem) {
+            if (e instanceof ItemEntity) {
                 // @FUF(reason = "There is no TickEvents.EntityTickEvent. Waiting on mixins...")
                 e.setNoGravity(true);
             }
@@ -128,7 +137,7 @@ public interface ICloudBlock {
         return false;
     }
 
-    default boolean isDense(IBlockState blockState) {
+    default boolean isDense(BlockState blockState) {
         return getCloudMaterialType(blockState) != CloudType.NORMAL;
     }
 
@@ -139,14 +148,15 @@ public interface ICloudBlock {
      * @param pos   The current position
      *
      * @return True to allow blocks to pass.
+     *
+     * @fuf Hacked until we can get mixins to implement a proper hook
      */
-    @FUF(reason = "Hacked until we can get mixins to implement a proper hook")
-    default boolean allowsFallingBlockToPass(IBlockState state, IBlockAccess world, BlockPos pos) {
+    default boolean allowsFallingBlockToPass(BlockState state, BlockView world, BlockPos pos) {
         if (isDense(state)) {
             return false;
         }
 
         Block above = world.getBlockState(pos.up()).getBlock();
-        return !(above instanceof ICloudBlock) && above instanceof BlockFalling;
+        return !(above instanceof ICloudBlock) && above instanceof FallingBlock;
     }
 }

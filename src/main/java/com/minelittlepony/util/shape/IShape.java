@@ -1,6 +1,9 @@
 package com.minelittlepony.util.shape;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import com.minelittlepony.util.Iterators;
 
 import net.minecraft.util.math.Vec3d;
 
@@ -18,54 +21,70 @@ public interface IShape {
      *
      * @return This Shape
      */
-    public IShape setRotation(float u, float v);
+    IShape setRotation(float u, float v);
 
     /**
      * Get the volume of space filled by this shape, or the surface area if hollow.
      *
      * @return double volume
      */
-    public double getVolumeOfSpawnableSpace();
+    double getVolumeOfSpawnableSpace();
 
     /**
      * X offset from the shape's origin.
      *
      * @return X
      */
-    public double getXOffset();
+    double getXOffset();
 
     /**
      * Y offset from the shape's origin.
      *
      * @return Y
      */
-    public double getYOffset();
+    double getYOffset();
 
     /**
      * Z offset from the shape's origin.
      *
      * @return Z
      */
-    public double getZOffset();
+    double getZOffset();
 
     /**
      * Gets the lower bounds of the region occupied by this shape.
      */
-    public Vec3d getLowerBound();
+    Vec3d getLowerBound();
 
     /**
      * Gets the upper bound of the region occupied by this shape.
      */
-    public Vec3d getUpperBound();
+    Vec3d getUpperBound();
 
     /**
      * Computes a random coordinate that falls within this shape's designated area.
      */
-    public Vec3d computePoint(Random rand);
+    Vec3d computePoint(Random rand);
 
     /**
      * Checks if the given point is on the edge, or if not hollow the inside, of this shape.
      * @return
      */
-    public boolean isPointInside(Vec3d point);
+    boolean isPointInside(Vec3d point);
+
+    /**
+     * Returns a sequence of N random points.
+     */
+    default Iterators<Vec3d> randomPoints(int n, Random rand) {
+        AtomicInteger atom = new AtomicInteger(n);
+        return Iterators.iterate(() -> {
+            if (atom.get() <= 0) {
+                return null;
+            }
+
+            atom.decrementAndGet();
+
+            return computePoint(rand);
+        });
+    }
 }

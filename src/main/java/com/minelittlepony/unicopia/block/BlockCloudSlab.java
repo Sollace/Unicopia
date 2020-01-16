@@ -6,20 +6,18 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.forgebullshit.FUF;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockStairs;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Material;
+import net.minecraft.block.StairsBlock;
+import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public abstract class BlockCloudSlab<T extends Block & ICloudBlock> extends USlab<T> implements ICloudBlock {
@@ -30,19 +28,19 @@ public abstract class BlockCloudSlab<T extends Block & ICloudBlock> extends USla
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean isTopSolid(IBlockState state) {
+    public boolean isTopSolid(BlockState state) {
         return getCloudMaterialType(state) == CloudType.ENCHANTED && super.isTopSolid(state);
     }
 
     @SuppressWarnings("deprecation")
     @FUF(reason = "...Really?")
-    public boolean isSideSolid(IBlockState base_state, IBlockAccess world, BlockPos pos, EnumFacing side) {
+    public boolean isSideSolid(BlockState base_state, BlockAccess world, BlockPos pos, Direction side) {
         return getCloudMaterialType(base_state) == CloudType.ENCHANTED && super.isSideSolid(base_state, world, pos, side);
     }
 
     @Override
     @Deprecated
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
+    public void addCollisionBoxToList(BlockState state, World worldIn, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
         if (getCanInteract(state, entity)) {
             super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, p_185477_7_);
         }
@@ -58,7 +56,7 @@ public abstract class BlockCloudSlab<T extends Block & ICloudBlock> extends USla
     }
 
     @Override
-    public CloudType getCloudMaterialType(IBlockState blockState) {
+    public CloudType getCloudMaterialType(BlockState blockState) {
         return modelBlock.getCloudMaterialType(blockState);
     }
 
@@ -78,32 +76,30 @@ public abstract class BlockCloudSlab<T extends Block & ICloudBlock> extends USla
         }
 
         @Override
-        public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
-
-            IBlockState beside = world.getBlockState(pos.offset(face));
+        public boolean isSideInvisible(BlockState state, BlockState beside, Direction face) {
 
             if (beside.getBlock() instanceof ICloudBlock) {
                 ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
 
                 if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
 
-                    EnumBlockHalf half = state.getValue(HALF);
+                    BlockHalf half = state.get(HALF);
 
                     if (beside.getBlock() instanceof BlockCloudStairs) {
-                        return beside.getValue(BlockStairs.HALF).ordinal() == state.getValue(HALF).ordinal()
-                           && beside.getValue(BlockStairs.FACING) == face;
+                        return beside.get(StairsBlock.HALF).ordinal() == state.get(HALF).ordinal()
+                           && beside.get(Properties.FACING) == face;
                     }
 
-                    if (face == EnumFacing.DOWN) {
-                        return half == EnumBlockHalf.BOTTOM;
+                    if (face == Direction.DOWN) {
+                        return half == BlockHalf.BOTTOM;
                     }
 
-                    if (face == EnumFacing.UP) {
-                        return half == EnumBlockHalf.TOP;
+                    if (face == Direction.UP) {
+                        return half == BlockHalf.TOP;
                     }
 
                     if (beside.getBlock() == this) {
-                        return beside.getValue(HALF) == state.getValue(HALF);
+                        return beside.get(HALF) == state.get(HALF);
                     }
                 }
             }

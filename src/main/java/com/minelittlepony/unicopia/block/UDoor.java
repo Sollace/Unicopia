@@ -8,20 +8,21 @@ import javax.annotation.Nullable;
 import com.minelittlepony.util.WorldEvent;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDoor;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.DoorBlock;
+import net.minecraft.block.Material;
+import net.minecraft.block.enums.DoubleBlockHalf;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.item.Items;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public abstract class UDoor extends BlockDoor {
+public abstract class UDoor extends DoorBlock {
 
     private final Supplier<Item> theItem;
 
@@ -40,12 +41,12 @@ public abstract class UDoor extends BlockDoor {
     }
 
     @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+    public Item getItemDropped(BlockState state, Random rand, int fortune) {
         return state.getValue(HALF) == BlockDoor.EnumDoorHalf.UPPER ? Items.AIR : getItem();
     }
 
     @Override
-    public ItemStack getItem(World world, BlockPos pos, IBlockState state) {
+    public ItemStack getItem(World world, BlockPos pos, BlockState state) {
         return new ItemStack(getItem());
     }
 
@@ -62,33 +63,33 @@ public abstract class UDoor extends BlockDoor {
     }
 
     @Override
-    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return toggleDoor(world, pos, false, true, player);
     }
 
     @Override
-    public void toggleDoor(World world, BlockPos pos, boolean open) {
+    public void setOpen(World world, BlockPos pos, boolean open) {
         toggleDoor(world, pos, open, false, null);
     }
 
     protected boolean isLockable() {
-        return material == Material.IRON;
+        return material == Material.METAL;
     }
 
     protected boolean canBePowered() {
         return true;
     }
 
-    protected boolean canOpen(@Nullable EntityPlayer player) {
-        return player == null || material != Material.IRON;
+    protected boolean canOpen(@Nullable PlayerEntity player) {
+        return player == null || material != Material.METAL;
     }
 
-    protected boolean toggleDoor(World world, BlockPos pos, boolean open, boolean force, @Nullable EntityPlayer player) {
+    protected boolean toggleDoor(World world, BlockPos pos, boolean open, boolean force, @Nullable PlayerEntity player) {
         if (!canOpen(player)) {
             return false;
         }
 
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
 
         if (state.getBlock() != this) {
             return false;
@@ -96,17 +97,17 @@ public abstract class UDoor extends BlockDoor {
 
         BlockPos lower = getPrimaryDoorPos(state, pos);
 
-        IBlockState mainDoor = pos == lower ? state : world.getBlockState(lower);
+        BlockState mainDoor = pos == lower ? state : world.getBlockState(lower);
 
         if (mainDoor.getBlock() != this) {
             return false;
         }
 
-        if (!force && mainDoor.getValue(OPEN) == open) {
+        if (!force && mainDoor.get(OPEN) == open) {
             return false;
         }
 
-        state = mainDoor.cycleProperty(OPEN);
+        state = mainDoor.cycle(OPEN);
 
         world.setBlockState(lower, state, 10);
 
@@ -119,22 +120,22 @@ public abstract class UDoor extends BlockDoor {
         return true;
     }
 
-    protected BlockPos getPrimaryDoorPos(IBlockState state, BlockPos pos) {
-        return state.getValue(HALF) == BlockDoor.EnumDoorHalf.LOWER ? pos : pos.down();
+    protected BlockPos getPrimaryDoorPos(BlockState state, BlockPos pos) {
+        return state.get(HALF) == DoubleBlockHalf.LOWER ? pos : pos.down();
     }
 
     @Override
-    public void neighborChanged(IBlockState state, World world, BlockPos pos, Block sender, BlockPos fromPos) {
-        if (state.getValue(HALF) == BlockDoor.EnumDoorHalf.UPPER) {
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sender, BlockPos fromPos, boolean v) {
+        if (state.get(HALF) == DoubleBlockHalf.UPPER) {
             BlockPos lower = pos.down();
 
-            IBlockState lowerDoor = world.getBlockState(lower);
+            BlockState lowerDoor = world.getBlockState(lower);
 
             // pop us off if we don't have a lower door
             if (lowerDoor.getBlock() != this) {
-                world.setBlockToAir(pos);
+                world.breakBlock(pos, true);
             } else if (sender != this) {
-                lowerDoor.neighborChanged(world, lower, sender, fromPos);
+                lowerDoor.neighborUpdate(world, lower, sender, fromPos, v);
             }
 
             return;
@@ -143,41 +144,41 @@ public abstract class UDoor extends BlockDoor {
         boolean destroyed = false;
 
         BlockPos upper = pos.up();
-        IBlockState upperDoor = world.getBlockState(upper);
+        BlockState upperDoor = world.getBlockState(upper);
 
         // pop us off if we don't have an upper door
         if (upperDoor.getBlock() != this) {
-            world.setBlockToAir(pos);
+            world.breakBlock(pos, true);
             destroyed = true;
         }
 
         // pop us off if we don't have support
-        if (!world.getBlockState(pos.down()).isSideSolid(world,  pos.down(), EnumFacing.UP)) {
-            world.setBlockToAir(pos);
+        if (!world.getBlockState(pos.down()).hasSolidTopSurface(world,  pos.down(), null)) {
+            world.breakBlock(pos, true);
 
             destroyed = true;
 
             if (upperDoor.getBlock() == this) {
-                world.setBlockToAir(upper);
+                world.breakBlock(upper, true);
             }
         }
 
         if (destroyed) {
-            if (!world.isRemote) {
+            if (!world.isClient) {
                 dropBlockAsItem(world, pos, state, 0);
             }
         } else if (canBePowered()) {
-            boolean powered = world.isBlockPowered(pos) || world.isBlockPowered(upper);
+            boolean powered = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(upper);
 
-            if (sender != this && (powered || sender.getDefaultState().canProvidePower()) && powered != upperDoor.getValue(POWERED)) {
-                world.setBlockState(upper, upperDoor.withProperty(POWERED, powered), 2);
+            if (sender != this && (powered || sender.getDefaultState().emitsRedstonePower()) && powered != upperDoor.get(POWERED)) {
+                world.setBlockState(upper, upperDoor.with(POWERED, powered), 2);
 
                 if (onPowerStateChanged(world, state, pos, powered)) {
                     world.markBlockRangeForRenderUpdate(pos, upper);
 
                     WorldEvent sound = powered ? getOpenSound() : getCloseSound();
 
-                    world.playEvent(null, sound.getId(), pos, 0);
+                    world.playGlobalEvent(null, sound.getId(), pos, 0);
                 }
             }
         }
@@ -186,9 +187,9 @@ public abstract class UDoor extends BlockDoor {
     /**
      * Called by the lower block when the powered state changes.
      */
-    protected boolean onPowerStateChanged(World world, IBlockState state, BlockPos pos, boolean powered) {
-        if (powered != state.getValue(OPEN)) {
-            world.setBlockState(pos, state.withProperty(OPEN, powered), 2);
+    protected boolean onPowerStateChanged(World world, BlockState state, BlockPos pos, boolean powered) {
+        if (powered != state.get(OPEN)) {
+            world.setBlockState(pos, state.with(OPEN, powered), 2);
 
             return true;
         }

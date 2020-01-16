@@ -13,7 +13,7 @@ import com.minelittlepony.util.lang.ClientLocale;
 import net.minecraft.block.Block;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.player.EntityPlayer;
@@ -63,7 +63,7 @@ public class ItemStaff extends ItemSword {
     }
 
     @Override
-    public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
+    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         super.hitEntity(stack, target, attacker);
 
         if (Predicates.MAGI.test(attacker)) {
@@ -73,7 +73,7 @@ public class ItemStaff extends ItemSword {
         return false;
     }
 
-    protected boolean castContainedEffect(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
+    protected boolean castContainedEffect(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         target.getEntityWorld().playSound(null, target.getPosition(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, attacker.getSoundCategory(), 1, 1);
 
         target.knockBack(attacker, 2,

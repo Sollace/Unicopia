@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.init.UItems;
+import com.minelittlepony.unicopia.UItems;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;

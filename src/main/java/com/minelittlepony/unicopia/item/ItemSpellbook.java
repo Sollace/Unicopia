@@ -58,7 +58,7 @@ public class ItemSpellbook extends ItemBook {
 
     public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 
-        if (!world.isRemote && Predicates.MAGI.test(player)) {
+        if (!world.isClient && Predicates.MAGI.test(player)) {
             pos = pos.offset(side);
 
             double diffX = player.posX - (pos.getX() + 0.5);
@@ -68,7 +68,7 @@ public class ItemSpellbook extends ItemBook {
             placeBook(world, pos.getX(), pos.getY(), pos.getZ(), yaw);
 
             if (!player.capabilities.isCreativeMode) {
-                player.getHeldItem(hand).shrink(1);
+                player.getStackInHand(hand).shrink(1);
             }
 
             return EnumActionResult.SUCCESS;

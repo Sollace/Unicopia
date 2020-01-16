@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.enchanting;
 
 import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.inventory.InventorySpellBook;
+import com.minelittlepony.unicopia.inventory.gui.SpellBookInventory;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
 import net.minecraft.inventory.IInventory;
@@ -32,16 +32,16 @@ public class SpellRecipe extends AbstractSpecialRecipe {
 
 	@Override
 	public ItemStack getCraftingResult(InventoryCrafting inv) {
-        InventorySpellBook inventory = (InventorySpellBook)inv;
+        SpellBookInventory inventory = (SpellBookInventory)inv;
 
         IInventory craftResult = inventory.getCraftResultMatrix();
         ItemStack stackToEnchant = craftResult.getStackInSlot(0);
 
-        return SpellRegistry.instance().enchantStack(stackToEnchant, spellId);
+        return SpellRegistry.getInstance().enchantStack(stackToEnchant, spellId);
 	}
 
 	@Override
 	public ItemStack getRecipeOutput() {
-		return SpellRegistry.instance().enchantStack(super.getRecipeOutput(), spellId);
+		return SpellRegistry.getInstance().enchantStack(super.getRecipeOutput(), spellId);
 	}
 }

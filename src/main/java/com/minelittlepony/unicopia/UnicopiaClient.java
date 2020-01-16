@@ -6,35 +6,20 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.minelittlepony.gui.Button;
-import com.minelittlepony.jumpingcastle.api.Target;
-import com.minelittlepony.unicopia.entity.EntityFakeClientPlayer;
-import com.minelittlepony.unicopia.extern.MineLP;
-import com.minelittlepony.unicopia.gui.GuiScreenSettings;
-import com.minelittlepony.unicopia.init.UEntities;
-import com.minelittlepony.unicopia.init.UParticles;
-import com.minelittlepony.unicopia.input.Keyboard;
-import com.minelittlepony.unicopia.input.MouseControl;
-import com.minelittlepony.unicopia.input.MovementControl;
-import com.minelittlepony.unicopia.inventory.gui.GuiOfHolding;
+import com.minelittlepony.unicopia.ability.powers.render.DisguiseRenderer;
+import com.minelittlepony.unicopia.client.gui.SettingsScreen;
+import com.minelittlepony.unicopia.client.input.Keyboard;
+import com.minelittlepony.unicopia.client.input.MouseControl;
+import com.minelittlepony.unicopia.client.input.InversionAwareKeyboardInput;
+import com.minelittlepony.unicopia.entity.player.IPlayer;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
-import com.minelittlepony.unicopia.player.IPlayer;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
-import com.minelittlepony.unicopia.render.DisguiseRenderer;
-import com.minelittlepony.util.gui.ButtonGridLayout;
-import com.minelittlepony.util.lang.ClientLocale;
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.input.Input;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MovementInput;
-import net.minecraft.world.IInteractionObject;
-
-import static com.minelittlepony.util.gui.ButtonGridLayout.*;
+import net.minecraft.entity.player.PlayerEntity;
 
 public class UnicopiaClient extends UClient {
 
@@ -50,7 +35,7 @@ public class UnicopiaClient extends UClient {
 
     private static Race getclientPlayerRace() {
         if (!UConfig.instance().ignoresMineLittlePony()
-                && Minecraft.getMinecraft().player != null) {
+                && MinecraftClient.getInstance().player != null) {
             Race race = MineLP.getPlayerPonyRace();
 
             if (!race.isDefault()) {
@@ -62,40 +47,11 @@ public class UnicopiaClient extends UClient {
         return UConfig.instance().getPrefferedRace();
     }
 
-    static void addUniButton(List<GuiButton> buttons) {
-        ButtonGridLayout layout = new ButtonGridLayout(buttons);
-
-        GuiButton uni = new Button(0, 0, 150, 20, ClientLocale.format("gui.unicopia"), b -> {
-            Minecraft mc = Minecraft.getMinecraft();
-
-            mc.displayGuiScreen(new GuiScreenSettings(mc.currentScreen));
-        });
-
-        List<Integer> possibleXCandidates = list(layout.getColumns());
-        List<Integer> possibleYCandidates = list(layout.getRows());
-
-        uni.y = last(possibleYCandidates, 1);
-
-        if (layout.getRows()
-                .filter(y -> layout.getRow(y).size() == 1).count() < 2) {
-            uni.y += 25;
-            uni.x = first(possibleXCandidates, 0);
-
-            layout.getRow(last(possibleYCandidates, 0)).forEach(button -> {
-                button.y = Math.max(button.y, uni.y + uni.height + 13);
-            });
-        } else {
-            uni.x = first(possibleXCandidates, 2);
-        }
-
-        layout.getElements().add(uni);
-    }
-
     @Override
     public void displayGuiToPlayer(EntityPlayer player, IInteractionObject inventory) {
         if (player instanceof EntityPlayerSP) {
             if ("unicopia:itemofholding".equals(inventory.getGuiID())) {
-                Minecraft.getMinecraft().displayGuiScreen(new GuiOfHolding(inventory));
+                MinecraftClient.getInstance().displayGuiScreen(new GuiOfHolding(inventory));
             }
         } else {
             super.displayGuiToPlayer(player, inventory);
@@ -105,13 +61,13 @@ public class UnicopiaClient extends UClient {
     @Override
     @Nullable
     public EntityPlayer getPlayer() {
-        return Minecraft.getMinecraft().player;
+        return MinecraftClient.getInstance().player;
     }
 
     @Override
     @Nullable
     public EntityPlayer getPlayerByUUID(UUID playerId) {
-        Minecraft mc = Minecraft.getMinecraft();
+        Minecraft mc = MinecraftClient.getInstance();
 
         if (mc.player.getUniqueID().equals(playerId)) {
             return mc.player;
@@ -120,6 +76,7 @@ public class UnicopiaClient extends UClient {
         return mc.world.getPlayerEntityByUUID(playerId);
     }
 
+    @Override
     @Nonnull
     public EntityPlayer createPlayer(Entity observer, GameProfile profile) {
         return new EntityFakeClientPlayer(observer.world, profile);
@@ -140,13 +97,13 @@ public class UnicopiaClient extends UClient {
 
     @Override
     public int getViewMode() {
-        return Minecraft.getMinecraft().gameSettings.thirdPersonView;
+        return MinecraftClient.getInstance().gameSettings.thirdPersonView;
     }
 
     @Override
     public void postRenderEntity(Entity entity) {
         if (entity instanceof EntityPlayer) {
-            IPlayer iplayer = PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity);
+            IPlayer iplayer = SpeciesList.instance().getPlayer((EntityPlayer)entity);
 
             if (iplayer.getGravity().getGravitationConstant() < 0) {
                 GlStateManager.translate(0, entity.height, 0);
@@ -160,12 +117,12 @@ public class UnicopiaClient extends UClient {
     @Override
     public boolean renderEntity(Entity entity, float renderPartialTicks) {
 
-        if (DisguiseRenderer.instance().renderDisguise(entity, renderPartialTicks)) {
+        if (DisguiseRenderer.getInstance().renderDisguise(entity, renderPartialTicks)) {
             return true;
         }
 
         if (entity instanceof EntityPlayer) {
-            IPlayer iplayer = PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity);
+            IPlayer iplayer = SpeciesList.instance().getPlayer((EntityPlayer)entity);
 
             if (iplayer.getGravity().getGravitationConstant() < 0) {
                 GlStateManager.scale(1, -1, 1);
@@ -174,7 +131,7 @@ public class UnicopiaClient extends UClient {
                 entity.rotationPitch *= -1;
             }
 
-            if (DisguiseRenderer.instance().renderDisguiseToGui(iplayer)) {
+            if (DisguiseRenderer.getInstance().renderDisguiseToGui(iplayer)) {
                 return true;
             }
 
@@ -197,10 +154,11 @@ public class UnicopiaClient extends UClient {
         clientPlayerRace = getclientPlayerRace();
     }
 
+    @Override
     public void tick() {
-        EntityPlayer player = UClient.instance().getPlayer();
+        PlayerEntity player = UClient.instance().getPlayer();
 
-        if (player != null && !player.isDead) {
+        if (player != null && !player.removed) {
             Race newRace = getclientPlayerRace();
 
             if (newRace != clientPlayerRace) {
@@ -212,20 +170,20 @@ public class UnicopiaClient extends UClient {
 
         Keyboard.getKeyHandler().onKeyInput();
 
-        if (player instanceof EntityPlayerSP) {
-            EntityPlayerSP sp = (EntityPlayerSP)player;
+        MinecraftClient client = MinecraftClient.getInstance();
 
-            MovementInput movement = sp.movementInput;
+        if (player instanceof ClientPlayerEntity) {
+            ClientPlayerEntity sp = (ClientPlayerEntity)player;
 
-            if (!(movement instanceof MovementControl)) {
-                sp.movementInput = new MovementControl(movement);
+            Input movement = sp.input;
+
+            if (!(movement instanceof InversionAwareKeyboardInput)) {
+                sp.input = new InversionAwareKeyboardInput(client, movement);
             }
         }
 
-        Minecraft mc = Minecraft.getMinecraft();
-
-        if (!(mc.mouseHelper instanceof MouseControl)) {
-            mc.mouseHelper = new MouseControl();
+        if (!(client.mouse instanceof MouseControl)) {
+            client.mouse = new MouseControl(client);
         }
     }
 }

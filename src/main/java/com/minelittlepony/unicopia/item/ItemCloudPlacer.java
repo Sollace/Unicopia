@@ -2,8 +2,9 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.function.Function;
 
+import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.entity.EntityCloud;
-import com.minelittlepony.unicopia.init.UItems;
+import com.minelittlepony.unicopia.magic.items.IDispensable;
 
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.creativetab.CreativeTabs;
@@ -54,9 +55,9 @@ public class ItemCloudPlacer extends Item implements IDispensable {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getStackInHand(hand);
 
-        if (!world.isRemote) {
+        if (!world.isClient) {
             RayTraceResult mop = rayTrace(world, player, true);
 
             BlockPos pos;

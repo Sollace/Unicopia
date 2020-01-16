@@ -6,25 +6,20 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.entity.EntityFakeServerPlayer;
-import com.minelittlepony.unicopia.forgebullshit.FUF;
-import com.minelittlepony.unicopia.player.IPlayer;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.entity.player.IPlayer;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.IInteractionObject;
-import net.minecraft.world.WorldServer;
+import net.minecraft.entity.player.PlayerEntity;
 
 public class UClient {
 
     private static UClient instance;
 
     public static boolean isClientSide() {
-        return net.minecraftforge.fml.common.FMLCommonHandler.instance().getSide().isClient();
+        return false;
     }
 
-    @FUF(reason = "Forced client Separation")
     public static UClient instance() {
         if (instance == null) {
             if (isClientSide()) {
@@ -37,30 +32,26 @@ public class UClient {
         return instance;
     }
 
-    @FUF(reason = "Forced client Separation")
-    public void displayGuiToPlayer(EntityPlayer player, IInteractionObject inventory) {
+    public void displayGuiToPlayer(PlayerEntity player, InteractionObject inventory) {
         player.displayGui(inventory);
     }
 
-    @FUF(reason = "Forced client Separation")
     @Nullable
-    public EntityPlayer getPlayer() {
+    public PlayerEntity getPlayer() {
         return null;
     }
 
     @Nullable
     public IPlayer getIPlayer() {
-        return PlayerSpeciesList.instance().getPlayer(getPlayer());
+        return SpeciesList.instance().getPlayer(getPlayer());
     }
 
-    @FUF(reason = "Forced client Separation")
     @Nullable
-    public EntityPlayer getPlayerByUUID(UUID playerId) {
+    public PlayerEntity getPlayerByUUID(UUID playerId) {
         return null;
     }
 
-    @FUF(reason = "Forced client Separation")
-    public boolean isClientPlayer(@Nullable EntityPlayer player) {
+    public boolean isClientPlayer(@Nullable PlayerEntity player) {
         return false;
     }
 
@@ -74,7 +65,7 @@ public class UClient {
      * Returns an implementation of EntityPlayer appropriate to the side being called on.
      */
     @Nonnull
-    public EntityPlayer createPlayer(Entity observer, GameProfile profile) {
+    public PlayerEntity createPlayer(Entity observer, GameProfile profile) {
         return new EntityFakeServerPlayer((WorldServer)observer.world, profile);
     }
 

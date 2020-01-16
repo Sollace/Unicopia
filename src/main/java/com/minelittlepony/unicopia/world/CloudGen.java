@@ -6,13 +6,12 @@ import java.util.Random;
 
 import javax.annotation.Nonnull;
 
-import com.minelittlepony.unicopia.structure.AbstractFeature;
-import com.minelittlepony.unicopia.structure.CloudDungeon;
+import com.minelittlepony.unicopia.world.structure.AbstractFeature;
+import com.minelittlepony.unicopia.world.structure.CloudDungeon;
 
-import net.minecraft.init.Biomes;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.structure.StructureStart;
+import net.minecraft.world.biome.Biomes;
 
 public class CloudGen extends AbstractFeaturesGen {
 
@@ -21,8 +20,8 @@ public class CloudGen extends AbstractFeaturesGen {
             Biomes.MESA,
             Biomes.DESERT, Biomes.DESERT_HILLS,
             Biomes.JUNGLE, Biomes.JUNGLE_HILLS,
-            Biomes.SWAMPLAND,
-            Biomes.ICE_PLAINS, Biomes.COLD_TAIGA
+            Biomes.SWAMP, Biomes.SWAMP_HILLS,
+            Biomes.ICE_SPIKES, Biomes.COLD_TAIGA
     );
 
     public CloudGen() {

@@ -12,7 +12,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.util.AssetWalker;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 public class AffineIngredients {
 
@@ -22,9 +22,9 @@ public class AffineIngredients {
         return instance;
     }
 
-    private final Map<ResourceLocation, SpellIngredient> storedIngredients = Maps.newHashMap();
+    private final Map<Identifier, SpellIngredient> storedIngredients = Maps.newHashMap();
 
-    private final AssetWalker walker = new AssetWalker(new ResourceLocation(Unicopia.MODID, "enchanting/ingredients"), this::handleJson);
+    private final AssetWalker walker = new AssetWalker(new Identifier(Unicopia.MODID, "enchanting/ingredients"), this::handleJson);
 
     public void load() {
         storedIngredients.clear();
@@ -32,7 +32,7 @@ public class AffineIngredients {
         walker.walk();
     }
 
-    public SpellIngredient getIngredient(ResourceLocation res) {
+    public SpellIngredient getIngredient(Identifier res) {
         SpellIngredient result = storedIngredients.get(res);
 
         if (result == null) {
@@ -43,7 +43,7 @@ public class AffineIngredients {
         return result;
     }
 
-    protected void handleJson(ResourceLocation id, JsonObject json) throws JsonParseException {
+    protected void handleJson(Identifier id, JsonObject json) throws JsonParseException {
         SpellIngredient ingredient = SpellIngredient.parse(json.get("items"));
 
         if (ingredient != null) {
@@ -53,9 +53,9 @@ public class AffineIngredients {
 
     static class AffineIngredient implements SpellIngredient {
 
-        private final ResourceLocation res;
+        private final Identifier res;
 
-        AffineIngredient(ResourceLocation res) {
+        AffineIngredient(Identifier res) {
             this.res = res;
         }
 
@@ -76,7 +76,7 @@ public class AffineIngredients {
 
         @Nonnull
         static SpellIngredient parse(JsonObject json) {
-            return new AffineIngredient(new ResourceLocation(json.get("id").getAsString()));
+            return new AffineIngredient(new Identifier(json.get("id").getAsString()));
         }
     }
 }

@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia.block;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -16,9 +16,9 @@ public interface ITillable {
      * Gets the farmland/tilled state for this block when attacked by a hoe.
      */
     @Nonnull
-    IBlockState getFarmlandState(ItemStack hoe, EntityPlayer player, World world, IBlockState state, BlockPos pos);
+    BlockState getFarmlandState(ItemStack hoe, PlayerEntity player, World world, BlockState state, BlockPos pos);
 
-    default boolean canBeTilled(ItemStack hoe, EntityPlayer player, World world, IBlockState state, BlockPos pos) {
-        return world.isAirBlock(pos.up());
+    default boolean canBeTilled(ItemStack hoe, PlayerEntity player, World world, BlockState state, BlockPos pos) {
+        return world.isAir(pos.up());
     }
 }

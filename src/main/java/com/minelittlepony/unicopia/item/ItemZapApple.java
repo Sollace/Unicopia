@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.edibles.Toxicity;
 import com.minelittlepony.util.MagicalDamageSource;
-import com.minelittlepony.util.vector.VecHelper;
+import com.minelittlepony.util.VecHelper;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
@@ -33,7 +33,7 @@ public class ItemZapApple extends ItemAppleMultiType {
         RayTraceResult mop = VecHelper.getObjectMouseOver(player, 5, 0);
 
         if (mop != null && mop.typeOfHit == RayTraceResult.Type.ENTITY) {
-            ItemStack stack = player.getHeldItem(hand);
+            ItemStack stack = player.getStackInHand(hand);
 
             if (canFeedTo(stack, mop.entityHit)) {
                 return onFedTo(stack, player, mop.entityHit);

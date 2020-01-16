@@ -1,50 +1,49 @@
 package com.minelittlepony.unicopia;
 
 import com.google.common.base.Predicate;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.player.PlayerEntity;
 
 public final class Predicates {
-    public static final Predicate<EntityPlayer> INTERACT_WITH_CLOUDS = player -> {
-        return player != null && PlayerSpeciesList.instance().getPlayer(player).getPlayerSpecies().canInteractWithClouds();
+    public static final Predicate<PlayerEntity> INTERACT_WITH_CLOUDS = player -> {
+        return player != null && SpeciesList.instance().getPlayer(player).getSpecies().canInteractWithClouds();
     };
 
     public static final Predicate<Entity> MAGI = entity -> {
-        return entity instanceof EntityPlayer && PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity).getPlayerSpecies().canCast();
+        return entity instanceof PlayerEntity && SpeciesList.instance().getPlayer((PlayerEntity)entity).getSpecies().canCast();
     };
 
     public static final Predicate<Entity> ITEMS = entity -> {
-        return entity instanceof EntityItem && entity.isEntityAlive() && entity.ticksExisted > 1;
+        return entity instanceof ItemEntity && entity.isAlive() && entity.age > 1;
     };
 
-    public static final Predicate<EntityItem> ITEM_INTERACT_WITH_CLOUDS = item -> {
-        return ITEMS.test(item) && PlayerSpeciesList.instance().getEntity(item).getPlayerSpecies().canInteractWithClouds();
+    public static final Predicate<ItemEntity> ITEM_INTERACT_WITH_CLOUDS = item -> {
+        return ITEMS.test(item) && SpeciesList.instance().getEntity(item).getSpecies().canInteractWithClouds();
     };
 
     public static final Predicate<Entity> ENTITY_INTERACT_WITH_CLOUDS = entity -> {
         return entity != null && (
-                    (entity instanceof EntityPlayer && INTERACT_WITH_CLOUDS.test((EntityPlayer)entity))
-                 || (entity instanceof EntityItem && ITEM_INTERACT_WITH_CLOUDS.test((EntityItem)entity))
+                    (entity instanceof PlayerEntity && INTERACT_WITH_CLOUDS.test((PlayerEntity)entity))
+                 || (entity instanceof ItemEntity && ITEM_INTERACT_WITH_CLOUDS.test((ItemEntity)entity))
               );
     };
 
     public static final Predicate<Entity> BUGGY = entity -> {
-        return entity instanceof EntityPlayer
-                && PlayerSpeciesList.instance().getPlayer((EntityPlayer)entity).getPlayerSpecies() == Race.CHANGELING;
+        return entity instanceof PlayerEntity
+                && SpeciesList.instance().getPlayer((PlayerEntity)entity).getSpecies() == Race.CHANGELING;
     };
 
-    public static EntityPlayer getPlayerFromEntity(Entity entity) {
-        if (entity instanceof EntityPlayer) {
-            return (EntityPlayer) entity;
+    public static PlayerEntity getPlayerFromEntity(Entity entity) {
+        if (entity instanceof PlayerEntity) {
+            return (PlayerEntity) entity;
         }
 
-        if (entity instanceof EntityItem) {
-            EntityItem item = (EntityItem)entity;
+        if (entity instanceof ItemEntity) {
+            ItemEntity item = (ItemEntity)entity;
             if (item.getOwner() != null) {
-                return item.getEntityWorld().getPlayerEntityByName(item.getOwner());
+                return item.getEntityWorld().getPlayerByUuid(item.getOwner());
             }
         }
 

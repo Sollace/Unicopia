@@ -33,7 +33,7 @@ public class BlockDutchDoor extends UDoor {
 
         IBlockState upper = world.getBlockState(pos.up());
         if (upper.getBlock() == this && upper.getValue(OPEN) != powered) {
-            world.setBlockState(pos.up(), upper.withProperty(OPEN, powered));
+            world.setBlockState(pos.up(), upper.with(OPEN, powered));
 
             return true;
         }
@@ -52,14 +52,14 @@ public class BlockDutchDoor extends UDoor {
             IBlockState other = world.getBlockState(pos.up());
 
             if (other.getBlock() == this) {
-                return state.withProperty(HINGE, other.getValue(HINGE))
-                    .withProperty(POWERED, other.getValue(POWERED));
+                return state.with(HINGE, other.getValue(HINGE))
+                    .with(POWERED, other.getValue(POWERED));
             }
         } else {
             IBlockState other = world.getBlockState(pos.down());
 
             if (other.getBlock() == this) {
-                return state.withProperty(FACING, other.getValue(FACING));
+                return state.with(FACING, other.getValue(FACING));
             }
         }
 
@@ -72,15 +72,15 @@ public class BlockDutchDoor extends UDoor {
         boolean upper = (meta & 8) != 0;
 
         IBlockState state = getDefaultState()
-                .withProperty(HALF, upper ? EnumDoorHalf.UPPER : EnumDoorHalf.LOWER)
-                .withProperty(OPEN, (meta & 4) != 0);
+                .with(HALF, upper ? EnumDoorHalf.UPPER : EnumDoorHalf.LOWER)
+                .with(OPEN, (meta & 4) != 0);
 
         if (upper) {
-            return state.withProperty(POWERED, (meta & 1) != 0)
-                    .withProperty(HINGE, (meta & 2) != 0 ? EnumHingePosition.RIGHT : EnumHingePosition.LEFT);
+            return state.with(POWERED, (meta & 1) != 0)
+                    .with(HINGE, (meta & 2) != 0 ? EnumHingePosition.RIGHT : EnumHingePosition.LEFT);
         }
 
-        return state.withProperty(FACING, EnumFacing.byHorizontalIndex(meta & 3).rotateYCCW());
+        return state.with(FACING, EnumFacing.byHorizontalIndex(meta & 3).rotateYCCW());
     }
 
     @Override

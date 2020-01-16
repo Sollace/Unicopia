@@ -5,19 +5,18 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.init.UBlocks;
+import com.minelittlepony.unicopia.UBlocks;
 
-import net.minecraft.block.SoundType;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BlockCloudFarm extends UFarmland implements ICloudBlock {
@@ -29,12 +28,7 @@ public class BlockCloudFarm extends UFarmland implements ICloudBlock {
     }
 
     @Override
-    public boolean isTranslucent(IBlockState state) {
-        return true;
-    }
-
-    @Override
-    public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
+    public boolean isAir(BlockState state, IBlockAccess world, BlockPos pos) {
         return allowsFallingBlockToPass(state, world, pos);
     }
 
@@ -44,21 +38,19 @@ public class BlockCloudFarm extends UFarmland implements ICloudBlock {
     }
 
     @Override
-    public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face) {
-
-        IBlockState beside = world.getBlockState(pos.offset(face));
+    public boolean isSideInvisible(BlockState state, BlockState beside, Direction face) {
 
         if (beside.getBlock() instanceof ICloudBlock) {
             ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
 
-            if ((face == EnumFacing.DOWN || face == EnumFacing.UP || cloud == this)) {
+            if ((face.getAxis() == Axis.Y || cloud == this)) {
                 if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
                     return true;
                 }
             }
         }
 
-        return super.doesSideBlockRendering(state, world, pos, face);
+        return super.isSideInvisible(state, beside, face);
     }
 
     @Override
@@ -69,21 +61,21 @@ public class BlockCloudFarm extends UFarmland implements ICloudBlock {
     }
 
     @Override
-    public void onLanded(World worldIn, Entity entity) {
+    public void onEntityLand(BlockView world, Entity entity) {
         if (!applyRebound(entity)) {
-            super.onLanded(worldIn, entity);
+            super.onEntityLand(world, entity);
         }
     }
 
     @Override
-    public void onEntityCollision(World w, BlockPos pos, IBlockState state, Entity entity) {
+    public void onEntityCollision(BlockState state, World w, BlockPos pos, Entity entity) {
         if (!applyBouncyness(state, entity)) {
-            super.onEntityCollision(w, pos, state, entity);
+            super.onEntityCollision(state, w, pos, entity);
         }
     }
 
     @Override
-    public boolean canEntityDestroy(IBlockState state, IBlockAccess world, BlockPos pos, Entity entity) {
+    public boolean canEntityDestroy(BlockState state, BlockView world, BlockPos pos, Entity entity) {
         return getCanInteract(state, entity) && super.canEntityDestroy(state, world, pos, entity);
     }
 
@@ -97,7 +89,7 @@ public class BlockCloudFarm extends UFarmland implements ICloudBlock {
     }
 
     @Deprecated
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
+    public void addCollisionBoxToList(BlockState state, World worldIn, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
         if (getCanInteract(state, entity)) {
             super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, p_185477_7_);
         }
@@ -105,21 +97,21 @@ public class BlockCloudFarm extends UFarmland implements ICloudBlock {
 
     @Deprecated
     @Override
-    public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos) {
+    public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
         if (CloudType.NORMAL.canInteract(player)) {
-            return super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
+            return super.calcBlockBreakingDelta(state, player, world, pos);
         }
         return -1;
     }
 
 
     @Override
-    public CloudType getCloudMaterialType(IBlockState blockState) {
+    public CloudType getCloudMaterialType(BlockState blockState) {
         return CloudType.NORMAL;
     }
 
     @Override
-    protected IBlockState getDroppedState(IBlockState state) {
+    protected BlockState getDroppedState(BlockState state) {
         return UBlocks.normal_cloud.getDefaultState();
     }
 }

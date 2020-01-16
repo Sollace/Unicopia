@@ -3,13 +3,12 @@ package com.minelittlepony.unicopia.item;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.entity.EntitySpear;
+import com.minelittlepony.unicopia.projectile.IAdvancedProjectile;
 import com.minelittlepony.unicopia.spell.ICaster;
-import com.minelittlepony.unicopia.tossable.ITossableItem;
-import com.minelittlepony.unicopia.tossable.ITossed;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.dispenser.IPosition;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
@@ -47,8 +46,8 @@ public class ItemSpear extends Item implements ITossableItem {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-        if (!world.isRemote) {
-            ItemStack itemstack = player.getHeldItem(hand);
+        if (!world.isClient) {
+            ItemStack itemstack = player.getStackInHand(hand);
 
             if (canBeThrown(itemstack)) {
                 player.setActiveHand(hand);
@@ -62,7 +61,7 @@ public class ItemSpear extends Item implements ITossableItem {
     }
 
     @Override
-    public void onPlayerStoppedUsing(ItemStack itemstack, World world, EntityLivingBase entity, int timeLeft) {
+    public void onPlayerStoppedUsing(ItemStack itemstack, World world, LivingEntity entity, int timeLeft) {
         if (entity instanceof EntityPlayer) {
 
             int i = getMaxItemUseDuration(itemstack) - timeLeft;
@@ -92,13 +91,13 @@ public class ItemSpear extends Item implements ITossableItem {
 
     @Nullable
     @Override
-    public ITossed createProjectile(World world, EntityPlayer player) {
+    public IAdvancedProjectile createProjectile(World world, EntityPlayer player) {
         return new EntitySpear(world, player);
     }
 
     @Nullable
     @Override
-    public ITossed createProjectile(World world, IPosition pos) {
+    public IAdvancedProjectile createProjectile(World world, IPosition pos) {
         return null;
     }
 

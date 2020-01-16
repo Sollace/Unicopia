@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.enchanting;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 /**
  * A spellbook page
@@ -15,7 +15,7 @@ public interface IPage extends Comparable<IPage> {
     /**
      * The unique name of this page.
      */
-    ResourceLocation getName();
+    Identifier getName();
 
     /**
      * Tests unlock conditions for this page.
@@ -27,7 +27,7 @@ public interface IPage extends Comparable<IPage> {
      * Gets the texture.
      * This is what's shown when this page is opened in the book gui.
      */
-    ResourceLocation getTexture();
+    Identifier getTexture();
 
     /**
      * The default state.

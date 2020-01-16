@@ -5,14 +5,14 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.init.UEffects;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.UEffects;
 
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumAction;
@@ -53,7 +53,7 @@ public abstract class ItemEdible extends ItemFood implements IEdible {
     }
 
     protected void onFoodEaten(ItemStack stack, World worldIn, EntityPlayer player) {
-        Race race = PlayerSpeciesList.instance().getPlayer(player).getPlayerSpecies();
+        Race race = SpeciesList.instance().getPlayer(player).getSpecies();
         Toxicity toxicity = (race.isDefault() || race == Race.CHANGELING) ? Toxicity.LETHAL : getToxicityLevel(stack);
 
         addSecondaryEffects(player, toxicity, stack);
@@ -65,7 +65,7 @@ public abstract class ItemEdible extends ItemFood implements IEdible {
     }
 
     @Override
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
+    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
 
         EntityPlayer entityplayer = entityLiving instanceof EntityPlayer ? (EntityPlayer)entityLiving : null;
 
@@ -79,8 +79,8 @@ public abstract class ItemEdible extends ItemFood implements IEdible {
             // replaced "this" with "stack.getItem()"
             entityplayer.addStat(StatList.getObjectUseStats(stack.getItem()));
 
-            if (entityplayer instanceof EntityPlayerMP) {
-                CriteriaTriggers.CONSUME_ITEM.trigger((EntityPlayerMP)entityplayer, stack);
+            if (entityplayer instanceof ServerPlayerEntity) {
+                CriteriaTriggers.CONSUME_ITEM.trigger((ServerPlayerEntity)entityplayer, stack);
             }
         }
 
@@ -103,10 +103,10 @@ public abstract class ItemEdible extends ItemFood implements IEdible {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-        Race race = PlayerSpeciesList.instance().getPlayer(player).getPlayerSpecies();
+        Race race = SpeciesList.instance().getPlayer(player).getSpecies();
 
         if (race.isDefault() || race == Race.CHANGELING) {
-            return new ActionResult<ItemStack>(EnumActionResult.FAIL, player.getHeldItem(hand));
+            return new ActionResult<ItemStack>(EnumActionResult.FAIL, player.getStackInHand(hand));
         }
 
         return super.onItemRightClick(world, player, hand);

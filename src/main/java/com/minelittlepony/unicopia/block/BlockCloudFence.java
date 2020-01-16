@@ -6,22 +6,17 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.CloudType;
 
-import net.minecraft.block.BlockFence;
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.FenceBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class BlockCloudFence extends BlockFence implements ICloudBlock {
+public class BlockCloudFence extends FenceBlock implements ICloudBlock {
 
     private final CloudType variant;
 
@@ -71,7 +66,7 @@ public class BlockCloudFence extends BlockFence implements ICloudBlock {
 
     @Override
     public BlockRenderLayer getRenderLayer() {
-        return variant == CloudType.NORMAL ? BlockRenderLayer.TRANSLUCENT : super.getRenderLayer();
+        return BlockRenderLayer.TRANSLUCENT;
     }
 
     @Override
@@ -82,9 +77,9 @@ public class BlockCloudFence extends BlockFence implements ICloudBlock {
     }
 
     @Override
-    public void onLanded(World worldIn, Entity entity) {
+    public void onEntityLand(BlockView world, Entity entity) {
         if (!applyRebound(entity)) {
-            super.onLanded(worldIn, entity);
+            super.onEntityLand(world, entity);
         }
     }
 
@@ -96,9 +91,9 @@ public class BlockCloudFence extends BlockFence implements ICloudBlock {
     }
 
     @Override
-    public void onEntityCollision(World w, BlockPos pos, IBlockState state, Entity entity) {
+    public void onEntityCollision(BlockState state, World w, BlockPos pos, Entity entity) {
         if (!applyBouncyness(state, entity)) {
-            super.onEntityCollision(w, pos, state, entity);
+            super.onEntityCollision(state, w, pos, entity);
         }
     }
 
@@ -108,7 +103,7 @@ public class BlockCloudFence extends BlockFence implements ICloudBlock {
     }
 
     @Deprecated
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
         if (getCanInteract(state, entity)) {
             super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, isActualState);
         }
@@ -116,9 +111,9 @@ public class BlockCloudFence extends BlockFence implements ICloudBlock {
 
     @Deprecated
     @Override
-    public float getPlayerRelativeBlockHardness(IBlockState state, EntityPlayer player, World worldIn, BlockPos pos) {
+    public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
         if (CloudType.NORMAL.canInteract(player)) {
-            return super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
+            return super.calcBlockBreakingDelta(state, player, world, pos);
         }
         return -1;
     }

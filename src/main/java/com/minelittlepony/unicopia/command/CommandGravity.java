@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia.command;
 
 import java.util.List;
 
-import com.minelittlepony.unicopia.player.IPlayer;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.entity.player.IPlayer;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -34,7 +34,7 @@ class CommandGravity extends CommandBase {
         }
 
         EntityPlayer player = getCommandSenderAsPlayer(sender);
-        IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(player);
+        IPlayer iplayer = SpeciesList.instance().getPlayer(player);
 
 
 

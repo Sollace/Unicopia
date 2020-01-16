@@ -2,27 +2,17 @@ package com.minelittlepony.unicopia.command;
 
 import java.util.List;
 
-import com.minelittlepony.unicopia.player.IPlayer;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
-import com.minelittlepony.unicopia.spell.SpellDisguise;
+import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.magic.spells.SpellDisguise;
 
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
-import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.JsonToNBT;
-import net.minecraft.nbt.NBTException;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.storage.AnvilChunkLoader;
 
-class CommandDisguise extends CommandBase {
+class CommandDisguise extends Command {
 
     @Override
     public String getName() {
@@ -45,9 +35,9 @@ class CommandDisguise extends CommandBase {
             throw new WrongUsageException(getUsage(sender));
         }
 
-        EntityPlayerMP player = args.length > 1 ? getPlayer(server, sender, args[0]) : getCommandSenderAsPlayer(sender);
+        ServerPlayerEntity player = args.length > 1 ? getPlayer(server, sender, args[0]) : getCommandSenderAsPlayer(sender);
 
-        IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(player);
+        IPlayer iplayer = SpeciesList.instance().getPlayer(player);
 
         Entity entity = constructDisguiseEntity(player.world, args);
 

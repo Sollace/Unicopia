@@ -7,14 +7,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UClient;
-import com.minelittlepony.unicopia.player.IPlayer;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.magic.items.IDependable;
 import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.unicopia.world.UWorld;
 import com.minelittlepony.util.MagicalDamageSource;
+import com.minelittlepony.util.VecHelper;
 import com.minelittlepony.util.lang.ClientLocale;
-import com.minelittlepony.util.vector.VecHelper;
 
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -103,7 +104,7 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
 
         entity.move(MoverType.SELF, diffX / 50, diffY / 50, diffZ / 50);
 
-        if (!player.world.isRemote && !entity.isDead) {
+        if (!player.world.isClient && !entity.isDead) {
             if (player.getPositionVector().distanceTo(entity.getPositionVector()) < 3) {
                if (entity.world.rand.nextInt(150) == 0) {
 
@@ -156,7 +157,7 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
             player.getFoodStats().addStats(1, 0);
         }
 
-        IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(player);
+        IPlayer iplayer = SpeciesList.instance().getPlayer(player);
 
         float attachedTime = iplayer.getInventory().getTicksAttached(this);
 

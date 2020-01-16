@@ -8,11 +8,11 @@ import com.google.common.collect.AbstractIterator;
 
 public interface Iterators<T> extends Iterable<T> {
 
-    static <T> Iterators<T> iterate(Supplier<T> producer) {
+    static <T> Iterators<T> iterate(Supplier<T> supplier) {
         return () -> new AbstractIterator<T>() {
             @Override
             protected T computeNext() {
-                T next = producer.get();
+                T next = supplier.get();
 
                 if (next == null) {
                     endOfData();

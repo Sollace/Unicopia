@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 public class UItemDecoration extends ItemBlock {
 
@@ -11,10 +11,10 @@ public class UItemDecoration extends ItemBlock {
     }
 
     public UItemDecoration(Block block, String domain, String name) {
-        this(block, new ResourceLocation(domain, name));
+        this(block, new Identifier(domain, name));
     }
 
-    public UItemDecoration(Block block, ResourceLocation res) {
+    public UItemDecoration(Block block, Identifier res) {
         super(block);
 
         setTranslationKey(res.getPath());

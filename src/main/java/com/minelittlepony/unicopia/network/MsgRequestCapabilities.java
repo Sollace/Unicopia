@@ -7,9 +7,9 @@ import com.minelittlepony.jumpingcastle.api.IChannel;
 import com.minelittlepony.jumpingcastle.api.IMessage;
 import com.minelittlepony.jumpingcastle.api.IMessageHandler;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.player.IPlayer;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.entity.player.IPlayer;
 
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -29,10 +29,10 @@ public class MsgRequestCapabilities implements IMessage, IMessageHandler<MsgRequ
     @Override
     public void onPayload(MsgRequestCapabilities message, IChannel channel) {
         Unicopia.log.warn("[Unicopia] [SERVER] [MsgRequestCapabilities] Sending capabilities to player %s\n", senderId.toString());
-        IPlayer player = PlayerSpeciesList.instance().getPlayer(senderId);
+        IPlayer player = SpeciesList.instance().getPlayer(senderId);
 
-        if (player.getPlayerSpecies().isDefault()) {
-            player.setPlayerSpecies(message.race);
+        if (player.getSpecies().isDefault()) {
+            player.setSpecies(message.race);
         }
 
         channel.respond(new MsgPlayerCapabilities(player), senderId);

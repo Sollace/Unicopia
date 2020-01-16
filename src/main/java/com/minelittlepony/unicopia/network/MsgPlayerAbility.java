@@ -5,19 +5,15 @@ import java.util.UUID;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
-import com.minelittlepony.jumpingcastle.api.IChannel;
-import com.minelittlepony.jumpingcastle.api.IMessage;
-import com.minelittlepony.jumpingcastle.api.IMessageHandler;
-import com.minelittlepony.unicopia.player.IPlayer;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
-import com.minelittlepony.unicopia.power.IData;
-import com.minelittlepony.unicopia.power.IPower;
-import com.minelittlepony.unicopia.power.PowersRegistry;
+import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.ability.IData;
+import com.minelittlepony.unicopia.ability.IPower;
+import com.minelittlepony.unicopia.ability.powers.PowersRegistry;
+import com.minelittlepony.unicopia.entity.player.IPlayer;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 
-@IMessage.Id(2)
-public class MsgPlayerAbility implements IMessage, IMessageHandler<MsgPlayerAbility> {
+public class MsgPlayerAbility {
 
     private static final Gson gson = new GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
@@ -32,14 +28,14 @@ public class MsgPlayerAbility implements IMessage, IMessageHandler<MsgPlayerAbil
     @Expose
     private String abilityJson;
 
-    public MsgPlayerAbility(EntityPlayer player, IPower<?> power, IData data) {
-        senderId = player.getUniqueID();
+    public MsgPlayerAbility(PlayerEntity player, IPower<?> power, IData data) {
+        senderId = player.getUuid();
         powerIdentifier = power.getKeyName();
         abilityJson = gson.toJson(data, power.getPackageType());
     }
 
     private <T extends IData> void apply(IPower<T> power) {
-        IPlayer player = PlayerSpeciesList.instance().getPlayer(senderId);
+        IPlayer player = SpeciesList.instance().getPlayer(senderId);
         if (player == null) {
             return;
         }

@@ -1,8 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.spell.ICaster;
-import com.minelittlepony.unicopia.tossable.ITossableItem;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -26,7 +25,7 @@ public class ItemRottenTomato extends ItemTomato implements ITossableItem {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
-        ItemStack itemstack = player.getHeldItem(hand);
+        ItemStack itemstack = player.getStackInHand(hand);
 
         if (canBeThrown(itemstack) && !player.canEat(false)) {
             toss(world, itemstack, player);
@@ -39,7 +38,7 @@ public class ItemRottenTomato extends ItemTomato implements ITossableItem {
 
     protected boolean isSickening(ItemStack stack, EntityPlayer player) {
         return canBeThrown(stack)
-                && !PlayerSpeciesList.instance().getPlayer(player).getPlayerSpecies().canUseEarth();
+                && !SpeciesList.instance().getPlayer(player).getSpecies().canUseEarth();
     }
 
     @Override

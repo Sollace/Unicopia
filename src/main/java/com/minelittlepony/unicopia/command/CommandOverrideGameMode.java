@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.command;
 
-import com.minelittlepony.unicopia.player.IPlayer;
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.entity.player.IPlayer;
 
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandGameMode;
@@ -44,8 +44,8 @@ class CommandOverrideGameMode extends CommandGameMode {
     protected void updateGameMode(EntityPlayer player, GameType m) {
         player.setGameType(m);
 
-        IPlayer iplayer = PlayerSpeciesList.instance().getPlayer(player);
+        IPlayer iplayer = SpeciesList.instance().getPlayer(player);
 
-        iplayer.setPlayerSpecies(iplayer.getPlayerSpecies());
+        iplayer.setSpecies(iplayer.getSpecies());
     }
 }

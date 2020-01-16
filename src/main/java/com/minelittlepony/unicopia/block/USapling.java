@@ -28,7 +28,7 @@ public class USapling extends BlockSapling implements ITreeGen {
         setTranslationKey(name);
         setSoundType(SoundType.PLANT);
 
-        setDefaultState(blockState.getBaseState().withProperty(STAGE, 0));
+        setDefaultState(stateFactory.getDefaultState().with(STAGE, 0));
     }
 
     public USapling setTreeGen(ITreeGen gen) {
@@ -142,7 +142,7 @@ public class USapling extends BlockSapling implements ITreeGen {
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(STAGE, (meta & 8) >> 3);
+        return getDefaultState().with(STAGE, (meta & 8) >> 3);
     }
 
     @Override

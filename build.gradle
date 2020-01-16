@@ -1,106 +1,85 @@
-buildscript {
-  repositories {
-    jcenter()
-    maven {
-      name 'forge'
-      url 'http://files.minecraftforge.net/maven/'
-    }
-    maven {
-      name = "sonatype"
-      url = "https://oss.sonatype.org/content/repositories/snapshots/"
-    }
-    maven {
-      name = 'sponge'
-      url = 'http://repo.spongepowered.org/maven'
-    }
-  }
-  dependencies {
-    classpath 'net.minecraftforge.gradle:ForgeGradle:' + project.forgeGradleVersion
-  }
+// Fabric build script
+// 03/06/2019
+// https://github.com/FabricMC/fabric-example-mod/blob/master/build.gradle
+
+plugins {
+    id 'java-library'
+    id 'fabric-loom' version '0.2.5-SNAPSHOT'
+    id 'maven-publish'
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
 
-def ver = "${project.buildType}${project.buildVersion}.${project.buildRevision}"
+targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
 
-version = ver
+version = "${project.minecraft_version}-${project.version}"
+
+if (project.release != 'RELEASE') {
+    version += "-${project.release}"
+}
+
 group = project.group
-description = project.description
+description = project.displayname
+archivesBaseName = project.name
 
 minecraft {
-  version = project.mcVersion + '-' + project.mcfVersion
-  mappings = project.mcMappings
-  runDir = 'run'
-  replace '@MODID@', project.modid
-  replace '@NAME@', project.name
-  replace '@AUTHOR@', project.author
-  replace '@VERSION@', ver
-  replace '@DESCRIPTION@', project.description
-}
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-sourceSets {
-  jei {
-    compileClasspath += main.compileClasspath
-    compileClasspath += main.output
-  }
-  external {
-    compileClasspath += main.compileClasspath
-  }
-  main {
-    compileClasspath += external.output
-    ext.refMap = project.refCore
-  }
+    refmapName = 'unicopia.mixin.refmap.json'
 }
 
 repositories {
-  flatDir {
-    dir 'lib'
-  }
-  maven {
-    // location of the maven that hosts JEI files
-    name = "Progwml6 maven"
-    url = "http://dvs1.progwml6.com/files/maven"
-  }
-  maven {
-    // location of a maven mirror for JEI files, as a fallback
-    name = "ModMaven"
-    url = "modmaven.k-4u.nl"
-  }
+    maven {
+        name = 'minelp'
+        url = 'http://repo.minelittlepony-mod.com/maven/snapshot'
+    }
+    maven {
+        name = 'minelp-release'
+        url = 'http://repo.minelittlepony-mod.com/maven/release'
+    }
 }
+
+// check for updates every build when on CI
+if (System.env.CI) {
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+}
+
 dependencies {
-  deobfCompile('com.minelittlepony:jumpingcastle:1.12.2.1.0.0:universal')
-  // compile against the JEI API but do not include it at runtime
-  deobfProvided "mezz.jei:jei_${project.mcVersion}:${project.jeiVersion}:api"
-  // at runtime, use the full JEI jar
-  runtime "mezz.jei:jei_${project.mcVersion}:${project.jeiVersion}"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}"
+    modApi "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+
+    //modApi "net.fabricmc.fabric-api:fabric-api-base:0.1.0+"
+    //modApi "net.fabricmc.fabric-api:fabric-events-lifecycle-v0:0.1.0+"
+    //modApi "net.fabricmc.fabric-api:fabric-resource-loader-v0:0.1.0+"
+
+	modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+    modApi "com.minelittlepony:Kirin:${project.kirin_version}"
+    include "com.minelittlepony:Kirin:${project.kirin_version}"
+
+    modImplementation "io.github.prospector.modmenu:ModMenu:1.6.2-93"
 }
 
 processResources {
-  def props = [
-    modid: project.modid,
-    name: project.title,
-    description: project.description,
-    version: ver,
-    revision: project.buildRevision,
-    mcversion: project.mcVersion,
-    author: project.author
-  ]
+    inputs.property "version", project.version
 
-  from(sourceSets.main.resources.srcDirs) {
-    include 'mcmod.info'
-    expand props
-  }
+    from(sourceSets.main.resources.srcDirs) {
+        include "fabric.mod.json"
+        expand "version": project.version
+    }
 
-  from(sourceSets.main.resources.srcDirs) {
-    exclude 'mcmod.info'
-  }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude "fabric.mod.json"
+    }
 }
 
-jar {
-  from sourceSets.main.output
-  from sourceSets.external.output
-  from sourceSets.jei.output
-  baseName = "Unicopia-mc${project.mcVersion}"
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = "sources"
+    from sourceSets.main.allSource
 }

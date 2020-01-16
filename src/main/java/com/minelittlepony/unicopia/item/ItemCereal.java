@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.player.PlayerSpeciesList;
+import com.minelittlepony.unicopia.SpeciesList;
 
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemFood;
@@ -22,7 +22,7 @@ public class ItemCereal extends ItemFood {
         setContainerItem(Items.BOWL);
     }
 
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving) {
+    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
         super.onItemUseFinish(stack, worldIn, entityLiving);
 
         return getContainerItem(stack);
@@ -33,7 +33,7 @@ public class ItemCereal extends ItemFood {
         super.onFoodEaten(stack, worldIn, player);
 
         if (sugarAmount != 0) {
-            PlayerSpeciesList.instance().getPlayer(player).addEnergy(sugarAmount);
+            SpeciesList.instance().getPlayer(player).addEnergy(sugarAmount);
         }
     }
 

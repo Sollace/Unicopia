@@ -9,20 +9,14 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraft.util.NonNullList;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 /**
  * An Ore Replacer.
  * Similar to what the OreDictionary does
  * except this is configurable and works for vanilla and modded recipes.
  */
+@Deprecated
 public class OreReplacer {
 
     /**

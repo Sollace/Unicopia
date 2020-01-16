@@ -7,14 +7,14 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.init.UParticles;
-import com.minelittlepony.unicopia.init.USounds;
-import com.minelittlepony.unicopia.power.IPower;
+import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.ability.IPower;
 import com.minelittlepony.util.MagicalDamageSource;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -23,8 +23,8 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.TrackedData;
+import net.minecraft.network.datasync.TrackedDataHandlerRegistry;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
@@ -33,15 +33,15 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.event.ForgeEventFactory;
 
-public class EntityCuccoon extends EntityLivingBase implements IMagicals, IInAnimate {
+public class EntityCuccoon extends LivingEntity implements IMagicals, IInAnimate {
 
-    private static final DataParameter<Integer> STRUGGLE_COUNT = EntityDataManager.createKey(EntityCuccoon.class, DataSerializers.VARINT);
+    private static final TrackedData<Integer> STRUGGLE_COUNT = DataTracker.registerData(EntityCuccoon.class, TrackedDataHandlerRegistry.INTEGER);
 
     private final List<ItemStack> armour = Lists.newArrayList();
 
@@ -56,9 +56,9 @@ public class EntityCuccoon extends EntityLivingBase implements IMagicals, IInAni
     }
 
     @Override
-    protected void entityInit() {
-        super.entityInit();
-        getDataManager().register(STRUGGLE_COUNT, 0);
+    protected void initDataTracker() {
+        super.initDataTracker();
+        getDataTracker().startTracking(STRUGGLE_COUNT, 0);
     }
 
     public int getStruggleCount() {
@@ -95,7 +95,7 @@ public class EntityCuccoon extends EntityLivingBase implements IMagicals, IInAni
         return super.canBeRidden(entity)
                 && !entity.isSneaking()
                 && !isBeingRidden()
-                && entity instanceof EntityLivingBase
+                && entity instanceof LivingEntity
                 && !Predicates.BUGGY.test(entity);
     }
 
@@ -134,8 +134,8 @@ public class EntityCuccoon extends EntityLivingBase implements IMagicals, IInAni
 
             captiveLastSneakState = sneaking;
 
-            if (passenger instanceof EntityLivingBase) {
-                EntityLivingBase living = (EntityLivingBase)passenger;
+            if (passenger instanceof LivingEntity) {
+                LivingEntity living = (LivingEntity)passenger;
 
                 if (!living.isPotionActive(MobEffects.REGENERATION) && living.getHealth() < living.getMaxHealth()) {
                     living.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 20, 2));
@@ -147,7 +147,7 @@ public class EntityCuccoon extends EntityLivingBase implements IMagicals, IInAni
             }
         }
 
-        if (world.isRemote) {
+        if (world.isClient) {
             double x = posX + width * world.rand.nextFloat() - width/2;
             double y = posY + height * world.rand.nextFloat();
             double z = posZ + width * world.rand.nextFloat() - width/2;
@@ -170,11 +170,11 @@ public class EntityCuccoon extends EntityLivingBase implements IMagicals, IInAni
 
                     IPower.spawnParticles(UParticles.CHANGELING_MAGIC, this, 7);
 
-                    if (passenger instanceof EntityLivingBase) {
+                    if (passenger instanceof LivingEntity) {
                         if (player.isPotionActive(MobEffects.NAUSEA)) {
-                            ((EntityLivingBase)passenger).addPotionEffect(player.removeActivePotionEffect(MobEffects.NAUSEA));
+                            ((LivingEntity)passenger).addPotionEffect(player.removeActivePotionEffect(MobEffects.NAUSEA));
                         } else if (world.rand.nextInt(2300) == 0) {
-                            ((EntityLivingBase)passenger).addPotionEffect(new PotionEffect(MobEffects.WITHER, 20, 1));
+                            ((LivingEntity)passenger).addPotionEffect(new PotionEffect(MobEffects.WITHER, 20, 1));
                         }
                     }
 
@@ -242,7 +242,7 @@ public class EntityCuccoon extends EntityLivingBase implements IMagicals, IInAni
     @Override
     protected void onDeathUpdate() {
         if (++deathTime == 20) {
-            if (!world.isRemote && (isPlayer() || recentlyHit > 0 && canDropLoot() && world.getGameRules().getBoolean("doMobLoot"))) {
+            if (!world.isClient && (isPlayer() || recentlyHit > 0 && canDropLoot() && world.getGameRules().getBoolean("doMobLoot"))) {
                 int i = ForgeEventFactory.getExperienceDrop(this, attackingPlayer, getExperiencePoints(attackingPlayer));
 
                 while (i > 0) {
@@ -273,12 +273,12 @@ public class EntityCuccoon extends EntityLivingBase implements IMagicals, IInAni
     }
 
     @Nullable
-    public AxisAlignedBB getCollisionBox(Entity entity) {
+    public Box getCollisionBox(Entity entity) {
         return entity.canBeCollidedWith() ? entity.getEntityBoundingBox() : null;
     }
 
     @Nullable
-    public AxisAlignedBB getCollisionBoundingBox() {
+    public Box getCollisionBoundingBox() {
         return getEntityBoundingBox().shrink(0.2);
     }
 

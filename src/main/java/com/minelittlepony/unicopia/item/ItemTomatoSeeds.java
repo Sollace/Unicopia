@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.block.BlockStick;
-import com.minelittlepony.unicopia.init.UBlocks;
+import com.minelittlepony.unicopia.UBlocks;
+import com.minelittlepony.unicopia.block.StickBlock;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -29,10 +29,10 @@ public class ItemTomatoSeeds extends Item {
 
         Block block = state.getBlock();
 
-        if (block instanceof BlockStick) {
+        if (block instanceof StickBlock) {
             if (UBlocks.tomato_plant.plant(world, pos, state)) {
                 if (!player.capabilities.isCreativeMode) {
-                    player.getHeldItem(hand).shrink(1);
+                    player.getStackInHand(hand).shrink(1);
                 }
 
                 return EnumActionResult.SUCCESS;

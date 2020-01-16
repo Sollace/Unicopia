@@ -4,13 +4,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import com.minelittlepony.unicopia.structure.AbstractFeature;
-import com.minelittlepony.unicopia.structure.GroundDungeon;
+import com.minelittlepony.unicopia.world.structure.AbstractFeature;
+import com.minelittlepony.unicopia.world.structure.GroundDungeon;
 
-import net.minecraft.init.Biomes;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.structure.StructureStart;
+import net.minecraft.world.biome.Biomes;
 
 public class StructuresGen extends AbstractFeaturesGen {
 

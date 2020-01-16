@@ -14,7 +14,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.minelittlepony.util.AssetWalker;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 public class Pages {
 
@@ -24,12 +24,12 @@ public class Pages {
         return instance;
     }
 
-    private final Map<ResourceLocation, PageInstance> pages = Maps.newHashMap();
+    private final Map<Identifier, PageInstance> pages = Maps.newHashMap();
     private List<PageInstance> pagesByIndex = Lists.newArrayList();
 
     private final Map<String, IConditionFactory> conditionFactories = Maps.newHashMap();
 
-    private final AssetWalker assets = new AssetWalker(new ResourceLocation("unicopia", "pages"), this::addPage);
+    private final AssetWalker assets = new AssetWalker(new Identifier("unicopia", "pages"), this::addPage);
 
     Pages() {
         registerConditionFactory("unicopia:compound_condition", CompoundCondition::new);
@@ -74,7 +74,7 @@ public class Pages {
         return a.name.compareTo(b.name);
     }
 
-    void addPage(ResourceLocation id, JsonObject json) throws JsonParseException {
+    void addPage(Identifier id, JsonObject json) throws JsonParseException {
         pages.put(id, new PageInstance(id, json));
     }
 
@@ -86,7 +86,7 @@ public class Pages {
     }
 
     @Nullable
-    public IPage getByName(ResourceLocation name) {
+    public IPage getByName(Identifier name) {
         return pages.get(name);
     }
 

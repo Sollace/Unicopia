@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.item.override;
 
-import com.minelittlepony.unicopia.init.UItems;
+import com.minelittlepony.unicopia.UItems;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,7 +18,7 @@ public class ItemShear extends ItemShears {
         IBlockState state = world.getBlockState(pos);
 
         if (UItems.moss.tryConvert(world, state, pos, player)) {
-            ItemStack stack = player.getHeldItem(hand);
+            ItemStack stack = player.getStackInHand(hand);
 
             if (!player.isCreative()) {
                 stack.damageItem(1, player);

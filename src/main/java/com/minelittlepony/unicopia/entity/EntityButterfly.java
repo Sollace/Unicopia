@@ -6,41 +6,45 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Unicopia;
 
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.passive.EntityAmbientCreature;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.entity.EntityCategory;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.AmbientEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome.SpawnListEntry;
+import net.minecraft.world.biome.Biome.SpawnEntry;
 
-public class EntityButterfly extends EntityAmbientCreature {
+public class EntityButterfly extends AmbientEntity {
 
-    public static final SpawnListEntry SPAWN_ENTRY = new SpawnListEntry(EntityButterfly.class, 15, 9, 15);
+    public static final EntityType<EntityButterfly> TYPE = EntityType.Builder.create(EntityButterfly::new, EntityCategory.AMBIENT)
+            .setDimensions(0.1F, 0.1F)
+            .build("butterfly");
 
-    private static final DataParameter<Boolean> RESTING = EntityDataManager.createKey(EntityButterfly.class, DataSerializers.BOOLEAN);
+    public static final SpawnEntry SPAWN_ENTRY = new SpawnEntry(TYPE, 15, 9, 15);
 
-    private static final DataParameter<Integer> VARIANT = EntityDataManager.createKey(EntityButterfly.class, DataSerializers.VARINT);
+    private static final TrackedData<Boolean> RESTING = DataTracker.registerData(EntityButterfly.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+    private static final TrackedData<Integer> VARIANT = DataTracker.registerData(EntityButterfly.class, TrackedDataHandlerRegistry.INTEGER);
 
     private BlockPos hoveringPosition;
 
-    public EntityButterfly(World world) {
-        super(world);
-
-        preventEntitySpawning = false;
-        width = 0.1F;
-        height = 0.1F;
-
-        setVariaty(Variant.random(world.rand));
+    public EntityButterfly(EntityType<EntityButterfly> type, World world) {
+        super(type, world);
+        setVariaty(Variant.random(world.random));
         setResting(true);
     }
 
@@ -57,53 +61,51 @@ public class EntityButterfly extends EntityAmbientCreature {
     }
 
     @Override
-    protected void applyEntityAttributes() {
-        super.applyEntityAttributes();
-        getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(2);
+    protected void initAttributes() {
+        super.initAttributes();
+        getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(2);
     }
 
     @Override
-    protected void entityInit() {
-        super.entityInit();
-        dataManager.register(VARIANT, Variant.BUTTERFLY.ordinal());
-        dataManager.register(RESTING, false);
+    protected void initDataTracker() {
+        super.initDataTracker();
+        getDataTracker().startTracking(VARIANT, Variant.BUTTERFLY.ordinal());
+        getDataTracker().startTracking(RESTING, false);
     }
 
     @Override
-    public boolean canBePushed() {
+    public boolean isPushable() {
         return false;
     }
 
     @Override
-    protected void collideWithEntity(Entity entity) {
-    }
+    public boolean collides() {
+        return false;
+     }
 
     @Override
-    protected void collideWithNearbyEntities() {
-    }
+    public void tick() {
+        super.tick();
 
-    @Override
-    public void onUpdate() {
-        super.onUpdate();
-
-        motionY *= 0.6;
+        Vec3d vel = getVelocity();
+        setVelocity(vel.x, y * 0.6, vel.z);
     }
 
     public boolean isResting() {
-        return dataManager.get(RESTING);
+        return getDataTracker().get(RESTING);
     }
 
     public void setResting(boolean resting) {
-        dataManager.set(RESTING, resting);
+        getDataTracker().set(RESTING, resting);
     }
 
     public Variant getVariety() {
         Variant[] values = Variant.values();
-        return values[dataManager.get(VARIANT) % values.length];
+        return values[getDataTracker().get(VARIANT) % values.length];
     }
 
     public void setVariaty(Variant variant) {
-        dataManager.set(VARIANT, variant.ordinal());
+        getDataTracker().set(VARIANT, variant.ordinal());
     }
 
     protected boolean isAggressor(Entity e) {
@@ -111,32 +113,34 @@ public class EntityButterfly extends EntityAmbientCreature {
             return false;
         }
 
-        if (e instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer)e;
+        if (e instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity)e;
 
             if (player.isCreative() || player.isSpectator()) {
                 return false;
             }
 
-            if (player.isSprinting() || player.isSwingInProgress || player.moveForward > 0 || player.moveStrafing > 0) {
+            if (player.isSprinting() || player.isHandSwinging || player.forwardSpeed > 0 || player.sidewaysSpeed > 0) {
                 return true;
             }
-        } else if (!IMob.VISIBLE_MOB_SELECTOR.test(e)) {
+            // TODO:
+        }/* else if (!IMob.VISIBLE_MOB_SELECTOR.test(e)) {
             return false;
-        }
+        }*/
 
-        return Math.abs(e.motionX) > 0 || Math.abs(e.motionZ) > 0;
+        return e.getVelocity().x != 0 || e.getVelocity().z != 0;
     }
 
-    protected void updateAITasks() {
-        super.updateAITasks();
+    @Override
+    public void tickMovement() {
+        super.tickMovement();
 
-        BlockPos pos = getPosition();
+        BlockPos pos = getBlockPos();
         BlockPos below = pos.down();
 
         if (isResting()) {
-            if (world.getBlockState(below).isNormalCube()) {
-                if (world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().grow(7)).stream().anyMatch(this::isAggressor)) {
+            if (world.getBlockState(below).isOpaque()) {
+                if (world.getEntities(this, getBoundingBox().expand(7)).stream().anyMatch(this::isAggressor)) {
                     setResting(false);
                 }
             } else {
@@ -146,70 +150,62 @@ public class EntityButterfly extends EntityAmbientCreature {
         } else {
 
             // invalidate the hovering position
-            if (hoveringPosition != null && (!world.isAirBlock(hoveringPosition) || hoveringPosition.getY() < 1)) {
+            if (hoveringPosition != null && (!world.isAir(hoveringPosition) || hoveringPosition.getY() < 1)) {
                 hoveringPosition = null;
             }
 
             // select a new hovering position
-            if (hoveringPosition == null || rand.nextInt(30) == 0 || hoveringPosition.distanceSq(posX, posY, posZ) < 4) {
-                hoveringPosition = new BlockPos(posX + rand.nextInt(7) - rand.nextInt(7), posY + rand.nextInt(6) - 2, posZ + rand.nextInt(7) - rand.nextInt(7));
+            if (hoveringPosition == null || random.nextInt(30) == 0 || hoveringPosition.getSquaredDistance(pos) < 4) {
+                hoveringPosition = new BlockPos(x + random.nextInt(7) - random.nextInt(7), y + random.nextInt(6) - 2, z + random.nextInt(7) - random.nextInt(7));
             }
 
             // hover casually towards the chosen position
 
-            double changedX = hoveringPosition.getX() + 0.5D - posX;
-            double changedY = hoveringPosition.getY() + 0.1D - posY;
-            double changedZ = hoveringPosition.getZ() + 0.5D - posZ;
+            double changedX = hoveringPosition.getX() + 0.5D - x;
+            double changedY = hoveringPosition.getY() + 0.1D - y;
+            double changedZ = hoveringPosition.getZ() + 0.5D - z;
 
-            motionX += (Math.signum(changedX) * 0.5D - motionX) * 0.10000000149011612D;
-            motionY += (Math.signum(changedY) * 0.699999988079071D - motionY) * 0.10000000149011612D;
-            motionZ += (Math.signum(changedZ) * 0.5D - motionZ) * 0.10000000149011612D;
+            Vec3d vel = getVelocity();
 
-            float f = (float)(MathHelper.atan2(motionZ, motionX) * (180 / Math.PI)) - 90;
+            setVelocity(
+                vel.x + (Math.signum(changedX) * 0.5D - vel.x) * 0.10000000149011612D,
+                vel.y + (Math.signum(changedY) * 0.699999988079071D - vel.y) * 0.10000000149011612D,
+                vel.z + (Math.signum(changedZ) * 0.5D - vel.z) * 0.10000000149011612D
+            );
 
-            moveForward = 0.5F;
-            rotationYaw += MathHelper.wrapDegrees(f - rotationYaw);
+            float f = (float)(MathHelper.atan2(vel.z, vel.x) * (180 / Math.PI)) - 90;
 
-            if (rand.nextInt(100) == 0 && world.getBlockState(below).isNormalCube()) {
+            forwardSpeed = 0.5F;
+            headYaw += MathHelper.wrapDegrees(f - headYaw);
+
+            if (random.nextInt(100) == 0 && world.getBlockState(below).isOpaque()) {
                 setResting(true);
             }
         }
     }
 
     @Override
-    protected boolean canTriggerWalking() {
-        return false;
+    public void handleFallDamage(float distance, float damageMultiplier) {
     }
 
     @Override
-    public void fall(float distance, float damageMultiplier) {
+    protected void fall(double y, boolean onGroundIn, BlockState state, BlockPos pos) {
     }
 
     @Override
-    protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos) {
-    }
-
-    @Override
-    public boolean doesEntityNotTriggerPressurePlate() {
+    public boolean canSpawn(IWorld world, SpawnType type) {
+        if (type == SpawnType.NATURAL) {
+            return y < world.getSeaLevel() && world.getLightLevel(getBlockPos()) > 7;
+        }
         return true;
     }
 
     @Override
-    public boolean getCanSpawnHere() {
-        if (posY < world.getSeaLevel()) {
-            return false;
-        }
-
-        return world.getLightFromNeighbors(getPosition()) > 7
-                && super.getCanSpawnHere();
+    public float getEyeHeight(EntityPose pos) {
+        return getHeight() / 2;
     }
 
-    @Override
-    public float getEyeHeight() {
-        return height / 2;
-    }
-
-    public static enum Variant {
+    public enum Variant {
         BUTTERFLY,
         YELLOW,
         LIME,
@@ -226,9 +222,9 @@ public class EntityButterfly extends EntityAmbientCreature {
         WHITE_MONARCH,
         BRIMSTONE;
 
-        private final ResourceLocation skin = new ResourceLocation(Unicopia.MODID, "textures/entity/butterfly/" + name().toLowerCase() + ".png");
+        private final Identifier skin = new Identifier(Unicopia.MODID, "textures/entity/butterfly/" + name().toLowerCase() + ".png");
 
-        public ResourceLocation getSkin() {
+        public Identifier getSkin() {
             return skin;
         }
 

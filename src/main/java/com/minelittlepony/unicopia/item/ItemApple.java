@@ -5,9 +5,9 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.edibles.IEdible;
 import com.minelittlepony.unicopia.edibles.Toxicity;
-import com.minelittlepony.unicopia.init.UItems;
 import com.minelittlepony.util.collection.Pool;
 import com.minelittlepony.util.collection.Weighted;
 
@@ -75,7 +75,7 @@ public class ItemApple extends ItemFood implements IEdible {
 
             if (!item.isDead && item.ticksExisted > item.lifespan * 0.9) {
 
-                if (!item.world.isRemote) {
+                if (!item.world.isClient) {
                     item.setDead();
 
                     EntityItem neu = new EntityItem(item.world);

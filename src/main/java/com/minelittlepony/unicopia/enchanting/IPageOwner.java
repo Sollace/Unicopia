@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 
 import com.minelittlepony.unicopia.network.ITransmittable;
 
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Identifier;
 
 /**
  * Interface for things that own and can unlock pages.
@@ -15,7 +15,7 @@ import net.minecraft.util.ResourceLocation;
 public interface IPageOwner extends ITransmittable {
 
     @Nonnull
-    Map<ResourceLocation, PageState> getPageStates();
+    Map<Identifier, PageState> getPageStates();
 
     default void setPageState(IPage page, PageState state) {
         if (state == PageState.LOCKED) {

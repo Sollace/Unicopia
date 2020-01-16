@@ -8,10 +8,11 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Predicates;
 import com.minelittlepony.unicopia.UClient;
-import com.minelittlepony.unicopia.inventory.ContainerOfHolding;
-import com.minelittlepony.unicopia.inventory.InventoryOfHolding;
+import com.minelittlepony.unicopia.inventory.gui.ContainerOfHolding;
+import com.minelittlepony.unicopia.inventory.gui.InventoryOfHolding;
+import com.minelittlepony.unicopia.magic.items.IMagicalItem;
 import com.minelittlepony.unicopia.spell.SpellAffinity;
-import com.minelittlepony.util.vector.VecHelper;
+import com.minelittlepony.util.VecHelper;
 
 import net.minecraft.client.util.ITooltipFlag;
 
@@ -29,7 +30,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
@@ -75,7 +76,7 @@ public class ItemOfHolding extends Item implements IMagicalItem {
             return super.onItemRightClick(world, player, hand);
         }
 
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getStackInHand(hand);
 
         if (player.isSneaking()) {
             RayTraceResult hit = VecHelper.getObjectMouseOver(player, 5, 0);
@@ -96,7 +97,7 @@ public class ItemOfHolding extends Item implements IMagicalItem {
                         return new ActionResult<>(EnumActionResult.SUCCESS, stack);
                     }
 
-                    AxisAlignedBB box = new AxisAlignedBB(pos.offset(hit.sideHit)).grow(0.5);
+                    Box box = new Box(pos.offset(hit.sideHit)).grow(0.5);
 
                     List<Entity> itemsAround = world.getEntitiesInAABBexcluding(player, box, Predicates.ITEMS);
 
