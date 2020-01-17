@@ -1,26 +1,26 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.client.renderer.entity.RenderManager;
+import net.fabricmc.fabric.api.client.render.EntityRendererRegistry;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.util.Identifier;
 
 import org.lwjgl.opengl.GL11;
 
 import com.minelittlepony.unicopia.client.render.entity.model.ModelCloud;
-import com.minelittlepony.unicopia.entity.EntityCloud;
+import com.minelittlepony.unicopia.entity.CloudEntity;
 import com.minelittlepony.util.WorldHelper;
 
-public class RenderCloud extends RenderLiving<EntityCloud> {
+public class RenderCloud extends LivingEntityRenderer<CloudEntity, ModelCloud> {
     private static final Identifier cloud = new Identifier("unicopia", "textures/entity/clouds.png");
     private static final Identifier rainCloud = new Identifier("unicopia", "textures/entity/clouds_storm.png");
 
-    public RenderCloud(RenderManager rendermanagerIn) {
-        super(rendermanagerIn, new ModelCloud(), 1f);
+    public RenderCloud(EntityRenderDispatcher manager, EntityRendererRegistry.Context context) {
+        super(manager, new ModelCloud(), 1f);
     }
 
     @Override
-    public float prepareScale(EntityCloud entity, float par2) {
+    public float prepareScale(CloudEntity entity, float par2) {
         float scale = entity.getCloudSize();
 
         GL11.glScalef(scale, scale, scale);
@@ -28,7 +28,7 @@ public class RenderCloud extends RenderLiving<EntityCloud> {
     }
 
     @Override
-    protected void renderModel(EntityCloud entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
+    protected void renderModel(CloudEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
 
         if (!entity.isDead) {
             GlStateManager.pushMatrix();
@@ -54,7 +54,7 @@ public class RenderCloud extends RenderLiving<EntityCloud> {
     }
 
     @Override
-    protected Identifier getEntityTexture(EntityCloud entity) {
+    protected Identifier getEntityTexture(CloudEntity entity) {
         if (entity.getIsRaining() && entity.getIsThundering()) {
             return rainCloud;
         }
@@ -62,12 +62,12 @@ public class RenderCloud extends RenderLiving<EntityCloud> {
     }
 
     @Override
-    protected int getColorMultiplier(EntityCloud par1LivingEntity, float yaw, float pitch) {
+    protected int getColorMultiplier(CloudEntity par1LivingEntity, float yaw, float pitch) {
         return 0;
     }
 
     @Override
-    protected float getDeathMaxRotation(EntityCloud par1LivingEntity) {
+    protected float getDeathMaxRotation(CloudEntity par1LivingEntity) {
         return 0;
     }
 }

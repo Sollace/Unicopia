@@ -5,39 +5,43 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
-import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.IPower;
+import com.minelittlepony.unicopia.particles.ParticleEmitter;
 import com.minelittlepony.util.MagicalDamageSource;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.EntityXPOrb;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.MobEffects;
-import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.datasync.TrackedData;
-import net.minecraft.network.datasync.TrackedDataHandlerRegistry;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumHandSide;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundEvent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.particle.BlockStateParticleEffect;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Arm;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraftforge.event.ForgeEventFactory;
 
 public class EntityCuccoon extends LivingEntity implements IMagicals, IInAnimate {
 
@@ -47,12 +51,10 @@ public class EntityCuccoon extends LivingEntity implements IMagicals, IInAnimate
 
     private boolean captiveLastSneakState;
 
-    public EntityCuccoon(World world) {
-        super(world);
-        setSize(0.6f, 0.6f);
-
-        width = 1.5F;
-        height = 1.6F;
+    public EntityCuccoon(EntityType<EntityCuccoon> type, World world) {
+        super(type, world);
+        //width = 1.5F;
+        //height = 1.6F;
     }
 
     @Override
@@ -62,11 +64,11 @@ public class EntityCuccoon extends LivingEntity implements IMagicals, IInAnimate
     }
 
     public int getStruggleCount() {
-        return getDataManager().get(STRUGGLE_COUNT) % 6;
+        return getDataTracker().get(STRUGGLE_COUNT) % 6;
     }
 
     public void setStruggleCount(int count) {
-        getDataManager().set(STRUGGLE_COUNT, count % 6);
+        getDataTracker().set(STRUGGLE_COUNT, count % 6);
     }
 
     @Override
@@ -81,50 +83,40 @@ public class EntityCuccoon extends LivingEntity implements IMagicals, IInAnimate
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean damage(DamageSource source, float amount) {
 
-        if (Predicates.BUGGY.test(source.getTrueSource())) {
+        if (EquinePredicates.BUGGY.test(source.getSource())) {
             amount = 0;
         }
 
-        return super.attackEntityFrom(source, amount);
+        return super.damage(source, amount);
     }
 
     @Override
-    protected boolean canBeRidden(Entity entity) {
-        return super.canBeRidden(entity)
+    protected boolean canAddPassenger(Entity entity) {
+        return super.canAddPassenger(entity)
                 && !entity.isSneaking()
-                && !isBeingRidden()
+                && !hasPassengers()
                 && entity instanceof LivingEntity
-                && !Predicates.BUGGY.test(entity);
+                && !EquinePredicates.BUGGY.test(entity);
     }
 
     @Override
-    public boolean canRenderOnFire() {
+    public boolean doesRenderOnFire() {
         return false;
     }
 
     @Override
-    protected boolean canTriggerWalking() {
-        return false;
-    }
-
-    @Override
-    public double getMountedYOffset() {
+    public double getMountedHeightOffset() {
         return 0;
     }
 
     @Override
-    public boolean canPassengerSteer() {
-        return false;
-    }
+    public void tick() {
+        super.tick();
 
-    @Override
-    public void onUpdate() {
-        super.onUpdate();
-
-        if (isBeingRidden()) {
-            Entity passenger = getPassengers().get(0);
+        if (hasPassengers()) {
+            Entity passenger = getPrimaryPassenger();
 
             boolean sneaking = passenger.isSneaking();
 
@@ -137,76 +129,75 @@ public class EntityCuccoon extends LivingEntity implements IMagicals, IInAnimate
             if (passenger instanceof LivingEntity) {
                 LivingEntity living = (LivingEntity)passenger;
 
-                if (!living.isPotionActive(MobEffects.REGENERATION) && living.getHealth() < living.getMaxHealth()) {
-                    living.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 20, 2));
+                if (!living.hasStatusEffect(StatusEffects.REGENERATION) && living.getHealth() < living.getHealthMaximum()) {
+                    living.addPotionEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 20, 2));
                 }
 
-                if (!living.isPotionActive(MobEffects.SLOWNESS) && living.getHealth() < living.getMaxHealth()) {
-                    living.addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 2000, 4));
+                if (!living.hasStatusEffect(StatusEffects.SLOWNESS) && living.getHealth() < living.getHealthMaximum()) {
+                    living.addPotionEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 2000, 4));
                 }
             }
         }
 
         if (world.isClient) {
-            double x = posX + width * world.rand.nextFloat() - width/2;
-            double y = posY + height * world.rand.nextFloat();
-            double z = posZ + width * world.rand.nextFloat() - width/2;
+            double x = this.x + width * random.nextFloat() - width/2;
+            double y = this.y + height * random.nextFloat();
+            double z = this.z + width * random.nextFloat() - width/2;
 
-            world.spawnParticle(EnumParticleTypes.DRIP_LAVA, x, y, z, 0, 0, 0);
+            world.addParticle(ParticleTypes.DRIPPING_LAVA, x, y, z, 0, 0, 0);
         }
     }
 
     @Override
-    public EnumActionResult applyPlayerInteraction(PlayerEntity player, Vec3d vec, EnumHand hand) {
+    public ActionResult interactAt(PlayerEntity player, Vec3d vec, Hand hand) {
 
-        if (hand == EnumHand.MAIN_HAND && Predicates.BUGGY.test(player)) {
+        if (hand == Hand.MAIN_HAND && EquinePredicates.BUGGY.test(player)) {
 
-            if (isBeingRidden()) {
-                Entity passenger = getPassengers().get(0);
+            if (hasPassengers()) {
+                Entity passenger = getPrimaryPassenger();
 
-                if (player.canEat(false) || player.getHealth() < player.getMaxHealth()) {
+                if (player.canConsume(false) || player.getHealth() < player.getHealthMaximum()) {
                     DamageSource d = MagicalDamageSource.causePlayerDamage("feed", player);
-
 
                     IPower.spawnParticles(UParticles.CHANGELING_MAGIC, this, 7);
 
                     if (passenger instanceof LivingEntity) {
-                        if (player.isPotionActive(MobEffects.NAUSEA)) {
-                            ((LivingEntity)passenger).addPotionEffect(player.removeActivePotionEffect(MobEffects.NAUSEA));
-                        } else if (world.rand.nextInt(2300) == 0) {
-                            ((LivingEntity)passenger).addPotionEffect(new PotionEffect(MobEffects.WITHER, 20, 1));
+                        if (player.hasStatusEffect(StatusEffects.NAUSEA)) {
+                            ((LivingEntity)passenger).addPotionEffect(player.removePotionEffect(StatusEffects.NAUSEA));
+                        } else if (random.nextInt(2300) == 0) {
+                            ((LivingEntity)passenger).addPotionEffect(new StatusEffectInstance(StatusEffects.WITHER, 20, 1));
                         }
                     }
 
                     if (passenger instanceof PlayerEntity) {
-                        if (!player.isPotionActive(MobEffects.HEALTH_BOOST)) {
-                            player.addPotionEffect(new PotionEffect(MobEffects.HEALTH_BOOST, 13000, 1));
+                        if (!player.hasStatusEffect(StatusEffects.HEALTH_BOOST)) {
+                            player.addPotionEffect(new StatusEffectInstance(StatusEffects.HEALTH_BOOST, 13000, 1));
                         }
                     }
 
-                    passenger.attackEntityFrom(d, 5);
+                    passenger.damage(d, 5);
 
-                    if (player.canEat(false)) {
-                        player.getFoodStats().addStats(5, 0);
+                    if (player.canConsume(false)) {
+                        player.getHungerManager().add(5, 0);
                     } else {
                         player.heal(5);
                     }
 
-                    return EnumActionResult.SUCCESS;
+                    return ActionResult.SUCCESS;
                 }
             }
         }
 
-        return super.applyPlayerInteraction(player, vec, hand);
+        return super.interactAt(player, vec, hand);
     }
 
     public float getBreatheAmount(float stutter) {
-        return MathHelper.sin((ticksExisted + stutter) / 40) / 2
+        return MathHelper.sin((age + stutter) / 40) / 2
                 + hurtTime / 10F;
     }
 
     @Override
-    public boolean attackable() {
+    public boolean isAttackable() {
         return false;
     }
 
@@ -214,23 +205,13 @@ public class EntityCuccoon extends LivingEntity implements IMagicals, IInAnimate
         if (captive.isSneaking() != captiveLastSneakState) {
             setStruggleCount(getStruggleCount() + 1);
 
-            for (int k = 0; k < 20; k++) {
-                double d2 = rand.nextGaussian() * 0.02;
-                double d0 = rand.nextGaussian() * 0.02;
-                double d1 = rand.nextGaussian() * 0.02;
-
-                world.spawnParticle(EnumParticleTypes.BLOCK_CRACK,
-                        posX + rand.nextFloat() * width * 2 - width,
-                        posY + rand.nextFloat() * height,
-                        posZ + rand.nextFloat() * width * 2 - width,
-                        d2, d0, d1, Block.getStateId(Blocks.SLIME_BLOCK.getDefaultState()));
-            }
+            spawnSlimeParticles();
 
             captive.playSound(USounds.SLIME_RETRACT, 1, 1);
             this.hurtTime += 15;
 
             if (getStruggleCount() == 0) {
-                setDead();
+                remove();
 
                 return true;
             }
@@ -239,47 +220,53 @@ public class EntityCuccoon extends LivingEntity implements IMagicals, IInAnimate
         return false;
     }
 
-    @Override
-    protected void onDeathUpdate() {
-        if (++deathTime == 20) {
-            if (!world.isClient && (isPlayer() || recentlyHit > 0 && canDropLoot() && world.getGameRules().getBoolean("doMobLoot"))) {
-                int i = ForgeEventFactory.getExperienceDrop(this, attackingPlayer, getExperiencePoints(attackingPlayer));
+    private void spawnSlimeParticles() {
+        EntityDimensions dims = getDimensions(getPose());
 
-                while (i > 0) {
-                    int j = EntityXPOrb.getXPSplit(i);
+        for (int k = 0; k < 20; k++) {
+            double d2 = random.nextGaussian() * 0.02;
+            double d0 = random.nextGaussian() * 0.02;
+            double d1 = random.nextGaussian() * 0.02;
 
-                    i -= j;
-
-                    world.spawnEntity(new EntityXPOrb(world, posX, posY, posZ, j));
-                }
-
-                this.dismountRidingEntity();
-            }
-
-            setDead();
-
-            for (int k = 0; k < 20; k++) {
-                double d2 = rand.nextGaussian() * 0.02;
-                double d0 = rand.nextGaussian() * 0.02;
-                double d1 = rand.nextGaussian() * 0.02;
-
-                world.spawnParticle(EnumParticleTypes.BLOCK_CRACK,
-                        posX + rand.nextFloat() * width * 2 - width,
-                        posY + rand.nextFloat() * height,
-                        posZ + rand.nextFloat() * width * 2 - width,
-                        d2, d0, d1, Block.getStateId(Blocks.SLIME_BLOCK.getDefaultState()));
-            }
+            world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.SLIME_BLOCK.getDefaultState()),
+                    x + random.nextFloat() * dims.width * 2 - dims.width,
+                    y + random.nextFloat() * dims.height,
+                    z + random.nextFloat() * dims.width * 2 - dims.width,
+                    d2, d0, d1);
         }
     }
 
+    @Override
+    protected void onDeathUpdate() {
+        if (++deathTime == 20) {
+            if (!world.isClient && lastAttackedTicks > 0 && canDropLootAndXp() && world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+                int i = getCurrentExperience(attackingPlayer);
+
+                while (i > 0) {
+                    int j = ExperienceOrbEntity.roundToOrbSize(i);
+
+                    i -= j;
+
+                    world.spawnEntity(new ExperienceOrbEntity(world, x, y, z, j));
+                }
+
+                removeAllPassengers();
+            }
+
+            remove();
+            spawnSlimeParticles();
+        }
+    }
+
+    @Override
     @Nullable
-    public Box getCollisionBox(Entity entity) {
-        return entity.canBeCollidedWith() ? entity.getEntityBoundingBox() : null;
+    public Box getHardCollisionBox(Entity entity) {
+        return entity.collides() ? entity.getBoundingBox() : null;
     }
 
     @Nullable
     public Box getCollisionBoundingBox() {
-        return getEntityBoundingBox().shrink(0.2);
+        return getBoundingBox().contract(0.2);
     }
 
     @Override
@@ -293,37 +280,26 @@ public class EntityCuccoon extends LivingEntity implements IMagicals, IInAnimate
     }
 
     @Override
-    public void readEntityFromNBT(NBTTagCompound compound) {
-        super.readEntityFromNBT(compound);
-    }
-
-    @Override
-    public void writeEntityToNBT(NBTTagCompound compound) {
-        super.writeEntityToNBT(compound);
-    }
-
-    @Override
     public boolean canInteract(Race race) {
         return race == Race.CHANGELING;
     }
 
     @Override
-    public Iterable<ItemStack> getArmorInventoryList() {
+    public Iterable<ItemStack> getArmorItems() {
         return armour;
     }
 
     @Override
-    public ItemStack getItemStackFromSlot(EntityEquipmentSlot slotIn) {
+    public ItemStack getEquippedStack(EquipmentSlot slot) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack) {
-
+    public void setEquippedStack(EquipmentSlot slot, ItemStack stack) {
     }
 
     @Override
-    public EnumHandSide getPrimaryHand() {
-        return EnumHandSide.LEFT;
+    public Arm getMainArm() {
+        return Arm.LEFT;
     }
 }

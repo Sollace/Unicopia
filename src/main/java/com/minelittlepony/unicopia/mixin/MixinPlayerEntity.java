@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.ducks.IRaceContainerHolder;
 import com.minelittlepony.unicopia.entity.IEntity;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
-import com.minelittlepony.unicopia.entity.player.PlayerCapabilities;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.PlayerCapabilities;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.entity.ItemEntity;

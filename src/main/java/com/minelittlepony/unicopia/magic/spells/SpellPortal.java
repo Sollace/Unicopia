@@ -7,10 +7,9 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 import com.minelittlepony.unicopia.entity.IMagicals;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.ICaster;
 import com.minelittlepony.unicopia.magic.IMagicEffect;
@@ -19,18 +18,18 @@ import com.minelittlepony.util.InbtSerialisable;
 import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.shape.Sphere;
 
-import net.fabricmc.fabric.api.particles.ParticleTypeRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.item.ItemUsageContext;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 
 public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseable {
 
@@ -105,11 +104,11 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseab
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ) {
-        position = pos.offset(side);
-        axis = Direction.getDirectionFromEntityLiving(position, player).getAxis();
+    public SpellCastResult onUse(ItemUsageContext context, Affinity affinity) {
+        position = context.getBlockPos().offset(context.getSide());
+        axis = context.getPlayerFacing().getAxis();
 
-        IPlayer prop = SpeciesList.instance().getPlayer(player);
+        IPlayer prop = SpeciesList.instance().getPlayer(context.getPlayer());
 
         SpellPortal other = prop.getEffect(SpellPortal.class, true);
         if (other != null) {
@@ -151,7 +150,7 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseab
     public boolean update(ICaster<?> source) {
         if (!source.getWorld().isClient) {
             getDestinationPortal().ifPresent(dest ->
-                source.getWorld().getEntitiesWithinAABB(Entity.class, getTeleportBounds().offset(source.getOrigin())).stream()
+                source.getWorld().getEntities(Entity.class, getTeleportBounds().offset(source.getOrigin())).stream()
                     .filter(this::canTeleport)
                     .forEach(i -> teleportEntity(source, dest, i)));
         }
@@ -161,9 +160,10 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseab
 
     @Override
     public void render(ICaster<?> source) {
-        source.spawnParticles(getPortalZone(), 10, pos -> {
+        // TODO:
+        /*source.spawnParticles(getPortalZone(), 10, pos -> {
             ParticleTypeRegistry.getTnstance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0, getTint());
-        });
+        });*/
     }
 
     public IShape getPortalZone() {
@@ -184,7 +184,7 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseab
     }
 
     protected boolean canTeleport(Entity i) {
-        return !(i instanceof IMagicals) && i.timeUntilPortal == 0;
+        return !(i instanceof IMagicals) && i.portalCooldown == 0;
     }
 
     protected void teleportEntity(ICaster<?> source, SpellPortal dest, Entity i) {
@@ -196,40 +196,40 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseab
 
         Direction offset = i.getHorizontalFacing();
 
-        double destX = dest.position.getX() + (i.posX - source.getOrigin().getX());
-        double destY = dest.position.getY() + (i.posY - source.getOrigin().getY());
-        double destZ = dest.position.getZ() + (i.posZ - source.getOrigin().getZ());
+        double destX = dest.position.getX() + (i.x - source.getOrigin().getX());
+        double destY = dest.position.getY() + (i.y - source.getOrigin().getY());
+        double destZ = dest.position.getZ() + (i.z - source.getOrigin().getZ());
 
         if (axis != Direction.Axis.Y) {
-            destX += offset.getXOffset();
+            destX += offset.getOffsetX();
             destY++;
-            destZ += offset.getZOffset();
+            destZ += offset.getOffsetZ();
         }
 
-        i.timeUntilPortal = i.getPortalCooldown();
+        i.portalCooldown = i.getDefaultPortalCooldown();
 
-        i.getEntityWorld().playSound(null, i.getPosition(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1, 1);
+        i.getEntityWorld().playSound(null, i.getBlockPos(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1, 1);
 
         if (dest.axis != axis) {
             if (xi != dest.axis) {
-                i.setPositionAndRotation(i.posX, i.posY, i.posZ, i.rotationYaw + 90, i.rotationPitch);
+                i.setPositionAndAngles(i.x, i.y, i.z, i.yaw + 90, i.pitch);
             }
         }
 
-        i.setPositionAndUpdate(destX, destY, destZ);
-        i.getEntityWorld().playSound(null, i.getPosition(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1, 1);
+        i.setPosition(destX, destY, destZ);
+        i.getEntityWorld().playSound(null, i.getBlockPos(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1, 1);
     }
 
     /**
      * Converts a possibly dead portal effect into a live one by forcing the owner entity to load.
      */
     protected SpellPortal getActualInstance() {
-        if (world instanceof WorldServer) {
-            Entity i = ((WorldServer)world).getEntityFromUuid(casterId);
+        if (world instanceof ServerWorld) {
+            Entity i = ((ServerWorld)world).getEntity(casterId);
 
             if (i == null) {
                 world.getChunk(position);
-                i = ((WorldServer)world).getEntityFromUuid(casterId);
+                i = ((ServerWorld)world).getEntity(casterId);
             }
 
             if (i instanceof SpellcastEntity) {
@@ -249,18 +249,18 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseab
      */
     public Optional<SpellPortal> getDestinationPortal() {
 
-        if (getDead()) {
+        if (isDead()) {
             return Optional.empty();
         }
 
         Entity i = null;
 
         if (destinationId != null) {
-            i = ((WorldServer)world).getEntityFromUuid(destinationId);
+            i = ((ServerWorld)world).getEntity(destinationId);
 
             if (i == null && destinationPos != null) {
                 world.getChunk(destinationPos);
-                i = ((WorldServer)world).getEntityFromUuid(destinationId);
+                i = ((ServerWorld)world).getEntity(destinationId);
 
                 if (i == null) {
                     setDead();
@@ -278,7 +278,7 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseab
             }
         }
 
-        if (sibling != null && sibling.getDead()) {
+        if (sibling != null && sibling.isDead()) {
             setDead();
         }
 
@@ -290,42 +290,42 @@ public class SpellPortal extends AbstractSpell.RangedAreaSpell implements IUseab
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound compound) {
+    public void toNBT(CompoundTag compound) {
         super.toNBT(compound);
 
         if (destinationPos != null) {
-            compound.setTag("destination", InbtSerialisable.writeBlockPos(destinationPos));
+            compound.put("destination", InbtSerialisable.writeBlockPos(destinationPos));
         }
 
         if (casterId != null) {
-            compound.setUniqueId("casterId", casterId);
+            compound.putUuid("casterId", casterId);
         }
 
         if (destinationId != null) {
-            compound.setUniqueId("destinationId", destinationId);
+            compound.putUuid("destinationId", destinationId);
         }
 
-        compound.setString("axis", axis.getName2());
+        compound.putString("axis", axis.getName());
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
+    public void fromNBT(CompoundTag compound) {
         super.fromNBT(compound);
 
-        if (compound.hasKey("destination")) {
-            destinationPos = InbtSerialisable.readBlockPos(compound.getCompoundTag("destination"));
+        if (compound.containsKey("destination")) {
+            destinationPos = InbtSerialisable.readBlockPos(compound.getCompound("destination"));
         }
 
-        if (compound.hasUniqueId("casterId")) {
-            casterId = compound.getUniqueId("casterId");
+        if (compound.containsKey("casterId")) {
+            casterId = compound.getUuid("casterId");
         }
 
-        if (compound.hasUniqueId("destinationId")) {
-            destinationId = compound.getUniqueId("destinationId");
+        if (compound.containsKey("destinationId")) {
+            destinationId = compound.getUuid("destinationId");
         }
 
-        if (compound.hasKey("axis")) {
-            axis = Direction.Axis.byName(compound.getString("axis").toLowerCase(Locale.ROOT));
+        if (compound.containsKey("axis")) {
+            axis = Direction.Axis.fromName(compound.getString("axis").toLowerCase(Locale.ROOT));
 
             if (axis == null) {
                 axis = Direction.Axis.Y;

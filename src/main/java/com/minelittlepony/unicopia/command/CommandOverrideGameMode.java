@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.command;
 
 import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandGameMode;

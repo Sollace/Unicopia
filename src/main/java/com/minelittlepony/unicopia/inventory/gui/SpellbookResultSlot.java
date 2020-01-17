@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.inventory.gui;
 import com.minelittlepony.unicopia.enchanting.IPageOwner;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
 import com.minelittlepony.unicopia.enchanting.SpellCraftingEvent;
-import com.minelittlepony.unicopia.item.ItemSpell;
+import com.minelittlepony.unicopia.item.MagicGemItem;
 import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -90,7 +90,7 @@ public class SpellbookResultSlot extends SpellBookContainer.SpellbookSlot {
 
     @Override
     public boolean canInsert(ItemStack stack) {
-        return (stack.getItem() instanceof ItemSpell || stack.getItem() instanceof MusicDiscItem)
+        return (stack.getItem() instanceof MagicGemItem || stack.getItem() instanceof MusicDiscItem)
                 && !SpellRegistry.stackHasEnchantment(stack);
     }
 

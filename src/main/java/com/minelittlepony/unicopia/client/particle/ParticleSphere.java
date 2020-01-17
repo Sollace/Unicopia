@@ -7,6 +7,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
@@ -74,12 +75,12 @@ public class ParticleSphere extends Particle implements IAttachableParticle {
         super.tick();
 
         if (caster != null) {
-            if (!caster.hasEffect() || caster.getEffect().getDead() || caster.getEntity().removed) {
+            if (!caster.hasEffect() || caster.getEffect().isDead() || caster.getEntity().removed) {
                 markDead();
             } else {
                 Entity e = caster.getEntity();
 
-                if (!caster.getWorld().loadedEntityList.contains(caster.getEntity())) {
+                if (caster.getWorld().getEntityById(e.getEntityId()) == null) {
                     markDead();
                 }
 

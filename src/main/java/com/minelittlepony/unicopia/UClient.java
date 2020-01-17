@@ -5,8 +5,9 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.entity.EntityFakeServerPlayer;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;

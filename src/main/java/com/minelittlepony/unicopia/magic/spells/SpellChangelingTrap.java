@@ -123,7 +123,7 @@ public class SpellChangelingTrap extends AbstractSpell implements ITossedEffect,
 
         StatusEffectInstance SLIME_REGEN = new StatusEffectInstance(StatusEffects.REGENERATION, 0);
 
-        entity.addPotionEffect(SLIME_REGEN);
+        entity.addStatusEffectInstance(SLIME_REGEN);
 
         if (caster.isLocal()) {
             if (struggleCounter <= 0) {

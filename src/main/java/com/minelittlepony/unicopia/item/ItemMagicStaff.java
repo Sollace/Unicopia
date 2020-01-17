@@ -5,9 +5,9 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 import com.minelittlepony.unicopia.projectile.ITossableItem;
 import com.minelittlepony.unicopia.spell.CasterUtils;
 import com.minelittlepony.unicopia.spell.IAligned;
@@ -53,7 +53,7 @@ public class ItemMagicStaff extends ItemStaff implements IAligned, ITossableItem
 
     @Override
     public TypedActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, EnumHand hand) {
-        if (Predicates.MAGI.test(player) && hand == EnumHand.MAIN_HAND) {
+        if (EquinePredicates.MAGI.test(player) && hand == EnumHand.MAIN_HAND) {
             ItemStack itemstack =  player.getStackInHand(hand);
 
             player.setActiveHand(hand);
@@ -66,7 +66,7 @@ public class ItemMagicStaff extends ItemStaff implements IAligned, ITossableItem
 
     @Override
     public void onPlayerStoppedUsing(ItemStack itemstack, World world, LivingEntity entity, int timeLeft) {
-        if (Predicates.MAGI.test(entity) && entity instanceof PlayerEntity) {
+        if (EquinePredicates.MAGI.test(entity) && entity instanceof PlayerEntity) {
 
             int i = getMaxItemUseDuration(itemstack) - timeLeft;
 

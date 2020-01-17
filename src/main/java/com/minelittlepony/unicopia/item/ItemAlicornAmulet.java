@@ -9,7 +9,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UClient;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 import com.minelittlepony.unicopia.magic.items.IDependable;
 import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.unicopia.world.UWorld;
@@ -28,7 +28,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
@@ -135,10 +135,10 @@ public class ItemAlicornAmulet extends ItemArmor implements IDependable {
     public String getItemStackDisplayName(ItemStack stack) {
 
         if (!stack.hasTagCompound()) {
-            stack.setTagCompound(new NBTTagCompound());
+            stack.setTagCompound(new CompoundTag());
         }
 
-        NBTTagCompound compound = stack.getTagCompound();
+        CompoundTag compound = stack.getTagCompound();
 
         int hideFlags = 0;
 

@@ -15,11 +15,11 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 
 @IMessage.Id(1)
 public class MsgPlayerCapabilities implements IMessage, IMessageHandler<MsgPlayerCapabilities> {
@@ -43,7 +43,7 @@ public class MsgPlayerCapabilities implements IMessage, IMessageHandler<MsgPlaye
         senderId = player.getOwner().getUniqueID();
 
         try (ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
-            NBTTagCompound nbt = player.toNBT();
+            CompoundTag nbt = player.toNBT();
 
             CompressedStreamTools.write(nbt, new DataOutputStream(bytes));
 
@@ -57,13 +57,13 @@ public class MsgPlayerCapabilities implements IMessage, IMessageHandler<MsgPlaye
         PlayerEntity self = UClient.instance().getPlayerByUUID(senderId);
 
         if (self == null) {
-            Unicopia.log.warn("[Unicopia] [CLIENT] [MsgPlayerCapabilities] Player with id %s was not found!\n", senderId.toString());
+            Unicopia.LOGGER.warn("[Unicopia] [CLIENT] [MsgPlayerCapabilities] Player with id %s was not found!\n", senderId.toString());
         } else {
             IPlayer player = SpeciesList.instance().getPlayer(self);
 
             if (compoundTag.length > 0) {
                 try (ByteArrayInputStream input = new ByteArrayInputStream(compoundTag)) {
-                    NBTTagCompound nbt = CompressedStreamTools.read(new DataInputStream(input));
+                    CompoundTag nbt = CompressedStreamTools.read(new DataInputStream(input));
 
                     player.fromNBT(nbt);
                 } catch (IOException e) {

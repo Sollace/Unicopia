@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
-import com.minelittlepony.unicopia.item.ItemSpell;
+import com.minelittlepony.unicopia.item.MagicGemItem;
 import com.minelittlepony.unicopia.spell.SpellAffinity;
 import com.minelittlepony.unicopia.spell.SpellRegistry;
 
@@ -50,8 +50,8 @@ public class SpellCraftingEvent {
 
         @Override
         public boolean matches(IPageOwner prop, Event event) {
-            if (!event.stack.isEmpty() && event.stack.getItem() instanceof ItemSpell) {
-                return ((ItemSpell)event.stack.getItem()).getAffinity() == affinity
+            if (!event.stack.isEmpty() && event.stack.getItem() instanceof MagicGemItem) {
+                return ((MagicGemItem)event.stack.getItem()).getAffinity() == affinity
                     && SpellRegistry.getKeyFromStack(event.stack).equals(spell);
             }
 

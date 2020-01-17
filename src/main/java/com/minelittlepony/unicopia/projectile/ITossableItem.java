@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.projectile;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.entity.item.AdvancedProjectileEntity;
+import com.minelittlepony.unicopia.entity.AdvancedProjectileEntity;
 import com.minelittlepony.unicopia.magic.items.IDispensable;
 
 import net.minecraft.block.DispenserBlock;

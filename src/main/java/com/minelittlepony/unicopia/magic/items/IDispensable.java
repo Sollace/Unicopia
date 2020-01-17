@@ -1,6 +1,9 @@
 package com.minelittlepony.unicopia.magic.items;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.block.Material;
+import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,7 +22,7 @@ public interface IDispensable {
                 TypedActionResult<ItemStack> result = dispenseStack(source, stack);
 
                 if (result.getResult() != ActionResult.SUCCESS) {
-                    return super.dispense(source, stack);
+                    return super.dispenseSilently(source, stack);
                 }
 
                 return result.getValue();
@@ -33,4 +36,20 @@ public interface IDispensable {
      * Called to dispense this stack.
      */
     TypedActionResult<ItemStack> dispenseStack(BlockPointer source, ItemStack stack);
+
+    static DispenserBehavior getBehaviorForItem(ItemStack stack) {
+        return DispenserAccess.INSTANCE.getBehaviorForItem(stack);
+    }
+}
+
+class DispenserAccess extends DispenserBlock {
+    static final DispenserAccess INSTANCE = new DispenserAccess();
+    private DispenserAccess() {
+        super(Block.Settings.of(Material.BUBBLE_COLUMN));
+    }
+
+    @Override
+    public DispenserBehavior getBehaviorForItem(ItemStack stack) {
+        return super.getBehaviorForItem(stack);
+    }
 }

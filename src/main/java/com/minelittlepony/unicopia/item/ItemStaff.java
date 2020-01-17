@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.util.lang.ClientLocale;
 
 import net.minecraft.block.Block;
@@ -66,7 +66,7 @@ public class ItemStaff extends ItemSword {
     public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         super.hitEntity(stack, target, attacker);
 
-        if (Predicates.MAGI.test(attacker)) {
+        if (EquinePredicates.MAGI.test(attacker)) {
             return castContainedEffect(stack, target, attacker);
         }
 

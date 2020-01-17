@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.function.Function;
 
-import com.minelittlepony.unicopia.entity.EntityCloud;
+import com.minelittlepony.unicopia.entity.CloudEntity;
 import com.minelittlepony.unicopia.magic.items.IDispensable;
 
 import net.minecraft.block.DispenserBlock;
@@ -23,9 +23,9 @@ import net.minecraft.world.World;
 
 public class CloudPlacerItem extends Item implements IDispensable {
 
-    private final Function<World, EntityCloud> cloudSupplier;
+    private final Function<World, CloudEntity> cloudSupplier;
 
-    public CloudPlacerItem(Function<World, EntityCloud> cloudSupplier) {
+    public CloudPlacerItem(Function<World, CloudEntity> cloudSupplier) {
         super(new Item.Settings()
                 .group(ItemGroup.MATERIALS)
                 .maxCount(16)
@@ -36,7 +36,7 @@ public class CloudPlacerItem extends Item implements IDispensable {
     }
 
     public void placeCloud(World world, BlockPos pos) {
-        EntityCloud cloud = cloudSupplier.apply(world);
+        CloudEntity cloud = cloudSupplier.apply(world);
         cloud.setPositionAndAngles(pos, 0, 0);
         world.spawnEntity(cloud);
     }

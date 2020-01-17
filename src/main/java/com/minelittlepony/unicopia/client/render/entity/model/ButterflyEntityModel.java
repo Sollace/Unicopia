@@ -1,13 +1,13 @@
 package com.minelittlepony.unicopia.client.render.entity.model;
 
-import com.minelittlepony.unicopia.entity.EntityButterfly;
+import com.minelittlepony.unicopia.entity.ButterflyEntity;
 import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.util.math.MathHelper;
 
-public class ButterflyEntityModel extends EntityModel<EntityButterfly> {
+public class ButterflyEntityModel extends EntityModel<ButterflyEntity> {
 
     private Cuboid body;
 
@@ -55,7 +55,7 @@ public class ButterflyEntityModel extends EntityModel<EntityButterfly> {
     }
 
     @Override
-    public void render(EntityButterfly entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+    public void render(ButterflyEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 
         setAngles(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
 
@@ -67,7 +67,7 @@ public class ButterflyEntityModel extends EntityModel<EntityButterfly> {
     }
 
     @Override
-    public void setAngles(EntityButterfly entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
+    public void setAngles(ButterflyEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
 
         float flap = MathHelper.cos(ageInTicks) * (float)Math.PI / 4;
 

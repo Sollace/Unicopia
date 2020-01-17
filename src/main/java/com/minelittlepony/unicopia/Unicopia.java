@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia;
 
+import net.fabricmc.api.ModInitializer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -10,28 +12,26 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.ability.powers.PowersRegistry;
-import com.minelittlepony.unicopia.advancements.UAdvancements;
+import com.minelittlepony.unicopia.ability.PowersRegistry;
 import com.minelittlepony.unicopia.command.Commands;
-import com.minelittlepony.unicopia.enchanting.AffineIngredients;
 import com.minelittlepony.unicopia.enchanting.Pages;
-import com.minelittlepony.unicopia.enchanting.SpecialRecipe;
-import com.minelittlepony.unicopia.enchanting.SpellRecipe;
+import com.minelittlepony.unicopia.enchanting.recipe.AffineIngredients;
+import com.minelittlepony.unicopia.enchanting.recipe.SpecialRecipe;
+import com.minelittlepony.unicopia.enchanting.recipe.SpellRecipe;
 import com.minelittlepony.unicopia.inventory.gui.SpellBookContainer;
 import com.minelittlepony.unicopia.inventory.gui.GuiSpellBook;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.util.crafting.CraftingManager;
-import com.minelittlepony.unicopia.world.Hooks;
 import com.minelittlepony.unicopia.world.UWorld;
 
-public class Unicopia implements IGuiHandler {
+public class Unicopia implements ModInitializer {
     public static final String MODID = "unicopia";
     public static final String NAME = "@NAME@";
     public static final String VERSION = "@VERSION@";
 
-    public static final Logger log = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
 
     private static IChannel channel;
 
@@ -47,6 +47,7 @@ public class Unicopia implements IGuiHandler {
         }
     };
 
+    @Deprecated
     public static CraftingManager getCraftingManager() {
         return craftingManager;
     }
@@ -55,21 +56,10 @@ public class Unicopia implements IGuiHandler {
         return channel;
     }
 
-    public void preInit(FMLPreInitializationEvent event) {
-        UConfig.init(event.getModConfigurationDirectory());
-        UClient.instance().preInit();
-        UWorld.instance().init();
-    }
+    @Override
+    public void onInitialize() {
+        Config.init(event.getModConfigurationDirectory());
 
-    public void onServerCreated(FMLServerAboutToStartEvent event) {
-        Fixes.init(event.getServer().getDataFixer());
-    }
-
-    public void onServerStart(FMLServerStartingEvent event) {
-        Commands.init(event);
-    }
-
-    public void init(FMLInitializationEvent event) {
         channel = JumpingCastle.subscribeTo(MODID, () -> {})
             .listenFor(MsgRequestCapabilities.class)
             .listenFor(MsgPlayerCapabilities.class)
@@ -79,37 +69,21 @@ public class Unicopia implements IGuiHandler {
 
         UAdvancements.init();
 
-        FBS.init();
-
-        NetworkRegistry.INSTANCE.registerGuiHandler(this, this);
-
-        UClient.instance().init();
-    }
-
-    public void postInit(FMLPostInitializationEvent event) {
         craftingManager.load();
 
         Pages.instance().load();
 
-        Biome.REGISTRY.forEach(UEntities::registerSpawnEntries);
+        UBlocks.bootstrap();
+        UItems.bootstrap();
+        Commands.bootstrap();
+
+
+        UWorld.instance().init();
+
+        UClient.instance().preInit();
+        UClient.instance().init();
         UClient.instance().postInit();
 
         UItems.fixRecipes();
-    }
-
-    @Override
-    public Object getServerGuiElement(int ID, PlayerEntity player, World world, int x, int y, int z) {
-        switch (ID) {
-            case 0: return new SpellBookContainer(player.inventory, world, new BlockPos(x, y, z));
-            default: return null;
-        }
-    }
-
-    @Override
-    public Object getClientGuiElement(int ID, PlayerEntity player, World world, int x, int y, int z) {
-        switch (ID) {
-            case 0: return new GuiSpellBook(player);
-            default: return null;
-        }
     }
 }

@@ -7,8 +7,7 @@ import com.minelittlepony.unicopia.magic.spells.SpellCastResult;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.world.World;
 
 /**
@@ -32,7 +31,7 @@ public interface IUseable {
      *
      * @return    ActionResult for the type of action to perform
      */
-    SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ);
+    SpellCastResult onUse(ItemUsageContext context, Affinity affinity);
 
     /**
      * Triggered when the player right clicks

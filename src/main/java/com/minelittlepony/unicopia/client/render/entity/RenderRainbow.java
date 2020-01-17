@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.client.render.entity;
 
 import org.lwjgl.opengl.GL11;
 
-import com.minelittlepony.unicopia.entity.EntityRainbow;
+import com.minelittlepony.unicopia.entity.RainbowEntity;
 import com.minelittlepony.util.WorldHelper;
 
 import net.minecraft.client.Minecraft;
@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.Identifier;
 
-public class RenderRainbow extends Render<EntityRainbow> {
+public class RenderRainbow extends Render<RainbowEntity> {
 
     public RenderRainbow(RenderManager renderManager) {
         super(renderManager);
@@ -22,9 +22,9 @@ public class RenderRainbow extends Render<EntityRainbow> {
 
     private static final Identifier TEXTURE = new Identifier("unicopia", "textures/environment/rainbow.png");
 
-    public void doRender(EntityRainbow entity, double x, double y, double z, float entityYaw, float partialTicks) {
-        float distance = MinecraftClient.getInstance().getRenderViewEntity().getDistance(entity);
-        float maxDistance = 16 * MinecraftClient.getInstance().gameSettings.renderDistanceChunks;
+    public void doRender(RainbowEntity entity, double x, double y, double z, float entityYaw, float partialTicks) {
+        float distance = MinecraftClient.instance().getRenderViewEntity().getDistance(entity);
+        float maxDistance = 16 * MinecraftClient.instance().gameSettings.renderDistanceChunks;
         double r = entity.getRadius();
         float light = WorldHelper.getDaylightBrightness(entity.getEntityWorld(), partialTicks);
 
@@ -49,7 +49,7 @@ public class RenderRainbow extends Render<EntityRainbow> {
 
         GlStateManager.color(1, 1, 1, opacity);
 
-        Tessellator tessellator = Tessellator.getInstance();
+        Tessellator tessellator = Tessellator.instance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
 
         bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
@@ -67,7 +67,7 @@ public class RenderRainbow extends Render<EntityRainbow> {
     }
 
     @Override
-    protected Identifier getEntityTexture(EntityRainbow entity) {
+    protected Identifier getEntityTexture(RainbowEntity entity) {
         return TEXTURE;
     }
 

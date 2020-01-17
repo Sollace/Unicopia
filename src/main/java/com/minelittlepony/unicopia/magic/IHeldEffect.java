@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.magic;
 
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 /**
  * Represents a passive spell that does something when held in the player's hand.

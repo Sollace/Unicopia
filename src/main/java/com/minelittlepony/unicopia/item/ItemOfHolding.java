@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.inventory.gui.ContainerOfHolding;
 import com.minelittlepony.unicopia.inventory.gui.InventoryOfHolding;
@@ -72,7 +72,7 @@ public class ItemOfHolding extends Item implements IMagicalItem {
     @Override
     public TypedActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, EnumHand hand) {
 
-        if (!Predicates.MAGI.test(player)) {
+        if (!EquinePredicates.MAGI.test(player)) {
             return super.onItemRightClick(world, player, hand);
         }
 
@@ -99,7 +99,7 @@ public class ItemOfHolding extends Item implements IMagicalItem {
 
                     Box box = new Box(pos.offset(hit.sideHit)).grow(0.5);
 
-                    List<Entity> itemsAround = world.getEntitiesInAABBexcluding(player, box, Predicates.ITEMS);
+                    List<Entity> itemsAround = world.getEntitiesInAABBexcluding(player, box, EquinePredicates.ITEMS);
 
                     if (itemsAround.size() > 0) {
                         InventoryOfHolding inventory = InventoryOfHolding.getInventoryFromStack(stack);

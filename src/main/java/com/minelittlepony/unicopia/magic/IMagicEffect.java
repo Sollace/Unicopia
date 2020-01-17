@@ -26,7 +26,7 @@ public interface IMagicEffect extends InbtSerialisable, IAffine {
     /**
      * Returns true if this spell is dead, and must be cleaned up.
      */
-    boolean getDead();
+    boolean isDead();
 
     /**
      * Returns true if this effect has changes that need to be sent to the client.

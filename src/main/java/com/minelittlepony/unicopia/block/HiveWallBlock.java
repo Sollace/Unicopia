@@ -9,7 +9,7 @@ import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.UMaterials;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 import com.minelittlepony.util.PosHelper;
 import com.minelittlepony.util.shape.IShape;
 import com.minelittlepony.util.shape.Sphere;

@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.client.input;
 
 import com.minelittlepony.unicopia.UClient;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.input.Input;

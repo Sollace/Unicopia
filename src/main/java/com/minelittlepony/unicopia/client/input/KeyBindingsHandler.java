@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.ability.powers.PowersRegistry;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.ability.PowersRegistry;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
 import net.fabricmc.fabric.api.client.keybinding.KeyBindingRegistry;

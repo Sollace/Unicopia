@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.magic.spells;
 
-import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.ICaster;
@@ -41,16 +40,17 @@ public class SpellCharge extends AbstractAttachableSpell {
 
     @Override
     public void render(ICaster<?> source) {
-        if (source.getWorld().rand.nextInt(4 + source.getCurrentLevel() * 4) == 0) {
+        if (source.getWorld().random.nextInt(4 + source.getCurrentLevel() * 4) == 0) {
             SpellcastEntity target = getTarget(source);
 
             if (target != null) {
-                Vec3d start = source.getEntity().getPositionVector();
+                Vec3d start = source.getEntity().getPos();
 
-                IShape line = new Line(start, target.getPositionVector());
+                IShape line = new Line(start, target.getPos());
 
                 source.spawnParticles(line, (int)line.getVolumeOfSpawnableSpace(), pos -> {
-                    ParticleTypeRegistry.getTnstance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos.add(start), 0, 0, 0, getTint());
+                    // TODO:
+                    // ParticleTypeRegistry.getTnstance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos.add(start), 0, 0, 0, getTint());
                 });
             }
 
@@ -70,6 +70,6 @@ public class SpellCharge extends AbstractAttachableSpell {
             }
         }
 
-        return !getDead();
+        return !isDead();
     }
 }

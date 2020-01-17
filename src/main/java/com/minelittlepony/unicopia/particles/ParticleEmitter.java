@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.particles;
 import java.util.EnumSet;
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -17,7 +18,7 @@ public class ParticleEmitter {
 
     static final ParticleEmitter INSTANCE = new ParticleEmitter();
 
-    public static ParticleEmitter getInstance() {
+    public static ParticleEmitter instance() {
         return INSTANCE;
     }
 
@@ -42,6 +43,10 @@ public class ParticleEmitter {
 
             spawnDiggingFX(entity.world, pos, vel, state, 1);
         }
+    }
+
+    public void emitDiggingParticles(Entity entity, Block block) {
+        emitDiggingParticles(entity, block.getDefaultState());
     }
 
     public void emitDiggingParticles(Entity entity, BlockState state) {

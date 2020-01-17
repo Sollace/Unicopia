@@ -69,7 +69,7 @@ public class UWorld implements IWorldGenerator {
             Consumer<World> task;
             while ((task = tickTasks.poll()) != null) {
                 Consumer<World> i = task;
-                Exceptions.logged(() -> i.accept(world), Unicopia.log);
+                Exceptions.logged(() -> i.accept(world), Unicopia.LOGGER);
             }
         }
     }

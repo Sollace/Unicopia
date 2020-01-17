@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.command;
 import java.util.List;
 
 import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 import com.minelittlepony.unicopia.magic.spells.SpellDisguise;
 
 import net.minecraft.command.CommandException;
@@ -64,13 +64,13 @@ class CommandDisguise extends Command {
     }
 
     protected Entity constructDisguiseEntity(World world, String[] args) throws CommandException {
-        NBTTagCompound nbt = getEntityNBT(args);
+        CompoundTag nbt = getEntityNBT(args);
         nbt.setString("id", args[1]);
 
         return AnvilChunkLoader.readWorldEntityPos(nbt, world, 0, 0, 0, false);
     }
 
-    protected NBTTagCompound getEntityNBT(String[] args) throws CommandException {
+    protected CompoundTag getEntityNBT(String[] args) throws CommandException {
         if (args.length > 2) {
             try {
                 return JsonToNBT.getTagFromJson(buildString(args, 2));
@@ -79,7 +79,7 @@ class CommandDisguise extends Command {
             }
         }
 
-        return new NBTTagCompound();
+        return new CompoundTag();
     }
 
     @Override

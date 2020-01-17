@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Streams;
-import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.ducks.IRaceContainerHolder;
 import com.minelittlepony.unicopia.entity.IMagicals;
@@ -60,7 +60,7 @@ public class CasterUtils {
     }
 
     static Stream<ICaster<?>> findAllSpellsInRange(ICaster<?> source, Box bb) {
-        return source.getWorld().getEntities(source.getEntity(), bb, e -> !e.removed && (e instanceof ICaster || Predicates.MAGI.test(e))).stream()
+        return source.getWorld().getEntities(source.getEntity(), bb, e -> !e.removed && (e instanceof ICaster || EquinePredicates.MAGI.test(e))).stream()
             .map(CasterUtils::toCaster)
             .filter(o -> o.isPresent() && o.get() != source)
             .map(Optional::get);
@@ -70,7 +70,7 @@ public class CasterUtils {
         return toCaster(entity)
                 .filter(ICaster::hasEffect)
                 .map(caster -> caster.getEffect(type, false))
-                .filter(e -> !e.getDead());
+                .filter(e -> !e.isDead());
     }
 
     /**

@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.inventory.gui;
 
 import javax.annotation.Nonnull;
 
-import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
@@ -156,7 +156,7 @@ public class SpellBookContainer extends Container {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return Predicates.MAGI.test(player);
+        return EquinePredicates.MAGI.test(player);
     }
 
     static class SpellbookSlot extends Slot {

@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia;
 
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.util.MagicalDamageSource;
 
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
@@ -10,22 +11,20 @@ import net.minecraft.potion.Potion;
 
 public class UEffects {
 
-    public static final DamageSource food_poisoning = new DamageSource("food_poisoning").bypassesArmor();
-
     public static final StatusEffect FOOD_POISONING = new UPotion(Unicopia.MODID, "food_poisoning", true, 3484199)
             .setIconIndex(3, 1)
             .setSilent()
             .setEffectiveness(0.25)
             .setApplicator((p, e, i) -> {
 
-                StatusEffectInstance nausea = e.getActivePotionEffect(StatusEffects.NAUSEA);
+                StatusEffectInstance nausea = e.getStatusEffect(StatusEffects.NAUSEA);
                 if (nausea == null) {
-                    StatusEffect foodEffect = e.getActivePotionEffect(p);
+                    StatusEffectInstance foodEffect = e.getStatusEffect(p);
                     nausea = new StatusEffectInstance(StatusEffects.NAUSEA, foodEffect.getDuration(), foodEffect.getAmplifier(), foodEffect.getIsAmbient(), foodEffect.doesShowParticles());
 
                     e.addPotionEffect(nausea);
                 }
 
-                e.attackEntityFrom(food_poisoning, i);
+                e.damage(MagicalDamageSource.FOOD_POISONING, i);
             });
 }

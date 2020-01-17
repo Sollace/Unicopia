@@ -54,7 +54,7 @@ public interface ICaster<E extends LivingEntity> extends IOwned<E>, ILevelled, I
     default <T extends IMagicEffect> Optional<T> getEffect(Class<T> type) {
         IMagicEffect effect = getEffect();
 
-        if (effect == null || effect.getDead() || !type.isAssignableFrom(effect.getClass())) {
+        if (effect == null || effect.isDead() || !type.isAssignableFrom(effect.getClass())) {
             return Optional.empty();
         }
 
@@ -117,7 +117,7 @@ public interface ICaster<E extends LivingEntity> extends IOwned<E>, ILevelled, I
 
     default void spawnParticles(ParticleEffect particleId, int count) {
         // TODO:
-        // ParticleTypeRegistry.getTnstance().getSpawner().spawnParticles(particleId, getEntity(), count);
+        // ParticleTypeRegistry.getInstance().getSpawner().spawnParticles(particleId, getEntity(), count);
     }
 
     default void spawnParticles(IShape area, int count, Consumer<Vec3d> particleSpawner) {
@@ -134,6 +134,7 @@ public interface ICaster<E extends LivingEntity> extends IOwned<E>, ILevelled, I
         return getOwner().getHealth() > 0;
     }
 
+    @Deprecated
     default Stream<ICaster<?>> findAllSpells() {
         return CasterUtils.findAllSpells(this);
     }

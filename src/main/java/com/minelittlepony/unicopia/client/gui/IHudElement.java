@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.gui;
 
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 public interface IHudElement {
 

@@ -5,6 +5,7 @@ import com.minelittlepony.util.MagicalDamageSource;
 
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -24,8 +25,8 @@ public class EntitySpear extends ArrowEntity implements IAdvancedProjectile {
 
     private static final TrackedData<Integer> KNOCKBACK = DataTracker.registerData(EntitySpear.class, TrackedDataHandlerRegistry.INTEGER);
 
-    public EntitySpear(World world) {
-        super(world);
+    public EntitySpear(EntityType<EntitySpear> type, World world) {
+        super(type, world);
     }
 
     public EntitySpear(World world, double x, double y, double z) {

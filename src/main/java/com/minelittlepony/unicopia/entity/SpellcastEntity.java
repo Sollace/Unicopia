@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.magic.Affinity;
@@ -41,6 +41,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -48,10 +49,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion.DestructionType;
 
 public class SpellcastEntity extends MobEntityWithAi implements IMagicals, ICaster<LivingEntity>, IInAnimate {
-
-    public static EntityType<SpellcastEntity> TYPE = EntityType.Builder.create(SpellcastEntity::new, EntityCategory.MISC)
-            .setDimensions(0.6F, 0.25F)
-            .build("spell");
 
     private LivingEntity owner = null;
 
@@ -136,18 +133,14 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, ICast
         dataTracker.startTracking(AFFINITY, Affinity.NEUTRAL.ordinal());
     }
 
-    @Override
-    public ItemStack getPickedResult(RayTraceResult target) {
+    // TODO:
+    /*@Override
+    public ItemStack getPickedStack(HitResult target) {
         return SpellRegistry.instance().enchantStack(new ItemStack(getItem()), getEffect().getName());
-    }
+    }*/
 
     protected Item getItem() {
         return getAffinity() == Affinity.BAD ? UItems.curse : UItems.spell;
-    }
-
-    @Override
-    protected boolean canTriggerWalking() {
-        return false;
     }
 
     @Override
@@ -206,7 +199,7 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, ICast
         if (!hasEffect()) {
             remove();
         } else {
-            if (getEffect().getDead()) {
+            if (getEffect().isDead()) {
                 remove();
                 onDeath();
             } else {
@@ -288,7 +281,7 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, ICast
 
     @Override
     public ActionResult interactAt(PlayerEntity player, Vec3d vec, Hand hand) {
-        if (Predicates.MAGI.test(player)) {
+        if (EquinePredicates.MAGI.test(player)) {
             ItemStack currentItem = player.getStackInHand(Hand.MAIN_HAND);
 
             if (currentItem != null

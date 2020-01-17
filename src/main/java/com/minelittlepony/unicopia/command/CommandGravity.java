@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.command;
 import java.util.List;
 
 import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;

@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.magic;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.UItems;
-import com.minelittlepony.unicopia.entity.item.AdvancedProjectileEntity;
+import com.minelittlepony.unicopia.entity.AdvancedProjectileEntity;
 import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 import com.minelittlepony.unicopia.projectile.IAdvancedProjectile;
 import com.minelittlepony.unicopia.projectile.ITossable;

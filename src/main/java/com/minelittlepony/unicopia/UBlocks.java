@@ -91,7 +91,7 @@ public class UBlocks {
     public static final Block apple_leaves = register(new FruitLeavesBlock()
             .growthChance(1200)
             .tint(0xFFEE81)
-            .fruit(ItemApple::getRandomItemStack)
+            .fruit(AppleItem::getRandomItemStack)
             .compost(w -> new ItemStack(UItems.rotten_apple)), "apple_leaves");
 
 

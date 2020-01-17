@@ -1,21 +1,20 @@
 package com.minelittlepony.unicopia;
 
-import net.minecraft.client.MinecraftClient;
-
 public final class MineLP {
     private static boolean checkComplete;
     private static boolean modIsActive;
 
+    // TODO:
     /**
      * Returns true if mine little pony is present. That's all we need.
      */
     static boolean modIsActive() {
         if (!checkComplete) {
             try {
-                MineLittlePony.getInstance();
+               // MineLittlePony.instance();
 
                 // always true, but this will throw if we don't have what we need.
-                modIsActive = PonyRace.HUMAN.isHuman();
+               // modIsActive = PonyRace.HUMAN.isHuman();
             } catch (Exception e) {
                 modIsActive = false;
             }
@@ -29,7 +28,7 @@ public final class MineLP {
             return Race.HUMAN;
         }
 
-        switch (IPony.forPlayer(MinecraftClient.getInstance().player).getRace(false)) {
+        /*switch (IPony.forPlayer(MinecraftClient.getInstance().player).getRace(false)) {
             case ALICORN:
                 return Race.ALICORN;
             case CHANGELING:
@@ -49,6 +48,7 @@ public final class MineLP {
             default:
                 return Race.EARTH;
 
-        }
+        }*/
+        return Race.EARTH;
     }
 }

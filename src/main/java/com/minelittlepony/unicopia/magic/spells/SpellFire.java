@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.magic.spells;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.ICaster;
@@ -206,7 +206,7 @@ public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseable
 
     protected boolean applyEntitySingle(Entity owner, World world, Entity e) {
         if ((!e.equals(owner) ||
-                (owner instanceof PlayerEntity && !Predicates.MAGI.test(owner))) && !(e instanceof EntityItem)
+                (owner instanceof PlayerEntity && !EquinePredicates.MAGI.test(owner))) && !(e instanceof EntityItem)
         && !(e instanceof IMagicals)) {
             e.setFire(60);
             e.attackEntityFrom(getDamageCause(e, (LivingEntity)owner), 0.1f);

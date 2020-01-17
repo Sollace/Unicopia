@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UMaterials;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;

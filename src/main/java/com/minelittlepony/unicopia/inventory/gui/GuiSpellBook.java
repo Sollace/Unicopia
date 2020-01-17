@@ -10,7 +10,7 @@ import com.minelittlepony.unicopia.enchanting.IPage;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
 import com.minelittlepony.unicopia.enchanting.PageState;
 import com.minelittlepony.unicopia.enchanting.Pages;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -171,7 +171,7 @@ public class GuiSpellBook extends GuiContainer implements IPageUnlockListener {
                 drawModalRectWithCustomSizedTexture(left, top, 0, 0, xSize, ySize, 512, 256);
             } else {
                 if (playerExtension.getWorld().rand.nextInt(100) == 0) {
-                    Unicopia.log.fatal("Missing texture " + texture);
+                    Unicopia.LOGGER.fatal("Missing texture " + texture);
                 }
             }
         }

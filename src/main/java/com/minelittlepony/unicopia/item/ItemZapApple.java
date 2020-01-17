@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
 
-import com.minelittlepony.unicopia.edibles.Toxicity;
+import com.minelittlepony.unicopia.item.consumables.Toxicity;
 import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.VecHelper;
 

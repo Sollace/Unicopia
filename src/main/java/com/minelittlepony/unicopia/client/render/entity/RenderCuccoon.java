@@ -36,7 +36,7 @@ public class RenderCuccoon extends RenderLivingBase<EntityCuccoon> {
         if (entity.isBeingRidden()) {
             Entity rider = entity.getPassengers().get(0);
 
-            if (!(rider == MinecraftClient.getInstance().player) || UClient.instance().getViewMode() != 0) {
+            if (!(rider == MinecraftClient.instance().player) || UClient.instance().getViewMode() != 0) {
                 GlStateManager.enableAlpha();
                 GlStateManager.enableBlend();
 

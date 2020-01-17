@@ -8,8 +8,6 @@ import com.minelittlepony.unicopia.client.particle.ParticleUnicornMagic;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.particles.ParticleFactoryRegistry;
-import net.fabricmc.fabric.api.particles.ParticleTypeRegistry;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.Identifier;
 
@@ -21,13 +19,4 @@ public class UParticles {
 
     public static final DefaultParticleType SPHERE = ParticleTypeRegistry.getTnstance().register(new Identifier("unicopia", "sphere"));
     public static final DefaultParticleType DISK = ParticleTypeRegistry.getTnstance().register(new Identifier("unicopia", "disk"));
-
-    @Environment(EnvType.CLIENT)
-    public void onInitializeClient() {
-        ParticleFactoryRegistry.getInstance().register(UNICORN_MAGIC, ParticleUnicornMagic::new);
-        ParticleFactoryRegistry.getInstance().register(CHANGELING_MAGIC, ParticleChangelingMagic::new);
-        ParticleFactoryRegistry.getInstance().register(RAIN_DROPS, ParticleRaindrops::new);
-        ParticleFactoryRegistry.getInstance().register(SPHERE, ParticleSphere::new);
-        ParticleFactoryRegistry.getInstance().register(DISK, ParticleDisk::new);
-    }
 }

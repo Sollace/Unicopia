@@ -12,7 +12,7 @@ import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.ability.IFlyingPredicate;
 import com.minelittlepony.unicopia.ability.IHeightPredicate;
 import com.minelittlepony.unicopia.entity.IOwned;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
 import com.minelittlepony.unicopia.magic.IAttachedEffect;

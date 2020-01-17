@@ -68,7 +68,7 @@ public abstract class AbstractAttachableSpell extends AbstractSpell {
             getTarget(source);
         }
 
-        return !getDead();
+        return !isDead();
     }
 
     protected void searchForTarget(ICaster<?> source) {

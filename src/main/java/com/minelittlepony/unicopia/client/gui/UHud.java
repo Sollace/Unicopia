@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.MinecraftClient;

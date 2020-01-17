@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.EquinePredicates;
 
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
@@ -32,7 +32,7 @@ public class BlockDiamondDoor extends UDoor {
 
     @Override
     protected boolean canOpen(@Nullable PlayerEntity player) {
-        return Predicates.MAGI.test(player);
+        return EquinePredicates.MAGI.test(player);
     }
 
     @Override

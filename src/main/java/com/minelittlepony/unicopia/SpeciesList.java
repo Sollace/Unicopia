@@ -5,10 +5,11 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.UConfig;
+import com.minelittlepony.unicopia.Config;
 import com.minelittlepony.unicopia.ducks.IRaceContainerHolder;
 import com.minelittlepony.unicopia.entity.IEntity;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -21,17 +22,17 @@ public class SpeciesList {
     }
 
     public boolean whiteListRace(Race race) {
-        boolean result = UConfig.instance().getSpeciesWhiteList().add(race);
+        boolean result = Config.instance().getSpeciesWhiteList().add(race);
 
-        UConfig.instance().save();
+        Config.instance().save();
 
         return result;
     }
 
     public boolean unwhiteListRace(Race race) {
-        boolean result = UConfig.instance().getSpeciesWhiteList().remove(race);
+        boolean result = Config.instance().getSpeciesWhiteList().remove(race);
 
-        UConfig.instance().save();
+        Config.instance().save();
 
         return result;
     }
@@ -41,7 +42,7 @@ public class SpeciesList {
             return false;
         }
 
-        return race.isDefault() || UConfig.instance().getSpeciesWhiteList().isEmpty() || UConfig.instance().getSpeciesWhiteList().contains(race);
+        return race.isDefault() || Config.instance().getSpeciesWhiteList().isEmpty() || Config.instance().getSpeciesWhiteList().contains(race);
     }
 
     public Race validate(Race race, PlayerEntity sender) {

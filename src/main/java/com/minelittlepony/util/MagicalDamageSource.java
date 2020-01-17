@@ -16,9 +16,8 @@ import net.minecraft.util.Language;
 
 public class MagicalDamageSource extends EntityDamageSource {
 
-    public static DamageSource mundane(String type) {
-        return new DamageSource(type) {};
-    }
+    public static final DamageSource FOOD_POISONING = new MundaneDamageSource("food_poisoning").setBypassesArmor();
+    public static final DamageSource ACID = new MundaneDamageSource("acid");
 
     public static DamageSource create(String type) {
         return new MagicalDamageSource(type);
@@ -64,5 +63,17 @@ public class MagicalDamageSource extends EntityDamageSource {
         }
 
         return new TranslatableText(basic, target.getDisplayName(), source.getDisplayName());
+    }
+
+    private static class MundaneDamageSource extends DamageSource {
+
+        public MundaneDamageSource(String key) {
+            super(key);
+        }
+
+        @Override
+        public DamageSource setBypassesArmor() {
+            return super.setBypassesArmor();
+        }
     }
 }

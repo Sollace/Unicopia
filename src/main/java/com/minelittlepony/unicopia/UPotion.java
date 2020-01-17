@@ -54,17 +54,17 @@ public class UPotion extends StatusEffect {
     }
 
     @Override
-    public boolean shouldRender(PotionEffect effect) {
+    public boolean shouldRender(StatusEffectInstance effect) {
         return !isSilent;
     }
 
     @Override
-    public boolean shouldRenderInvText(PotionEffect effect) {
+    public boolean shouldRenderInvText(StatusEffectInstance effect) {
         return !isSilent;
     }
 
     @Override
-    public boolean shouldRenderHUD(PotionEffect effect) {
+    public boolean shouldRenderHUD(StatusEffectInstance effect) {
         return !isSilent;
     }
 

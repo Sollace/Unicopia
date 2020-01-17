@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.magic.spells;
 
 import java.util.function.Supplier;
 
-import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.ICaster;
 import com.minelittlepony.unicopia.magic.IMagicEffect;
@@ -42,7 +41,8 @@ public class GenericSpell extends AbstractSpell {
 
     @Override
     public void render(ICaster<?> source) {
-        source.spawnParticles(UParticles.UNICORN_MAGIC, 1, getTint());
+        // TODO:
+        // source.spawnParticles(UParticles.UNICORN_MAGIC, 1, getTint());
     }
 
     @Override

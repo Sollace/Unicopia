@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.magic.items;
 
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 public interface IDependable extends IMagicalItem {
     void onRemoved(IPlayer player, float needfulness);

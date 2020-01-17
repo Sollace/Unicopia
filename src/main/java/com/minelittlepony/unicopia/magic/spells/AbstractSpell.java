@@ -21,7 +21,7 @@ public abstract class AbstractSpell implements IMagicEffect {
     }
 
     @Override
-    public boolean getDead() {
+    public boolean isDead() {
         return isDead;
     }
 

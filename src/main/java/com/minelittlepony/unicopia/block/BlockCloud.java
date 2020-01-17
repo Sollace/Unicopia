@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UBlocks;
-import com.minelittlepony.unicopia.item.ItemMoss;
+import com.minelittlepony.unicopia.item.MossItem;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -56,7 +56,7 @@ public class BlockCloud extends Block implements ICloudBlock, ITillable {
             pos = pos.offset(Direction.random(rand), 1 + rand.nextInt(2));
             state = world.getBlockState(pos);
 
-            BlockState converted = ItemMoss.affected.getInverse().getConverted(state);
+            BlockState converted = MossItem.AFFECTED.getInverse().getConverted(state);
 
             if (!state.equals(converted)) {
                 world.setBlockState(pos, converted);

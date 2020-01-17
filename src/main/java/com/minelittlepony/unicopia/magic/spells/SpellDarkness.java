@@ -97,7 +97,7 @@ public class SpellDarkness extends AbstractAttachableSpell {
         }
 
 
-        return !getDead();
+        return !isDead();
     }
 
     private void applyBlocks(ICaster<?> source, int radius) {
@@ -225,7 +225,7 @@ public class SpellDarkness extends AbstractAttachableSpell {
             return;
         }
 
-        float size = source.getWorld().rand.nextFloat() * maxSize;
+        float size = source.getWorld().random.nextFloat() * maxSize;
 
         float particleSpeed = hasTarget() ? 0.3F : 0.5F;
 

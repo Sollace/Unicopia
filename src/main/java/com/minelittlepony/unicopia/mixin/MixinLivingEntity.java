@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.ducks.IRaceContainerHolder;
 import com.minelittlepony.unicopia.entity.IEntity;
-import com.minelittlepony.unicopia.entity.living.LivingEntityCapabilities;
+import com.minelittlepony.unicopia.entity.capabilities.LivingEntityCapabilities;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;

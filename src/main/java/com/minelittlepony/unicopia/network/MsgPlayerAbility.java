@@ -8,8 +8,8 @@ import com.google.gson.annotations.Expose;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.ability.IData;
 import com.minelittlepony.unicopia.ability.IPower;
-import com.minelittlepony.unicopia.ability.powers.PowersRegistry;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.ability.PowersRegistry;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 import net.minecraft.entity.player.PlayerEntity;
 

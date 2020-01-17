@@ -3,10 +3,10 @@ package com.minelittlepony.unicopia.magic.spells;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UParticles;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.IAttachedEffect;
 import com.minelittlepony.unicopia.magic.ICaster;
@@ -14,11 +14,10 @@ import com.minelittlepony.unicopia.particles.ParticleConnection;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.util.shape.Sphere;
 
-import net.fabricmc.fabric.api.particles.ParticleTypeRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
 public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttachedEffect {
@@ -62,7 +61,7 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
     public boolean updateOnPerson(ICaster<?> source) {
         int costMultiplier = applyEntities(source);
         if (costMultiplier > 0) {
-            if (source.getOwner().ticksExisted % 20 == 0) {
+            if (source.getOwner().age % 20 == 0) {
                 double cost = 4 + (source.getCurrentLevel() * 2);
 
                 cost *= costMultiplier / 5F;
@@ -74,7 +73,7 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
             }
         }
 
-        return !getDead();
+        return !isDead();
     }
 
     public double getDrawDropOffRange(ICaster<?> source) {
@@ -92,7 +91,7 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
 
         Entity owner = source.getOwner();
 
-        boolean ownerIsValid = source.getAffinity() != Affinity.BAD && Predicates.MAGI.test(owner);
+        boolean ownerIsValid = source.getAffinity() != Affinity.BAD && EquinePredicates.MAGI.test(owner);
 
         Vec3d origin = source.getOriginVector();
 
@@ -102,7 +101,7 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
 
         targets.forEach(i -> {
             try {
-                double dist = i.getPositionVector().distanceTo(origin);
+                double dist = i.getPos().distanceTo(origin);
 
                 applyRadialEffect(source, i, dist, radius);
             } catch (Throwable e) {
@@ -120,7 +119,7 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
             if (!ProjectileUtil.isProjectileThrownBy(target, source.getOwner())) {
                 if (distance < 1) {
                     target.playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 0.1F, 1);
-                    target.setDead();
+                    target.remove();
                 } else {
                     ricochet(target, pos);
                 }
@@ -142,7 +141,7 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
      * Applies a force to the given entity based on distance from the source.
      */
     protected void applyForce(Vec3d pos, Entity target, double force, double distance) {
-        pos = target.getPositionVector().subtract(pos).normalize().scale(force);
+        pos = target.getPos().subtract(pos).normalize().multiply(force);
 
         target.addVelocity(
                 pos.x,
@@ -174,8 +173,8 @@ public class SpellShield extends AbstractSpell.RangedAreaSpell implements IAttac
      * Reverses a projectiles direction to deflect it off the shield's surface.
      */
     protected void ricochet(Entity projectile, Vec3d pos) {
-        Vec3d position = projectile.getPositionVector();
-        Vec3d motion = new Vec3d(projectile.motionX, projectile.motionY, projectile.motionZ);
+        Vec3d position = projectile.getPos();
+        Vec3d motion = projectile.getVelocity();
 
         Vec3d normal = position.subtract(pos).normalize();
         Vec3d approach = motion.subtract(normal);

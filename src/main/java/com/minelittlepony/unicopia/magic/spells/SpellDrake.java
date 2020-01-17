@@ -3,14 +3,12 @@ package com.minelittlepony.unicopia.magic.spells;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
-import com.minelittlepony.unicopia.entity.ai.FollowCasterGoal;
+import com.minelittlepony.unicopia.entity.capabilities.FollowCasterGoal;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.ICaster;
 import com.minelittlepony.unicopia.magic.IMagicEffect;
 
-import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.Box;
 
 public class SpellDrake extends AbstractSpell {
@@ -49,8 +47,9 @@ public class SpellDrake extends AbstractSpell {
         return true;
     }
 
-    public boolean getDead() {
-        return super.getDead();
+    @Override
+    public boolean isDead() {
+        return super.isDead();
     }
 
     @Override
@@ -67,7 +66,7 @@ public class SpellDrake extends AbstractSpell {
             living.tasks.addTask(1, new EntityAISwimming(living));
             living.tasks.addTask(2, new FollowCasterGoal<>(caster, 1, 4, 70));
 
-            living.setPosition(living.posX, living.posY, living.posZ);
+            living.setPosition(living.x, living.y, living.z);
         }
     }
 
@@ -76,7 +75,7 @@ public class SpellDrake extends AbstractSpell {
         if (piggyBackSpell == null) {
             Box bb = EFFECT_BOUNDS.offset(source.getOriginVector());
 
-            source.getWorld().getEntitiesInAABBexcluding(source.getEntity(), bb, e -> e instanceof SpellcastEntity).stream()
+            source.getWorld().getEntities(source.getEntity(), bb, e -> e instanceof SpellcastEntity).stream()
                 .map(i -> (SpellcastEntity)i)
                 .filter(i -> i.hasEffect() && !(i.getEffect() instanceof SpellDrake))
                 .findFirst().ifPresent(i -> {
@@ -102,23 +101,23 @@ public class SpellDrake extends AbstractSpell {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound compound) {
+    public void toNBT(CompoundTag compound) {
         super.toNBT(compound);
 
         if (piggyBackSpell != null) {
-            compound.setTag("effect", SpellRegistry.instance().serializeEffectToNBT(piggyBackSpell));
+            compound.put("effect", SpellRegistry.instance().serializeEffectToNBT(piggyBackSpell));
         }
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
+    public void fromNBT(CompoundTag compound) {
         super.fromNBT(compound);
 
-        if (compound.hasKey("effect")) {
+        if (compound.containsKey("effect")) {
             if (piggyBackSpell != null) {
-                piggyBackSpell.fromNBT(compound.getCompoundTag("effect"));
+                piggyBackSpell.fromNBT(compound.getCompound("effect"));
             } else {
-                piggyBackSpell = SpellRegistry.instance().createEffectFromNBT(compound.getCompoundTag("effect"));
+                piggyBackSpell = SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect"));
             }
         }
     }

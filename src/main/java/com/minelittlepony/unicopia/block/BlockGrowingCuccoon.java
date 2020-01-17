@@ -5,7 +5,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.UMaterials;
 import com.minelittlepony.unicopia.USounds;
@@ -30,8 +30,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class BlockGrowingCuccoon extends Block {
-
-    public static final DamageSource DAMAGE_SOURCE = MagicalDamageSource.mundane("acid");
 
     public static final IntProperty AGE = IntProperty.of("age", 0, 7);
     public static final EnumProperty<Shape> SHAPE = EnumProperty.of("shape", Shape.class);
@@ -207,11 +205,11 @@ public class BlockGrowingCuccoon extends Block {
 
     @Override
     public void onEntityCollision(World world, BlockPos pos, BlockState state, Entity entity) {
-        if (entity instanceof LivingEntity && !entity.isDead) {
+        if (entity instanceof LivingEntity && !entity.removed) {
             LivingEntity living = (LivingEntity)entity;
 
-            if (!Predicates.BUGGY.test(living) && living.getHealth() > 0) {
-                living.attackEntityFrom(DAMAGE_SOURCE, 1);
+            if (!EquinePredicates.BUGGY.test(living) && living.getHealth() > 0) {
+                living.damage(MagicalDamageSource.ACID, 1);
                 living.setInWeb();
 
                 if (!world.isClient) {
@@ -224,8 +222,8 @@ public class BlockGrowingCuccoon extends Block {
                             if (world.rand.nextInt(13000) == 0) {
                                 PlayerEntity player = (PlayerEntity)living;
 
-                                skull.setTagCompound(new NBTTagCompound());
-                                skull.getTagCompound().setTag("SkullOwner", NBTUtil.writeGameProfile(new NBTTagCompound(), player.getGameProfile()));
+                                skull.setTagCompound(new CompoundTag());
+                                skull.getTagCompound().setTag("SkullOwner", NBTUtil.writeGameProfile(new CompoundTag(), player.getGameProfile()));
                                 skull.setItemDamage(3);
                             } else {
                                 living.dropItem(Items.SKULL, 1);

@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.world.structure;
 
 import java.util.Random;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -43,7 +43,7 @@ public abstract class AbstractFeature extends StructureComponent {
     }
 
     @Override
-    protected void writeStructureToNBT(NBTTagCompound tagCompound) {
+    protected void writeStructureToNBT(CompoundTag tagCompound) {
         tagCompound.setInteger("Width", width);
         tagCompound.setInteger("Height", height);
         tagCompound.setInteger("Depth", depth);
@@ -51,7 +51,7 @@ public abstract class AbstractFeature extends StructureComponent {
     }
 
     @Override
-    protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager templater) {
+    protected void readStructureFromNBT(CompoundTag tagCompound, TemplateManager templater) {
         width = tagCompound.getInteger("Width");
         height = tagCompound.getInteger("Height");
         depth = tagCompound.getInteger("Depth");

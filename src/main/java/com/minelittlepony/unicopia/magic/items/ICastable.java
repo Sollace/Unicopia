@@ -6,17 +6,18 @@ import com.minelittlepony.unicopia.magic.IMagicEffect;
 import com.minelittlepony.unicopia.magic.spells.SpellCastResult;
 import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public interface ICastable extends IMagicalItem, IDispensable {
 
     @Override
-    default TypedActionResult<ItemStack> dispenseStack(IBlockSource source, ItemStack stack) {
+    default TypedActionResult<ItemStack> dispenseStack(BlockPointer source, ItemStack stack) {
         IDispenceable effect = SpellRegistry.instance().getDispenseActionFrom(stack);
 
         if (effect == null) {
@@ -32,15 +33,15 @@ public interface ICastable extends IMagicalItem, IDispensable {
         if (dispenceResult == SpellCastResult.PLACE) {
             castContainedSpell(source.getWorld(), source.getBlockPos(), stack, effect);
 
-            stack.shrink(1);
+            stack.decrement(1);
         }
 
-        return new ActionResult(ActionResult.SUCCESS, stack);
+        return new TypedActionResult<>(ActionResult.SUCCESS, stack);
     }
 
-    SpellCastResult onDispenseSpell(BlockState source, ItemStack stack, IDispenceable effect);
+    SpellCastResult onDispenseSpell(BlockPointer source, ItemStack stack, IDispenceable effect);
 
-    SpellCastResult onCastSpell(PlayerEntity player, World world, BlockPos pos, ItemStack stack, IMagicEffect effect, Direction side, float hitX, float hitY, float hitZ);
+    SpellCastResult onCastSpell(ItemUsageContext context, IMagicEffect effect);
 
     boolean canFeed(SpellcastEntity spell, ItemStack stack);
 
@@ -48,10 +49,10 @@ public interface ICastable extends IMagicalItem, IDispensable {
      * Called to cast a spell. The result is an entity spawned with the spell attached.
      */
     default SpellcastEntity castContainedSpell(World world, BlockPos pos, ItemStack stack, IMagicEffect effect) {
-        SpellcastEntity spell = new SpellcastEntity(world);
+        SpellcastEntity spell = new SpellcastEntity(null, world);
 
         spell.setAffinity(getAffinity(stack));
-        spell.setLocationAndAngles(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0);
+        spell.setPositionAndAngles(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0);
         spell.setEffect(effect);
 
         world.spawnEntity(spell);

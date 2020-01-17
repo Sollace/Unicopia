@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.Predicates;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.UClient;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
@@ -58,7 +58,7 @@ public interface ICloudBlock {
                     }
                 }
 
-                if (!Predicates.INTERACT_WITH_CLOUDS.apply(player)) {
+                if (!EquinePredicates.INTERACT_WITH_CLOUDS.apply(player)) {
                     return type != CloudType.ENCHANTED;
                 }
 

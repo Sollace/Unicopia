@@ -1,11 +1,11 @@
 package com.minelittlepony.unicopia.magic.spells;
 
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.ICaster;
 import com.minelittlepony.unicopia.magic.IHeldEffect;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
@@ -67,7 +67,7 @@ public class SpellLight extends GenericSpell implements IHeldEffect {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound compound) {
+    public void writeToNBT(CompoundTag compound) {
         super.toNBT(compound);
 
         if (compound.hasKey("lastX")) {
@@ -78,7 +78,7 @@ public class SpellLight extends GenericSpell implements IHeldEffect {
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
+    public void readFromNBT(CompoundTag compound) {
         super.fromNBT(compound);
 
         if (lastPos != null) {

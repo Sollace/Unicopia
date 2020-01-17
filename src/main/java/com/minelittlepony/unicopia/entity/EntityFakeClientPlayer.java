@@ -28,7 +28,7 @@ public class EntityFakeClientPlayer extends AbstractClientPlayer implements IOwn
     @Nullable
     protected NetworkPlayerInfo getPlayerInfo() {
         if (playerInfo == null) {
-            NetHandlerPlayClient connection = MinecraftClient.getInstance().getConnection();
+            NetHandlerPlayClient connection = MinecraftClient.instance().getConnection();
 
             playerInfo = connection.getPlayerInfo(getGameProfile().getId());
 
