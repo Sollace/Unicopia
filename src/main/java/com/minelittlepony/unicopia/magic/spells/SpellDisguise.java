@@ -5,9 +5,9 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.ability.IFlyingPredicate;
 import com.minelittlepony.unicopia.ability.IHeightPredicate;
@@ -28,6 +28,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.AmbientEntity;
@@ -147,7 +148,7 @@ public class SpellDisguise extends AbstractSpell implements IAttachedEffect, ISu
     protected synchronized void createPlayer(CompoundTag nbt, GameProfile profile, ICaster<?> source) {
         removeDisguise();
 
-        entity = UClient.instance().createPlayer(source.getEntity(), profile);
+        entity = InteractionManager.instance().createPlayer(source.getEntity(), profile);
         entity.setCustomName(source.getOwner().getName());
         ((PlayerEntity)entity).fromTag(nbt.getCompound("playerNbt"));
         entity.setUuid(UUID.randomUUID());
@@ -273,10 +274,10 @@ public class SpellDisguise extends AbstractSpell implements IAttachedEffect, ISu
             }
         }
 
-        if (to instanceof IRangedAttackMob) {
+        if (to instanceof RangedAttackMob) {
             ItemStack activeItem = from.getActiveItemStack();
 
-            ((IRangedAttackMob)to).setSwingingArms(!activeItem.isEmpty() && activeItem.getUseAction() == UseAction.BOW);
+            ((RangedAttackMob)to).setSwingingArms(!activeItem.isEmpty() && activeItem.getUseAction() == UseAction.BOW);
         }
 
         if (to instanceof TameableEntity) {
@@ -401,7 +402,7 @@ public class SpellDisguise extends AbstractSpell implements IAttachedEffect, ISu
                 entity.getDataTracker().set(MixinEntity.Player.getModelFlag(), owner.getDataTracker().get(MixinEntity.Player.getModelFlag()));
             }
 
-            if (player.isClientPlayer() && UClient.instance().getViewMode() == 0) {
+            if (player.isClientPlayer() && InteractionManager.instance().getViewMode() == 0) {
                 entity.setInvisible(true);
                 entity.y = Integer.MIN_VALUE;
             }

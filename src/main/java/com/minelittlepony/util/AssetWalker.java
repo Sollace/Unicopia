@@ -23,10 +23,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.minelittlepony.unicopia.util.crafting.CraftingManager;
-
 import net.minecraft.util.Identifier;
 
+/***
+ * @deprecated Use Mojang's method
+ */
+@Deprecated
 public class AssetWalker {
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -60,7 +62,7 @@ public class AssetWalker {
             URI uri = url.toURI();
 
             if ("file".equals(uri.getScheme())) {
-                readFiles(Paths.get(CraftingManager.class.getResource(loadLocation).toURI()));
+                readFiles(Paths.get(AssetWalker.class.getResource(loadLocation).toURI()));
             } else {
                 if (!"jar".equals(uri.getScheme())) {
                     LOGGER.error("Unsupported scheme " + uri + " trying to list all recipes");

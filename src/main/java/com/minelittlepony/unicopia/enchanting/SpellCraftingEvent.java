@@ -6,8 +6,8 @@ import javax.annotation.Nullable;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import com.minelittlepony.unicopia.item.MagicGemItem;
-import com.minelittlepony.unicopia.spell.SpellAffinity;
-import com.minelittlepony.unicopia.spell.SpellRegistry;
+import com.minelittlepony.unicopia.magic.Affinity;
+import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 
 import net.minecraft.item.ItemStack;
 
@@ -30,7 +30,7 @@ public class SpellCraftingEvent {
 
     static class Condition implements IUnlockCondition<Event> {
         @Nonnull
-        SpellAffinity affinity;
+        Affinity affinity;
 
         @Expose
         String spell;
@@ -39,7 +39,7 @@ public class SpellCraftingEvent {
             require(json, "affinity");
             require(json, "spell");
 
-            affinity = SpellAffinity.of(json.get("affinity").getAsString());
+            affinity = Affinity.of(json.get("affinity").getAsString());
             spell = json.get("spell").getAsString();
         }
 

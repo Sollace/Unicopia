@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.client;
 
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UBlocks;
-import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.entity.capabilities.ICamera;
@@ -17,24 +17,24 @@ class ClientHooks {
     public static void postEntityRender() {
         GlStateManager.enableAlphaTest();
 
-        UClient.instance().postRenderEntity(event.getEntity());
+        InteractionManager.instance().postRenderEntity(event.getEntity());
     }
 
     public static void preEntityRender() {
-        if (UClient.instance().renderEntity(event.getEntity(), event.getPartialRenderTick())) {
+        if (InteractionManager.instance().renderEntity(event.getEntity(), event.getPartialRenderTick())) {
             event.setCanceled(true);
         }
     }
 
     public static void onDisplayGui(GuiScreenEvent.InitGuiEvent.Post event) {
         if (event.getGui() instanceof GuiOptions || event.getGui() instanceof GuiShareToLan) {
-            UnicopiaClient.addUniButton(event.getButtonList());
+            ClientInteractionManager.addUniButton(event.getButtonList());
         }
     }
 
     public static void onGameTick(TickEvent.ClientTickEvent event) {
         if (event.phase == Phase.END) {
-            UClient.instance().tick();
+            InteractionManager.instance().tick();
         }
     }
 
@@ -42,7 +42,7 @@ class ClientHooks {
         GlStateManager.pushMatrix();
 
         if (event.getType() != ElementType.ALL) {
-            IPlayer player = UClient.instance().getIPlayer();
+            IPlayer player = InteractionManager.instance().getIPlayer();
 
             if (player != null && MinecraftClient.getInstance().world != null) {
                 UHud.instance.repositionElements(player, event.getResolution(), event.getType(), true);
@@ -59,7 +59,7 @@ class ClientHooks {
     public static void postRenderHud(RenderGameOverlayEvent.Post event) {
 
         if (event.getType() == ElementType.ALL) {
-            IPlayer player = UClient.instance().getIPlayer();
+            IPlayer player = InteractionManager.instance().getIPlayer();
 
             if (player != null && MinecraftClient.getInstance().world != null) {
                 UHud.instance.renderHud(player, event.getResolution());
@@ -80,7 +80,7 @@ class ClientHooks {
 
     public static void setupPlayerCamera(EntityViewRenderEvent.CameraSetup event) {
 
-        IPlayer player = UClient.instance().getIPlayer();
+        IPlayer player = InteractionManager.instance().getIPlayer();
 
         if (player != null) {
             ICamera view = player.getCamera();

@@ -18,6 +18,9 @@ public class MagicalDamageSource extends EntityDamageSource {
 
     public static final DamageSource FOOD_POISONING = new MundaneDamageSource("food_poisoning").setBypassesArmor();
     public static final DamageSource ACID = new MundaneDamageSource("acid");
+    public static final DamageSource ALICORN_AMULET = new MagicalDamageSource("alicorn_amulet").setUnblockable().setBypassesArmor();
+    public static final DamageSource DARKNESS = new MagicalDamageSource("darkness");
+    public static final DamageSource ZAP_APPLE = new MagicalDamageSource("zap");
 
     public static DamageSource create(String type) {
         return new MagicalDamageSource(type);
@@ -63,6 +66,19 @@ public class MagicalDamageSource extends EntityDamageSource {
         }
 
         return new TranslatableText(basic, target.getDisplayName(), source.getDisplayName());
+    }
+
+    @Override
+    public MagicalDamageSource setUnblockable() {
+        super.setUnblockable();
+        return this;
+    }
+
+
+    @Override
+    public MagicalDamageSource setBypassesArmor() {
+        super.setBypassesArmor();
+        return this;
     }
 
     private static class MundaneDamageSource extends DamageSource {

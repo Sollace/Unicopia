@@ -11,7 +11,6 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.TypeFilterableList;
 import net.minecraft.util.math.BlockPos;
@@ -20,7 +19,6 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome.SpawnEntry;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 
 public class WildCloudEntity extends CloudEntity {
@@ -31,10 +29,10 @@ public class WildCloudEntity extends CloudEntity {
     public WildCloudEntity(EntityType<WildCloudEntity> type, World world) {
         super(type, world);
 
-        preventEntitySpawning = true;
+        inanimate = true;
     }
 
-    @Override
+    /*@Override
     public boolean isNotColliding() {
         Box boundingbox = getBoundingBox();
 
@@ -42,22 +40,24 @@ public class WildCloudEntity extends CloudEntity {
                 && world.isSkyVisible(getBlockPos())
                 && world.doesNotCollide(this, boundingbox)
                 && !world.intersectsFluid(boundingbox);
-    }
+    }*/
 
     /**
      * Returns true if there are no solid, live entities in the specified Box, excluding the given entity
      *
      * @ref World.checkNoEntityCollision(Box area, Entity entity)
      */
-    public boolean checkNoEntityCollision(Box area, Entity entity) {
+    /*public boolean checkNoEntityCollision(Box area, Entity entity) {
+        ServerWorld s;
+        ((ServerWorld)world).intersectsEntities(entity_1, voxelShape_1)
 
         for (Entity i : world.getEntities(entity, area)) {
-            if (!i.removed && (i.preventEntitySpawning || i instanceof CloudEntity) && (!entity.hasVehicle() || !entity.isConnectedThroughVehicle(i))) {
+            if (!i.removed && (i.inanimate || i instanceof CloudEntity) && (!entity.hasVehicle() || !entity.isConnectedThroughVehicle(i))) {
                 return false;
             }
         }
         return true;
-    }
+    }*/
 
     @Override
     public boolean canSpawn(IWorld world, SpawnType type) {
@@ -93,17 +93,17 @@ public class WildCloudEntity extends CloudEntity {
             targetAltitude = getRandomFlyingHeight();
 
             if (y < minSpawnHeight) {
-                minSpawnHeight += world.random.nextInt(Math.max(1,  (int)getMaximumFlyingHeight() - (int)minSpawnHeight));
+                minSpawnHeight += random.nextInt(Math.max(1,  (int)getMaximumFlyingHeight() - (int)minSpawnHeight));
 
                 setPositionAndAngles(x, minSpawnHeight - 1, z, yaw, pitch);
-                collideWithNearbyEntities();
+                moveToBoundingBoxCenter();
             }
 
-            if (world.hasRain(getBlockPos())) {
+            if (this.world.hasRain(getBlockPos())) {
                 setIsRaining(true);
             }
 
-            if (world.isThundering()) {
+            if (this.world.isThundering()) {
                 setIsThundering(true);
             }
 

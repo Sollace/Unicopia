@@ -1,13 +1,15 @@
 package com.minelittlepony.unicopia.command;
 
+import net.fabricmc.fabric.api.registry.CommandRegistry;
+
 public class Commands {
     public static void bootstrap() {
-        event.registerServerCommand(new CommandOverrideGameMode());
-        event.registerServerCommand(new CommandSpecies());
-        event.registerServerCommand(new CommandRacelist());
-        event.registerServerCommand(new CommandDisguise());
-        event.registerServerCommand(new CommandGravity());
+        CommandRegistry.INSTANCE.register(false, SpeciesCommand::register);
+        CommandRegistry.INSTANCE.register(false, RacelistCommand::register);
+        CommandRegistry.INSTANCE.register(false, DisguiseCommand::register);
+        CommandRegistry.INSTANCE.register(false, GravityCommand::register);
 
-        event.getServer().setAllowFlight(true);
+        // TODO:
+        //event.getServer().setAllowFlight(true);
     }
 }

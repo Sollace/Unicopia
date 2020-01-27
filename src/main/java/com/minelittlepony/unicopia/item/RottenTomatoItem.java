@@ -10,7 +10,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -20,8 +19,8 @@ import net.minecraft.world.World;
 
 public class RottenTomatoItem extends TomatoItem implements ITossableItem {
 
-    public RottenTomatoItem(FoodComponent components) {
-        super(components);
+    public RottenTomatoItem(int hunger, float saturation) {
+        super(hunger, saturation);
 
         setDispenseable();
     }

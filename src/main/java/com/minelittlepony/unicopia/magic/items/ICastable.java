@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.magic.items;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.IDispenceable;
 import com.minelittlepony.unicopia.magic.IMagicEffect;
-import com.minelittlepony.unicopia.magic.spells.SpellCastResult;
+import com.minelittlepony.unicopia.magic.spells.CastResult;
 import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 
 import net.minecraft.item.ItemStack;
@@ -24,13 +24,13 @@ public interface ICastable extends IMagicalItem, IDispensable {
             return new TypedActionResult<>(ActionResult.FAIL, stack);
         }
 
-        SpellCastResult dispenceResult = onDispenseSpell(source, stack, effect);
+        CastResult dispenceResult = onDispenseSpell(source, stack, effect);
 
-        if (dispenceResult == SpellCastResult.DEFAULT) {
+        if (dispenceResult == CastResult.DEFAULT) {
             return new TypedActionResult<>(ActionResult.PASS, stack);
         }
 
-        if (dispenceResult == SpellCastResult.PLACE) {
+        if (dispenceResult == CastResult.PLACE) {
             castContainedSpell(source.getWorld(), source.getBlockPos(), stack, effect);
 
             stack.decrement(1);
@@ -39,9 +39,9 @@ public interface ICastable extends IMagicalItem, IDispensable {
         return new TypedActionResult<>(ActionResult.SUCCESS, stack);
     }
 
-    SpellCastResult onDispenseSpell(BlockPointer source, ItemStack stack, IDispenceable effect);
+    CastResult onDispenseSpell(BlockPointer source, ItemStack stack, IDispenceable effect);
 
-    SpellCastResult onCastSpell(ItemUsageContext context, IMagicEffect effect);
+    CastResult onCastSpell(ItemUsageContext context, IMagicEffect effect);
 
     boolean canFeed(SpellcastEntity spell, ItemStack stack);
 

@@ -34,22 +34,22 @@ public class SpellRegistry {
 
     private SpellRegistry() {
         registerSpell(SpellShield::new);
-        registerSpell(SpellCharge::new);
+        registerSpell(ChargingSpell::new);
         registerSpell(SpellFire::new);
         registerSpell(SpellIce::new);
-        registerSpell(SpellPortal::new);
-        registerSpell(SpellVortex::new);
+        registerSpell(PortalSpell::new);
+        registerSpell(AttractiveSpell::new);
         registerSpell(SpellDisguise::new);
         registerSpell(SpellNecromancy::new);
-        registerSpell(SpellAwkward::new);
+        registerSpell(AwkwardSpell::new);
         registerSpell(SpellInferno::new);
         registerSpell(SpellDrake::new);
         registerSpell(SpellReveal::new);
-        registerSpell(SpellDarkness::new);
+        registerSpell(DarknessSpell::new);
         registerSpell(SpellFlame::new);
-        registerSpell(SpellSiphon::new);
+        registerSpell(SiphoningSpell::new);
         registerSpell(SpellLight::new);
-        registerSpell(SpellChangelingTrap::new);
+        registerSpell(ChangelingTrapSpell::new);
         registerSpell(SpellScorch::new);
     }
 

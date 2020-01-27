@@ -11,9 +11,7 @@ import net.minecraft.world.World;
 
 public class UPot extends FlowerPotBlock {
 
-    public UPot(String domain, String name) {
-        setTranslationKey(name);
-        setRegistryName(domain, name);
+    public UPot() {
         setHardness(0);
         setSoundType(SoundType.STONE);
     }

@@ -6,16 +6,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.PacketByteBuf;
 
 public class ContainerOfHolding extends Container {
-
     private final InventoryOfHolding inventory;
 
     private ItemStack sourceStack;
 
-    public ContainerOfHolding(PlayerEntity player) {
-        // TODO
-        super(null, 0);
+    public ContainerOfHolding(int num, Identifier id, PlayerEntity player, PacketByteBuf buff) {
+        super(null, num);
 
         sourceStack = player.getStackInHand(Hand.MAIN_HAND);
         inventory = InventoryOfHolding.getInventoryFromStack(sourceStack);

@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.input;
 
-import com.minelittlepony.unicopia.UClient;
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 import net.minecraft.client.MinecraftClient;
@@ -40,7 +40,7 @@ public class InversionAwareKeyboardInput extends KeyboardInput {
         this.movementSideways = proxy.movementSideways;
         this.movementForward = proxy.movementForward;
 
-        IPlayer player = UClient.instance().getIPlayer();
+        IPlayer player = InteractionManager.instance().getIPlayer();
 
         if (player.getGravity().getGravitationConstant() < 0) {
             boolean tmp = pressingLeft;

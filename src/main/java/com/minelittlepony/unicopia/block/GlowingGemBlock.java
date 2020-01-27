@@ -53,7 +53,7 @@ public class GlowingGemBlock extends TorchBlock implements ICloudBlock {
     protected static final VoxelShape TORCH_WEST_AABB  = VoxelShapes.cuboid(new Box(F, E, B, 1, 1, C));
     protected static final VoxelShape TORCH_EAST_AABB  = VoxelShapes.cuboid(new Box(0, E, B, A, 1, C));
 
-    public GlowingGemBlock(String domain, String name) {
+    public GlowingGemBlock() {
         super(FabricBlockSettings.of(Material.PART)
                 .noCollision()
                 .strength(0, 0)

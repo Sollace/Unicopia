@@ -34,6 +34,10 @@ public enum Race {
         this.earth = earth;
     }
 
+    public boolean isUsable() {
+        return !isDefault();
+    }
+
     public boolean isDefault() {
         return this == HUMAN;
     }

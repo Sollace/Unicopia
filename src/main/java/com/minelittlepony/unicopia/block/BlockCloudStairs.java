@@ -23,29 +23,8 @@ import net.minecraft.world.World;
 
 public class BlockCloudStairs extends UStairs implements ICloudBlock {
 
-    public BlockCloudStairs(BlockState inherited, String domain, String name) {
-        super(inherited, domain, name);
-    }
-
-    @Override
-    public boolean isAir(BlockState state, BlockView world, BlockPos pos) {
-        return allowsFallingBlockToPass(state, world, pos);
-    }
-
-    @Override
-    public void addCollisionBoxToList(BlockState state, World worldIn, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean p_185477_7_) {
-        if (getCanInteract(baseBlockState, entity)) {
-            super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entity, p_185477_7_);
-        }
-    }
-
-    @Deprecated
-    @Override
-    public HitResult collisionRayTrace(BlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
-        if (handleRayTraceSpecialCases(worldIn, pos, blockState)) {
-            return null;
-        }
-        return super.collisionRayTrace(blockState, worldIn, pos, start, end);
+    public BlockCloudStairs(BlockState inherited) {
+        super(inherited);
     }
 
     @SuppressWarnings("deprecation")
@@ -61,10 +40,7 @@ public class BlockCloudStairs extends UStairs implements ICloudBlock {
     }
 
     @Override
-    public boolean doesSideBlockRendering(BlockState state, BlockView world, BlockPos pos, Direction face) {
-
-        BlockState beside = world.getBlockState(pos.offset(face));
-
+    public boolean isSideInvisible(BlockState state, BlockState beside, Direction face) {
         if (beside.getBlock() instanceof ICloudBlock) {
             ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
 
@@ -97,7 +73,7 @@ public class BlockCloudStairs extends UStairs implements ICloudBlock {
 
                     return sideIsBack
                             || (sideIsSide && bsideIsSide && front == bfront && half == bhalf);
-                } else if (beside.getBlock() instanceof BlockCloudSlab) {
+                } else if (beside.getBlock() instanceof CloudSlabBlock) {
                     SlabType bhalf = beside.get(SlabBlock.TYPE);
 
                     if (face == Direction.UP || face == Direction.DOWN) {

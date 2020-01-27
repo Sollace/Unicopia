@@ -3,18 +3,17 @@ package com.minelittlepony.unicopia.network;
 import java.util.UUID;
 
 import com.google.gson.annotations.Expose;
-import com.minelittlepony.jumpingcastle.api.IChannel;
-import com.minelittlepony.jumpingcastle.api.IMessage;
-import com.minelittlepony.jumpingcastle.api.IMessageHandler;
+import com.minelittlepony.jumpingcastle.api.Channel;
+import com.minelittlepony.jumpingcastle.api.Message;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.MinecraftServer;
 
-@IMessage.Id(0)
-public class MsgRequestCapabilities implements IMessage, IMessageHandler<MsgRequestCapabilities> {
+public class MsgRequestCapabilities implements Message, Message.Handler<MsgRequestCapabilities> {
     @Expose
     public UUID senderId;
 
@@ -27,9 +26,11 @@ public class MsgRequestCapabilities implements IMessage, IMessageHandler<MsgRequ
     }
 
     @Override
-    public void onPayload(MsgRequestCapabilities message, IChannel channel) {
+    public void onPayload(MsgRequestCapabilities message, Channel channel) {
+        MinecraftServer server = channel.getServer();
+
         Unicopia.LOGGER.warn("[Unicopia] [SERVER] [MsgRequestCapabilities] Sending capabilities to player %s\n", senderId.toString());
-        IPlayer player = SpeciesList.instance().getPlayer(senderId);
+        IPlayer player = SpeciesList.instance().getPlayer(server.getPlayerManager().getPlayer(senderId));
 
         if (player.getSpecies().isDefault()) {
             player.setSpecies(message.race);

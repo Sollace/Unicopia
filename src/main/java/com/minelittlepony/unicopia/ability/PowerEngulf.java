@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import org.lwjgl.glfw.GLFW;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
-import com.minelittlepony.unicopia.magic.spells.SpellChangelingTrap;
+import com.minelittlepony.unicopia.magic.spells.ChangelingTrapSpell;
 
 public class PowerEngulf implements IPower<Hit> {
 
@@ -47,7 +47,7 @@ public class PowerEngulf implements IPower<Hit> {
 
     @Override
     public void apply(IPlayer player, Hit data) {
-        new SpellChangelingTrap().toss(player);
+        new ChangelingTrapSpell().toss(player);
     }
 
     @Override

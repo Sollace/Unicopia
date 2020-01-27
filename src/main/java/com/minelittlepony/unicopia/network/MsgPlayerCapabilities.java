@@ -8,21 +8,19 @@ import java.io.IOException;
 import java.util.UUID;
 
 import com.google.gson.annotations.Expose;
-import com.minelittlepony.jumpingcastle.api.IChannel;
-import com.minelittlepony.jumpingcastle.api.IMessage;
-import com.minelittlepony.jumpingcastle.api.IMessageHandler;
+import com.minelittlepony.jumpingcastle.api.Channel;
+import com.minelittlepony.jumpingcastle.api.Message;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.UClient;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
 
-@IMessage.Id(1)
-public class MsgPlayerCapabilities implements IMessage, IMessageHandler<MsgPlayerCapabilities> {
+public class MsgPlayerCapabilities implements Message, Message.Handler<MsgPlayerCapabilities> {
     @Expose
     Race newRace;
 
@@ -34,18 +32,18 @@ public class MsgPlayerCapabilities implements IMessage, IMessageHandler<MsgPlaye
 
     public MsgPlayerCapabilities(Race race, PlayerEntity player) {
         newRace = race;
-        senderId = player.getUniqueID();
+        senderId = player.getUuid();
         compoundTag = new byte[0];
     }
 
     public MsgPlayerCapabilities(IPlayer player) {
         newRace = player.getSpecies();
-        senderId = player.getOwner().getUniqueID();
+        senderId = player.getOwner().getUuid();
 
         try (ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
             CompoundTag nbt = player.toNBT();
 
-            CompressedStreamTools.write(nbt, new DataOutputStream(bytes));
+            NbtIo.write(nbt, new DataOutputStream(bytes));
 
             compoundTag = bytes.toByteArray();
         } catch (IOException e) {
@@ -53,8 +51,11 @@ public class MsgPlayerCapabilities implements IMessage, IMessageHandler<MsgPlaye
     }
 
     @Override
-    public void onPayload(MsgPlayerCapabilities message, IChannel channel) {
-        PlayerEntity self = UClient.instance().getPlayerByUUID(senderId);
+    public void onPayload(MsgPlayerCapabilities message, Channel channel) {
+
+        MinecraftServer server = channel.getServer();
+
+        PlayerEntity self = server.getPlayerManager().getPlayer(senderId);
 
         if (self == null) {
             Unicopia.LOGGER.warn("[Unicopia] [CLIENT] [MsgPlayerCapabilities] Player with id %s was not found!\n", senderId.toString());
@@ -63,7 +64,7 @@ public class MsgPlayerCapabilities implements IMessage, IMessageHandler<MsgPlaye
 
             if (compoundTag.length > 0) {
                 try (ByteArrayInputStream input = new ByteArrayInputStream(compoundTag)) {
-                    CompoundTag nbt = CompressedStreamTools.read(new DataInputStream(input));
+                    CompoundTag nbt = NbtIo.read(new DataInputStream(input));
 
                     player.fromNBT(nbt);
                 } catch (IOException e) {

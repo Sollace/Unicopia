@@ -12,7 +12,7 @@ public class ParticleChangelingMagic extends PortalParticle {
 
     private int baseTextureIndex = 128;
 
-    public ParticleChangelingMagic(ParticleEffect type, World world, double x, double y, double z, double dx, double dy, double dz) {
+    public ParticleChangelingMagic(World world, double x, double y, double z, double dx, double dy, double dz) {
         super(world, x, y, z, dx, dy, dz);
 
         float intensity = rand.nextFloat() * 0.6F + 0.4F;

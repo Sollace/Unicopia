@@ -1,61 +1,41 @@
 package com.minelittlepony.unicopia.block;
 
-import java.util.function.Supplier;
-
 import com.minelittlepony.unicopia.CloudType;
+import com.minelittlepony.unicopia.UMaterials;
 
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockState;
+import net.fabricmc.fabric.api.block.FabricBlockSettings;
+import net.minecraft.block.BlockRenderLayer;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.EnumHand;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class BlockCloudDoor extends UDoor implements ICloudBlock {
+public class BlockCloudDoor extends AbstractDoorBlock implements ICloudBlock {
 
-    public BlockCloudDoor(Material material, String domain, String name, Supplier<Item> theItem) {
-        super(material, domain, name, theItem);
-
-        setSoundType(SoundType.CLOTH);
-        setHardness(3);
-        setResistance(200);
+    @SuppressWarnings("deprecation")
+    public BlockCloudDoor() {
+        super(FabricBlockSettings.of(UMaterials.cloud)
+                .sounds(BlockSoundGroup.WOOL)
+                .hardness(3)
+                .resistance(200)
+                .breakByTool(net.fabricmc.fabric.api.tools.FabricToolTags.SHOVELS, 0)
+                .build());
     }
 
     @Override
-    public MapColor getMapColor(BlockState state, BlockView worldIn, BlockPos pos) {
-        return blockMapColor;
-    }
-
-    @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, BlockState state, PlayerEntity player, EnumHand hand, Direction facing, float hitX, float hitY, float hitZ) {
-        if (!getCanInteract(state, player)) {
-            return false;
-        }
-
-        return super.onBlockActivated(worldIn, pos, state, player, hand, facing, hitX, hitY, hitZ);
-    }
-
-    @Override
-    public String getHarvestTool(BlockState state) {
-        return "shovel";
-    }
-
-    @Override
-    public int getHarvestLevel(BlockState state) {
-        return 0;
+    public boolean activate(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        return getCanInteract(state, player) && super.activate(state, worldIn, pos, player, hand, hit);
     }
 
     @Deprecated
     @Override
-    public float getBlockHardness(BlockState blockState, World world, BlockPos pos) {
-        float hardness = super.getBlockHardness(blockState, world, pos);
+    public float getHardness(BlockState blockState, BlockView world, BlockPos pos) {
+        float hardness = super.getHardness(blockState, world, pos);
 
         return Math.max(hardness, Math.min(60, hardness + (pos.getY() - 100)));
     }
@@ -66,22 +46,17 @@ public class BlockCloudDoor extends UDoor implements ICloudBlock {
     }
 
     @Override
-    public void onEntityCollision(World w, BlockPos pos, BlockState state, Entity entity) {
+    public void onEntityCollision(BlockState state, World w, BlockPos pos, Entity entity) {
         if (!applyBouncyness(state, entity)) {
-            super.onEntityCollision(w, pos, state, entity);
+            super.onEntityCollision(state, w, pos, entity);
         }
-    }
-
-    @Override
-    public boolean canEntityDestroy(BlockState state, BlockView world, BlockPos pos, Entity entity) {
-        return getCanInteract(state, entity) && super.canEntityDestroy(state, world, pos, entity);
     }
 
     @Deprecated
     @Override
-    public float getPlayerRelativeBlockHardness(BlockState state, PlayerEntity player, World worldIn, BlockPos pos) {
+    public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView worldIn, BlockPos pos) {
         if (CloudType.NORMAL.canInteract(player)) {
-            return super.getPlayerRelativeBlockHardness(state, player, worldIn, pos);
+            return super.calcBlockBreakingDelta(state, player, worldIn, pos);
         }
         return -1;
     }

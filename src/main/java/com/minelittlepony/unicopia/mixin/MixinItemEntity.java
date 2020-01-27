@@ -1,41 +1,51 @@
 package com.minelittlepony.unicopia.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.minelittlepony.unicopia.ducks.IRaceContainerHolder;
-import com.minelittlepony.unicopia.entity.IEntity;
+import com.minelittlepony.unicopia.ducks.IItemEntity;
 import com.minelittlepony.unicopia.entity.capabilities.ItemEntityCapabilities;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 
 @Mixin(ItemEntity.class)
-public abstract class MixinItemEntity extends Entity implements IRaceContainerHolder<IEntity> {
+public abstract class MixinItemEntity extends Entity implements IItemEntity {
 
-    private final IEntity caster = createRaceContainer();
+    private final ItemEntityCapabilities caster = createRaceContainer();
 
     private MixinItemEntity() { super(null, null); }
 
     @Override
-    public IEntity createRaceContainer() {
+    public ItemEntityCapabilities createRaceContainer() {
         return new ItemEntityCapabilities((ItemEntity)(Object)this);
     }
 
     @Override
-    public IEntity getRaceContainer() {
+    public ItemEntityCapabilities getRaceContainer() {
         return caster;
     }
 
-    @Inject(method = "tick()V", at = @At("HEAD"))
+    @Inject(method = "tick()V", at = @At("HEAD"), cancellable = true)
     private void beforeTick(CallbackInfo info) {
-        caster.beforeUpdate();
+        if (caster.beforeUpdate()) {
+            info.cancel();
+        }
     }
 
     @Inject(method = "tick()V", at = @At("RETURN"))
     private void afterTick(CallbackInfo info) {
         caster.onUpdate();
     }
+
+    @Accessor("age")
+    @Override
+    public abstract int getAge();
+
+    @Accessor("pickupDelay")
+    @Override
+    public abstract int getPickupDelay();
 }

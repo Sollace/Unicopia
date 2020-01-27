@@ -3,14 +3,10 @@ package com.minelittlepony.unicopia.enchanting.recipe;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Streams;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.minelittlepony.unicopia.enchanting.recipe.AffineIngredients.AffineIngredient;
-import com.minelittlepony.unicopia.enchanting.recipe.SpellIngredient.Serializer;
 import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 
 import net.minecraft.item.Item;
@@ -68,7 +64,7 @@ class SingleSpellIngredient implements SpellIngredient {
     public Stream<ItemStack> getStacks() {
         if (!contained.isEmpty()) {
             DefaultedList<ItemStack> subItems = DefaultedList.of();
-            contained.getItem().getSubItems(ItemGroup.SEARCH, subItems);
+            contained.getItem().appendStacks(ItemGroup.SEARCH, subItems);
 
             return subItems.stream();
         }

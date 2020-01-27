@@ -4,6 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.SpeciesList;
@@ -19,10 +20,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameMode;
 
 @Mixin(PlayerEntity.class)
 public abstract class MixinPlayerEntity extends LivingEntity implements IRaceContainerHolder<IPlayer> {
-
     private MixinPlayerEntity() { super(null, null); }
 
     @Override
@@ -54,5 +55,11 @@ public abstract class MixinPlayerEntity extends LivingEntity implements IRaceCon
         SpeciesList.instance().getForEntity(info.getReturnValue()).ifPresent(o -> {
             o.getRaceContainer().setSpecies(getRaceContainer().getSpecies());
         });
+    }
+
+    @Inject(method = "setGameMode(Lnet/minecraft/world/GameMode;)V",
+            at = @At("RETURN"))
+    public void setGameMode(GameMode mode, CallbackInfo info) {
+        getRaceContainer().setSpecies(getRaceContainer().getSpecies());
     }
 }

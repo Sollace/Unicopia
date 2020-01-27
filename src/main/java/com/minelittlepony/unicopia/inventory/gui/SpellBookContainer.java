@@ -4,7 +4,6 @@ import javax.annotation.Nonnull;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
 import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 import com.minelittlepony.unicopia.world.UWorld;
@@ -17,6 +16,8 @@ import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -72,7 +73,10 @@ public class SpellBookContainer extends Container {
         ItemStack current = craftResult.getInvStack(0);
 
         if (!current.isEmpty()) {
-            ItemStack crafted = Unicopia.getCraftingManager().findMatchingResult(craftMatrix, worldObj);
+            // TODO: RecipeType.SPELL_BOOK
+            ItemStack crafted = player.world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftMatrix, worldObj)
+                    .map(Recipe::getOutput)
+                    .orElse(ItemStack.EMPTY);
 
             if (!crafted.isEmpty()) {
                 resultSlot.setCrafted(true);

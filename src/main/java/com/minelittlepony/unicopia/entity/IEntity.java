@@ -29,13 +29,13 @@ public interface IEntity extends InbtSerialisable, IUpdatable {
     }
 
     /**
-     * Called at the beginning of a player's update cycle.
+     * Called at the beginning of an update cycle.
      */
-    void beforeUpdate();
+    boolean beforeUpdate();
 
 
     /**
-     * Event triggered when this player is hit by a projectile.
+     * Event triggered when this entity is hit by a projectile.
      */
     default boolean onProjectileImpact(ProjectileEntity projectile) {
         return false;

@@ -13,7 +13,7 @@ import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.IAbilityReceiver;
 import com.minelittlepony.unicopia.enchanting.PageState;
-import com.minelittlepony.unicopia.entity.EntityCuccoon;
+import com.minelittlepony.unicopia.entity.CuccoonEntity;
 import com.minelittlepony.unicopia.entity.IFlight;
 import com.minelittlepony.unicopia.entity.IFood;
 import com.minelittlepony.unicopia.entity.IGravity;

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.enchanting.recipe;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import com.google.gson.JsonElement;
@@ -8,10 +10,16 @@ import com.google.gson.JsonParseException;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.SystemUtil;
 
 public interface SpellIngredient {
 
     SpellIngredient EMPTY = new SingleSpellIngredient(ItemStack.EMPTY, false);
+    Map<String, Serializer<? extends SpellIngredient>> SERIALIZERS = SystemUtil.consume(new HashMap<>(), map -> {
+        map.put("compound", CompoundSpellIngredient.SERIALIZER);
+        map.put("single", SingleSpellIngredient.SERIALIZER);
+        map.put("affine", AffineIngredient.SERIALIZER);
+    });
 
     Serializer<SpellIngredient> SERIALIZER = new Serializer<SpellIngredient>() {
         @Override
@@ -25,12 +33,9 @@ public interface SpellIngredient {
 
         @Override
         public SpellIngredient read(PacketByteBuf buff) {
-            byte type = buff.readByte();
+            String type = buff.readString();
 
-            if (type == 0) {
-                return SingleSpellIngredient.SERIALIZER.read(buff);
-            }
-            return CompoundSpellIngredient.SERIALIZER.read(buff);
+            return SERIALIZERS.get(type).read(buff);
         }
 
         @Override

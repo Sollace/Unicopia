@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.render.entity.model;
 
-import com.minelittlepony.unicopia.entity.EntityCuccoon;
+import com.minelittlepony.unicopia.entity.CuccoonEntity;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -40,7 +40,7 @@ public class ModelCuccoon extends ModelBase {
     @Override
     public void render(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
 
-        float breatheAmount = ((EntityCuccoon)entity).getBreatheAmount(ageInTicks) / 8;
+        float breatheAmount = ((CuccoonEntity)entity).getBreatheAmount(ageInTicks) / 8;
 
         GlStateManager.pushMatrix();
 

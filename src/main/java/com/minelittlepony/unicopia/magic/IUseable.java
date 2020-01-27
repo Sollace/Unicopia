@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.magic;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.magic.spells.SpellCastResult;
+import com.minelittlepony.unicopia.magic.spells.CastResult;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,7 +31,7 @@ public interface IUseable {
      *
      * @return    ActionResult for the type of action to perform
      */
-    SpellCastResult onUse(ItemUsageContext context, Affinity affinity);
+    CastResult onUse(ItemUsageContext context, Affinity affinity);
 
     /**
      * Triggered when the player right clicks
@@ -44,5 +44,5 @@ public interface IUseable {
      *
      * @return    ActionResult for the type of action to perform
      */
-    SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, @Nullable Entity hitEntity);
+    CastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, @Nullable Entity hitEntity);
 }

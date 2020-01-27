@@ -1,11 +1,10 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.function.Function;
-
 import com.minelittlepony.unicopia.entity.CloudEntity;
 import com.minelittlepony.unicopia.magic.items.IDispensable;
 
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -23,20 +22,20 @@ import net.minecraft.world.World;
 
 public class CloudPlacerItem extends Item implements IDispensable {
 
-    private final Function<World, CloudEntity> cloudSupplier;
+    private final EntityType<? extends CloudEntity> cloudSupplier;
 
-    public CloudPlacerItem(Function<World, CloudEntity> cloudSupplier) {
+    public CloudPlacerItem(EntityType<? extends CloudEntity> spawner) {
         super(new Item.Settings()
                 .group(ItemGroup.MATERIALS)
                 .maxCount(16)
         );
-        this.cloudSupplier = cloudSupplier;
+        this.cloudSupplier = spawner;
 
         setDispenseable();
     }
 
     public void placeCloud(World world, BlockPos pos) {
-        CloudEntity cloud = cloudSupplier.apply(world);
+        CloudEntity cloud = cloudSupplier.create(world);
         cloud.setPositionAndAngles(pos, 0, 0);
         world.spawnEntity(cloud);
     }

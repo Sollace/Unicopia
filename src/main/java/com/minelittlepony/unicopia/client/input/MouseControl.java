@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.input;
 
-import com.minelittlepony.unicopia.UClient;
+import com.minelittlepony.unicopia.InteractionManager;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
@@ -13,7 +13,7 @@ public class MouseControl extends Mouse {
 
     @Override
     public void updateMouse() {
-        if (UClient.instance().getIPlayer().getGravity().getGravitationConstant() < 0) {
+        if (InteractionManager.instance().getIPlayer().getGravity().getGravitationConstant() < 0) {
             //cursorDeltaX = -cursorDeltaX;
             //cursorDeltaY = -cursorDeltaY;
         }

@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.magic;
 
-import com.minelittlepony.unicopia.magic.spells.SpellCastResult;
+import com.minelittlepony.unicopia.magic.spells.CastResult;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -20,5 +20,5 @@ public interface IDispenceable extends IMagicEffect {
      * @param affinity  The affinity of the casting artifact
      * @return    an ActionResult for the type of action to perform.
      */
-    SpellCastResult onDispenced(BlockPos pos, Direction facing, Position source, Affinity affinity);
+    CastResult onDispenced(BlockPos pos, Direction facing, Position source, Affinity affinity);
 }

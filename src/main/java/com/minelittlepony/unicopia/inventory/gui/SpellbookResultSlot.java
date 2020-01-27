@@ -45,7 +45,7 @@ public class SpellbookResultSlot extends SpellBookContainer.SpellbookSlot {
             ItemStack current = craftMatrix.getCraftResultMatrix().getInvStack(0);
             craftMatrix.getCraftResultMatrix().setInvStack(0, stack);
 
-            // TODO: URecipeType.GEM_ENCHANTMENT
+            // TODO: URecipeType.SPELL_BOOK
             DefaultedList<ItemStack> remaining = player.world.getRecipeManager().getRemainingStacks(RecipeType.CRAFTING,  craftMatrix, player.world);
 
             craftMatrix.getCraftResultMatrix().setInvStack(0, current);

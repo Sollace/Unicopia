@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.item;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.item.consumables.ItemEdible;
+import com.minelittlepony.unicopia.item.consumables.EdibleItem;
 import com.minelittlepony.unicopia.item.consumables.Toxicity;
 import com.minelittlepony.util.collection.ReversableStateMapList;
 import net.minecraft.block.Block;
@@ -17,7 +17,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class MossItem extends ItemEdible {
+public class MossItem extends EdibleItem {
 
     public static final ReversableStateMapList AFFECTED = new ReversableStateMapList();
 

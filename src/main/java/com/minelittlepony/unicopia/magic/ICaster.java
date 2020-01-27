@@ -2,19 +2,15 @@ package com.minelittlepony.unicopia.magic;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.entity.IOwned;
 import com.minelittlepony.util.VecHelper;
-import com.minelittlepony.util.shape.IShape;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -23,7 +19,7 @@ import net.minecraft.world.World;
 /**
  * Interface for any magically capable entities that can cast and persist spells.
  */
-public interface ICaster<E extends LivingEntity> extends IOwned<E>, ILevelled, IAffine, IMagicals {
+public interface ICaster<E extends LivingEntity> extends IOwned<E>, ILevelled, IAffine, IMagicals, IParticleSource {
 
     void setEffect(@Nullable IMagicEffect effect);
 
@@ -113,19 +109,6 @@ public interface ICaster<E extends LivingEntity> extends IOwned<E>, ILevelled, I
      */
     default Vec3d getOriginVector() {
         return getEntity().getPos();
-    }
-
-    default void spawnParticles(ParticleEffect particleId, int count) {
-        // TODO:
-        // ParticleTypeRegistry.getInstance().getSpawner().spawnParticles(particleId, getEntity(), count);
-    }
-
-    default void spawnParticles(IShape area, int count, Consumer<Vec3d> particleSpawner) {
-        Vec3d pos = getOriginVector();
-
-        area.randomPoints(count, getWorld().random).stream()
-            .map(point -> point.add(pos))
-            .forEach(particleSpawner);
     }
 
     default boolean subtractEnergyCost(double amount) {

@@ -2,7 +2,8 @@ package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.UClient;
+import com.minelittlepony.unicopia.InteractionManager;
+
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -25,7 +26,7 @@ public interface ICloudBlock {
 
     default boolean handleRayTraceSpecialCases(World world, BlockPos pos, BlockState state) {
         if (world.isClient) {
-            PlayerEntity player = UClient.instance().getPlayer();
+            PlayerEntity player = InteractionManager.instance().getClientPlayer();
 
             if (player.abilities.creativeMode) {
                 return false;

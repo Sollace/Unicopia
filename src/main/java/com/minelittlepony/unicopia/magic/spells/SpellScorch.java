@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.magic.spells;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.UParticles;
-import com.minelittlepony.unicopia.entity.AdvancedProjectileEntity;
+import com.minelittlepony.unicopia.entity.ProjectileEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.ICaster;
 import com.minelittlepony.unicopia.magic.ITossedEffect;

@@ -86,28 +86,28 @@ public class SpellIce extends AbstractSpell.RangedAreaSpell implements IUseable,
     }
 
     @Override
-    public SpellCastResult onDispenced(BlockPos pos, Direction facing, IBlockSource source, Affinity affinity) {
-        return applyBlocks(null, source.getWorld(), pos.offset(facing, rad)) ? SpellCastResult.NONE : SpellCastResult.DEFAULT;
+    public CastResult onDispenced(BlockPos pos, Direction facing, IBlockSource source, Affinity affinity) {
+        return applyBlocks(null, source.getWorld(), pos.offset(facing, rad)) ? CastResult.NONE : CastResult.DEFAULT;
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ) {
+    public CastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ) {
         if (player != null && player.isSneaking()) {
             applyBlockSingle(world, pos);
         } else {
             applyBlocks(player, world, pos);
         }
 
-        return SpellCastResult.DEFAULT;
+        return CastResult.DEFAULT;
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, @Nullable Entity hitEntity) {
+    public CastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, @Nullable Entity hitEntity) {
         if (hitEntity != null && applyEntitySingle(player, hitEntity)) {
-            return SpellCastResult.DEFAULT;
+            return CastResult.DEFAULT;
         }
 
-        return SpellCastResult.NONE;
+        return CastResult.NONE;
     }
 
     private boolean applyBlocks(PlayerEntity owner, World world, BlockPos pos) {

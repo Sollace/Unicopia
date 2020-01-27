@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.UClient;
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.IAbilityReceiver;
 import com.minelittlepony.unicopia.enchanting.IPageOwner;
 import com.minelittlepony.unicopia.entity.IFlight;
@@ -132,24 +132,7 @@ public interface IPlayer extends ICaster<PlayerEntity>, IRaceContainer<PlayerEnt
      * Returns true if this player is the use.
      */
     default boolean isClientPlayer() {
-        return UClient.instance().isClientPlayer(getOwner());
-    }
-
-    static PlayerEntity fromServer(UUID playerId) {
-
-        MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-
-        if (server == null) {
-            return UClient.instance().getPlayerByUUID(playerId);
-        }
-
-        Entity e = server.getPlayerManager().getPlayer(playerId);
-
-        if (e instanceof PlayerEntity) {
-            return (PlayerEntity)e;
-        }
-
-        return null;
+        return InteractionManager.instance().isClientPlayer(getOwner());
     }
 
     static boolean equal(GameProfile one, GameProfile two) {

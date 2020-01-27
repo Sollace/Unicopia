@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.item;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.IDispenceable;
 import com.minelittlepony.unicopia.magic.IMagicEffect;
-import com.minelittlepony.unicopia.magic.spells.SpellCastResult;
+import com.minelittlepony.unicopia.magic.spells.CastResult;
 import com.minelittlepony.util.MagicalDamageSource;
 
 import net.minecraft.item.ItemStack;
@@ -16,20 +16,20 @@ import net.minecraft.world.explosion.Explosion.DestructionType;
 public class CursedMagicGemItem extends MagicGemItem {
 
     @Override
-    public SpellCastResult onDispenseSpell(BlockPointer source, ItemStack stack, IDispenceable effect) {
+    public CastResult onDispenseSpell(BlockPointer source, ItemStack stack, IDispenceable effect) {
 
         BlockPos pos = source.getBlockPos();
         World world = source.getWorld();
 
-        SpellCastResult result = super.onDispenseSpell(source, stack, effect);
+        CastResult result = super.onDispenseSpell(source, stack, effect);
 
-        if (result != SpellCastResult.NONE) {
+        if (result != CastResult.NONE) {
             if (world.random.nextInt(200) == 0) {
                 float strength = world.random.nextFloat() * 100;
 
                 world.createExplosion(null, pos.getX(), pos.getY(), pos.getZ(), strength, DestructionType.DESTROY);
 
-                return SpellCastResult.NONE;
+                return CastResult.NONE;
             }
         }
 
@@ -37,10 +37,10 @@ public class CursedMagicGemItem extends MagicGemItem {
     }
 
     @Override
-    public SpellCastResult onCastSpell(ItemUsageContext context, IMagicEffect effect) {
-        SpellCastResult result = super.onCastSpell(context, effect);
+    public CastResult onCastSpell(ItemUsageContext context, IMagicEffect effect) {
+        CastResult result = super.onCastSpell(context, effect);
 
-        if (result != SpellCastResult.NONE) {
+        if (result != CastResult.NONE) {
             context.getPlayer().damage(MagicalDamageSource.causePlayerDamage("corruption", context.getPlayer()), 1);
         }
 

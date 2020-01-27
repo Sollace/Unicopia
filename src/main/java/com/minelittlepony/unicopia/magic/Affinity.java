@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.magic;
 
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public enum Affinity {
@@ -26,8 +28,10 @@ public enum Affinity {
         return this == BAD ? "curse" : "spell";
     }
 
-    public String getUnlocalizedName() {
-        return "affinity." + getTranslationKey() + ".name";
+    public Text getName() {
+        Text text = new TranslatableText("affinity." + getTranslationKey() + ".name");
+        text.getStyle().setColor(getColourCode());
+        return text;
     }
 
     public int getCorruption() {

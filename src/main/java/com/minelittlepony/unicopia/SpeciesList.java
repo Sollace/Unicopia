@@ -1,8 +1,6 @@
 package com.minelittlepony.unicopia;
 
 import java.util.Optional;
-import java.util.UUID;
-
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Config;
@@ -60,11 +58,6 @@ public class SpeciesList {
     @Nullable
     public IPlayer getPlayer(@Nullable PlayerEntity player) {
         return this.<IPlayer>getEntity(player);
-    }
-
-    @Nullable
-    public IPlayer getPlayer(UUID playerId) {
-        return getPlayer(IPlayer.fromServer(playerId));
     }
 
     @Nullable

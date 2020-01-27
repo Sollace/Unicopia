@@ -64,8 +64,8 @@ public class SpellInferno extends SpellFire {
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ) {
-        return SpellCastResult.PLACE;
+    public CastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ) {
+        return CastResult.PLACE;
     }
 
     @Override

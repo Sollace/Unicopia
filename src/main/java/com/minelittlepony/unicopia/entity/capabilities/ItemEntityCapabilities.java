@@ -1,11 +1,14 @@
 package com.minelittlepony.unicopia.entity.capabilities;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ducks.IItemEntity;
 import com.minelittlepony.unicopia.entity.IOwned;
 import com.minelittlepony.unicopia.entity.IRaceContainer;
 
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.ActionResult;
 
 public class ItemEntityCapabilities implements IRaceContainer<ItemEntity>, IOwned<ItemEntity> {
 
@@ -23,8 +26,14 @@ public class ItemEntityCapabilities implements IRaceContainer<ItemEntity>, IOwne
     }
 
     @Override
-    public void beforeUpdate() {
+    public boolean beforeUpdate() {
+        ItemStack stack = owner.getStack();
 
+        if (!stack.isEmpty() && stack.getItem() instanceof TickableItem) {
+            return ((TickableItem)stack.getItem()).onGroundTick((IItemEntity)owner) == ActionResult.SUCCESS;
+        }
+
+        return false;
     }
 
     @Override
@@ -61,5 +70,9 @@ public class ItemEntityCapabilities implements IRaceContainer<ItemEntity>, IOwne
     @Override
     public ItemEntity getOwner() {
         return owner;
+    }
+
+    public interface TickableItem {
+        ActionResult onGroundTick(IItemEntity entity);
     }
 }

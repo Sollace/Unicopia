@@ -155,24 +155,24 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, IInAnimat
     }
 
     @Override
-    protected void collideWithEntity(Entity other) {
+    protected void pushAway(Entity other) {
         if (other instanceof CloudEntity || other instanceof PlayerEntity) {
             if (other.y > y) {
                 return;
             }
 
-            super.collideWithEntity(other);
+            super.pushAway(other);
         }
     }
 
     @Override
-    public void applyEntityCollision(Entity other) {
+    public void pushAwayFrom(Entity other) {
         if (other instanceof PlayerEntity) {
             if (EquinePredicates.INTERACT_WITH_CLOUDS.test((PlayerEntity)other)) {
-                super.applyEntityCollision(other);
+                super.pushAwayFrom(other);
             }
         } else if (other instanceof CloudEntity) {
-            super.applyEntityCollision(other);
+            super.pushAwayFrom(other);
         }
     }
 

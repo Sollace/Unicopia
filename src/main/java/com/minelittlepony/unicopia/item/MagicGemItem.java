@@ -11,7 +11,7 @@ import com.minelittlepony.unicopia.magic.IDispenceable;
 import com.minelittlepony.unicopia.magic.IMagicEffect;
 import com.minelittlepony.unicopia.magic.IUseable;
 import com.minelittlepony.unicopia.magic.items.ICastable;
-import com.minelittlepony.unicopia.magic.spells.SpellCastResult;
+import com.minelittlepony.unicopia.magic.spells.CastResult;
 import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 import com.minelittlepony.util.VecHelper;
 
@@ -50,7 +50,7 @@ public class MagicGemItem extends Item implements ICastable {
     }
 
     @Override
-    public SpellCastResult onDispenseSpell(BlockPointer source, ItemStack stack, IDispenceable effect) {
+    public CastResult onDispenseSpell(BlockPointer source, ItemStack stack, IDispenceable effect) {
         Direction facing = source.getBlockState().get(DispenserBlock.FACING);
         BlockPos pos = source.getBlockPos().offset(facing);
 
@@ -58,12 +58,12 @@ public class MagicGemItem extends Item implements ICastable {
     }
 
     @Override
-    public SpellCastResult onCastSpell(ItemUsageContext context, IMagicEffect effect) {
+    public CastResult onCastSpell(ItemUsageContext context, IMagicEffect effect) {
         if (effect instanceof IUseable) {
             return ((IUseable)effect).onUse(context, getAffinity(context.getStack()));
         }
 
-        return SpellCastResult.PLACE;
+        return CastResult.PLACE;
     }
 
     @Override
@@ -89,17 +89,17 @@ public class MagicGemItem extends Item implements ICastable {
             return ActionResult.FAIL;
         }
 
-        SpellCastResult result = onCastSpell(context, effect);
+        CastResult result = onCastSpell(context, effect);
 
         if (!context.getWorld().isClient) {
             pos = pos.offset(context.getSide());
 
-            if (result == SpellCastResult.PLACE) {
+            if (result == CastResult.PLACE) {
                 castContainedSpell(context.getWorld(), pos, stack, effect).setOwner(player);
             }
         }
 
-        if (result != SpellCastResult.NONE) {
+        if (result != CastResult.NONE) {
             if (!player.isCreative()) {
                 stack.decrement(1);
             }
@@ -126,10 +126,10 @@ public class MagicGemItem extends Item implements ICastable {
         IUseable effect = SpellRegistry.instance().getUseActionFrom(stack);
 
         if (effect != null) {
-            SpellCastResult result = effect.onUse(stack, getAffinity(stack), player, world, VecHelper.getLookedAtEntity(player, 5));
+            CastResult result = effect.onUse(stack, getAffinity(stack), player, world, VecHelper.getLookedAtEntity(player, 5));
 
-            if (result != SpellCastResult.NONE) {
-                if (result == SpellCastResult.PLACE && !player.isCreative()) {
+            if (result != CastResult.NONE) {
+                if (result == CastResult.PLACE && !player.isCreative()) {
                     stack.decrement(1);
                 }
 

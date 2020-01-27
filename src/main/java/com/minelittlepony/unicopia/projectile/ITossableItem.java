@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.projectile;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.entity.AdvancedProjectileEntity;
+import com.minelittlepony.unicopia.entity.ProjectileEntity;
 import com.minelittlepony.unicopia.magic.items.IDispensable;
 
 import net.minecraft.block.DispenserBlock;
@@ -41,12 +41,12 @@ public interface ITossableItem extends ITossable<ItemStack>, IDispensable {
 
     @Nullable
     default IAdvancedProjectile createProjectile(World world, PlayerEntity player) {
-        return new AdvancedProjectileEntity(null, world, player);
+        return new ProjectileEntity(null, world, player);
     }
 
     @Nullable
     default IAdvancedProjectile createProjectile(World world, Position pos) {
-        return new AdvancedProjectileEntity(null, world, pos.getX(), pos.getY(), pos.getZ());
+        return new ProjectileEntity(null, world, pos.getX(), pos.getY(), pos.getZ());
     }
 
     default void toss(World world, ItemStack itemstack, PlayerEntity player) {

@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.magic;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.UItems;
-import com.minelittlepony.unicopia.entity.AdvancedProjectileEntity;
+import com.minelittlepony.unicopia.entity.ProjectileEntity;
 import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 import com.minelittlepony.unicopia.projectile.IAdvancedProjectile;
 import com.minelittlepony.unicopia.projectile.ITossable;
@@ -49,7 +49,7 @@ public interface ITossedEffect extends IMagicEffect, ITossable<ICaster<?>> {
         world.playSound(null, entity.x, entity.y, entity.z, getThrowSound(caster), SoundCategory.NEUTRAL, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
         if (caster.isLocal()) {
-            IAdvancedProjectile projectile = new AdvancedProjectileEntity(null, world, caster.getOwner());
+            IAdvancedProjectile projectile = new ProjectileEntity(null, world, caster.getOwner());
 
             projectile.setItem(getCastAppearance(caster));
             projectile.setThrowDamage(getThrowDamage(caster));

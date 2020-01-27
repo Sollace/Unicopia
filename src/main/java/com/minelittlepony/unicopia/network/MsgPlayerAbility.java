@@ -5,6 +5,8 @@ import java.util.UUID;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
+import com.minelittlepony.jumpingcastle.api.Channel;
+import com.minelittlepony.jumpingcastle.api.Message;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.ability.IData;
 import com.minelittlepony.unicopia.ability.IPower;
@@ -12,8 +14,9 @@ import com.minelittlepony.unicopia.ability.PowersRegistry;
 import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.MinecraftServer;
 
-public class MsgPlayerAbility {
+public class MsgPlayerAbility implements Message, Message.Handler<MsgPlayerAbility> {
 
     private static final Gson gson = new GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
@@ -34,8 +37,9 @@ public class MsgPlayerAbility {
         abilityJson = gson.toJson(data, power.getPackageType());
     }
 
-    private <T extends IData> void apply(IPower<T> power) {
-        IPlayer player = SpeciesList.instance().getPlayer(senderId);
+    private <T extends IData> void apply(IPower<T> power, Channel channel) {
+        MinecraftServer server = channel.getServer();
+        IPlayer player = SpeciesList.instance().getPlayer(server.getPlayerManager().getPlayer(senderId));
         if (player == null) {
             return;
         }
@@ -46,7 +50,7 @@ public class MsgPlayerAbility {
     }
 
     @Override
-    public void onPayload(MsgPlayerAbility message, IChannel channel) {
-        PowersRegistry.instance().getPowerFromName(powerIdentifier).ifPresent(this::apply);
+    public void onPayload(MsgPlayerAbility message, Channel channel) {
+        PowersRegistry.instance().getPowerFromName(powerIdentifier).ifPresent(power -> apply(power, channel));
     }
 }

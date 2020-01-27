@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.input;
 
-import com.minelittlepony.unicopia.UClient;
+import com.minelittlepony.unicopia.ServerInteractionManager;
 
 public final class Keyboard {
     private static IKeyBindingHandler keyHandler;
@@ -8,7 +8,7 @@ public final class Keyboard {
     public static IKeyBindingHandler getKeyHandler() {
 
         if (keyHandler == null) {
-            if (UClient.isClientSide()) {
+            if (ServerInteractionManager.isClientSide()) {
                 keyHandler = new KeyBindingsHandler();
             } else {
                 keyHandler = bind -> {};

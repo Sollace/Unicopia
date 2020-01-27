@@ -1,9 +1,9 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
-import com.minelittlepony.unicopia.UClient;
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.render.entity.model.ModelCuccoon;
-import com.minelittlepony.unicopia.entity.EntityCuccoon;
+import com.minelittlepony.unicopia.entity.CuccoonEntity;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 
-public class RenderCuccoon extends RenderLivingBase<EntityCuccoon> {
+public class RenderCuccoon extends RenderLivingBase<CuccoonEntity> {
 
     private static final Identifier TEXTURE = new Identifier(Unicopia.MODID, "textures/entity/cuccoon.png");
 
@@ -21,22 +21,22 @@ public class RenderCuccoon extends RenderLivingBase<EntityCuccoon> {
     }
 
     @Override
-    protected Identifier getEntityTexture(EntityCuccoon entity) {
+    protected Identifier getEntityTexture(CuccoonEntity entity) {
         return TEXTURE;
     }
 
     @Override
-    protected float getDeathMaxRotation(EntityCuccoon entity) {
+    protected float getDeathMaxRotation(CuccoonEntity entity) {
         return 0;
     }
 
     @Override
-    public void doRender(EntityCuccoon entity, double x, double y, double z, float entityYaw, float partialTicks) {
+    public void doRender(CuccoonEntity entity, double x, double y, double z, float entityYaw, float partialTicks) {
 
         if (entity.isBeingRidden()) {
             Entity rider = entity.getPassengers().get(0);
 
-            if (!(rider == MinecraftClient.instance().player) || UClient.instance().getViewMode() != 0) {
+            if (!(rider == MinecraftClient.instance().player) || InteractionManager.instance().getViewMode() != 0) {
                 GlStateManager.enableAlpha();
                 GlStateManager.enableBlend();
 

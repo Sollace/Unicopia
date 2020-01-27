@@ -25,6 +25,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class BlockTomatoPlant extends CropBlock {
@@ -65,12 +66,13 @@ public class BlockTomatoPlant extends CropBlock {
         return UItems.tomato;
     }
 
-    public boolean canPlaceBlockAt(World world, BlockPos pos) {
+    @Override
+    public boolean canPlaceAt(BlockState state, ViewableWorld world, BlockPos pos) {
         if (world.getBlockState(pos.down()).getBlock() instanceof BlockTomatoPlant) {
             return true;
         }
 
-        return super.canPlaceBlockAt(world, pos);
+        return super.canPlaceAt(state, world, pos);
     }
 
     @Override

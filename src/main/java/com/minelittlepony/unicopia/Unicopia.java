@@ -23,7 +23,6 @@ import com.minelittlepony.unicopia.inventory.gui.GuiSpellBook;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
-import com.minelittlepony.unicopia.util.crafting.CraftingManager;
 import com.minelittlepony.unicopia.world.UWorld;
 
 public class Unicopia implements ModInitializer {
@@ -33,24 +32,9 @@ public class Unicopia implements ModInitializer {
 
     public static final Logger LOGGER = LogManager.getLogger();
 
+    static InteractionManager interactionManager;
+
     private static IChannel channel;
-
-    private static CraftingManager craftingManager = new CraftingManager(MODID, "enchanting") {
-        @Override
-        protected void registerRecipeTypes(Map<String, Function<JsonObject, IRecipe>> types) {
-            super.registerRecipeTypes(types);
-
-            types.put("unicopia:crafting_spell", SpellRecipe::deserialize);
-            types.put("unicopia:crafting_special", SpecialRecipe::deserialize);
-
-            AffineIngredients.instance().load();
-        }
-    };
-
-    @Deprecated
-    public static CraftingManager getCraftingManager() {
-        return craftingManager;
-    }
 
     public static IChannel getConnection() {
         return channel;
@@ -76,13 +60,13 @@ public class Unicopia implements ModInitializer {
         UBlocks.bootstrap();
         UItems.bootstrap();
         Commands.bootstrap();
-
+        UContainers.bootstrap();
 
         UWorld.instance().init();
 
-        UClient.instance().preInit();
-        UClient.instance().init();
-        UClient.instance().postInit();
+        InteractionManager.instance().preInit();
+        InteractionManager.instance().init();
+        InteractionManager.instance().postInit();
 
         UItems.fixRecipes();
     }

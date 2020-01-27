@@ -98,7 +98,7 @@ public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseable
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ) {
+    public CastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, BlockPos pos, Direction side, float hitX, float hitY, float hitZ) {
         boolean result = false;
 
         if (player == null || player.isSneaking()) {
@@ -114,20 +114,20 @@ public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseable
             result = applyEntities(player, world, pos);
         }
 
-        return result ? SpellCastResult.DEFAULT : SpellCastResult.NONE;
+        return result ? CastResult.DEFAULT : CastResult.NONE;
     }
 
     @Override
-    public SpellCastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, @Nullable Entity hitEntity) {
+    public CastResult onUse(ItemStack stack, Affinity affinity, PlayerEntity player, World world, @Nullable Entity hitEntity) {
         if (hitEntity == null) {
-            return SpellCastResult.NONE;
+            return CastResult.NONE;
         }
 
-        return applyEntitySingle(player, world, hitEntity) ? SpellCastResult.DEFAULT : SpellCastResult.NONE;
+        return applyEntitySingle(player, world, hitEntity) ? CastResult.DEFAULT : CastResult.NONE;
     }
 
     @Override
-    public SpellCastResult onDispenced(BlockPos pos, Direction facing, IBlockSource source, Affinity affinity) {
+    public CastResult onDispenced(BlockPos pos, Direction facing, IBlockSource source, Affinity affinity) {
         pos = pos.offset(facing, 4);
 
         boolean result = false;
@@ -140,7 +140,7 @@ public class SpellFire extends AbstractSpell.RangedAreaSpell implements IUseable
             result = applyEntities(null, source.getWorld(), pos);
         }
 
-        return result ? SpellCastResult.NONE : SpellCastResult.DEFAULT;
+        return result ? CastResult.NONE : CastResult.DEFAULT;
     }
 
     protected boolean applyBlocks(World world, BlockPos pos) {

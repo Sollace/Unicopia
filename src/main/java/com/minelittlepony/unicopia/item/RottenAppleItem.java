@@ -1,8 +1,10 @@
 package com.minelittlepony.unicopia.item;
 
+import com.minelittlepony.unicopia.ducks.IItemEntity;
+
 import net.fabricmc.fabric.api.registry.FuelRegistry;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.FoodComponent;
+import net.minecraft.util.ActionResult;
 
 public class RottenAppleItem extends AppleItem {
 
@@ -12,7 +14,7 @@ public class RottenAppleItem extends AppleItem {
     }
 
     @Override
-    public boolean onEntityItemUpdate(ItemEntity item) {
-        return false;
+    public ActionResult onGroundTick(IItemEntity item) {
+        return ActionResult.PASS;
     }
 }
