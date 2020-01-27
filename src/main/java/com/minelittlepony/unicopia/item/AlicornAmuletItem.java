@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.ducks.IItemEntity;
 import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
 import com.minelittlepony.unicopia.magic.Affinity;

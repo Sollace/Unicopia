@@ -22,6 +22,7 @@ import com.minelittlepony.unicopia.block.DutchDoorBlock;
 import com.minelittlepony.unicopia.block.SugarBlock;
 import com.minelittlepony.unicopia.block.UPot;
 import com.minelittlepony.unicopia.item.AppleItem;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.world.structure.CustomSaplingGenerator;
 import com.minelittlepony.unicopia.block.BlockTomatoPlant;
 import com.minelittlepony.unicopia.block.BlockCloudDoor;
@@ -101,7 +102,9 @@ public class UBlocks {
         return Registry.BLOCK.add(new Identifier(Unicopia.MODID, name), block);
     }
 
-    static void registerColors(ItemColors items, BlockColors blocks) {
+    public static void bootstrap() {
+        ItemColors items;
+        BlockColors blocks;
         items.register((stack, tint) -> {
             BlockState state = ((BlockItem)stack.getItem()).getBlock().getDefaultState();
 
@@ -120,9 +123,5 @@ public class UBlocks {
 
             return GrassColors.getColor(0.5D, 1);
         }, apple_leaves);
-    }
-
-    static void bootstrap() {
-
     }
 }

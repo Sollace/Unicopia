@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.world;
 import java.util.List;
 
 import com.minelittlepony.unicopia.UBlocks;
-import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.block.ITillable;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 
 import net.minecraft.block.Block;

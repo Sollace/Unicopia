@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.block;
 
 import java.util.Random;
 
-import com.minelittlepony.unicopia.UItems;
+import com.minelittlepony.unicopia.item.UItems;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

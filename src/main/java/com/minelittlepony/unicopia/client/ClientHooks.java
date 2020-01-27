@@ -3,10 +3,10 @@ package com.minelittlepony.unicopia.client;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UBlocks;
-import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.entity.capabilities.ICamera;
 import com.minelittlepony.unicopia.entity.capabilities.IPlayer;
+import com.minelittlepony.unicopia.item.UItems;
 import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.MinecraftClient;

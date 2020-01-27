@@ -1,71 +1,37 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.item.AlicornAmuletItem;
-import com.minelittlepony.unicopia.item.SugaryItem;
-import com.minelittlepony.unicopia.item.AppleItem;
-import com.minelittlepony.unicopia.item.CloudPlacerItem;
-import com.minelittlepony.unicopia.item.ExtendedShearsItem;
-import com.minelittlepony.unicopia.item.CursedMagicGemItem;
-import com.minelittlepony.unicopia.item.EnchantedStaffItem;
-import com.minelittlepony.unicopia.item.MossItem;
-import com.minelittlepony.unicopia.item.BagOfHoldingItem;
-import com.minelittlepony.unicopia.item.RottenAppleItem;
-import com.minelittlepony.unicopia.item.RottenTomatoItem;
-import com.minelittlepony.unicopia.item.SpearItem;
-import com.minelittlepony.unicopia.item.MagicGemItem;
-import com.minelittlepony.unicopia.item.SpellbookItem;
-import com.minelittlepony.unicopia.item.StaffItem;
-import com.minelittlepony.unicopia.item.TomatoItem;
-import com.minelittlepony.unicopia.item.TomatoSeedsItem;
-import com.minelittlepony.unicopia.item.ZapAppleItem;
-import com.minelittlepony.unicopia.item.PredicatedBlockItem;
-import com.minelittlepony.unicopia.item.StickItem;
-import com.minelittlepony.unicopia.item.URecord;
-import com.minelittlepony.unicopia.item.consumables.BushToxicityDeterminent;
-import com.minelittlepony.unicopia.item.consumables.CookedToxicityDeterminent;
-import com.minelittlepony.unicopia.item.consumables.FlowerToxicityDeterminent;
-import com.minelittlepony.unicopia.item.consumables.DelegatedEdibleItem;
+import com.minelittlepony.unicopia.item.consumables.DynamicToxicItem;
+import com.minelittlepony.unicopia.item.consumables.ToxicBlockItem;
+import com.minelittlepony.unicopia.item.consumables.ToxicItem;
 import com.minelittlepony.unicopia.item.consumables.Toxicity;
-import com.minelittlepony.unicopia.item.consumables.DelegateFoodItem;
+import com.minelittlepony.unicopia.item.consumables.Toxin;
+import com.minelittlepony.unicopia.item.consumables.DynamicToxicBlockItem;
 import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 import com.minelittlepony.unicopia.magic.spells.SpellScorch;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.item.ItemColors;
+import net.minecraft.item.AliasedBlockItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.FoodComponents;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.TallBlockItem;
-import net.minecraft.item.Item.Settings;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.registry.Registry;
 
 import static com.minelittlepony.unicopia.EquinePredicates.*;
 
-import javax.annotation.Nullable;
-
 import com.minelittlepony.unicopia.ServerInteractionManager;
-import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.entity.ConstructionCloudEntity;
-import com.minelittlepony.unicopia.entity.RacingCloudEntity;
-import com.minelittlepony.unicopia.entity.WildCloudEntity;
-import com.minelittlepony.unicopia.forgebullshit.BuildInTexturesBakery;
-import com.minelittlepony.unicopia.forgebullshit.OreReplacer;
-import com.minelittlepony.unicopia.forgebullshit.UnFuckedItemSnow;
+import com.minelittlepony.unicopia.UBlocks;
+import com.minelittlepony.unicopia.UEntities;
+import com.minelittlepony.unicopia.USounds;
 
 public class UItems {
 
-    private static final StickItem stick = register(new StickItem(), "minecraft", "stick");
-    private static final ExtendedShearsItem shears = register(new ExtendedShearsItem(), "minecraft", "shears");
-
-    public static final AppleItem red_apple = register(new AppleItem(FoodComponents.APPLE), "minecraft", "apple");
     public static final AppleItem green_apple = register(new AppleItem(FoodComponents.APPLE), "apple_green");
     public static final AppleItem sweet_apple = register(new AppleItem(FoodComponents.APPLE), "apple_sweet");
     public static final AppleItem sour_apple = register(new AppleItem(FoodComponents.APPLE), "apple_sour");
@@ -130,10 +96,12 @@ public class UItems {
 
     public static final MossItem moss = register(new MossItem(new Item.Settings()), "moss");
 
-    public static final Item alfalfa_seeds = new ItemSeedFood(1, 4, UBlocks.alfalfa, Blocks.FARMLAND)
-            .setTranslationKey("alfalfa_seeds")
-            .setRegistryName(Unicopia.MODID, "alfalfa_seeds")
-            .setCreativeTab(CreativeTabs.MATERIALS);
+    public static final Item alfalfa_seeds = register(new AliasedBlockItem(UBlocks.alfalfa, new Item.Settings()
+            .group(ItemGroup.MATERIALS)
+            .food(new FoodComponent.Builder()
+                    .hunger(1)
+                    .saturationModifier(4)
+                    .build())), "alfalfa_seeds");
 
     public static final Item enchanted_torch = register(new BlockItem(UBlocks.enchanted_torch, new Item.Settings().group(ItemGroup.DECORATIONS)), "enchanted_torch");
 
@@ -167,85 +135,36 @@ public class UItems {
     public static final TomatoItem cloudsdale_tomato = register(new TomatoItem(16, 4), "cloudsdale_tomato");
     public static final RottenTomatoItem rotten_cloudsdale_tomato = register(new RottenTomatoItem(5, 34), "rotten_cloudsdale_tomato");
 
-    public static final TomatoSeedsItem tomato_seeds = new TomatoSeedsItem(Unicopia.MODID, "tomato_seeds");
+    public static final TomatoSeedsItem tomato_seeds = register(new TomatoSeedsItem(), "tomato_seeds");
 
-    public static final Item apple_seeds = new UItemDecoration(UBlocks.apple_tree, Unicopia.MODID, "apple_seeds");
+    public static final Item apple_seeds = register(new BlockItem(UBlocks.apple_tree, new Item.Settings().group(ItemGroup.DECORATIONS)), "apple_seeds");
+    public static final Item apple_leaves = register(new BlockItem(UBlocks.apple_leaves, new Item.Settings().group(ItemGroup.DECORATIONS)), "apple_leaves");
 
-    public static final Item apple_leaves = new BlockItem(UBlocks.apple_leaves);
+    public static final Item daffodil_daisy_sandwich = register(new DynamicToxicItem(new Item.Settings(), 3, 2, UseAction.EAT, Toxicity::fromStack), "daffodil_daisy_sandwich");
+    public static final Item hay_burger = register(new DynamicToxicItem(new Item.Settings(), 3, 4, UseAction.EAT, Toxicity::fromStack), "hay_burger");
+    public static final Item hay_fries = register(new ToxicItem(new Item.Settings(), 1, 5, UseAction.EAT, Toxicity.SAFE), "hay_fries");
+    public static final Item salad = register(new DynamicToxicItem(new Item.Settings().recipeRemainder(Items.BOWL), 4, 2, UseAction.EAT, Toxicity::fromStack), "salad");
 
-    public static final Item double_plant = new DelegateFoodItem(Blocks.TALL_GRASS, stack ->
-                BlockDoublePlant.EnumPlantType.byMetadata(stack.getMetadata()).getTranslationKey()
-            ).setFoodDelegate(new DelegatedEdibleItem(new BushToxicityDeterminent()))
-            .setTranslationKey("doublePlant");
-
-    public static final Item tall_grass = new DelegateFoodItem(Blocks.GRASS, stack -> {
-        switch (stack.getMetadata()) {
-            case 0: return "shrub";
-            case 1: return "grass";
-            case 2: return "fern";
-            default: return "";
-        }
-    }).setFoodDelegate(new DelegatedEdibleItem(stack -> {
-        switch (stack.getMetadata()) {
-            default:
-            case 0: return Toxicity.SAFE;
-            case 1: return Toxicity.SAFE;
-            case 2: return Toxicity.SEVERE;
-        }
-    }));
-
-    public static final Item yellow_flower = new DelegateFoodItem(Blocks.YELLOW_FLOWER, stack ->
-                BlockFlower.EnumFlowerType.getType(BlockFlower.EnumFlowerColor.YELLOW, stack.getMetadata()).getTranslationKey()
-            ).setFoodDelegate(new DelegatedEdibleItem(new FlowerToxicityDeterminent(BlockFlower.EnumFlowerColor.YELLOW)))
-            .setTranslationKey("flower");
-
-    public static final Item red_flower = new DelegateFoodItem(Blocks.RED_FLOWER, stack ->
-                BlockFlower.EnumFlowerType.getType(BlockFlower.EnumFlowerColor.RED, stack.getMetadata()).getTranslationKey()
-            ).setFoodDelegate(new DelegatedEdibleItem(new FlowerToxicityDeterminent(BlockFlower.EnumFlowerColor.RED)))
-            .setTranslationKey("rose");
-
-    public static final Item daffodil_daisy_sandwich = new DelegatedEdibleItem(Unicopia.MODID, "daffodil_daisy_sandwich", 3, 2, CookedToxicityDeterminent.instance)
-            .setHasSubtypes(true);
-    public static final Item hay_burger = new DelegatedEdibleItem(Unicopia.MODID, "hay_burger", 3, 4, CookedToxicityDeterminent.instance)
-            .setHasSubtypes(true);
-    public static final Item hay_fries = new DelegatedEdibleItem(Unicopia.MODID, "hay_fries", 1, 5, stack -> Toxicity.SAFE);
-    public static final Item salad = new DelegatedEdibleItem(Unicopia.MODID, "salad", 4, 2, CookedToxicityDeterminent.instance)
-            .setHasSubtypes(true)
-            .setContainerItem(Items.BOWL);
-
-    public static final Item wheat_worms = new DelegatedEdibleItem(Unicopia.MODID, "wheat_worms", 1, 0, stack -> Toxicity.SEVERE);
-
+    public static final Item wheat_worms = register(new ToxicItem(new Item.Settings(), 1, 0, UseAction.EAT, Toxicity.SEVERE), "wheat_worms");
     public static final Item mug = register(new Item(new Item.Settings().group(ItemGroup.MATERIALS)), "mug");
-    public static final Item apple_cider = new DelegatedEdibleItem(Unicopia.MODID, "apple_cider", 4, 2, stack -> Toxicity.MILD)
-            .setUseAction(UseAction.DRINK)
-            .setContainerItem(mug)
-            .setFull3D();
-    public static final Item juice = new DelegatedEdibleItem(Unicopia.MODID, "juice", 2, 2, stack -> Toxicity.SAFE)
-            .setUseAction(UseAction.DRINK)
-            .setContainerItem(Items.GLASS_BOTTLE);
-    public static final Item burned_juice = new DelegatedEdibleItem(Unicopia.MODID, "burned_juice", 3, 1, stack -> Toxicity.FAIR)
-            .setUseAction(UseAction.DRINK)
-            .setContainerItem(Items.GLASS_BOTTLE);
+    public static final Item apple_cider = register(new ToxicItem(new Item.Settings().recipeRemainder(mug), 4, 2, UseAction.DRINK, Toxicity.MILD), "apple_cider");
+    public static final Item juice = register(new ToxicItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE), 2, 2, UseAction.DRINK, Toxicity.SAFE), "juice");
+    public static final Item burned_juice = register(new ToxicItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE), 3, 1, UseAction.DRINK, Toxicity.FAIR), "burned_juice");
 
-    private static <T extends Item> T register(T item, String namespace, String name) {
-        return Registry.ITEM.add(new Identifier(namespace, name), item);
+    private static <T extends Item> T register(T newItem, Item oldItem) {
+        return Registry.ITEM.add(Registry.ITEM.getId(oldItem), newItem);
     }
+
     private static <T extends Item> T register(T item, String name) {
         return register(item, name);
     }
 
-    static void bootstrap() {
-        RegistryLockSpinner.open(Item.REGISTRY, Items.class, r -> r
-                .replace(Items.APPLE, red_apple)
-                .replace(Item.getItemFromBlock(Blocks.TALLGRASS), tall_grass)
-                .replace(Item.getItemFromBlock(Blocks.DOUBLE_PLANT), double_plant)
-                .replace(Item.getItemFromBlock(Blocks.YELLOW_FLOWER), yellow_flower)
-                .replace(Item.getItemFromBlock(Blocks.RED_FLOWER), red_flower));
+    public static void bootstrap() {
 
         if (ServerInteractionManager.isClientSide()) {
-            BuildInTexturesBakery.getBuiltInTextures().add(new Identifier(Unicopia.MODID, "items/empty_slot_gem"));
+            //BuildInTexturesBakery.getBuiltInTextures().add(new Identifier(Unicopia.MODID, "items/empty_slot_gem"));
 
-            ItemColors registry;
+            ItemColors registry = null;
             registry.register((stack, tint) -> {
                 if (MAGI.test(MinecraftClient.getInstance().player)) {
                     return SpellRegistry.instance().getSpellTintFromStack(stack);
@@ -255,12 +174,36 @@ public class UItems {
             }, spell, curse);
         }
 
-        FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(zap_apple), new ItemStack(cooked_zap_apple), 0.1F);
-        FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(juice), new ItemStack(burned_juice), 0);
-        FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(cuccoon), new ItemStack(chitin_shell), 0.3F);
+        // FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(zap_apple), new ItemStack(cooked_zap_apple), 0.1F);
+        // FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(juice), new ItemStack(burned_juice), 0);
+        // FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(cuccoon), new ItemStack(chitin_shell), 0.3F);
+    }
 
-        new OreReplacer()
-            .registerAll(stack -> stack.getItem().getRegistryName().equals(red_apple.getRegistryName()))
-            .done();
+    static class VanillaOverrides {
+        public static final StickItem stick = register(new StickItem(), Items.STICK);
+        public static final ExtendedShearsItem shears = register(new ExtendedShearsItem(), Items.SHEARS);
+
+        public static final AppleItem red_apple = register(new AppleItem(FoodComponents.APPLE), Items.APPLE);
+
+        public static final Item grass = register(new DynamicToxicBlockItem(Blocks.GRASS, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.NAUSEA), Items.GRASS);
+        public static final Item fern = register(new DynamicToxicBlockItem(Blocks.FERN, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE, Toxin.STRENGTH), Items.FERN);
+        public static final Item dead_bush = register(new DynamicToxicBlockItem(Blocks.DEAD_BUSH, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE, Toxin.NAUSEA), Items.DEAD_BUSH);
+
+        public static final Item dandelion = register(new ToxicBlockItem(Blocks.DANDELION, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.DANDELION);
+        public static final Item poppy = register(new ToxicBlockItem(Blocks.POPPY, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE), Items.POPPY);
+        public static final Item blue_orchid = register(new ToxicBlockItem(Blocks.BLUE_ORCHID, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.BLUE_ORCHID);
+        public static final Item allium = register(new ToxicBlockItem(Blocks.ALLIUM, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.FAIR), Items.ALLIUM);
+        public static final Item azure_bluet = register(new DynamicToxicBlockItem(Blocks.AZURE_BLUET, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.RADIOACTIVITY), Items.AZURE_BLUET);
+        public static final Item red_tulip = register(new ToxicBlockItem(Blocks.RED_TULIP, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.RED_TULIP);
+        public static final Item orange_tulip = register(new ToxicBlockItem(Blocks.ORANGE_TULIP, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.ORANGE_TULIP);
+        public static final Item white_tulip = register(new ToxicBlockItem(Blocks.WHITE_TULIP, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.FAIR), Items.WHITE_TULIP);
+        public static final Item pink_tulip = register(new ToxicBlockItem(Blocks.PINK_TULIP, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.PINK_TULIP);
+        public static final Item oxeye_daisy = register(new DynamicToxicBlockItem(Blocks.OXEYE_DAISY, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE, Toxin.BLINDNESS), Items.OXEYE_DAISY);
+        public static final Item cornflower = register(new ToxicBlockItem(Blocks.CORNFLOWER, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.CORNFLOWER);
+
+        public static final Item rose_bush = register(new DynamicToxicBlockItem(Blocks.ROSE_BUSH, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.DAMAGE), Items.ROSE_BUSH);
+        public static final Item peony = register(new ToxicBlockItem(Blocks.PEONY, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.PEONY);
+        public static final Item tall_grass = register(new ToxicBlockItem(Blocks.TALL_GRASS, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.TALL_GRASS);
+        public static final Item large_fern = register(new DynamicToxicBlockItem(Blocks.LARGE_FERN, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE, Toxin.DAMAGE), Items.LARGE_FERN);
     }
 }

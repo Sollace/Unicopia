@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.inventory.gui.SpellBookInventory;
+import com.minelittlepony.unicopia.item.UItems;
 
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;

@@ -19,6 +19,7 @@ import com.minelittlepony.unicopia.enchanting.recipe.AffineIngredients;
 import com.minelittlepony.unicopia.enchanting.recipe.SpecialRecipe;
 import com.minelittlepony.unicopia.enchanting.recipe.SpellRecipe;
 import com.minelittlepony.unicopia.inventory.gui.SpellBookContainer;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.inventory.gui.GuiSpellBook;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;

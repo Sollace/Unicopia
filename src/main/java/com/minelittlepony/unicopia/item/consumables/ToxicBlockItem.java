@@ -8,12 +8,16 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UEffects;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -22,28 +26,35 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
-public class EdibleItem extends Item implements IEdible {
+public class ToxicBlockItem extends BlockItem implements Toxic, Toxin {
 
+    private final UseAction action;
     private final Toxicity toxicity;
 
-    public EdibleItem(Item.Settings settings, Toxicity toxicity) {
-        super(settings);
+    public ToxicBlockItem(Block block, Item.Settings settings, int hunger, float saturation, UseAction action, Toxicity toxicity) {
+        super(block, settings
+                .group(ItemGroup.FOOD)
+                .food(new FoodComponent.Builder()
+                        .hunger(hunger)
+                        .saturationModifier(saturation)
+                        .build()));
         this.toxicity = toxicity;
+        this.action = action;
     }
 
     @Override
-    public Toxicity getToxicityLevel(ItemStack stack) {
+    public Toxicity getToxicity(ItemStack stack) {
         return toxicity;
     }
 
     @Override
     public UseAction getUseAction(ItemStack stack) {
-        return UseAction.EAT;
+        return action;
     }
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(getToxicityLevel(stack).getTooltip());
+        tooltip.add(getToxicity(stack).getTooltip());
     }
 
     @Override
@@ -52,7 +63,7 @@ public class EdibleItem extends Item implements IEdible {
 
         if (entity instanceof PlayerEntity) {
             Race race = SpeciesList.instance().getPlayer((PlayerEntity)entity).getSpecies();
-            Toxicity toxicity = (race.isDefault() || race == Race.CHANGELING) ? Toxicity.LETHAL : getToxicityLevel(stack);
+            Toxicity toxicity = (race.isDefault() || race == Race.CHANGELING) ? Toxicity.LETHAL : getToxicity(stack);
 
             addSecondaryEffects((PlayerEntity)entity, toxicity, stack);
         }

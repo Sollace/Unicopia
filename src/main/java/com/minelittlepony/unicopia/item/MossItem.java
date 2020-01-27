@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.item;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.item.consumables.EdibleItem;
+import com.minelittlepony.unicopia.item.consumables.ToxicItem;
 import com.minelittlepony.unicopia.item.consumables.Toxicity;
 import com.minelittlepony.util.collection.ReversableStateMapList;
 import net.minecraft.block.Block;
@@ -14,10 +14,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.UseAction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class MossItem extends EdibleItem {
+public class MossItem extends ToxicItem {
 
     public static final ReversableStateMapList AFFECTED = new ReversableStateMapList();
 
@@ -35,7 +36,7 @@ public class MossItem extends EdibleItem {
     }
 
     public MossItem(Item.Settings settings) {
-        super(settings);
+        super(settings, 2, 1, UseAction.EAT, Toxicity.FAIR);
     }
 
     public boolean tryConvert(World world, BlockState state, BlockPos pos, @Nullable PlayerEntity player) {
@@ -61,7 +62,7 @@ public class MossItem extends EdibleItem {
     }
 
     @Override
-    public Toxicity getToxicityLevel(ItemStack stack) {
+    public Toxicity getToxicity(ItemStack stack) {
         return Toxicity.MILD;
     }
 }

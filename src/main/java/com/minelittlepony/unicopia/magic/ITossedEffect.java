@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia.magic;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.entity.ProjectileEntity;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 import com.minelittlepony.unicopia.projectile.IAdvancedProjectile;
 import com.minelittlepony.unicopia.projectile.ITossable;

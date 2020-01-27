@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.enchanting.recipe;
 
 import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.inventory.gui.SpellBookInventory;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.spells.SpellRegistry;
 
 import net.minecraft.inventory.CraftingInventory;

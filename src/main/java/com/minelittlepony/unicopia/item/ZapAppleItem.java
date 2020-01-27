@@ -4,7 +4,6 @@ package com.minelittlepony.unicopia.item;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.item.consumables.Toxicity;
 import com.minelittlepony.util.MagicalDamageSource;
 import com.minelittlepony.util.VecHelper;
@@ -120,7 +119,7 @@ public class ZapAppleItem extends AppleItem {
     }
 
     @Override
-    public Toxicity getToxicityLevel(ItemStack stack) {
+    public Toxicity getToxicity(ItemStack stack) {
         return getAppearance(stack) == Items.AIR ? Toxicity.SEVERE : Toxicity.SAFE;
     }
 

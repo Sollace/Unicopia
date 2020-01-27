@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UItems;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.ICaster;
 import com.minelittlepony.unicopia.magic.IMagicEffect;

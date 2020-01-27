@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.item;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.magic.items.IDispensable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DispenserBlock;

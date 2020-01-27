@@ -1,7 +1,8 @@
 package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.UItems;
+import com.minelittlepony.unicopia.item.UItems;
+
 import net.minecraft.container.Container;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.EntityType;

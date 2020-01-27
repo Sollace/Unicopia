@@ -4,7 +4,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.UItems;
+import com.minelittlepony.unicopia.item.UItems;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropBlock;

@@ -1,37 +1,29 @@
 package com.minelittlepony.unicopia.item;
 
 import java.util.List;
-import java.util.function.Supplier;
-
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.UItems;
 import com.minelittlepony.unicopia.ducks.IItemEntity;
 import com.minelittlepony.unicopia.entity.capabilities.ItemEntityCapabilities;
-import com.minelittlepony.unicopia.item.consumables.IEdible;
+import com.minelittlepony.unicopia.item.consumables.Toxic;
 import com.minelittlepony.unicopia.item.consumables.Toxicity;
-import com.minelittlepony.util.collection.Pool;
-import com.minelittlepony.util.collection.Weighted;
-
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.FoodComponent;
-import net.minecraft.item.FoodComponents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class AppleItem extends Item implements IEdible, ItemEntityCapabilities.TickableItem {
+public class AppleItem extends Item implements Toxic, ItemEntityCapabilities.TickableItem {
 
-    private static final Pool<Object, Weighted<Supplier<ItemStack>>> typeVariantMap = Pool.of(PlanksBlock.Type.OAK,
+    // TODO: Move this to a datapack
+    /*private static final Pool<Object, Weighted<Supplier<ItemStack>>> TYPE_VARIANT_POOL = Pool.of(PlanksBlock.Type.OAK,
             PlanksBlock.Type.OAK, new Weighted<Supplier<ItemStack>>()
                     .put(1, () -> new ItemStack(UItems.rotten_apple))
                     .put(2, () -> new ItemStack(UItems.green_apple))
@@ -58,13 +50,14 @@ public class AppleItem extends Item implements IEdible, ItemEntityCapabilities.T
                     .put(2, () -> new ItemStack(UItems.sweet_apple))
                     .put(5, () -> new ItemStack(UItems.zap_apple)
             )
-    );
+    );*/
 
     public static ItemStack getRandomItemStack(Object variant) {
-        return typeVariantMap.getOptional(variant)
+        return new ItemStack(UItems.VanillaOverrides.red_apple);
+        /*return TYPE_VARIANT_POOL.getOptional(variant)
                 .flatMap(Weighted::get)
                 .map(Supplier::get)
-                .orElse(ItemStack.EMPTY);
+                .orElse(ItemStack.EMPTY);*/
     }
 
     public AppleItem(FoodComponent components) {
@@ -111,11 +104,11 @@ public class AppleItem extends Item implements IEdible, ItemEntityCapabilities.T
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World worldIn, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(getToxicityLevel(stack).getTooltip());
+        tooltip.add(getToxicity(stack).getTooltip());
     }
 
     @Override
-    public Toxicity getToxicityLevel(ItemStack stack) {
+    public Toxicity getToxicity(ItemStack stack) {
         return Toxicity.SAFE;
     }
 }

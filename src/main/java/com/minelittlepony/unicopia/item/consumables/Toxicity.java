@@ -1,7 +1,14 @@
 package com.minelittlepony.unicopia.item.consumables;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -16,6 +23,7 @@ public enum Toxicity {
     private final int level;
     private final int duration;
 
+    private static final Map<String, Toxicity> REGISTRY;
     private static final Toxicity[] values = values();
 
     Toxicity(int level, int duration) {
@@ -53,10 +61,22 @@ public enum Toxicity {
         return text;
     }
 
+    public static Toxicity fromStack(ItemStack stack) {
+        if (stack.hasTag()) {
+            CompoundTag tag = stack.getSubTag("toxicity");
+            if (tag != null) {
+                return REGISTRY.getOrDefault(tag.asString(), SAFE);
+            }
+        }
+        return SAFE;
+    }
+
+    @Deprecated
     public static Toxicity byMetadata(int metadata) {
         return values[metadata % values.length];
     }
 
+    @Deprecated
     public static String[] getVariants(String key) {
         String[] result = new String[values.length];
 
@@ -65,5 +85,9 @@ public enum Toxicity {
         }
 
         return result;
+    }
+
+    static {
+        REGISTRY = Arrays.stream(values()).collect(Collectors.toMap(Toxicity::name, Function.identity()));
     }
 }

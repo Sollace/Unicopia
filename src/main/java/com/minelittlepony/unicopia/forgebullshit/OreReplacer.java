@@ -9,7 +9,13 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeType;
+import net.minecraft.util.DefaultedList;
 
 /**
  * An Ore Replacer.
@@ -25,25 +31,24 @@ public class OreReplacer {
     public static final IIngredientRemapper VANILLA = new IIngredientRemapper() {
 
         @Override
-        public boolean canRemap(IRecipe recipe) {
-            return recipe.getClass() == ShapedRecipes.class
-                || recipe.getClass() == ShapelessRecipes.class;
+        public boolean canRemap(Recipe<?> recipe) {
+            return recipe.getType() == RecipeType.CRAFTING;
         }
 
         @Override
-        public int replaceIngredients(OreReplacer sender, IRecipe recipe) {
-            NonNullList<Ingredient> ingredients = recipe.getIngredients();
+        public int replaceIngredients(OreReplacer sender, Recipe<?> recipe) {
+            DefaultedList<Ingredient> ingredients = recipe.getPreviewInputs();
 
             int replacements = 0;
 
             for (int i = 0; i < ingredients.size(); i++) {
                 Ingredient ingredient = ingredients.get(i);
 
-                NonNullList<ItemStack> newStacks = NonNullList.create();
+                DefaultedList<ItemStack> newStacks = DefaultedList.of();
 
                 boolean altered = false;
 
-                ItemStack[] stacks = ingredient.getMatchingStacks();
+                ItemStack[] stacks = ingredient.getStackArray();
 
                 for (int k = 0; k < stacks.length; k++) {
                     ItemStack stack = stacks[k];
@@ -59,7 +64,7 @@ public class OreReplacer {
 
                 if (altered) {
                     replacements++;
-                    ingredients.set(i, Ingredient.fromStacks(newStacks.stream().distinct().toArray(ItemStack[]::new)));
+                    ingredients.set(i, Ingredient.ofStacks(newStacks.stream().distinct().toArray(ItemStack[]::new)));
                 }
             }
 
@@ -106,7 +111,7 @@ public class OreReplacer {
         log.info("Replaced {} ingredients.", replacements);
     }
 
-    public boolean replaceOre(ItemStack stack, NonNullList<ItemStack> newStacks) {
+    public boolean replaceOre(ItemStack stack, DefaultedList<ItemStack> newStacks) {
         return ores.stream().filter(ore -> ore.matches(stack)).peek(ore ->
             ore.getSubItems(stack, newStacks)
         ).findFirst().isPresent();
@@ -114,22 +119,22 @@ public class OreReplacer {
 
     public interface IIngredientRemapper {
 
-        boolean canRemap(IRecipe recipe);
+        boolean canRemap(Recipe<?> recipe);
 
-        int replaceIngredients(OreReplacer sender, IRecipe recipe);
+        int replaceIngredients(OreReplacer sender, Recipe<?> recipe);
     }
 
     @FunctionalInterface
     public interface IOre {
         boolean matches(ItemStack stack);
 
-        default void getSubItems(ItemStack stack, NonNullList<ItemStack> newStacks) {
-            NonNullList<ItemStack> newList = NonNullList.create();
+        default void getSubItems(ItemStack stack, DefaultedList<ItemStack> newStacks) {
+            DefaultedList<ItemStack> newList = DefaultedList.of();
 
-            stack.getItem().getSubItems(CreativeTabs.SEARCH, newList);
+            stack.getItem().appendStacks(ItemGroup.SEARCH, newList);
 
-            if (stack.hasTagCompound()) {
-                newList.forEach(i -> i.setTagCompound(stack.getTagCompound().copy()));
+            if (stack.hasTag()) {
+                newList.forEach(i -> i.setTag((CompoundTag)stack.getTag().copy()));
             }
 
             newStacks.addAll(newList);
