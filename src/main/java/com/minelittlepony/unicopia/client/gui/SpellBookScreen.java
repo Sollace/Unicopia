@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.client.gui;
 import org.lwjgl.opengl.GL11;
 
 import com.minelittlepony.common.client.gui.element.Button;
-import com.minelittlepony.unicopia.UnicopiaCore;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.container.SpellBookContainer;
 import com.minelittlepony.unicopia.container.SpellBookContainer.SpellbookSlot;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
@@ -162,7 +162,7 @@ public class SpellBookScreen extends AbstractContainerScreen<SpellBookContainer>
                 blit(left, top, 0, 0, containerWidth, containerHeight, 512, 256);
             } else {
                 if (player.getWorld().random.nextInt(100) == 0) {
-                    UnicopiaCore.LOGGER.fatal("Missing texture " + texture);
+                    Unicopia.LOGGER.fatal("Missing texture " + texture);
                 }
             }
         }

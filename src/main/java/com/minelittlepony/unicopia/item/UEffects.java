@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.UnicopiaCore;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.CustomStatusEffect;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 
 public interface UEffects {
 
-    StatusEffect FOOD_POISONING = new CustomStatusEffect(new Identifier(UnicopiaCore.MODID, "food_poisoning"), StatusEffectType.BENEFICIAL, 3484199)
+    StatusEffect FOOD_POISONING = new CustomStatusEffect(new Identifier(Unicopia.MODID, "food_poisoning"), StatusEffectType.BENEFICIAL, 3484199)
             .setSilent()
             .direct((p, e, i) -> {
                 StatusEffectInstance nausea = e.getStatusEffect(StatusEffects.NAUSEA);

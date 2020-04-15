@@ -11,7 +11,7 @@ import com.google.gson.annotations.Expose;
 import com.minelittlepony.jumpingcastle.api.Channel;
 import com.minelittlepony.jumpingcastle.api.Message;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UnicopiaCore;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -57,7 +57,7 @@ public class MsgPlayerCapabilities implements Message, Message.Handler<MsgPlayer
         PlayerEntity self = server.getPlayerManager().getPlayer(senderId);
 
         if (self == null) {
-            UnicopiaCore.LOGGER.warn("[Unicopia] [CLIENT] [MsgPlayerCapabilities] Player with id %s was not found!\n", senderId.toString());
+            Unicopia.LOGGER.warn("[Unicopia] [CLIENT] [MsgPlayerCapabilities] Player with id %s was not found!\n", senderId.toString());
         } else {
             Pony player = Pony.of(self);
 

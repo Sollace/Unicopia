@@ -22,10 +22,8 @@ import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.structure.UStructures;
 
-public class UnicopiaCore implements ModInitializer {
+public class Unicopia implements ModInitializer {
     public static final String MODID = "unicopia";
-    public static final String NAME = "@NAME@";
-    public static final String VERSION = "@VERSION@";
 
     public static final Logger LOGGER = LogManager.getLogger();
 

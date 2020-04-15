@@ -10,7 +10,7 @@ import com.minelittlepony.jumpingcastle.api.Target;
 import com.minelittlepony.unicopia.Config;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UnicopiaCore;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.client.render.DisguiseRenderer;
@@ -38,7 +38,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ExtendedBlockView;
 
-public class UnicopiaCoreClient extends InteractionManager implements ClientModInitializer {
+public class UnicopiaClient extends InteractionManager implements ClientModInitializer {
 
     private final KeyBindingsHandler keyboard = new KeyBindingsHandler();
 
@@ -149,7 +149,7 @@ public class UnicopiaCoreClient extends InteractionManager implements ClientModI
         ColorProviderRegistry.ITEM.register((stack, tint) -> {
             return getLeavesColor(((BlockItem)stack.getItem()).getBlock().getDefaultState(), null, null, tint);
         }, UItems.apple_leaves);
-        ColorProviderRegistry.BLOCK.register(UnicopiaCoreClient::getLeavesColor, UBlocks.apple_leaves);
+        ColorProviderRegistry.BLOCK.register(UnicopiaClient::getLeavesColor, UBlocks.apple_leaves);
         ColorProviderRegistry.ITEM.register((stack, tint) -> {
             if (MAGI.test(MinecraftClient.getInstance().player)) {
                 return SpellRegistry.instance().getSpellTintFromStack(stack);
@@ -181,7 +181,7 @@ public class UnicopiaCoreClient extends InteractionManager implements ClientModI
             if (newRace != clientPlayerRace) {
                 clientPlayerRace = newRace;
 
-                UnicopiaCore.getConnection().send(new MsgRequestCapabilities(player, clientPlayerRace), Target.SERVER);
+                Unicopia.getConnection().send(new MsgRequestCapabilities(player, clientPlayerRace), Target.SERVER);
             }
         }
 

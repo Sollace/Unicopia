@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.structure;
 
-import com.minelittlepony.unicopia.UnicopiaCore;
+import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.Identifier;
@@ -18,11 +18,11 @@ public interface UStructures {
     StructureFeature<DefaultFeatureConfig> RUIN = feature("ruin", new RuinFeature(DefaultFeatureConfig::deserialize));
 
     static StructurePieceType part(String id, StructurePieceType type) {
-        return Registry.register(Registry.STRUCTURE_PIECE, new Identifier(UnicopiaCore.MODID, id), type);
+        return Registry.register(Registry.STRUCTURE_PIECE, new Identifier(Unicopia.MODID, id), type);
     }
 
     static <C extends FeatureConfig, F extends Feature<C>> F feature(String id, F feature) {
-        return Registry.register(Registry.FEATURE, new Identifier(UnicopiaCore.MODID, id), feature);
+        return Registry.register(Registry.FEATURE, new Identifier(Unicopia.MODID, id), feature);
      }
 
     static void bootstrap() { }

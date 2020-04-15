@@ -5,7 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.UnicopiaCore;
+import com.minelittlepony.unicopia.Unicopia;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.JsonDataLoader;
@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
 public class AffineIngredients extends JsonDataLoader implements IdentifiableResourceReloadListener {
-    private static final Identifier ID = new Identifier(UnicopiaCore.MODID, "ingredients");
+    private static final Identifier ID = new Identifier(Unicopia.MODID, "ingredients");
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .disableHtmlEscaping()

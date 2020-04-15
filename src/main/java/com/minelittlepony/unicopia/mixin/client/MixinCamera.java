@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.client.mixin;
+package com.minelittlepony.unicopia.mixin.client;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

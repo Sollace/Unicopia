@@ -38,7 +38,7 @@ public class AwaitTickQueue {
                 try {
                     task.accept(world);
                 } catch (Exception e) {
-                    UnicopiaCore.LOGGER.error(e);
+                    Unicopia.LOGGER.error(e);
                 }
             }
         }

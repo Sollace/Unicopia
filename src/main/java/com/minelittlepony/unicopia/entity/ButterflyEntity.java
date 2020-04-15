@@ -4,7 +4,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.UnicopiaCore;
+import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -222,7 +222,7 @@ public class ButterflyEntity extends AmbientEntity {
         WHITE_MONARCH,
         BRIMSTONE;
 
-        private final Identifier skin = new Identifier(UnicopiaCore.MODID, "textures/entity/butterfly/" + name().toLowerCase() + ".png");
+        private final Identifier skin = new Identifier(Unicopia.MODID, "textures/entity/butterfly/" + name().toLowerCase() + ".png");
 
         public Identifier getSkin() {
             return skin;

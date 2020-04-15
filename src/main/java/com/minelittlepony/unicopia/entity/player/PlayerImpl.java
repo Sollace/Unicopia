@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UTags;
-import com.minelittlepony.unicopia.UnicopiaCore;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.AbilityReceiver;
 import com.minelittlepony.unicopia.enchanting.PageOwner;
 import com.minelittlepony.unicopia.entity.FlightControl;
@@ -170,9 +170,9 @@ public class PlayerImpl implements Pony {
 
         if (!getWorld().isClient()) {
             if (full) {
-                UnicopiaCore.getConnection().broadcast(new MsgPlayerCapabilities(this));
+                Unicopia.getConnection().broadcast(new MsgPlayerCapabilities(this));
             } else {
-                UnicopiaCore.getConnection().broadcast(new MsgPlayerCapabilities(getSpecies(), getOwner()));
+                Unicopia.getConnection().broadcast(new MsgPlayerCapabilities(getSpecies(), getOwner()));
             }
         }
     }

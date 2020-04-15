@@ -6,7 +6,7 @@ import com.google.gson.annotations.Expose;
 import com.minelittlepony.jumpingcastle.api.Channel;
 import com.minelittlepony.jumpingcastle.api.Message;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UnicopiaCore;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +28,7 @@ public class MsgRequestCapabilities implements Message, Message.Handler<MsgReque
     public void onPayload(MsgRequestCapabilities message, Channel channel) {
         MinecraftServer server = channel.getServer();
 
-        UnicopiaCore.LOGGER.warn("[Unicopia] [SERVER] [MsgRequestCapabilities] Sending capabilities to player %s\n", senderId.toString());
+        Unicopia.LOGGER.warn("[Unicopia] [SERVER] [MsgRequestCapabilities] Sending capabilities to player %s\n", senderId.toString());
         Pony player = Pony.of(server.getPlayerManager().getPlayer(senderId));
 
         if (player.getSpecies().isDefault()) {

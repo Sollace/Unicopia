@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.jumpingcastle.api.Target;
-import com.minelittlepony.unicopia.UnicopiaCore;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.AbilityReceiver;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.Abilities;
@@ -159,7 +159,7 @@ class AbilityDelegate implements AbilityReceiver, Updatable, NbtSerialisable {
         Ability.IData data = ability.tryActivate(player);
 
         if (data != null) {
-            UnicopiaCore.getConnection().send(new MsgPlayerAbility(player.getOwner(), ability, data), Target.SERVER);
+            Unicopia.getConnection().send(new MsgPlayerAbility(player.getOwner(), ability, data), Target.SERVER);
         }
 
         return data != null;
