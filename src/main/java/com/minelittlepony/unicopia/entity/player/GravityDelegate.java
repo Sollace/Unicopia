@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.entity.player;
 import java.util.Random;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.FlightPredicate;
 import com.minelittlepony.unicopia.ability.HeightPredicate;
@@ -12,6 +11,7 @@ import com.minelittlepony.unicopia.entity.Updatable;
 import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.mixin.MixinEntity;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.particles.UParticles;
 import com.minelittlepony.unicopia.util.MutableVector;
 
 import net.minecraft.entity.Entity;

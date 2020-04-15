@@ -6,11 +6,11 @@ import javax.annotation.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.entity.InAnimate;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.util.VecHelper;
+import com.minelittlepony.unicopia.util.particles.UParticles;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;

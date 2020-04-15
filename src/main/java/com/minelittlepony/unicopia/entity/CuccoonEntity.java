@@ -7,10 +7,10 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
+import com.minelittlepony.unicopia.util.particles.UParticles;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;

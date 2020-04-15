@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.item;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.entity.SpellbookEntity;
+import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.magic.Dispensable;
 
 import net.minecraft.block.DispenserBlock;

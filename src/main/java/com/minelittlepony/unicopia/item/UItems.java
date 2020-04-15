@@ -2,9 +2,9 @@ package com.minelittlepony.unicopia.item;
 
 import static com.minelittlepony.unicopia.EquinePredicates.*;
 
-import com.minelittlepony.unicopia.UBlocks;
-import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.magic.spell.ScorchSpell;
 import com.minelittlepony.unicopia.toxin.DynamicToxicBlockItem;
 import com.minelittlepony.unicopia.toxin.DynamicToxicItem;

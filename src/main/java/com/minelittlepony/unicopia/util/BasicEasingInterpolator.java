@@ -1,4 +1,4 @@
-package com.minelittlepony.util;
+package com.minelittlepony.unicopia.util;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;

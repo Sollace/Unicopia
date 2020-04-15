@@ -3,9 +3,9 @@ package com.minelittlepony.unicopia.ability;
 import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.ShieldSpell;
+import com.minelittlepony.unicopia.util.particles.UParticles;
 
 /**
  * A magic casting ability for unicorns.

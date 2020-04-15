@@ -2,9 +2,9 @@ package com.minelittlepony.unicopia.block;
 
 import java.util.Random;
 
-import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.gas.CloudType;
 import com.minelittlepony.unicopia.gas.Gas;
+import com.minelittlepony.unicopia.util.particles.UParticles;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;

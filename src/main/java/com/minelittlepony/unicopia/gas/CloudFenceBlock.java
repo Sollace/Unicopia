@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.gas;
 
-import com.minelittlepony.unicopia.CloudType;
-
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;

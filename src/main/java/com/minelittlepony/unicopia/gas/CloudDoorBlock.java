@@ -1,8 +1,7 @@
 package com.minelittlepony.unicopia.gas;
 
-import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.UMaterials;
 import com.minelittlepony.unicopia.block.AbstractDoorBlock;
+import com.minelittlepony.unicopia.block.UMaterials;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.BlockRenderLayer;

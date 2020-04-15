@@ -2,11 +2,11 @@ package com.minelittlepony.unicopia.container;
 
 import javax.annotation.Nonnull;
 
+import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
-import com.minelittlepony.unicopia.util.AwaitTickQueue;
 
 import net.minecraft.container.Container;
 import net.minecraft.container.Slot;

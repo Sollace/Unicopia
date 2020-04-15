@@ -4,8 +4,6 @@ import java.util.Iterator;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.UEntities;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;

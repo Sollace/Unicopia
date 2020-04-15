@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.UBlocks;
+import com.minelittlepony.unicopia.block.UBlocks;
 
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.player.PlayerEntity;

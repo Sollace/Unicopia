@@ -3,14 +3,14 @@ package com.minelittlepony.unicopia.ability;
 import javax.annotation.Nullable;
 
 import com.google.gson.annotations.Expose;
-import com.minelittlepony.unicopia.IKeyBinding;
+import com.minelittlepony.unicopia.KeyBind;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public interface Ability<T extends Ability.IData> extends IKeyBinding {
+public interface Ability<T extends Ability.IData> extends KeyBind {
 
     @Override
     default String getKeyCategory() {

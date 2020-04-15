@@ -1,7 +1,6 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.container;
 
-import com.minelittlepony.unicopia.container.BagOfHoldingContainer;
-import com.minelittlepony.unicopia.container.SpellBookContainer;
+import com.minelittlepony.unicopia.UnicopiaCore;
 
 import net.fabricmc.fabric.api.container.ContainerProviderRegistry;
 import net.minecraft.util.Identifier;

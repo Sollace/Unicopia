@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.gas;
 
-import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.UBlocks;
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.ducks.Farmland;
 
 import net.minecraft.block.BlockRenderLayer;

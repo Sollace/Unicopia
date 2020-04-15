@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.entity.player;
 
-import com.minelittlepony.util.MotionCompositor;
+import com.minelittlepony.unicopia.util.MotionCompositor;
 
 import net.minecraft.util.math.Vec3d;
 

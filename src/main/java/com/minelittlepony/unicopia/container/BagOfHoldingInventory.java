@@ -7,7 +7,6 @@ import java.util.function.BiFunction;
 
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.advancement.BOHDeathCriterion;
-import com.minelittlepony.unicopia.util.HeavyInventoryUtils;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
@@ -113,7 +112,7 @@ public class BagOfHoldingInventory extends BasicInventory implements NbtSerialis
             }
         }
 
-        HeavyInventoryUtils.encodeStackWeight(blockStack, HeavyInventoryUtils.getContentsTotalWorth(blockInventory, true), true);
+        HeavyInventory.encodeStackWeight(blockStack, HeavyInventory.getContentsTotalWorth(blockInventory, true), true);
 
         world.removeBlockEntity(pos);
         world.setBlockState(pos, Blocks.AIR.getDefaultState());
@@ -181,7 +180,7 @@ public class BagOfHoldingInventory extends BasicInventory implements NbtSerialis
     }
 
     public double getContentsTotalWorth() {
-        return HeavyInventoryUtils.getContentsTotalWorth(this, true);
+        return HeavyInventory.getContentsTotalWorth(this, true);
     }
 
     public void writeTostack(ItemStack stack) {

@@ -1,17 +1,6 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.entity;
 
-import com.minelittlepony.unicopia.entity.ButterflyEntity;
-import com.minelittlepony.unicopia.entity.CloudEntity;
-import com.minelittlepony.unicopia.entity.ConstructionCloudEntity;
-import com.minelittlepony.unicopia.entity.CuccoonEntity;
-import com.minelittlepony.unicopia.entity.ProjectileEntity;
-import com.minelittlepony.unicopia.entity.RacingCloudEntity;
-import com.minelittlepony.unicopia.entity.RainbowEntity;
-import com.minelittlepony.unicopia.entity.SpearEntity;
-import com.minelittlepony.unicopia.entity.SpellbookEntity;
-import com.minelittlepony.unicopia.entity.SpellcastEntity;
-import com.minelittlepony.unicopia.entity.WildCloudEntity;
-import com.minelittlepony.unicopia.util.collection.ListHelper;
+import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCategory;
@@ -55,16 +44,22 @@ public interface UEntities {
     static void bootstrap() {
         Registry.BIOME.forEach(biome -> {
             if (!(biome instanceof NetherBiome || biome instanceof EndBiome)) {
-                ListHelper.addifAbsent(biome.getEntitySpawnList(EntityCategory.AMBIENT), biome instanceof OceanBiome ? WildCloudEntity.SPAWN_ENTRY_OCEAN : WildCloudEntity.SPAWN_ENTRY_LAND);
-                ListHelper.addifAbsent(biome.getEntitySpawnList(EntityCategory.CREATURE), RainbowEntity.SPAWN_ENTRY);
+                addifAbsent(biome.getEntitySpawnList(EntityCategory.AMBIENT), biome instanceof OceanBiome ? WildCloudEntity.SPAWN_ENTRY_OCEAN : WildCloudEntity.SPAWN_ENTRY_LAND);
+                addifAbsent(biome.getEntitySpawnList(EntityCategory.CREATURE), RainbowEntity.SPAWN_ENTRY);
             }
 
             if (biome instanceof PlainsBiome
                 || biome instanceof RiverBiome
                 || biome instanceof MountainsBiome
                 || biome instanceof ForestBiome) {
-                ListHelper.addifAbsent(biome.getEntitySpawnList(EntityCategory.AMBIENT), ButterflyEntity.SPAWN_ENTRY);
+                addifAbsent(biome.getEntitySpawnList(EntityCategory.AMBIENT), ButterflyEntity.SPAWN_ENTRY);
             }
         });
+    }
+
+    static <T> void addifAbsent(List<T> entries, T entry) {
+        if (!entries.contains(entry)) {
+            entries.add(entry);
+        }
     }
 }

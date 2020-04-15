@@ -2,11 +2,11 @@ package com.minelittlepony.unicopia.magic.spell;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.TossedMagicEffect;
 import com.minelittlepony.unicopia.util.PosHelper;
+import com.minelittlepony.unicopia.util.particles.UParticles;
 import com.minelittlepony.unicopia.util.projectile.AdvancedProjectile;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 

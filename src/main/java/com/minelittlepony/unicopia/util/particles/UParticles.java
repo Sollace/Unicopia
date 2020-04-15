@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.util.particles;
 
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.Identifier;

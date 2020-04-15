@@ -1,7 +1,6 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.block;
 
-import com.minelittlepony.unicopia.block.BlockGrowingCuccoon;
-import com.minelittlepony.unicopia.block.TomatoPlantBlock;
+import com.minelittlepony.unicopia.UnicopiaCore;
 import com.minelittlepony.unicopia.gas.CloudAnvilBlock;
 import com.minelittlepony.unicopia.gas.CloudBlock;
 import com.minelittlepony.unicopia.gas.CloudDoorBlock;
@@ -9,17 +8,7 @@ import com.minelittlepony.unicopia.gas.CloudFarmlandBlock;
 import com.minelittlepony.unicopia.gas.CloudFenceBlock;
 import com.minelittlepony.unicopia.gas.CloudSlabBlock;
 import com.minelittlepony.unicopia.gas.CloudStairsBlock;
-import com.minelittlepony.unicopia.block.ChiselledChitinBlock;
-import com.minelittlepony.unicopia.block.ChitinBlock;
-import com.minelittlepony.unicopia.block.DiamondDoorBlock;
-import com.minelittlepony.unicopia.block.DutchDoorBlock;
-import com.minelittlepony.unicopia.block.FruitLeavesBlock;
-import com.minelittlepony.unicopia.block.GlowingGemBlock;
-import com.minelittlepony.unicopia.block.HiveWallBlock;
-import com.minelittlepony.unicopia.block.SlimeLayerBlock;
-import com.minelittlepony.unicopia.block.StickBlock;
-import com.minelittlepony.unicopia.block.SugarBlock;
-import com.minelittlepony.unicopia.block.TallCropBlock;
+import com.minelittlepony.unicopia.gas.CloudType;
 import com.minelittlepony.unicopia.item.AppleItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.structure.CustomSaplingGenerator;

@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.gas;
 
-import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.block.USlab;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;

@@ -6,12 +6,12 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UBlocks;
-import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.ability.PegasusCloudInteractionAbility.ICloudEntity;
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.particles.ParticleEmitter;
+import com.minelittlepony.unicopia.util.particles.UParticles;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;

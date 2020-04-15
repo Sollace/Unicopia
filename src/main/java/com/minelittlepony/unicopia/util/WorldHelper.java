@@ -2,16 +2,14 @@ package com.minelittlepony.unicopia.util;
 
 import net.minecraft.world.World;
 
-public final class WorldHelper {
-
-
+public interface WorldHelper {
     /**
      * Gets the daylight brightness value on a scale of 0-1.
      * Midday = 1
      * Sunrise/Sunset = 0
      * Nighttime = 0
      */
-    public static float getDaylightBrightness(World w, float partialTicks) {
+    static float getDaylightBrightness(World w, float partialTicks) {
         float celst = w.getSkyAngle(partialTicks);
 
         // ----------------------------
@@ -52,7 +50,7 @@ public final class WorldHelper {
      * Sunrise/Sunset = 0
      * Daytime = 0
      */
-    public static float getLunarBrightness(World w, float partialTicks) {
+    static float getLunarBrightness(World w, float partialTicks) {
         float celst = w.getSkyAngle(partialTicks);
 
         // ----------------------------

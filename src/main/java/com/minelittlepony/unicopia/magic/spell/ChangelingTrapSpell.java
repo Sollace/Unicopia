@@ -2,11 +2,11 @@ package com.minelittlepony.unicopia.magic.spell;
 
 import java.util.Optional;
 
-import com.minelittlepony.unicopia.UBlocks;
-import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.CuccoonEntity;
 import com.minelittlepony.unicopia.entity.IMagicals;
+import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
 import com.minelittlepony.unicopia.magic.AttachedMagicEffect;

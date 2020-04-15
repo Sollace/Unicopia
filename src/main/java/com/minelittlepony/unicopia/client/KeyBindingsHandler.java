@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.client;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.minelittlepony.unicopia.IKeyBinding;
+import com.minelittlepony.unicopia.KeyBind;
 import com.minelittlepony.unicopia.UnicopiaCore;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -24,7 +24,7 @@ class KeyBindingsHandler {
 
     private final Set<KeyBinding> pressed = new HashSet<>();
 
-    public void addKeybind(IKeyBinding p) {
+    public void addKeybind(KeyBind p) {
         KeyBindingRegistry.INSTANCE.addCategory(p.getKeyCategory());
 
         FabricKeyBinding b = FabricKeyBinding.Builder.create(new Identifier(UnicopiaCore.MODID, p.getKeyName()), InputUtil.Type.KEYSYM, p.getKeyCode(), p.getKeyCategory()).build();

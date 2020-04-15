@@ -20,8 +20,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
-public class VecHelper {
-
+public interface VecHelper {
     /**
      * Performs a ray cast from the given entity and returns a result for the first block that ray intercepts.
      *
@@ -33,7 +32,7 @@ public class VecHelper {
      *
      * @return    RayTraceResult result or null
      */
-    public static HitResult rayTrace(Entity e, double distance, float partialTick) {
+    static HitResult rayTrace(Entity e, double distance, float partialTick) {
         Vec3d cam = e.getCameraPosVec(partialTick);
         Vec3d look = e.getRotationVec(partialTick).multiply(distance);
 
@@ -49,7 +48,7 @@ public class VecHelper {
      * Gets the entity the player is currently looking at, or null.
      */
     @Nullable
-    public static Entity getLookedAtEntity(LivingEntity e, int reach) {
+    static Entity getLookedAtEntity(LivingEntity e, int reach) {
         HitResult objectMouseOver = getObjectMouseOver(e, reach, 1);
 
         if (objectMouseOver instanceof EntityHitResult && objectMouseOver.getType() == BlockHitResult.Type.ENTITY) {
@@ -59,7 +58,7 @@ public class VecHelper {
         return null;
     }
 
-    public static Stream<Entity> findAllEntitiesInRange(@Nullable Entity origin, World w, BlockPos pos, double radius) {
+    static Stream<Entity> findAllEntitiesInRange(@Nullable Entity origin, World w, BlockPos pos, double radius) {
 
         BlockPos begin = pos.add(-radius, -radius, -radius);
         BlockPos end = pos.add(radius, radius, radius);
@@ -77,7 +76,7 @@ public class VecHelper {
     /**
      * Gets all entities within a given range from the player.
      */
-    public static List<Entity> getWithinRange(PlayerEntity player, double reach, @Nullable Predicate<? super Entity> predicate) {
+    static List<Entity> getWithinRange(PlayerEntity player, double reach, @Nullable Predicate<? super Entity> predicate) {
         Vec3d look = player.getCameraPosVec(1).multiply(reach);
 
         return player.world.getEntities(player, player
@@ -95,7 +94,7 @@ public class VecHelper {
      *
      * @return    RayTraceResult result or null
      */
-    public static HitResult getObjectMouseOver(Entity e, double distance, float partialTick) {
+    static HitResult getObjectMouseOver(Entity e, double distance, float partialTick) {
         return getObjectMouseOver(e, distance, partialTick, EntityPredicates.EXCEPT_SPECTATOR);
     }
 
@@ -111,7 +110,7 @@ public class VecHelper {
      *
      * @return    RayTraceResult result or null
      */
-    public static HitResult getObjectMouseOver(Entity e, double distance, float partialTick, Predicate<Entity> predicate) {
+    static HitResult getObjectMouseOver(Entity e, double distance, float partialTick, Predicate<Entity> predicate) {
         HitResult tracedBlock = rayTrace(e, distance, partialTick);
 
         double totalTraceDistance = distance;

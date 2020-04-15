@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia;
 
-public interface IKeyBinding {
+public interface KeyBind {
     String getKeyCategory();
 
     String getKeyName();

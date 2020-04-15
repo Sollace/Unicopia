@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.gas;
 
 import java.util.Random;
 
-import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.util.WorldEvent;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;

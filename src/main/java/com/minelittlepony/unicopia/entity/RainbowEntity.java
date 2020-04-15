@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UEntities;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.packet.EntitySpawnGlobalS2CPacket;

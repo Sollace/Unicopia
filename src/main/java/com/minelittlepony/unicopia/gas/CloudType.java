@@ -1,5 +1,6 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.gas;
 
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.CloudEntity;
 
 import net.minecraft.entity.Entity;

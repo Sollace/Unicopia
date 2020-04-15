@@ -6,9 +6,9 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.UContainers;
 import com.minelittlepony.unicopia.container.BagOfHoldingContainer;
 import com.minelittlepony.unicopia.container.BagOfHoldingInventory;
+import com.minelittlepony.unicopia.container.UContainers;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.MagicalItem;
 import com.minelittlepony.unicopia.util.VecHelper;

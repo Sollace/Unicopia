@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.util;
+package com.minelittlepony.unicopia.container;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.EmptyBlockView;
 
-public class HeavyInventoryUtils {
+public class HeavyInventory {
 
     public static double getContentsTotalWorth(Inventory inventory, boolean deep) {
         double total = 0;

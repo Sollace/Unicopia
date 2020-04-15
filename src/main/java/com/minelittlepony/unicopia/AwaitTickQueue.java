@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.util;
+package com.minelittlepony.unicopia;
 
 import java.util.List;
 import java.util.Queue;
@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
-import com.minelittlepony.unicopia.UnicopiaCore;
 
 import net.minecraft.world.World;
 

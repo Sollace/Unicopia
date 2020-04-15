@@ -5,8 +5,6 @@ import java.util.Random;
 
 import com.google.common.collect.Maps;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UBlocks;
-import com.minelittlepony.unicopia.UMaterials;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.PosHelper;

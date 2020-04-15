@@ -1,5 +1,6 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.item;
 
+import com.minelittlepony.unicopia.UnicopiaCore;
 import com.minelittlepony.unicopia.util.CustomStatusEffect;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 

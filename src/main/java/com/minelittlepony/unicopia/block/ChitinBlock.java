@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UMaterials;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;

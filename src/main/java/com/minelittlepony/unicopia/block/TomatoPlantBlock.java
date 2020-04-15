@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.block;
 
 import java.util.List;
-import com.minelittlepony.unicopia.UBlocks;
+
 import com.minelittlepony.unicopia.gas.CloudFarmlandBlock;
 import com.minelittlepony.unicopia.item.UItems;
 

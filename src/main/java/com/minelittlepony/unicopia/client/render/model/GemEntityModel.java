@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.client.render.model;
 
 import com.minelittlepony.unicopia.client.render.ModelQuads;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
-import com.minelittlepony.util.Color;
+import com.minelittlepony.unicopia.util.Color;
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 

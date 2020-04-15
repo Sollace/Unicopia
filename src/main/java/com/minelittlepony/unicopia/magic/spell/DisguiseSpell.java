@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.ability.FlightPredicate;
 import com.minelittlepony.unicopia.ability.HeightPredicate;
 import com.minelittlepony.unicopia.entity.Owned;
@@ -18,6 +17,7 @@ import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.magic.SuppressableEffect;
+import com.minelittlepony.unicopia.util.particles.UParticles;
 import com.minelittlepony.unicopia.util.projectile.ProjectileUtil;
 import com.mojang.authlib.GameProfile;
 

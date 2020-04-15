@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia;
 
 import java.util.List;
 
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 

@@ -6,12 +6,12 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Multimap;
+import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.ducks.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemEntityCapabilities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.AddictiveMagicalItem;
-import com.minelittlepony.unicopia.util.AwaitTickQueue;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 

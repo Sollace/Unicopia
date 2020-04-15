@@ -6,8 +6,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.UBlocks;
-import com.minelittlepony.unicopia.UMaterials;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;

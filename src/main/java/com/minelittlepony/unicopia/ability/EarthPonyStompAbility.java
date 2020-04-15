@@ -6,10 +6,10 @@ import org.lwjgl.glfw.GLFW;
 
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.Expose;
+import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AppleItem;
-import com.minelittlepony.unicopia.util.AwaitTickQueue;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;

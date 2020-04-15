@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.block;
 
 import net.minecraft.block.Material;
 import net.minecraft.block.MaterialColor;

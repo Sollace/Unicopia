@@ -3,13 +3,13 @@ package com.minelittlepony.unicopia.magic.spell;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
+import com.minelittlepony.unicopia.util.particles.UParticles;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
