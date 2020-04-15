@@ -6,12 +6,10 @@ import net.fabricmc.fabric.api.registry.CommandRegistry;
 import com.minelittlepony.unicopia.core.ability.PowersRegistry;
 import com.minelittlepony.unicopia.core.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.redux.UContainers;
-import com.minelittlepony.unicopia.redux.UWorld;
 import com.minelittlepony.unicopia.redux.ability.PowerCloudBase;
 import com.minelittlepony.unicopia.redux.ability.PowerDisguise;
 import com.minelittlepony.unicopia.redux.ability.PowerEngulf;
 import com.minelittlepony.unicopia.redux.ability.PowerStomp;
-import com.minelittlepony.unicopia.redux.block.UBlocks;
 import com.minelittlepony.unicopia.redux.command.DisguiseCommand;
 import com.minelittlepony.unicopia.redux.enchanting.Pages;
 import com.minelittlepony.unicopia.redux.item.UItems;
@@ -28,6 +26,7 @@ import com.minelittlepony.unicopia.redux.magic.spells.InfernoSpell;
 import com.minelittlepony.unicopia.redux.magic.spells.PortalSpell;
 import com.minelittlepony.unicopia.redux.magic.spells.RevealingSpell;
 import com.minelittlepony.unicopia.redux.magic.spells.ScorchSpell;
+import com.minelittlepony.unicopia.redux.structure.UStructures;
 
 public class UnicopiaRedux implements ModInitializer {
     @Override
@@ -37,7 +36,7 @@ public class UnicopiaRedux implements ModInitializer {
         UBlocks.bootstrap();
         UItems.bootstrap();
         UContainers.bootstrap();
-        UWorld.instance().init();
+        UStructures.bootstrap();
 
         CommandRegistry.INSTANCE.register(false, DisguiseCommand::register);
 

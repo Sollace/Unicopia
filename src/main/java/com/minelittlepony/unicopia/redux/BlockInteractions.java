@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.minelittlepony.unicopia.core.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.redux.block.ITillable;
-import com.minelittlepony.unicopia.redux.block.UBlocks;
 import com.minelittlepony.unicopia.redux.item.UItems;
 
 import net.minecraft.block.Block;

@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.core.InteractionManager;
 import com.minelittlepony.unicopia.core.ability.IAbilityReceiver;
+import com.minelittlepony.unicopia.core.enchanting.IPageOwner;
 import com.minelittlepony.unicopia.core.entity.FlightControl;
 import com.minelittlepony.unicopia.core.entity.RaceContainer;
 import com.minelittlepony.unicopia.core.magic.ICaster;
@@ -23,7 +24,7 @@ import net.minecraft.util.math.BlockPos;
  *
  * This is the core of unicopia.
  */
-public interface IPlayer extends ICaster<PlayerEntity>, RaceContainer<PlayerEntity>, ITransmittable {
+public interface IPlayer extends ICaster<PlayerEntity>, RaceContainer<PlayerEntity>, ITransmittable, IPageOwner {
 
     /**
      * Gets the player's magical abilities delegate responsible for all spell casting and persisting/updating.

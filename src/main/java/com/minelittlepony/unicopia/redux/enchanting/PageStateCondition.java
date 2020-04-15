@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.redux.enchanting;
 
 import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.core.enchanting.IPage;
+import com.minelittlepony.unicopia.core.enchanting.Page;
 import com.minelittlepony.unicopia.core.enchanting.IPageOwner;
 import com.minelittlepony.unicopia.core.enchanting.IUnlockEvent;
 import com.minelittlepony.unicopia.core.enchanting.PageState;
@@ -24,7 +24,7 @@ public class PageStateCondition implements IUnlockCondition<IUnlockEvent> {
 
     @Override
     public boolean matches(IPageOwner owner, IUnlockEvent event) {
-        IPage ipage = Pages.instance().getByName(page);
+        Page ipage = Pages.instance().getByName(page);
 
         if (ipage != null) {
             return owner.getPageState(ipage) == state;

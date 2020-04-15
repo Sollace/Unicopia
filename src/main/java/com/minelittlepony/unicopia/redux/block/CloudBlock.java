@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.minelittlepony.unicopia.core.SpeciesList;
 import com.minelittlepony.unicopia.redux.CloudType;
+import com.minelittlepony.unicopia.redux.UBlocks;
 import com.minelittlepony.unicopia.redux.item.MossItem;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
@@ -62,16 +63,6 @@ public class CloudBlock extends Block implements ICloudBlock, ITillable {
     public BlockRenderLayer getRenderLayer() {
         return variant == CloudType.NORMAL ? BlockRenderLayer.TRANSLUCENT : super.getRenderLayer();
     }
-
-    /*@Deprecated
-    @Override
-    public boolean isSideSolid(BlockState base_state, BlockView world, BlockPos pos, Direction side) {
-        if (side == Direction.UP && (variant == CloudType.ENCHANTED || world.getBlockState(pos.up()).getBlock() instanceof ICloudBlock)) {
-            return true;
-        }
-
-        return super.isSideSolid(base_state, world, pos, side);
-    }*/
 
     @Override
     public boolean isSideInvisible(BlockState state, BlockState beside, Direction face) {

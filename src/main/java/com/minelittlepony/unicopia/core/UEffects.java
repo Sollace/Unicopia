@@ -9,9 +9,9 @@ import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
 
-public class UEffects {
+public interface UEffects {
 
-    public static final StatusEffect FOOD_POISONING = new CustomStatusEffect(new Identifier(UnicopiaCore.MODID, "food_poisoning"), StatusEffectType.BENEFICIAL, 3484199)
+    StatusEffect FOOD_POISONING = new CustomStatusEffect(new Identifier(UnicopiaCore.MODID, "food_poisoning"), StatusEffectType.BENEFICIAL, 3484199)
             .setSilent()
             .direct((p, e, i) -> {
                 StatusEffectInstance nausea = e.getStatusEffect(StatusEffects.NAUSEA);

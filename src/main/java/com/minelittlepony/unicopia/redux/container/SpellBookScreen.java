@@ -1,24 +1,28 @@
 package com.minelittlepony.unicopia.redux.container;
 
-import java.io.IOException;
-
 import org.lwjgl.opengl.GL11;
 
+import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.unicopia.core.SpeciesList;
 import com.minelittlepony.unicopia.core.UnicopiaCore;
-import com.minelittlepony.unicopia.core.enchanting.IPage;
+import com.minelittlepony.unicopia.core.enchanting.Page;
 import com.minelittlepony.unicopia.core.enchanting.PageState;
 import com.minelittlepony.unicopia.core.entity.player.IPlayer;
+import com.minelittlepony.unicopia.redux.container.SpellBookContainer.SpellbookSlot;
 import com.minelittlepony.unicopia.redux.enchanting.IPageUnlockListener;
 import com.minelittlepony.unicopia.redux.enchanting.Pages;
+import com.mojang.blaze3d.platform.GlStateManager;
 
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.texture.MissingSprite;
+import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 
-public class SpellBookScreen extends ContainerScreen implements IPageUnlockListener {
+public class SpellBookScreen extends AbstractContainerScreen<SpellBookContainer> implements IPageUnlockListener {
 
-    private static IPage currentIPage;
+    private static Page currentPage;
 
     public static final Identifier spellBookGuiTextures = new Identifier("unicopia", "textures/gui/container/book.png");
 
@@ -28,64 +32,58 @@ public class SpellBookScreen extends ContainerScreen implements IPageUnlockListe
     private PageButton prevPage;
 
     public SpellBookScreen(PlayerEntity player) {
-        super(new SpellBookContainer(player.inventory, player.world, new BlockPos(player)));
-        player.openContainer = inventorySlots;
+        super(
+                new SpellBookContainer(0, null, player, null),
+                player.inventory,
+                new LiteralText("item.spellbook.name")
+        );
+        player.container = container;
 
-        xSize = 405;
-        ySize = 219;
-        allowUserInput = true;
+        containerWidth = 405;
+        containerHeight = 219;
         playerExtension = SpeciesList.instance().getPlayer(player);
     }
 
     @Override
-    public void initGui() {
-        super.initGui();
-        buttonList.clear();
+    public void init() {
+        super.init();
 
-        int x = (width - xSize) / 2;
-        int y = (height - ySize) / 2;
+        addButton(nextPage = new PageButton(left + 360, top + 185, true)).onClick(v -> {
+            currentPage = currentPage.next();
+            onPageChange();
+        });
+        addButton(prevPage = new PageButton(left + 20, top + 185, false)).onClick(v -> {
+            currentPage = currentPage.prev();
+            onPageChange();
+        });
 
-        buttonList.add(nextPage = new PageButton(1, x + 360, y + 185, true));
-        buttonList.add(prevPage = new PageButton(2, x + 20, y + 185, false));
-
-        if (currentIPage == null) {
-            currentIPage = Pages.instance().getByIndex(0);
+        if (currentPage == null) {
+            currentPage = Pages.instance().getByIndex(0);
         }
 
         onPageChange();
 
-        if (playerExtension.hasPageStateRelative(currentIPage, PageState.UNREAD, 1)) {
+        if (playerExtension.hasPageStateRelative(currentPage, PageState.UNREAD, Page::next)) {
             nextPage.triggerShake();
         }
 
-        if (playerExtension.hasPageStateRelative(currentIPage, PageState.UNREAD, -1)) {
+        if (playerExtension.hasPageStateRelative(currentPage, PageState.UNREAD, Page::prev)) {
             prevPage.triggerShake();
         }
     }
 
-    @Override
-    protected void actionPerformed(GuiButton button) throws IOException {
-        if (button.id == 1) {
-            currentIPage = currentIPage.next();
-        } else {
-            currentIPage = currentIPage.prev();
-        }
-
-        onPageChange();
-    }
-
     protected void onPageChange() {
-        prevPage.enabled = currentIPage.getIndex() > 0;
-        nextPage.enabled = currentIPage.getIndex() < Pages.instance().getTotalPages() - 1;
+        prevPage.setEnabled(currentPage.getIndex() > 0);
+        nextPage.setEnabled(currentPage.getIndex() < Pages.instance().getTotalPages() - 1);
 
-        if (playerExtension.getPageState(currentIPage) == PageState.UNREAD) {
-            playerExtension.setPageState(currentIPage, PageState.READ);
+        if (playerExtension.getPageState(currentPage) == PageState.UNREAD) {
+            playerExtension.setPageState(currentPage, PageState.READ);
         }
     }
 
     @Override
-    public boolean onPageUnlocked(IPage page) {
-        int i = currentIPage.compareTo(page);
+    public boolean onPageUnlocked(Page page) {
+        int i = currentPage.compareTo(page);
 
         if (i <= 0) {
             prevPage.triggerShake();
@@ -99,11 +97,9 @@ public class SpellBookScreen extends ContainerScreen implements IPageUnlockListe
     }
 
     @Override
-    protected void drawGradientRect(int left, int top, int width, int height, int startColor, int endColor) {
-        Slot slot = getSlotUnderMouse();
-
-        if (slot == null || left != slot.xPos || top != slot.yPos || !drawSlotOverlay(slot)) {
-            super.drawGradientRect(left, top, width, height, startColor, endColor);
+    protected void fillGradient(int left, int top, int width, int height, int startColor, int endColor) {
+        if (focusedSlot == null || left != focusedSlot.xPosition || top != focusedSlot.yPosition || !drawSlotOverlay(focusedSlot)) {
+            super.fillGradient(left, top, width, height, startColor, endColor);
         }
     }
 
@@ -112,8 +108,8 @@ public class SpellBookScreen extends ContainerScreen implements IPageUnlockListe
             GlStateManager.enableBlend();
             GL11.glDisable(GL11.GL_ALPHA_TEST);
 
-            mc.getTextureManager().bindTexture(spellBookGuiTextures);
-            drawModalRectWithCustomSizedTexture(slot.xPos - 1, slot.yPos - 1, 74, 223, 18, 18, 512, 256);
+            minecraft.getTextureManager().bindTexture(spellBookGuiTextures);
+            blit(slot.xPosition - 1, slot.yPosition - 1, 74, 223, 18, 18, 512, 256);
 
             GL11.glEnable(GL11.GL_ALPHA_TEST);
             GlStateManager.disableBlend();
@@ -124,47 +120,48 @@ public class SpellBookScreen extends ContainerScreen implements IPageUnlockListe
         return false;
     }
 
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
 
-        renderHoveredToolTip(mouseX, mouseY);
+    @Override
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        super.render(mouseX, mouseY, partialTicks);
+        drawMouseoverTooltip(mouseX, mouseY);
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        String text = String.format("%d / %d", currentIPage.getIndex() + 1, Pages.instance().getTotalPages());
+    protected void drawForeground(int mouseX, int mouseY) {
+        String text = String.format("%d / %d", currentPage.getIndex() + 1, Pages.instance().getTotalPages());
 
-        fontRenderer.drawString(text, 70 - fontRenderer.getStringWidth(text)/2, 190, 0x0);
+        font.draw(text, 70 - font.getStringWidth(text)/2, 190, 0x0);
     }
 
+
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        drawWorldBackground(0);
-        GlStateManager.color(1, 1, 1, 1);
+    protected void drawBackground(float partialTicks, int mouseX, int mouseY) {
+        renderBackground(0);
+        GlStateManager.color4f(1, 1, 1, 1);
 
-        int left = (width - xSize) / 2;
-        int top = (height - ySize) / 2;
+        int left = (width - containerWidth) / 2;
+        int top = (height - containerHeight) / 2;
 
-        mc.getTextureManager().bindTexture(spellBookGuiTextures);
-        drawModalRectWithCustomSizedTexture(left, top, 0, 0, xSize, ySize, 512, 256);
+        minecraft.getTextureManager().bindTexture(spellBookGuiTextures);
+        blit(left, top, 0, 0, containerWidth, containerHeight, 512, 256);
 
         GlStateManager.enableBlend();
         GL11.glDisable(GL11.GL_ALPHA_TEST);
 
-        mc.getTextureManager().bindTexture(spellBookGuiTextures);
-        drawModalRectWithCustomSizedTexture(left + 147, top + 49, 407, 2, 100, 101, 512, 256);
+        minecraft.getTextureManager().bindTexture(spellBookGuiTextures);
+        blit(left + 147, top + 49, 407, 2, 100, 101, 512, 256);
 
-        if (playerExtension.getPageState(currentIPage) != PageState.LOCKED) {
-            Identifier texture = currentIPage.getTexture();
+        if (playerExtension.getPageState(currentPage) != PageState.LOCKED) {
+            Identifier texture = currentPage.getTexture();
 
-            if (mc.getTextureManager().getTexture(texture) != TextureUtil.MISSING_TEXTURE) {
+            if (minecraft.getTextureManager().getTexture(texture) != MissingSprite.getMissingSpriteTexture()) {
                 GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-                mc.getTextureManager().bindTexture(texture);
-                drawModalRectWithCustomSizedTexture(left, top, 0, 0, xSize, ySize, 512, 256);
+                minecraft.getTextureManager().bindTexture(texture);
+                blit(left, top, 0, 0, containerWidth, containerHeight, 512, 256);
             } else {
-                if (playerExtension.getWorld().rand.nextInt(100) == 0) {
+                if (playerExtension.getWorld().random.nextInt(100) == 0) {
                     UnicopiaCore.LOGGER.fatal("Missing texture " + texture);
                 }
             }
@@ -174,19 +171,19 @@ public class SpellBookScreen extends ContainerScreen implements IPageUnlockListe
         GlStateManager.disableBlend();
     }
 
-    static class PageButton extends GuiButton {
+    class PageButton extends Button {
         private final boolean direction;
 
         private int shakesLeft = 0;
         private float shakeCount = 0;
 
-        public PageButton(int id, int x, int y, boolean direction) {
-            super(id, x, y, 23, 13, "");
+        public PageButton(int x, int y, boolean direction) {
+            super(x, y, 23, 13);
             this.direction = direction;
         }
 
         @Override
-        public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks) {
+        public void renderButton(int mouseX, int mouseY, float partialTicks) {
             if (visible) {
 
                 boolean shaking = false;
@@ -207,8 +204,8 @@ public class SpellBookScreen extends ContainerScreen implements IPageUnlockListe
                     y -= (int)(Math.sin(shakeCount) * 3);
                 }
 
-                GlStateManager.color(1, 1, 1, 1);
-                mc.getTextureManager().bindTexture(spellBookGuiTextures);
+                GlStateManager.color4f(1, 1, 1, 1);
+                minecraft.getTextureManager().bindTexture(spellBookGuiTextures);
 
                 int u = 0;
                 int v = 220;
@@ -225,12 +222,13 @@ public class SpellBookScreen extends ContainerScreen implements IPageUnlockListe
                     v += 13;
                 }
 
-                drawModalRectWithCustomSizedTexture(x, y, u, v, 23, 13, 512, 256);
+                blit(x, y, u, v, 23, 13, 512, 256);
             }
         }
 
-        public boolean isMouseOver(int mouseX, int mouseY) {
-            return enabled &&  mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
+        @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            return visible &&  mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
 
         }
 

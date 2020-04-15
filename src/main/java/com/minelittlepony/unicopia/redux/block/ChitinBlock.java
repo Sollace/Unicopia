@@ -25,7 +25,7 @@ public class ChitinBlock extends Block {
     public static final EnumProperty<Covering> COVERING = EnumProperty.of("covering", Covering.class);
 
     public ChitinBlock() {
-        super(FabricBlockSettings.of(UMaterials.hive)
+        super(FabricBlockSettings.of(UMaterials.HIVE)
                 .hardness(50)
                 .strength(2000, 2000)
                 .materialColor(MaterialColor.BLACK)

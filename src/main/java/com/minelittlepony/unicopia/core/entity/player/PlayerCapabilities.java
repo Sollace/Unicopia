@@ -10,7 +10,6 @@ import com.minelittlepony.unicopia.core.UEffects;
 import com.minelittlepony.unicopia.core.UTags;
 import com.minelittlepony.unicopia.core.UnicopiaCore;
 import com.minelittlepony.unicopia.core.ability.IAbilityReceiver;
-import com.minelittlepony.unicopia.core.enchanting.IPageOwner;
 import com.minelittlepony.unicopia.core.enchanting.PageState;
 import com.minelittlepony.unicopia.core.entity.FlightControl;
 import com.minelittlepony.unicopia.core.entity.Trap;
@@ -49,7 +48,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 
-public class PlayerCapabilities implements IPlayer, IPageOwner {
+public class PlayerCapabilities implements IPlayer {
 
     private static final TrackedData<Integer> PLAYER_RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Float> ENERGY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);

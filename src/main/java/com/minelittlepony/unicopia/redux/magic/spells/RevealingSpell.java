@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.core.util.shape.Sphere;
 
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.Vec3d;
 
 
 public class RevealingSpell extends AbstractSpell {
@@ -48,10 +49,10 @@ public class RevealingSpell extends AbstractSpell {
         IShape area = new Sphere(false, 15);
 
         source.spawnParticles(area, 5, pos -> {
-            ParticleTypeRegistry.getTnstance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0, getTint());
+            source.addParticle(UParticles.UNICORN_MAGIC, pos, Vec3d.ZERO); // getTint()
         });
 
-        source.spawnParticles(UParticles.UNICORN_MAGIC, 5, getTint());
+        source.spawnParticles(UParticles.UNICORN_MAGIC, 5); //getTint()
     }
 
     @Override

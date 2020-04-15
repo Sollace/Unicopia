@@ -19,7 +19,7 @@ public class BlockCloudDoor extends AbstractDoorBlock implements ICloudBlock {
 
     @SuppressWarnings("deprecation")
     public BlockCloudDoor() {
-        super(FabricBlockSettings.of(UMaterials.cloud)
+        super(FabricBlockSettings.of(UMaterials.CLOUD)
                 .sounds(BlockSoundGroup.WOOL)
                 .hardness(3)
                 .resistance(200)

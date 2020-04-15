@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.redux.enchanting;
 
-import com.minelittlepony.unicopia.core.enchanting.IPage;
+import com.minelittlepony.unicopia.core.enchanting.Page;
 
 @FunctionalInterface
 public interface IPageUnlockListener {
@@ -10,5 +10,5 @@ public interface IPageUnlockListener {
      * @param page The page that has been unlocked
      * @return True to allow, false to block.
      */
-	boolean onPageUnlocked(IPage page);
+	boolean onPageUnlocked(Page page);
 }

@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import net.minecraft.entity.player.PlayerAbilities;
 
 @Mixin(PlayerAbilities.class)
-public interface IWalker {
+public interface Walker {
     @Accessor("walkSpeed")
     void setWalkSpeed(float speed);
 }

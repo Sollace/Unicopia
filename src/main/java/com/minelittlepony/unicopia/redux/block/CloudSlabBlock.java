@@ -42,7 +42,7 @@ public class CloudSlabBlock<T extends Block & ICloudBlock> extends USlab<T> impl
 
                     SlabType half = state.get(TYPE);
 
-                    if (beside.getBlock() instanceof BlockCloudStairs) {
+                    if (beside.getBlock() instanceof CloudStairsBlock) {
                         return beside.get(StairsBlock.HALF).ordinal() == state.get(TYPE).ordinal()
                            && beside.get(Properties.FACING) == face;
                     }

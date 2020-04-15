@@ -24,7 +24,7 @@ import net.minecraft.world.BlockView;
 public class ChiselledChitinBlock extends Block {
 
     public ChiselledChitinBlock() {
-        super(FabricBlockSettings.of(UMaterials.hive)
+        super(FabricBlockSettings.of(UMaterials.HIVE)
                 .strength(50, 2000)
                 .materialColor(MaterialColor.BLACK)
                 .build()

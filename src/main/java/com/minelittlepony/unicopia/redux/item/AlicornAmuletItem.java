@@ -12,10 +12,9 @@ import com.minelittlepony.unicopia.core.entity.ItemEntityCapabilities;
 import com.minelittlepony.unicopia.core.entity.player.IPlayer;
 import com.minelittlepony.unicopia.core.magic.Affinity;
 import com.minelittlepony.unicopia.core.magic.IDependable;
+import com.minelittlepony.unicopia.core.util.AwaitTickQueue;
 import com.minelittlepony.unicopia.core.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.core.util.VecHelper;
-import com.minelittlepony.unicopia.redux.UWorld;
-
 import net.minecraft.util.ChatUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -218,7 +217,7 @@ public class AlicornAmuletItem extends ArmorItem implements IDependable, ItemEnt
 
             player.world.createExplosion(player, pos.x, pos.y, pos.z, 10, DestructionType.NONE);
 
-            UWorld.scheduleTask(w -> {
+            AwaitTickQueue.scheduleTask(w -> {
                 w.createExplosion(player, pos.x, pos.y, pos.z, 6, DestructionType.BREAK);
             }, 50);
         }

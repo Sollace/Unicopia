@@ -5,9 +5,9 @@ import net.minecraft.item.Item;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 
-public class UTags {
+public interface UTags {
     // TODO: includes unicopia:alicorn_amulet
-    public static final Tag<Item> CURSED_ARTEFACTS = TagRegistry.item(new Identifier(UnicopiaCore.MODID, "cursed_artefacts"));
+    Tag<Item> CURSED_ARTEFACTS = TagRegistry.item(new Identifier(UnicopiaCore.MODID, "cursed_artefacts"));
 
     static void bootstrap() {}
 }

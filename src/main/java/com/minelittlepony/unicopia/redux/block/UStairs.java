@@ -14,7 +14,7 @@ public class UStairs extends StairsBlock {
     protected final Block baseBlock;
     protected final BlockState baseBlockState;
 
-    public UStairs(BlockState inherited, Block.Settings settings) {
+    public UStairs(BlockState inherited, Settings settings) {
         super(inherited, settings);
         baseBlock = inherited.getBlock();
         baseBlockState = inherited;

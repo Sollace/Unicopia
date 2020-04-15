@@ -149,7 +149,7 @@ public class IceSpell extends AbstractSpell.RangedAreaSpell implements IUseable,
 
         if (!state.equals(converted)) {
             world.setBlockState(pos, converted, 3);
-        } else if (state.getMaterial() != UMaterials.cloud && world.doesBlockHaveSolidTopSurface(pos, owner)
+        } else if (state.getMaterial() != UMaterials.CLOUD && world.doesBlockHaveSolidTopSurface(pos, owner)
                 || (id == Blocks.SNOW)
                 || state.matches(BlockTags.LEAVES)) {
             incrementIce(world, pos.up());

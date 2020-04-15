@@ -6,45 +6,50 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.redux.item.UItems;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropBlock;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
-public class BlockAlfalfa extends CropBlock {
+public class TallCropBlock extends CropBlock {
 
     public static final IntProperty AGE = IntProperty.of("age", 0, 4);
     public static final EnumProperty<Half> HALF = EnumProperty.of("half", Half.class);
 
-    private static final Box[] BOUNDS = new Box[] {
-        new Box(0, 0, 0, 1, 0.1, 1),
-        new Box(0, 0, 0, 1, 0.2, 1),
-        new Box(0, 0, 0, 1, 0.4, 1),
-        new Box(0, 0, 0, 1, 0.6, 1),
-        new Box(0, 0, 0, 1, 0.8, 1),
-        new Box(0, 0, 0, 1, 1,   1),
-        new Box(0, 0, 0, 1, 1.2, 1),
-        new Box(0, 0, 0, 1, 1.4, 1),
-        new Box(0, 0, 0, 1, 1.6, 1),
-        new Box(0, 0, 0, 1, 1.8, 1),
-        new Box(0, 0, 0, 1, 2,   1),
-        new Box(0, 0, 0, 1, 2.2, 1),
-        new Box(0, 0, 0, 1, 2.4, 1),
-        new Box(0, 0, 0, 1, 2.6, 1),
-        new Box(0, 0, 0, 1, 2.8, 1),
-        new Box(0, 0, 0, 1, 3,   1)
+    private static final VoxelShape[] SHAPES = new VoxelShape[] {
+            Block.createCuboidShape(0, 0, 0, 16, 1.6, 16),
+            Block.createCuboidShape(0, 0, 0, 16, 3.2, 16),
+            Block.createCuboidShape(0, 0, 0, 16, 4.4, 16),
+            Block.createCuboidShape(0, 0, 0, 16, 9.6, 16),
+            Block.createCuboidShape(0, 0, 0, 16, 12.8, 16),
+            Block.createCuboidShape(0, 0, 0, 16, 16,   16),
+            Block.createCuboidShape(0, 0, 0, 16, 17.6, 16),
+            Block.createCuboidShape(0, 0, 0, 16, 19.2, 16),
+            Block.createCuboidShape(0, 0, 0, 16, 20.4, 16),
+            Block.createCuboidShape(0, 0, 0, 16, 25.6, 16),
+            Block.createCuboidShape(0, 0, 0, 16, 32,   16),
+            Block.createCuboidShape(0, 0, 0, 16, 33.6, 16),
+            Block.createCuboidShape(0, 0, 0, 16, 38.4, 16),
+            Block.createCuboidShape(0, 0, 0, 16, 67.6, 16),
+            Block.createCuboidShape(0, 0, 0, 16, 44.8, 16),
+            Block.createCuboidShape(0, 0, 0, 16, 48,   16)
     };
 
-    public BlockAlfalfa() {
+    public TallCropBlock(Settings settings) {
+        super(settings);
         setDefaultState(getDefaultState().with(HALF, Half.BOTTOM));
     }
 
@@ -69,26 +74,17 @@ public class BlockAlfalfa extends CropBlock {
     }
 
     @Override
-    protected Item getCrop() {
-        return UItems.alfalfa_seeds;
-    }
-
-    @Override
     public void onScheduledTick(BlockState state, World world, BlockPos pos, Random rand) {
-        checkAndDropBlock(world, pos, state);
-        if (rand.nextInt(10) != 0) {
-
-            if (world.isBlockLoaded(pos) && world.getLightLevel(pos.up()) >= 9) {
-                if (canGrow(world, rand, pos, state)) {
-                    growUpwards(world, pos, state, 1);
-                }
+        if (rand.nextInt(10) != 0 && world.isBlockLoaded(pos) && world.getLightLevel(pos.up()) >= 9) {
+            if (canGrow(world, rand, pos, state)) {
+                growUpwards(world, pos, state, 1);
             }
         }
     }
 
     @Override
-    protected boolean canSustainBush(BlockState state) {
-        return super.canSustainBush(state) || state.getBlock() == this;
+    protected boolean canPlantOnTop(BlockState state, BlockView view, BlockPos pos) {
+        return state.getBlock() == this || super.canPlantOnTop(state, view, pos);
     }
 
     protected void growUpwards(World world, BlockPos pos, BlockState state, int increase) {
@@ -127,36 +123,8 @@ public class BlockAlfalfa extends CropBlock {
     }
 
     @Override
-    public Item getItemDropped(BlockState state, Random rand, int fortune) {
-        if (state.get(HALF) != Half.BOTTOM) {
-            return Items.AIR;
-        }
-
-        return super.getItemDropped(state, rand, fortune);
-    }
-
-    @Override
-    public void getDrops(NonNullList<ItemStack> drops, BlockView world, BlockPos pos, BlockState state, int fortune) {
-        Random rand = world instanceof World ? ((World)world).random : RANDOM;
-
-        Item item = getItemDropped(state, rand, fortune);
-        if (item != Items.AIR) {
-            drops.add(new ItemStack(item, getFullAge(world, pos), damageDropped(state)));
-
-            if (isMaxAge(state)) {
-                drops.add(new ItemStack(UItems.alfalfa_leaves, rand.nextInt(10)));
-            }
-        }
-    }
-
-    @Override
-    public int quantityDropped(BlockState state, int fortune, Random random) {
-        return 1;
-    }
-
-    @Override
-    public boolean canBlockStay(World world, BlockPos pos, BlockState state) {
-        return getHalf(state) != Half.BOTTOM || super.canBlockStay(world, pos, state);
+    public boolean canPlaceAt(BlockState state, ViewableWorld world, BlockPos pos) {
+        return getHalf(state) != Half.BOTTOM || super.canPlaceAt(state, world, pos);
     }
 
     public void onPlayerDestroy(World worldIn, BlockPos pos, BlockState state) {
@@ -164,7 +132,7 @@ public class BlockAlfalfa extends CropBlock {
     }
 
     @Override
-    public void onBlockHarvested(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
+    public void onBreak(World worldIn, BlockPos pos, BlockState state, PlayerEntity player) {
         breakConnectedBlocks(worldIn, pos, player);
     }
 
@@ -188,23 +156,27 @@ public class BlockAlfalfa extends CropBlock {
     }
 
     @Override
-    protected int getBonemealAgeIncrease(World world) {
-        return super.getBonemealAgeIncrease(world) / 2;
+    protected int getGrowthAmount(World world) {
+        return super.getGrowthAmount(world) / 2;
     }
 
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, HALF, AGE);
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+        builder.add(AGE, HALF);
     }
 
     @Override
-    public boolean canCollideCheck(BlockState state, boolean hitIfLiquid) {
-        return getHalf(state) != Half.MIDDLE;
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+        if (getHalf(state) != Half.MIDDLE) {
+            return VoxelShapes.empty();
+        }
+        return super.getCollisionShape(state, view, pos, context);
     }
 
     @Override
-    public Box getBoundingBox(BlockState state, BlockView source, BlockPos pos) {
-        return BOUNDS[Math.min(BOUNDS.length - 1, getFullAge(source, pos))].offset(getOffset(state, source, pos));
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        Vec3d offset = getOffsetPos(state, view, pos);
+        return SHAPES[Math.min(SHAPES.length - 1, getFullAge(view, pos))].offset(offset.x, offset.y, offset.z);
     }
 
     @Override
@@ -227,7 +199,7 @@ public class BlockAlfalfa extends CropBlock {
 
     @Override
     public void applyGrowth(World world, BlockPos pos, BlockState state) {
-        growUpwards(world, pos, state, getBonemealAgeIncrease(world));
+        growUpwards(world, pos, state, getGrowthAmount(world));
     }
 
     protected BlockPos getTip(World world, BlockPos pos) {
@@ -273,7 +245,7 @@ public class BlockAlfalfa extends CropBlock {
 
         @Override
         public String toString() {
-            return this == TOP ? "top" : this == MIDDLE ? "middle" : "bottom";
+            return super.toString().toLowerCase();
         }
 
         @Override

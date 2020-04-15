@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.core.EquinePredicates;
 import com.minelittlepony.unicopia.core.USounds;
 import com.minelittlepony.unicopia.core.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.core.util.PosHelper;
+import com.minelittlepony.unicopia.redux.UBlocks;
 import com.minelittlepony.unicopia.redux.UMaterials;
 
 import net.minecraft.block.Block;
@@ -47,7 +48,7 @@ public class BlockGrowingCuccoon extends Block {
     };
 
     public BlockGrowingCuccoon() {
-        super(UMaterials.hive);
+        super(UMaterials.HIVE);
 
         setTranslationKey(name);
         setRegistryName(domain, name);

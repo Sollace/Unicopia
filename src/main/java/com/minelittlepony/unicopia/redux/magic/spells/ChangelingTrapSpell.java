@@ -10,8 +10,8 @@ import com.minelittlepony.unicopia.core.magic.CasterUtils;
 import com.minelittlepony.unicopia.core.magic.IAttachedEffect;
 import com.minelittlepony.unicopia.core.magic.ICaster;
 import com.minelittlepony.unicopia.core.util.WorldEvent;
+import com.minelittlepony.unicopia.redux.UBlocks;
 import com.minelittlepony.unicopia.redux.UEntities;
-import com.minelittlepony.unicopia.redux.block.UBlocks;
 import com.minelittlepony.unicopia.redux.entity.CuccoonEntity;
 import com.minelittlepony.unicopia.redux.magic.ITossedEffect;
 

@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.core.entity.player.IPlayer;
 import com.minelittlepony.unicopia.core.util.PosHelper;
 import com.minelittlepony.unicopia.core.util.shape.IShape;
 import com.minelittlepony.unicopia.core.util.shape.Sphere;
+import com.minelittlepony.unicopia.redux.UBlocks;
 import com.minelittlepony.unicopia.redux.UMaterials;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
@@ -45,7 +46,7 @@ public class HiveWallBlock extends FallingBlock {
     private static final IShape shape = new Sphere(false, 1.5);
 
     public HiveWallBlock() {
-        super(FabricBlockSettings.of(UMaterials.hive)
+        super(FabricBlockSettings.of(UMaterials.HIVE)
                 .noCollision()
                 .strength(10, 10)
                 .hardness(2)
@@ -266,7 +267,7 @@ public class HiveWallBlock extends FallingBlock {
             for (Direction facing : axis.getFacings()) {
                 BlockPos op = pos.offset(facing);
 
-                if (world.getBlockState(op).getMaterial() == UMaterials.hive) {
+                if (world.getBlockState(op).getMaterial() == UMaterials.HIVE) {
                     if (one) {
                         return true;
                     }

@@ -10,9 +10,15 @@ import com.minelittlepony.unicopia.core.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.redux.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.redux.entity.ai.FollowCasterGoal;
 
+import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.Box;
 
+/**
+ * Spike The Dragon, but in rock form.
+ *
+ * It follows you around and can pick up/carry other gems.
+ */
 public class FaithfulAssistantSpell extends AbstractSpell {
 
     private static final Box EFFECT_BOUNDS = new Box(-2, -2, -2, 2, 2, 2);
@@ -59,14 +65,15 @@ public class FaithfulAssistantSpell extends AbstractSpell {
         return super.isDirty() || (piggyBackSpell != null && piggyBackSpell.isDirty());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onPlaced(ICaster<?> caster) {
         if (caster.getEntity() instanceof SpellcastEntity) {
             SpellcastEntity living = (SpellcastEntity)caster.getEntity();
 
-            ((PathNavigateGround)living.getNavigator()).setCanSwim(false);
-            living.tasks.addTask(1, new EntityAISwimming(living));
-            living.tasks.addTask(2, new FollowCasterGoal<>(caster, 1, 4, 70));
+            living.getNavigation().setCanSwim(false);
+            living.getGoals().add(1, new SwimGoal(living));
+            living.getGoals().add(2, new FollowCasterGoal<>((ICaster<SpellcastEntity>)caster, 1, 4, 70));
 
             living.setPosition(living.x, living.y, living.z);
         }

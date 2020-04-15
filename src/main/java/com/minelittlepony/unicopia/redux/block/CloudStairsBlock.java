@@ -1,9 +1,5 @@
 package com.minelittlepony.unicopia.redux.block;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.minelittlepony.unicopia.redux.CloudType;
 
 import net.minecraft.block.Block;
@@ -11,20 +7,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.SlabType;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Box;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
 
-public class BlockCloudStairs extends UStairs implements ICloudBlock {
+public class CloudStairsBlock extends UStairs implements ICloudBlock {
 
-    public BlockCloudStairs(BlockState inherited) {
-        super(inherited);
+    public CloudStairsBlock(BlockState inherited, Settings settings) {
+        super(inherited, settings);
     }
 
     @Override
@@ -36,7 +26,7 @@ public class BlockCloudStairs extends UStairs implements ICloudBlock {
                 Direction front = state.get(FACING);
                 BlockHalf half = state.get(HALF);
 
-                VoxelShape shape = state.getCollisionShape(world, pos);
+                VoxelShape shape = getOutlineShape(state, null, null, EntityContext.absent());
 
                 boolean sideIsBack = Block.isFaceFullSquare(shape, face);
                 boolean sideIsFront = Block.isFaceFullSquare(shape, face.getOpposite());
@@ -53,7 +43,7 @@ public class BlockCloudStairs extends UStairs implements ICloudBlock {
                             );
                     }
 
-                    VoxelShape shapeBeside = beside.getCollisionShape(world, pos);
+                    VoxelShape shapeBeside = getOutlineShape(beside, null, null, EntityContext.absent());
 
                     boolean bsideIsBack = Block.isFaceFullSquare(shapeBeside, face);
                     boolean bsideIsFront = Block.isFaceFullSquare(shapeBeside, face.getOpposite());

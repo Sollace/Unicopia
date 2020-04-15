@@ -14,8 +14,8 @@ public class BagOfHoldingContainer extends Container {
 
     private ItemStack sourceStack;
 
-    public BagOfHoldingContainer(int num, Identifier id, PlayerEntity player, PacketByteBuf buff) {
-        super(null, num);
+    public BagOfHoldingContainer(int sync, Identifier id, PlayerEntity player, PacketByteBuf buf) {
+        super(null, sync);
 
         sourceStack = player.getStackInHand(Hand.MAIN_HAND);
         inventory = BagOfHoldingInventory.getInventoryFromStack(sourceStack);

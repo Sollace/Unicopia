@@ -8,8 +8,10 @@ import com.minelittlepony.unicopia.core.magic.IHeldEffect;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.light.ChunkBlockLightProvider;
+import net.minecraft.world.chunk.light.ChunkLightingView;
 
 public class GlowingSpell extends GenericSpell implements IHeldEffect {
 
@@ -30,7 +32,15 @@ public class GlowingSpell extends GenericSpell implements IHeldEffect {
         super.setDead();
 
         if (lastPos != null) {
-            source.getWorld().checkLight(lastPos);
+            ChunkLightingView view = source.getWorld().getChunkManager().getLightingProvider().get(LightType.BLOCK);
+
+            if (!(view instanceof ChunkBlockLightProvider)) {
+                return;
+            }
+
+            ChunkBlockLightProvider provider = (ChunkBlockLightProvider)view;
+
+            provider.queueLightCheck(lastPos);
         }
     }
 
@@ -49,43 +59,50 @@ public class GlowingSpell extends GenericSpell implements IHeldEffect {
 
         World world = source.getWorld();
 
+        ChunkLightingView view = world.getChunkManager().getLightingProvider().get(LightType.BLOCK);
+
+        if (!(view instanceof ChunkBlockLightProvider)) {
+            return true;
+        }
+
+
+        ChunkBlockLightProvider provider = (ChunkBlockLightProvider)view;
+
         if (lastPos != null && !lastPos.equals(pos)) {
-            world.checkLight(lastPos);
+            provider.queueLightCheck(lastPos);
         }
 
         lastPos = pos;
 
-
-        int light = world.getLightFor(EnumSkyBlock.BLOCK, pos);
+        int light = provider.getLightLevel(pos);
 
         if (light < 8) {
-            world.setLightFor(EnumSkyBlock.BLOCK, pos, 8);
-            world.notifyLightSet(pos);
-            world.checkLight(pos.up());
+            provider.method_15514(pos, 8);
+            provider.queueLightCheck(pos);
         }
 
         return true;
     }
 
     @Override
-    public void writeToNBT(CompoundTag compound) {
+    public void toNBT(CompoundTag compound) {
         super.toNBT(compound);
 
-        if (compound.hasKey("lastX")) {
-            lastPos = new BlockPos(compound.getInteger("lastX"), compound.getInteger("lastY"), compound.getInteger("lastZ"));
+        if (compound.containsKey("lastX")) {
+            lastPos = new BlockPos(compound.getInt("lastX"), compound.getInt("lastY"), compound.getInt("lastZ"));
         } else {
             lastPos = null;
         }
     }
 
     @Override
-    public void readFromNBT(CompoundTag compound) {
+    public void fromNBT(CompoundTag compound) {
         super.fromNBT(compound);
 
         if (lastPos != null) {
-            compound.setInteger("lastX", lastPos.getX());
-            compound.setInteger("lastY", lastPos.getY());
-            compound.setInteger("lastZ", lastPos.getZ());
+            compound.putInt("lastX", lastPos.getX());
+            compound.putInt("lastY", lastPos.getY());
+            compound.putInt("lastZ", lastPos.getZ());
         }
     }
 }

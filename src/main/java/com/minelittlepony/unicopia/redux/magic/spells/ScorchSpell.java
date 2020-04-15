@@ -8,7 +8,6 @@ import com.minelittlepony.unicopia.core.magic.ICaster;
 import com.minelittlepony.unicopia.core.magic.spell.FireSpell;
 import com.minelittlepony.unicopia.core.util.PosHelper;
 import com.minelittlepony.unicopia.core.util.shape.Sphere;
-import com.minelittlepony.unicopia.redux.entity.ProjectileEntity;
 import com.minelittlepony.unicopia.redux.magic.ITossedEffect;
 import com.minelittlepony.unicopia.redux.util.projectile.IAdvancedProjectile;
 
@@ -58,7 +57,7 @@ public class ScorchSpell extends FireSpell implements ITossedEffect {
     @Override
     public void render(ICaster<?> source) {
         source.spawnParticles(ParticleTypes.FLAME, 3);
-        source.spawnParticles(UParticles.UNICORN_MAGIC, 3, getTint());
+        source.spawnParticles(UParticles.UNICORN_MAGIC, 3); // getTint()
     }
 
     @Override

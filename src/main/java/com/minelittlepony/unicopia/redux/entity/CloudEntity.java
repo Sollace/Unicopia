@@ -10,8 +10,8 @@ import com.minelittlepony.unicopia.core.SpeciesList;
 import com.minelittlepony.unicopia.core.UParticles;
 import com.minelittlepony.unicopia.core.entity.InAnimate;
 import com.minelittlepony.unicopia.core.util.particles.ParticleEmitter;
+import com.minelittlepony.unicopia.redux.UBlocks;
 import com.minelittlepony.unicopia.redux.ability.PowerCloudBase.ICloudEntity;
-import com.minelittlepony.unicopia.redux.block.UBlocks;
 import com.minelittlepony.unicopia.redux.item.UItems;
 
 import net.minecraft.block.BlockState;
@@ -24,6 +24,8 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
@@ -35,7 +37,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ShovelItem;
@@ -50,7 +51,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
@@ -71,9 +71,6 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
 
     protected int directionX;
     protected int directionZ;
-
-    private final double baseWidth = 3f;
-    private final double baseHeight = 0.8f;
 
     public CloudEntity(EntityType<? extends CloudEntity> type, World world) {
         super(type, world);
@@ -690,26 +687,17 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
     }
 
     public int getCloudSize() {
-        int size = dataTracker.get(SCALE);
-        updateSize(size);
-        return size;
-    }
-
-    private void updateSize(int scale) {
-        setSize((float)baseWidth * scale, (float)baseHeight * scale);
+        return dataTracker.get(SCALE);
     }
 
     @Override
-    protected void setSize(float width, float height) {
-        if (width != this.width || height != this.height) {
-            super.setSize(width, height);
-            setPosition(x, y, z);
-        }
+    public EntityDimensions getDimensions(EntityPose pose) {
+        return super.getDimensions(pose).scaled(getCloudSize());
     }
 
     public void setCloudSize(int val) {
         val = Math.max(1, val);
-        updateSize(val);
         dataTracker.set(SCALE, val);
+        calculateDimensions();
     }
 }

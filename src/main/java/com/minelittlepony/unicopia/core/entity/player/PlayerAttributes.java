@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.core.entity.player;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.core.Race;
-import com.minelittlepony.unicopia.core.mixin.IWalker;
+import com.minelittlepony.unicopia.core.mixin.Walker;
 import com.minelittlepony.unicopia.core.util.HeavyInventoryUtils;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -26,7 +26,7 @@ public class PlayerAttributes {
     public void applyAttributes(PlayerEntity entity, Race race) {
         loadStrength = HeavyInventoryUtils.getContentsTotalWorth(entity.inventory, false);
 
-        ((IWalker)entity.abilities).setWalkSpeed(0.1F - (float)(loadStrength / 100000));
+        ((Walker)entity.abilities).setWalkSpeed(0.1F - (float)(loadStrength / 100000));
 
         applyAttribute(entity, EntityAttributes.ATTACK_DAMAGE, EARTH_PONY_STRENGTH, race.canUseEarth());
         applyAttribute(entity, EntityAttributes.KNOCKBACK_RESISTANCE, EARTH_PONY_STRENGTH, race.canUseEarth());

@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.util.GlAllocationUtils;
 
 public class SphereModel {
@@ -20,9 +21,9 @@ public class SphereModel {
     protected float rotZ;
 
     public void setPosition(double x, double y, double z) {
-        posX = x - TileEntityRendererDispatcher.staticPlayerX;
-        posY = y - TileEntityRendererDispatcher.staticPlayerY;
-        posZ = z - TileEntityRendererDispatcher.staticPlayerZ;
+        posX = x - BlockEntityRenderDispatcher.renderOffsetX;
+        posY = y - BlockEntityRenderDispatcher.renderOffsetY;
+        posZ = z - BlockEntityRenderDispatcher.renderOffsetZ;
     }
 
     public void setRotation(float x, float y, float z) {
@@ -68,6 +69,7 @@ public class SphereModel {
     }
 
     protected void drawShape() {
+
         Sphere sphere = new Sphere();
 
         sphere.setDrawStyle(GLU.GLU_FILL);

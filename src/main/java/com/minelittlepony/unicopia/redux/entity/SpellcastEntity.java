@@ -5,8 +5,6 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.minelittlepony.unicopia.core.EquinePredicates;
 import com.minelittlepony.unicopia.core.Race;
 import com.minelittlepony.unicopia.core.entity.InAnimate;
@@ -20,9 +18,9 @@ import com.minelittlepony.unicopia.redux.item.UItems;
 import com.minelittlepony.unicopia.redux.magic.ICastable;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCategory;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -31,9 +29,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
-import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -43,7 +39,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -74,6 +69,10 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, ICast
 
     public GoalSelector getGoals() {
         return goalSelector;
+    }
+
+    public GoalSelector getTargets() {
+        return targetSelector;
     }
 
     @Override
@@ -209,7 +208,6 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, ICast
             }
 
             if (getEffect().allowAI()) {
-                dimensions.height = 1.5F;
                 super.tickMovement();
             }
         }
@@ -236,6 +234,17 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, ICast
         if (getCurrentLevel() < 0) {
             remove();
         }
+    }
+
+    @Override
+    public EntityDimensions getDimensions(EntityPose pose) {
+        EntityDimensions dims = super.getDimensions(pose);
+
+        if (hasEffect() && getEffect().allowAI()) {
+            return EntityDimensions.changing(dims.width, 1.5F);
+        }
+
+        return dims;
     }
 
     public boolean overLevelCap() {

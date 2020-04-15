@@ -1,11 +1,11 @@
 package com.minelittlepony.unicopia.redux.client;
 
 import com.minelittlepony.unicopia.core.UParticles;
-import com.minelittlepony.unicopia.core.client.particle.ParticleChangelingMagic;
+import com.minelittlepony.unicopia.core.client.particle.ChangelingMagicParticle;
 import com.minelittlepony.unicopia.core.client.particle.DiskParticle;
 import com.minelittlepony.unicopia.core.client.particle.RaindropsParticle;
 import com.minelittlepony.unicopia.core.client.particle.SphereParticle;
-import com.minelittlepony.unicopia.core.client.particle.ParticleUnicornMagic;
+import com.minelittlepony.unicopia.core.client.particle.MagicParticle;
 import com.minelittlepony.unicopia.core.util.collection.ListHelper;
 import com.minelittlepony.unicopia.redux.client.render.ButterflyEntityRenderer;
 import com.minelittlepony.unicopia.redux.client.render.RenderCloud;
@@ -37,7 +37,7 @@ import net.minecraft.world.biome.OceanBiome;
 import net.minecraft.world.biome.PlainsBiome;
 import net.minecraft.world.biome.RiverBiome;
 
-public class URenderers {
+public interface URenderers {
     static void bootstrap() {
         EntityRendererRegistry.INSTANCE.register(CloudEntity.class, RenderCloud::new);
         EntityRendererRegistry.INSTANCE.register(SpellcastEntity.class, SpellcastEntityRenderer::new);
@@ -48,8 +48,8 @@ public class URenderers {
         EntityRendererRegistry.INSTANCE.register(CuccoonEntity.class, RenderCuccoon::new);
         EntityRendererRegistry.INSTANCE.register(SpearEntity.class, RenderSpear::new);
 
-        ParticleFactoryRegistry.instance().register(UParticles.UNICORN_MAGIC, ParticleUnicornMagic::new);
-        ParticleFactoryRegistry.instance().register(UParticles.CHANGELING_MAGIC, ParticleChangelingMagic::new);
+        ParticleFactoryRegistry.instance().register(UParticles.UNICORN_MAGIC, MagicParticle::new);
+        ParticleFactoryRegistry.instance().register(UParticles.CHANGELING_MAGIC, ChangelingMagicParticle::new);
         ParticleFactoryRegistry.instance().register(UParticles.RAIN_DROPS, RaindropsParticle::new);
         ParticleFactoryRegistry.instance().register(UParticles.SPHERE, SphereParticle::new);
         ParticleFactoryRegistry.instance().register(UParticles.DISK, DiskParticle::new);

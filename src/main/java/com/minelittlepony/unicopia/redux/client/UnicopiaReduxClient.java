@@ -5,8 +5,8 @@ import static com.minelittlepony.unicopia.core.EquinePredicates.MAGI;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.core.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.redux.UBlocks;
 import com.minelittlepony.unicopia.redux.block.IColourful;
-import com.minelittlepony.unicopia.redux.block.UBlocks;
 import com.minelittlepony.unicopia.redux.item.UItems;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.render.ColorProviderRegistry;

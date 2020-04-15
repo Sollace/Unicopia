@@ -5,7 +5,7 @@ import net.minecraft.util.Identifier;
 /**
  * A spellbook page
  */
-public interface IPage extends Comparable<IPage> {
+public interface Page extends Comparable<Page> {
     /**
      * Gets the index.
      * This is the position the page appears in the book gui.
@@ -34,7 +34,7 @@ public interface IPage extends Comparable<IPage> {
      */
     PageState getDefaultState();
 
-    IPage next();
+    Page next();
 
-    IPage prev();
+    Page prev();
 }

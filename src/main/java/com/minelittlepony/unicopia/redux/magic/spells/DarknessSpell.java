@@ -206,7 +206,7 @@ public class DarknessSpell extends AbstractAttachableSpell {
 
     public boolean isAreaOccupied(ICaster<?> source, Vec3d pos) {
         if (source.getWorld().isAir(new BlockPos(pos).down())) {
-            return source.findAllSpells().anyMatch(spell -> {
+            return source.findAllSpellsInRange(100).anyMatch(spell -> {
                 ShieldSpell effect = spell.getEffect(ShieldSpell.class, false);
 
                 if (effect != null) {

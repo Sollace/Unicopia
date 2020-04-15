@@ -5,13 +5,11 @@ import javax.annotation.Nonnull;
 import com.minelittlepony.unicopia.core.EquinePredicates;
 import com.minelittlepony.unicopia.core.SpeciesList;
 import com.minelittlepony.unicopia.core.magic.spell.SpellRegistry;
-import com.minelittlepony.unicopia.redux.UWorld;
+import com.minelittlepony.unicopia.core.util.AwaitTickQueue;
 import com.minelittlepony.unicopia.redux.enchanting.IPageUnlockListener;
-
 import net.minecraft.container.Container;
 import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -19,7 +17,8 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.PacketByteBuf;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion.DestructionType;
 
@@ -37,15 +36,15 @@ public class SpellBookContainer extends Container {
 
     private final PlayerEntity player;
 
-    public SpellBookContainer(PlayerInventory inventory, World world, BlockPos pos) {
-        super(null, 0);// TODO
-        worldObj = world;
-        player = inventory.player;
+    public SpellBookContainer(int sync, Identifier id, PlayerEntity player, PacketByteBuf buf) {
+        super(null, 0);
+        worldObj = player.world;
+        this.player = player;
 
         initCraftingSlots();
 
         for (int i = 0; i < 9; ++i) {
-            addSlot(new Slot(inventory, i, 121 + i * 18, 195));
+            addSlot(new Slot(player.inventory, i, 121 + i * 18, 195));
         }
 
         onContentChanged(craftMatrix);
@@ -94,9 +93,7 @@ public class SpellBookContainer extends Container {
                     worldObj.createExplosion(null, player.x, player.y, player.z, 0, DestructionType.NONE);
                     worldObj.addParticle(ParticleTypes.EXPLOSION, player.x, player.y, player.z, 1, 0, 0);
 
-                    UWorld.enqueueTask(w -> {
-                        player.container.close(player);
-                    });
+                    AwaitTickQueue.enqueueTask(w -> player.container.close(player));
 
                     return;
                 }

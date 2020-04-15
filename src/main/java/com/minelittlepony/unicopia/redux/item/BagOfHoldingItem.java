@@ -10,12 +10,12 @@ import com.minelittlepony.unicopia.core.magic.Affinity;
 import com.minelittlepony.unicopia.core.magic.IMagicalItem;
 import com.minelittlepony.unicopia.core.util.VecHelper;
 import com.minelittlepony.unicopia.redux.UContainers;
+import com.minelittlepony.unicopia.redux.container.BagOfHoldingContainer;
 import com.minelittlepony.unicopia.redux.container.BagOfHoldingInventory;
 
 import net.fabricmc.fabric.api.container.ContainerProviderRegistry;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.container.Container;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -127,7 +127,7 @@ public class BagOfHoldingItem extends Item implements IMagicalItem {
         return true;
     }
 
-    class ContainerProvider implements NameableContainerProvider {
+    public static class ContainerProvider implements NameableContainerProvider {
 
         private Text customname = null;
 
@@ -146,8 +146,8 @@ public class BagOfHoldingItem extends Item implements IMagicalItem {
         }
 
         @Override
-        public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player) {
-            return null;
+        public BagOfHoldingContainer createMenu(int id, PlayerInventory inv, PlayerEntity player) {
+            return new BagOfHoldingContainer(id, null, player, null);
         }
     }
 }

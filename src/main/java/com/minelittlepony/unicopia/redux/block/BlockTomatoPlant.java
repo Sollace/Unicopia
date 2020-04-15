@@ -185,7 +185,7 @@ public class BlockTomatoPlant extends CropBlock {
             return getPlacedState(world, pos, world.getBlockState(pos));
         }
 
-        if (state.getBlock() instanceof BlockCloudFarm) {
+        if (state.getBlock() instanceof CloudFarmlandBlock) {
             return getDefaultState().with(TYPE, Type.CLOUDSDALE);
         }
 

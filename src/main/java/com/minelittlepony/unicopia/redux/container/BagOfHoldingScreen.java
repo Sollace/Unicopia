@@ -1,14 +1,15 @@
 package com.minelittlepony.unicopia.redux.container;
 
-import java.io.IOException;
-
+import com.minelittlepony.common.client.gui.element.Scrollbar;
+import com.minelittlepony.unicopia.redux.item.BagOfHoldingItem;
 import com.mojang.blaze3d.platform.GlStateManager;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.ContainerScreen9;
+import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
-public class BagOfHoldingScreen extends ContainerScreen9 {
+public class BagOfHoldingScreen extends AbstractContainerScreen<BagOfHoldingContainer> {
     private static final Identifier CHEST_GUI_TEXTURE = new Identifier("textures/gui/container/generic_54.png");
 
     private final int inventoryRows;
@@ -16,34 +17,33 @@ public class BagOfHoldingScreen extends ContainerScreen9 {
 
     private final Scrollbar scrollbar = new Scrollbar();
 
-    public BagOfHoldingScreen(IInteractionObject interaction) {
-        super(interaction.createContainer(MinecraftClient.getInstance().player.inventory, MinecraftClient.getInstance().player));
+    public BagOfHoldingScreen(PlayerEntity player, BagOfHoldingItem.ContainerProvider provider) {
+        super(provider.createMenu(0, player.inventory, player), player.inventory, provider.getDisplayName());
 
-        playerRows = MinecraftClient.getInstance().player.inventory.getSizeInventory() / 9;
-        inventoryRows = (inventorySlots.inventorySlots.size() / 9) - 1;
+        playerRows = playerInventory.getInvSize() / 9;
+        inventoryRows = (container.slotList.size() / 9) - 1;
     }
 
     @Override
-    public void initGui() {
-
-        super.initGui();
-
+    public void init() {
+        super.init();
         scrollbar.reposition(
-                guiLeft + xSize,
-                guiTop,
-                ySize,
+                left + containerWidth,
+                top,
+                containerHeight,
                 (inventoryRows + 1) * 18 + 17);
+        children.add(scrollbar);
     }
 
     @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
-        mc.player.playSound(SoundEvents.BLOCK_ENDERCHEST_OPEN, 0.5F, 0.5F);
+    public void onClose() {
+        super.onClose();
+        minecraft.player.playSound(SoundEvents.BLOCK_ENDER_CHEST_OPEN, 0.5F, 0.5F);
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        drawDefaultBackground();
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        renderBackground();
 
         scrollbar.render(mouseX, mouseY, partialTicks);
 
@@ -52,58 +52,50 @@ public class BagOfHoldingScreen extends ContainerScreen9 {
         GlStateManager.pushMatrix();
         GlStateManager.translatef(0, scroll, 0);
 
-        super.drawScreen(mouseX, mouseY - scroll, partialTicks);
+        super.render(mouseX, mouseY - scroll, partialTicks);
 
         int h = height;
         height = Integer.MAX_VALUE;
-        renderHoveredToolTip(mouseX, mouseY - scroll);
+        drawMouseoverTooltip(mouseX, mouseY - scroll);
         height = h;
 
         GlStateManager.popMatrix();
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        scrollbar.performAction(mouseX, mouseY);
-        super.mouseClicked(mouseX, mouseY + scrollbar.getScrollAmount(), mouseButton);
+    public boolean mouseClicked(double x, double y, int button) {
+        return super.mouseClicked(x, y + scrollbar.getScrollAmount(), button);
     }
 
     @Override
-    protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
-        super.mouseClickMove(mouseX, mouseY + scrollbar.getScrollAmount(), clickedMouseButton, timeSinceLastClick);
-
-        if (!dragSplitting) {
-            scrollbar.mouseMove(mouseX, mouseY, timeSinceLastClick);
-        }
+    public boolean mouseDragged(double x, double y, int button, double dx, double dy) {
+        return super.mouseDragged(x, y + scrollbar.getScrollAmount(), button, dx, dy);
     }
 
     @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state) {
-        super.mouseReleased(mouseX, mouseY + scrollbar.getScrollAmount(), state);
-        scrollbar.mouseUp(mouseX, mouseY);
+    public boolean mouseReleased(double x, double y, int button) {
+        return super.mouseReleased(x, y + scrollbar.getScrollAmount(), button);
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        BagOfHoldingContainer coh = (BagOfHoldingContainer)inventorySlots;
-
-        fontRenderer.drawString(coh.getName(), 8, 6, 0x404040);
+    protected void drawForeground(int mouseX, int mouseY) {
+        font.draw(title.asString(), 8, 6, 0x404040);
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+    protected void drawBackground(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.color4f(1, 1, 1, 1);
 
-        mc.getTextureManager().bindTexture(CHEST_GUI_TEXTURE);
+        minecraft.getTextureManager().bindTexture(CHEST_GUI_TEXTURE);
 
-        int midX = (width - xSize) / 2;
-        int midY = (height - ySize) / 2;
+        int midX = (width - containerWidth) / 2;
+        int midY = (height - containerHeight) / 2;
 
-        drawTexturedModalRect(midX, midY, 0, 0, xSize, 18);
+        blit(midX, midY, 0, 0, containerWidth, 18);
         for (int i = 0; i < inventoryRows - (playerRows - 1); i++) {
-            drawTexturedModalRect(midX, midY + (18 * (i + 1)), 0, 18, xSize, 18);
+            blit(midX, midY + (18 * (i + 1)), 0, 18, containerWidth, 18);
         }
 
-        drawTexturedModalRect(midX, midY + (18 * (inventoryRows - (playerRows - 2))) - 1, 0, 131, xSize, 98);
+        blit(midX, midY + (18 * (inventoryRows - (playerRows - 2))) - 1, 0, 131, containerWidth, 98);
     }
 }

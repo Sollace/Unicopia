@@ -11,13 +11,13 @@ import com.minelittlepony.unicopia.core.SpeciesList;
 import com.minelittlepony.unicopia.core.ability.IPower;
 import com.minelittlepony.unicopia.core.ability.Location;
 import com.minelittlepony.unicopia.core.entity.player.IPlayer;
+import com.minelittlepony.unicopia.core.util.AwaitTickQueue;
 import com.minelittlepony.unicopia.core.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.core.util.PosHelper;
 import com.minelittlepony.unicopia.core.util.VecHelper;
 import com.minelittlepony.unicopia.core.util.WorldEvent;
 import com.minelittlepony.unicopia.core.util.shape.IShape;
 import com.minelittlepony.unicopia.core.util.shape.Sphere;
-import com.minelittlepony.unicopia.redux.UWorld;
 import com.minelittlepony.unicopia.redux.item.AppleItem;
 
 import net.minecraft.block.Block;
@@ -182,7 +182,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
             if (harmed || player.world.random.nextInt(5) == 0) {
 
                 if (!harmed || player.world.random.nextInt(30) == 0) {
-                    UWorld.enqueueTask(w -> removeTree(w, data.pos()));
+                    AwaitTickQueue.enqueueTask(w -> removeTree(w, data.pos()));
                 }
 
                 iplayer.subtractEnergyCost(3);
@@ -329,7 +329,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
 
             dropApplesPart(capturedDrops, new ArrayList<BlockPos>(), w, log, pos, 0);
 
-            UWorld.enqueueTask(wo -> {
+            AwaitTickQueue.enqueueTask(wo -> {
                 capturedDrops.forEach(item -> {
                     item.setToDefaultPickupDelay();
                     wo.spawnEntity(item);

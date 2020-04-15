@@ -5,14 +5,14 @@ import javax.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
-import com.minelittlepony.unicopia.core.enchanting.IPage;
+import com.minelittlepony.unicopia.core.enchanting.Page;
 import com.minelittlepony.unicopia.core.enchanting.IPageOwner;
 import com.minelittlepony.unicopia.core.enchanting.IUnlockEvent;
 import com.minelittlepony.unicopia.core.enchanting.PageState;
 
 import net.minecraft.util.Identifier;
 
-class PageInstance implements IPage {
+class PageInstance implements Page {
 
     int index;
 
@@ -85,13 +85,13 @@ class PageInstance implements IPage {
     }
 
     @Override
-    public IPage next() {
+    public Page next() {
         int i = Math.min(Pages.instance().getTotalPages() - 1, index + 1);
         return Pages.instance().getByIndex(i);
     }
 
     @Override
-    public IPage prev() {
+    public Page prev() {
         if (index <= 0) {
             return this;
         }
@@ -100,12 +100,12 @@ class PageInstance implements IPage {
     }
 
     @Override
-    public int compareTo(IPage o) {
+    public int compareTo(Page o) {
         return getIndex() - o.getIndex();
     }
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof IPage && getName().equals(((IPage)o).getName());
+        return o instanceof Page && getName().equals(((Page)o).getName());
     }
 }

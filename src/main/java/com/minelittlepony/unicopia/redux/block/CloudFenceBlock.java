@@ -11,7 +11,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
@@ -61,12 +60,6 @@ public class CloudFenceBlock extends FenceBlock implements ICloudBlock {
         if (!applyRebound(entity)) {
             super.onEntityLand(world, entity);
         }
-    }
-
-    @Override
-    public boolean canConnect(BlockState state, boolean bool, Direction facing) {
-        return !(state.getBlock() instanceof CloudBanisterBlock)
-                && super.canConnect(state, bool, facing);
     }
 
     @Override

@@ -12,7 +12,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.minelittlepony.unicopia.core.enchanting.IPage;
+import com.minelittlepony.unicopia.core.enchanting.Page;
 import com.minelittlepony.unicopia.core.enchanting.IPageOwner;
 import com.minelittlepony.unicopia.core.enchanting.IUnlockEvent;
 import com.minelittlepony.unicopia.core.enchanting.PageState;
@@ -90,17 +90,17 @@ public class Pages {
     }
 
     @Nullable
-    public IPage getByName(Identifier name) {
+    public Page getByName(Identifier name) {
         return pages.get(name);
     }
 
     @Nullable
-    public IPage getByIndex(int index) {
+    public Page getByIndex(int index) {
         return pagesByIndex.get(index);
     }
 
-    public Stream<IPage> getUnlockablePages(Predicate<IPage> predicate) {
-        return pages.values().stream().map(IPage.class::cast).filter(predicate);
+    public Stream<Page> getUnlockablePages(Predicate<Page> predicate) {
+        return pages.values().stream().map(Page.class::cast).filter(predicate);
     }
 
     public void triggerUnlockEvent(IPageOwner owner, IUnlockEvent event, @Nullable IPageUnlockListener unlockListener) {
@@ -109,7 +109,7 @@ public class Pages {
             .forEach(page -> unlockPage(owner, page, unlockListener));
     }
 
-    public void unlockPage(IPageOwner owner, IPage page, @Nullable IPageUnlockListener unlockListener) {
+    public void unlockPage(IPageOwner owner, Page page, @Nullable IPageUnlockListener unlockListener) {
         if (owner.getPageState(page).isLocked()) {
             if (unlockListener == null || unlockListener.onPageUnlocked(page)) {
                 owner.setPageState(page, PageState.UNREAD);

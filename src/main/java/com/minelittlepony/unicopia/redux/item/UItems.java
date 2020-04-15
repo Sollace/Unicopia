@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.redux.item;
 
+import com.minelittlepony.unicopia.redux.UBlocks;
 import com.minelittlepony.unicopia.redux.UEntities;
-import com.minelittlepony.unicopia.redux.block.UBlocks;
 import com.minelittlepony.unicopia.redux.magic.spells.ScorchSpell;
 import com.minelittlepony.unicopia.redux.toxin.DynamicToxicBlockItem;
 import com.minelittlepony.unicopia.redux.toxin.DynamicToxicItem;
@@ -51,7 +51,6 @@ public class UItems {
     public static final Item cloud_stairs = register(new PredicatedBlockItem(UBlocks.cloud_stairs, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS), INTERACT_WITH_CLOUDS), "cloud_stairs");
 
     public static final Item cloud_fence = register(new PredicatedBlockItem(UBlocks.cloud_fence, new Item.Settings().group(ItemGroup.DECORATIONS), INTERACT_WITH_CLOUDS), "cloud_fence");
-    public static final Item cloud_banister = register(new PredicatedBlockItem(UBlocks.cloud_banister, new Item.Settings().group(ItemGroup.DECORATIONS), INTERACT_WITH_CLOUDS), "cloud_banister");
 
     public static final Item anvil = register(new PredicatedBlockItem(UBlocks.anvil, new Item.Settings().group(ItemGroup.DECORATIONS), INTERACT_WITH_CLOUDS), "cloud_anvil");
 

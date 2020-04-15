@@ -20,7 +20,6 @@ import com.minelittlepony.unicopia.core.magic.IAttachedEffect;
 import com.minelittlepony.unicopia.core.magic.ICaster;
 import com.minelittlepony.unicopia.core.magic.IMagicEffect;
 import com.minelittlepony.unicopia.core.magic.ISuppressable;
-import com.minelittlepony.unicopia.core.mixin.MixinEntity;
 import com.minelittlepony.unicopia.core.util.projectile.ProjectileUtil;
 import com.mojang.authlib.GameProfile;
 
@@ -30,11 +29,12 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.mob.FlyingEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -44,7 +44,6 @@ import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 
 public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISuppressable, IFlyingPredicate, IHeightPredicate {
@@ -248,26 +247,26 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
         to.prevPitch = from.prevPitch;
         to.prevYaw = from.prevYaw;
 
-        to.distanceWalkedOnStepModified = from.distanceWalkedOnStepModified;
-        to.distanceWalkedModified = from.distanceWalkedModified;
-        to.prevDistanceWalkedModified = from.prevDistanceWalkedModified;
+        //to.distanceWalkedOnStepModified = from.distanceWalkedOnStepModified;
+        //to.distanceWalkedModified = from.distanceWalkedModified;
+        //to.prevDistanceWalkedModified = from.prevDistanceWalkedModified;
 
         if (to instanceof LivingEntity) {
             LivingEntity l = (LivingEntity)to;
 
-            l.rotationYawHead = from.rotationYawHead;
-            l.prevRotationYawHead = from.prevRotationYawHead;
-            l.renderYawOffset = from.renderYawOffset;
-            l.prevRenderYawOffset = from.prevRenderYawOffset;
+            l.headYaw = from.headYaw;
+            l.prevHeadYaw = from.prevHeadYaw;
+            //l.renderYawOffset = from.renderYawOffset;
+            //l.prevRenderYawOffset = from.prevRenderYawOffset;
 
-            l.limbSwing = from.limbSwing;
-            l.limbSwingAmount = from.limbSwingAmount;
-            l.prevLimbSwingAmount = from.prevLimbSwingAmount;
+            l.limbDistance = from.limbDistance;
+            l.limbAngle = from.limbAngle;
+            l.lastLimbDistance = from.lastLimbDistance;
 
-            l.swingingHand = from.swingingHand;
-            l.swingProgress = from.swingProgress;
-            l.swingProgressInt = from.swingProgressInt;
-            l.isSwingInProgress = from.isSwingInProgress;
+            l.handSwingProgress = from.handSwingProgress;
+            l.lastHandSwingProgress = from.lastHandSwingProgress;
+            l.handSwingTicks = from.handSwingTicks;
+            l.isHandSwinging = from.isHandSwinging;
 
             l.hurtTime = from.hurtTime;
             l.deathTime = from.deathTime;
@@ -282,11 +281,11 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
             }
         }
 
-        if (to instanceof RangedAttackMob) {
+        /*if (to instanceof RangedAttackMob) {
             ItemStack activeItem = from.getActiveItem();
 
             ((RangedAttackMob)to).setSwingingArms(!activeItem.isEmpty() && activeItem.getUseAction() == UseAction.BOW);
-        }
+        }*/
 
         if (to instanceof TameableEntity) {
             ((TameableEntity)to).setSitting(from.isSneaking());
@@ -310,7 +309,6 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
         return update(caster);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean update(ICaster<?> source) {
         LivingEntity owner = source.getOwner();
@@ -347,12 +345,12 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
         }
 
         entity.noClip = true;
-        entity.updateBlocked = true;
+        //entity.updateBlocked = true;
 
-        entity.getEntityData().setBoolean("disguise", true);
+        //entity.getEntityData().setBoolean("disguise", true);
 
-        if (entity instanceof LivingEntity) {
-            ((LivingEntity)entity).setNoAI(true);
+        if (entity instanceof MobEntity) {
+            ((MobEntity)entity).setAiDisabled(true);
         }
 
         entity.setInvisible(false);
@@ -368,10 +366,10 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
             ShulkerEntity shulker = ((ShulkerEntity)entity);
 
             shulker.yaw = 0;
-            shulker.renderYawOffset = 0;
-            shulker.prevRenderYawOffset = 0;
+            //shulker.renderYawOffset = 0;
+            //shulker.prevRenderYawOffset = 0;
 
-            shulker.setAttachmentPos(null);
+            shulker.setAttachedBlock(null);
 
             if (source.isClient() && source instanceof IPlayer) {
                 IPlayer player = (IPlayer)source;
@@ -380,14 +378,14 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
                 float peekAmount = 0.3F;
 
                 if (!owner.isSneaking()) {
-                    float speed = (float)Math.sqrt(Math.pow(owner.motionX, 2) + Math.pow(owner.motionZ, 2));
+                    double speed = Math.sqrt(Entity.squaredHorizontalLength(owner.getVelocity()));
 
-                    peekAmount = MathHelper.clamp(speed * 30, 0, 1);
+                    peekAmount = (float)MathHelper.clamp(speed * 30, 0, 1);
                 }
 
                 peekAmount = player.getInterpolator().interpolate("peek", peekAmount, 5);
 
-                shulker.setPeekAmount(peekAmount);
+                shulker.setPeekAmount((int)peekAmount);
             }
         }
 
@@ -407,7 +405,7 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
             }
 
             if (entity instanceof PlayerEntity) {
-                entity.getDataTracker().set(MixinEntity.Player.getModelFlag(), owner.getDataTracker().get(MixinEntity.Player.getModelFlag()));
+                entity.getDataTracker().set(Player.getModelBitFlag(), owner.getDataTracker().get(Player.getModelBitFlag()));
             }
 
             if (player.isClientPlayer() && InteractionManager.instance().getViewMode() == 0) {
@@ -482,6 +480,7 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
         }
 
         if (entity instanceof Owned) {
+            @SuppressWarnings("unchecked")
             IPlayer iplayer = SpeciesList.instance().getPlayer(((Owned<PlayerEntity>)entity).getOwner());
 
             return iplayer != null && iplayer.getSpecies().canFly();
@@ -527,5 +526,12 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
         return entity instanceof ShulkerEntity
             || entity instanceof AbstractDecorationEntity
             || entity instanceof FallingBlockEntity;
+    }
+
+    static abstract class Player extends PlayerEntity {
+        public Player() { super(null, null); }
+        static TrackedData<Byte> getModelBitFlag() {
+            return PLAYER_MODEL_BIT_MASK;
+        }
     }
 }

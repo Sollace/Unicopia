@@ -1,21 +1,21 @@
 package com.minelittlepony.unicopia.redux.client.render;
 
-import com.minelittlepony.unicopia.redux.client.render.model.ModelSpellbook;
+import com.minelittlepony.unicopia.redux.client.render.model.SpellbookModel;
 import com.minelittlepony.unicopia.redux.entity.SpellbookEntity;
+import com.mojang.blaze3d.platform.GlStateManager;
 
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.entity.RenderLiving;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.util.Identifier;
 
-public class RenderSpellbook extends RenderLiving<SpellbookEntity> {
+public class RenderSpellbook extends LivingEntityRenderer<SpellbookEntity, SpellbookModel> {
 
     private static final Identifier BLUE = new Identifier("unicopia", "textures/entity/enchanting_table_book_blue.png");
     private static final Identifier NORMAL = new Identifier("unicopia", "textures/entity/enchanting_table_book.png");
 
-    public RenderSpellbook(RenderManager rendermanagerIn) {
-        super(rendermanagerIn, new ModelSpellbook(), 0);
+    public RenderSpellbook(EntityRenderDispatcher rendermanagerIn) {
+        super(rendermanagerIn, new SpellbookModel(), 0);
     }
 
     @Override
@@ -40,20 +40,20 @@ public class RenderSpellbook extends RenderLiving<SpellbookEntity> {
         if (first_page_rot > 1) first_page_rot = 1;
         if (second_page_rot > 1) second_page_rot = 1;
 
-        if (!((SpellbookEntity)entity).getIsOpen()) {
-            GlStateManager.translate(0, 1.44f, 0);
+        if (!entity.getIsOpen()) {
+            GlStateManager.translatef(0, 1.44f, 0);
         } else {
-            GlStateManager.translate(0, 1.2f + breath, 0);
+            GlStateManager.translatef(0, 1.2f + breath, 0);
         }
         GlStateManager.pushMatrix();
 
-        if (!((SpellbookEntity)entity).getIsOpen()) {
+        if (!entity.getIsOpen()) {
             first_page_rot = second_page_rot = open_angle = 0;
-            GlStateManager.rotate(90.0F, 1.0F, 0.0F, 0.0F);
-            GlStateManager.rotate(90.0F, 0.0F, 0.0F, 1.0F);
-            GlStateManager.translate(-0.25f, 0, 0);
+            GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotatef(90.0F, 0.0F, 0.0F, 1.0F);
+            GlStateManager.translatef(-0.25f, 0, 0);
         } else {
-            GlStateManager.rotate(-60.0F, 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotatef(-60.0F, 0.0F, 0.0F, 1.0F);
         }
 
         GlStateManager.enableCull();

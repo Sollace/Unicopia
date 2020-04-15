@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.redux.item;
 
+import com.minelittlepony.unicopia.redux.UBlocks;
 import com.minelittlepony.unicopia.redux.block.StickBlock;
-import com.minelittlepony.unicopia.redux.block.UBlocks;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
