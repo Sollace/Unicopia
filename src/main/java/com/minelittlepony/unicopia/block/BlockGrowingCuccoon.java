@@ -1,32 +1,38 @@
 package com.minelittlepony.unicopia.block;
 
-import java.util.List;
 import java.util.Random;
-
-import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 
+import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.LadderBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.item.Item;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class BlockGrowingCuccoon extends Block {
@@ -34,57 +40,51 @@ public class BlockGrowingCuccoon extends Block {
     public static final IntProperty AGE = IntProperty.of("age", 0, 7);
     public static final EnumProperty<Shape> SHAPE = EnumProperty.of("shape", Shape.class);
 
-    public static final Box[] SHAFTS = new Box[] {
-            new Box(7/16F, 0, 7/16F, 9/16F, 1, 7/16F),
-            new Box(6/16F, 0, 6/16F, 10/16F, 1, 10/16F),
-            new Box(5/16F, 0, 5/16F, 11/16F, 1, 11/16F),
-            new Box(4/16F, 0, 4/16F, 12/16F, 1, 12/16F)
+    public static final VoxelShape[] SHAFTS = new VoxelShape[] {
+            Block.createCuboidShape(7, 0, 7, 9, 16, 7),
+            Block.createCuboidShape(6, 0, 6, 10, 16, 10),
+            Block.createCuboidShape(5, 0, 5, 11, 16, 11),
+            Block.createCuboidShape(4, 0, 4, 12, 16, 12)
     };
-    public static final Box[] BULBS = new Box[] {
-            new Box(6/16F, 1/16F, 6/16F, 10/16F, 8/16F, 10/16F),
-            new Box(4/16F, 0, 4/16F, 12/16F, 9/16F, 12/16F),
-            new Box(3/16F, 0, 3/16F, 13/16F, 10/16F, 13/16F),
-            new Box(2/16F, 0, 2/16F, 14/16F, 12/16F, 14/16F),
+    public static final VoxelShape[] BULBS = new VoxelShape[] {
+            Block.createCuboidShape(6, 1, 6, 10, 8, 10),
+            Block.createCuboidShape(4, 0, 4, 12, 9, 12),
+            Block.createCuboidShape(3, 0, 3, 13, 10, 13),
+            Block.createCuboidShape(2, 0, 2, 14, 12, 14),
     };
 
+    @SuppressWarnings("deprecation")
     public BlockGrowingCuccoon() {
-        super(UMaterials.HIVE);
+        super(FabricBlockSettings.of(UMaterials.HIVE)
+                .ticksRandomly()
+                .breakInstantly()
+                .lightLevel(9)
+                .slipperiness(0.5F)
+                .sounds(BlockSoundGroup.SLIME)
+                .breakByTool(net.fabricmc.fabric.api.tools.FabricToolTags.SHOVELS, 2)
+                .build()
+        );
 
-        setTranslationKey(name);
-        setRegistryName(domain, name);
-        setResistance(0);
-        setSoundType(SoundType.SLIME);
-        setDefaultSlipperiness(0.5F);
-        setHarvestLevel("shovel", 2);
-        setLightLevel(0.6F);
-        setLightOpacity(0);
-
-        useNeighborBrightness = true;
-
-        setDefaultState(getBlockState().getBaseState()
+        setDefaultState(stateFactory.getDefaultState()
                 .with(AGE, 0)
                 .with(SHAPE, Shape.BULB));
     }
 
+    // TODO: loot table
+    /*
     @Override
-    public boolean isTranslucent(BlockState state) {
+    public int quantityDropped(BlockState state, int fortune, Random random) {
+        return random.nextInt(3) == 0 ? state.get(AGE) : 0;
+    }
+
+    @Override
+    public Item getItemDropped(BlockState state, Random rand, int fortune) {
+        return Items.SLIME_BALL;
+    }*/
+
+    @Override
+    public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
         return true;
-    }
-
-    @Override
-    public boolean isOpaqueCube(BlockState state) {
-        return false;
-    }
-
-    @Override
-    //Push player out of block
-    public boolean isFullCube(BlockState state) {
-        return false;
-    }
-
-    @Override
-    public boolean isNormalCube(BlockState state) {
-        return false;
     }
 
     @Override
@@ -92,19 +92,13 @@ public class BlockGrowingCuccoon extends Block {
         return BlockRenderLayer.TRANSLUCENT;
     }
 
-    @Deprecated
     @Override
-    public Box getCollisionBoundingBox(BlockState state, BlockView world, BlockPos pos) {
-        return getBoundingBox(state, world, pos);
+    public Block.OffsetType getOffsetType() {
+        return Block.OffsetType.XZ;
     }
 
     @Override
-    public Block.EnumOffsetType getOffsetType() {
-        return Block.EnumOffsetType.XZ;
-    }
-
-    @Override
-    public void updateTick(World world, BlockPos pos, BlockState state, Random rand) {
+    public void onScheduledTick(BlockState state, World world, BlockPos pos, Random rand) {
         if (!checkSupport(world, pos)) {
             breakConnected(world, pos);
             return;
@@ -137,12 +131,10 @@ public class BlockGrowingCuccoon extends Block {
                 }
             }
         }
-
-        world.scheduleUpdate(pos, this, tickRate(world));
     }
 
     protected void breakConnected(World world, BlockPos pos) {
-        world.destroyBlock(pos, true);
+        world.breakBlock(pos, true);
 
         pos = pos.down();
         if (world.getBlockState(pos).getBlock() == this) {
@@ -171,65 +163,48 @@ public class BlockGrowingCuccoon extends Block {
     }
 
     @Override
-    public int quantityDropped(BlockState state, int fortune, Random random) {
-        return random.nextInt(3) == 0 ? state.get(AGE) : 0;
+    public boolean canPlaceAt(BlockState state, ViewableWorld world, BlockPos pos) {
+        return super.canPlaceAt(state, world, pos) && checkSupport(world, pos);
     }
 
     @Override
-    public Item getItemDropped(BlockState state, Random rand, int fortune) {
-        return Items.SLIME_BALL;
-    }
-
-    @Override
-    public boolean canPlaceBlockAt(World world, BlockPos pos) {
-        return super.canPlaceBlockAt(world, pos) && checkSupport(world, pos);
-    }
-
-    @Override
-    public void onNeighborChange(BlockView world, BlockPos pos, BlockPos neighbor) {
-        if (world instanceof World && !checkSupport(world, pos)) {
-            breakConnected((World)world, pos);
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block otherBlock, BlockPos otherPos, boolean change) {
+        super.neighborUpdate(state, world, pos, otherBlock, otherPos, change);
+        if (!checkSupport(world, pos)) {
+            breakConnected(world, pos);
         }
     }
 
     @Override
-    public void breakBlock(World world, BlockPos pos, BlockState state) {
-        world.notifyNeighborsOfStateChange(pos, this, true);
-        super.breakBlock(world, pos, state);
+    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState replacement, boolean boolean_1) {
+        world.updateNeighborsAlways(pos, this);
+        super.onBlockRemoved(state, world, pos, replacement, boolean_1);
     }
 
     @Override
-    public void onBlockAdded(World world, BlockPos pos, BlockState state) {
-        world.scheduleUpdate(pos, this, 10);
-    }
-
-    @Override
-    public void onEntityCollision(World world, BlockPos pos, BlockState state, Entity entity) {
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (entity instanceof LivingEntity && !entity.removed) {
             LivingEntity living = (LivingEntity)entity;
 
             if (!EquinePredicates.BUGGY.test(living) && living.getHealth() > 0) {
                 living.damage(MagicalDamageSource.ACID, 1);
-                living.setInWeb();
+                living.slowMovement(state, new Vec3d(0.25D, 0.05000000074505806D, 0.25D));
 
                 if (!world.isClient) {
                     if (living.getHealth() <= 0) {
                         living.dropItem(Items.BONE, 3);
 
                         if (living instanceof PlayerEntity) {
-                            ItemStack skull = new ItemStack(Items.SKULL, 1);
-
-                            if (world.rand.nextInt(13000) == 0) {
+                            if (world.random.nextInt(13000) == 0) {
+                                ItemStack skull = new ItemStack(Items.PLAYER_HEAD);
                                 PlayerEntity player = (PlayerEntity)living;
 
-                                skull.setTagCompound(new CompoundTag());
-                                skull.getTagCompound().setTag("SkullOwner", NBTUtil.writeGameProfile(new CompoundTag(), player.getGameProfile()));
-                                skull.setItemDamage(3);
+                                skull.setTag(new CompoundTag());
+                                skull.getTag().put("SkullOwner", TagHelper.serializeProfile(new CompoundTag(), player.getGameProfile()));
+                                player.dropItem(skull, true);
                             } else {
-                                living.dropItem(Items.SKULL, 1);
+                                living.dropItem(Items.SKELETON_SKULL, 1);
                             }
-
-                            living.entityDropItem(skull, 0);
                         }
                     }
                 }
@@ -239,7 +214,7 @@ public class BlockGrowingCuccoon extends Block {
 
     public boolean checkSupport(BlockView world, BlockPos pos) {
 
-        if (PosHelper.some(pos, p -> !world.isAirBlock(p), Direction.HORIZONTALS)) {
+        if (PosHelper.some(pos, p -> !world.getBlockState(p).isAir(), Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST)) {
             return false;
         }
 
@@ -251,48 +226,26 @@ public class BlockGrowingCuccoon extends Block {
             return true;
         }
 
-        switch (above.getBlockFaceShape(world, pos, Direction.DOWN)) {
-            case SOLID:
-            case CENTER:
-            case CENTER_BIG:
-            case CENTER_SMALL: return true;
-            default: return false;
-        }
+        return Block.isFaceFullSquare(above.getCollisionShape(world, pos), Direction.DOWN);
     }
 
-    @Deprecated
+
     @Override
-    public void addCollisionBoxToList(BlockState state, World world, BlockPos pos, Box entityBox, List<Box> collidingBoxes, @Nullable Entity entity, boolean isActualState) {
-        if (!isActualState) {
-            state = state.getActualState(world, pos);
-        }
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
+        Vec3d offset = getOffsetPos(state, view, pos);
 
-        int age = state.get(AGE) / 2;
-
-        Vec3d offset = state.getOffset(world, pos);
-
-        addCollisionBoxToList(pos, entityBox, collidingBoxes, SHAFTS[age % SHAFTS.length].offset(offset));
 
         if (state.get(SHAPE) == Shape.BULB) {
-            addCollisionBoxToList(pos, entityBox, collidingBoxes, BULBS[age % BULBS.length].offset(offset));
-        }
-    }
-
-    @Deprecated
-    @Override
-    public Box getBoundingBox(BlockState state, BlockView source, BlockPos pos) {
-        state = state.getActualState(source, pos);
-
-        if (state.get(SHAPE) == Shape.BULB) {
-            return BULBS[state.get(AGE) / 2].offset(state.getOffset(source, pos));
+            return BULBS[state.get(AGE) / 2].offset(offset.x, offset.y, offset.z);
         }
 
-        return SHAFTS[state.get(AGE) / 2].offset(state.getOffset(source, pos));
+        return SHAFTS[state.get(AGE) / 2].offset(offset.x, offset.y, offset.z);
     }
 
+
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, AGE, SHAPE);
+    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+        builder.add(AGE, SHAPE);
     }
 
     // TODO: isLadder
@@ -306,9 +259,10 @@ public class BlockGrowingCuccoon extends Block {
         if (state.get(SHAPE) == Shape.BULB) {
             if (rand.nextInt(8) == 0) {
 
+                Vec3d offset = state.getOffsetPos(world, pos).add(pos.getX(), pos.getY(), pos.getZ());
                 Box bounds = BULBS[state.get(AGE) / 2]
-                        .offset(pos)
-                        .offset(state.getOffsetPos(world, pos));
+                        .offset(offset.x, offset.y, offset.z)
+                        .getBoundingBox();
 
                 double x = bounds.minX + (bounds.maxX - bounds.minX) * rand.nextFloat();
                 double y = bounds.minY;
