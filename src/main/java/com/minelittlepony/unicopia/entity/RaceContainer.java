@@ -7,6 +7,6 @@ import net.minecraft.entity.Entity;
  *
  * @param <T> The type of owner
  */
-public interface RaceContainer<T extends Entity> extends IEntity {
+public interface RaceContainer<T extends Entity> extends Ponylike {
 
 }

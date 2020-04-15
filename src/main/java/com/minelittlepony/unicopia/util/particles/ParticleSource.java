@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.util.particles;
 
 import java.util.function.Consumer;
 
-import com.minelittlepony.unicopia.util.shape.IShape;
+import com.minelittlepony.unicopia.util.shape.Shape;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleEffect;
@@ -27,7 +27,7 @@ public interface ParticleSource {
         ParticleUtils.spawnParticles(particleId, getEntity(), count);
     }
 
-    default void spawnParticles(IShape area, int count, Consumer<Vec3d> particleSpawner) {
+    default void spawnParticles(Shape area, int count, Consumer<Vec3d> particleSpawner) {
         Vec3d pos = getOriginVector();
 
         area.randomPoints(count, getWorld().random).stream()

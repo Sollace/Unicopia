@@ -6,11 +6,11 @@ import net.minecraft.util.math.Vec3d;
 
 public class PlayerCamera extends MotionCompositor {
 
-    private final IPlayer player;
+    private final Pony player;
 
     private double baseRoll = 0;
 
-    public PlayerCamera(IPlayer player) {
+    public PlayerCamera(Pony player) {
         this.player = player;
     }
 

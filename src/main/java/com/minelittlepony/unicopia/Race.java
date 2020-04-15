@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.google.common.base.Strings;
 
+import net.minecraft.entity.player.PlayerEntity;
+
 public enum Race {
     /**
      * The default, unset race.
@@ -65,6 +67,28 @@ public enum Race {
     public String getTranslationKey() {
         return String.format("unicopia.race.%s", name().toLowerCase());
     }
+
+
+    public boolean isPermitted(PlayerEntity sender) {
+        if (isOp() && (sender == null || !sender.abilities.creativeMode)) {
+            return false;
+        }
+
+        return isDefault() || Config.getInstance().getSpeciesWhiteList().isEmpty() || Config.getInstance().getSpeciesWhiteList().contains(this);
+    }
+
+    public Race validate(PlayerEntity sender) {
+        if (!isPermitted(sender)) {
+            if (this == EARTH) {
+                return HUMAN;
+            }
+
+            return EARTH.validate(sender);
+        }
+
+        return this;
+    }
+
 
     public boolean equals(String s) {
         return name().equalsIgnoreCase(s)

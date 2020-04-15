@@ -7,10 +7,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.minelittlepony.jumpingcastle.api.Channel;
 import com.minelittlepony.jumpingcastle.api.Message;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.Abilities;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
@@ -38,7 +37,7 @@ public class MsgPlayerAbility implements Message, Message.Handler<MsgPlayerAbili
 
     private <T extends Ability.IData> void apply(Ability<T> power, Channel channel) {
         MinecraftServer server = channel.getServer();
-        IPlayer player = SpeciesList.instance().getPlayer(server.getPlayerManager().getPlayer(senderId));
+        Pony player = Pony.of(server.getPlayerManager().getPlayer(senderId));
         if (player == null) {
             return;
         }

@@ -1,23 +1,20 @@
 package com.minelittlepony.unicopia.entity.player;
 
-import java.util.Map;
-
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UEffects;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.UnicopiaCore;
 import com.minelittlepony.unicopia.ability.AbilityReceiver;
-import com.minelittlepony.unicopia.enchanting.PageState;
+import com.minelittlepony.unicopia.enchanting.PageOwner;
 import com.minelittlepony.unicopia.entity.FlightControl;
 import com.minelittlepony.unicopia.entity.Trap;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.IAttachedEffect;
-import com.minelittlepony.unicopia.magic.IHeldEffect;
-import com.minelittlepony.unicopia.magic.IMagicEffect;
-import com.minelittlepony.unicopia.magic.IMagicalItem;
+import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
+import com.minelittlepony.unicopia.magic.HeldMagicEffect;
+import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.MagicalItem;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
@@ -42,13 +39,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 
-public class PlayerCapabilities implements IPlayer {
+public class PlayerImpl implements Pony {
 
     private static final TrackedData<Integer> PLAYER_RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Float> ENERGY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -81,7 +77,7 @@ public class PlayerCapabilities implements IPlayer {
 
     private boolean invisible = false;
 
-    public PlayerCapabilities(PlayerEntity player) {
+    public PlayerImpl(PlayerEntity player) {
         this.entity = player;
 
         player.getDataTracker().startTracking(PLAYER_RACE, Race.EARTH.ordinal());
@@ -102,7 +98,7 @@ public class PlayerCapabilities implements IPlayer {
 
     @Override
     public void setSpecies(Race race) {
-        race = SpeciesList.instance().validate(race, entity);
+        race = race.validate(entity);
 
         entity.getDataTracker().set(PLAYER_RACE, race.ordinal());
 
@@ -145,7 +141,7 @@ public class PlayerCapabilities implements IPlayer {
 
     @Nullable
     @Override
-    public IHeldEffect getHeldEffect(ItemStack stack) {
+    public HeldMagicEffect getHeldEffect(ItemStack stack) {
 
         if (!getSpecies().canCast()) {
             heldEffectDelegate.set(null);
@@ -153,7 +149,7 @@ public class PlayerCapabilities implements IPlayer {
             return null;
         }
 
-        IHeldEffect heldEffect = heldEffectDelegate.get(IHeldEffect.class, true);
+        HeldMagicEffect heldEffect = heldEffectDelegate.get(HeldMagicEffect.class, true);
 
         if (heldEffect == null || !heldEffect.getName().equals(SpellRegistry.getKeyFromStack(stack))) {
             heldEffect = SpellRegistry.instance().getHeldFrom(stack);
@@ -191,6 +187,11 @@ public class PlayerCapabilities implements IPlayer {
     @Override
     public AbilityReceiver getAbilities() {
         return powers;
+    }
+
+    @Override
+    public PageOwner getPages() {
+        return pageStates;
     }
 
     @Override
@@ -247,7 +248,7 @@ public class PlayerCapabilities implements IPlayer {
         gravity.onUpdate();
 
         if (hasEffect()) {
-            IAttachedEffect effect = getEffect(IAttachedEffect.class, true);
+            AttachedMagicEffect effect = getEffect(AttachedMagicEffect.class, true);
 
             if (effect != null) {
                 if (entity.getEntityWorld().isClient()) {
@@ -262,10 +263,10 @@ public class PlayerCapabilities implements IPlayer {
 
         ItemStack stack = entity.getStackInHand(Hand.MAIN_HAND);
 
-        IHeldEffect effect = getHeldEffect(stack);
+        HeldMagicEffect effect = getHeldEffect(stack);
 
         if (effect != null) {
-            Affinity affinity = stack.getItem() instanceof IMagicalItem ? ((IMagicalItem)stack.getItem()).getAffinity(stack) : Affinity.NEUTRAL;
+            Affinity affinity = stack.getItem() instanceof MagicalItem ? ((MagicalItem)stack.getItem()).getAffinity(stack) : Affinity.NEUTRAL;
 
             effect.updateInHand(this, affinity);
         }
@@ -299,7 +300,7 @@ public class PlayerCapabilities implements IPlayer {
     @Override
     public boolean onProjectileImpact(ProjectileEntity projectile) {
         if (hasEffect()) {
-            IMagicEffect effect = getEffect();
+            MagicEffect effect = getEffect();
             if (!effect.isDead() && effect.handleProjectileImpact(projectile)) {
                 return true;
             }
@@ -346,7 +347,7 @@ public class PlayerCapabilities implements IPlayer {
             return Either.left(SleepFailureReason.OTHER_PROBLEM);
         }
 
-        if (findAllSpellsInRange(10).anyMatch(c -> c instanceof IPlayer && ((IPlayer)c).getInventory().matches(UTags.CURSED_ARTEFACTS))) {
+        if (findAllSpellsInRange(10).anyMatch(c -> c instanceof Pony && ((Pony)c).getInventory().matches(UTags.CURSED_ARTEFACTS))) {
             return Either.left(SleepFailureReason.NOT_SAFE);
         }
 
@@ -391,7 +392,7 @@ public class PlayerCapabilities implements IPlayer {
         compound.put("powers", powers.toNBT());
         compound.put("gravity", gravity.toNBT());
 
-        IMagicEffect effect = getEffect();
+        MagicEffect effect = getEffect();
 
         if (effect != null) {
             compound.put("effect", SpellRegistry.instance().serializeEffectToNBT(effect));
@@ -415,13 +416,13 @@ public class PlayerCapabilities implements IPlayer {
     }
 
     @Override
-    public void copyFrom(IPlayer oldPlayer) {
+    public void copyFrom(Pony oldPlayer) {
         setEffect(oldPlayer.getEffect());
         setSpecies(oldPlayer.getSpecies());
     }
 
     @Override
-    public void setEffect(@Nullable IMagicEffect effect) {
+    public void setEffect(@Nullable MagicEffect effect) {
         effectDelegate.set(effect);
 
         sendCapabilities(true);
@@ -434,7 +435,7 @@ public class PlayerCapabilities implements IPlayer {
 
     @Nullable
     @Override
-    public <T extends IMagicEffect> T getEffect(@Nullable Class<T> type, boolean update) {
+    public <T extends MagicEffect> T getEffect(@Nullable Class<T> type, boolean update) {
         return effectDelegate.get(type, update);
     }
 
@@ -454,11 +455,6 @@ public class PlayerCapabilities implements IPlayer {
 
     @Override
     public void setCurrentLevel(int level) {
-    }
-
-    @Override
-    public Map<Identifier, PageState> getPageStates() {
-        return pageStates.getPageStates();
     }
 
 }

@@ -6,15 +6,15 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.IDispenceable;
-import com.minelittlepony.unicopia.magic.IUseable;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.DispenceableMagicEffect;
+import com.minelittlepony.unicopia.magic.Useable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
-import com.minelittlepony.unicopia.util.collection.IStateMapping;
+import com.minelittlepony.unicopia.util.collection.StateMapping;
 import com.minelittlepony.unicopia.util.collection.StateMapList;
-import com.minelittlepony.unicopia.util.shape.IShape;
+import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.Block;
@@ -41,12 +41,12 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class FireSpell extends AbstractSpell.RangedAreaSpell implements IUseable, IDispenceable {
+public class FireSpell extends AbstractSpell.RangedAreaSpell implements Useable, DispenceableMagicEffect {
 
     public final StateMapList affected = new StateMapList();
 
-    private static final IShape visual_effect_region = new Sphere(false, 0.5);
-    private static final IShape effect_range = new Sphere(false, 4);
+    private static final Shape visual_effect_region = new Sphere(false, 0.5);
+    private static final Shape effect_range = new Sphere(false, 4);
 
     public FireSpell() {
         affected.removeBlock(s -> s.getBlock() == Blocks.SNOW || s.getBlock() == Blocks.SNOW_BLOCK);
@@ -60,7 +60,7 @@ public class FireSpell extends AbstractSpell.RangedAreaSpell implements IUseable
         affected.replaceBlock(Blocks.INFESTED_MOSSY_STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
         affected.replaceBlock(Blocks.PODZOL, Blocks.COARSE_DIRT);
         affected.setProperty(Blocks.FARMLAND, FarmlandBlock.MOISTURE, 0);
-        affected.add(IStateMapping.build(
+        affected.add(StateMapping.build(
                 s -> s.getBlock() == Blocks.DIRT,
                 s -> (Math.random() <= 0.15 ? Blocks.COARSE_DIRT.getDefaultState() : s)));
     }
@@ -81,12 +81,12 @@ public class FireSpell extends AbstractSpell.RangedAreaSpell implements IUseable
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
         return false;
     }
 
     @Override
-    public void render(ICaster<?> source) {
+    public void render(Caster<?> source) {
         source.spawnParticles(visual_effect_region, source.getCurrentLevel() * 6, pos -> {
             source.addParticle(ParticleTypes.LARGE_SMOKE, pos, Vec3d.ZERO);
         });

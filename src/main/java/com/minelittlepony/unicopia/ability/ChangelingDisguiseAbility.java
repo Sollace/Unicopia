@@ -6,10 +6,9 @@ import javax.annotation.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.entity.InAnimate;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -42,12 +41,12 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
 
     @Nullable
     @Override
-    public Hit tryActivate(IPlayer player) {
+    public Hit tryActivate(Pony player) {
         return new Hit();
     }
 
     @Override
-    public void apply(IPlayer iplayer, Hit data) {
+    public void apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.getOwner();
         HitResult trace = VecHelper.getObjectMouseOver(player, 10, 1);
 
@@ -65,7 +64,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
             looked = ((EntityHitResult)trace).getEntity();
 
             if (looked instanceof PlayerEntity) {
-                looked = SpeciesList.instance().getPlayer((PlayerEntity)looked)
+                looked = Pony.of((PlayerEntity)looked)
                         .getEffect(DisguiseSpell.class)
                         .map(DisguiseSpell::getDisguise)
                         .orElse(looked);
@@ -90,13 +89,13 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
     }
 
     @Override
-    public void preApply(IPlayer player) {
+    public void preApply(Pony player) {
         player.addEnergy(2);
         player.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
     }
 
     @Override
-    public void postApply(IPlayer player) {
+    public void postApply(Pony player) {
         player.setEnergy(0);
         player.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
     }

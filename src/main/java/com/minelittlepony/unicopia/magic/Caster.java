@@ -21,15 +21,15 @@ import net.minecraft.world.World;
 /**
  * Interface for any magically capable entities that can cast and persist spells.
  */
-public interface ICaster<E extends LivingEntity> extends Owned<E>, ILevelled, IAffine, IMagicals, ParticleSource {
+public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affine, IMagicals, ParticleSource {
 
-    void setEffect(@Nullable IMagicEffect effect);
+    void setEffect(@Nullable MagicEffect effect);
 
     /**
      * Gets the active effect for this caster.
      */
     @Nullable
-    default IMagicEffect getEffect(boolean update) {
+    default MagicEffect getEffect(boolean update) {
         return getEffect(null, update);
     }
 
@@ -38,19 +38,19 @@ public interface ICaster<E extends LivingEntity> extends Owned<E>, ILevelled, IA
      * Returns null if no such effect exists for this caster.
      */
     @Nullable
-    <T extends IMagicEffect> T getEffect(@Nullable Class<T> type, boolean update);
+    <T extends MagicEffect> T getEffect(@Nullable Class<T> type, boolean update);
 
     /**
      * Gets the active effect for this caster updating it if needed.
      */
     @Nullable
-    default IMagicEffect getEffect() {
+    default MagicEffect getEffect() {
         return getEffect(true);
     }
 
     @SuppressWarnings("unchecked")
-    default <T extends IMagicEffect> Optional<T> getEffect(Class<T> type) {
-        IMagicEffect effect = getEffect();
+    default <T extends MagicEffect> Optional<T> getEffect(Class<T> type) {
+        MagicEffect effect = getEffect();
 
         if (effect == null || effect.isDead() || !type.isAssignableFrom(effect.getClass())) {
             return Optional.empty();
@@ -122,11 +122,11 @@ public interface ICaster<E extends LivingEntity> extends Owned<E>, ILevelled, IA
         return getOwner().getHealth() > 0;
     }
 
-    default Stream<ICaster<?>> findAllSpellsInRange(double radius) {
+    default Stream<Caster<?>> findAllSpellsInRange(double radius) {
         return CasterUtils.findAllSpellsInRange(this, radius);
     }
 
-    default Stream<ICaster<?>> findAllSpellsInRange(Box bb) {
+    default Stream<Caster<?>> findAllSpellsInRange(Box bb) {
         return CasterUtils.findAllSpellsInRange(this, bb);
     }
 

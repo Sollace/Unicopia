@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
  * Interface for things that own and can unlock pages.
  *
  */
-public interface IPageOwner extends Transmittable {
+public interface PageOwner extends Transmittable {
 
     @Nonnull
     Map<Identifier, PageState> getPageStates();

@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
-import com.minelittlepony.unicopia.magic.ICaster;
+import com.minelittlepony.unicopia.magic.Caster;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
@@ -43,7 +43,7 @@ public abstract class AbstractAttachableSpell extends AbstractSpell {
     }
 
     @Nullable
-    protected SpellcastEntity getTarget(ICaster<?> source) {
+    protected SpellcastEntity getTarget(Caster<?> source) {
         if (targettedEntity == null && targettedEntityId != null) {
             Entity e = ((ServerWorld)source.getWorld()).getEntity(targettedEntityId);
 
@@ -63,7 +63,7 @@ public abstract class AbstractAttachableSpell extends AbstractSpell {
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
 
         if (source.getWorld() instanceof ServerWorld) {
             if (searching) {
@@ -76,7 +76,7 @@ public abstract class AbstractAttachableSpell extends AbstractSpell {
         return !isDead();
     }
 
-    protected void searchForTarget(ICaster<?> source) {
+    protected void searchForTarget(Caster<?> source) {
         BlockPos origin = source.getOrigin();
 
         source.getWorld().getEntities(source.getEntity(), getSearchArea(source), e -> {
@@ -88,7 +88,7 @@ public abstract class AbstractAttachableSpell extends AbstractSpell {
                 .ifPresent(this::setTarget);
     }
 
-    protected abstract Box getSearchArea(ICaster<?> source);
+    protected abstract Box getSearchArea(Caster<?> source);
 
     protected abstract boolean canTargetEntity(SpellcastEntity e);
 

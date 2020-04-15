@@ -5,15 +5,15 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.UMaterials;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.IDispenceable;
-import com.minelittlepony.unicopia.magic.IUseable;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.DispenceableMagicEffect;
+import com.minelittlepony.unicopia.magic.Useable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
-import com.minelittlepony.unicopia.util.collection.IStateMapping;
+import com.minelittlepony.unicopia.util.collection.StateMapping;
 import com.minelittlepony.unicopia.util.collection.StateMapList;
-import com.minelittlepony.unicopia.util.shape.IShape;
+import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.Block;
@@ -35,18 +35,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class IceSpell extends AbstractSpell.RangedAreaSpell implements IUseable, IDispenceable {
+public class IceSpell extends AbstractSpell.RangedAreaSpell implements Useable, DispenceableMagicEffect {
 
     public final StateMapList affected = new StateMapList();
 
     public IceSpell() {
-        affected.add(IStateMapping.build(
+        affected.add(StateMapping.build(
                 s -> s.getMaterial() == Material.WATER,
                 s -> Blocks.ICE.getDefaultState()));
-        affected.add(IStateMapping.build(
+        affected.add(StateMapping.build(
                 s -> s.getMaterial() == Material.LAVA,
                 s -> Blocks.OBSIDIAN.getDefaultState()));
-        affected.add(IStateMapping.build(
+        affected.add(StateMapping.build(
                 s -> s.getBlock() == Blocks.SNOW,
                 s -> {
                     s = s.cycle(SnowBlock.LAYERS);
@@ -61,7 +61,7 @@ public class IceSpell extends AbstractSpell.RangedAreaSpell implements IUseable,
     }
 
     private final int rad = 3;
-    private final IShape effect_range = new Sphere(false, rad);
+    private final Shape effect_range = new Sphere(false, rad);
 
     @Override
     public String getName() {
@@ -79,12 +79,12 @@ public class IceSpell extends AbstractSpell.RangedAreaSpell implements IUseable,
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
         return false;
     }
 
     @Override
-    public void render(ICaster<?> source) {
+    public void render(Caster<?> source) {
     }
 
     @Override

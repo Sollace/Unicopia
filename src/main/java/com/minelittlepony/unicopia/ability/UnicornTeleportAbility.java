@@ -4,7 +4,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UParticles;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.block.Block;
@@ -40,12 +40,12 @@ public class UnicornTeleportAbility implements Ability<Ability.Pos> {
     }
 
     @Override
-    public int getWarmupTime(IPlayer player) {
+    public int getWarmupTime(Pony player) {
         return 20;
     }
 
     @Override
-    public int getCooldownTime(IPlayer player) {
+    public int getCooldownTime(Pony player) {
         return 50;
     }
 
@@ -55,7 +55,7 @@ public class UnicornTeleportAbility implements Ability<Ability.Pos> {
     }
 
     @Override
-    public Pos tryActivate(IPlayer player) {
+    public Pos tryActivate(Pony player) {
         HitResult ray = VecHelper.getObjectMouseOver(player.getOwner(), 100, 1);
 
         World w = player.getWorld();
@@ -115,7 +115,7 @@ public class UnicornTeleportAbility implements Ability<Ability.Pos> {
     }
 
     @Override
-    public void apply(IPlayer iplayer, Pos data) {
+    public void apply(Pony iplayer, Pos data) {
         iplayer.getWorld().playSound(null, iplayer.getOrigin(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
 
         PlayerEntity player = iplayer.getOwner();
@@ -164,13 +164,13 @@ public class UnicornTeleportAbility implements Ability<Ability.Pos> {
     }
 
     @Override
-    public void preApply(IPlayer player) {
+    public void preApply(Pony player) {
         player.addExertion(3);
         player.spawnParticles(UParticles.UNICORN_MAGIC, 5);
     }
 
     @Override
-    public void postApply(IPlayer player) {
+    public void postApply(Pony player) {
         player.spawnParticles(UParticles.UNICORN_MAGIC, 5);
     }
 }

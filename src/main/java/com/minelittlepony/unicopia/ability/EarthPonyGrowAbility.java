@@ -4,7 +4,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UParticles;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.block.BlockState;
@@ -33,12 +33,12 @@ public class EarthPonyGrowAbility implements Ability<Ability.Pos> {
     }
 
     @Override
-    public int getWarmupTime(IPlayer player) {
+    public int getWarmupTime(Pony player) {
         return 10;
     }
 
     @Override
-    public int getCooldownTime(IPlayer player) {
+    public int getCooldownTime(Pony player) {
         return 50;
     }
 
@@ -48,7 +48,7 @@ public class EarthPonyGrowAbility implements Ability<Ability.Pos> {
     }
 
     @Override
-    public Pos tryActivate(IPlayer player) {
+    public Pos tryActivate(Pony player) {
         HitResult ray = VecHelper.getObjectMouseOver(player.getOwner(), 3, 1);
 
         if (ray instanceof BlockHitResult && ray.getType() == HitResult.Type.BLOCK) {
@@ -64,7 +64,7 @@ public class EarthPonyGrowAbility implements Ability<Ability.Pos> {
     }
 
     @Override
-    public void apply(IPlayer player, Pos data) {
+    public void apply(Pony player, Pos data) {
         int count = 0;
 
         for (BlockPos pos : BlockPos.iterate(
@@ -91,7 +91,7 @@ public class EarthPonyGrowAbility implements Ability<Ability.Pos> {
     }
 
     @Override
-    public void preApply(IPlayer player) {
+    public void preApply(Pony player) {
         player.addExertion(3);
 
         if (player.getWorld().isClient()) {
@@ -100,7 +100,7 @@ public class EarthPonyGrowAbility implements Ability<Ability.Pos> {
     }
 
     @Override
-    public void postApply(IPlayer player) {
+    public void postApply(Pony player) {
 
     }
 }

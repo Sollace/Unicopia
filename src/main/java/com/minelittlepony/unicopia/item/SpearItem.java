@@ -3,9 +3,9 @@ package com.minelittlepony.unicopia.item;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.entity.SpearEntity;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.util.projectile.IAdvancedProjectile;
-import com.minelittlepony.unicopia.util.projectile.ITossableItem;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.util.projectile.AdvancedProjectile;
+import com.minelittlepony.unicopia.util.projectile.TossableItem;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EquipmentSlot;
@@ -21,7 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 
-public class SpearItem extends Item implements ITossableItem {
+public class SpearItem extends Item implements TossableItem {
 
     public SpearItem(Settings settings) {
         super(settings);
@@ -84,18 +84,18 @@ public class SpearItem extends Item implements ITossableItem {
 
     @Nullable
     @Override
-    public IAdvancedProjectile createProjectile(World world, PlayerEntity player) {
+    public AdvancedProjectile createProjectile(World world, PlayerEntity player) {
         return new SpearEntity(world, player);
     }
 
     @Nullable
     @Override
-    public IAdvancedProjectile createProjectile(World world, Position pos) {
+    public AdvancedProjectile createProjectile(World world, Position pos) {
         return null;
     }
 
     @Override
-    public void onImpact(ICaster<?> caster, BlockPos pos, BlockState state) {
+    public void onImpact(Caster<?> caster, BlockPos pos, BlockState state) {
 
     }
 }

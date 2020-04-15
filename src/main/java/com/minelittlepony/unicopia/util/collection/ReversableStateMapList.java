@@ -9,7 +9,7 @@ public class ReversableStateMapList extends StateMapList {
         return inverse;
     }
 
-    public boolean add(IStateMapping mapping) {
+    public boolean add(StateMapping mapping) {
         inverse.add(mapping.inverse());
         return super.add(mapping);
     }

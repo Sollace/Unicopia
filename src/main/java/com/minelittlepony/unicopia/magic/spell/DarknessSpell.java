@@ -7,10 +7,10 @@ import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
-import com.minelittlepony.unicopia.magic.ICaster;
+import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
-import com.minelittlepony.unicopia.util.shape.IShape;
+import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.BlockState;
@@ -60,7 +60,7 @@ public class DarknessSpell extends AbstractAttachableSpell {
     }
 
     @Override
-    public void onPlaced(ICaster<?> caster) {
+    public void onPlaced(Caster<?> caster) {
         if (caster.getEntity() instanceof SpellcastEntity) {
             SpellcastEntity living = (SpellcastEntity)caster.getEntity();
 
@@ -70,7 +70,7 @@ public class DarknessSpell extends AbstractAttachableSpell {
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
         super.update(source);
 
         int soundChance = 15;
@@ -99,7 +99,7 @@ public class DarknessSpell extends AbstractAttachableSpell {
         return !isDead();
     }
 
-    private void applyBlocks(ICaster<?> source, int radius) {
+    private void applyBlocks(Caster<?> source, int radius) {
         for (BlockPos pos : PosHelper.getAllInRegionMutable(source.getOrigin(), new Sphere(false, radius))) {
             if (source.getWorld().random.nextInt(500) == 0) {
                 BlockState state = source.getWorld().getBlockState(pos);
@@ -117,20 +117,20 @@ public class DarknessSpell extends AbstractAttachableSpell {
         }
     }
 
-    private void applyEntities(ICaster<?> source, int radius, Consumer<LivingEntity> consumer) {
+    private void applyEntities(Caster<?> source, int radius, Consumer<LivingEntity> consumer) {
         source.findAllEntitiesInRange(radius * 1.5F)
                 .filter(e -> e instanceof LivingEntity)
                 .map(LivingEntity.class::cast)
                 .forEach(consumer);
     }
 
-    private void applyLight(ICaster<?> source, LivingEntity entity) {
+    private void applyLight(Caster<?> source, LivingEntity entity) {
         if (entity.getHealth() < entity.getHealthMaximum()) {
             entity.heal(1);
         }
     }
 
-    private void applyDark(ICaster<?> source, LivingEntity entity) {
+    private void applyDark(Caster<?> source, LivingEntity entity) {
 
         if (isAreaOccupied(source, entity.getPosVector())) {
             return;
@@ -171,7 +171,7 @@ public class DarknessSpell extends AbstractAttachableSpell {
     }
 
     @Override
-    public void render(ICaster<?> source) {
+    public void render(Caster<?> source) {
         int radius = 7 + (source.getCurrentLevel() * 3);
 
         boolean tamed = hasTarget();
@@ -182,7 +182,7 @@ public class DarknessSpell extends AbstractAttachableSpell {
             radius /= 3;
         }
 
-        IShape shape = new Sphere(false, radius);
+        Shape shape = new Sphere(false, radius);
 
         source.spawnParticles(shape, radius * 6, pos -> {
             spawnSphere(source, pos, tint, searching ? 4 : 2);
@@ -203,7 +203,7 @@ public class DarknessSpell extends AbstractAttachableSpell {
         return e instanceof LivingEntity && CasterUtils.isHoldingEffect("light", e);
     }
 
-    public boolean isAreaOccupied(ICaster<?> source, Vec3d pos) {
+    public boolean isAreaOccupied(Caster<?> source, Vec3d pos) {
         if (source.getWorld().isAir(new BlockPos(pos).down())) {
             return source.findAllSpellsInRange(100).anyMatch(spell -> {
                 ShieldSpell effect = spell.getEffect(ShieldSpell.class, false);
@@ -219,7 +219,7 @@ public class DarknessSpell extends AbstractAttachableSpell {
         return false;
     }
 
-    public void spawnSphere(ICaster<?> source, Vec3d pos, int tint, int maxSize) {
+    public void spawnSphere(Caster<?> source, Vec3d pos, int tint, int maxSize) {
         if (isAreaOccupied(source, pos)) {
             return;
         }
@@ -244,7 +244,7 @@ public class DarknessSpell extends AbstractAttachableSpell {
     }
 
     @Override
-    protected Box getSearchArea(ICaster<?> source) {
+    protected Box getSearchArea(Caster<?> source) {
         return searchArea.offset(source.getOriginVector());
     }
 

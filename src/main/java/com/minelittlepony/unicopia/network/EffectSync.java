@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia.network;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.IMagicEffect;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 
 import net.minecraft.entity.data.TrackedData;
@@ -19,13 +19,13 @@ import net.minecraft.nbt.CompoundTag;
 public class EffectSync {
 
     @Nullable
-    private IMagicEffect effect;
+    private MagicEffect effect;
 
-    private final ICaster<?> owned;
+    private final Caster<?> owned;
 
     private final TrackedData<CompoundTag> param;
 
-    public EffectSync(ICaster<?> owned, TrackedData<CompoundTag> param) {
+    public EffectSync(Caster<?> owned, TrackedData<CompoundTag> param) {
         this.owned = owned;
         this.param = param;
     }
@@ -55,7 +55,7 @@ public class EffectSync {
     }
 
     @SuppressWarnings("unchecked")
-    public <E extends IMagicEffect> E get(Class<E> type, boolean update) {
+    public <E extends MagicEffect> E get(Class<E> type, boolean update) {
         if (!update) {
             if (effect == null || type == null || type.isAssignableFrom(effect.getClass())) {
                 return (E)effect;
@@ -93,7 +93,7 @@ public class EffectSync {
         return null;
     }
 
-    public void set(@Nullable IMagicEffect effect) {
+    public void set(@Nullable MagicEffect effect) {
         if (this.effect != null && this.effect != effect) {
             this.effect.setDead();
         }

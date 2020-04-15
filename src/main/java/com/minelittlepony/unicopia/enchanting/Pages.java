@@ -118,13 +118,13 @@ public class Pages extends JsonDataLoader implements IdentifiableResourceReloadL
         return pages.values().stream().map(Page.class::cast).filter(predicate);
     }
 
-    public void triggerUnlockEvent(IPageOwner owner, IUnlockEvent event, @Nullable IPageUnlockListener unlockListener) {
+    public void triggerUnlockEvent(PageOwner owner, IUnlockEvent event, @Nullable IPageUnlockListener unlockListener) {
         pages.values().stream()
             .filter(page -> page.canUnlock(owner, event))
             .forEach(page -> unlockPage(owner, page, unlockListener));
     }
 
-    public void unlockPage(IPageOwner owner, Page page, @Nullable IPageUnlockListener unlockListener) {
+    public void unlockPage(PageOwner owner, Page page, @Nullable IPageUnlockListener unlockListener) {
         if (owner.getPageState(page).isLocked()) {
             if (unlockListener == null || unlockListener.onPageUnlocked(page)) {
                 owner.setPageState(page, PageState.UNREAD);

@@ -6,12 +6,11 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Multimap;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.ducks.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemEntityCapabilities;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.IDependable;
+import com.minelittlepony.unicopia.magic.AddictiveMagicalItem;
 import com.minelittlepony.unicopia.util.AwaitTickQueue;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -48,7 +47,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion.DestructionType;
 
-public class AlicornAmuletItem extends ArmorItem implements IDependable, ItemEntityCapabilities.TickableItem {
+public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem, ItemEntityCapabilities.TickableItem {
 
     private static final UUID[] MODIFIERS = new UUID[] {
             UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"),
@@ -70,7 +69,7 @@ public class AlicornAmuletItem extends ArmorItem implements IDependable, ItemEnt
     @Override
     public ActionResult onGroundTick(IItemEntity item) {
 
-        ItemEntity entity = item.getRaceContainer().getOwner();
+        ItemEntity entity = item.get().getOwner();
 
         World world = entity.world;
 
@@ -119,7 +118,7 @@ public class AlicornAmuletItem extends ArmorItem implements IDependable, ItemEnt
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 
-        IPlayer iplayer = SpeciesList.instance().getPlayer(MinecraftClient.getInstance().player);
+        Pony iplayer = Pony.of(MinecraftClient.getInstance().player);
 
         if (iplayer != null) {
             int attachedTime = iplayer.getInventory().getTicksAttached(this);
@@ -160,7 +159,7 @@ public class AlicornAmuletItem extends ArmorItem implements IDependable, ItemEnt
             player.getHungerManager().add(1, 0);
         }
 
-        IPlayer iplayer = SpeciesList.instance().getPlayer(player);
+        Pony iplayer = Pony.of(player);
 
         float attachedTime = iplayer.getInventory().getTicksAttached(this);
 
@@ -227,7 +226,7 @@ public class AlicornAmuletItem extends ArmorItem implements IDependable, ItemEnt
     }
 
     @Override
-    public void onRemoved(IPlayer player, float needfulness) {
+    public void onRemoved(Pony player, float needfulness) {
 
         float attachedTime = player.getInventory().getTicksAttached(this) / 100F;
 

@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.gui;
 
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.gui.DrawableHelper;
@@ -11,7 +11,7 @@ class FlightExperienceBar extends DrawableHelper implements IHudElement {
     static final Identifier TEXTURE = new Identifier("textures/gui/bars.png");
 
     @Override
-    public boolean shouldRender(IPlayer player) {
+    public boolean shouldRender(Pony player) {
         return player.getSpecies().canFly()
                 && !player.getOwner().abilities.creativeMode;
     }

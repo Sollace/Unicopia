@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.entity;
 
-import com.minelittlepony.unicopia.magic.ITossedEffect;
+import com.minelittlepony.unicopia.magic.TossedMagicEffect;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.projectile.IAdvancedProjectile;
+import com.minelittlepony.unicopia.util.projectile.AdvancedProjectile;
 
 import net.minecraft.client.network.packet.GameStateChangeS2CPacket;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -25,7 +25,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class SpearEntity extends ArrowEntity implements IAdvancedProjectile {
+public class SpearEntity extends ArrowEntity implements AdvancedProjectile {
 
     private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(SpearEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 
@@ -184,6 +184,6 @@ public class SpearEntity extends ArrowEntity implements IAdvancedProjectile {
     }
 
     @Override
-    public void setEffect(ITossedEffect effect) {
+    public void setEffect(TossedMagicEffect effect) {
     }
 }

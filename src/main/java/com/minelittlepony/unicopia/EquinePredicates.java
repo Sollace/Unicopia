@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia;
 
 import com.google.common.base.Predicate;
+import com.minelittlepony.unicopia.entity.Ponylike;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -8,11 +10,11 @@ import net.minecraft.entity.player.PlayerEntity;
 
 public interface EquinePredicates {
     Predicate<PlayerEntity> INTERACT_WITH_CLOUDS = player -> {
-        return player != null && SpeciesList.instance().getPlayer(player).getSpecies().canInteractWithClouds();
+        return player != null && Pony.of(player).getSpecies().canInteractWithClouds();
     };
 
     Predicate<Entity> MAGI = entity -> {
-        return entity instanceof PlayerEntity && SpeciesList.instance().getPlayer((PlayerEntity)entity).getSpecies().canCast();
+        return entity instanceof PlayerEntity && Pony.of((PlayerEntity)entity).getSpecies().canCast();
     };
 
     Predicate<Entity> ITEMS = entity -> {
@@ -20,7 +22,7 @@ public interface EquinePredicates {
     };
 
     Predicate<ItemEntity> ITEM_INTERACT_WITH_CLOUDS = item -> {
-        return ITEMS.test(item) && SpeciesList.instance().getEntity(item).getSpecies().canInteractWithClouds();
+        return ITEMS.test(item) && Ponylike.of(item).getSpecies().canInteractWithClouds();
     };
 
     Predicate<Entity> ENTITY_INTERACT_WITH_CLOUDS = entity -> {
@@ -32,7 +34,7 @@ public interface EquinePredicates {
 
     Predicate<Entity> BUGGY = entity -> {
         return entity instanceof PlayerEntity
-                && SpeciesList.instance().getPlayer((PlayerEntity)entity).getSpecies() == Race.CHANGELING;
+                && Pony.of((PlayerEntity)entity).getSpecies() == Race.CHANGELING;
     };
 
     static PlayerEntity getPlayerFromEntity(Entity entity) {

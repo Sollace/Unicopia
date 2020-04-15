@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.entity.SpellbookEntity;
-import com.minelittlepony.unicopia.magic.IDispensable;
+import com.minelittlepony.unicopia.magic.Dispensable;
 
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,7 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class SpellbookItem extends BookItem implements IDispensable {
+public class SpellbookItem extends BookItem implements Dispensable {
 
     public SpellbookItem() {
         super(new Item.Settings()

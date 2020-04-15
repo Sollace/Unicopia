@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.container;
 import javax.annotation.Nonnull;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.util.AwaitTickQueue;
 
@@ -65,7 +65,7 @@ public class SpellBookContainer extends Container {
         addSlot(new SpellbookSlot(craftMatrix, 2, 175, 134));
         addSlot(new SpellbookSlot(craftMatrix, 3, 226, 120));
         addSlot(new SpellbookSlot(craftMatrix, 4, 227, 65));
-        addSlot(resultSlot = new SpellbookResultSlot(listener, SpeciesList.instance().getPlayer(player), craftMatrix, craftResult, 0, 191, 92));
+        addSlot(resultSlot = new SpellbookResultSlot(listener, Pony.of(player), craftMatrix, craftResult, 0, 191, 92));
     }
 
     @Override
@@ -161,7 +161,7 @@ public class SpellBookContainer extends Container {
         return EquinePredicates.MAGI.test(player);
     }
 
-    static class SpellbookSlot extends Slot {
+    public static class SpellbookSlot extends Slot {
 
         public SpellbookSlot(Inventory inventoryIn, int index, int xPosition, int yPosition) {
             super(inventoryIn, index, xPosition, yPosition);

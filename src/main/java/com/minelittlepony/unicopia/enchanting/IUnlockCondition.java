@@ -20,7 +20,7 @@ public interface IUnlockCondition<T extends IUnlockEvent> {
      * @param prop      PlayerExtension for the player doing the crafting
      * @param stack     ItemStack crafted
      */
-    boolean matches(IPageOwner owner, T event);
+    boolean matches(PageOwner owner, T event);
 
     default void require(JsonObject json, String memberName) {
         if (!json.has(memberName)) {

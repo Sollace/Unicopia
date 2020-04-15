@@ -8,9 +8,9 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.CasterUtils;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.ITossedEffect;
-import com.minelittlepony.unicopia.magic.IUseable;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.TossedMagicEffect;
+import com.minelittlepony.unicopia.magic.Useable;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -29,7 +29,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
-public class AwkwardSpell extends AbstractSpell implements ITossedEffect, IUseable {
+public class AwkwardSpell extends AbstractSpell implements TossedMagicEffect, Useable {
 
     @Override
     public String getName() {
@@ -47,12 +47,12 @@ public class AwkwardSpell extends AbstractSpell implements ITossedEffect, IUseab
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
         return true;
     }
 
     @Override
-    public void render(ICaster<?> source) {
+    public void render(Caster<?> source) {
         source.spawnParticles(new Sphere(false, (1 + source.getCurrentLevel()) * 8), 10, pos -> {
 
             List<Identifier> names = new ArrayList<>(Registry.PARTICLE_TYPE.getIds());
@@ -81,7 +81,7 @@ public class AwkwardSpell extends AbstractSpell implements ITossedEffect, IUseab
     }
 
     @Override
-    public void onImpact(ICaster<?> caster, BlockPos pos, BlockState state) {
+    public void onImpact(Caster<?> caster, BlockPos pos, BlockState state) {
         // noop
     }
 

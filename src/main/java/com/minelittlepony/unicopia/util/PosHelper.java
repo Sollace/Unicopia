@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.google.common.collect.Lists;
-import com.minelittlepony.unicopia.util.shape.IShape;
+import com.minelittlepony.unicopia.util.shape.Shape;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -60,7 +60,7 @@ public class PosHelper {
         });
     }
 
-    public static Iterators<BlockPos> getAllInRegionMutable(BlockPos origin, IShape shape) {
+    public static Iterators<BlockPos> getAllInRegionMutable(BlockPos origin, Shape shape) {
         Iterator<BlockPos> iter = BlockPos.iterate(
                 origin.add(new BlockPos(shape.getLowerBound())),
                 origin.add(new BlockPos(shape.getUpperBound()))

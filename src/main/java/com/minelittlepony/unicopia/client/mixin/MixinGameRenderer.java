@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
@@ -18,7 +18,7 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
             at = @At("RETURN"),
             cancellable = true)
     private void onGetFov(Camera camera, float f, boolean z, CallbackInfoReturnable<Double> info) {
-        info.setReturnValue(SpeciesList.instance().getPlayer(MinecraftClient.getInstance().player)
+        info.setReturnValue(Pony.of(MinecraftClient.getInstance().player)
                 .getCamera()
                 .calculateFieldOfView(info.getReturnValue()));
     }

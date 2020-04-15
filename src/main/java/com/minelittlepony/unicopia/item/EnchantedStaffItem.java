@@ -6,14 +6,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
-import com.minelittlepony.unicopia.magic.IAffine;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.ITossedEffect;
-import com.minelittlepony.unicopia.util.projectile.ITossableItem;
+import com.minelittlepony.unicopia.magic.Affine;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.TossedMagicEffect;
+import com.minelittlepony.unicopia.util.projectile.TossableItem;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
@@ -34,12 +33,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class EnchantedStaffItem extends StaffItem implements IAffine, ITossableItem {
+public class EnchantedStaffItem extends StaffItem implements Affine, TossableItem {
 
     @Nonnull
-    private final ITossedEffect effect;
+    private final TossedMagicEffect effect;
 
-    public EnchantedStaffItem(Settings settings, @Nonnull ITossedEffect effect) {
+    public EnchantedStaffItem(Settings settings, @Nonnull TossedMagicEffect effect) {
         super(settings.maxDamage(500));
 
         this.effect = effect;
@@ -131,7 +130,7 @@ public class EnchantedStaffItem extends StaffItem implements IAffine, ITossableI
 
     @Override
     public void toss(World world, ItemStack stack, PlayerEntity player) {
-        IPlayer iplayer = SpeciesList.instance().getPlayer(player);
+        Pony iplayer = Pony.of(player);
 
         iplayer.subtractEnergyCost(4);
         effect.toss(iplayer);
@@ -140,7 +139,7 @@ public class EnchantedStaffItem extends StaffItem implements IAffine, ITossableI
     }
 
     @Override
-    public void onImpact(ICaster<?> caster, BlockPos pos, BlockState state) {
+    public void onImpact(Caster<?> caster, BlockPos pos, BlockState state) {
         effect.onImpact(caster, pos, state);
     }
 

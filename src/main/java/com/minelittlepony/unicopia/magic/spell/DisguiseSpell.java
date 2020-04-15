@@ -7,18 +7,17 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.ability.FlightPredicate;
 import com.minelittlepony.unicopia.ability.HeightPredicate;
 import com.minelittlepony.unicopia.entity.Owned;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
-import com.minelittlepony.unicopia.magic.IAttachedEffect;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.IMagicEffect;
-import com.minelittlepony.unicopia.magic.ISuppressable;
+import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.SuppressableEffect;
 import com.minelittlepony.unicopia.util.projectile.ProjectileUtil;
 import com.mojang.authlib.GameProfile;
 
@@ -45,7 +44,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.MathHelper;
 
-public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISuppressable, FlightPredicate, HeightPredicate {
+public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect, SuppressableEffect, FlightPredicate, HeightPredicate {
 
     @Nonnull
     private String entityId = "";
@@ -79,12 +78,12 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
     }
 
     @Override
-    public boolean isVulnerable(ICaster<?> otherSource, IMagicEffect other) {
+    public boolean isVulnerable(Caster<?> otherSource, MagicEffect other) {
         return suppressionCounter <= otherSource.getCurrentLevel();
     }
 
     @Override
-    public void onSuppressed(ICaster<?> otherSource) {
+    public void onSuppressed(Caster<?> otherSource) {
         suppressionCounter = 100;
         setDirty(true);
     }
@@ -146,7 +145,7 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
         return entityNbt;
     }
 
-    protected synchronized void createPlayer(CompoundTag nbt, GameProfile profile, ICaster<?> source) {
+    protected synchronized void createPlayer(CompoundTag nbt, GameProfile profile, Caster<?> source) {
         removeDisguise();
 
         entity = InteractionManager.instance().createPlayer(source.getEntity(), profile);
@@ -158,7 +157,7 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
         onEntityLoaded(source);
     }
 
-    protected void checkAndCreateDisguiseEntity(ICaster<?> source) {
+    protected void checkAndCreateDisguiseEntity(Caster<?> source) {
         if (entity == null && entityNbt != null) {
             CompoundTag nbt = entityNbt;
             entityNbt = null;
@@ -184,7 +183,7 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
         }
     }
 
-    protected void onEntityLoaded(ICaster<?> source) {
+    protected void onEntityLoaded(Caster<?> source) {
         if (entity == null) {
             return;
         }
@@ -304,20 +303,20 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
     }
 
     @Override
-    public boolean updateOnPerson(ICaster<?> caster) {
+    public boolean updateOnPerson(Caster<?> caster) {
         return update(caster);
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
         LivingEntity owner = source.getOwner();
 
         if (getSuppressed()) {
             suppressionCounter--;
 
             owner.setInvisible(false);
-            if (source instanceof IPlayer) {
-                ((IPlayer)source).setInvisible(false);
+            if (source instanceof Pony) {
+                ((Pony)source).setInvisible(false);
             }
 
             if (entity != null) {
@@ -335,9 +334,9 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
         }
 
         if (entity == null) {
-            if (source instanceof IPlayer) {
+            if (source instanceof Pony) {
                 owner.setInvisible(false);
-                ((IPlayer) source).setInvisible(false);
+                ((Pony) source).setInvisible(false);
             }
 
             return false;
@@ -370,8 +369,8 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
 
             shulker.setAttachedBlock(null);
 
-            if (source.isClient() && source instanceof IPlayer) {
-                IPlayer player = (IPlayer)source;
+            if (source.isClient() && source instanceof Pony) {
+                Pony player = (Pony)source;
 
 
                 float peekAmount = 0.3F;
@@ -393,8 +392,8 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
             entity.pitch = 0;
         }
 
-        if (source instanceof IPlayer) {
-            IPlayer player = (IPlayer)source;
+        if (source instanceof Pony) {
+            Pony player = (Pony)source;
 
             player.setInvisible(true);
             source.getOwner().setInvisible(true);
@@ -404,7 +403,7 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
             }
 
             if (entity instanceof PlayerEntity) {
-                entity.getDataTracker().set(Player.getModelBitFlag(), owner.getDataTracker().get(Player.getModelBitFlag()));
+                entity.getDataTracker().set(PlayerAccess.getModelBitFlag(), owner.getDataTracker().get(PlayerAccess.getModelBitFlag()));
             }
 
             if (player.isClientPlayer() && InteractionManager.instance().getViewMode() == 0) {
@@ -425,7 +424,7 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
     }
 
     @Override
-    public void render(ICaster<?> source) {
+    public void render(Caster<?> source) {
         if (getSuppressed()) {
             source.spawnParticles(UParticles.UNICORN_MAGIC, 5);
             source.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
@@ -473,14 +472,14 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
     }
 
     @Override
-    public boolean checkCanFly(IPlayer player) {
+    public boolean checkCanFly(Pony player) {
         if (entity == null || !player.getSpecies().canFly()) {
             return false;
         }
 
         if (entity instanceof Owned) {
             @SuppressWarnings("unchecked")
-            IPlayer iplayer = SpeciesList.instance().getPlayer(((Owned<PlayerEntity>)entity).getOwner());
+            Pony iplayer = Pony.of(((Owned<PlayerEntity>)entity).getOwner());
 
             return iplayer != null && iplayer.getSpecies().canFly();
         }
@@ -494,7 +493,7 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
     }
 
     @Override
-    public float getTargetEyeHeight(IPlayer player) {
+    public float getTargetEyeHeight(Pony player) {
         if (entity != null && !getSuppressed()) {
             if (entity instanceof FallingBlockEntity) {
                 return 0.5F;
@@ -505,7 +504,7 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
     }
 
     @Override
-    public float getTargetBodyHeight(IPlayer player) {
+    public float getTargetBodyHeight(Pony player) {
         if (entity != null && !getSuppressed()) {
             if (entity instanceof FallingBlockEntity) {
                 return 0.9F;
@@ -527,8 +526,8 @@ public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISu
             || entity instanceof FallingBlockEntity;
     }
 
-    static abstract class Player extends PlayerEntity {
-        public Player() { super(null, null); }
+    static abstract class PlayerAccess extends PlayerEntity {
+        public PlayerAccess() { super(null, null); }
         static TrackedData<Byte> getModelBitFlag() {
             return PLAYER_MODEL_BIT_MASK;
         }

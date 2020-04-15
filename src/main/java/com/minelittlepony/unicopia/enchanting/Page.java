@@ -21,7 +21,7 @@ public interface Page extends Comparable<Page> {
      * Tests unlock conditions for this page.
      * Returns true if the owner is permitted to read this page.
      */
-    boolean canUnlock(IPageOwner owner, IUnlockEvent event);
+    boolean canUnlock(PageOwner owner, IUnlockEvent event);
 
     /**
      * Gets the texture.

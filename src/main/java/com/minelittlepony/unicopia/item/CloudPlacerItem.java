@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.entity.CloudEntity;
-import com.minelittlepony.unicopia.magic.IDispensable;
+import com.minelittlepony.unicopia.magic.Dispensable;
 
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.EntityType;
@@ -20,7 +20,7 @@ import net.minecraft.util.math.Position;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
-public class CloudPlacerItem extends Item implements IDispensable {
+public class CloudPlacerItem extends Item implements Dispensable {
 
     private final EntityType<? extends CloudEntity> cloudSupplier;
 

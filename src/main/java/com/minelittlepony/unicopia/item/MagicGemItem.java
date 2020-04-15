@@ -8,10 +8,10 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
-import com.minelittlepony.unicopia.magic.ICastable;
-import com.minelittlepony.unicopia.magic.IDispenceable;
-import com.minelittlepony.unicopia.magic.IMagicEffect;
-import com.minelittlepony.unicopia.magic.IUseable;
+import com.minelittlepony.unicopia.magic.Castable;
+import com.minelittlepony.unicopia.magic.DispenceableMagicEffect;
+import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Useable;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -34,7 +34,7 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class MagicGemItem extends Item implements ICastable {
+public class MagicGemItem extends Item implements Castable {
 
     public MagicGemItem() {
         super(new Settings()
@@ -50,7 +50,7 @@ public class MagicGemItem extends Item implements ICastable {
     }
 
     @Override
-    public CastResult onDispenseSpell(BlockPointer source, ItemStack stack, IDispenceable effect) {
+    public CastResult onDispenseSpell(BlockPointer source, ItemStack stack, DispenceableMagicEffect effect) {
         Direction facing = source.getBlockState().get(DispenserBlock.FACING);
         BlockPos pos = source.getBlockPos().offset(facing);
 
@@ -58,9 +58,9 @@ public class MagicGemItem extends Item implements ICastable {
     }
 
     @Override
-    public CastResult onCastSpell(ItemUsageContext context, IMagicEffect effect) {
-        if (effect instanceof IUseable) {
-            return ((IUseable)effect).onUse(context, getAffinity(context.getStack()));
+    public CastResult onCastSpell(ItemUsageContext context, MagicEffect effect) {
+        if (effect instanceof Useable) {
+            return ((Useable)effect).onUse(context, getAffinity(context.getStack()));
         }
 
         return CastResult.PLACE;
@@ -83,7 +83,7 @@ public class MagicGemItem extends Item implements ICastable {
             return ActionResult.FAIL;
         }
 
-        IMagicEffect effect = SpellRegistry.instance().getSpellFrom(stack);
+        MagicEffect effect = SpellRegistry.instance().getSpellFrom(stack);
 
         if (effect == null) {
             return ActionResult.FAIL;
@@ -123,7 +123,7 @@ public class MagicGemItem extends Item implements ICastable {
             return new TypedActionResult<>(ActionResult.FAIL, stack);
         }
 
-        IUseable effect = SpellRegistry.instance().getUseActionFrom(stack);
+        Useable effect = SpellRegistry.instance().getUseActionFrom(stack);
 
         if (effect != null) {
             CastResult result = effect.onUse(stack, getAffinity(stack), player, world, VecHelper.getLookedAtEntity(player, 5));
@@ -188,7 +188,7 @@ public class MagicGemItem extends Item implements ICastable {
 
     @Override
     public boolean canFeed(SpellcastEntity entity, ItemStack stack) {
-        IMagicEffect effect = entity.getEffect();
+        MagicEffect effect = entity.getEffect();
 
         return effect != null
                 && entity.getAffinity() == getAffinity()

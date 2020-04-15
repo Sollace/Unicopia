@@ -1,16 +1,16 @@
-package com.minelittlepony.unicopia.container;
+package com.minelittlepony.unicopia.client.gui;
 
 import org.lwjgl.opengl.GL11;
 
 import com.minelittlepony.common.client.gui.element.Button;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UnicopiaCore;
+import com.minelittlepony.unicopia.container.SpellBookContainer;
 import com.minelittlepony.unicopia.container.SpellBookContainer.SpellbookSlot;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
 import com.minelittlepony.unicopia.enchanting.Page;
 import com.minelittlepony.unicopia.enchanting.PageState;
 import com.minelittlepony.unicopia.enchanting.Pages;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
@@ -26,7 +26,7 @@ public class SpellBookScreen extends AbstractContainerScreen<SpellBookContainer>
 
     public static final Identifier spellBookGuiTextures = new Identifier("unicopia", "textures/gui/container/book.png");
 
-    private IPlayer playerExtension;
+    private Pony player;
 
     private PageButton nextPage;
     private PageButton prevPage;
@@ -41,7 +41,7 @@ public class SpellBookScreen extends AbstractContainerScreen<SpellBookContainer>
 
         containerWidth = 405;
         containerHeight = 219;
-        playerExtension = SpeciesList.instance().getPlayer(player);
+        this.player = Pony.of(player);
     }
 
     @Override
@@ -63,11 +63,11 @@ public class SpellBookScreen extends AbstractContainerScreen<SpellBookContainer>
 
         onPageChange();
 
-        if (playerExtension.hasPageStateRelative(currentPage, PageState.UNREAD, Page::next)) {
+        if (player.getPages().hasPageStateRelative(currentPage, PageState.UNREAD, Page::next)) {
             nextPage.triggerShake();
         }
 
-        if (playerExtension.hasPageStateRelative(currentPage, PageState.UNREAD, Page::prev)) {
+        if (player.getPages().hasPageStateRelative(currentPage, PageState.UNREAD, Page::prev)) {
             prevPage.triggerShake();
         }
     }
@@ -76,8 +76,8 @@ public class SpellBookScreen extends AbstractContainerScreen<SpellBookContainer>
         prevPage.setEnabled(currentPage.getIndex() > 0);
         nextPage.setEnabled(currentPage.getIndex() < Pages.instance().getTotalPages() - 1);
 
-        if (playerExtension.getPageState(currentPage) == PageState.UNREAD) {
-            playerExtension.setPageState(currentPage, PageState.READ);
+        if (player.getPages().getPageState(currentPage) == PageState.UNREAD) {
+            player.getPages().setPageState(currentPage, PageState.READ);
         }
     }
 
@@ -152,7 +152,7 @@ public class SpellBookScreen extends AbstractContainerScreen<SpellBookContainer>
         minecraft.getTextureManager().bindTexture(spellBookGuiTextures);
         blit(left + 147, top + 49, 407, 2, 100, 101, 512, 256);
 
-        if (playerExtension.getPageState(currentPage) != PageState.LOCKED) {
+        if (player.getPages().getPageState(currentPage) != PageState.LOCKED) {
             Identifier texture = currentPage.getTexture();
 
             if (minecraft.getTextureManager().getTexture(texture) != MissingSprite.getMissingSpriteTexture()) {
@@ -161,7 +161,7 @@ public class SpellBookScreen extends AbstractContainerScreen<SpellBookContainer>
                 minecraft.getTextureManager().bindTexture(texture);
                 blit(left, top, 0, 0, containerWidth, containerHeight, 512, 256);
             } else {
-                if (playerExtension.getWorld().random.nextInt(100) == 0) {
+                if (player.getWorld().random.nextInt(100) == 0) {
                     UnicopiaCore.LOGGER.fatal("Missing texture " + texture);
                 }
             }

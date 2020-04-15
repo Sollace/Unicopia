@@ -6,27 +6,27 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.ducks.RaceContainerHolder;
-import com.minelittlepony.unicopia.entity.IEntity;
+import com.minelittlepony.unicopia.ducks.PonyContainer;
+import com.minelittlepony.unicopia.entity.Ponylike;
 import com.minelittlepony.unicopia.entity.LivingEntityCapabilities;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
 @Mixin(LivingEntity.class)
-public abstract class MixinLivingEntity extends Entity implements RaceContainerHolder<IEntity> {
+public abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylike> {
 
-    private final IEntity caster = createRaceContainer();
+    private final Ponylike caster = create();
 
     private MixinLivingEntity() { super(null, null); }
 
     @Override
-    public IEntity createRaceContainer() {
+    public Ponylike create() {
         return new LivingEntityCapabilities((LivingEntity)(Object)this);
     }
 
     @Override
-    public IEntity getRaceContainer() {
+    public Ponylike get() {
         return caster;
     }
 

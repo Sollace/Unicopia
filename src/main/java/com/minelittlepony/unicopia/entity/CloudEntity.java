@@ -6,10 +6,10 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.ability.PegasusCloudInteractionAbility.ICloudEntity;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.particles.ParticleEmitter;
 
@@ -329,7 +329,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
                 player.horizontalSpeed = (float)(player.horizontalSpeed + MathHelper.sqrt(difX * difX + difZ * difZ) * 0.6);
                 player.distanceWalked = (float)(player.distanceWalked + MathHelper.sqrt(difX * difX + difY * difY + difZ * difZ) * 0.6);
 
-                if (SpeciesList.instance().getPlayer(player).stepOnCloud()) {
+                if (Pony.of(player).stepOnCloud()) {
                     BlockSoundGroup soundtype = BlockSoundGroup.WOOL;
                     player.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
                 }
@@ -506,7 +506,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
     public ItemEntity dropItem(ItemConvertible stack, int amount) {
         ItemEntity item = super.dropItem(stack, amount);
 
-        SpeciesList.instance().getEntity(item).setSpecies(Race.PEGASUS);
+        Ponylike.of(item).setSpecies(Race.PEGASUS);
         item.setNoGravity(true);
         item.setVelocity(0, 0, 0);
 

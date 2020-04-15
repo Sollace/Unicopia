@@ -6,7 +6,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UParticles;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.Entity;
@@ -24,12 +24,12 @@ public class PegasusCloudInteractionAbility implements Ability<Ability.Numeric> 
     }
 
     @Override
-    public int getWarmupTime(IPlayer player) {
+    public int getWarmupTime(Pony player) {
         return 10;
     }
 
     @Override
-    public int getCooldownTime(IPlayer player) {
+    public int getCooldownTime(Pony player) {
         return 5;
     }
 
@@ -39,7 +39,7 @@ public class PegasusCloudInteractionAbility implements Ability<Ability.Numeric> 
     }
 
     @Override
-    public Numeric tryActivate(IPlayer player) {
+    public Numeric tryActivate(Pony player) {
         return findTarget(player).map(cloud -> {
             Numeric data = new Numeric(player.getOwner().inventory.selectedSlot + 1);
             cloud.handlePegasusInteration(data.type);
@@ -54,13 +54,13 @@ public class PegasusCloudInteractionAbility implements Ability<Ability.Numeric> 
     }
 
     @Override
-    public void apply(IPlayer player, Numeric data) {
+    public void apply(Pony player, Numeric data) {
         findTarget(player).ifPresent(cloud -> {
             cloud.handlePegasusInteration(data.type);
         });
     }
 
-    protected Optional<ICloudEntity> findTarget(IPlayer player) {
+    protected Optional<ICloudEntity> findTarget(Pony player) {
         if (player.getOwner().hasVehicle() && player.getOwner().getVehicle() instanceof ICloudEntity) {
             return Optional.ofNullable((ICloudEntity)player.getOwner().getVehicle());
         }
@@ -75,12 +75,12 @@ public class PegasusCloudInteractionAbility implements Ability<Ability.Numeric> 
     }
 
     @Override
-    public void preApply(IPlayer player) {
+    public void preApply(Pony player) {
         player.spawnParticles(UParticles.UNICORN_MAGIC, 10);
     }
 
     @Override
-    public void postApply(IPlayer player) {
+    public void postApply(Pony player) {
         player.spawnParticles(UParticles.RAIN_DROPS, 5);
     }
 

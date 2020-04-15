@@ -12,7 +12,7 @@ import net.minecraft.world.World;
  * Interface for right-click actions.
  *
  */
-public interface IUseable {
+public interface Useable {
 
     /**
      * Triggered when the player right clicks a block

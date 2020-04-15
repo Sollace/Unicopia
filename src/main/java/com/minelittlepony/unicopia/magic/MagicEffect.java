@@ -1,14 +1,14 @@
 package com.minelittlepony.unicopia.magic;
 
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
-import com.minelittlepony.unicopia.util.InbtSerialisable;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.entity.projectile.ProjectileEntity;
 
 /**
  * Interface for a magic spells
  */
-public interface IMagicEffect extends InbtSerialisable, IAffine {
+public interface MagicEffect extends NbtSerialisable, Affine {
 
     /**
      * Gets the name used to identify this effect.
@@ -49,19 +49,19 @@ public interface IMagicEffect extends InbtSerialisable, IAffine {
      * Gets the highest level this spell can be safely operated at.
      * Gems may go higher, however chance of explosion/exhaustion increases with every level.
      */
-    int getMaxLevelCutOff(ICaster<?> caster);
+    int getMaxLevelCutOff(Caster<?> caster);
 
-    float getMaxExhaustion(ICaster<?> caster);
+    float getMaxExhaustion(Caster<?> caster);
 
     /**
      * Gets the chances of this effect turning into an innert gem or exploding.
      */
-    float getExhaustion(ICaster<?> caster);
+    float getExhaustion(Caster<?> caster);
 
     /**
      * Called when first attached to a gem.
      */
-    default void onPlaced(ICaster<?> caster) {
+    default void onPlaced(Caster<?> caster) {
 
     }
 
@@ -75,7 +75,7 @@ public interface IMagicEffect extends InbtSerialisable, IAffine {
      *
      * @param source   The entity we are currently attached to.
      */
-    boolean update(ICaster<?> source);
+    boolean update(Caster<?> source);
 
     /**
      * Called every tick when attached to an entity to produce particle effects.
@@ -83,7 +83,7 @@ public interface IMagicEffect extends InbtSerialisable, IAffine {
      *
      * @param source    The entity we are attached to.
      */
-    void render(ICaster<?> source);
+    void render(Caster<?> source);
 
     /**
      * Return true to allow the gem update and move.
@@ -95,7 +95,7 @@ public interface IMagicEffect extends InbtSerialisable, IAffine {
     /**
      * Returns a new, deep-copied instance of this spell.
      */
-    default IMagicEffect copy() {
+    default MagicEffect copy() {
         return SpellRegistry.instance().copyInstance(this);
     }
 }

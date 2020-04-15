@@ -9,7 +9,7 @@ import net.minecraft.util.math.Vec3d;
  * A lonely Line. The simplest form of shape.
  *
  */
-public class Line implements IShape {
+public class Line implements Shape {
 
     double len;
 

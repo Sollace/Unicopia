@@ -9,9 +9,9 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.ICastable;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.IMagicEffect;
+import com.minelittlepony.unicopia.magic.Castable;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.EffectSync;
 
@@ -43,7 +43,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion.DestructionType;
 
-public class SpellcastEntity extends MobEntityWithAi implements IMagicals, ICaster<LivingEntity>, InAnimate {
+public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caster<LivingEntity>, InAnimate {
 
     private LivingEntity owner = null;
 
@@ -99,7 +99,7 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, ICast
     }
 
     @Override
-    public void setEffect(@Nullable IMagicEffect effect) {
+    public void setEffect(@Nullable MagicEffect effect) {
         effectDelegate.set(effect);
 
         if (effect != null) {
@@ -114,7 +114,7 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, ICast
 
     @Nullable
     @Override
-    public <T extends IMagicEffect> T getEffect(@Nullable Class<T> type, boolean update) {
+    public <T extends MagicEffect> T getEffect(@Nullable Class<T> type, boolean update) {
         return effectDelegate.get(type, update);
     }
 
@@ -294,8 +294,8 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, ICast
             ItemStack currentItem = player.getStackInHand(Hand.MAIN_HAND);
 
             if (currentItem != null
-                    && currentItem.getItem() instanceof ICastable
-                    && ((ICastable)currentItem.getItem()).canFeed(this, currentItem)
+                    && currentItem.getItem() instanceof Castable
+                    && ((Castable)currentItem.getItem()).canFeed(this, currentItem)
                     && tryLevelUp(currentItem)) {
 
                 if (!player.abilities.creativeMode) {

@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
  */
 public class SpellCraftingEvent {
 
-    public static void trigger(IPageOwner owner, ItemStack stack, @Nullable IPageUnlockListener unlockListener) {
+    public static void trigger(PageOwner owner, ItemStack stack, @Nullable IPageUnlockListener unlockListener) {
         Pages.instance().triggerUnlockEvent(owner, new Event(stack), unlockListener);
     }
 
@@ -49,7 +49,7 @@ public class SpellCraftingEvent {
         }
 
         @Override
-        public boolean matches(IPageOwner prop, Event event) {
+        public boolean matches(PageOwner prop, Event event) {
             if (!event.stack.isEmpty() && event.stack.getItem() instanceof MagicGemItem) {
                 return ((MagicGemItem)event.stack.getItem()).getAffinity() == affinity
                     && SpellRegistry.getKeyFromStack(event.stack).equals(spell);

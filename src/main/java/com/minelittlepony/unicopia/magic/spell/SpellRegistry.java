@@ -12,10 +12,10 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.IDispenceable;
-import com.minelittlepony.unicopia.magic.IHeldEffect;
-import com.minelittlepony.unicopia.magic.IMagicEffect;
-import com.minelittlepony.unicopia.magic.IUseable;
+import com.minelittlepony.unicopia.magic.DispenceableMagicEffect;
+import com.minelittlepony.unicopia.magic.HeldMagicEffect;
+import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Useable;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -54,7 +54,7 @@ public class SpellRegistry {
     }
 
     @Nullable
-    public IMagicEffect getSpellFromName(String name) {
+    public MagicEffect getSpellFromName(String name) {
         if (entries.containsKey(name)) {
             return entries.get(name).create();
         }
@@ -63,14 +63,14 @@ public class SpellRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends IMagicEffect> T copyInstance(T effect) {
+    public <T extends MagicEffect> T copyInstance(T effect) {
         return (T)createEffectFromNBT(serializeEffectToNBT(effect));
     }
 
     @Nullable
-    public IMagicEffect createEffectFromNBT(CompoundTag compound) {
+    public MagicEffect createEffectFromNBT(CompoundTag compound) {
         if (compound.containsKey("effect_id")) {
-            IMagicEffect effect = getSpellFromName(compound.getString("effect_id"));
+            MagicEffect effect = getSpellFromName(compound.getString("effect_id"));
 
             if (effect != null) {
                 effect.fromNBT(compound);
@@ -82,7 +82,7 @@ public class SpellRegistry {
         return null;
     }
 
-    public CompoundTag serializeEffectToNBT(IMagicEffect effect) {
+    public CompoundTag serializeEffectToNBT(MagicEffect effect) {
         CompoundTag compound = effect.toNBT();
 
         compound.putString("effect_id", effect.getName());
@@ -95,26 +95,26 @@ public class SpellRegistry {
     }
 
     @Nullable
-    public IDispenceable getDispenseActionFrom(ItemStack stack) {
+    public DispenceableMagicEffect getDispenseActionFrom(ItemStack stack) {
         return getEntryFromStack(stack).map(Entry::dispensable).orElse(null);
     }
 
     @Nullable
-    public IUseable getUseActionFrom(ItemStack stack) {
+    public Useable getUseActionFrom(ItemStack stack) {
         return getEntryFromStack(stack).map(Entry::useable).orElse(null);
     }
 
     @Nullable
-    public IHeldEffect getHeldFrom(ItemStack stack) {
+    public HeldMagicEffect getHeldFrom(ItemStack stack) {
         return getEntryFromStack(stack).map(Entry::holdable).orElse(null);
     }
 
     @Nullable
-    public IMagicEffect getSpellFrom(ItemStack stack) {
+    public MagicEffect getSpellFrom(ItemStack stack) {
         return getSpellFromName(getKeyFromStack(stack));
     }
 
-    public <T extends IMagicEffect> void register(Supplier<T> factory) {
+    public <T extends MagicEffect> void register(Supplier<T> factory) {
         try {
             new Entry<>(factory);
         } catch (Exception e) {
@@ -174,7 +174,7 @@ public class SpellRegistry {
     }
 
     @Immutable
-    class Entry<T extends IMagicEffect> {
+    class Entry<T extends MagicEffect> {
         final Supplier<T> factory;
 
         final int color;
@@ -190,9 +190,9 @@ public class SpellRegistry {
 
             this.factory = factory;
             this.color = inst.getTint();
-            this.canDispense = inst instanceof IDispenceable;
-            this.canUse = inst instanceof IUseable;
-            this.canHold = inst instanceof IHeldEffect;
+            this.canDispense = inst instanceof DispenceableMagicEffect;
+            this.canUse = inst instanceof Useable;
+            this.canHold = inst instanceof HeldMagicEffect;
             this.affinity = inst.getAffinity();
 
             if (inst.isCraftable()) {
@@ -204,28 +204,28 @@ public class SpellRegistry {
             entries.put(inst.getName(), this);
         }
 
-        IUseable useable() {
+        Useable useable() {
             if (!canUse) {
                 return null;
             }
 
-            return (IUseable)create();
+            return (Useable)create();
         }
 
-        IHeldEffect holdable() {
+        HeldMagicEffect holdable() {
             if (!canHold) {
                 return null;
             }
 
-            return (IHeldEffect)create();
+            return (HeldMagicEffect)create();
         }
 
-        IDispenceable dispensable() {
+        DispenceableMagicEffect dispensable() {
             if (!canDispense) {
                 return null;
             }
 
-            return (IDispenceable)create();
+            return (DispenceableMagicEffect)create();
         }
 
         T create() {

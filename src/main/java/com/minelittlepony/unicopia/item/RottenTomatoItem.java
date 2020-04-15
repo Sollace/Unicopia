@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.util.projectile.ITossableItem;
+import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.util.projectile.TossableItem;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
@@ -17,7 +17,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class RottenTomatoItem extends TomatoItem implements ITossableItem {
+public class RottenTomatoItem extends TomatoItem implements TossableItem {
 
     public RottenTomatoItem(int hunger, float saturation) {
         super(hunger, saturation);
@@ -40,7 +40,7 @@ public class RottenTomatoItem extends TomatoItem implements ITossableItem {
 
     protected boolean isSickening(ItemStack stack, PlayerEntity player) {
         return canBeThrown(stack)
-                && !SpeciesList.instance().getPlayer(player).getSpecies().canUseEarth();
+                && !Pony.of(player).getSpecies().canUseEarth();
     }
 
     @Override
@@ -61,7 +61,7 @@ public class RottenTomatoItem extends TomatoItem implements ITossableItem {
     }
 
     @Override
-    public void onImpact(ICaster<?> caster, BlockPos pos, BlockState state) {
+    public void onImpact(Caster<?> caster, BlockPos pos, BlockState state) {
         if (caster.isLocal() && state.getMaterial() == Material.GLASS) {
             caster.getWorld().breakBlock(pos, true);
         }

@@ -14,23 +14,23 @@ import net.minecraft.state.property.Property;
  * A collection of block-state mappings.
  *
  */
-public class StateMapList extends ArrayList<IStateMapping> {
+public class StateMapList extends ArrayList<StateMapping> {
     private static final long serialVersionUID = 2602772651960588745L;
 
     public void removeBlock(Predicate<BlockState> mapper) {
-        add(IStateMapping.removeBlock(mapper));
+        add(StateMapping.removeBlock(mapper));
     }
 
     public void replaceBlock(Block from, Block to) {
-        add(IStateMapping.replaceBlock(from, to));
+        add(StateMapping.replaceBlock(from, to));
     }
 
     public <T extends Comparable<T>> void replaceProperty(Block block, Property<T> property, T from, T to) {
-        add(IStateMapping.replaceProperty(block, property, from, to));
+        add(StateMapping.replaceProperty(block, property, from, to));
     }
 
     public <T extends Comparable<T>> void setProperty(Block block, Property<T> property, T to) {
-        add(IStateMapping.setProperty(block, property, to));
+        add(StateMapping.setProperty(block, property, to));
     }
 
     /**
@@ -53,7 +53,7 @@ public class StateMapList extends ArrayList<IStateMapping> {
      */
     @Nonnull
     public BlockState getConverted(@Nonnull BlockState state) {
-        for (IStateMapping i : this) {
+        for (StateMapping i : this) {
             if (i.test(state)) {
                 return i.apply(state);
             }

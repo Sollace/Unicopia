@@ -9,9 +9,9 @@ import com.minelittlepony.unicopia.entity.CuccoonEntity;
 import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
-import com.minelittlepony.unicopia.magic.IAttachedEffect;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.ITossedEffect;
+import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.TossedMagicEffect;
 import com.minelittlepony.unicopia.util.WorldEvent;
 
 import net.minecraft.block.BlockState;
@@ -32,7 +32,7 @@ import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-public class ChangelingTrapSpell extends AbstractSpell implements ITossedEffect, IAttachedEffect {
+public class ChangelingTrapSpell extends AbstractSpell implements TossedMagicEffect, AttachedMagicEffect {
 
     private BlockPos previousTrappedPosition;
 
@@ -54,22 +54,22 @@ public class ChangelingTrapSpell extends AbstractSpell implements ITossedEffect,
     }
 
     @Override
-    public SoundEvent getThrowSound(ICaster<?> caster) {
+    public SoundEvent getThrowSound(Caster<?> caster) {
         return USounds.SLIME_RETRACT;
     }
 
     @Override
-    public ItemStack getCastAppearance(ICaster<?> caster) {
+    public ItemStack getCastAppearance(Caster<?> caster) {
         return new ItemStack(Items.SLIME_BALL);
     }
 
-    private boolean checkStruggleCondition(ICaster<?> caster) {
+    private boolean checkStruggleCondition(Caster<?> caster) {
         return !caster.getOrigin().equals(previousTrappedPosition)
             || (!(caster.getOwner() instanceof PlayerEntity) && caster.getWorld().random.nextInt(20) == 0);
     }
 
     @Override
-    public boolean updateOnPerson(ICaster<?> caster) {
+    public boolean updateOnPerson(Caster<?> caster) {
         LivingEntity entity = caster.getOwner();
 
         if (entity.getVelocity().y > 0) {
@@ -144,17 +144,17 @@ public class ChangelingTrapSpell extends AbstractSpell implements ITossedEffect,
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
         return !source.getEntity().hasVehicle();
     }
 
     @Override
-    public void render(ICaster<?> source) {
+    public void render(Caster<?> source) {
         source.spawnParticles(ParticleTypes.DRIPPING_LAVA, 1);
     }
 
     @Override
-    public void renderOnPerson(ICaster<?> source) {
+    public void renderOnPerson(Caster<?> source) {
         render(source);
     }
 
@@ -163,7 +163,7 @@ public class ChangelingTrapSpell extends AbstractSpell implements ITossedEffect,
         return Affinity.BAD;
     }
 
-    public void enforce(ICaster<?> caster) {
+    public void enforce(Caster<?> caster) {
         struggleCounter = 10;
 
         if (caster.isLocal() && caster.getWorld().random.nextInt(3) == 0) {
@@ -178,7 +178,7 @@ public class ChangelingTrapSpell extends AbstractSpell implements ITossedEffect,
         setDirty(true);
     }
 
-    protected void entrap(ICaster<?> e) {
+    protected void entrap(Caster<?> e) {
 
         ChangelingTrapSpell existing = e.getEffect(ChangelingTrapSpell.class, true);
 
@@ -196,7 +196,7 @@ public class ChangelingTrapSpell extends AbstractSpell implements ITossedEffect,
     }
 
     @Override
-    public void onImpact(ICaster<?> caster, BlockPos pos, BlockState state) {
+    public void onImpact(Caster<?> caster, BlockPos pos, BlockState state) {
         if (caster.isLocal()) {
             caster.findAllEntitiesInRange(5)
                 .filter(this::canAffect)

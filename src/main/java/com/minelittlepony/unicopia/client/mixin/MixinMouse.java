@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
@@ -23,7 +23,7 @@ abstract class MixinMouse {
 
     @Inject(method = "updateMouse()V", at = @At("HEAD"))
     private void onUpdateMouse(CallbackInfo info) {
-        if (SpeciesList.instance().getPlayer(client.player).getGravity().getGravitationConstant() < 0) {
+        if (Pony.of(client.player).getGravity().getGravitationConstant() < 0) {
             cursorDeltaX = -cursorDeltaX;
             cursorDeltaY = -cursorDeltaY;
         }

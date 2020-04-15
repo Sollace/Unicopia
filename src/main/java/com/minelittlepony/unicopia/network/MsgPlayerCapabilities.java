@@ -11,9 +11,8 @@ import com.google.gson.annotations.Expose;
 import com.minelittlepony.jumpingcastle.api.Channel;
 import com.minelittlepony.jumpingcastle.api.Message;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UnicopiaCore;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
@@ -36,7 +35,7 @@ public class MsgPlayerCapabilities implements Message, Message.Handler<MsgPlayer
         compoundTag = new byte[0];
     }
 
-    public MsgPlayerCapabilities(IPlayer player) {
+    public MsgPlayerCapabilities(Pony player) {
         newRace = player.getSpecies();
         senderId = player.getOwner().getUuid();
 
@@ -60,7 +59,7 @@ public class MsgPlayerCapabilities implements Message, Message.Handler<MsgPlayer
         if (self == null) {
             UnicopiaCore.LOGGER.warn("[Unicopia] [CLIENT] [MsgPlayerCapabilities] Player with id %s was not found!\n", senderId.toString());
         } else {
-            IPlayer player = SpeciesList.instance().getPlayer(self);
+            Pony player = Pony.of(self);
 
             if (compoundTag.length > 0) {
                 try (ByteArrayInputStream input = new ByteArrayInputStream(compoundTag)) {

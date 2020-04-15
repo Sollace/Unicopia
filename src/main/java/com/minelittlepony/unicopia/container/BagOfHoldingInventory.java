@@ -6,9 +6,9 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 
 import com.minelittlepony.unicopia.advancement.BOHDeathCriterion;
-import com.minelittlepony.unicopia.magic.IMagicalItem;
+import com.minelittlepony.unicopia.magic.MagicalItem;
 import com.minelittlepony.unicopia.util.HeavyInventoryUtils;
-import com.minelittlepony.unicopia.util.InbtSerialisable;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
 import net.minecraft.block.Block;
@@ -36,7 +36,7 @@ import net.minecraft.world.explosion.Explosion.DestructionType;
 import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextParameters;
 
-public class BagOfHoldingInventory extends BasicInventory implements InbtSerialisable {
+public class BagOfHoldingInventory extends BasicInventory implements NbtSerialisable {
 
     public static final int NBT_COMPOUND = 10;
     public static final int MIN_SIZE = 18;
@@ -159,7 +159,7 @@ public class BagOfHoldingInventory extends BasicInventory implements InbtSeriali
                 // TODO: tag for items that are invalid for the inventory of holding
                 || stack.getItem() instanceof BlockItem && (((BlockItem)stack.getItem()).getBlock() instanceof ShulkerBoxBlock)
                 || (compound != null && compound.containsKey("invalid"))
-                || (stack.getItem() instanceof IMagicalItem && ((IMagicalItem) stack.getItem()).hasInnerSpace());
+                || (stack.getItem() instanceof MagicalItem && ((MagicalItem) stack.getItem()).hasInnerSpace());
     }
 
     protected boolean isIllegalBlock(Block block) {

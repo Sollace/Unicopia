@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.ability;
 
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 /**
  * Predicate for abilities to control whether a player can fly.
@@ -8,5 +8,5 @@ import com.minelittlepony.unicopia.entity.player.IPlayer;
  * This overrides what the race specifies.
  */
 public interface FlightPredicate {
-    boolean checkCanFly(IPlayer player);
+    boolean checkCanFly(Pony player);
 }

@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.container;
 
-import com.minelittlepony.unicopia.enchanting.IPageOwner;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
 import com.minelittlepony.unicopia.enchanting.SpellCraftingEvent;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.MagicGemItem;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 
@@ -15,16 +15,16 @@ import net.minecraft.util.DefaultedList;
 
 public class SpellbookResultSlot extends SpellBookContainer.SpellbookSlot {
 
-    private final IPageOwner owner;
+    private final Pony player;
     private final SpellBookInventory craftMatrix;
 
     private IPageUnlockListener listener;
 
     private boolean crafted;
 
-    public SpellbookResultSlot(IPageUnlockListener listener, IPageOwner owner, SpellBookInventory craftMatric, Inventory inventory, int index, int xPosition, int yPosition) {
+    public SpellbookResultSlot(IPageUnlockListener listener, Pony player, SpellBookInventory craftMatric, Inventory inventory, int index, int xPosition, int yPosition) {
         super(inventory, index, xPosition, yPosition);
-        this.owner = owner;
+        this.player = player;
         this.listener = listener;
         craftMatrix = craftMatric;
     }
@@ -85,7 +85,7 @@ public class SpellbookResultSlot extends SpellBookContainer.SpellbookSlot {
 
     @Override
     protected void onCrafted(ItemStack stack) {
-        SpellCraftingEvent.trigger(owner, stack, listener);
+        SpellCraftingEvent.trigger(player.getPages(), stack, listener);
     }
 
     @Override

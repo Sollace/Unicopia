@@ -1,15 +1,15 @@
 package com.minelittlepony.unicopia.magic;
 
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 /**
  * Represents a passive spell that does something when held in the player's hand.
  */
-public interface IHeldEffect extends IMagicEffect {
+public interface HeldMagicEffect extends MagicEffect {
     /**
      * Called every tick when held in a player's inventory.
      *
      * @param source    The entity we are currently attached to.
      */
-    void updateInHand(IPlayer caster, Affinity affinity);
+    void updateInHand(Pony caster, Affinity affinity);
 }

@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,7 +20,7 @@ public class SugaryItem extends Item {
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
         if (sugarAmount != 0 && entity instanceof PlayerEntity) {
-            SpeciesList.instance().getPlayer((PlayerEntity)entity).addEnergy(sugarAmount);
+            Pony.of((PlayerEntity)entity).addEnergy(sugarAmount);
         }
 
         return super.finishUsing(stack, world, entity);

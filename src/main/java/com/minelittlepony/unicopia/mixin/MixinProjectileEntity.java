@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.ducks.PonyContainer;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.Projectile;
@@ -21,9 +21,8 @@ public abstract class MixinProjectileEntity extends Entity implements Projectile
             at = @At("HEAD"),
             cancellable = true)
     private void onOnEntityHit(EntityHitResult hit, CallbackInfo info) {
-        SpeciesList.instance().getForEntity(hit.getEntity())
-        .ifPresent(container -> {
-            if (container.getRaceContainer().onProjectileImpact((ProjectileEntity)(Object)this)) {
+        PonyContainer.of(hit.getEntity()).ifPresent(container -> {
+            if (container.get().onProjectileImpact((ProjectileEntity)(Object)this)) {
                 info.cancel();
             }
         });

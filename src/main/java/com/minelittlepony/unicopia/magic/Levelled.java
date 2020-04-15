@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.magic;
 /**
  * Object with levelling capabilities.
  */
-public interface ILevelled {
+public interface Levelled {
 
     /**
      * Maximum level this spell can reach or -1 for unlimited.

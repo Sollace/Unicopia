@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.toxin.ToxicItem;
 import com.minelittlepony.unicopia.toxin.Toxicity;
 import com.minelittlepony.unicopia.util.collection.ReversableStateMapList;
@@ -50,7 +50,7 @@ public class MossItem extends ToxicItem {
 
             int amount = 1;
 
-            if (player != null && SpeciesList.instance().getPlayer(player).getSpecies().canUseEarth()) {
+            if (player != null && Pony.of(player).getSpecies().canUseEarth()) {
                 amount = world.random.nextInt(4);
             }
 

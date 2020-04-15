@@ -4,10 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.minelittlepony.unicopia.IKeyBinding;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UnicopiaCore;
 import com.minelittlepony.unicopia.ability.Abilities;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
 import net.fabricmc.fabric.api.client.keybinding.KeyBindingRegistry;
@@ -39,7 +38,7 @@ class KeyBindingsHandler {
             || client.player == null) {
             return;
         }
-        IPlayer iplayer = SpeciesList.instance().getPlayer(client.player);
+        Pony iplayer = Pony.of(client.player);
 
         for (KeyBinding i : bindings) {
             if (i.isPressed()) {

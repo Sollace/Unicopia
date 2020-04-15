@@ -9,7 +9,7 @@ import java.util.Random;
  * A sphere, or 2d circle of you so desire.
  *
  */
-public class Sphere implements IShape {
+public class Sphere implements Shape {
 
     protected final Vec3d stretch;
     private final boolean hollow;

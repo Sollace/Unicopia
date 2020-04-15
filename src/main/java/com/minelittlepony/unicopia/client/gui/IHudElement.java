@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.gui;
 
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 public interface IHudElement {
 
@@ -8,5 +8,5 @@ public interface IHudElement {
 
     void renderHud(UHud context);
 
-    boolean shouldRender(IPlayer player);
+    boolean shouldRender(Pony player);
 }

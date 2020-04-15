@@ -1,12 +1,16 @@
 package com.minelittlepony.unicopia.entity;
 
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.util.InbtSerialisable;
+import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ducks.PonyContainer;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
+
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 
-public interface IEntity extends InbtSerialisable, Updatable {
+public interface Ponylike extends NbtSerialisable, Updatable {
     Race getSpecies();
 
     void setSpecies(Race race);
@@ -55,5 +59,12 @@ public interface IEntity extends InbtSerialisable, Updatable {
      */
     default void onJump() {
 
+    }
+
+    @Nullable
+    static <T extends Ponylike> T of(Entity entity) {
+        return PonyContainer.<Entity, T>of(entity)
+                .map(PonyContainer::get)
+                .orElse(null);
     }
 }

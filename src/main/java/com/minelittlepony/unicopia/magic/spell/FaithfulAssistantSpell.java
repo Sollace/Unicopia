@@ -2,11 +2,11 @@ package com.minelittlepony.unicopia.magic.spell;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.entity.FollowCasterGoal;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
-import com.minelittlepony.unicopia.entity.ai.FollowCasterGoal;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.IMagicEffect;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.MagicEffect;
 
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.nbt.CompoundTag;
@@ -22,7 +22,7 @@ public class FaithfulAssistantSpell extends AbstractSpell {
     private static final Box EFFECT_BOUNDS = new Box(-2, -2, -2, 2, 2, 2);
 
     @Nullable
-    private IMagicEffect piggyBackSpell;
+    private MagicEffect piggyBackSpell;
 
     @Override
     public String getName() {
@@ -65,20 +65,20 @@ public class FaithfulAssistantSpell extends AbstractSpell {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void onPlaced(ICaster<?> caster) {
+    public void onPlaced(Caster<?> caster) {
         if (caster.getEntity() instanceof SpellcastEntity) {
             SpellcastEntity living = (SpellcastEntity)caster.getEntity();
 
             living.getNavigation().setCanSwim(false);
             living.getGoals().add(1, new SwimGoal(living));
-            living.getGoals().add(2, new FollowCasterGoal<>((ICaster<SpellcastEntity>)caster, 1, 4, 70));
+            living.getGoals().add(2, new FollowCasterGoal<>((Caster<SpellcastEntity>)caster, 1, 4, 70));
 
             living.setPosition(living.x, living.y, living.z);
         }
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
         if (piggyBackSpell == null) {
             Box bb = EFFECT_BOUNDS.offset(source.getOriginVector());
 
@@ -101,7 +101,7 @@ public class FaithfulAssistantSpell extends AbstractSpell {
     }
 
     @Override
-    public void render(ICaster<?> source) {
+    public void render(Caster<?> source) {
         if (piggyBackSpell != null) {
             piggyBackSpell.render(source);
         }

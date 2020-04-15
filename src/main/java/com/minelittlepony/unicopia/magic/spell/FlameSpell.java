@@ -1,15 +1,15 @@
 package com.minelittlepony.unicopia.magic.spell;
 
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.IHeldEffect;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.HeldMagicEffect;
 
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
 
-public class FlameSpell extends AbstractSpell implements IHeldEffect {
+public class FlameSpell extends AbstractSpell implements HeldMagicEffect {
 
     @Override
     public String getName() {
@@ -27,16 +27,16 @@ public class FlameSpell extends AbstractSpell implements IHeldEffect {
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
         return false;
     }
 
     @Override
-    public void render(ICaster<?> source) {
+    public void render(Caster<?> source) {
     }
 
     @Override
-    public void updateInHand(IPlayer caster, Affinity affinity) {
+    public void updateInHand(Pony caster, Affinity affinity) {
         PlayerEntity player = caster.getOwner();
 
         if (player.age % 15 == 0) {

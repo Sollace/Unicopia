@@ -76,7 +76,7 @@ class PageInstance implements Page {
     }
 
     @Override
-    public boolean canUnlock(IPageOwner owner, IUnlockEvent event) {
+    public boolean canUnlock(PageOwner owner, IUnlockEvent event) {
         return condition == null || condition.accepts(event) && condition.matches(owner, event);
     }
 

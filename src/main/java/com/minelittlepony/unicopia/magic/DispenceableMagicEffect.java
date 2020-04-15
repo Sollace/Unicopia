@@ -7,7 +7,7 @@ import net.minecraft.util.math.Direction;
 /**
  * Represents an object with an action to perform when dispensed from a dispenser.
  */
-public interface IDispenceable extends IMagicEffect {
+public interface DispenceableMagicEffect extends MagicEffect {
 
     /**
      * Called when dispensed.

@@ -35,7 +35,7 @@ public class CompoundCondition implements IUnlockCondition<IUnlockEvent> {
     }
 
     @Override
-    public boolean matches(IPageOwner owner, IUnlockEvent event) {
+    public boolean matches(PageOwner owner, IUnlockEvent event) {
         return operation.test.apply(conditions.stream(), condition -> condition.accepts(event) && condition.matches(owner, event));
     }
 

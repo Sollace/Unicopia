@@ -15,17 +15,17 @@ import net.minecraft.entity.ItemEntity;
 @Mixin(ItemEntity.class)
 public abstract class MixinItemEntity extends Entity implements IItemEntity {
 
-    private final ItemEntityCapabilities caster = createRaceContainer();
+    private final ItemEntityCapabilities caster = create();
 
     private MixinItemEntity() { super(null, null); }
 
     @Override
-    public ItemEntityCapabilities createRaceContainer() {
+    public ItemEntityCapabilities create() {
         return new ItemEntityCapabilities((ItemEntity)(Object)this);
     }
 
     @Override
-    public ItemEntityCapabilities getRaceContainer() {
+    public ItemEntityCapabilities get() {
         return caster;
     }
 

@@ -2,10 +2,10 @@ package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.IAffine;
-import com.minelittlepony.unicopia.magic.IAttachedEffect;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.IMagicEffect;
+import com.minelittlepony.unicopia.magic.Affine;
+import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.EffectSync;
 
@@ -15,7 +15,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
 
-public class LivingEntityCapabilities implements RaceContainer<LivingEntity>, ICaster<LivingEntity> {
+public class LivingEntityCapabilities implements RaceContainer<LivingEntity>, Caster<LivingEntity> {
 
     private static final TrackedData<CompoundTag> EFFECT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
 
@@ -41,12 +41,12 @@ public class LivingEntityCapabilities implements RaceContainer<LivingEntity>, IC
     }
 
     @Override
-    public void setEffect(IMagicEffect effect) {
+    public void setEffect(MagicEffect effect) {
         effectDelegate.set(effect);
     }
 
     @Override
-    public <T extends IMagicEffect> T getEffect(Class<T> type, boolean update) {
+    public <T extends MagicEffect> T getEffect(Class<T> type, boolean update) {
         return effectDelegate.get(type, update);
     }
 
@@ -58,7 +58,7 @@ public class LivingEntityCapabilities implements RaceContainer<LivingEntity>, IC
     @Override
     public void onUpdate() {
         if (hasEffect()) {
-            IAttachedEffect effect = getEffect(IAttachedEffect.class, true);
+            AttachedMagicEffect effect = getEffect(AttachedMagicEffect.class, true);
 
             if (effect != null) {
                 if (entity.getEntityWorld().isClient()) {
@@ -98,15 +98,15 @@ public class LivingEntityCapabilities implements RaceContainer<LivingEntity>, IC
 
     @Override
     public Affinity getAffinity() {
-        if (getOwner() instanceof IAffine) {
-            return ((IAffine)getOwner()).getAffinity();
+        if (getOwner() instanceof Affine) {
+            return ((Affine)getOwner()).getAffinity();
         }
         return Affinity.NEUTRAL;
     }
 
     @Override
     public void toNBT(CompoundTag compound) {
-        IMagicEffect effect = getEffect();
+        MagicEffect effect = getEffect();
 
         if (effect != null) {
             compound.put("effect", SpellRegistry.instance().serializeEffectToNBT(effect));

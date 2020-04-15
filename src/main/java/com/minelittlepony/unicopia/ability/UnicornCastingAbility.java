@@ -4,7 +4,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UParticles;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.ShieldSpell;
 
 /**
@@ -24,12 +24,12 @@ public class UnicornCastingAbility implements Ability<Ability.Hit> {
     }
 
     @Override
-    public int getWarmupTime(IPlayer player) {
+    public int getWarmupTime(Pony player) {
         return 20;
     }
 
     @Override
-    public int getCooldownTime(IPlayer player) {
+    public int getCooldownTime(Pony player) {
         return 0;
     }
 
@@ -39,7 +39,7 @@ public class UnicornCastingAbility implements Ability<Ability.Hit> {
     }
 
     @Override
-    public Hit tryActivate(IPlayer player) {
+    public Hit tryActivate(Pony player) {
         return new Hit();
     }
 
@@ -49,7 +49,7 @@ public class UnicornCastingAbility implements Ability<Ability.Hit> {
     }
 
     @Override
-    public void apply(IPlayer player, Hit data) {
+    public void apply(Pony player, Hit data) {
         // TODO: A way to pick the active effect
         if (player.getEffect() instanceof ShieldSpell) {
             player.setEffect(null);
@@ -59,12 +59,12 @@ public class UnicornCastingAbility implements Ability<Ability.Hit> {
     }
 
     @Override
-    public void preApply(IPlayer player) {
+    public void preApply(Pony player) {
         player.spawnParticles(UParticles.UNICORN_MAGIC, 5);
     }
 
     @Override
-    public void postApply(IPlayer player) {
+    public void postApply(Pony player) {
         player.spawnParticles(UParticles.UNICORN_MAGIC, 5);
     }
 }

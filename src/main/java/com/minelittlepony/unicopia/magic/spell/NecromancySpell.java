@@ -4,10 +4,10 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.ICaster;
+import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.WorldEvent;
-import com.minelittlepony.unicopia.util.shape.IShape;
+import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.EntityType;
@@ -43,7 +43,7 @@ public class NecromancySpell extends AbstractSpell.RangedAreaSpell {
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
 
         if (source.getWorld().isClient || source.getWorld().getDifficulty() == Difficulty.PEACEFUL) {
             return true;
@@ -54,7 +54,7 @@ public class NecromancySpell extends AbstractSpell.RangedAreaSpell {
 
         int radius = source.getCurrentLevel() + 1;
 
-        IShape affectRegion = new Sphere(false, radius * 4);
+        Shape affectRegion = new Sphere(false, radius * 4);
 
         if (source.getWorld().random.nextInt(100) != 0) {
             return true;
@@ -84,7 +84,7 @@ public class NecromancySpell extends AbstractSpell.RangedAreaSpell {
         return true;
     }
 
-    protected void spawnMonster(ICaster<?> source, Vec3d pos) {
+    protected void spawnMonster(Caster<?> source, Vec3d pos) {
         int index = (int)MathHelper.nextDouble(source.getWorld().random, 0, spawns.size());
         LivingEntity zombie = spawns.get(index).create(source.getWorld());
         zombie.setPosition(pos.x, pos.y, pos.z);
@@ -97,8 +97,8 @@ public class NecromancySpell extends AbstractSpell.RangedAreaSpell {
     }
 
     @Override
-    public void render(ICaster<?> source) {
-        IShape affectRegion = new Sphere(false, (1 + source.getCurrentLevel()) * 4);
+    public void render(Caster<?> source) {
+        Shape affectRegion = new Sphere(false, (1 + source.getCurrentLevel()) * 4);
 
         source.spawnParticles(affectRegion, 5, pos -> {
             if (!source.getWorld().isAir(new BlockPos(pos).down())) {

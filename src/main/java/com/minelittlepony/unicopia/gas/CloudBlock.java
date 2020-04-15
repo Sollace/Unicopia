@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.gas;
 import java.util.Random;
 
 import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UBlocks;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.MossItem;
 import com.minelittlepony.unicopia.util.HoeUtil;
 
@@ -116,6 +116,6 @@ public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
 
     @Override
     public boolean canTill(ItemUsageContext context) {
-        return context.getPlayer() == null || SpeciesList.instance().getPlayer(context.getPlayer()).getSpecies().canInteractWithClouds();
+        return context.getPlayer() == null || Pony.of(context.getPlayer()).getSpecies().canInteractWithClouds();
     }
 }

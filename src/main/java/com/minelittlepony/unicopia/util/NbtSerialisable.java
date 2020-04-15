@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 
-public interface InbtSerialisable {
+public interface NbtSerialisable {
     /**
      * Called to save this to nbt to persist state on file or to transmit over the network
      *

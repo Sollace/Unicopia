@@ -7,15 +7,14 @@ import org.lwjgl.glfw.GLFW;
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.Expose;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AppleItem;
 import com.minelittlepony.unicopia.util.AwaitTickQueue;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.WorldEvent;
-import com.minelittlepony.unicopia.util.shape.IShape;
+import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.Block;
@@ -63,12 +62,12 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
     }
 
     @Override
-    public int getWarmupTime(IPlayer player) {
+    public int getWarmupTime(Pony player) {
         return 3;
     }
 
     @Override
-    public int getCooldownTime(IPlayer player) {
+    public int getCooldownTime(Pony player) {
         return 50;
     }
 
@@ -78,7 +77,7 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
     }
 
     @Override
-    public EarthPonyStompAbility.Data tryActivate(IPlayer player) {
+    public EarthPonyStompAbility.Data tryActivate(Pony player) {
         HitResult mop = VecHelper.getObjectMouseOver(player.getOwner(), 6, 1);
 
         if (mop instanceof BlockHitResult && mop.getType() == HitResult.Type.BLOCK) {
@@ -118,7 +117,7 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
     }
 
     @Override
-    public void apply(IPlayer iplayer, Data data) {
+    public void apply(Pony iplayer, Data data) {
 
         PlayerEntity player = iplayer.getOwner();
 
@@ -143,7 +142,7 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
                     double amount = (4 * player.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()) / (float)dist;
 
                     if (i instanceof PlayerEntity) {
-                        Race race = SpeciesList.instance().getPlayer((PlayerEntity)i).getSpecies();
+                        Race race = Pony.of((PlayerEntity)i).getSpecies();
                         if (race.canUseEarth()) {
                             amount /= 3;
                         }
@@ -203,13 +202,13 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
     }
 
     @Override
-    public void preApply(IPlayer player) {
+    public void preApply(Pony player) {
         player.addExertion(40);
         player.getOwner().attemptSprintingParticles();
     }
 
     @Override
-    public void postApply(IPlayer player) {
+    public void postApply(Pony player) {
         int timeDiff = getCooldownTime(player) - player.getAbilities().getRemainingCooldown();
 
         if (player.getOwner().getEntityWorld().getTime() % 1 == 0 || timeDiff == 0) {
@@ -224,7 +223,7 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
     private void spawnParticleRing(PlayerEntity player, int timeDiff, double yVel) {
         int animationTicks = timeDiff / 10;
         if (animationTicks < 6) {
-            IShape shape = new Sphere(true, animationTicks, 1, 0, 1);
+            Shape shape = new Sphere(true, animationTicks, 1, 0, 1);
 
             double y = 0.5 + (Math.sin(animationTicks) * 1.5);
 

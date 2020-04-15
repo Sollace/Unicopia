@@ -5,8 +5,8 @@ import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.ducks.Colourful;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -84,7 +84,7 @@ public class FruitLeavesBlock extends LeavesBlock implements Colourful {
     public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (SpeciesList.instance().getPlayer(player).getSpecies().canUseEarth()) {
+        if (Pony.of(player).getSpecies().canUseEarth()) {
             if (stack.isEmpty()) {
 
                 if (state.get(HEAVY)) {

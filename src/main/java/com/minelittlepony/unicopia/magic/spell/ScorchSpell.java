@@ -4,10 +4,10 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.ITossedEffect;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.TossedMagicEffect;
 import com.minelittlepony.unicopia.util.PosHelper;
-import com.minelittlepony.unicopia.util.projectile.IAdvancedProjectile;
+import com.minelittlepony.unicopia.util.projectile.AdvancedProjectile;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.BlockState;
@@ -15,7 +15,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.explosion.Explosion.DestructionType;
 
-public class ScorchSpell extends FireSpell implements ITossedEffect {
+public class ScorchSpell extends FireSpell implements TossedMagicEffect {
 
     @Override
     public String getName() {
@@ -33,7 +33,7 @@ public class ScorchSpell extends FireSpell implements ITossedEffect {
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
 
         BlockPos pos = PosHelper.findSolidGroundAt(source.getWorld(), source.getOrigin());
 
@@ -54,7 +54,7 @@ public class ScorchSpell extends FireSpell implements ITossedEffect {
     }
 
     @Override
-    public void render(ICaster<?> source) {
+    public void render(Caster<?> source) {
         source.spawnParticles(ParticleTypes.FLAME, 3);
         source.spawnParticles(UParticles.UNICORN_MAGIC, 3); // getTint()
     }
@@ -66,8 +66,8 @@ public class ScorchSpell extends FireSpell implements ITossedEffect {
 
     @Override
     @Nullable
-    public IAdvancedProjectile toss(ICaster<?> caster) {
-        IAdvancedProjectile projectile = ITossedEffect.super.toss(caster);
+    public AdvancedProjectile toss(Caster<?> caster) {
+        AdvancedProjectile projectile = TossedMagicEffect.super.toss(caster);
 
         if (projectile != null) {
             projectile.setGravity(false);
@@ -77,7 +77,7 @@ public class ScorchSpell extends FireSpell implements ITossedEffect {
     }
 
     @Override
-    public void onImpact(ICaster<?> caster, BlockPos pos, BlockState state) {
+    public void onImpact(Caster<?> caster, BlockPos pos, BlockState state) {
         if (caster.isLocal()) {
             caster.getWorld().createExplosion(caster.getOwner(), pos.getX(), pos.getY(), pos.getZ(), 2, DestructionType.DESTROY);
         }

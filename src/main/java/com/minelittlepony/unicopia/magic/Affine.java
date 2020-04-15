@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.magic;
 /**
  * Interface for things that have an affine alignment.
  */
-public interface IAffine {
+public interface Affine {
     /**
      * Gets the current alignment.
      * Good/Bad/Neutral

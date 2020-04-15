@@ -2,8 +2,7 @@ package com.minelittlepony.unicopia.command;
 
 import java.util.function.Function;
 
-import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.DisguiseSpell;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -53,7 +52,7 @@ public class DisguiseCommand {
         nbt = nbt.method_10553();
         nbt.putString("id", id.toString());
 
-        IPlayer iplayer = SpeciesList.instance().getPlayer(player);
+        Pony iplayer = Pony.of(player);
 
         Entity entity = EntityType.loadEntityWithPassengers(nbt, source.getWorld(), Function.identity());
 
@@ -82,7 +81,7 @@ public class DisguiseCommand {
     }
 
     static int reveal(ServerCommandSource source, PlayerEntity player) {
-        IPlayer iplayer = SpeciesList.instance().getPlayer(player);
+        Pony iplayer = Pony.of(player);
         iplayer.getEffect(DisguiseSpell.class).ifPresent(disguise -> {
             disguise.setDead();
         });

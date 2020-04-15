@@ -10,41 +10,41 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.state.property.Property;
 
-public interface IStateMapping extends Predicate<BlockState>, Function<BlockState, BlockState> {
+public interface StateMapping extends Predicate<BlockState>, Function<BlockState, BlockState> {
 
-    static IStateMapping removeBlock(Predicate<BlockState> mapper) {
+    static StateMapping removeBlock(Predicate<BlockState> mapper) {
         return build(
                 mapper,
                 s -> Blocks.AIR.getDefaultState());
     }
 
-    static IStateMapping replaceBlock(Block from, Block to) {
+    static StateMapping replaceBlock(Block from, Block to) {
         return build(
                 s -> s.getBlock() == from,
                 s -> to.getDefaultState(),
                 s -> replaceBlock(to, from));
     }
 
-    static <T extends Comparable<T>> IStateMapping replaceProperty(Block block, Property<T> property, T from, T to) {
+    static <T extends Comparable<T>> StateMapping replaceProperty(Block block, Property<T> property, T from, T to) {
         return build(
                 s -> s.getBlock() == block && s.get(property) == from,
                 s -> s.with(property, to),
                 s -> replaceProperty(block, property, to, from));
     }
 
-    static <T extends Comparable<T>> IStateMapping setProperty(Block block, Property<T> property, T to) {
+    static <T extends Comparable<T>> StateMapping setProperty(Block block, Property<T> property, T to) {
         return build(
                 s -> s.getBlock() == block,
                 s -> s.with(property, to));
     }
 
-    static IStateMapping build(Predicate<BlockState> predicate, Function<BlockState, BlockState> converter) {
+    static StateMapping build(Predicate<BlockState> predicate, Function<BlockState, BlockState> converter) {
         return build(predicate, converter, s -> s);
     }
 
-    static IStateMapping build(Predicate<BlockState> predicate, Function<BlockState, BlockState> converter, Function<IStateMapping, IStateMapping> inverter) {
-        return new IStateMapping() {
-            private IStateMapping inverse;
+    static StateMapping build(Predicate<BlockState> predicate, Function<BlockState, BlockState> converter, Function<StateMapping, StateMapping> inverter) {
+        return new StateMapping() {
+            private StateMapping inverse;
 
             @Override
             public boolean test(BlockState state) {
@@ -57,7 +57,7 @@ public interface IStateMapping extends Predicate<BlockState>, Function<BlockStat
             }
 
             @Override
-            public IStateMapping inverse() {
+            public StateMapping inverse() {
                 if (inverse == null) {
                     inverse = inverter.apply(this);
                 }
@@ -95,7 +95,7 @@ public interface IStateMapping extends Predicate<BlockState>, Function<BlockStat
      * Gets the inverse of this mapping if one exists. Otherwise returns itself.
      */
     @Nonnull
-    default IStateMapping inverse() {
+    default StateMapping inverse() {
         return this;
     }
 }

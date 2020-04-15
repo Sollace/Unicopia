@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.command;
 
-import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -37,7 +36,7 @@ class GravityCommand {
     static int get(ServerCommandSource source, PlayerEntity player, boolean isSelf) {
         String translationKey = "commands.gravity.get";
 
-        IPlayer iplayer = SpeciesList.instance().getPlayer(player);
+        Pony iplayer = Pony.of(player);
 
         float gravity = iplayer.getGravity().getGravitationConstant();
 
@@ -53,7 +52,7 @@ class GravityCommand {
     static int set(ServerCommandSource source, PlayerEntity player, float gravity, boolean isSelf) {
         String translationKey = "commands.gravity.set";
 
-        IPlayer iplayer = SpeciesList.instance().getPlayer(player);
+        Pony iplayer = Pony.of(player);
 
         iplayer.getGravity().setGraviationConstant(gravity);
         iplayer.sendCapabilities(true);

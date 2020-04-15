@@ -4,11 +4,12 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.AbilityReceiver;
-import com.minelittlepony.unicopia.enchanting.IPageOwner;
+import com.minelittlepony.unicopia.enchanting.PageOwner;
 import com.minelittlepony.unicopia.entity.FlightControl;
+import com.minelittlepony.unicopia.entity.Ponylike;
 import com.minelittlepony.unicopia.entity.RaceContainer;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.IHeldEffect;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.HeldMagicEffect;
 import com.minelittlepony.unicopia.network.Transmittable;
 import com.minelittlepony.util.IInterpolator;
 import com.mojang.authlib.GameProfile;
@@ -24,7 +25,7 @@ import net.minecraft.util.math.BlockPos;
  *
  * This is the core of unicopia.
  */
-public interface IPlayer extends ICaster<PlayerEntity>, RaceContainer<PlayerEntity>, Transmittable, IPageOwner {
+public interface Pony extends Caster<PlayerEntity>, RaceContainer<PlayerEntity>, Transmittable {
 
     /**
      * Gets the player's magical abilities delegate responsible for all spell casting and persisting/updating.
@@ -55,6 +56,8 @@ public interface IPlayer extends ICaster<PlayerEntity>, RaceContainer<PlayerEnti
      * Gets an animation interpolator.
      */
     IInterpolator getInterpolator();
+
+    PageOwner getPages();
 
     /**
      * Gets the amount of exertion this player has put toward any given activity.
@@ -92,7 +95,7 @@ public interface IPlayer extends ICaster<PlayerEntity>, RaceContainer<PlayerEnti
         setEnergy(getEnergy() + energy / 100F);
     }
 
-    void copyFrom(IPlayer oldPlayer);
+    void copyFrom(Pony oldPlayer);
 
     /**
      * Called when the player steps on clouds.
@@ -106,7 +109,7 @@ public interface IPlayer extends ICaster<PlayerEntity>, RaceContainer<PlayerEnti
      * Returns null if the passed item has no held effect.
      */
     @Nullable
-    IHeldEffect getHeldEffect(ItemStack stack);
+    HeldMagicEffect getHeldEffect(ItemStack stack);
 
     /**
      * Called when this player falls.
@@ -127,6 +130,11 @@ public interface IPlayer extends ICaster<PlayerEntity>, RaceContainer<PlayerEnti
      */
     default boolean isClientPlayer() {
         return InteractionManager.instance().isClientPlayer(getOwner());
+    }
+
+    @Nullable
+    static Pony of(@Nullable PlayerEntity player) {
+        return Ponylike.<Pony>of(player);
     }
 
     static boolean equal(GameProfile one, GameProfile two) {

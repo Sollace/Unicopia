@@ -1,9 +1,9 @@
 package com.minelittlepony.unicopia.magic.spell;
 
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.ICaster;
+import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -30,7 +30,7 @@ public class AttractiveSpell extends ShieldSpell {
     }
 
     @Override
-    public void render(ICaster<?> source) {
+    public void render(Caster<?> source) {
         int range = 4 + (source.getCurrentLevel() * 2);
         Vec3d pos = source.getOriginVector();
 
@@ -40,18 +40,18 @@ public class AttractiveSpell extends ShieldSpell {
     }
 
     @Override
-    public double getDrawDropOffRange(ICaster<?> caster) {
+    public double getDrawDropOffRange(Caster<?> caster) {
         return 10 + (caster.getCurrentLevel() * 2);
     }
 
     @Override
-    protected void applyRadialEffect(ICaster<?> source, Entity target, double distance, double radius) {
+    protected void applyRadialEffect(Caster<?> source, Entity target, double distance, double radius) {
         Vec3d pos = source.getOriginVector();
 
         double force = 2.5F / distance;
 
         if (source.getAffinity() != Affinity.BAD && target instanceof PlayerEntity) {
-            force *= calculateAdjustedForce(SpeciesList.instance().getPlayer((PlayerEntity)target));
+            force *= calculateAdjustedForce(Pony.of((PlayerEntity)target));
         }
 
         if (source.getAffinity() == Affinity.BAD && source.getWorld().random.nextInt(4500) == 0) {

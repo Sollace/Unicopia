@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.ability;
 import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.client.network.packet.EntityPassengersSetS2CPacket;
@@ -29,12 +29,12 @@ public class PegasusCarryAbility implements Ability<Ability.Hit> {
     }
 
     @Override
-    public int getWarmupTime(IPlayer player) {
+    public int getWarmupTime(Pony player) {
         return 0;
     }
 
     @Override
-    public int getCooldownTime(IPlayer player) {
+    public int getCooldownTime(Pony player) {
         return 10;
     }
 
@@ -44,7 +44,7 @@ public class PegasusCarryAbility implements Ability<Ability.Hit> {
     }
 
     @Override
-    public Hit tryActivate(IPlayer player) {
+    public Hit tryActivate(Pony player) {
         return new Hit();
     }
 
@@ -66,7 +66,7 @@ public class PegasusCarryAbility implements Ability<Ability.Hit> {
     }
 
     @Override
-    public void apply(IPlayer iplayer, Hit data) {
+    public void apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.getOwner();
         LivingEntity rider = findRider(player, iplayer.getWorld());
 
@@ -82,11 +82,11 @@ public class PegasusCarryAbility implements Ability<Ability.Hit> {
     }
 
     @Override
-    public void preApply(IPlayer player) {
+    public void preApply(Pony player) {
     }
 
     @Override
-    public void postApply(IPlayer player) {
+    public void postApply(Pony player) {
     }
 
     public interface IPickupImmuned {

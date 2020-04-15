@@ -4,12 +4,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UParticles;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.IAttachedEffect;
-import com.minelittlepony.unicopia.magic.ICaster;
+import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
+import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.util.particles.ParticleConnection;
 import com.minelittlepony.unicopia.util.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -20,7 +19,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
-public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements IAttachedEffect {
+public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements AttachedMagicEffect {
 
     private final ParticleConnection particlEffect = new ParticleConnection();
 
@@ -40,12 +39,12 @@ public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements IAttac
     }
 
     @Override
-    public void renderOnPerson(ICaster<?> source) {
+    public void renderOnPerson(Caster<?> source) {
         render(source);
     }
 
     @Override
-    public void render(ICaster<?> source) {
+    public void render(Caster<?> source) {
         float radius = 4 + (source.getCurrentLevel() * 2);
 
         source.spawnParticles(new Sphere(true, radius), (int)(radius * 6), pos -> {
@@ -61,7 +60,7 @@ public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements IAttac
     }
 
     @Override
-    public boolean updateOnPerson(ICaster<?> source) {
+    public boolean updateOnPerson(Caster<?> source) {
         int costMultiplier = applyEntities(source);
         if (costMultiplier > 0) {
             if (source.getOwner().age % 20 == 0) {
@@ -79,17 +78,17 @@ public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements IAttac
         return !isDead();
     }
 
-    public double getDrawDropOffRange(ICaster<?> source) {
+    public double getDrawDropOffRange(Caster<?> source) {
         return 4 + (source.getCurrentLevel() * 2);
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
         applyEntities(source);
         return true;
     }
 
-    protected int applyEntities(ICaster<?> source) {
+    protected int applyEntities(Caster<?> source) {
         double radius = getDrawDropOffRange(source);
 
         Entity owner = source.getOwner();
@@ -115,7 +114,7 @@ public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements IAttac
         return targets.size();
     }
 
-    protected void applyRadialEffect(ICaster<?> source, Entity target, double distance, double radius) {
+    protected void applyRadialEffect(Caster<?> source, Entity target, double distance, double radius) {
         Vec3d pos = source.getOriginVector();
 
         if (ProjectileUtil.isProjectile(target)) {
@@ -131,7 +130,7 @@ public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements IAttac
             double force = Math.max(0.1, radius / 4);
 
             if (source.getAffinity() != Affinity.BAD && target instanceof PlayerEntity) {
-                force *= calculateAdjustedForce(SpeciesList.instance().getPlayer((PlayerEntity)target));
+                force *= calculateAdjustedForce(Pony.of((PlayerEntity)target));
             } else {
                 force *= 0.75;
             }
@@ -156,7 +155,7 @@ public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements IAttac
     /**
      * Returns a force to apply based on the given player's given race.
      */
-    protected double calculateAdjustedForce(IPlayer player) {
+    protected double calculateAdjustedForce(Pony player) {
         double force = 0.75;
 
         if (player.getSpecies().canUseEarth()) {

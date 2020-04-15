@@ -1,9 +1,8 @@
 package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UMaterials;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -43,7 +42,7 @@ public class ChitinBlock extends Block {
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
         float hardness = super.calcBlockBreakingDelta(state, player, world, pos);
 
-        IPlayer iplayer = SpeciesList.instance().getPlayer(player);
+        Pony iplayer = Pony.of(player);
         Race race = iplayer.getSpecies();
 
         if (race == Race.CHANGELING) {

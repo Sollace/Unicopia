@@ -5,9 +5,9 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 import com.minelittlepony.unicopia.entity.Updatable;
-import com.minelittlepony.unicopia.magic.IDependable;
-import com.minelittlepony.unicopia.magic.IMagicalItem;
-import com.minelittlepony.unicopia.util.InbtSerialisable;
+import com.minelittlepony.unicopia.magic.AddictiveMagicalItem;
+import com.minelittlepony.unicopia.magic.MagicalItem;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,12 +17,12 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-public class PlayerInventory implements Updatable, InbtSerialisable {
-    private final Map<IDependable, Entry> dependencies = Maps.newHashMap();
+public class PlayerInventory implements Updatable, NbtSerialisable {
+    private final Map<AddictiveMagicalItem, Entry> dependencies = Maps.newHashMap();
 
-    private final IPlayer player;
+    private final Pony player;
 
-    PlayerInventory(IPlayer player) {
+    PlayerInventory(Pony player) {
         this.player = player;
     }
 
@@ -32,7 +32,7 @@ public class PlayerInventory implements Updatable, InbtSerialisable {
      *
      * Bad things might happen when it's removed.
      */
-    public synchronized void enforceDependency(IDependable item) {
+    public synchronized void enforceDependency(AddictiveMagicalItem item) {
         if (dependencies.containsKey(item)) {
             dependencies.get(item).reinforce();
         } else {
@@ -43,7 +43,7 @@ public class PlayerInventory implements Updatable, InbtSerialisable {
     /**
      * Returns how long the player has been wearing the given item.
      */
-    public synchronized int getTicksAttached(IDependable item) {
+    public synchronized int getTicksAttached(AddictiveMagicalItem item) {
         if (dependencies.containsKey(item)) {
             return dependencies.get(item).ticksAttached;
         }
@@ -56,7 +56,7 @@ public class PlayerInventory implements Updatable, InbtSerialisable {
      *
      * Zero means not dependent at all / not wearing.
      */
-    public synchronized float getNeedfulness(IDependable item) {
+    public synchronized float getNeedfulness(AddictiveMagicalItem item) {
         if (dependencies.containsKey(item)) {
             return dependencies.get(item).needfulness;
         }
@@ -67,10 +67,10 @@ public class PlayerInventory implements Updatable, InbtSerialisable {
     @Override
     public synchronized void onUpdate() {
 
-        Iterator<Map.Entry<IDependable, Entry>> iterator = dependencies.entrySet().iterator();
+        Iterator<Map.Entry<AddictiveMagicalItem, Entry>> iterator = dependencies.entrySet().iterator();
 
         while (iterator.hasNext()) {
-            Map.Entry<IDependable, Entry> entry = iterator.next();
+            Map.Entry<AddictiveMagicalItem, Entry> entry = iterator.next();
 
             Entry item = entry.getValue();
 
@@ -85,7 +85,7 @@ public class PlayerInventory implements Updatable, InbtSerialisable {
     /**
      * Checks if the player is wearing the specified magical artifact.
      */
-    public boolean isWearing(IMagicalItem item) {
+    public boolean isWearing(MagicalItem item) {
         for (ItemStack i : player.getOwner().getArmorItems()) {
             if (!i.isEmpty() && i.getItem() == item) {
                 return true;
@@ -131,18 +131,18 @@ public class PlayerInventory implements Updatable, InbtSerialisable {
         });
     }
 
-    class Entry implements Updatable, InbtSerialisable {
+    class Entry implements Updatable, NbtSerialisable {
         int ticksAttached = 0;
 
         float needfulness = 1;
 
-        IDependable item;
+        AddictiveMagicalItem item;
 
         Entry() {
 
         }
 
-        Entry(IDependable key) {
+        Entry(AddictiveMagicalItem key) {
             this.item = key;
         }
 
@@ -175,7 +175,7 @@ public class PlayerInventory implements Updatable, InbtSerialisable {
 
             Item item = Registry.ITEM.get(new Identifier(compound.getString("item")));
 
-            this.item = item instanceof IDependable ? (IDependable)item : null;
+            this.item = item instanceof AddictiveMagicalItem ? (AddictiveMagicalItem)item : null;
         }
     }
 }

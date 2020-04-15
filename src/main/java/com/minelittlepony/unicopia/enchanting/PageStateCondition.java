@@ -19,7 +19,7 @@ public class PageStateCondition implements IUnlockCondition<IUnlockEvent> {
     }
 
     @Override
-    public boolean matches(IPageOwner owner, IUnlockEvent event) {
+    public boolean matches(PageOwner owner, IUnlockEvent event) {
         Page ipage = Pages.instance().getByName(page);
 
         if (ipage != null) {

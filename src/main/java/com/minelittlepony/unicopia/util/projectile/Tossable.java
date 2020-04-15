@@ -1,18 +1,18 @@
 package com.minelittlepony.unicopia.util.projectile;
 
-import com.minelittlepony.unicopia.magic.ICaster;
+import com.minelittlepony.unicopia.magic.Caster;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 
-public interface ITossable<T> {
+public interface Tossable<T> {
 
     /**
      * Called once the projectile lands either hitting the ground or an entity.
      */
-    void onImpact(ICaster<?> caster, BlockPos pos, BlockState state);
+    void onImpact(Caster<?> caster, BlockPos pos, BlockState state);
 
     /**
      * The sound made when thrown.

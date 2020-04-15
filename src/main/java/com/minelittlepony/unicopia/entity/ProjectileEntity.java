@@ -3,14 +3,14 @@ package com.minelittlepony.unicopia.entity;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.IMagicEffect;
-import com.minelittlepony.unicopia.magic.ITossedEffect;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.TossedMagicEffect;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.EffectSync;
-import com.minelittlepony.unicopia.util.projectile.IAdvancedProjectile;
-import com.minelittlepony.unicopia.util.projectile.ITossable;
-import com.minelittlepony.unicopia.util.projectile.ITossableItem;
+import com.minelittlepony.unicopia.util.projectile.AdvancedProjectile;
+import com.minelittlepony.unicopia.util.projectile.Tossable;
+import com.minelittlepony.unicopia.util.projectile.TossableItem;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -39,7 +39,7 @@ import net.minecraft.world.World;
  *
  * Can also carry a spell if needed.
  */
-public class ProjectileEntity extends ThrownItemEntity implements IMagicals, IAdvancedProjectile, ICaster<LivingEntity> {
+public class ProjectileEntity extends ThrownItemEntity implements IMagicals, AdvancedProjectile, Caster<LivingEntity> {
 
     private static final TrackedData<Float> DAMAGE = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(ProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -116,12 +116,12 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, IAd
     }
 
     @Override
-    public void setEffect(ITossedEffect effect) {
-        setEffect((IMagicEffect)effect);
+    public void setEffect(TossedMagicEffect effect) {
+        setEffect((MagicEffect)effect);
     }
 
     @Override
-    public void setEffect(IMagicEffect effect) {
+    public void setEffect(MagicEffect effect) {
         effectDelegate.set(effect);
 
         if (effect != null) {
@@ -130,7 +130,7 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, IAd
     }
 
     @Override
-    public <T extends IMagicEffect> T getEffect(Class<T> type, boolean update) {
+    public <T extends MagicEffect> T getEffect(Class<T> type, boolean update) {
         return effectDelegate.get(type, update);
     }
 
@@ -260,15 +260,15 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, IAd
     protected void onHitBlock(BlockHitResult hit) {
         Item item = getItem().getItem();
 
-        if (item instanceof ITossableItem) {
-            ((ITossableItem)item).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));
+        if (item instanceof TossableItem) {
+            ((TossableItem)item).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));
         }
 
         if (hasEffect()) {
-            IMagicEffect effect = getEffect();
+            MagicEffect effect = getEffect();
 
-            if (effect instanceof ITossable) {
-                ((ITossable<?>)effect).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));
+            if (effect instanceof Tossable) {
+                ((Tossable<?>)effect).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));
             }
         }
     }
@@ -276,7 +276,7 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, IAd
     protected void onHitEntity(EntityHitResult hit) {
         Entity entity = hit.getEntity();
 
-        if (entity instanceof IAdvancedProjectile) {
+        if (entity instanceof AdvancedProjectile) {
             return;
         }
 

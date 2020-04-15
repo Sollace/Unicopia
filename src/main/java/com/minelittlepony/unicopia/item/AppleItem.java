@@ -69,7 +69,7 @@ public class AppleItem extends Item implements Toxic, ItemEntityCapabilities.Tic
 
     @Override
     public ActionResult onGroundTick(IItemEntity item) {
-        ItemEntity entity = item.getRaceContainer().getOwner();
+        ItemEntity entity = item.get().getOwner();
 
         if (!entity.removed && item.getAge() > item.getPickupDelay()) {
 

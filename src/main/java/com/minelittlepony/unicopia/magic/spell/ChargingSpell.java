@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia.magic.spell;
 
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.util.shape.IShape;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Line;
 
 import net.minecraft.util.math.Box;
@@ -34,19 +34,19 @@ public class ChargingSpell extends AbstractAttachableSpell {
     }
 
     @Override
-    protected Box getSearchArea(ICaster<?> source) {
+    protected Box getSearchArea(Caster<?> source) {
         return searchArea.offset(source.getOriginVector());
     }
 
     @Override
-    public void render(ICaster<?> source) {
+    public void render(Caster<?> source) {
         if (source.getWorld().random.nextInt(4 + source.getCurrentLevel() * 4) == 0) {
             SpellcastEntity target = getTarget(source);
 
             if (target != null) {
                 Vec3d start = source.getEntity().getPos();
 
-                IShape line = new Line(start, target.getPos());
+                Shape line = new Line(start, target.getPos());
 
                 source.spawnParticles(line, (int)line.getVolumeOfSpawnableSpace(), pos -> {
                     // TODO: ParticleTypeRegistry
@@ -58,7 +58,7 @@ public class ChargingSpell extends AbstractAttachableSpell {
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
         super.update(source);
 
         if (!searching) {

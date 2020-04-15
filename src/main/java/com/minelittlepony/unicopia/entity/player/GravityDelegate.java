@@ -9,9 +9,9 @@ import com.minelittlepony.unicopia.ability.FlightPredicate;
 import com.minelittlepony.unicopia.ability.HeightPredicate;
 import com.minelittlepony.unicopia.entity.FlightControl;
 import com.minelittlepony.unicopia.entity.Updatable;
-import com.minelittlepony.unicopia.magic.IMagicEffect;
+import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.mixin.MixinEntity;
-import com.minelittlepony.unicopia.util.InbtSerialisable;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.MutableVector;
 
 import net.minecraft.entity.Entity;
@@ -24,9 +24,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class GravityDelegate implements Updatable, FlightControl, InbtSerialisable, FlightPredicate, HeightPredicate {
+public class GravityDelegate implements Updatable, FlightControl, NbtSerialisable, FlightPredicate, HeightPredicate {
 
-    private final IPlayer player;
+    private final Pony player;
 
     private static final float MAXIMUM_FLIGHT_EXPERIENCE = 1500;
 
@@ -41,18 +41,18 @@ public class GravityDelegate implements Updatable, FlightControl, InbtSerialisab
 
     private float gravity = 0;
 
-    public GravityDelegate(IPlayer player) {
+    public GravityDelegate(Pony player) {
         this.player = player;
     }
 
     @Override
-    public boolean checkCanFly(IPlayer player) {
+    public boolean checkCanFly(Pony player) {
         if (player.getOwner().abilities.creativeMode) {
             return true;
         }
 
         if (player.hasEffect()) {
-            IMagicEffect effect = player.getEffect();
+            MagicEffect effect = player.getEffect();
             if (!effect.isDead() && effect instanceof FlightPredicate) {
                 return ((FlightPredicate)effect).checkCanFly(player);
             }
@@ -61,14 +61,14 @@ public class GravityDelegate implements Updatable, FlightControl, InbtSerialisab
         return player.getSpecies().canFly();
     }
 
-    protected boolean isRainboom(IPlayer player) {
+    protected boolean isRainboom(Pony player) {
         return Math.sqrt(getHorizontalMotion(player.getOwner())) > 0.4F;
     }
 
     @Override
-    public float getTargetEyeHeight(IPlayer player) {
+    public float getTargetEyeHeight(Pony player) {
         if (player.hasEffect()) {
-            IMagicEffect effect = player.getEffect();
+            MagicEffect effect = player.getEffect();
             if (!effect.isDead() && effect instanceof HeightPredicate) {
                 float val = ((HeightPredicate)effect).getTargetEyeHeight(player);
                 if (val > 0) {
@@ -85,9 +85,9 @@ public class GravityDelegate implements Updatable, FlightControl, InbtSerialisab
     }
 
     @Override
-    public float getTargetBodyHeight(IPlayer player) {
+    public float getTargetBodyHeight(Pony player) {
         if (player.hasEffect()) {
-            IMagicEffect effect = player.getEffect();
+            MagicEffect effect = player.getEffect();
             if (!effect.isDead() && effect instanceof HeightPredicate) {
                 float val = ((HeightPredicate)effect).getTargetBodyHeight(player);
                 if (val > 0) {

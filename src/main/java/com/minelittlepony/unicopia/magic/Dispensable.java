@@ -11,7 +11,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
 
-public interface IDispensable {
+public interface Dispensable {
     /**
      * Enables dispensing behaviours for this item.
      */

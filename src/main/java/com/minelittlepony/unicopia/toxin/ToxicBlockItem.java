@@ -5,8 +5,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UEffects;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
@@ -62,7 +62,7 @@ public class ToxicBlockItem extends BlockItem implements Toxic, Toxin {
         super.finishUsing(stack, world, entity);
 
         if (entity instanceof PlayerEntity) {
-            Race race = SpeciesList.instance().getPlayer((PlayerEntity)entity).getSpecies();
+            Race race = Pony.of((PlayerEntity)entity).getSpecies();
             Toxicity toxicity = (race.isDefault() || race == Race.CHANGELING) ? Toxicity.LETHAL : getToxicity(stack);
 
             addSecondaryEffects((PlayerEntity)entity, toxicity, stack);
@@ -73,7 +73,7 @@ public class ToxicBlockItem extends BlockItem implements Toxic, Toxin {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        Race race = SpeciesList.instance().getPlayer(player).getSpecies();
+        Race race = Pony.of(player).getSpecies();
 
         if (race.isDefault() || race == Race.CHANGELING) {
             return new TypedActionResult<>(ActionResult.FAIL, player.getStackInHand(hand));

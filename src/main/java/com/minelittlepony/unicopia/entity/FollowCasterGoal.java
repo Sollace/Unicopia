@@ -1,8 +1,8 @@
-package com.minelittlepony.unicopia.entity.ai;
+package com.minelittlepony.unicopia.entity;
 
 import java.util.EnumSet;
 
-import com.minelittlepony.unicopia.magic.ICaster;
+import com.minelittlepony.unicopia.magic.Caster;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -19,7 +19,7 @@ import net.minecraft.world.ViewableWorld;
 
 public class FollowCasterGoal<T extends MobEntity> extends Goal {
 
-    protected final ICaster<?> caster;
+    protected final Caster<?> caster;
 
     protected final MobEntity entity;
 
@@ -38,7 +38,7 @@ public class FollowCasterGoal<T extends MobEntity> extends Goal {
 
     private float oldWaterCost;
 
-    public FollowCasterGoal(ICaster<T> caster, double followSpeed, float minDist, float maxDist) {
+    public FollowCasterGoal(Caster<T> caster, double followSpeed, float minDist, float maxDist) {
         this.caster = caster;
 
         this.entity = (MobEntity)caster.getEntity();

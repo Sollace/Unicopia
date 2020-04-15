@@ -10,13 +10,12 @@ import com.minelittlepony.jumpingcastle.api.Target;
 import com.minelittlepony.unicopia.Config;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.UnicopiaCore;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.client.render.DisguiseRenderer;
 import com.minelittlepony.unicopia.ducks.Colourful;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
@@ -55,7 +54,7 @@ public class UnicopiaCoreClient extends InteractionManager implements ClientModI
     private static Race clientPlayerRace = getclientPlayerRace();
 
     private static Race getclientPlayerRace() {
-        if (!Config.instance().ignoresMineLittlePony()
+        if (!Config.getInstance().ignoresMineLittlePony()
                 && MinecraftClient.getInstance().player != null) {
             Race race = MineLPConnector.getPlayerPonyRace();
 
@@ -65,7 +64,7 @@ public class UnicopiaCoreClient extends InteractionManager implements ClientModI
         }
 
 
-        return Config.instance().getPrefferedRace();
+        return Config.getInstance().getPrefferedRace();
     }
 
     @Override
@@ -87,7 +86,7 @@ public class UnicopiaCoreClient extends InteractionManager implements ClientModI
             return false;
         }
 
-        return IPlayer.equal(MinecraftClient.getInstance().player, player);
+        return Pony.equal(MinecraftClient.getInstance().player, player);
     }
 
     @Override
@@ -97,7 +96,7 @@ public class UnicopiaCoreClient extends InteractionManager implements ClientModI
 
     public void postRenderEntity(Entity entity) {
         if (entity instanceof PlayerEntity) {
-            IPlayer iplayer = SpeciesList.instance().getPlayer((PlayerEntity)entity);
+            Pony iplayer = Pony.of((PlayerEntity)entity);
 
             if (iplayer.getGravity().getGravitationConstant() < 0) {
                 GlStateManager.translated(0, entity.getDimensions(entity.getPose()).height, 0);
@@ -115,7 +114,7 @@ public class UnicopiaCoreClient extends InteractionManager implements ClientModI
         }
 
         if (entity instanceof PlayerEntity) {
-            IPlayer iplayer = SpeciesList.instance().getPlayer((PlayerEntity)entity);
+            Pony iplayer = Pony.of((PlayerEntity)entity);
 
             if (iplayer.getGravity().getGravitationConstant() < 0) {
                 GlStateManager.scalef(1, -1, 1);

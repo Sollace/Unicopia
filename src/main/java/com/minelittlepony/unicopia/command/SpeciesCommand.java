@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.command;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
@@ -46,8 +46,8 @@ class SpeciesCommand {
 
     static int set(ServerCommandSource source, PlayerEntity player, Race race, boolean isSelf) {
 
-        if (SpeciesList.instance().speciesPermitted(race, player)) {
-            SpeciesList.instance().getPlayer(player).setSpecies(race);
+        if (race.isPermitted(player)) {
+            Pony.of(player).setSpecies(race);
 
             Text formattedName = new TranslatableText(race.name().toLowerCase());
 
@@ -67,7 +67,7 @@ class SpeciesCommand {
     }
 
     static int get(ServerCommandSource source, PlayerEntity player, boolean isSelf) {
-        Race spec = SpeciesList.instance().getPlayer(player).getSpecies();
+        Race spec = Pony.of(player).getSpecies();
 
         String name = "commands.race.tell.";
         name += isSelf ? "self" : "other";
@@ -91,7 +91,7 @@ class SpeciesCommand {
 
         boolean first = true;
         for (Race i : Race.values()) {
-            if (!i.isDefault() && SpeciesList.instance().speciesPermitted(i, player)) {
+            if (!i.isDefault() && i.isPermitted(player)) {
                 message.append(new TranslatableText((!first ? "\n" : "") + " - " + i.name().toLowerCase()));
                 first = false;
             }

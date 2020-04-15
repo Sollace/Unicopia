@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 
-import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.PlayerCamera;
 
 import net.minecraft.client.MinecraftClient;
@@ -24,7 +24,7 @@ abstract class MixinCamera {
         PlayerEntity player = MinecraftClient.getInstance().player;
 
         if (player != null) {
-            PlayerCamera view = SpeciesList.instance().getPlayer(player).getCamera();
+            PlayerCamera view = Pony.of(player).getCamera();
 
             //event.setRoll(view.calculateRoll());
             pitch = view.calculatePitch(pitch);

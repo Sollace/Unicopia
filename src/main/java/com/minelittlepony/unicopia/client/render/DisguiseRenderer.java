@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.render;
 
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.DisguiseSpell;
 
 import net.minecraft.client.MinecraftClient;
@@ -46,7 +46,7 @@ public class DisguiseRenderer {
         renderDisguise(renderMan, entity, x, y, z);
     }
 
-    public boolean renderDisguiseToGui(IPlayer player) {
+    public boolean renderDisguiseToGui(Pony player) {
         DisguiseSpell effect = player.getEffect(DisguiseSpell.class, false);
 
         if (effect == null || effect.isDead()) {

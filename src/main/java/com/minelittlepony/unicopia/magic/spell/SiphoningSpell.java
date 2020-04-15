@@ -4,10 +4,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.ICaster;
+import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -31,7 +30,7 @@ public class SiphoningSpell extends AbstractSpell.RangedAreaSpell {
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
 
         int radius = 4 + source.getCurrentLevel();
 
@@ -57,7 +56,7 @@ public class SiphoningSpell extends AbstractSpell.RangedAreaSpell {
                             float dealt = Math.min(e.getHealth(), attackAmount);
 
                             if (e instanceof PlayerEntity) {
-                                IPlayer player = SpeciesList.instance().getPlayer((PlayerEntity)e);
+                                Pony player = Pony.of((PlayerEntity)e);
 
                                 Race race = player.getSpecies();
 
@@ -107,7 +106,7 @@ public class SiphoningSpell extends AbstractSpell.RangedAreaSpell {
     }
 
     @Override
-    public void render(ICaster<?> source) {
+    public void render(Caster<?> source) {
         int radius = 4 + source.getCurrentLevel();
 
         Vec3d origin = source.getOriginVector();

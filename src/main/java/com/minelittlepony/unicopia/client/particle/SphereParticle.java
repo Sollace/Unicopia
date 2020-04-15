@@ -16,11 +16,11 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 
 import com.minelittlepony.unicopia.client.render.SphereModel;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.util.particles.ParticleConnection.IAttachableParticle;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.util.particles.ParticleConnection.AttachableParticle;
 import com.mojang.blaze3d.platform.GlStateManager;
 
-public class SphereParticle extends Particle implements IAttachableParticle {
+public class SphereParticle extends Particle implements AttachableParticle {
 
     protected float red;
     protected float green;
@@ -29,7 +29,7 @@ public class SphereParticle extends Particle implements IAttachableParticle {
 
     protected float radius;
 
-    private ICaster<?> caster;
+    private Caster<?> caster;
 
     private static final SphereModel model = new SphereModel();
 
@@ -63,7 +63,7 @@ public class SphereParticle extends Particle implements IAttachableParticle {
     }
 
     @Override
-    public void attachTo(ICaster<?> caster) {
+    public void attachTo(Caster<?> caster) {
         setMaxAge(50000);
         this.caster = caster;
     }

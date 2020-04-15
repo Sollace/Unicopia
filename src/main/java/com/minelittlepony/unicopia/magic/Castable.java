@@ -11,11 +11,11 @@ import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public interface ICastable extends IMagicalItem, IDispensable {
+public interface Castable extends MagicalItem, Dispensable {
 
     @Override
     default TypedActionResult<ItemStack> dispenseStack(BlockPointer source, ItemStack stack) {
-        IDispenceable effect = SpellRegistry.instance().getDispenseActionFrom(stack);
+        DispenceableMagicEffect effect = SpellRegistry.instance().getDispenseActionFrom(stack);
 
         if (effect == null) {
             return new TypedActionResult<>(ActionResult.FAIL, stack);
@@ -36,16 +36,16 @@ public interface ICastable extends IMagicalItem, IDispensable {
         return new TypedActionResult<>(ActionResult.SUCCESS, stack);
     }
 
-    CastResult onDispenseSpell(BlockPointer source, ItemStack stack, IDispenceable effect);
+    CastResult onDispenseSpell(BlockPointer source, ItemStack stack, DispenceableMagicEffect effect);
 
-    CastResult onCastSpell(ItemUsageContext context, IMagicEffect effect);
+    CastResult onCastSpell(ItemUsageContext context, MagicEffect effect);
 
     boolean canFeed(SpellcastEntity spell, ItemStack stack);
 
     /**
      * Called to cast a spell. The result is an entity spawned with the spell attached.
      */
-    default SpellcastEntity castContainedSpell(World world, BlockPos pos, ItemStack stack, IMagicEffect effect) {
+    default SpellcastEntity castContainedSpell(World world, BlockPos pos, ItemStack stack, MagicEffect effect) {
         SpellcastEntity spell = new SpellcastEntity(null, world);
 
         spell.setAffinity(getAffinity(stack));

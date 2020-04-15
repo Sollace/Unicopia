@@ -11,7 +11,7 @@ import net.minecraft.util.math.Vec3d;
  *
  *Interface for a 3d shape, used for spawning particles in a designated area (or anything else you need shapes for).
  */
-public interface IShape {
+public interface Shape {
 
     /**
      * Rotates this shape around it's center.
@@ -21,7 +21,7 @@ public interface IShape {
      *
      * @return This Shape
      */
-    IShape setRotation(float u, float v);
+    Shape setRotation(float u, float v);
 
     /**
      * Get the volume of space filled by this shape, or the surface area if hollow.

@@ -21,11 +21,11 @@ public class Config {
             .setPrettyPrinting()
             .create();
 
-    public static Config instance() {
+    public static Config getInstance() {
         return instance;
     }
 
-    public static void init(Path directory) {
+    static void init(Path directory) {
         Path file = directory.resolve("unicopia.json");
 
         try {

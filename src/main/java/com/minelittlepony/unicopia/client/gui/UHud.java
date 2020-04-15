@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.MinecraftClient;
@@ -22,7 +22,7 @@ public class UHud {
 
     TextRenderer fonts = mc.textRenderer;
 
-    IPlayer player;
+    Pony player;
 
     int width;
 
@@ -34,7 +34,7 @@ public class UHud {
         elements.add(new FlightExperienceBar());
     }
 
-    public void renderHud(IPlayer player, Window resolution) {
+    public void renderHud(Pony player, Window resolution) {
         this.width = resolution.getScaledWidth();
         this.height = resolution.getScaledHeight();
         this.player = player;
@@ -43,7 +43,7 @@ public class UHud {
         elements.forEach(this::renderElement);
     }
 
-    public void repositionElements(IPlayer player, Window window, boolean begin) {
+    public void repositionElements(Pony player, Window window, boolean begin) {
         this.width = window.getScaledWidth();
         this.height = window.getScaledHeight();
         this.player = player;

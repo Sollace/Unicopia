@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -41,12 +41,12 @@ public class ChangelingFeedAbility implements Ability<Ability.Hit> {
     }
 
     @Override
-    public int getWarmupTime(IPlayer player) {
+    public int getWarmupTime(Pony player) {
         return 5;
     }
 
     @Override
-    public int getCooldownTime(IPlayer player) {
+    public int getCooldownTime(Pony player) {
         return canFeed(player) ? 15 : 80;
     }
 
@@ -57,7 +57,7 @@ public class ChangelingFeedAbility implements Ability<Ability.Hit> {
 
     @Nullable
     @Override
-    public Hit tryActivate(IPlayer player) {
+    public Hit tryActivate(Pony player) {
         if (canFeed(player)) {
             if (!getTargets(player).isEmpty()) {
                 return new Hit();
@@ -67,7 +67,7 @@ public class ChangelingFeedAbility implements Ability<Ability.Hit> {
         return null;
     }
 
-    private boolean canFeed(IPlayer player) {
+    private boolean canFeed(Pony player) {
         return player.getOwner().getHealth() < player.getOwner().getHealthMaximum() || player.getOwner().canConsume(false);
     }
 
@@ -86,7 +86,7 @@ public class ChangelingFeedAbility implements Ability<Ability.Hit> {
         return Hit.class;
     }
 
-    protected List<LivingEntity> getTargets(IPlayer player) {
+    protected List<LivingEntity> getTargets(Pony player) {
         List<Entity> list = VecHelper.getWithinRange(player.getOwner(), 3, this::canDrain);
 
         Entity looked = VecHelper.getLookedAtEntity(player.getOwner(), 17);
@@ -98,7 +98,7 @@ public class ChangelingFeedAbility implements Ability<Ability.Hit> {
     }
 
     @Override
-    public void apply(IPlayer iplayer, Hit data) {
+    public void apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.getOwner();
 
         float maximumHealthGain = player.getHealthMaximum() - player.getHealth();
@@ -156,12 +156,12 @@ public class ChangelingFeedAbility implements Ability<Ability.Hit> {
     }
 
     @Override
-    public void preApply(IPlayer player) {
+    public void preApply(Pony player) {
         player.addExertion(6);
     }
 
     @Override
-    public void postApply(IPlayer player) {
+    public void postApply(Pony player) {
         player.spawnParticles(ParticleTypes.HEART, 1);
     }
 }

@@ -1,13 +1,13 @@
 package com.minelittlepony.unicopia.magic;
 
-public interface IAttachedEffect extends IMagicEffect {
+public interface AttachedMagicEffect extends MagicEffect {
     /**
      * Called every tick when attached to a player.
      *
      * @param source    The entity we are currently attached to.
      * @return true to keep alive
      */
-    boolean updateOnPerson(ICaster<?> caster);
+    boolean updateOnPerson(Caster<?> caster);
 
     /**
      * Called every tick when attached to a player. Used to apply particle effects.
@@ -15,5 +15,5 @@ public interface IAttachedEffect extends IMagicEffect {
      *
      * @param source    The entity we are currently attached to.
      */
-    default void renderOnPerson(ICaster<?> source) {}
+    default void renderOnPerson(Caster<?> source) {}
 }

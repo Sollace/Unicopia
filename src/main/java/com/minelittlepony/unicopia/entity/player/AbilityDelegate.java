@@ -10,13 +10,13 @@ import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.entity.Updatable;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
-import com.minelittlepony.unicopia.util.InbtSerialisable;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.CompoundTag;
 
-class AbilityDelegate implements AbilityReceiver, Updatable, InbtSerialisable {
+class AbilityDelegate implements AbilityReceiver, Updatable, NbtSerialisable {
 
-    private final IPlayer player;
+    private final Pony player;
 
     /**
      * Ticks of warmup before an ability is triggered.
@@ -36,7 +36,7 @@ class AbilityDelegate implements AbilityReceiver, Updatable, InbtSerialisable {
     @Nullable
     private Ability<?> activeAbility = null;
 
-    public AbilityDelegate(IPlayer player) {
+    public AbilityDelegate(Pony player) {
         this.player = player;
     }
 

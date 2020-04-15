@@ -6,17 +6,16 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.IMagicEffect;
-import com.minelittlepony.unicopia.magic.IUseable;
-import com.minelittlepony.unicopia.util.InbtSerialisable;
-import com.minelittlepony.unicopia.util.shape.IShape;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Useable;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
@@ -32,11 +31,11 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class PortalSpell extends AbstractSpell.RangedAreaSpell implements IUseable {
+public class PortalSpell extends AbstractSpell.RangedAreaSpell implements Useable {
 
-    private static final IShape portalZone_X = new Sphere(true, 1, 0, 2, 1);
-    private static final IShape portalZone_Y = new Sphere(true, 1, 2, 0, 2);
-    private static final IShape portalZone_Z = new Sphere(true, 1, 1, 2, 0);
+    private static final Shape portalZone_X = new Sphere(true, 1, 0, 2, 1);
+    private static final Shape portalZone_Y = new Sphere(true, 1, 2, 0, 2);
+    private static final Shape portalZone_Z = new Sphere(true, 1, 1, 2, 0);
 
     private static final Box TELEPORT_BOUNDS_VERT = new Box(-1, -0.5, -1, 1, 0.5, 1);
     private static final Box TELEPORT_BOUNDS = new Box(-0.5, -0.5, -0.5, 0.5, 3, 0.5);
@@ -83,13 +82,13 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements IUseab
         destinationId = null;
         destinationPos = null;
 
-        getDestinationPortal().ifPresent(IMagicEffect::setDead);
+        getDestinationPortal().ifPresent(MagicEffect::setDead);
     }
 
     private PortalSpell bridge;
 
     @Override
-    public void onPlaced(ICaster<?> caster) {
+    public void onPlaced(Caster<?> caster) {
         world = caster.getWorld();
         casterId = caster.getUniqueId();
         position = caster.getOrigin();
@@ -109,7 +108,7 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements IUseab
         position = context.getBlockPos().offset(context.getSide());
         axis = context.getPlayerFacing().getAxis();
 
-        IPlayer prop = SpeciesList.instance().getPlayer(context.getPlayer());
+        Pony prop = Pony.of(context.getPlayer());
 
         PortalSpell other = prop.getEffect(PortalSpell.class, true);
         if (other != null) {
@@ -148,7 +147,7 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements IUseab
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
         if (!source.getWorld().isClient) {
             getDestinationPortal().ifPresent(dest ->
                 source.getWorld().getEntities(Entity.class, getTeleportBounds().offset(source.getOrigin())).stream()
@@ -160,14 +159,14 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements IUseab
     }
 
     @Override
-    public void render(ICaster<?> source) {
+    public void render(Caster<?> source) {
         // TODO: ParticleTypeRegistry
         /*source.spawnParticles(getPortalZone(), 10, pos -> {
             ParticleTypeRegistry.getTnstance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0, getTint());
         });*/
     }
 
-    public IShape getPortalZone() {
+    public Shape getPortalZone() {
         switch (axis) {
             case X: return portalZone_X;
             default:
@@ -188,7 +187,7 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements IUseab
         return !(i instanceof IMagicals) && i.portalCooldown == 0;
     }
 
-    protected void teleportEntity(ICaster<?> source, PortalSpell dest, Entity i) {
+    protected void teleportEntity(Caster<?> source, PortalSpell dest, Entity i) {
         Direction.Axis xi = i.getHorizontalFacing().getAxis();
 
         if (axis != Direction.Axis.Y && xi != axis) {
@@ -234,7 +233,7 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements IUseab
             }
 
             if (i instanceof SpellcastEntity) {
-                IMagicEffect effect = ((SpellcastEntity) i).getEffect();
+                MagicEffect effect = ((SpellcastEntity) i).getEffect();
 
                 if (effect instanceof PortalSpell) {
                     return (PortalSpell)effect;
@@ -272,7 +271,7 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements IUseab
         }
 
         if (i instanceof SpellcastEntity) {
-            IMagicEffect effect = ((SpellcastEntity) i).getEffect();
+            MagicEffect effect = ((SpellcastEntity) i).getEffect();
 
             if (effect instanceof PortalSpell) {
                 sibling = (PortalSpell)effect;
@@ -295,7 +294,7 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements IUseab
         super.toNBT(compound);
 
         if (destinationPos != null) {
-            compound.put("destination", InbtSerialisable.writeBlockPos(destinationPos));
+            compound.put("destination", NbtSerialisable.writeBlockPos(destinationPos));
         }
 
         if (casterId != null) {
@@ -314,7 +313,7 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements IUseab
         super.fromNBT(compound);
 
         if (compound.containsKey("destination")) {
-            destinationPos = InbtSerialisable.readBlockPos(compound.getCompound("destination"));
+            destinationPos = NbtSerialisable.readBlockPos(compound.getCompound("destination"));
         }
 
         if (compound.containsKey("casterId")) {

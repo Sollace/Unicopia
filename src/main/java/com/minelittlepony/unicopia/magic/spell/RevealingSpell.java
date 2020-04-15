@@ -2,9 +2,9 @@ package com.minelittlepony.unicopia.magic.spell;
 
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.ICaster;
-import com.minelittlepony.unicopia.magic.ISuppressable;
-import com.minelittlepony.unicopia.util.shape.IShape;
+import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.SuppressableEffect;
+import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.sound.SoundCategory;
@@ -25,14 +25,14 @@ public class RevealingSpell extends AbstractSpell {
     }
 
     @Override
-    public void onPlaced(ICaster<?> source) {
+    public void onPlaced(Caster<?> source) {
         source.setCurrentLevel(1);
     }
 
     @Override
-    public boolean update(ICaster<?> source) {
+    public boolean update(Caster<?> source) {
         source.findAllSpellsInRange(15).forEach(e -> {
-            ISuppressable spell = e.getEffect(ISuppressable.class, false);
+            SuppressableEffect spell = e.getEffect(SuppressableEffect.class, false);
 
             if (spell != null && spell.isVulnerable(source, this)) {
                 spell.onSuppressed(source);
@@ -44,8 +44,8 @@ public class RevealingSpell extends AbstractSpell {
     }
 
     @Override
-    public void render(ICaster<?> source) {
-        IShape area = new Sphere(false, 15);
+    public void render(Caster<?> source) {
+        Shape area = new Sphere(false, 15);
 
         source.spawnParticles(area, 5, pos -> {
             source.addParticle(UParticles.UNICORN_MAGIC, pos, Vec3d.ZERO); // getTint()

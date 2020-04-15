@@ -7,8 +7,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.ducks.RaceContainerHolder;
+import com.minelittlepony.unicopia.ducks.PonyContainer;
 import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 
@@ -22,7 +21,7 @@ public class CasterUtils {
     /**
      * Finds all surrounding spells withing range from the given caster.
      */
-    public static Stream<ICaster<?>> findAllSpellsInRange(ICaster<?> source, double radius) {
+    public static Stream<Caster<?>> findAllSpellsInRange(Caster<?> source, double radius) {
 
         BlockPos origin = source.getOrigin();
 
@@ -32,7 +31,7 @@ public class CasterUtils {
         Box bb = new Box(begin, end);
 
         return source.getWorld().getEntities(source.getEntity(), bb, e ->
-            !e.removed && (e instanceof ICaster || e instanceof PlayerEntity)
+            !e.removed && (e instanceof Caster || e instanceof PlayerEntity)
         ).stream().filter(e -> {
                 double dist = e.squaredDistanceTo(origin.getX(), origin.getY(), origin.getZ());
                 double dist2 = e.squaredDistanceTo(origin.getX(), origin.getY() - e.getStandingEyeHeight(), origin.getZ());
@@ -44,16 +43,16 @@ public class CasterUtils {
             .map(Optional::get);
     }
 
-    static Stream<ICaster<?>> findAllSpellsInRange(ICaster<?> source, Box bb) {
-        return source.getWorld().getEntities(source.getEntity(), bb, e -> !e.removed && (e instanceof ICaster || EquinePredicates.MAGI.test(e))).stream()
+    static Stream<Caster<?>> findAllSpellsInRange(Caster<?> source, Box bb) {
+        return source.getWorld().getEntities(source.getEntity(), bb, e -> !e.removed && (e instanceof Caster || EquinePredicates.MAGI.test(e))).stream()
             .map(CasterUtils::toCaster)
             .filter(o -> o.isPresent() && o.get() != source)
             .map(Optional::get);
     }
 
-    static <T extends IMagicEffect> Optional<T> toMagicEffect(Class<T> type, @Nullable Entity entity) {
+    static <T extends MagicEffect> Optional<T> toMagicEffect(Class<T> type, @Nullable Entity entity) {
         return toCaster(entity)
-                .filter(ICaster::hasEffect)
+                .filter(Caster::hasEffect)
                 .map(caster -> caster.getEffect(type, false))
                 .filter(e -> !e.isDead());
     }
@@ -71,14 +70,13 @@ public class CasterUtils {
     /**
      * Attempts to convert the passed entity into a caster using all the known methods.
      */
-    public static Optional<ICaster<?>> toCaster(@Nullable Entity entity) {
-        if (entity instanceof ICaster<?>) {
-            return Optional.of((ICaster<?>)entity);
+    public static Optional<Caster<?>> toCaster(@Nullable Entity entity) {
+        if (entity instanceof Caster<?>) {
+            return Optional.of((Caster<?>)entity);
         }
 
         if (entity instanceof LivingEntity && !(entity instanceof IMagicals)) {
-            return SpeciesList.instance().getForEntity(entity)
-                    .map(RaceContainerHolder::getCaster);
+            return PonyContainer.of(entity).map(PonyContainer::getCaster);
         }
 
         return Optional.empty();

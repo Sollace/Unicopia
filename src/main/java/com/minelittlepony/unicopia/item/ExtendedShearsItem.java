@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.magic.IDispensable;
+import com.minelittlepony.unicopia.magic.Dispensable;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DispenserBlock;
@@ -50,7 +50,7 @@ public class ExtendedShearsItem extends ShearsItem {
     public ExtendedShearsItem() {
         super(new Item.Settings().maxDamage(238).group(ItemGroup.TOOLS));
 
-        vanillaDispenserBehaviour = IDispensable.getBehaviorForItem(new ItemStack(Items.SHEARS));
+        vanillaDispenserBehaviour = Dispensable.getBehaviorForItem(new ItemStack(Items.SHEARS));
         DispenserBlock.registerBehavior(Items.SHEARS, dispenserBehavior);
         DispenserBlock.registerBehavior(this, dispenserBehavior);
     }

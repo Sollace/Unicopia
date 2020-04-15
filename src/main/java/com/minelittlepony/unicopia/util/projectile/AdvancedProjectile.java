@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.util.projectile;
 
-import com.minelittlepony.unicopia.magic.ITossedEffect;
+import com.minelittlepony.unicopia.magic.TossedMagicEffect;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -8,7 +8,7 @@ import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public interface IAdvancedProjectile extends Projectile {
+public interface AdvancedProjectile extends Projectile {
 
     void setGravity(boolean gravity);
 
@@ -16,7 +16,7 @@ public interface IAdvancedProjectile extends Projectile {
 
     void setOwner(LivingEntity owner);
 
-    void setEffect(ITossedEffect effect);
+    void setEffect(TossedMagicEffect effect);
 
     void setThrowDamage(float damage);
 

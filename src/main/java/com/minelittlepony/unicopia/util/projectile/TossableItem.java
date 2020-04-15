@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.util.projectile;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.entity.ProjectileEntity;
-import com.minelittlepony.unicopia.magic.IDispensable;
+import com.minelittlepony.unicopia.magic.Dispensable;
 
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.Entity;
@@ -18,7 +18,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 
-public interface ITossableItem extends ITossable<ItemStack>, IDispensable {
+public interface TossableItem extends Tossable<ItemStack>, Dispensable {
 
     default boolean canBeThrown(ItemStack stack) {
         return true;
@@ -40,12 +40,12 @@ public interface ITossableItem extends ITossable<ItemStack>, IDispensable {
     }
 
     @Nullable
-    default IAdvancedProjectile createProjectile(World world, PlayerEntity player) {
+    default AdvancedProjectile createProjectile(World world, PlayerEntity player) {
         return new ProjectileEntity(null, world, player);
     }
 
     @Nullable
-    default IAdvancedProjectile createProjectile(World world, Position pos) {
+    default AdvancedProjectile createProjectile(World world, Position pos) {
         return new ProjectileEntity(null, world, pos.getX(), pos.getY(), pos.getZ());
     }
 
@@ -54,7 +54,7 @@ public interface ITossableItem extends ITossable<ItemStack>, IDispensable {
         world.playSound(null, player.x, player.y, player.z, getThrowSound(itemstack), SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
         if (!world.isClient) {
-            IAdvancedProjectile projectile = createProjectile(world, player);
+            AdvancedProjectile projectile = createProjectile(world, player);
 
             if (projectile == null) {
                 return;
@@ -75,7 +75,7 @@ public interface ITossableItem extends ITossable<ItemStack>, IDispensable {
     }
 
     default ItemStack toss(World world, Position pos, Direction facing, ItemStack stack) {
-        IAdvancedProjectile projectile = createProjectile(world, pos);
+        AdvancedProjectile projectile = createProjectile(world, pos);
 
         if (projectile == null) {
             return stack;

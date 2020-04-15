@@ -3,14 +3,14 @@ package com.minelittlepony.unicopia.entity.player;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.minelittlepony.unicopia.enchanting.IPageOwner;
+import com.minelittlepony.unicopia.enchanting.PageOwner;
 import com.minelittlepony.unicopia.enchanting.PageState;
-import com.minelittlepony.unicopia.util.InbtSerialisable;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 
-public class PlayerPageStats implements InbtSerialisable, IPageOwner {
+public class PlayerPageStats implements NbtSerialisable, PageOwner {
     private final Map<Identifier, PageState> pageStates = new HashMap<>();
 
     @Override
@@ -22,7 +22,6 @@ public class PlayerPageStats implements InbtSerialisable, IPageOwner {
     public void sendCapabilities(boolean full) {
 
     }
-
 
     @Override
     public void toNBT(CompoundTag compound) {

@@ -5,13 +5,12 @@ import java.util.Random;
 
 import com.google.common.collect.Maps;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.UMaterials;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.PosHelper;
-import com.minelittlepony.unicopia.util.shape.IShape;
+import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
@@ -43,7 +42,7 @@ public class HiveWallBlock extends FallingBlock {
     public static final EnumProperty<State> STATE = EnumProperty.of("state", State.class);
     public static final EnumProperty<Axis> AXIS = EnumProperty.of("axis", Axis.class);
 
-    private static final IShape shape = new Sphere(false, 1.5);
+    private static final Shape shape = new Sphere(false, 1.5);
 
     @SuppressWarnings("deprecation")
     public HiveWallBlock() {
@@ -185,7 +184,7 @@ public class HiveWallBlock extends FallingBlock {
     @Override
     public void onSteppedOn(World world, BlockPos pos, Entity entity) {
         if (entity instanceof PlayerEntity) {
-            IPlayer player = SpeciesList.instance().getPlayer((PlayerEntity)entity);
+            Pony player = Pony.of((PlayerEntity)entity);
 
             if (player.getSpecies() != Race.CHANGELING && !world.isClient) {
                 if (((isEmptySpace(world, pos.down()) || canFallThrough(world.getBlockState(pos.down()))) && pos.getY() >= 0)) {
@@ -206,7 +205,7 @@ public class HiveWallBlock extends FallingBlock {
     public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         if (hand == Hand.MAIN_HAND && player.getStackInHand(hand).isEmpty()) {
-            IPlayer iplayer = SpeciesList.instance().getPlayer(player);
+            Pony iplayer = Pony.of(player);
 
             if (iplayer.getSpecies() == Race.CHANGELING) {
                 retreat(world, pos);
