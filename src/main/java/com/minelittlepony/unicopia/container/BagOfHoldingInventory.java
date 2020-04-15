@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-import com.minelittlepony.unicopia.advancements.BOHDeathCriterion;
+import com.minelittlepony.unicopia.advancement.BOHDeathCriterion;
 import com.minelittlepony.unicopia.magic.IMagicalItem;
 import com.minelittlepony.unicopia.util.HeavyInventoryUtils;
 import com.minelittlepony.unicopia.util.InbtSerialisable;

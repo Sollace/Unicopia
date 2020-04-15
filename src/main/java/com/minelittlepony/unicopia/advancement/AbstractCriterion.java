@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.advancements;
+package com.minelittlepony.unicopia.advancement;
 
 import java.util.List;
 import java.util.Map;
@@ -10,7 +10,7 @@ import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 
-public abstract class AbstractCriterion<E extends AbstractCriterion.Entry<T>, T extends CriterionConditions> implements Criterion<T> {
+abstract class AbstractCriterion<E extends AbstractCriterion.Entry<T>, T extends CriterionConditions> implements Criterion<T> {
 
     protected final Map<PlayerAdvancementTracker, E> listeners = Maps.newHashMap();
 

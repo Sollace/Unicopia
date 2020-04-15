@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.advancements;
+package com.minelittlepony.unicopia.advancement;
 
 import com.google.gson.JsonElement;
 
