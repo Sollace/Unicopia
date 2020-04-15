@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client;
 
+import static com.minelittlepony.unicopia.EquinePredicates.MAGI;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -10,10 +12,14 @@ import com.minelittlepony.unicopia.IKeyBindingHandler;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.UnicopiaCore;
 import com.minelittlepony.unicopia.ability.PowersRegistry;
+import com.minelittlepony.unicopia.block.IColourful;
 import com.minelittlepony.unicopia.client.render.DisguiseRenderer;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
+import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.util.MineLPConnector;
 import com.minelittlepony.unicopia.util.dummy.DummyClientPlayerEntity;
@@ -21,13 +27,19 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.render.ColorProviderRegistry;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.input.Input;
-import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.color.world.BiomeColors;
+import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ExtendedBlockView;
 
 public class UnicopiaCoreClient extends InteractionManager implements ClientModInitializer {
 
@@ -134,6 +146,33 @@ public class UnicopiaCoreClient extends InteractionManager implements ClientModI
         ClientReadyCallback.EVENT.register(client -> {
             PowersRegistry.instance().getValues().forEach(keyboard::addKeybind);
         });
+
+        //BuildInTexturesBakery.getBuiltInTextures().add(new Identifier(Unicopia.MODID, "items/empty_slot_gem"));
+
+        ColorProviderRegistry.ITEM.register((stack, tint) -> {
+            return getLeavesColor(((BlockItem)stack.getItem()).getBlock().getDefaultState(), null, null, tint);
+        }, UItems.apple_leaves);
+        ColorProviderRegistry.BLOCK.register(UnicopiaCoreClient::getLeavesColor, UBlocks.apple_leaves);
+        ColorProviderRegistry.ITEM.register((stack, tint) -> {
+            if (MAGI.test(MinecraftClient.getInstance().player)) {
+                return SpellRegistry.instance().getSpellTintFromStack(stack);
+            }
+            return 0xFFFFFF;
+        }, UItems.spell, UItems.curse);
+    }
+
+    private static int getLeavesColor(BlockState state, @Nullable ExtendedBlockView world, @Nullable BlockPos pos, int tint) {
+        Block block = state.getBlock();
+
+        if (block instanceof IColourful) {
+            return ((IColourful)block).getCustomTint(state, tint);
+        }
+
+        if (world != null && pos != null) {
+            return BiomeColors.getGrassColor(world, pos);
+        }
+
+        return GrassColors.getColor(0.5D, 1);
     }
 
     private void tick(MinecraftClient client) {
@@ -150,19 +189,5 @@ public class UnicopiaCoreClient extends InteractionManager implements ClientModI
         }
 
         keyboard.onKeyInput();
-
-        if (player instanceof ClientPlayerEntity) {
-            ClientPlayerEntity sp = (ClientPlayerEntity)player;
-
-            Input movement = sp.input;
-
-            if (!(movement instanceof InversionAwareKeyboardInput)) {
-                sp.input = new InversionAwareKeyboardInput(client, movement);
-            }
-        }
-
-        if (!(client.mouse instanceof MouseControl)) {
-            client.mouse = new MouseControl(client);
-        }
     }
 }

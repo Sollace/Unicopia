@@ -14,7 +14,6 @@ import net.minecraft.resource.SynchronousResourceReloadListener;
 
 @Mixin(GameRenderer.class)
 abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceReloadListener {
-
     @Inject(method = "getFov(Lnet/minecraft/client/render/Camera;FZ)D",
             at = @At("RETURN"),
             cancellable = true)

@@ -13,8 +13,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.entity.player.PlayerEntity;
 
 @Mixin(Camera.class)
-public class MixinCamera {
-
+abstract class MixinCamera {
     @Shadow
     private float pitch;
     @Shadow

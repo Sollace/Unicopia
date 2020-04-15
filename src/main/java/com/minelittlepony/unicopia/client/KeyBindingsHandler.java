@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.client;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.minelittlepony.unicopia.IKeyBindingHandler;
 import com.minelittlepony.unicopia.SpeciesList;
@@ -17,13 +17,13 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
 
 
-public class KeyBindingsHandler implements IKeyBindingHandler {
+class KeyBindingsHandler implements IKeyBindingHandler {
     private final MinecraftClient client = MinecraftClient.getInstance();
 
-    private final List<KeyBinding> bindings = new ArrayList<>();
-    private final List<KeyBinding> removed = new ArrayList<>();
+    private final Set<KeyBinding> bindings = new HashSet<>();
+    private final Set<KeyBinding> removed = new HashSet<>();
 
-    private final List<KeyBinding> pressed = new ArrayList<>();
+    private final Set<KeyBinding> pressed = new HashSet<>();
 
     @Override
     public void addKeybind(IKeyBinding p) {
@@ -46,9 +46,7 @@ public class KeyBindingsHandler implements IKeyBindingHandler {
         for (KeyBinding i : bindings) {
             if (i.isPressed()) {
 
-                if (!pressed.contains(i)) {
-                    pressed.add(i);
-
+                if (pressed.add(i)) {
                     if (!PowersRegistry.instance().hasRegisteredPower(i.getDefaultKeyCode().getKeyCode())) {
                         removed.add(i);
                         System.out.println("Error: Keybinding(" + i.getLocalizedName() + ") does not have a registered pony power. Keybinding will be removed from event.");
@@ -58,19 +56,13 @@ public class KeyBindingsHandler implements IKeyBindingHandler {
                             .ifPresent(iplayer.getAbilities()::tryUseAbility);
                     }
                 }
-            } else {
-                if (pressed.contains(i)) {
-                    pressed.remove(i);
-
-                    iplayer.getAbilities().tryClearAbility();
-                }
+            } else if (pressed.remove(i)) {
+                iplayer.getAbilities().tryClearAbility();
             }
         }
 
-        for (KeyBinding i : removed) {
-            removed.remove(i);
-            bindings.remove(i);
-            pressed.remove(i);
-        }
+        bindings.removeAll(removed);
+        pressed.removeAll(removed);
+        removed.clear();
     }
 }
