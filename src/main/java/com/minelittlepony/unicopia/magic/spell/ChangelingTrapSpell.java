@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.CuccoonEntity;
 import com.minelittlepony.unicopia.entity.IMagicals;
-import com.minelittlepony.unicopia.magic.AbstractSpell;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
 import com.minelittlepony.unicopia.magic.IAttachedEffect;

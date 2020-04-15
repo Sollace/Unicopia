@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.magic.spell;
 
 import com.minelittlepony.unicopia.entity.player.IPlayer;
-import com.minelittlepony.unicopia.magic.AbstractSpell;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.ICaster;
 import com.minelittlepony.unicopia.magic.IHeldEffect;

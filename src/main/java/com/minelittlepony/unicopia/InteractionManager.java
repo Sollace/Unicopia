@@ -12,9 +12,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class InteractionManager {
+    public static InteractionManager instance = new InteractionManager();
 
     public static InteractionManager instance() {
-        return UnicopiaCore.interactionManager;
+        return instance;
     }
 
     public boolean isClientPlayer(@Nullable PlayerEntity player) {

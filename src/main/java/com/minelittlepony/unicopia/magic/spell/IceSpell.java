@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.magic.spell;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.UMaterials;
-import com.minelittlepony.unicopia.magic.AbstractSpell;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.ICaster;

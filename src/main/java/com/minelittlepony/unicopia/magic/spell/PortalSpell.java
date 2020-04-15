@@ -10,7 +10,6 @@ import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
-import com.minelittlepony.unicopia.magic.AbstractSpell;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.ICaster;

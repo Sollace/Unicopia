@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.entity.ai.FollowCasterGoal;
-import com.minelittlepony.unicopia.magic.AbstractSpell;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.ICaster;
 import com.minelittlepony.unicopia.magic.IMagicEffect;

@@ -2,13 +2,13 @@ package com.minelittlepony.unicopia.ability;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.IKeyBindingHandler;
+import com.minelittlepony.unicopia.IKeyBinding;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
 
 import net.minecraft.world.World;
 
-public interface IPower<T extends IPower.IData> extends IKeyBindingHandler.IKeyBinding {
+public interface IPower<T extends IPower.IData> extends IKeyBinding {
 
     @Override
     default String getKeyCategory() {
@@ -19,7 +19,6 @@ public interface IPower<T extends IPower.IData> extends IKeyBindingHandler.IKeyB
      * Returns the number of ticks the player must hold the ability key to trigger this ability.
      */
     int getWarmupTime(IPlayer player);
-
 
     /**
      * Returns the number of ticks allowed for cooldown

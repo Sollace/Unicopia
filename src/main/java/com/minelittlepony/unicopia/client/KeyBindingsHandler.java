@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.client;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.minelittlepony.unicopia.IKeyBindingHandler;
+import com.minelittlepony.unicopia.IKeyBinding;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UnicopiaCore;
 import com.minelittlepony.unicopia.ability.PowersRegistry;
@@ -17,7 +17,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
 
 
-class KeyBindingsHandler implements IKeyBindingHandler {
+class KeyBindingsHandler {
     private final MinecraftClient client = MinecraftClient.getInstance();
 
     private final Set<KeyBinding> bindings = new HashSet<>();
@@ -25,7 +25,6 @@ class KeyBindingsHandler implements IKeyBindingHandler {
 
     private final Set<KeyBinding> pressed = new HashSet<>();
 
-    @Override
     public void addKeybind(IKeyBinding p) {
         KeyBindingRegistry.INSTANCE.addCategory(p.getKeyCategory());
 
@@ -35,7 +34,6 @@ class KeyBindingsHandler implements IKeyBindingHandler {
         bindings.add(b);
     }
 
-    @Override
     public void onKeyInput() {
         if (client.currentScreen != null
             || client.player == null) {

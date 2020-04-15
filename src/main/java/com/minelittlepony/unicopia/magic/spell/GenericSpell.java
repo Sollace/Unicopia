@@ -1,6 +1,10 @@
-package com.minelittlepony.unicopia.magic;
+package com.minelittlepony.unicopia.magic.spell;
 
 import java.util.function.Supplier;
+
+import com.minelittlepony.unicopia.magic.Affinity;
+import com.minelittlepony.unicopia.magic.ICaster;
+import com.minelittlepony.unicopia.magic.IMagicEffect;
 
 public class GenericSpell extends AbstractSpell {
 

@@ -1,4 +1,7 @@
-package com.minelittlepony.unicopia.magic;
+package com.minelittlepony.unicopia.magic.spell;
+
+import com.minelittlepony.unicopia.magic.ICaster;
+import com.minelittlepony.unicopia.magic.IMagicEffect;
 
 import net.minecraft.nbt.CompoundTag;
 

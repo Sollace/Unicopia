@@ -27,8 +27,6 @@ public class UnicopiaCore implements ModInitializer {
 
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public static InteractionManager interactionManager = new InteractionManager();
-
     private static Channel channel;
 
     public static Channel getConnection() {

@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import com.minelittlepony.common.event.ClientReadyCallback;
 import com.minelittlepony.jumpingcastle.api.Target;
 import com.minelittlepony.unicopia.Config;
-import com.minelittlepony.unicopia.IKeyBindingHandler;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.SpeciesList;
@@ -43,7 +42,7 @@ import net.minecraft.world.ExtendedBlockView;
 
 public class UnicopiaCoreClient extends InteractionManager implements ClientModInitializer {
 
-    private final IKeyBindingHandler keyboard = new KeyBindingsHandler();
+    private final KeyBindingsHandler keyboard = new KeyBindingsHandler();
 
     /**
      * The race preferred by the client - as determined by mine little pony.
@@ -140,7 +139,7 @@ public class UnicopiaCoreClient extends InteractionManager implements ClientModI
     @Override
     public void onInitializeClient() {
         clientPlayerRace = getclientPlayerRace();
-        UnicopiaCore.interactionManager = this;
+        InteractionManager.instance = this;
 
         ClientTickCallback.EVENT.register(this::tick);
         ClientReadyCallback.EVENT.register(client -> {

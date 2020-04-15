@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
-import com.minelittlepony.unicopia.magic.AbstractSpell;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.IAttachedEffect;
 import com.minelittlepony.unicopia.magic.ICaster;
