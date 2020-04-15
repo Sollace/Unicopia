@@ -6,7 +6,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.util.Identifier;
 
-class FlightExperienceBar extends DrawableHelper implements IHudElement {
+class FlightExperienceBar extends DrawableHelper implements HudElement {
 
     static final Identifier TEXTURE = new Identifier("textures/gui/bars.png");
 

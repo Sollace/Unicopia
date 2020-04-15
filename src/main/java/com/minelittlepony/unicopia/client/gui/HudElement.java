@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.client.gui;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-public interface IHudElement {
+public interface HudElement {
 
     void repositionHud(UHud context);
 

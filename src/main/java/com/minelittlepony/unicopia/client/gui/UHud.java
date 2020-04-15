@@ -16,7 +16,7 @@ public class UHud {
 
     public static final UHud instance = new UHud();
 
-    private List<IHudElement> elements = new ArrayList<>();
+    private List<HudElement> elements = new ArrayList<>();
 
     MinecraftClient mc = MinecraftClient.getInstance();
 
@@ -52,7 +52,7 @@ public class UHud {
         elements.forEach(this::positionElement);
     }
 
-    private void positionElement(IHudElement element) {
+    private void positionElement(HudElement element) {
         if (!element.shouldRender(player)) {
             return;
         }
@@ -60,7 +60,7 @@ public class UHud {
         element.repositionHud(this);
     }
 
-    private void renderElement(IHudElement element) {
+    private void renderElement(HudElement element) {
         if (!element.shouldRender(player)) {
             return;
         }

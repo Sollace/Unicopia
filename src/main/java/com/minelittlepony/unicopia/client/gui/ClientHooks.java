@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.MinecraftClient;
 
+@Deprecated
 // TODO: forge events
 class ClientHooks {
     public static void beforePreRenderHud() {
