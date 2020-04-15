@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.ducks.IRaceContainerHolder;
+import com.minelittlepony.unicopia.ducks.RaceContainerHolder;
 import com.minelittlepony.unicopia.entity.IEntity;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
 import com.minelittlepony.unicopia.entity.player.PlayerCapabilities;
@@ -23,7 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 
 @Mixin(PlayerEntity.class)
-public abstract class MixinPlayerEntity extends LivingEntity implements IRaceContainerHolder<IPlayer> {
+public abstract class MixinPlayerEntity extends LivingEntity implements RaceContainerHolder<IPlayer> {
     private MixinPlayerEntity() { super(null, null); }
 
     @Override

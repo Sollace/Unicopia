@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.gas;
 
 import java.util.Random;
 
@@ -19,7 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class CloudAnvilBlock extends AnvilBlock implements ICloudBlock {
+public class CloudAnvilBlock extends AnvilBlock implements Gas {
     @SuppressWarnings("deprecation")
     public CloudAnvilBlock() {
         super(FabricBlockSettings.of(Material.WOOL)
@@ -70,8 +70,8 @@ public class CloudAnvilBlock extends AnvilBlock implements ICloudBlock {
     public void onScheduledTick(BlockState state, World world, BlockPos pos, Random rand) {
         BlockState below = world.getBlockState(pos.down());
 
-        if (below.getBlock() instanceof ICloudBlock) {
-            if (((ICloudBlock)below.getBlock()).isDense(below)) {
+        if (below.getBlock() instanceof Gas) {
+            if (((Gas)below.getBlock()).isDense(below)) {
                 return;
             }
         }

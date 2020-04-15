@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.gas;
 
 import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.EquinePredicates;
@@ -20,7 +20,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public interface ICloudBlock {
+public interface Gas {
 
     CloudType getCloudMaterialType(BlockState blockState);
 
@@ -51,8 +51,8 @@ public interface ICloudBlock {
                     return false;
                 }
 
-                if (block instanceof ICloudBlock) {
-                    CloudType other = ((ICloudBlock)block).getCloudMaterialType(heldState);
+                if (block instanceof Gas) {
+                    CloudType other = ((Gas)block).getCloudMaterialType(heldState);
 
                     if (other.canInteract(player)) {
                         return false;
@@ -158,6 +158,6 @@ public interface ICloudBlock {
         }
 
         Block above = world.getBlockState(pos.up()).getBlock();
-        return !(above instanceof ICloudBlock) && above instanceof FallingBlock;
+        return !(above instanceof Gas) && above instanceof FallingBlock;
     }
 }

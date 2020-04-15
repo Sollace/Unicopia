@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.gas;
 
 import java.util.Random;
 
@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.item.MossItem;
+import com.minelittlepony.unicopia.util.HoeUtil;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -14,14 +15,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class CloudBlock extends Block implements ICloudBlock, ITillable {
+public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
 
     private final CloudType variant;
 
@@ -33,6 +34,7 @@ public class CloudBlock extends Block implements ICloudBlock, ITillable {
                 .build()
         );
         this.variant = variant;
+        HoeUtil.registerTillingAction(this, UBlocks.cloud_farmland.getDefaultState());
     }
 
     @Override
@@ -66,8 +68,8 @@ public class CloudBlock extends Block implements ICloudBlock, ITillable {
 
     @Override
     public boolean isSideInvisible(BlockState state, BlockState beside, Direction face) {
-        if (beside.getBlock() instanceof ICloudBlock) {
-            ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
+        if (beside.getBlock() instanceof Gas) {
+            Gas cloud = ((Gas)beside.getBlock());
 
             if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
                 return true;
@@ -113,14 +115,7 @@ public class CloudBlock extends Block implements ICloudBlock, ITillable {
     }
 
     @Override
-    public boolean canBeTilled(ItemStack hoe, PlayerEntity player, World world, BlockState state, BlockPos pos) {
-        return SpeciesList.instance().getPlayer(player).getSpecies().canInteractWithClouds()
-                && ITillable.super.canBeTilled(hoe, player, world, state, pos);
+    public boolean canTill(ItemUsageContext context) {
+        return context.getPlayer() == null || SpeciesList.instance().getPlayer(context.getPlayer()).getSpecies().canInteractWithClouds();
     }
-
-    @Override
-    public BlockState getFarmlandState(ItemStack hoe, PlayerEntity player, World world, BlockState state, BlockPos pos) {
-        return UBlocks.cloud_farmland.getDefaultState();
-    }
-
 }

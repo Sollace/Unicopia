@@ -1,45 +1,51 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.gas;
 
 import com.minelittlepony.unicopia.CloudType;
-import com.minelittlepony.unicopia.UBlocks;
-import com.minelittlepony.unicopia.ducks.IFarmland;
 
+import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.FarmlandBlock;
+import net.minecraft.block.FenceBlock;
+import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class CloudFarmlandBlock extends FarmlandBlock implements IFarmland, ICloudBlock {
+public class CloudFenceBlock extends FenceBlock implements Gas {
 
-    public CloudFarmlandBlock(Settings settings) {
-        super(settings);
+    private final CloudType variant;
+
+    public CloudFenceBlock(Material material, CloudType variant) {
+        super(FabricBlockSettings.of(material)
+                .hardness(0.5F)
+                .resistance(1)
+                .sounds(BlockSoundGroup.WOOL)
+                .build());
+
+        this.variant = variant;
+    }
+
+    @Override
+    public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
+        return variant == CloudType.NORMAL;
+    }
+
+    @Override
+    public boolean isOpaque(BlockState state) {
+        return false;
+    }
+
+    @Override
+    public CloudType getCloudMaterialType(BlockState blockState) {
+        return variant;
     }
 
     @Override
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.TRANSLUCENT;
-    }
-
-    @Override
-    public boolean isSideInvisible(BlockState state, BlockState beside, Direction face) {
-
-        if (beside.getBlock() instanceof ICloudBlock) {
-            ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
-
-            if (face.getAxis() == Axis.Y || cloud == this) {
-                if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
-                    return true;
-                }
-            }
-        }
-
-        return super.isSideInvisible(state, beside, face);
     }
 
     @Override
@@ -70,15 +76,5 @@ public class CloudFarmlandBlock extends FarmlandBlock implements IFarmland, IClo
             return super.calcBlockBreakingDelta(state, player, world, pos);
         }
         return -1;
-    }
-
-    @Override
-    public CloudType getCloudMaterialType(BlockState blockState) {
-        return CloudType.NORMAL;
-    }
-
-    @Override
-    public BlockState getDirtState(BlockState state, World world, BlockPos pos) {
-        return UBlocks.normal_cloud.getDefaultState();
     }
 }

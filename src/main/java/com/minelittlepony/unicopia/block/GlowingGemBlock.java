@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.UParticles;
+import com.minelittlepony.unicopia.gas.Gas;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -31,7 +32,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class GlowingGemBlock extends TorchBlock implements ICloudBlock {
+public class GlowingGemBlock extends TorchBlock implements Gas {
 
     public static BooleanProperty ON = BooleanProperty.of("on");
 

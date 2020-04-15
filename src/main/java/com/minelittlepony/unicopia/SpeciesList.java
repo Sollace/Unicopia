@@ -4,7 +4,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Config;
-import com.minelittlepony.unicopia.ducks.IRaceContainerHolder;
+import com.minelittlepony.unicopia.ducks.RaceContainerHolder;
 import com.minelittlepony.unicopia.entity.IEntity;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
 
@@ -63,14 +63,14 @@ public class SpeciesList {
     @Nullable
     public <T extends IEntity> T getEntity(Entity entity) {
         return this.<Entity, T>getForEntity(entity)
-                .map(IRaceContainerHolder::getRaceContainer)
+                .map(RaceContainerHolder::getRaceContainer)
                 .orElse(null);
     }
 
     @SuppressWarnings("unchecked")
-    public <E extends Entity, T extends IEntity> Optional<IRaceContainerHolder<T>> getForEntity(Entity entity) {
-        if (entity instanceof IRaceContainerHolder) {
-            return Optional.of(((IRaceContainerHolder<T>)entity));
+    public <E extends Entity, T extends IEntity> Optional<RaceContainerHolder<T>> getForEntity(Entity entity) {
+        if (entity instanceof RaceContainerHolder) {
+            return Optional.of(((RaceContainerHolder<T>)entity));
         }
         return Optional.empty();
     }

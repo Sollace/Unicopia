@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.structure;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -22,14 +21,17 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.DecoratorConfig;
+import net.minecraft.world.gen.feature.AbstractTempleFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
-public class RuinFeature extends BiomeWhitelistedFeature<DefaultFeatureConfig> {
-
+class RuinFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
     private static final BlockPos POS = new BlockPos(4, 0, 15);
-
     private static final Identifier[] VARIANTS = new Identifier[] {
             new Identifier(UnicopiaCore.MODID, "ground/tower"),
             new Identifier(UnicopiaCore.MODID, "ground/temple_with_book"),
@@ -38,22 +40,24 @@ public class RuinFeature extends BiomeWhitelistedFeature<DefaultFeatureConfig> {
             new Identifier(UnicopiaCore.MODID, "ground/wizard_tower_blue")
     };
 
-    private static final List<Biome> BIOMELIST = Arrays.<Biome>asList(
-            Biomes.TAIGA,
-            Biomes.TAIGA_HILLS,
-            Biomes.GIANT_TREE_TAIGA,
-            Biomes.GIANT_TREE_TAIGA_HILLS,
-            Biomes.SNOWY_TAIGA,
-            Biomes.SNOWY_TAIGA_HILLS,
-            Biomes.GIANT_SPRUCE_TAIGA,
-            Biomes.GIANT_TREE_TAIGA_HILLS,
-            Biomes.SNOWY_TAIGA_MOUNTAINS,
-            Biomes.DARK_FOREST,
-            Biomes.DARK_FOREST_HILLS
-    );
-
     public RuinFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> func) {
         super(func);
+
+        Arrays.asList(
+                Biomes.TAIGA,
+                Biomes.TAIGA_HILLS,
+                Biomes.GIANT_TREE_TAIGA,
+                Biomes.GIANT_TREE_TAIGA_HILLS,
+                Biomes.SNOWY_TAIGA,
+                Biomes.SNOWY_TAIGA_HILLS,
+                Biomes.GIANT_SPRUCE_TAIGA,
+                Biomes.GIANT_TREE_TAIGA_HILLS,
+                Biomes.SNOWY_TAIGA_MOUNTAINS,
+                Biomes.DARK_FOREST,
+                Biomes.DARK_FOREST_HILLS
+        ).forEach(biome -> {
+            biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Biome.configureFeature(UStructures.CLOUD_HOUSE, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT));
+        });
     }
 
     @Override
@@ -69,11 +73,6 @@ public class RuinFeature extends BiomeWhitelistedFeature<DefaultFeatureConfig> {
     @Override
     protected int getSeedModifier() {
         return 39548;
-    }
-
-    @Override
-    protected boolean canSpawnInBiome(Biome biome) {
-        return BIOMELIST.contains(biome);
     }
 
     @Override
@@ -104,7 +103,7 @@ public class RuinFeature extends BiomeWhitelistedFeature<DefaultFeatureConfig> {
         private final Identifier template;
 
         public Piece(StructureManager manager, Identifier template, BlockPos pos, BlockRotation rotation) {
-            super(UStructures.RUIN, 0);
+            super(UStructures.RUIN_PART, 0);
             this.pos = pos;
             this.rotation = rotation;
             this.template = template;
@@ -113,7 +112,7 @@ public class RuinFeature extends BiomeWhitelistedFeature<DefaultFeatureConfig> {
         }
 
         public Piece(StructureManager manager, CompoundTag tag) {
-           super(UStructures.RUIN, tag);
+           super(UStructures.RUIN_PART, tag);
            this.template = new Identifier(tag.getString("Template"));
            this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
            init(manager);

@@ -1,7 +1,8 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.gas;
 
 import com.minelittlepony.unicopia.CloudType;
 import com.minelittlepony.unicopia.UMaterials;
+import com.minelittlepony.unicopia.block.AbstractDoorBlock;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.BlockRenderLayer;
@@ -15,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class CloudDoorBlock extends AbstractDoorBlock implements ICloudBlock {
+public class CloudDoorBlock extends AbstractDoorBlock implements Gas {
 
     @SuppressWarnings("deprecation")
     public CloudDoorBlock() {

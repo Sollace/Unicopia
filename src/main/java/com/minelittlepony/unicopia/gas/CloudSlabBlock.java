@@ -1,6 +1,7 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.gas;
 
 import com.minelittlepony.unicopia.CloudType;
+import com.minelittlepony.unicopia.block.USlab;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -11,7 +12,7 @@ import net.minecraft.block.enums.SlabType;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.Direction;
 
-public class CloudSlabBlock<T extends Block & ICloudBlock> extends USlab<T> implements ICloudBlock {
+public class CloudSlabBlock<T extends Block & Gas> extends USlab<T> implements Gas {
 
     public CloudSlabBlock(T modelBlock, Material material) {
         super(modelBlock, FabricBlockSettings.of(material).build());
@@ -25,8 +26,8 @@ public class CloudSlabBlock<T extends Block & ICloudBlock> extends USlab<T> impl
     @Override
     public boolean isSideInvisible(BlockState state, BlockState beside, Direction face) {
         if (isDouble(state)) {
-            if (beside.getBlock() instanceof ICloudBlock) {
-                ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
+            if (beside.getBlock() instanceof Gas) {
+                Gas cloud = ((Gas)beside.getBlock());
 
                 if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
                     return true;
@@ -35,8 +36,8 @@ public class CloudSlabBlock<T extends Block & ICloudBlock> extends USlab<T> impl
 
             return false;
         } else {
-            if (beside.getBlock() instanceof ICloudBlock) {
-                ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
+            if (beside.getBlock() instanceof Gas) {
+                Gas cloud = ((Gas)beside.getBlock());
 
                 if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
 

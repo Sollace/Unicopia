@@ -1,5 +1,5 @@
 package com.minelittlepony.unicopia.network;
 
-public interface ITransmittable {
+public interface Transmittable {
     void sendCapabilities(boolean full);
 }

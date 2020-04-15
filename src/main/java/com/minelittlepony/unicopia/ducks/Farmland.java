@@ -4,7 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public interface IFarmland {
+public interface Farmland {
     /**
      * Gets the state used to represent this block as a piece of dirt.
      */

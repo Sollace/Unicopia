@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia;
 
 import java.util.List;
 
-import com.minelittlepony.unicopia.block.ITillable;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 
@@ -10,30 +9,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.GrassBlock;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 // TODO: forge events
 public class BlockInteractions {
-    public boolean onBlockTilled(World world, BlockPos pos, PlayerEntity player, ItemStack hoe) {
-        BlockState state = world.getBlockState(pos);
-
-        if (!(state.getBlock() instanceof ITillable)) {
-            return false;
-        }
-
-        ITillable farm = ((ITillable)state.getBlock());
-
-        if (!farm.canBeTilled(hoe, player, world, state, pos)) {
-            return false;
-        }
-
-        world.setBlockState(pos, farm.getFarmlandState(hoe, player, world, state, pos));
-
-        return true;
-    }
 
     public void addAuxiliaryDrops(World world, BlockState state, BlockPos pos, List<ItemStack> drops, int fortune) {
         Block block = state.getBlock();

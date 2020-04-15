@@ -1,6 +1,7 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.gas;
 
 import com.minelittlepony.unicopia.CloudType;
+import com.minelittlepony.unicopia.block.UStairs;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -11,7 +12,7 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 
-public class CloudStairsBlock extends UStairs implements ICloudBlock {
+public class CloudStairsBlock extends UStairs implements Gas {
 
     public CloudStairsBlock(BlockState inherited, Settings settings) {
         super(inherited, settings);
@@ -19,8 +20,8 @@ public class CloudStairsBlock extends UStairs implements ICloudBlock {
 
     @Override
     public boolean isSideInvisible(BlockState state, BlockState beside, Direction face) {
-        if (beside.getBlock() instanceof ICloudBlock) {
-            ICloudBlock cloud = ((ICloudBlock)beside.getBlock());
+        if (beside.getBlock() instanceof Gas) {
+            Gas cloud = ((Gas)beside.getBlock());
 
             if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
                 Direction front = state.get(FACING);

@@ -7,7 +7,7 @@ import com.minelittlepony.unicopia.magic.ICaster;
 
 import net.minecraft.entity.LivingEntity;
 
-public interface IRaceContainerHolder<T extends IEntity> {
+public interface RaceContainerHolder<T extends IEntity> {
     T getRaceContainer();
 
     @SuppressWarnings("unchecked")

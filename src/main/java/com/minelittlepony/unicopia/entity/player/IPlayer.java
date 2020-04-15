@@ -9,7 +9,7 @@ import com.minelittlepony.unicopia.entity.FlightControl;
 import com.minelittlepony.unicopia.entity.RaceContainer;
 import com.minelittlepony.unicopia.magic.ICaster;
 import com.minelittlepony.unicopia.magic.IHeldEffect;
-import com.minelittlepony.unicopia.network.ITransmittable;
+import com.minelittlepony.unicopia.network.Transmittable;
 import com.minelittlepony.util.IInterpolator;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
@@ -24,7 +24,7 @@ import net.minecraft.util.math.BlockPos;
  *
  * This is the core of unicopia.
  */
-public interface IPlayer extends ICaster<PlayerEntity>, RaceContainer<PlayerEntity>, ITransmittable, IPageOwner {
+public interface IPlayer extends ICaster<PlayerEntity>, RaceContainer<PlayerEntity>, Transmittable, IPageOwner {
 
     /**
      * Gets the player's magical abilities delegate responsible for all spell casting and persisting/updating.

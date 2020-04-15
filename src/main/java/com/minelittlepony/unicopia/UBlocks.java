@@ -1,16 +1,16 @@
 package com.minelittlepony.unicopia;
 
-import com.minelittlepony.unicopia.block.CloudDoorBlock;
 import com.minelittlepony.unicopia.block.BlockGrowingCuccoon;
 import com.minelittlepony.unicopia.block.TomatoPlantBlock;
+import com.minelittlepony.unicopia.gas.CloudAnvilBlock;
+import com.minelittlepony.unicopia.gas.CloudBlock;
+import com.minelittlepony.unicopia.gas.CloudDoorBlock;
+import com.minelittlepony.unicopia.gas.CloudFarmlandBlock;
+import com.minelittlepony.unicopia.gas.CloudFenceBlock;
+import com.minelittlepony.unicopia.gas.CloudSlabBlock;
+import com.minelittlepony.unicopia.gas.CloudStairsBlock;
 import com.minelittlepony.unicopia.block.ChiselledChitinBlock;
 import com.minelittlepony.unicopia.block.ChitinBlock;
-import com.minelittlepony.unicopia.block.CloudAnvilBlock;
-import com.minelittlepony.unicopia.block.CloudBlock;
-import com.minelittlepony.unicopia.block.CloudFarmlandBlock;
-import com.minelittlepony.unicopia.block.CloudFenceBlock;
-import com.minelittlepony.unicopia.block.CloudSlabBlock;
-import com.minelittlepony.unicopia.block.CloudStairsBlock;
 import com.minelittlepony.unicopia.block.DiamondDoorBlock;
 import com.minelittlepony.unicopia.block.DutchDoorBlock;
 import com.minelittlepony.unicopia.block.FruitLeavesBlock;

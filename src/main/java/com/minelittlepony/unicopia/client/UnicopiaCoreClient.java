@@ -14,8 +14,8 @@ import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.UnicopiaCore;
 import com.minelittlepony.unicopia.ability.PowersRegistry;
-import com.minelittlepony.unicopia.block.IColourful;
 import com.minelittlepony.unicopia.client.render.DisguiseRenderer;
+import com.minelittlepony.unicopia.ducks.Colourful;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
@@ -163,8 +163,8 @@ public class UnicopiaCoreClient extends InteractionManager implements ClientModI
     private static int getLeavesColor(BlockState state, @Nullable ExtendedBlockView world, @Nullable BlockPos pos, int tint) {
         Block block = state.getBlock();
 
-        if (block instanceof IColourful) {
-            return ((IColourful)block).getCustomTint(state, tint);
+        if (block instanceof Colourful) {
+            return ((Colourful)block).getCustomTint(state, tint);
         }
 
         if (world != null && pos != null) {

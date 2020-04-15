@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import javax.annotation.Nonnull;
 
-import com.minelittlepony.unicopia.network.ITransmittable;
+import com.minelittlepony.unicopia.network.Transmittable;
 
 import net.minecraft.util.Identifier;
 
@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
  * Interface for things that own and can unlock pages.
  *
  */
-public interface IPageOwner extends ITransmittable {
+public interface IPageOwner extends Transmittable {
 
     @Nonnull
     Map<Identifier, PageState> getPageStates();

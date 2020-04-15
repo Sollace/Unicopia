@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.ducks.IRaceContainerHolder;
+import com.minelittlepony.unicopia.ducks.RaceContainerHolder;
 import com.minelittlepony.unicopia.entity.IEntity;
 import com.minelittlepony.unicopia.entity.LivingEntityCapabilities;
 
@@ -14,7 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
 @Mixin(LivingEntity.class)
-public abstract class MixinLivingEntity extends Entity implements IRaceContainerHolder<IEntity> {
+public abstract class MixinLivingEntity extends Entity implements RaceContainerHolder<IEntity> {
 
     private final IEntity caster = createRaceContainer();
 

@@ -1,11 +1,8 @@
 package com.minelittlepony.unicopia.structure;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
-
-import javax.annotation.Nonnull;
 
 import com.minelittlepony.unicopia.UnicopiaCore;
 import com.mojang.datafixers.Dynamic;
@@ -24,35 +21,40 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
+import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.DecoratorConfig;
+import net.minecraft.world.gen.feature.AbstractTempleFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
+import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
-public class CloudDungeonFeature extends BiomeWhitelistedFeature<DefaultFeatureConfig> {
-
+class CloudDungeonFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
     private static final BlockPos POS = new BlockPos(4, 0, 15);
-
     private static final Identifier[] VARIANTS = new Identifier[] {
             new Identifier(UnicopiaCore.MODID, "cloud/temple_small"),
             new Identifier(UnicopiaCore.MODID, "cloud/house_small"),
             new Identifier(UnicopiaCore.MODID, "cloud/island_small")
     };
 
-    private static final List<Biome> ALLOWED_BIOMES = Arrays.<Biome>asList(
-            Biomes.OCEAN,
-            Biomes.WOODED_BADLANDS_PLATEAU,
-            Biomes.DESERT,
-            Biomes.DESERT_HILLS,
-            Biomes.JUNGLE,
-            Biomes.JUNGLE_HILLS,
-            Biomes.SWAMP,
-            Biomes.SWAMP_HILLS,
-            Biomes.ICE_SPIKES,
-            Biomes.TAIGA
-    );
-
     public CloudDungeonFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> func) {
         super(func);
+
+        Arrays.asList(
+                Biomes.OCEAN,
+                Biomes.WOODED_BADLANDS_PLATEAU,
+                Biomes.DESERT,
+                Biomes.DESERT_HILLS,
+                Biomes.JUNGLE,
+                Biomes.JUNGLE_HILLS,
+                Biomes.SWAMP,
+                Biomes.SWAMP_HILLS,
+                Biomes.ICE_SPIKES,
+                Biomes.TAIGA
+        ).forEach(biome -> {
+            biome.addFeature(GenerationStep.Feature.LOCAL_MODIFICATIONS, Biome.configureFeature(UStructures.CLOUD_HOUSE, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT));
+        });
     }
 
     @Override
@@ -68,11 +70,6 @@ public class CloudDungeonFeature extends BiomeWhitelistedFeature<DefaultFeatureC
     @Override
     public int getRadius() {
         return 12;
-    }
-
-    @Override
-    protected boolean canSpawnInBiome(@Nonnull Biome biome) {
-        return ALLOWED_BIOMES.contains(biome);
     }
 
     @Override
@@ -103,7 +100,7 @@ public class CloudDungeonFeature extends BiomeWhitelistedFeature<DefaultFeatureC
         private final Identifier template;
 
         public Piece(StructureManager manager, Identifier template, BlockPos pos, BlockRotation rotation) {
-            super(UStructures.CLOUD_HOUSE, 0);
+            super(UStructures.CLOUD_HOUSE_PART, 0);
             this.pos = pos;
             this.rotation = rotation;
             this.template = template;
@@ -112,7 +109,7 @@ public class CloudDungeonFeature extends BiomeWhitelistedFeature<DefaultFeatureC
         }
 
         public Piece(StructureManager manager, CompoundTag tag) {
-           super(UStructures.CLOUD_HOUSE, tag);
+           super(UStructures.CLOUD_HOUSE_PART, tag);
            this.template = new Identifier(tag.getString("Template"));
            this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
            init(manager);

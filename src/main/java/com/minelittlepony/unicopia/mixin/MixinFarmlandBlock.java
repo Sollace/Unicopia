@@ -4,7 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 
-import com.minelittlepony.unicopia.ducks.IFarmland;
+import com.minelittlepony.unicopia.ducks.Farmland;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -20,8 +20,8 @@ abstract class MixinFarmlandBlock extends Block {
             at = @At("HEAD"),
             cancellable = true)
     public static void setToDirt(BlockState state, World world, BlockPos pos) {
-        if (state.getBlock() instanceof IFarmland) {
-            BlockState dirtState = ((IFarmland)state.getBlock()).getDirtState(state, world, pos);
+        if (state.getBlock() instanceof Farmland) {
+            BlockState dirtState = ((Farmland)state.getBlock()).getDirtState(state, world, pos);
             world.setBlockState(pos, pushEntitiesUpBeforeBlockChange(state, dirtState, world, pos));
         }
     }

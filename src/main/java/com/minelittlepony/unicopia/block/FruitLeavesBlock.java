@@ -6,6 +6,7 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 import com.minelittlepony.unicopia.SpeciesList;
+import com.minelittlepony.unicopia.ducks.Colourful;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -27,7 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome.TemperatureGroup;
 
-public class FruitLeavesBlock extends LeavesBlock implements IColourful {
+public class FruitLeavesBlock extends LeavesBlock implements Colourful {
 
     public static final BooleanProperty HEAVY = BooleanProperty.of("heavy");
 

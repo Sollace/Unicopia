@@ -30,7 +30,7 @@ public class AwaitTickQueue {
         }
     }
 
-    public void onUpdate(World world) {
+    public void tick(World world) {
         synchronized (locker) {
             delayedTasks = delayedTasks.stream().filter(DelayedTask::tick).collect(Collectors.toList());
 
