@@ -51,6 +51,6 @@ public class UnicopiaCore implements ModInitializer {
         Abilities.getInstance().init();
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(Pages.instance());
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(AffineIngredients.instance());
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(AffineIngredients.instance());
     }
 }
