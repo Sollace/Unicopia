@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "unicopia",
+  "version": "${version}",
+  "name": "Unicopia",
+  "description": "Magical Abilities for Mine Little Pony!",
+  "authors": [ "Sollace" ],
+  "mixins": [
+    "unicopia.mixin.json"
+  ],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+  	"main": [
+      "com.minelittlepony.unicopia.Unicopia"
+    ],
+    "client": [
+      "com.minelittlepony.unicopia.client.UnicopiaClient"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.4.0",
+    "fabric-api-base": ">=0.1.0",
+    "fabric-events-lifecycle-v0": ">=0.1.0",
+    "fabric-keybindings-v0": ">=0.1.0",
+    "fabric-rendering-v1": ">=0.1.0"
+  }
+}

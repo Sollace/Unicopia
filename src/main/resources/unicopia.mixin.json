@@ -1,0 +1,25 @@
+{
+  "required": true,
+  "minVersion": "0.7",
+  "package": "com.minelittlepony.unicopia.mixin",
+  "refmap": "unicopia.client.mixin.refmap.json",
+  "compatibilityLevel": "JAVA_8",
+  "main": [
+  	"MixinEntity",
+  	"MixinFarmlandBlock",
+  	"MixinHoeItem",
+  	"MixinItemEntity",
+  	"MixinPlayerEntity",
+  	"MixinProjectileEntity",
+  	"Walker"
+  ],
+  "client": [
+    "client.MixinCamera",
+    "client.MixinGameRenderer",
+    "client.MixinKeyboardInput",
+    "client.MixinMouse"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
