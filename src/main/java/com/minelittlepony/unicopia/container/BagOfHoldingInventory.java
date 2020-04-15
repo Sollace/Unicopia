@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.advancement.BOHDeathCriterion;
-import com.minelittlepony.unicopia.magic.MagicalItem;
 import com.minelittlepony.unicopia.util.HeavyInventoryUtils;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
@@ -15,13 +15,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.EnderChestBlock;
-import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -156,10 +154,8 @@ public class BagOfHoldingInventory extends BasicInventory implements NbtSerialis
         CompoundTag compound = stack.getSubTag("inventory");
 
         return isIllegalBlock(Block.getBlockFromItem(stack.getItem()))
-                // TODO: tag for items that are invalid for the inventory of holding
-                || stack.getItem() instanceof BlockItem && (((BlockItem)stack.getItem()).getBlock() instanceof ShulkerBoxBlock)
-                || (compound != null && compound.containsKey("invalid"))
-                || (stack.getItem() instanceof MagicalItem && ((MagicalItem) stack.getItem()).hasInnerSpace());
+                || stack.getItem().isIn(UTags.HAMMERPACE_IMMUNE)
+                || (compound != null && compound.containsKey("invalid"));
     }
 
     protected boolean isIllegalBlock(Block block) {

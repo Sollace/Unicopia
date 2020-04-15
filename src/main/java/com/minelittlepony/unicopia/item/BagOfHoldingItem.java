@@ -122,11 +122,6 @@ public class BagOfHoldingItem extends Item implements MagicalItem {
         return Affinity.NEUTRAL;
     }
 
-    @Override
-    public boolean hasInnerSpace() {
-        return true;
-    }
-
     public static class ContainerProvider implements NameableContainerProvider {
 
         private Text customname = null;
