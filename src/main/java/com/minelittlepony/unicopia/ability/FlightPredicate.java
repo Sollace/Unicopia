@@ -7,6 +7,6 @@ import com.minelittlepony.unicopia.entity.player.IPlayer;
  *
  * This overrides what the race specifies.
  */
-public interface IFlyingPredicate {
+public interface FlightPredicate {
     boolean checkCanFly(IPlayer player);
 }

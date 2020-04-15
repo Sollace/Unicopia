@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 import com.minelittlepony.common.util.GamePaths;
 import com.minelittlepony.jumpingcastle.api.Channel;
 import com.minelittlepony.jumpingcastle.api.JumpingCastle;
-import com.minelittlepony.unicopia.ability.PowersRegistry;
+import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.enchanting.Pages;
 import com.minelittlepony.unicopia.enchanting.recipe.AffineIngredients;
@@ -48,7 +48,7 @@ public class UnicopiaCore implements ModInitializer {
         UItems.bootstrap();
         UContainers.bootstrap();
         UStructures.bootstrap();
-        PowersRegistry.instance().init();
+        Abilities.getInstance().init();
 
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(Pages.instance());
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(AffineIngredients.instance());

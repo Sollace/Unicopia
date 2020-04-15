@@ -5,16 +5,16 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.jumpingcastle.api.Target;
 import com.minelittlepony.unicopia.UnicopiaCore;
-import com.minelittlepony.unicopia.ability.IAbilityReceiver;
-import com.minelittlepony.unicopia.ability.IPower;
-import com.minelittlepony.unicopia.ability.PowersRegistry;
+import com.minelittlepony.unicopia.ability.AbilityReceiver;
+import com.minelittlepony.unicopia.ability.Ability;
+import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.entity.Updatable;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.util.InbtSerialisable;
 
 import net.minecraft.nbt.CompoundTag;
 
-class AbilityDelegate implements IAbilityReceiver, Updatable, InbtSerialisable {
+class AbilityDelegate implements AbilityReceiver, Updatable, InbtSerialisable {
 
     private final IPlayer player;
 
@@ -34,7 +34,7 @@ class AbilityDelegate implements IAbilityReceiver, Updatable, InbtSerialisable {
     private boolean triggered;
 
     @Nullable
-    private IPower<?> activeAbility = null;
+    private Ability<?> activeAbility = null;
 
     public AbilityDelegate(IPlayer player) {
         this.player = player;
@@ -48,7 +48,7 @@ class AbilityDelegate implements IAbilityReceiver, Updatable, InbtSerialisable {
     }
 
     @Override
-    public void tryUseAbility(IPower<?> power) {
+    public void tryUseAbility(Ability<?> power) {
         if (canSwitchStates()) {
             setAbility(power);
         }
@@ -61,7 +61,7 @@ class AbilityDelegate implements IAbilityReceiver, Updatable, InbtSerialisable {
         }
     }
 
-    protected synchronized void setAbility(@Nullable IPower<?> power) {
+    protected synchronized void setAbility(@Nullable Ability<?> power) {
         if (activeAbility != power) {
             triggered = false;
             activeAbility = power;
@@ -71,7 +71,7 @@ class AbilityDelegate implements IAbilityReceiver, Updatable, InbtSerialisable {
     }
 
     @Nullable
-    protected synchronized IPower<?> getUsableAbility() {
+    protected synchronized Ability<?> getUsableAbility() {
         if (!(activeAbility == null || (triggered && warmup == 0 && cooldown == 0)) && activeAbility.canUse(player.getSpecies())) {
             return activeAbility;
         }
@@ -85,7 +85,7 @@ class AbilityDelegate implements IAbilityReceiver, Updatable, InbtSerialisable {
 
     @Override
     public void onUpdate() {
-        IPower<?> ability = getUsableAbility();
+        Ability<?> ability = getUsableAbility();
 
         if (ability == null) {
             return;
@@ -129,7 +129,7 @@ class AbilityDelegate implements IAbilityReceiver, Updatable, InbtSerialisable {
         compound.putInt("warmup", warmup);
         compound.putInt("cooldown", cooldown);
 
-        IPower<?> ability = getUsableAbility();
+        Ability<?> ability = getUsableAbility();
 
         if (ability != null) {
             compound.putString("activeAbility", ability.getKeyName());
@@ -145,7 +145,7 @@ class AbilityDelegate implements IAbilityReceiver, Updatable, InbtSerialisable {
         cooldown = compound.getInt("cooldown");
 
         if (compound.containsKey("activeAbility")) {
-            PowersRegistry.instance()
+            Abilities.getInstance()
                 .getPowerFromName(compound.getString("activeAbility"))
                 .ifPresent(p -> activeAbility = p);
         }
@@ -155,8 +155,8 @@ class AbilityDelegate implements IAbilityReceiver, Updatable, InbtSerialisable {
      * Attempts to activate the current stored ability.
      * Returns true if the ability suceeded, otherwise false.
      */
-    protected boolean activateAbility(@Nonnull IPower<?> ability) {
-        IPower.IData data = ability.tryActivate(player);
+    protected boolean activateAbility(@Nonnull Ability<?> ability) {
+        Ability.IData data = ability.tryActivate(player);
 
         if (data != null) {
             UnicopiaCore.getConnection().send(new MsgPlayerAbility(player.getOwner(), ability, data), Target.SERVER);

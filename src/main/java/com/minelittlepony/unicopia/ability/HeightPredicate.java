@@ -7,7 +7,7 @@ import com.minelittlepony.unicopia.entity.player.IPlayer;
  *
  * This overrides the default.
  */
-public interface IHeightPredicate {
+public interface HeightPredicate {
     float getTargetEyeHeight(IPlayer player);
 
     float getTargetBodyHeight(IPlayer player);

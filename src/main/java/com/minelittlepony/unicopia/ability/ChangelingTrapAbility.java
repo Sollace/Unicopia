@@ -1,43 +1,41 @@
 package com.minelittlepony.unicopia.ability;
 
+import javax.annotation.Nullable;
+
 import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
-import com.minelittlepony.unicopia.magic.spell.ShieldSpell;
+import com.minelittlepony.unicopia.magic.spell.ChangelingTrapSpell;
 
-/**
- * A magic casting ability for unicorns.
- * (only shields for now)
- */
-public class PowerMagic implements IPower<Hit> {
+public class ChangelingTrapAbility implements Ability<Ability.Hit> {
 
     @Override
     public String getKeyName() {
-        return "unicopia.power.magic";
+        return "engulf";
     }
 
     @Override
     public int getKeyCode() {
-        return GLFW.GLFW_KEY_P;
+        return GLFW.GLFW_KEY_L;
     }
 
     @Override
     public int getWarmupTime(IPlayer player) {
-        return 20;
-    }
-
-    @Override
-    public int getCooldownTime(IPlayer player) {
         return 0;
     }
 
     @Override
-    public boolean canUse(Race playerSpecies) {
-        return playerSpecies.canCast();
+    public int getCooldownTime(IPlayer player) {
+        return 30;
     }
 
+    @Override
+    public boolean canUse(Race playerSpecies) {
+        return playerSpecies == Race.CHANGELING;
+    }
+
+    @Nullable
     @Override
     public Hit tryActivate(IPlayer player) {
         return new Hit();
@@ -50,21 +48,16 @@ public class PowerMagic implements IPower<Hit> {
 
     @Override
     public void apply(IPlayer player, Hit data) {
-        // TODO: A way to pick the active effect
-        if (player.getEffect() instanceof ShieldSpell) {
-            player.setEffect(null);
-        } else {
-            player.setEffect(new ShieldSpell());
-        }
+        new ChangelingTrapSpell().toss(player);
     }
 
     @Override
     public void preApply(IPlayer player) {
-        player.spawnParticles(UParticles.UNICORN_MAGIC, 5);
+
     }
 
     @Override
     public void postApply(IPlayer player) {
-        player.spawnParticles(UParticles.UNICORN_MAGIC, 5);
+
     }
 }

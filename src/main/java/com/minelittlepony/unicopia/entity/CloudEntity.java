@@ -9,7 +9,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.UParticles;
-import com.minelittlepony.unicopia.ability.PowerCloudBase.ICloudEntity;
+import com.minelittlepony.unicopia.ability.PegasusCloudInteractionAbility.ICloudEntity;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.particles.ParticleEmitter;
 

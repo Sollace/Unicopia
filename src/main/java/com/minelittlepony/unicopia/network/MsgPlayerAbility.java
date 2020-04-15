@@ -8,8 +8,8 @@ import com.google.gson.annotations.Expose;
 import com.minelittlepony.jumpingcastle.api.Channel;
 import com.minelittlepony.jumpingcastle.api.Message;
 import com.minelittlepony.unicopia.SpeciesList;
-import com.minelittlepony.unicopia.ability.IPower;
-import com.minelittlepony.unicopia.ability.PowersRegistry;
+import com.minelittlepony.unicopia.ability.Ability;
+import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,13 +30,13 @@ public class MsgPlayerAbility implements Message, Message.Handler<MsgPlayerAbili
     @Expose
     private String abilityJson;
 
-    public MsgPlayerAbility(PlayerEntity player, IPower<?> power, IPower.IData data) {
+    public MsgPlayerAbility(PlayerEntity player, Ability<?> power, Ability.IData data) {
         senderId = player.getUuid();
         powerIdentifier = power.getKeyName();
         abilityJson = gson.toJson(data, power.getPackageType());
     }
 
-    private <T extends IPower.IData> void apply(IPower<T> power, Channel channel) {
+    private <T extends Ability.IData> void apply(Ability<T> power, Channel channel) {
         MinecraftServer server = channel.getServer();
         IPlayer player = SpeciesList.instance().getPlayer(server.getPlayerManager().getPlayer(senderId));
         if (player == null) {
@@ -50,6 +50,6 @@ public class MsgPlayerAbility implements Message, Message.Handler<MsgPlayerAbili
 
     @Override
     public void onPayload(MsgPlayerAbility message, Channel channel) {
-        PowersRegistry.instance().getPowerFromName(powerIdentifier).ifPresent(power -> apply(power, channel));
+        Abilities.getInstance().getPowerFromName(powerIdentifier).ifPresent(power -> apply(power, channel));
     }
 }

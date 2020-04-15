@@ -6,7 +6,7 @@ import java.util.Set;
 import com.minelittlepony.unicopia.IKeyBinding;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UnicopiaCore;
-import com.minelittlepony.unicopia.ability.PowersRegistry;
+import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
 
 import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
@@ -45,11 +45,11 @@ class KeyBindingsHandler {
             if (i.isPressed()) {
 
                 if (pressed.add(i)) {
-                    if (!PowersRegistry.instance().hasRegisteredPower(i.getDefaultKeyCode().getKeyCode())) {
+                    if (!Abilities.getInstance().hasRegisteredPower(i.getDefaultKeyCode().getKeyCode())) {
                         removed.add(i);
                         System.out.println("Error: Keybinding(" + i.getLocalizedName() + ") does not have a registered pony power. Keybinding will be removed from event.");
                     } else {
-                        PowersRegistry.instance()
+                        Abilities.getInstance()
                             .getCapablePowerFromKey(i.getDefaultKeyCode().getKeyCode(), iplayer.getSpecies())
                             .ifPresent(iplayer.getAbilities()::tryUseAbility);
                     }

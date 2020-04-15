@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 /**
  * Pegasi ability to pick up and carry other players
  */
-public class PowerCarry implements IPower<Hit> {
+public class PegasusCarryAbility implements Ability<Ability.Hit> {
 
     @Override
     public String getKeyName() {

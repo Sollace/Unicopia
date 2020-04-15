@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 /**
  * Earth Pony ability to grow crops
  */
-public class PowerGrow implements IPower<Location> {
+public class EarthPonyGrowAbility implements Ability<Ability.Pos> {
 
     @Override
     public String getKeyName() {
@@ -48,23 +48,23 @@ public class PowerGrow implements IPower<Location> {
     }
 
     @Override
-    public Location tryActivate(IPlayer player) {
+    public Pos tryActivate(IPlayer player) {
         HitResult ray = VecHelper.getObjectMouseOver(player.getOwner(), 3, 1);
 
         if (ray instanceof BlockHitResult && ray.getType() == HitResult.Type.BLOCK) {
-            return new Location(((BlockHitResult)ray).getBlockPos());
+            return new Pos(((BlockHitResult)ray).getBlockPos());
         }
 
         return null;
     }
 
     @Override
-    public Class<Location> getPackageType() {
-        return Location.class;
+    public Class<Pos> getPackageType() {
+        return Pos.class;
     }
 
     @Override
-    public void apply(IPlayer player, Location data) {
+    public void apply(IPlayer player, Pos data) {
         int count = 0;
 
         for (BlockPos pos : BlockPos.iterate(

@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.entity.player;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
-import com.minelittlepony.unicopia.ability.IAbilityReceiver;
+import com.minelittlepony.unicopia.ability.AbilityReceiver;
 import com.minelittlepony.unicopia.enchanting.IPageOwner;
 import com.minelittlepony.unicopia.entity.FlightControl;
 import com.minelittlepony.unicopia.entity.RaceContainer;
@@ -29,7 +29,7 @@ public interface IPlayer extends ICaster<PlayerEntity>, RaceContainer<PlayerEnti
     /**
      * Gets the player's magical abilities delegate responsible for all spell casting and persisting/updating.
      */
-    IAbilityReceiver getAbilities();
+    AbilityReceiver getAbilities();
 
     /**
      * Gets the gravity delegate responsible for updating flight states

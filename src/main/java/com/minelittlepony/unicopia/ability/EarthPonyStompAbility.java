@@ -43,7 +43,7 @@ import net.minecraft.world.World;
 /**
  * Earth Pony stomping ability
  */
-public class PowerStomp implements IPower<PowerStomp.Data> {
+public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data> {
 
     private final double rad = 4;
 
@@ -78,7 +78,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
     }
 
     @Override
-    public PowerStomp.Data tryActivate(IPlayer player) {
+    public EarthPonyStompAbility.Data tryActivate(IPlayer player) {
         HitResult mop = VecHelper.getObjectMouseOver(player.getOwner(), 6, 1);
 
         if (mop instanceof BlockHitResult && mop.getType() == HitResult.Type.BLOCK) {
@@ -101,8 +101,8 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
     }
 
     @Override
-    public Class<PowerStomp.Data> getPackageType() {
-        return PowerStomp.Data.class;
+    public Class<EarthPonyStompAbility.Data> getPackageType() {
+        return EarthPonyStompAbility.Data.class;
     }
 
     public static BlockPos getSolidBlockBelow(BlockPos pos, World w) {
@@ -472,7 +472,7 @@ public class PowerStomp implements IPower<PowerStomp.Data> {
         return null;
     }
 
-    protected static class Data extends Location {
+    protected static class Data extends Ability.Pos {
         @Expose
         public int hitType;
 

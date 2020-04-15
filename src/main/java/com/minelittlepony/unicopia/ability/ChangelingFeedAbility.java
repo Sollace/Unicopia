@@ -28,7 +28,7 @@ import net.minecraft.particle.ParticleTypes;
 /**
  * Changeling ability to restore health from mobs
  */
-public class PowerFeed implements IPower<Hit> {
+public class ChangelingFeedAbility implements Ability<Ability.Hit> {
 
     @Override
     public String getKeyName() {

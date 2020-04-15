@@ -2,13 +2,15 @@ package com.minelittlepony.unicopia.ability;
 
 import javax.annotation.Nullable;
 
+import com.google.gson.annotations.Expose;
 import com.minelittlepony.unicopia.IKeyBinding;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public interface IPower<T extends IPower.IData> extends IKeyBinding {
+public interface Ability<T extends Ability.IData> extends IKeyBinding {
 
     @Override
     default String getKeyCategory() {
@@ -76,5 +78,45 @@ public interface IPower<T extends IPower.IData> extends IKeyBinding {
 
     public interface IData {
 
+    }
+
+    class Pos implements Ability.IData {
+        @Expose
+        public int x;
+
+        @Expose
+        public int y;
+
+        @Expose
+        public int z;
+
+        public Pos(int x, int y, int z) {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public Pos(BlockPos pos) {
+            x = pos.getX();
+            y = pos.getY();
+            z = pos.getZ();
+        }
+
+        public BlockPos pos() {
+            return new BlockPos(x, y, z);
+        }
+    }
+
+    class Hit implements Ability.IData {
+
+    }
+
+    class Numeric implements IData {
+        @Expose
+        public int type;
+
+        public Numeric(int t) {
+            type = t;
+        }
     }
 }

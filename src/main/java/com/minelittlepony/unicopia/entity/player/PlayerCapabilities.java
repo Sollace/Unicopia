@@ -9,7 +9,7 @@ import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UEffects;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.UnicopiaCore;
-import com.minelittlepony.unicopia.ability.IAbilityReceiver;
+import com.minelittlepony.unicopia.ability.AbilityReceiver;
 import com.minelittlepony.unicopia.enchanting.PageState;
 import com.minelittlepony.unicopia.entity.FlightControl;
 import com.minelittlepony.unicopia.entity.Trap;
@@ -189,7 +189,7 @@ public class PlayerCapabilities implements IPlayer {
     }
 
     @Override
-    public IAbilityReceiver getAbilities() {
+    public AbilityReceiver getAbilities() {
         return powers;
     }
 

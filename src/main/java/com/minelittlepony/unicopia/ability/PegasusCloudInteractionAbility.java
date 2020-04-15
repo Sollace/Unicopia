@@ -11,7 +11,7 @@ import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.Entity;
 
-public class PowerCloudBase implements IPower<Numeric> {
+public class PegasusCloudInteractionAbility implements Ability<Ability.Numeric> {
 
     @Override
     public String getKeyName() {

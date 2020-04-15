@@ -28,7 +28,7 @@ import net.minecraft.util.math.BlockPos;
 /**
  * Changeling ability to disguise themselves as other players.
  */
-public class PowerDisguise extends PowerFeed {
+public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
 
     @Override
     public String getKeyName() {

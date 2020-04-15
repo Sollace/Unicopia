@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 /**
  * Unicorn teleport ability
  */
-public class PowerTeleport implements IPower<Location> {
+public class UnicornTeleportAbility implements Ability<Ability.Pos> {
 
     @Override
     public String getKeyName() {
@@ -55,7 +55,7 @@ public class PowerTeleport implements IPower<Location> {
     }
 
     @Override
-    public Location tryActivate(IPlayer player) {
+    public Pos tryActivate(IPlayer player) {
         HitResult ray = VecHelper.getObjectMouseOver(player.getOwner(), 100, 1);
 
         World w = player.getWorld();
@@ -104,18 +104,18 @@ public class PowerTeleport implements IPower<Location> {
             return null;
         }
 
-        return new Location(pos.getX(), pos.getY(), pos.getZ());
+        return new Pos(pos.getX(), pos.getY(), pos.getZ());
     }
 
 
 
     @Override
-    public Class<Location> getPackageType() {
-        return Location.class;
+    public Class<Pos> getPackageType() {
+        return Pos.class;
     }
 
     @Override
-    public void apply(IPlayer iplayer, Location data) {
+    public void apply(IPlayer iplayer, Pos data) {
         iplayer.getWorld().playSound(null, iplayer.getOrigin(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
 
         PlayerEntity player = iplayer.getOwner();

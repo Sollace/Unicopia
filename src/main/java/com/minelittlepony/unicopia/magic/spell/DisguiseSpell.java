@@ -9,8 +9,8 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UParticles;
-import com.minelittlepony.unicopia.ability.IFlyingPredicate;
-import com.minelittlepony.unicopia.ability.IHeightPredicate;
+import com.minelittlepony.unicopia.ability.FlightPredicate;
+import com.minelittlepony.unicopia.ability.HeightPredicate;
 import com.minelittlepony.unicopia.entity.Owned;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
 import com.minelittlepony.unicopia.magic.Affinity;
@@ -45,7 +45,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.MathHelper;
 
-public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISuppressable, IFlyingPredicate, IHeightPredicate {
+public class DisguiseSpell extends AbstractSpell implements IAttachedEffect, ISuppressable, FlightPredicate, HeightPredicate {
 
     @Nonnull
     private String entityId = "";

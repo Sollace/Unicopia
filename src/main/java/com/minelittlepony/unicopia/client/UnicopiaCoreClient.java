@@ -13,7 +13,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.SpeciesList;
 import com.minelittlepony.unicopia.UBlocks;
 import com.minelittlepony.unicopia.UnicopiaCore;
-import com.minelittlepony.unicopia.ability.PowersRegistry;
+import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.client.render.DisguiseRenderer;
 import com.minelittlepony.unicopia.ducks.Colourful;
 import com.minelittlepony.unicopia.entity.player.IPlayer;
@@ -143,7 +143,7 @@ public class UnicopiaCoreClient extends InteractionManager implements ClientModI
 
         ClientTickCallback.EVENT.register(this::tick);
         ClientReadyCallback.EVENT.register(client -> {
-            PowersRegistry.instance().getValues().forEach(keyboard::addKeybind);
+            Abilities.getInstance().getValues().forEach(keyboard::addKeybind);
         });
 
         //BuildInTexturesBakery.getBuiltInTextures().add(new Identifier(Unicopia.MODID, "items/empty_slot_gem"));

@@ -5,8 +5,8 @@ import java.util.Random;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UParticles;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.ability.IFlyingPredicate;
-import com.minelittlepony.unicopia.ability.IHeightPredicate;
+import com.minelittlepony.unicopia.ability.FlightPredicate;
+import com.minelittlepony.unicopia.ability.HeightPredicate;
 import com.minelittlepony.unicopia.entity.FlightControl;
 import com.minelittlepony.unicopia.entity.Updatable;
 import com.minelittlepony.unicopia.magic.IMagicEffect;
@@ -24,7 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class GravityDelegate implements Updatable, FlightControl, InbtSerialisable, IFlyingPredicate, IHeightPredicate {
+public class GravityDelegate implements Updatable, FlightControl, InbtSerialisable, FlightPredicate, HeightPredicate {
 
     private final IPlayer player;
 
@@ -53,8 +53,8 @@ public class GravityDelegate implements Updatable, FlightControl, InbtSerialisab
 
         if (player.hasEffect()) {
             IMagicEffect effect = player.getEffect();
-            if (!effect.isDead() && effect instanceof IFlyingPredicate) {
-                return ((IFlyingPredicate)effect).checkCanFly(player);
+            if (!effect.isDead() && effect instanceof FlightPredicate) {
+                return ((FlightPredicate)effect).checkCanFly(player);
             }
         }
 
@@ -69,8 +69,8 @@ public class GravityDelegate implements Updatable, FlightControl, InbtSerialisab
     public float getTargetEyeHeight(IPlayer player) {
         if (player.hasEffect()) {
             IMagicEffect effect = player.getEffect();
-            if (!effect.isDead() && effect instanceof IHeightPredicate) {
-                float val = ((IHeightPredicate)effect).getTargetEyeHeight(player);
+            if (!effect.isDead() && effect instanceof HeightPredicate) {
+                float val = ((HeightPredicate)effect).getTargetEyeHeight(player);
                 if (val > 0) {
                     return val;
                 }
@@ -88,8 +88,8 @@ public class GravityDelegate implements Updatable, FlightControl, InbtSerialisab
     public float getTargetBodyHeight(IPlayer player) {
         if (player.hasEffect()) {
             IMagicEffect effect = player.getEffect();
-            if (!effect.isDead() && effect instanceof IHeightPredicate) {
-                float val = ((IHeightPredicate)effect).getTargetBodyHeight(player);
+            if (!effect.isDead() && effect instanceof HeightPredicate) {
+                float val = ((HeightPredicate)effect).getTargetBodyHeight(player);
                 if (val > 0) {
                     return val;
                 }
