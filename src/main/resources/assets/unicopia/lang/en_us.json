@@ -1,0 +1,317 @@
+{
+  "tile.cloud_block.name": "Block of Cloud",
+  "tile.packed_cloud_block.name": "Dense Cloud",
+  "tile.enchanted_cloud_block.name": "Enchanted Cloud",
+
+  "tile.cloud_slab.name": "Cloud Slab",
+  "tile.double_cloud_slab.name": "Double Cloud Slab",
+  "tile.packed_cloud_slab.name": "Dense Cloud Slab",
+  "tile.packed_normal_cloud_slab.name": "Double Dense Cloud Slab",
+  "tile.enchanted_cloud_slab.name": "Enchanted Cloud Slab",
+  "tile.double_enchanted_cloud_slab.name": "Double Enchanted Cloud Slab",
+
+  "tile.cloud_stairs.name": "Cloud Stairs",
+  "tile.cloud_fence.name": "Cloud Fence",
+  "tile.cloud_banister.name": "Banister",
+  "tile.cloud_farmland.name": "Tilled Clouds",
+
+  "tile.hive.name": "Hive Wall",
+  "tile.chitin_block.name": "Chitin Block",
+  "tile.chissled_chitin.name": "Chiseled Chitin Block",
+  "tile.chitin_shell.name": "Chitin Shell",
+  "tile.cuccoon.name": "Cocoon",
+  "tile.slime_layer.name": "Slime",
+
+  "tile.apple_leaves.name": "Apple Leaves",
+  "tile.apple_sapling.name": "Apple Seeds",
+
+  "tile.sugar_block.name": "Block of Sugar",
+
+  "tile.enchanted_torch.name": "Stone Lamp",
+
+  "item.cloud_matter.name": "Lump of Cloud",
+  "item.racing_cloud_spawner.name": "Racing Cloud",
+  "item.construction_cloud_spawner.name": "Construction Cloud",
+  "item.wild_cloud_spawner.name": "Wild Cloud",
+
+  "item.mist_door.name": "Cloud Door",
+  "item.library_door.name": "Dutch Library Door",
+  "item.bakery_door.name": "Dutch Bakery Door",
+  "item.diamond_door.name": "Diamond Door",
+  "item.dew_drop.name": "Dew Drop",
+  "item.cloud_anvil.name": "Anvilhead Anvil",
+  "item.chitin_shell.name": "Chitinous Shell",
+
+  "item.moss.name": "Moss",
+  "item.staff_meadow_brook.name": "Meadow Brook's Staff",
+  "item.staff_meadow_brook.tagline": "It's a big stick",
+  "item.staff_remembrance.name": "Staff of Remembrance",
+  "item.spear.name": "Spear",
+  "item.alicorn_amulet.name": "The Alicorn Amulet",
+  "item.alicorn_amulet.tagline": "Time Worn: %s",
+
+  "tile.bed.youAreAMonster": "You may not rest here, you are the monster",
+
+  "item.gem.name": "Gem",
+  "item.gem.enchanted.name": "Gem of %s",
+  "item.corrupted_gem.name": "Fractured Gem",
+  "item.corrupted_gem.enchanted.name": "Fractured Gem of %s",
+
+  "affinity.good.name": "Pure",
+  "affinity.neutral.name": "Neutral",
+  "affinity.bad.name": "Corrupt",
+
+  "spell.shield.name": "Defense",
+  "spell.shield.tagline": "Protection I",
+
+  "spell.awkward.name": "Awkwardness",
+  "spell.awkward.tagline": "*Derp*",
+
+  "spell.portal.name": "Transportation",
+  "spell.portal.tagline": "Teleportation I",
+
+  "spell.light.name": "Illumination",
+  "spell.light.tagline": "Discovery I",
+
+  "spell.reveal.name": "Revealing",
+  "spell.reveal.tagline": "Discovery II",
+
+  "spell.flame.name": "Burning",
+  "spell.flame.tagline": "Fire I",
+
+  "spell.fire.name": "Flame",
+  "spell.fire.tagline": "Fire II",
+
+  "spell.vortex.name": "Retention",
+  "spell.vortex.tagline": "Containment I",
+
+  "spell.charge.name": "Channeling",
+  "spell.charge.tagline": "Energy I",
+
+  "spell.siphon.name": "Pilon",
+  "spell.siphon.tagline": "Energy II",
+
+  "spell.ice.name": "Frost",
+  "spell.ice.tagline": "Ice I",
+
+  "spell.drake.name": "Assistance",
+  "spell.drake.tagline": "Golomancy I",
+
+  "curse.shield.name": "Repulsion",
+  "curse.shield.tagline": "Hostility I",
+
+  "curse.darkness.name": "Darkness",
+  "curse.darkness.tagline": "Golomancy I/Resurrection II",
+
+  "curse.harm.name": "Hurting",
+  "curse.harm.tagline": "Hostility II",
+
+  "curse.awkward.name": "Awkwardness",
+  "curse.awkward.tagline": "*Derp*",
+
+  "curse.vortex.name": "Suffering",
+  "curse.vortex.tagline": "Torture I",
+
+  "curse.necromancy.name": "Necromancy",
+  "curse.necromancy.tagline": "Resurrection I",
+
+  "curse.inferno.name": "Inferno",
+  "curse.inferno.tagline": "Fire III",
+
+  "curse.siphon.name": "Siphoning",
+  "curse.siphon.tagline": "Energy III",
+
+  "item.spellbook.name": "Spellbook",
+  "item.bag_of_holding.name": "Bag of Holding",
+
+  "item.apple_green.name": "Granny Smith Apple",
+  "item.apple_sweet.name": "Sweet Apple Acres Apple",
+  "item.apple_sour.name": "Sour Apple",
+
+  "item.rotten_apple.name": "Rotten Apple",
+
+  "item.cooked_zap_apple.name": "Cooked Zap Apple",
+
+  "item.zap_apple.name": "Zap Apple",
+  "item.zap_apple.red.name": "Apple",
+  "item.zap_apple.green.name": "Granny Smith Apple",
+  "item.zap_apple.sweet.name": "Sweet Apple Acres Apple",
+  "item.zap_apple.sour.name": "Sour Apple",
+  "item.zap_apple.zap.name": "Cooked Zap Apple",
+
+  "item.apple_seeds.name": "Apple Seeds",
+
+  "item.tomato.name": "Tomato",
+  "item.rotten_tomato.name": "Rotten Tomato",
+  "item.tomato_seeds.name": "Tomato Seeds",
+
+  "item.cloudsdale_tomato.name": "Cloudsdale Tomato",
+  "item.rotten_cloudsdale_tomato.name": "Rotten Cloudsdale Tomato",
+
+  "item.alfalfa_leaves.name": "Alfalfa",
+  "item.alfalfa_seeds.name": "Grain",
+
+  "item.cereal.name": "Breakfast Cereal",
+  "item.sugar_cereal.name": "Boop 'o Roops",
+  "item.daffodil_daisy_sandwich.name": "Daffodil Daisy Sandwich",
+  "item.hay_burger.name": "Hay Burger",
+  "item.hay_fries.name": "Hay Fries",
+  "item.salad.name": "Salad",
+  "item.wheat_worms.name": "Wheat Worms",
+  "item.apple_cider.name": "Apple Cider",
+  "item.mug.name": "Mug",
+
+  "item.juice.name": "Juice",
+  "item.burned_juice.name": "Burned Juice",
+
+  "item.record.pet.desc": "Danial Ingram - pet",
+  "item.record.popular.desc": "Danial Ingram - popular",
+  "item.record.crusade.desc": "Danial Ingram - crusade",
+  "item.record.funk.desc": "funk, just funk",
+
+  "entity.racing_cloud.name": "Bucking Bronco",
+  "entity.construction_cloud.name": "Construction Cloud",
+  "entity.cloud.name": "Cloud",
+  "entity.spell.name": "Magic",
+  "entity.spellbook.name": "Spellbook",
+  "entity.butterfly.name": "Butterfly",
+  "entity.spear.name": "Spear",
+
+  "toxicity.safe.name": "Safe",
+  "toxicity.mild.name": "Mildly Toxic",
+  "toxicity.fair.name": "Fairly Toxic",
+  "toxicity.severe.name": "Toxic",
+  "toxicity.lethal.name": "Lethal",
+
+  "gui.unicopia": "Unicopia...",
+
+  "commands.race.success.self": "Your race has been updated",
+  "commands.race.success.otherself": "%1$s changed race to %2$s",
+  "commands.race.success.other": "Changed %1$s's race to %2$s",
+  "commands.race.usage": "/race <get|set|list|describe> [player] <species>",
+  "commands.race.list": "The available races are:",
+  "commands.race.permission": "Selected Race is not permitted by your current server",
+  "commands.race.fail": ""%s" is not a recognised Race",
+
+  "commands.race.tell.self": "You are a ",
+  "commands.race.tell.self.alt": "You are an ",
+  "commands.race.tell.other": "%s is a ",
+  "commands.race.tell.other.alt": "%s is an ",
+
+  "commands.race.describe.title": "%s",
+  "commands.race.describe.human.1": "This is a default race with no abilities.",
+  "commands.race.describe.human.2": "If you have this, it means there are no other races available.",
+  "commands.race.describe.human.3": "It has no special abilities.",
+
+  "commands.race.describe.earth.1": "Earth Ponies can grow crops using mana and punch trees for apples (yeeeeeeehaaaaawwwwwwwwwww)",
+  "commands.race.describe.earth.2": "Their offensive ability is to kick down whilst jumping for a deafening ground smash.",
+  "commands.race.describe.earth.3": "They are strong but slow.",
+
+  "commands.race.describe.unicorn.1": "Unicorns are the primary magic users. They can teleport and cast powerful spells.",
+  "commands.race.describe.unicorn.2": "Their defensive features a powerful shield powered by their mana.",
+  "commands.race.describe.unicorn.3": "They are prone to tiring quickly.",
+
+  "commands.race.describe.pegasus.1": "Pegasi are the masters of the skies.",
+  "commands.race.describe.pegasus.2": "They live mostly in the air and are the only species with the ability to mould and harness cloud materials for their homes.",
+  "commands.race.describe.pegasus.3": "They are fast and light but easy to knock down.",
+
+  "commands.race.describe.alicorn.1": "Praise the sun!",
+  "commands.race.describe.alicorn.2": "Alicorns have all abilities of the other races.",
+  "commands.race.describe.alicorn.3": "Only available to CREATIVE mode players.",
+
+  "commands.race.describe.changeling.1": "Beware the changeling, for they can appear when least expected.",
+  "commands.race.describe.changeling.2": "Changelings can fly but but do not interact with clouds.",
+  "commands.race.describe.changeling.3": "They have to feed on mobs and other players to eat.",
+
+  "commands.racelist.usage": "/racelist <allow|disallow> <species>",
+  "commands.racelist.illegal": "The default race %s cannot be used with this command.",
+  "commands.racelist.allowed": "Added %1$s to the whitelist.",
+  "commands.racelist.allowed.failed": "%1$s is already whitelisted.",
+  "commands.race.success.other": "%1$s was added to the whitelist by %2$s.",
+  "commands.racelist.allowed.failed.other": "%2$s tried to whitelist %1$s but it was already whitelisted.",
+  "commands.racelist.disallowed": "Removed %1$s from the whitelist.",
+  "commands.racelist.disallowed.failed": "%1$s is not on the whitelist.",
+  "commands.racelist.disallowed.other": "%1$s was removed from the whitelist by %2$s.",
+  "commands.racelist.disallowed.failed.other": "%2$s tried to remove %1$s from the whitelist but it has not been added yet.",
+
+  "commands.disguise.usage": "/disguise <player> <entity> [nbt]",
+  "commands.disguise.notfound": "The entity id '%s' does not exist.",
+  "commands.disguise.success.other": "%1$s is now disguised as %2$s",
+  "commands.disguise.success.self": "Updated disguise to %s",
+  "commands.disguise.success.otherself": "%1$s changed their disguise to %2$s",
+
+  "commands.gravity.usage": "/gravity <get|set> <player> <gravity>",
+  "commands.gravity.get": "Your gravity is %f",
+  "commands.gravity.get.other": "%1$s has a gravity of %f",
+  "commands.gravity.set": "Your gravity was set to %f",
+  "commands.gravity.set.other": "Set %1$s's gravity to %f",
+
+  "unicopia.race.human": "Human",
+  "unicopia.race.human.alt": "Humans",
+  "unicopia.race.earth": "Earth Pony",
+  "unicopia.race.earth.alt": "Earth Ponies",
+  "unicopia.race.unicorn": "Unicorn",
+  "unicopia.race.unicorn.alt": "Unicorns",
+  "unicopia.race.pegasus": "Pegasus",
+  "unicopia.race.pegasus.alt": "Pegasi",
+  "unicopia.race.alicorn": "Alicorn",
+  "unicopia.race.alicorn.alt": "Alicorns",
+  "unicopia.race.changeling": "Changeling",
+  "unicopia.race.changeling.alt": "Changelings",
+
+  "unicopia.category.name": "Pony Abilities",
+
+  "unicopia.power.grow": "Primary Earth Pony ability",
+  "unicopia.power.earth": "Secondary Earth Pony ability",
+
+  "unicopia.power.teleport": "Primary Unicorn ability",
+  "unicopia.power.magic": "Secondary Unicorn ability",
+
+  "unicopia.power.cloud": "Primary Pegasus ability",
+  "unicopia.power.carry": "Pick up & Drop riders",
+
+  "unicopia.power.feed": "Primary Changeling ability",
+  "unicopia.power.disguise": "Secondary Changeling ability",
+
+  "unicopia.gui.title.bagofholding": "Bag of Holding",
+
+  "death.attack.alicorn_amulet": "%1$s was driven insane",
+  "death.attack.darkness": "%1$s went missing",
+  "death.attack.feed": "%1$s was drained of all life",
+  "death.attack.feed.player": "%1$s died to feed %2$s",
+  "death.attack.cold": "%1$s died of frost bite",
+  "death.attack.cold.player": "%1$s was frozen to death by %2$s",
+  "death.attack.cold.player.item": "%1$s was frozen to death by %2$s using %3$s",
+  "death.attack.smash": "%1$s was crushed under hoof",
+  "death.attack.smash.player": "%1$s was crushed by %2$s",
+  "death.attack.fire": "%1$s was burnt to a crisp by magic",
+  "death.attack.fire.player": "%1$s was burnt to a crisp by %2$s",
+  "death.attack.fire.own": "%1$s was burnt to a crisp by their own spell",
+  "death.attack.zap": "%1$s ate a Zap Apple",
+  "death.attack.paradox": "%1$s imploded",
+  "death.attack.acid": "%1$s drowned in acid",
+  "death.attack.food_poisoning": "%1$s died of food poisoning",
+  "death.attack.food_poisoning.player": "%1$s poisoned %1$s' to death",
+
+  "advancements.adventure.bag_of_holding.title": "Read the Manual",
+  "advancements.adventure.bag_of_holding.description": "Successfully die using the Bag of Holding",
+  "advancements.adventure.bag_of_holding_2.title": "Oops! I did it again",
+  "advancements.adventure.bag_of_holding_2.description": "Die by the Bag of Holding a second time",
+  "advancements.adventure.bag_of_holding_3.title": "Oh come on!",
+  "advancements.adventure.bag_of_holding_3.description": "-_-",
+  "advancements.adventure.first_staff.title": "Baby Steps",
+  "advancements.adventure.first_staff.description": "Craft your first staff",
+  "advancements.adventure.just_a_stick.title": "Old 'n Busted",
+  "advancements.adventure.just_a_stick.description": "It's a stick. What did you expect?",
+  "advancements.adventure.unicopia_beginning.title": "Just the beginning...",
+  "advancements.adventure.unicopia_beginning.description": "Found your first gem, but what can it do?",
+
+  "effect.food_poisoning": "Food Poisoning",
+
+  "unicopia.subtitle.flap_wings": "Wing Flaps",
+  "unicopia.subtitle.wind_rush": "Wind Gust",
+  "unicopia.subtitle.insects": "Insects Scurrying",
+  "unicopia.subtitle.slime_advance": "Squealch",
+  "unicopia.subtitle.slime_retract": "Sqonk",
+  "unicopia.subtitle.changeling_buzz": "Drone Buzzing"
+}
