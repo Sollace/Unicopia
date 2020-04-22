@@ -13,6 +13,6 @@ public class SugarBlock extends FallingBlock {
                 .sounds(BlockSoundGroup.SAND)
                 .build()
         );
-        //TODO: drops SUGAR x 9;
+        //TODO: loot table SUGAR x 9;
     }
 }

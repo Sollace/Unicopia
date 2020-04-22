@@ -46,7 +46,7 @@ public class TomatoPlantBlock extends CropBlock {
         );
         setDefaultState(getDefaultState().with(TYPE, Type.NORMAL));
 
-        // TODO: drops UItems.tomato_seeds x1
+        // TODO: loot table UItems.tomato_seeds x1
         // if mature: UItems.tomato
     }
 

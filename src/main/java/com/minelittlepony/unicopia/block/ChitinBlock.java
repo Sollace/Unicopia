@@ -31,7 +31,7 @@ public class ChitinBlock extends Block {
         );
         setDefaultState(stateManager.getDefaultState().with(COVERING, Covering.UNCOVERED));
 
-        // TODO: drops:
+        // TODO: loot table:
         //  UItems.chitin_shell x 3
         // setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }

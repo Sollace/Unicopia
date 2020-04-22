@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 
 @Deprecated
 public class CustomDrops {
-    // TODO: replace with a loot table
+    // TODO: loot table
     public void addAuxiliaryDrops(World world, BlockState state, BlockPos pos, List<ItemStack> drops, int fortune) {
         Block block = state.getBlock();
 

@@ -14,7 +14,7 @@ import net.minecraft.state.property.Property;
  * A collection of block-state mappings.
  *
  */
-public class StateMapList extends ArrayList<StateMapping> {
+public class BlockStateMap extends ArrayList<StateMapping> {
     private static final long serialVersionUID = 2602772651960588745L;
 
     public void removeBlock(Predicate<BlockState> mapper) {

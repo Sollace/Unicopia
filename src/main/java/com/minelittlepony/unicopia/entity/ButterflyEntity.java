@@ -19,6 +19,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -123,10 +124,9 @@ public class ButterflyEntity extends AmbientEntity {
             if (player.isSprinting() || player.isHandSwinging || player.forwardSpeed > 0 || player.sidewaysSpeed > 0) {
                 return true;
             }
-            // TODO: IMob.VISIBLE_MOB_SELECTOR
-        }/* else if (!IMob.VISIBLE_MOB_SELECTOR.test(e)) {
+        } else if (!EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(e)) {
             return false;
-        }*/
+        }
 
         return e.getVelocity().x != 0 || e.getVelocity().z != 0;
     }

@@ -13,10 +13,12 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.container.SpellbookResultSlot;
 import com.minelittlepony.unicopia.ducks.Colourful;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.mixin.client.DefaultTexturesRegistry;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.util.dummy.DummyClientPlayerEntity;
 import com.mojang.authlib.GameProfile;
@@ -28,6 +30,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.color.world.GrassColors;
+import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -55,11 +59,9 @@ public class UnicopiaClient extends InteractionManager implements ClientModIniti
         InteractionManager.instance = this;
 
         ClientTickCallback.EVENT.register(this::tick);
-        ClientReadyCallback.EVENT.register(client -> {
-            Abilities.getInstance().getValues().forEach(keyboard::addKeybind);
-        });
+        ClientReadyCallback.EVENT.register(client -> Abilities.getInstance().getValues().forEach(keyboard::addKeybind));
 
-        //BuildInTexturesBakery.getBuiltInTextures().add(new Identifier(Unicopia.MODID, "items/empty_slot_gem"));
+        DefaultTexturesRegistry.getDefaultTextures().add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, SpellbookResultSlot.EMPTY_GEM_SLOT));
 
         ColorProviderRegistry.ITEM.register((stack, tint) -> {
             return getLeavesColor(((BlockItem)stack.getItem()).getBlock().getDefaultState(), null, null, tint);
@@ -88,19 +90,6 @@ public class UnicopiaClient extends InteractionManager implements ClientModIniti
 
         keyboard.onKeyInput();
     }
-    private static Race getclientPlayerRace() {
-        if (!Config.getInstance().ignoresMineLittlePony()
-                && MinecraftClient.getInstance().player != null) {
-            Race race = MineLPConnector.getPlayerPonyRace();
-
-            if (!race.isDefault()) {
-                return race;
-            }
-        }
-
-
-        return Config.getInstance().getPrefferedRace();
-    }
 
     @Override
     @Nonnull
@@ -127,6 +116,20 @@ public class UnicopiaClient extends InteractionManager implements ClientModIniti
     @Override
     public int getViewMode() {
         return MinecraftClient.getInstance().options.perspective;
+    }
+
+    private static Race getclientPlayerRace() {
+        if (!Config.getInstance().ignoresMineLittlePony()
+                && MinecraftClient.getInstance().player != null) {
+            Race race = MineLPConnector.getPlayerPonyRace();
+
+            if (!race.isDefault()) {
+                return race;
+            }
+        }
+
+
+        return Config.getInstance().getPrefferedRace();
     }
 
     private static int getLeavesColor(BlockState state, @Nullable BlockRenderView world, @Nullable BlockPos pos, int tint) {

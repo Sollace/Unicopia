@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ducks.PickedItemSupplier;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Castable;
@@ -43,7 +44,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion.DestructionType;
 
-public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caster<LivingEntity>, InAnimate {
+public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caster<LivingEntity>, InAnimate, PickedItemSupplier {
 
     private LivingEntity owner = null;
 
@@ -132,11 +133,10 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
         dataTracker.startTracking(AFFINITY, Affinity.NEUTRAL.ordinal());
     }
 
-    // TODO: getPickedStack
-    /*@Override
-    public ItemStack getPickedStack(HitResult target) {
+    @Override
+    public ItemStack getPickedStack() {
         return SpellRegistry.instance().enchantStack(new ItemStack(getItem()), getEffect().getName());
-    }*/
+    }
 
     protected Item getItem() {
         return getAffinity() == Affinity.BAD ? UItems.curse : UItems.spell;

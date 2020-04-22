@@ -6,7 +6,7 @@ import net.minecraft.client.MinecraftClient;
 
 @Deprecated
 // TODO: forge events
-class ClientHooks {
+class HudHooks {
     public static void beforePreRenderHud() {
         MinecraftClient client = MinecraftClient.getInstance();
 
@@ -16,7 +16,6 @@ class ClientHooks {
     }
 
     public static void postRenderHud() {
-
         MinecraftClient client = MinecraftClient.getInstance();
 
         if (client.player != null && client.world != null) {

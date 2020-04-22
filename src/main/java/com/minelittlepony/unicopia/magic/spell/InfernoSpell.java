@@ -5,7 +5,7 @@ import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.collection.StateMapping;
-import com.minelittlepony.unicopia.util.collection.StateMapList;
+import com.minelittlepony.unicopia.util.collection.BlockStateMap;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 
 public class InfernoSpell extends FireSpell {
 
-    public final StateMapList hellFireAffected = new StateMapList();
+    public final BlockStateMap hellFireAffected = new BlockStateMap();
 
     public InfernoSpell() {
         hellFireAffected.add(StateMapping.build(

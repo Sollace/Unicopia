@@ -8,8 +8,8 @@ import com.google.common.collect.Lists;
 import com.google.gson.annotations.Expose;
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.TreeType;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.AppleItem;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -28,7 +28,6 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.BlockHitResult;
@@ -351,7 +350,7 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
 
                     ItemEntity item = new ItemEntity(EntityType.ITEM, w);
                     item.setPos(pos.getX() + w.random.nextFloat(), pos.getY() - 0.5, pos.getZ() + w.random.nextFloat());
-                    item.setStack(getApple(w, log));
+                    item.setStack(TreeType.get(log).pickRandomStack());
 
                     drops.add(item);
                 }
@@ -361,10 +360,6 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
                 }, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
             }
         }
-    }
-
-    private ItemStack getApple(World w, BlockState log) {
-        return AppleItem.getRandomItemStack(getVariant(log));
     }
 
     private int measureTree(World w, BlockState log, BlockPos pos) {
@@ -455,20 +450,7 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
     }
 
     private boolean variantEquals(BlockState one, BlockState two) {
-        return getVariant(one) == getVariant(two);
-    }
-
-    private Object getVariant(BlockState state) {
-        // TODO: Variants are gone
-        /*if (state.getBlock() instanceof LeavesBlock) {
-            return ((LeavesBlock)state.getBlock()).getWoodType(state);
-        }
-
-        return state.getEntries().entrySet().stream()
-                .filter(i -> i.getKey().getName().contentEquals("variant"))
-                .map(i -> i.getValue())
-                .findFirst().orElse(null);*/
-        return null;
+        return TreeType.get(one).equals(TreeType.get(two));
     }
 
     protected static class Data extends Ability.Pos {

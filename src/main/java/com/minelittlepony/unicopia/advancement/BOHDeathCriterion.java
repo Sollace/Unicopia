@@ -15,7 +15,6 @@ import net.minecraft.util.Identifier;
  * Advantement trigger for the book of holding. It's an achievement to die so spectacularly! :D
  */
 public class BOHDeathCriterion extends AbstractCriterion<BOHDeathCriterion.Entry, BOHDeathCriterion.Conditions> {
-    // TODO:  Need to register this
     public static final BOHDeathCriterion INSTANCE = new BOHDeathCriterion();
 
     private static final Identifier ID = new Identifier("unicopia", "death_by_bag_of_holding");

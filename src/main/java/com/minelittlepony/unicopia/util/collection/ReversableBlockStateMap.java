@@ -1,11 +1,11 @@
 package com.minelittlepony.unicopia.util.collection;
 
-public class ReversableStateMapList extends StateMapList {
+public class ReversableBlockStateMap extends BlockStateMap {
     private static final long serialVersionUID = 6154365988455383098L;
 
-    private final StateMapList inverse = new StateMapList();
+    private final BlockStateMap inverse = new BlockStateMap();
 
-    public StateMapList getInverse() {
+    public BlockStateMap getInverse() {
         return inverse;
     }
 

@@ -73,7 +73,7 @@ public class SpellBookContainer extends Container {
         ItemStack current = craftResult.getInvStack(0);
 
         if (!current.isEmpty()) {
-            // TODO: RecipeType.SPELL_BOOK
+            // TODO: URecipeType.SPELL_BOOK
             ItemStack crafted = player.world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftMatrix, worldObj)
                     .map(Recipe::getOutput)
                     .orElse(ItemStack.EMPTY);

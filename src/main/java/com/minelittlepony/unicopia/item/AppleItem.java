@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.ducks.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemEntityCapabilities;
 import com.minelittlepony.unicopia.toxin.Toxic;
 import com.minelittlepony.unicopia.toxin.Toxicity;
-
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -22,44 +21,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class AppleItem extends Item implements Toxic, ItemEntityCapabilities.TickableItem {
-
-    // TODO: Move this to a datapack
-    /*private static final Pool<Object, Weighted<Supplier<ItemStack>>> TYPE_VARIANT_POOL = Pool.of(PlanksBlock.Type.OAK,
-            PlanksBlock.Type.OAK, new Weighted<Supplier<ItemStack>>()
-                    .put(1, () -> new ItemStack(UItems.rotten_apple))
-                    .put(2, () -> new ItemStack(UItems.green_apple))
-                    .put(3, () -> new ItemStack(UItems.red_apple)),
-            PlanksBlock.Type.SPRUCE, new Weighted<Supplier<ItemStack>>()
-                    .put(1, () -> new ItemStack(UItems.sour_apple))
-                    .put(2, () -> new ItemStack(UItems.green_apple))
-                    .put(3, () -> new ItemStack(UItems.sweet_apple))
-                    .put(4, () -> new ItemStack(UItems.rotten_apple)),
-            PlanksBlock.Type.BIRCH, new Weighted<Supplier<ItemStack>>()
-                    .put(1, () -> new ItemStack(UItems.rotten_apple))
-                    .put(2, () -> new ItemStack(UItems.sweet_apple))
-                    .put(5, () -> new ItemStack(UItems.green_apple)),
-            PlanksBlock.Type.JUNGLE, new Weighted<Supplier<ItemStack>>()
-                    .put(5, () -> new ItemStack(UItems.green_apple))
-                    .put(2, () -> new ItemStack(UItems.sweet_apple))
-                    .put(1, () -> new ItemStack(UItems.sour_apple)),
-            PlanksBlock.Type.ACACIA, new Weighted<Supplier<ItemStack>>()
-                    .put(1, () -> new ItemStack(UItems.rotten_apple))
-                    .put(2, () -> new ItemStack(UItems.sweet_apple))
-                    .put(5, () -> new ItemStack(UItems.green_apple)),
-            PlanksBlock.Type.DARK_OAK, new Weighted<Supplier<ItemStack>>()
-                    .put(1, () -> new ItemStack(UItems.rotten_apple))
-                    .put(2, () -> new ItemStack(UItems.sweet_apple))
-                    .put(5, () -> new ItemStack(UItems.zap_apple)
-            )
-    );*/
-
-    public static ItemStack getRandomItemStack(Object variant) {
-        return new ItemStack(UItems.VanillaOverrides.red_apple);
-        /*return TYPE_VARIANT_POOL.getOptional(variant)
-                .flatMap(Weighted::get)
-                .map(Supplier::get)
-                .orElse(ItemStack.EMPTY);*/
-    }
 
     public AppleItem(FoodComponent components) {
         super(new Item.Settings()

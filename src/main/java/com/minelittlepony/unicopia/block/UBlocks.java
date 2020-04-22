@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.block;
 
+import com.minelittlepony.unicopia.TreeType;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.gas.CloudAnvilBlock;
 import com.minelittlepony.unicopia.gas.CloudBlock;
@@ -9,7 +10,6 @@ import com.minelittlepony.unicopia.gas.CloudFenceBlock;
 import com.minelittlepony.unicopia.gas.CloudSlabBlock;
 import com.minelittlepony.unicopia.gas.CloudStairsBlock;
 import com.minelittlepony.unicopia.gas.CloudType;
-import com.minelittlepony.unicopia.item.AppleItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.structure.CustomSaplingGenerator;
 
@@ -68,7 +68,7 @@ public interface UBlocks {
     Block apple_leaves = register(new FruitLeavesBlock()
             .growthChance(1200)
             .tint(0xFFEE81)
-            .fruit(AppleItem::getRandomItemStack)
+            .fruit(W -> TreeType.OAK.pickRandomStack())
             .compost(w -> new ItemStack(UItems.rotten_apple)), "apple_leaves");
 
 

@@ -12,7 +12,7 @@ import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.collection.StateMapping;
-import com.minelittlepony.unicopia.util.collection.StateMapList;
+import com.minelittlepony.unicopia.util.collection.BlockStateMap;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -37,7 +37,7 @@ import net.minecraft.world.World;
 
 public class IceSpell extends AbstractSpell.RangedAreaSpell implements Useable, DispenceableMagicEffect {
 
-    public final StateMapList affected = new StateMapList();
+    public final BlockStateMap affected = new BlockStateMap();
 
     public IceSpell() {
         affected.add(StateMapping.build(

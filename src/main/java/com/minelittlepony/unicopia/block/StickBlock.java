@@ -40,7 +40,7 @@ public class StickBlock extends Block {
                 .build()
         );
 
-        // TODO: drops Items.STICK x1
+        // TODO: loot table Items.STICK x1
     }
 
     @Deprecated

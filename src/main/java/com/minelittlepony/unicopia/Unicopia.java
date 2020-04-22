@@ -11,12 +11,14 @@ import com.minelittlepony.common.util.GamePaths;
 import com.minelittlepony.jumpingcastle.api.Channel;
 import com.minelittlepony.jumpingcastle.api.JumpingCastle;
 import com.minelittlepony.unicopia.ability.Abilities;
+import com.minelittlepony.unicopia.advancement.BOHDeathCriterion;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.container.UContainers;
 import com.minelittlepony.unicopia.enchanting.Pages;
 import com.minelittlepony.unicopia.enchanting.recipe.AffineIngredients;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.mixin.CriterionsRegistry;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
@@ -50,6 +52,7 @@ public class Unicopia implements ModInitializer {
         UStructures.bootstrap();
         Abilities.getInstance().init();
 
+        CriterionsRegistry.register(BOHDeathCriterion.INSTANCE);
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(Pages.instance());
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(AffineIngredients.instance());
     }

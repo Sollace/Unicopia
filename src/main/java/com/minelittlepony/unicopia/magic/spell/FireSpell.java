@@ -13,7 +13,7 @@ import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.collection.StateMapping;
-import com.minelittlepony.unicopia.util.collection.StateMapList;
+import com.minelittlepony.unicopia.util.collection.BlockStateMap;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -43,7 +43,7 @@ import net.minecraft.world.World;
 
 public class FireSpell extends AbstractSpell.RangedAreaSpell implements Useable, DispenceableMagicEffect {
 
-    public final StateMapList affected = new StateMapList();
+    public final BlockStateMap affected = new BlockStateMap();
 
     private static final Shape visual_effect_region = new Sphere(false, 0.5);
     private static final Shape effect_range = new Sphere(false, 4);

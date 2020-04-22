@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.toxin.ToxicItem;
 import com.minelittlepony.unicopia.toxin.Toxicity;
-import com.minelittlepony.unicopia.util.collection.ReversableStateMapList;
+import com.minelittlepony.unicopia.util.collection.ReversableBlockStateMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -16,25 +16,24 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.UseAction;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class MossItem extends ToxicItem {
 
-    public static final ReversableStateMapList AFFECTED = new ReversableStateMapList();
-
-    static {
+    public static final ReversableBlockStateMap AFFECTED = Util.make(new ReversableBlockStateMap(), a -> {
         // TODO: move to resourcepack
-        AFFECTED.replaceBlock(Blocks.MOSSY_COBBLESTONE, Blocks.COBBLESTONE);
-        AFFECTED.replaceBlock(Blocks.MOSSY_COBBLESTONE_SLAB, Blocks.COBBLESTONE_SLAB);
-        AFFECTED.replaceBlock(Blocks.MOSSY_COBBLESTONE_STAIRS, Blocks.COBBLESTONE_STAIRS);
-        AFFECTED.replaceBlock(Blocks.MOSSY_COBBLESTONE_WALL, Blocks.COBBLESTONE_WALL);
-        AFFECTED.replaceBlock(Blocks.MOSSY_STONE_BRICK_SLAB, Blocks.STONE_BRICK_SLAB);
-        AFFECTED.replaceBlock(Blocks.MOSSY_STONE_BRICK_STAIRS, Blocks.STONE_BRICK_STAIRS);
-        AFFECTED.replaceBlock(Blocks.MOSSY_STONE_BRICK_WALL, Blocks.MOSSY_STONE_BRICK_WALL);
-        AFFECTED.replaceBlock(Blocks.MOSSY_STONE_BRICKS, Blocks.STONE_BRICKS);
-        AFFECTED.replaceBlock(Blocks.INFESTED_MOSSY_STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
-    }
+        a.replaceBlock(Blocks.MOSSY_COBBLESTONE, Blocks.COBBLESTONE);
+        a.replaceBlock(Blocks.MOSSY_COBBLESTONE_SLAB, Blocks.COBBLESTONE_SLAB);
+        a.replaceBlock(Blocks.MOSSY_COBBLESTONE_STAIRS, Blocks.COBBLESTONE_STAIRS);
+        a.replaceBlock(Blocks.MOSSY_COBBLESTONE_WALL, Blocks.COBBLESTONE_WALL);
+        a.replaceBlock(Blocks.MOSSY_STONE_BRICK_SLAB, Blocks.STONE_BRICK_SLAB);
+        a.replaceBlock(Blocks.MOSSY_STONE_BRICK_STAIRS, Blocks.STONE_BRICK_STAIRS);
+        a.replaceBlock(Blocks.MOSSY_STONE_BRICK_WALL, Blocks.MOSSY_STONE_BRICK_WALL);
+        a.replaceBlock(Blocks.MOSSY_STONE_BRICKS, Blocks.STONE_BRICKS);
+        a.replaceBlock(Blocks.INFESTED_MOSSY_STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
+    });
 
     public MossItem(Item.Settings settings) {
         super(settings, 2, 1, UseAction.EAT, Toxicity.FAIR);

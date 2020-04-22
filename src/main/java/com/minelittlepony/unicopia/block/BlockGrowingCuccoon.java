@@ -4,6 +4,7 @@ import java.util.Random;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.ducks.Climbable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 
@@ -36,7 +37,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class BlockGrowingCuccoon extends Block {
+public class BlockGrowingCuccoon extends Block implements Climbable {
 
     public static final IntProperty AGE = IntProperty.of("age", 0, 7);
     public static final EnumProperty<Shape> SHAPE = EnumProperty.of("shape", Shape.class);
@@ -229,7 +230,6 @@ public class BlockGrowingCuccoon extends Block {
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext ePos) {
         Vec3d offset = getOffsetPos(state, view, pos);
 
-
         if (state.get(SHAPE) == Shape.BULB) {
             return BULBS[state.get(AGE) / 2].offset(offset.x, offset.y, offset.z);
         }
@@ -242,12 +242,6 @@ public class BlockGrowingCuccoon extends Block {
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(AGE, SHAPE);
     }
-
-    // TODO: isLadder
-    /*@Override
-    public boolean isLadder(BlockState state, BlockView world, BlockPos pos, LivingEntity entity) {
-        return true;
-    }*/
 
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random rand) {

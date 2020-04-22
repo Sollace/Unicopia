@@ -172,7 +172,7 @@ public class GlowingGemBlock extends TorchBlock implements Gas {
         return CloudType.ENCHANTED;
     }
 
-    // TODO: this is a loot table now
+    // TODO: loot table
     /*@Override
     public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder context) {
 

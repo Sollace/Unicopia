@@ -67,4 +67,14 @@ public abstract class MixinLivingEntity extends Entity implements PonyContainer<
     private static void clinit(CallbackInfo info) {
         LivingEntityCapabilities.boostrap();
     }
+
+    // ---------- temporary
+    @Inject(method = "isClimbing()Z", at = @At("HEAD"), cancellable = true)
+    public void onIsClimbing(CallbackInfoReturnable<Boolean> info) {
+        LivingEntity self = (LivingEntity)(Object)this;
+
+        if (!self.isSpectator() && self.getBlockState().getBlock() instanceof com.minelittlepony.unicopia.ducks.Climbable) {
+            info.setReturnValue(true);
+        }
+     }
 }

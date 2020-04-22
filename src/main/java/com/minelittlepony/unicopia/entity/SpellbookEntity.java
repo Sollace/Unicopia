@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.ducks.PickedItemSupplier;
 import com.minelittlepony.unicopia.item.UItems;
 
 import net.minecraft.container.Container;
@@ -13,6 +14,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.BlockSoundGroup;
@@ -24,7 +26,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
-public class SpellbookEntity extends MobEntity implements NameableContainerFactory, IMagicals {
+public class SpellbookEntity extends MobEntity implements NameableContainerFactory, IMagicals, PickedItemSupplier {
 
     private static final TrackedData<Boolean> OPENED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> ALTERED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -45,6 +47,11 @@ public class SpellbookEntity extends MobEntity implements NameableContainerFacto
         dataTracker.startTracking(OPENED, true);
         dataTracker.startTracking(OPENED_USER, (byte)1);
         dataTracker.startTracking(ALTERED, false);
+    }
+
+    @Override
+    public ItemStack getPickedStack() {
+        return new ItemStack(UItems.spellbook);
     }
 
     @Override
@@ -192,10 +199,4 @@ public class SpellbookEntity extends MobEntity implements NameableContainerFacto
             compound.putBoolean("force_open", state);
         }
     }
-
-    // TODO: getPickStack
-    /*@Override
-    public ItemStack getPickStack(HitResult target) {
-        return new ItemStack(UItems.spellbook);
-    }*/
 }
