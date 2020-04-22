@@ -74,7 +74,7 @@ public class ZapAppleItem extends AppleItem {
         player.damage(MagicalDamageSource.ZAP_APPLE, 120);
 
         if (w instanceof ServerWorld) {
-            ((ServerWorld) w).addLightning(new LightningEntity(w, player.x, player.y, player.z, false));
+            ((ServerWorld) w).addLightning(new LightningEntity(w, player.getX(), player.getY(), player.getZ(), false));
         }
 
         return stack;
@@ -87,7 +87,7 @@ public class ZapAppleItem extends AppleItem {
     }
 
     public TypedActionResult<ItemStack> onFedTo(ItemStack stack, PlayerEntity player, Entity e) {
-        e.onStruckByLightning(new LightningEntity(e.world, e.x, e.y, e.z, false));
+        e.onStruckByLightning(new LightningEntity(e.world, e.getX(), e.getY(), e.getZ(), false));
 
         if (!player.abilities.creativeMode) {
             stack.decrement(1);
@@ -105,7 +105,7 @@ public class ZapAppleItem extends AppleItem {
     }
 
     public Item getAppearance(ItemStack stack) {
-        if (stack.hasTag() && stack.getTag().containsKey("appearance")) {
+        if (stack.hasTag() && stack.getTag().contains("appearance")) {
             return Registry.ITEM.get(new Identifier(stack.getTag().getString("appearance")));
         }
 

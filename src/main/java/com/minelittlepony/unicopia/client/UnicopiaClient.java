@@ -13,7 +13,6 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.block.UBlocks;
-import com.minelittlepony.unicopia.client.render.DisguiseRenderer;
 import com.minelittlepony.unicopia.ducks.Colourful;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
@@ -21,10 +20,8 @@ import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.util.dummy.DummyClientPlayerEntity;
 import com.mojang.authlib.GameProfile;
-import com.mojang.blaze3d.platform.GlStateManager;
-
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.render.ColorProviderRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -36,7 +33,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ExtendedBlockView;
+import net.minecraft.world.BlockRenderView;
 
 public class UnicopiaClient extends InteractionManager implements ClientModInitializer {
 
@@ -52,6 +49,45 @@ public class UnicopiaClient extends InteractionManager implements ClientModIniti
      */
     private static Race clientPlayerRace = getclientPlayerRace();
 
+    @Override
+    public void onInitializeClient() {
+        clientPlayerRace = getclientPlayerRace();
+        InteractionManager.instance = this;
+
+        ClientTickCallback.EVENT.register(this::tick);
+        ClientReadyCallback.EVENT.register(client -> {
+            Abilities.getInstance().getValues().forEach(keyboard::addKeybind);
+        });
+
+        //BuildInTexturesBakery.getBuiltInTextures().add(new Identifier(Unicopia.MODID, "items/empty_slot_gem"));
+
+        ColorProviderRegistry.ITEM.register((stack, tint) -> {
+            return getLeavesColor(((BlockItem)stack.getItem()).getBlock().getDefaultState(), null, null, tint);
+        }, UItems.apple_leaves);
+        ColorProviderRegistry.BLOCK.register(UnicopiaClient::getLeavesColor, UBlocks.apple_leaves);
+        ColorProviderRegistry.ITEM.register((stack, tint) -> {
+            if (MAGI.test(MinecraftClient.getInstance().player)) {
+                return SpellRegistry.instance().getSpellTintFromStack(stack);
+            }
+            return 0xFFFFFF;
+        }, UItems.spell, UItems.curse);
+    }
+
+    private void tick(MinecraftClient client) {
+        PlayerEntity player = client.player;
+
+        if (player != null && !player.removed) {
+            Race newRace = getclientPlayerRace();
+
+            if (newRace != clientPlayerRace) {
+                clientPlayerRace = newRace;
+
+                Unicopia.getConnection().send(new MsgRequestCapabilities(player, clientPlayerRace), Target.SERVER);
+            }
+        }
+
+        keyboard.onKeyInput();
+    }
     private static Race getclientPlayerRace() {
         if (!Config.getInstance().ignoresMineLittlePony()
                 && MinecraftClient.getInstance().player != null) {
@@ -93,72 +129,7 @@ public class UnicopiaClient extends InteractionManager implements ClientModIniti
         return MinecraftClient.getInstance().options.perspective;
     }
 
-    public void postRenderEntity(Entity entity) {
-        if (entity instanceof PlayerEntity) {
-            Pony iplayer = Pony.of((PlayerEntity)entity);
-
-            if (iplayer.getGravity().getGravitationConstant() < 0) {
-                GlStateManager.translated(0, entity.getDimensions(entity.getPose()).height, 0);
-                GlStateManager.scalef(1, -1, 1);
-                entity.prevPitch *= -1;
-                entity.pitch *= -1;
-            }
-        }
-    }
-
-    public boolean renderEntity(Entity entity, float renderPartialTicks) {
-
-        if (DisguiseRenderer.getInstance().renderDisguise(entity, renderPartialTicks)) {
-            return true;
-        }
-
-        if (entity instanceof PlayerEntity) {
-            Pony iplayer = Pony.of((PlayerEntity)entity);
-
-            if (iplayer.getGravity().getGravitationConstant() < 0) {
-                GlStateManager.scalef(1, -1, 1);
-                GlStateManager.translated(0, -entity.getDimensions(entity.getPose()).height, 0);
-                entity.prevPitch *= -1;
-                entity.pitch *= -1;
-            }
-
-            if (DisguiseRenderer.getInstance().renderDisguiseToGui(iplayer)) {
-                return true;
-            }
-
-            if (iplayer.isInvisible()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    @Override
-    public void onInitializeClient() {
-        clientPlayerRace = getclientPlayerRace();
-        InteractionManager.instance = this;
-
-        ClientTickCallback.EVENT.register(this::tick);
-        ClientReadyCallback.EVENT.register(client -> {
-            Abilities.getInstance().getValues().forEach(keyboard::addKeybind);
-        });
-
-        //BuildInTexturesBakery.getBuiltInTextures().add(new Identifier(Unicopia.MODID, "items/empty_slot_gem"));
-
-        ColorProviderRegistry.ITEM.register((stack, tint) -> {
-            return getLeavesColor(((BlockItem)stack.getItem()).getBlock().getDefaultState(), null, null, tint);
-        }, UItems.apple_leaves);
-        ColorProviderRegistry.BLOCK.register(UnicopiaClient::getLeavesColor, UBlocks.apple_leaves);
-        ColorProviderRegistry.ITEM.register((stack, tint) -> {
-            if (MAGI.test(MinecraftClient.getInstance().player)) {
-                return SpellRegistry.instance().getSpellTintFromStack(stack);
-            }
-            return 0xFFFFFF;
-        }, UItems.spell, UItems.curse);
-    }
-
-    private static int getLeavesColor(BlockState state, @Nullable ExtendedBlockView world, @Nullable BlockPos pos, int tint) {
+    private static int getLeavesColor(BlockState state, @Nullable BlockRenderView world, @Nullable BlockPos pos, int tint) {
         Block block = state.getBlock();
 
         if (block instanceof Colourful) {
@@ -172,19 +143,4 @@ public class UnicopiaClient extends InteractionManager implements ClientModIniti
         return GrassColors.getColor(0.5D, 1);
     }
 
-    private void tick(MinecraftClient client) {
-        PlayerEntity player = client.player;
-
-        if (player != null && !player.removed) {
-            Race newRace = getclientPlayerRace();
-
-            if (newRace != clientPlayerRace) {
-                clientPlayerRace = newRace;
-
-                Unicopia.getConnection().send(new MsgRequestCapabilities(player, clientPlayerRace), Target.SERVER);
-            }
-        }
-
-        keyboard.onKeyInput();
-    }
 }

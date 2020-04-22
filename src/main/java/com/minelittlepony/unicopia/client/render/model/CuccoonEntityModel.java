@@ -1,68 +1,65 @@
 package com.minelittlepony.unicopia.client.render.model;
 
 import com.minelittlepony.unicopia.entity.CuccoonEntity;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
-import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
+import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
+import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
+import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class CuccoonEntityModel extends EntityModel<CuccoonEntity> {
 
-    private final Cuboid body;
+    private final ModelPart body;
+
+    private float breatheAmount;
 
     public CuccoonEntityModel() {
-        body = new Cuboid(this, 0, 0);
+        body = new ModelPart(this, 0, 0);
         body.setTextureSize(250, 250);
 
         body.setTextureOffset(0, 0);
 
         // cuccoon shape
-        body.addBox(-4, -2, -4, 8, 2, 8);
-        body.addBox(-7.5F, 0, -7.5F, 15, 6, 15);
-        body.addBox(-10, 4, -10, 20, 6, 20);
-        body.addBox(-11.5F, 10, -11.5F, 23, 8, 23);
-        body.addBox(-10, 17, -10, 20, 6, 20);
-        body.addBox(-11.5F, 22, -11.5F, 23, 2, 23);
-
-
-        // pile of blocks
-        // body.addBox(-10, offsetY + 10, -10, 12, 12, 12);
-        // body.addBox(-14, offsetY + 14, 4, 10, 10, 10);
-        // body.addBox(-17, offsetY + 17, 3, 8, 8, 8);
-        // body.addBox(0, offsetY + 10, 0, 12, 12, 12);
-        // body.addBox(-7, offsetY + 6, -7, 16, 16, 16);
-        // body.addBox(-7, offsetY + 0, -7, 12, 12, 12);
+        body.addCuboid(-4, -2, -4, 8, 2, 8);
+        body.addCuboid(-7.5F, 0, -7.5F, 15, 6, 15);
+        body.addCuboid(-10, 4, -10, 20, 6, 20);
+        body.addCuboid(-11.5F, 10, -11.5F, 23, 8, 23);
+        body.addCuboid(-10, 17, -10, 20, 6, 20);
+        body.addCuboid(-11.5F, 22, -11.5F, 23, 2, 23);
     }
 
     @Override
-    public void render(CuccoonEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+        matrices.push();
 
-        float breatheAmount = entity.getBreatheAmount(ageInTicks) / 8;
+        RenderSystem.enableBlend();
+        RenderSystem.enableAlphaTest();
+        RenderSystem.enableRescaleNormal();
 
-        GlStateManager.pushMatrix();
+        RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
 
-        GlStateManager.enableBlend();
-        GlStateManager.enableAlphaTest();
-        GlStateManager.enableNormalize();
+        matrices.scale(1 - breatheAmount, 1 + breatheAmount, 1 - breatheAmount);
+        matrices.translate(0, -breatheAmount * 1.3F, 0);
 
-        GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
+        body.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
 
-        GlStateManager.scalef(1 - breatheAmount, 1 + breatheAmount, 1 - breatheAmount);
-        GlStateManager.translatef(0, -breatheAmount * 1.3F, 0);
+        matrices.scale(0.9F, 0.9F, 0.9F);
+        matrices.translate(0, 0.2F, 0);
 
-        body.render(scale);
+        body.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
 
-        GlStateManager.scalef(0.9F, 0.9F, 0.9F);
-        GlStateManager.translatef(0, 0.2F, 0);
+        RenderSystem.disableRescaleNormal();
+        RenderSystem.disableAlphaTest();
+        RenderSystem.disableBlend();
 
-        body.render(scale);
+        matrices.pop();
+    }
 
-        GlStateManager.disableNormalize();
-        GlStateManager.disableAlphaTest();
-        GlStateManager.disableBlend();
-
-        GlStateManager.popMatrix();
+    @Override
+    public void setAngles(CuccoonEntity entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+        breatheAmount = entity.getBreatheAmount(customAngle) / 8;
     }
 }

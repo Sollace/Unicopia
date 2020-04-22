@@ -9,8 +9,8 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.InAnimate;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.particles.UParticles;
 import com.minelittlepony.unicopia.util.VecHelper;
-import com.minelittlepony.unicopia.util.particles.UParticles;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -76,7 +76,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
             }
         }
 
-        player.getEntityWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PARROT_IMITATE_POLAR_BEAR, SoundCategory.PLAYERS, 1.4F, 0.4F);
+        player.getEntityWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PARROT_IMITATE_RAVAGER, SoundCategory.PLAYERS, 1.4F, 0.4F);
 
         iplayer.getEffect(DisguiseSpell.class).orElseGet(() -> {
             DisguiseSpell disc = new DisguiseSpell();

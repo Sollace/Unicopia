@@ -105,7 +105,7 @@ public abstract class AbstractAttachableSpell extends AbstractSpell {
     public void fromNBT(CompoundTag compound) {
         super.fromNBT(compound);
 
-        if (compound.containsKey("target")) {
+        if (compound.contains("target")) {
             targettedEntityId = compound.getUuid("target");
         }
     }

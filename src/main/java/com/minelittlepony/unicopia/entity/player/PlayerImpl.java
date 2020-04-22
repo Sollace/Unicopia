@@ -327,8 +327,8 @@ public class PlayerImpl implements Pony {
 
     @Override
     public boolean stepOnCloud() {
-        if (entity.fallDistance > 1 || entity.distanceWalked > nextStepDistance) {
-            nextStepDistance = entity.distanceWalked + 2;
+        if (entity.fallDistance > 1 || entity.distanceTraveled > nextStepDistance) {
+            nextStepDistance = entity.distanceTraveled + 2;
             entity.fallDistance = 0;
 
             return true;
@@ -372,16 +372,16 @@ public class PlayerImpl implements Pony {
 
                 player.getHungerManager().add(-health/2, -saturation/2);
 
-                player.addPotionEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 3, true, true));
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 3, true, true));
             } else {
-                player.addPotionEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 3, true, true));
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 3, true, true));
             }
 
             if (player.world.getDifficulty() != Difficulty.PEACEFUL && player.world.random.nextInt(20) == 0) {
-                player.addPotionEffect(new StatusEffectInstance(UEffects.FOOD_POISONING, 3, 2, true, true));
+                player.addStatusEffect(new StatusEffectInstance(UEffects.FOOD_POISONING, 3, 2, true, true));
             }
 
-            player.addPotionEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 2000, 2, true, true));
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 2000, 2, true, true));
         }
     }
 
@@ -408,7 +408,7 @@ public class PlayerImpl implements Pony {
         powers.fromNBT(compound.getCompound("powers"));
         gravity.fromNBT(compound.getCompound("gravity"));
 
-        if (compound.containsKey("effect")) {
+        if (compound.contains("effect")) {
             setEffect(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
         }
 

@@ -11,7 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -27,7 +27,7 @@ public class ChiselledChitinBlock extends Block {
                 .materialColor(MaterialColor.BLACK)
                 .build()
         );
-        setDefaultState(stateFactory.getDefaultState()
+        setDefaultState(stateManager.getDefaultState()
                 .with(Properties.FACING, Direction.UP)
         );
     }
@@ -49,7 +49,7 @@ public class ChiselledChitinBlock extends Block {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(Properties.FACING);
     }
 

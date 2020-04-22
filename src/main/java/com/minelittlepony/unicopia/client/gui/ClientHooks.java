@@ -2,20 +2,16 @@ package com.minelittlepony.unicopia.client.gui;
 
 import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.mojang.blaze3d.platform.GlStateManager;
-
 import net.minecraft.client.MinecraftClient;
 
 @Deprecated
 // TODO: forge events
 class ClientHooks {
     public static void beforePreRenderHud() {
-        GlStateManager.pushMatrix();
-
         MinecraftClient client = MinecraftClient.getInstance();
 
         if (client.player != null && client.world != null) {
-            UHud.instance.repositionElements(Pony.of(client.player), client.window, true);
+            UHud.instance.repositionElements(Pony.of(client.player), client.getWindow(), true);
         }
     }
 
@@ -24,9 +20,7 @@ class ClientHooks {
         MinecraftClient client = MinecraftClient.getInstance();
 
         if (client.player != null && client.world != null) {
-            UHud.instance.renderHud(Pony.of(client.player), client.window);
+            UHud.instance.renderHud(Pony.of(client.player), client.getWindow());
         }
-
-        GlStateManager.popMatrix();
     }
 }

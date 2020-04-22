@@ -10,8 +10,8 @@ import com.minelittlepony.unicopia.ability.PegasusCloudInteractionAbility.ICloud
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.util.particles.ParticleEmitter;
-import com.minelittlepony.unicopia.util.particles.UParticles;
+import com.minelittlepony.unicopia.particles.ParticleEmitter;
+import com.minelittlepony.unicopia.particles.UParticles;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -103,11 +103,6 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
     }
 
     @Override
-    public int getLightmapCoordinates() {
-        return 0xF000F0;
-    }
-
-    @Override
     public float getBrightnessAtEyes() {
         return 0xF000F0;
     }
@@ -149,7 +144,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
     @Override
     protected void pushAway(Entity other) {
         if (other instanceof CloudEntity || other instanceof PlayerEntity) {
-            if (other.y > y) {
+            if (other.getY() > getY()) {
                 return;
             }
 
@@ -175,9 +170,9 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
         if (getIsRaining()) {
             if (world.isClient) {
                 for (int i = 0; i < 30 * getCloudSize(); i++) {
-                    double x = MathHelper.nextDouble(random, boundingbox.minX, boundingbox.maxX);
-                    double y = getBoundingBox().minY + getHeight()/2;
-                    double z = MathHelper.nextDouble(random, boundingbox.minZ, boundingbox.maxZ);
+                    double x = MathHelper.nextDouble(random, boundingbox.x1, boundingbox.x2);
+                    double y = getBoundingBox().y1 + getHeight()/2;
+                    double z = MathHelper.nextDouble(random, boundingbox.z1, boundingbox.z2);
 
                     ParticleEffect particleId = canSnowHere(new BlockPos(x, y, z)) ? ParticleTypes.ITEM_SNOWBALL : UParticles.RAIN_DROPS;
 
@@ -186,21 +181,20 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
 
                 Box rainedArea = boundingbox
                         .expand(1, 0, 1)
-                        .expand(0, -(y - getGroundPosition(x, z).getY()), 0);
+                        .expand(0, -(getY() - getGroundPosition(getBlockPos()).getY()), 0);
 
 
-                for (PlayerEntity j : world.getEntities(PlayerEntity.class, rainedArea)) {
-                    if (!canSnowHere(j.getBlockPos())) {
-                        j.world.playSound(j, j.getBlockPos(), SoundEvents.WEATHER_RAIN, SoundCategory.AMBIENT, 0.1F, 0.6F);
-                    }
+                for (PlayerEntity j : world.getEntities(PlayerEntity.class, rainedArea, j -> canSnowHere(j.getBlockPos()))) {
+                    j.world.playSound(j, j.getBlockPos(), SoundEvents.WEATHER_RAIN, SoundCategory.AMBIENT, 0.1F, 0.6F);
                 }
             }
 
             double width = getDimensions(getPose()).width;
-            BlockPos pos = getGroundPosition(
-                x + random.nextFloat() * width,
-                z + random.nextFloat() * width
-            );
+            BlockPos pos = getGroundPosition(new BlockPos(
+                getX() + random.nextFloat() * width,
+                getY(),
+                getZ() + random.nextFloat() * width
+            ));
 
             if (getIsThundering()) {
                 if (random.nextInt(3000) == 0) {
@@ -246,7 +240,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
                         }
                     }
 
-                    state.getBlock().onRainTick(world, below);
+                    state.getBlock().rainTick(world, below);
                 }
             }
 
@@ -277,7 +271,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
 
         for (Entity i : world.getEntities(this, boundingbox
                 .expand(1 / (1 + getCloudSize())), EquinePredicates.ENTITY_INTERACT_WITH_CLOUDS)) {
-            if (i.y > y + 0.5) {
+            if (i.getY() > getY() + 0.5) {
                 applyGravityCompensation(i);
             }
         }
@@ -285,9 +279,9 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
         if (isOnFire() && !dead) {
             for (int i = 0; i < 5; i++) {
                 world.addParticle(ParticleTypes.CLOUD,
-                        MathHelper.nextDouble(random, boundingbox.minX, boundingbox.maxX),
-                        MathHelper.nextDouble(random, boundingbox.minY, boundingbox.maxY),
-                        MathHelper.nextDouble(random, boundingbox.minZ, boundingbox.maxZ), 0, 0.25, 0);
+                        MathHelper.nextDouble(random, boundingbox.x1, boundingbox.x2),
+                        MathHelper.nextDouble(random, boundingbox.y1, boundingbox.y2),
+                        MathHelper.nextDouble(random, boundingbox.z1, boundingbox.z2), 0, 0.25, 0);
             }
         }
 
@@ -308,7 +302,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
 
     @Override
     public double getMountedHeightOffset() {
-        return getBoundingBox().maxY - getBoundingBox().minY - 0.25;
+        return getBoundingBox().y2 - getBoundingBox().y1 - 0.25;
     }
 
     @Override
@@ -320,14 +314,14 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
 
     @Override
     public void onPlayerCollision(PlayerEntity player) {
-        if (player.y >= y) {
+        if (player.getY() >= getY()) {
             if (applyGravityCompensation(player)) {
-                double difX = player.x - player.prevX;
-                double difZ = player.z - player.prevZ;
-                double difY = player.y - player.prevY;
+                double difX = player.getX() - player.prevX;
+                double difZ = player.getZ() - player.prevZ;
+                double difY = player.getY() - player.prevY;
 
                 player.horizontalSpeed = (float)(player.horizontalSpeed + MathHelper.sqrt(difX * difX + difZ * difZ) * 0.6);
-                player.distanceWalked = (float)(player.distanceWalked + MathHelper.sqrt(difX * difX + difY * difY + difZ * difZ) * 0.6);
+                player.distanceTraveled = (float)(player.distanceTraveled + MathHelper.sqrt(difX * difX + difY * difY + difZ * difZ) * 0.6);
 
                 if (Pony.of(player).stepOnCloud()) {
                     BlockSoundGroup soundtype = BlockSoundGroup.WOOL;
@@ -343,15 +337,15 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
     protected void mobTick() {
         if (!getStationary()) {
             if (!hasVehicle()) {
-                double distance = targetAltitude - y;
+                double distance = targetAltitude - getY();
 
-                if (targetAltitude < y && !world.isAir(getBlockPos())) {
+                if (targetAltitude < getY() && !world.isAir(getBlockPos())) {
                     distance = 0;
                 }
 
                 if (Math.abs(distance) < 1 && random.nextInt(7000) == 0) {
                     targetAltitude = getRandomFlyingHeight();
-                    distance = targetAltitude - y;
+                    distance = targetAltitude - getY();
                 }
 
                 if (Math.abs(distance) < 1) {
@@ -449,10 +443,10 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
             } else if (stack != null && stack.getItem() instanceof ShovelItem) {
                 return super.damage(source, amount * 1.5f);
             } else if (canFly) {
-                if (player.y < y || !world.isAir(getBlockPos())) {
-                    targetAltitude = y + 5;
-                } else if (player.y > y) {
-                    targetAltitude = y - 5;
+                if (player.getY() < getY() || !world.isAir(getBlockPos())) {
+                    targetAltitude = getY() + 5;
+                } else if (player.getY() > getY()) {
+                    targetAltitude = getY() - 5;
                 }
             }
         }
@@ -610,7 +604,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
     }
 
     public void spawnThunderbolt() {
-        spawnThunderbolt(getGroundPosition(x, z));
+        spawnThunderbolt(getGroundPosition(getBlockPos()));
     }
 
     public void spawnThunderbolt(BlockPos pos) {
@@ -619,10 +613,10 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
         }
     }
 
-    private BlockPos getGroundPosition(double x, double z) {
-        BlockPos pos = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, new BlockPos(x, y, z));
+    private BlockPos getGroundPosition(BlockPos inPos) {
+        BlockPos pos = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, inPos);
 
-        if (pos.getY() >= y) {
+        if (pos.getY() >= getY()) {
             while (World.isValid(pos)) {
                 pos = pos.down();
                 if (world.getBlockState(pos).hasSolidTopSurface(world, pos, this)) {

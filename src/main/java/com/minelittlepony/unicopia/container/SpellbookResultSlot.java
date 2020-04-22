@@ -5,15 +5,21 @@ import com.minelittlepony.unicopia.enchanting.SpellCraftingEvent;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.MagicGemItem;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
+import com.mojang.datafixers.util.Pair;
 
+import net.minecraft.container.PlayerContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MusicDiscItem;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.DefaultedList;
+import net.minecraft.util.Identifier;
 
 public class SpellbookResultSlot extends SpellBookContainer.SpellbookSlot {
+    // TODO: need to register this
+    public static final Identifier EMPTY_GEM_SLOT = new Identifier("unicopia", "empty_slot_gem");
+
 
     private final Pony player;
     private final SpellBookInventory craftMatrix;
@@ -95,7 +101,7 @@ public class SpellbookResultSlot extends SpellBookContainer.SpellbookSlot {
     }
 
     @Override
-    public String getBackgroundSprite() {
-        return "unicopia:items/empty_slot_gem";
+    public Pair<Identifier, Identifier> getBackgroundSprite() {
+        return Pair.of(PlayerContainer.BLOCK_ATLAS_TEXTURE, EMPTY_GEM_SLOT);
     }
 }

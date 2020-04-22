@@ -19,7 +19,7 @@ import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
 
 public class Pages extends JsonDataLoader implements IdentifiableResourceReloadListener {
@@ -38,7 +38,7 @@ public class Pages extends JsonDataLoader implements IdentifiableResourceReloadL
     private final Map<Identifier, PageInstance> pages = Maps.newHashMap();
     private List<PageInstance> pagesByIndex = Lists.newArrayList();
 
-    private final Map<String, IConditionFactory> conditionFactories = SystemUtil.consume(Maps.newHashMap(), m -> {
+    private final Map<String, IConditionFactory> conditionFactories = Util.make(Maps.newHashMap(), m -> {
         m.put("unicopia:compound_condition", CompoundCondition::new);
         m.put("unicopia:page_state", PageStateCondition::new);
         m.put("unicopia:spell_crafting", SpellCraftingEvent.Condition::new);
@@ -51,12 +51,6 @@ public class Pages extends JsonDataLoader implements IdentifiableResourceReloadL
     @Override
     public Identifier getFabricId() {
         return ID;
-    }
-
-    @Override
-    protected Map<Identifier, JsonObject> prepare(ResourceManager manager, Profiler profiler) {
-        // TODO: broken synthetic
-        return super.method_20731(manager, profiler);
     }
 
     @Override

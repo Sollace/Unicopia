@@ -15,7 +15,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.WorldView;
 
 public class FollowCasterGoal<T extends MobEntity> extends Goal {
 
@@ -25,7 +25,7 @@ public class FollowCasterGoal<T extends MobEntity> extends Goal {
 
     protected LivingEntity owner;
 
-    protected final ViewableWorld world;
+    protected final WorldView world;
 
     public final double followSpeed;
 
@@ -79,15 +79,15 @@ public class FollowCasterGoal<T extends MobEntity> extends Goal {
     @Override
     public void start() {
         timeout = 0;
-        oldWaterCost = entity.getPathNodeTypeWeight(PathNodeType.WATER);
-        entity.setPathNodeTypeWeight(PathNodeType.WATER, 0);
+        oldWaterCost = entity.getPathfindingPenalty(PathNodeType.WATER);
+        entity.setPathfindingPenalty(PathNodeType.WATER, 0);
     }
 
     @Override
     public void stop() {
         owner = null;
         navigation.stop();
-        entity.setPathNodeTypeWeight(PathNodeType.WATER, oldWaterCost);
+        entity.setPathfindingPenalty(PathNodeType.WATER, oldWaterCost);
     }
 
     @Override
@@ -107,15 +107,15 @@ public class FollowCasterGoal<T extends MobEntity> extends Goal {
             return;
         }
 
-        int x = MathHelper.floor(owner.x) - 2;
-        int y = MathHelper.floor(owner.getBoundingBox().minY);
-        int z = MathHelper.floor(owner.z) - 2;
+        int x = MathHelper.floor(owner.getX()) - 2;
+        int y = MathHelper.floor(owner.getBoundingBox().y1);
+        int z = MathHelper.floor(owner.getZ()) - 2;
 
         for (int offX = 0; offX <= 4; offX++) {
             for (int offZ = 0; offZ <= 4; offZ++) {
                 if ((offX < 1 || offZ < 1 || offX > 3 || offZ > 3) && canMoveInto(new BlockPos(x + offX, y - 1, z + offZ))) {
 
-                    entity.setPositionAndAngles((x + offX) + 0.5F, y, (z + offZ) + 0.5F, entity.headYaw, entity.pitch);
+                    entity.updatePositionAndAngles((x + offX) + 0.5F, y, (z + offZ) + 0.5F, entity.headYaw, entity.pitch);
                     navigation.stop();
 
                     return;

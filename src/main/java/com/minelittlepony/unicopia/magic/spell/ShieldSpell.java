@@ -8,8 +8,9 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.util.particles.ParticleConnection;
-import com.minelittlepony.unicopia.util.particles.UParticles;
+import com.minelittlepony.unicopia.particles.MagicParticleEffect;
+import com.minelittlepony.unicopia.particles.ParticleConnection;
+import com.minelittlepony.unicopia.particles.UParticles;
 import com.minelittlepony.unicopia.util.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -48,7 +49,7 @@ public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements Attach
         float radius = 4 + (source.getCurrentLevel() * 2);
 
         source.spawnParticles(new Sphere(true, radius), (int)(radius * 6), pos -> {
-            source.addParticle(UParticles.UNICORN_MAGIC, pos, Vec3d.ZERO); // getTint()
+            source.addParticle(new MagicParticleEffect(getTint()), pos, Vec3d.ZERO);
         });
 
         particlEffect

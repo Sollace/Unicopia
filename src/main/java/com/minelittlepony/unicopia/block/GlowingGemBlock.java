@@ -4,7 +4,7 @@ import java.util.Random;
 
 import com.minelittlepony.unicopia.gas.CloudType;
 import com.minelittlepony.unicopia.gas.Gas;
-import com.minelittlepony.unicopia.util.particles.UParticles;
+import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
@@ -16,12 +16,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -65,10 +67,15 @@ public class GlowingGemBlock extends TorchBlock implements Gas {
                 .sounds(BlockSoundGroup.GLASS)
                 .build()
         );
-        setDefaultState(stateFactory.getDefaultState()
+        setDefaultState(stateManager.getDefaultState()
                 .with(Properties.FACING, Direction.UP)
                 .with(ON, true)
         );
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(Properties.FACING).add(ON);
     }
 
     @Override
@@ -83,7 +90,7 @@ public class GlowingGemBlock extends TorchBlock implements Gas {
     }
 
     @Override
-    public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         if (!state.get(ON)) {
             ItemStack held = player.getStackInHand(hand);
@@ -99,10 +106,10 @@ public class GlowingGemBlock extends TorchBlock implements Gas {
                 }
             }
 
-            return true;
+            return ActionResult.SUCCESS;
         }
 
-        return false;
+        return ActionResult.PASS;
     }
 
     @Override
@@ -126,7 +133,7 @@ public class GlowingGemBlock extends TorchBlock implements Gas {
 
         if (state.get(ON)) {
             for (int i = 0; i < 3; i++) {
-                world.addParticle(UParticles.UNICORN_MAGIC,
+                world.addParticle(MagicParticleEffect.UNICORN,
                         x - 0.3, y - 0.3, z - 0.3,
                         rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
             }
@@ -136,7 +143,7 @@ public class GlowingGemBlock extends TorchBlock implements Gas {
     }
 
     @Override
-    public void onScheduledTick(BlockState state, World world, BlockPos pos, Random random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (world.hasRain(pos)) {
             if (state.get(ON)) {
                 world.playSound(null, pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
@@ -187,10 +194,5 @@ public class GlowingGemBlock extends TorchBlock implements Gas {
         }
 
         return 0;
-    }
-
-    @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-        builder.add(Properties.FACING).add(ON);
     }
 }

@@ -4,8 +4,8 @@ import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.VecHelper;
-import com.minelittlepony.unicopia.util.particles.UParticles;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BoneMealItem;
@@ -95,7 +95,7 @@ public class EarthPonyGrowAbility implements Ability<Ability.Pos> {
         player.addExertion(3);
 
         if (player.getWorld().isClient()) {
-            player.spawnParticles(UParticles.UNICORN_MAGIC, 1);
+            player.spawnParticles(MagicParticleEffect.UNICORN, 1);
         }
     }
 

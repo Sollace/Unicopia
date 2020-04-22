@@ -67,14 +67,14 @@ public class BagOfHoldingContainer extends Container {
     @Override
     public ItemStack transferSlot(PlayerEntity playerIn, int index) {
         ItemStack resultingStack = ItemStack.EMPTY;
-        Slot slot = slotList.get(index);
+        Slot slot = slots.get(index);
 
         if (slot != null && slot.hasStack()) {
             ItemStack originalStack = slot.getStack();
             resultingStack = originalStack.copy();
 
             if (index < inventory.getInvSize()) {
-                if (!insertItem(originalStack, inventory.getInvSize(), slotList.size(), true)) {
+                if (!insertItem(originalStack, inventory.getInvSize(), slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
             } else if (!insertItem(originalStack, 0, inventory.getInvSize(), false)) {

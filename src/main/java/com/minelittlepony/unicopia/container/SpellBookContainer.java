@@ -90,9 +90,9 @@ public class SpellBookContainer extends Container {
 
                     player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_SNARE, 1, 1);
 
-                    worldObj.createExplosion(null, player.x, player.y, player.z, 0, DestructionType.NONE);
-                    worldObj.createExplosion(null, player.x, player.y, player.z, 0, DestructionType.NONE);
-                    worldObj.addParticle(ParticleTypes.EXPLOSION, player.x, player.y, player.z, 1, 0, 0);
+                    worldObj.createExplosion(null, player.getX(), player.getY(), player.getZ(), 0, DestructionType.NONE);
+                    worldObj.createExplosion(null, player.getX(), player.getY(), player.getZ(), 0, DestructionType.NONE);
+                    worldObj.addParticle(ParticleTypes.EXPLOSION, player.getX(), player.getY(), player.getZ(), 1, 0, 0);
 
                     AwaitTickQueue.enqueueTask(w -> player.container.close(player));
 
@@ -116,7 +116,7 @@ public class SpellBookContainer extends Container {
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {
         ItemStack stack = ItemStack.EMPTY;
-        Slot slot = slotList.get(index);
+        Slot slot = slots.get(index);
 
         if (slot != null && slot.hasStack()) {
             ItemStack slotStack = slot.getStack();

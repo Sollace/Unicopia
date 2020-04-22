@@ -90,10 +90,10 @@ public class WildCloudEntity extends CloudEntity {
 
             targetAltitude = getRandomFlyingHeight();
 
-            if (y < minSpawnHeight) {
+            if (getY() < minSpawnHeight) {
                 minSpawnHeight += random.nextInt(Math.max(1,  (int)getMaximumFlyingHeight() - (int)minSpawnHeight));
 
-                setPositionAndAngles(x, minSpawnHeight - 1, z, yaw, pitch);
+                updatePositionAndAngles(getX(), minSpawnHeight - 1, getZ(), yaw, pitch);
                 moveToBoundingBoxCenter();
             }
 
@@ -115,7 +115,7 @@ public class WildCloudEntity extends CloudEntity {
             setIsRaining(packData.leader.getIsRaining());
             setIsThundering(packData.leader.getIsThundering());
 
-            setPositionAndAngles(position.x, position.y, position.z, packData.leader.yaw, packData.leader.pitch);
+            updatePositionAndAngles(position.x, position.y, position.z, packData.leader.yaw, packData.leader.pitch);
             checkBlockCollision();
         }
 

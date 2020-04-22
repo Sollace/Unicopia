@@ -39,7 +39,7 @@ public class GlowingSpell extends GenericSpell implements HeldMagicEffect {
 
             ChunkBlockLightProvider provider = (ChunkBlockLightProvider)view;
 
-            provider.queueLightCheck(lastPos);
+            provider.checkBlock(lastPos);
         }
     }
 
@@ -68,7 +68,7 @@ public class GlowingSpell extends GenericSpell implements HeldMagicEffect {
         ChunkBlockLightProvider provider = (ChunkBlockLightProvider)view;
 
         if (lastPos != null && !lastPos.equals(pos)) {
-            provider.queueLightCheck(lastPos);
+            provider.checkBlock(lastPos);
         }
 
         lastPos = pos;
@@ -76,8 +76,8 @@ public class GlowingSpell extends GenericSpell implements HeldMagicEffect {
         int light = provider.getLightLevel(pos);
 
         if (light < 8) {
-            provider.method_15514(pos, 8);
-            provider.queueLightCheck(pos);
+            provider.addLightSource(pos, 8);
+            provider.checkBlock(pos);
         }
 
         return true;
@@ -87,7 +87,7 @@ public class GlowingSpell extends GenericSpell implements HeldMagicEffect {
     public void toNBT(CompoundTag compound) {
         super.toNBT(compound);
 
-        if (compound.containsKey("lastX")) {
+        if (compound.contains("lastX")) {
             lastPos = new BlockPos(compound.getInt("lastX"), compound.getInt("lastY"), compound.getInt("lastZ"));
         } else {
             lastPos = null;

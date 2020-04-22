@@ -3,12 +3,12 @@ package com.minelittlepony.unicopia.block;
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -37,20 +37,9 @@ public abstract class USlab<T extends Block> extends SlabBlock {
         return state.get(TYPE) == SlabType.DOUBLE;
     }
 
-    @Deprecated
     @Override
-    public boolean isOpaque(BlockState state) {
-        return isDouble(state) && modelBlock != null && modelBlock.isOpaque(state);
-    }
-
-    @Override
-    public void onScheduledTick(BlockState state, World world, BlockPos pos, Random rand) {
-        modelBlock.onScheduledTick(state, world, pos, rand);
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return modelBlock.getRenderLayer();
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random rand) {
+        modelBlock.scheduledTick(state, world, pos, rand);
     }
 
     @Override

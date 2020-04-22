@@ -4,12 +4,12 @@ import com.minelittlepony.common.client.gui.element.Scrollbar;
 import com.minelittlepony.unicopia.item.BagOfHoldingItem;
 import com.mojang.blaze3d.platform.GlStateManager;
 
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
-public class BagOfHoldingScreen extends AbstractContainerScreen<BagOfHoldingContainer> {
+public class BagOfHoldingScreen extends ContainerScreen<BagOfHoldingContainer> {
     private static final Identifier CHEST_GUI_TEXTURE = new Identifier("textures/gui/container/generic_54.png");
 
     private final int inventoryRows;
@@ -21,15 +21,16 @@ public class BagOfHoldingScreen extends AbstractContainerScreen<BagOfHoldingCont
         super(provider.createMenu(0, player.inventory, player), player.inventory, provider.getDisplayName());
 
         playerRows = playerInventory.getInvSize() / 9;
-        inventoryRows = (container.slotList.size() / 9) - 1;
+        inventoryRows = (container.slots.size() / 9) - 1;
+
     }
 
     @Override
     public void init() {
         super.init();
         scrollbar.reposition(
-                left + containerWidth,
-                top,
+                x + containerWidth,
+                y,
                 containerHeight,
                 (inventoryRows + 1) * 18 + 17);
         children.add(scrollbar);

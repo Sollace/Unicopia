@@ -6,10 +6,10 @@ import java.util.function.Consumer;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
+import com.minelittlepony.unicopia.particles.UParticles;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
-import com.minelittlepony.unicopia.util.particles.UParticles;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -21,6 +21,7 @@ import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -65,7 +66,7 @@ public class DarknessSpell extends AbstractAttachableSpell {
             SpellcastEntity living = (SpellcastEntity)caster.getEntity();
 
             living.getGoals().add(1, new FleeEntityGoal<>(living, PlayerEntity.class, 3, 4, 4));
-            living.setPosition(living.x, living.y, living.z);
+            living.setPos(living.getX(), living.getY(), living.getZ());
         }
     }
 
@@ -108,8 +109,9 @@ public class DarknessSpell extends AbstractAttachableSpell {
                     Fertilizable growable = (Fertilizable)state.getBlock();
 
                     if (growable.canGrow(source.getWorld(), source.getWorld().random, pos, state)) {
-                        growable.grow(source.getWorld(), source.getWorld().random, pos, state);
-
+                        if (source.getWorld() instanceof ServerWorld) {
+                            growable.grow((ServerWorld)source.getWorld(), source.getWorld().random, pos, state);
+                        }
                         return;
                     }
                 }
@@ -125,7 +127,7 @@ public class DarknessSpell extends AbstractAttachableSpell {
     }
 
     private void applyLight(Caster<?> source, LivingEntity entity) {
-        if (entity.getHealth() < entity.getHealthMaximum()) {
+        if (entity.getHealth() < entity.getMaximumHealth()) {
             entity.heal(1);
         }
     }
@@ -137,7 +139,7 @@ public class DarknessSpell extends AbstractAttachableSpell {
         }
 
         if (!isLightholder(entity)) {
-            entity.addPotionEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 3));
+            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 3));
 
             Vec3d origin = source.getOriginVector();
             Vec3d to = entity.getPosVector();
@@ -156,7 +158,7 @@ public class DarknessSpell extends AbstractAttachableSpell {
 
         } else {
             if (entity.hasStatusEffect(StatusEffects.BLINDNESS)) {
-                entity.removePotionEffect(StatusEffects.BLINDNESS);
+                entity.removeStatusEffect(StatusEffects.BLINDNESS);
             }
         }
     }

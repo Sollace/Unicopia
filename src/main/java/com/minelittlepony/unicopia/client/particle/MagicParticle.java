@@ -1,13 +1,14 @@
 package com.minelittlepony.unicopia.client.particle;
 
+import com.minelittlepony.unicopia.particles.MagicParticleEffect;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.particle.v1.FabricSpriteProvider;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
-import net.minecraft.client.particle.SpriteProvider;
-import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.world.World;
 
 public class MagicParticle extends SpriteBillboardParticle {
@@ -96,16 +97,16 @@ public class MagicParticle extends SpriteBillboardParticle {
     }
 
     @Environment(EnvType.CLIENT)
-    public static class Factory implements ParticleFactory<DustParticleEffect> {
-        private final SpriteProvider provider;
+    public static class Factory implements ParticleFactory<MagicParticleEffect> {
+        private final FabricSpriteProvider provider;
 
-        public Factory(SpriteProvider provider) {
+        public Factory(FabricSpriteProvider provider) {
             this.provider = provider;
         }
 
         @Override
-        public Particle createParticle(DustParticleEffect effect, World world, double x, double y, double z, double dx, double dy, double dz) {
-            MagicParticle particle = effect.getAlpha() > 0 ?
+        public Particle createParticle(MagicParticleEffect effect, World world, double x, double y, double z, double dx, double dy, double dz) {
+            MagicParticle particle = effect.hasTint() ?
                     new MagicParticle(world, x, y, z, dx, dy, dz, effect.getRed(), effect.getGreen(), effect.getBlue())
                      : new MagicParticle(world, x, y, z, dx, dy, dz);
             particle.setSprite(provider);

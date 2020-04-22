@@ -25,10 +25,10 @@ import net.minecraft.item.AutomaticItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -116,8 +116,7 @@ public class ChangelingTrapSpell extends AbstractSpell implements TossedMagicEff
         entity.limbDistance = 0;
         entity.lastLimbDistance = 0;
 
-        entity.x = Math.floor(entity.x) + 0.4;
-        entity.z = Math.floor(entity.z) + 0.4;
+        entity.setPos(Math.floor(entity.getX()) + 0.4, entity.getY(), Math.floor(entity.getZ()) + 0.4);
 
         entity.hurtTime = 2;
         entity.horizontalCollision = true;
@@ -129,7 +128,7 @@ public class ChangelingTrapSpell extends AbstractSpell implements TossedMagicEff
 
         StatusEffectInstance SLIME_REGEN = new StatusEffectInstance(StatusEffects.REGENERATION, 0);
 
-        entity.addPotionEffect(SLIME_REGEN);
+        entity.addStatusEffect(SLIME_REGEN);
 
         if (caster.isLocal()) {
             if (struggleCounter <= 0) {
@@ -212,7 +211,7 @@ public class ChangelingTrapSpell extends AbstractSpell implements TossedMagicEff
         super.toNBT(compound);
 
         if (previousTrappedPosition != null) {
-            compound.put("previousTrappedPosition", TagHelper.serializeBlockPos(previousTrappedPosition));
+            compound.put("previousTrappedPosition", NbtHelper.fromBlockPos(previousTrappedPosition));
         }
         compound.putInt("struggle", struggleCounter);
     }
@@ -224,8 +223,8 @@ public class ChangelingTrapSpell extends AbstractSpell implements TossedMagicEff
         previousTrappedPosition = null;
         struggleCounter = compound.getInt("struggle");
 
-        if (compound.containsKey("previousTrappedPosition")) {
-            previousTrappedPosition = TagHelper.deserializeBlockPos(compound.getCompound("previousTrappedPosition"));
+        if (compound.contains("previousTrappedPosition")) {
+            previousTrappedPosition = NbtHelper.toBlockPos(compound.getCompound("previousTrappedPosition"));
         }
     }
 }

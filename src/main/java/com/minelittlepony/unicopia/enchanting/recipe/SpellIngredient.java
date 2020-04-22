@@ -10,12 +10,12 @@ import com.google.gson.JsonParseException;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.PacketByteBuf;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.util.Util;
 
 public interface SpellIngredient {
 
     SpellIngredient EMPTY = new SingleSpellIngredient(ItemStack.EMPTY, false);
-    Map<String, Serializer<? extends SpellIngredient>> SERIALIZERS = SystemUtil.consume(new HashMap<>(), map -> {
+    Map<String, Serializer<? extends SpellIngredient>> SERIALIZERS = Util.make(new HashMap<>(), map -> {
         map.put("compound", CompoundSpellIngredient.SERIALIZER);
         map.put("single", SingleSpellIngredient.SERIALIZER);
         map.put("affine", AffineIngredient.SERIALIZER);

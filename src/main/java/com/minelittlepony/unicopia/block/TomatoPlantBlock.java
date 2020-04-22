@@ -15,10 +15,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.context.LootContext;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.hit.BlockHitResult;
@@ -26,9 +28,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.loot.context.LootContext;
+import net.minecraft.world.WorldView;
 
 public class TomatoPlantBlock extends CropBlock {
 
@@ -49,17 +50,17 @@ public class TomatoPlantBlock extends CropBlock {
         // if mature: UItems.tomato
     }
 
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
+        builder.add(TYPE);
+    }
+
     @Deprecated
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView source, BlockPos pos, EntityContext context) {
         Vec3d off = state.getOffsetPos(source, pos);
         return StickBlock.BOUNDING_BOX.offset(off.x, off.y, off.z);
-    }
-
-    @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-        super.appendProperties(builder);
-        builder.add(TYPE);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class TomatoPlantBlock extends CropBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState state, ViewableWorld world, BlockPos pos) {
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         if (world.getBlockState(pos.down()).getBlock() instanceof TomatoPlantBlock) {
             return true;
         }
@@ -106,7 +107,7 @@ public class TomatoPlantBlock extends CropBlock {
     }
 
     @Override
-    public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         if (hand == Hand.MAIN_HAND && isMature(state)) {
             if (player.getStackInHand(hand).isEmpty()) {
@@ -126,11 +127,11 @@ public class TomatoPlantBlock extends CropBlock {
 
                 world.setBlockState(pos, state.with(getAgeProperty(), 0));
 
-                return true;
+                return ActionResult.SUCCESS;
             }
         }
 
-        return false;
+        return ActionResult.PASS;
     }
 
     @Override

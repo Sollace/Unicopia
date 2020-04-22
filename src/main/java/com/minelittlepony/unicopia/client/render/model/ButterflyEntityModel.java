@@ -1,73 +1,70 @@
 package com.minelittlepony.unicopia.client.render.model;
 
 import com.minelittlepony.unicopia.entity.ButterflyEntity;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.model.Cuboid;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 public class ButterflyEntityModel extends EntityModel<ButterflyEntity> {
 
-    private Cuboid body;
+    private ModelPart body;
 
-    private Cuboid leftWingInner;
-    private Cuboid leftWingOuter;
+    private ModelPart leftWingInner;
+    private ModelPart leftWingOuter;
 
-    private Cuboid rightWingInner;
-    private Cuboid rightWingOuter;
+    private ModelPart rightWingInner;
+    private ModelPart rightWingOuter;
 
     public ButterflyEntityModel() {
         textureWidth = 64;
         textureHeight = 64;
 
-        body = new Cuboid(this, 0, 0);
-        body.rotationPointZ = -10;
-        body.rotationPointY = 12;
+        body = new ModelPart(this, 0, 0);
+        body.pivotX = -10;
+        body.pivotY = 12;
 
-        rightWingInner = new Cuboid(this, 42, 0);
+        rightWingInner = new ModelPart(this, 42, 0);
         rightWingInner.roll = -0.2F;
-        rightWingInner.addBox(-13, -5, 0, 10, 19, 1);
+        rightWingInner.addCuboid(-13, -5, 0, 10, 19, 1);
 
         body.addChild(rightWingInner);
 
-        rightWingOuter = new Cuboid(this, 24, 16);
-        rightWingOuter.setRotationPoint(-13, 10, 0.1F);
+        rightWingOuter = new ModelPart(this, 24, 16);
+        rightWingOuter.setPivot(-13, 10, 0.1F);
         rightWingOuter.roll = -0.2F;
-        rightWingOuter.addBox(0, 0, 0, 10, 12, 1);
+        rightWingOuter.addCuboid(0, 0, 0, 10, 12, 1);
 
         rightWingInner.addChild(rightWingOuter);
 
-        leftWingInner = new Cuboid(this, 42, 0);
+        leftWingInner = new ModelPart(this, 42, 0);
         leftWingInner.mirror = true;
         leftWingInner.roll = 0.2F;
-        leftWingInner.addBox(2, -5, 0, 10, 19, 1);
+        leftWingInner.addCuboid(2, -5, 0, 10, 19, 1);
 
         body.addChild(leftWingInner);
 
-        leftWingOuter = new Cuboid(this, 24, 16);
+        leftWingOuter = new ModelPart(this, 24, 16);
         leftWingOuter.mirror = true;
         leftWingOuter.roll = -0.2F;
-        leftWingOuter.setRotationPoint(2, 10, 0.1F);
-        leftWingOuter.addBox(0, 0, 0, 10, 12, 1);
+        leftWingOuter.setPivot(2, 10, 0.1F);
+        leftWingOuter.addCuboid(0, 0, 0, 10, 12, 1);
 
         leftWingInner.addChild(leftWingOuter);
     }
 
     @Override
-    public void render(ButterflyEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-
-        setAngles(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-
-        GlStateManager.disableLighting();
-
-        body.render(scale);
-
-        GlStateManager.enableLighting();
+    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+        RenderSystem.disableLighting();
+        body.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        RenderSystem.enableLighting();
     }
 
     @Override
-    public void setAngles(ButterflyEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor) {
+    public void setAngles(ButterflyEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float headYaw, float headPitch) {
 
         float flap = MathHelper.cos(ageInTicks) * (float)Math.PI / 4;
 

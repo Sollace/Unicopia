@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.collect.Lists;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
@@ -46,7 +45,7 @@ public class OreReplacer {
 
                 boolean altered = false;
 
-                ItemStack[] stacks = ingredient.getStackArray();
+                ItemStack[] stacks = ingredient.getMatchingStacksClient();
 
                 for (int k = 0; k < stacks.length; k++) {
                     ItemStack stack = stacks[k];
@@ -132,7 +131,7 @@ public class OreReplacer {
             stack.getItem().appendStacks(ItemGroup.SEARCH, newList);
 
             if (stack.hasTag()) {
-                newList.forEach(i -> i.setTag((CompoundTag)stack.getTag().copy()));
+                newList.forEach(i -> i.setTag(stack.getTag().copy()));
             }
 
             newStacks.addAll(newList);

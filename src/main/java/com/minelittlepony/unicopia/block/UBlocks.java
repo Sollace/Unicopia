@@ -24,9 +24,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public interface UBlocks {
-    CloudBlock normal_cloud = register(new CloudBlock(UMaterials.CLOUD, CloudType.NORMAL), "cloud_block");
-    CloudBlock enchanted_cloud = register(new CloudBlock(UMaterials.CLOUD, CloudType.ENCHANTED), "enchanted_cloud_block");
-    CloudBlock packed_cloud = register(new CloudBlock(UMaterials.CLOUD, CloudType.PACKED), "packed_cloud_block");
+    CloudBlock normal_cloud = register(new CloudBlock(CloudType.NORMAL), "cloud_block");
+    CloudBlock enchanted_cloud = register(new CloudBlock(CloudType.ENCHANTED), "enchanted_cloud_block");
+    CloudBlock packed_cloud = register(new CloudBlock(CloudType.PACKED), "packed_cloud_block");
 
     CloudStairsBlock cloud_stairs = register(new CloudStairsBlock(normal_cloud.getDefaultState(), FabricBlockSettings.of(UMaterials.CLOUD).build()), "cloud_stairs");
 
@@ -43,7 +43,7 @@ public interface UBlocks {
 
     CloudAnvilBlock anvil = register(new CloudAnvilBlock(), "anvil");
 
-    CloudFenceBlock cloud_fence = register(new CloudFenceBlock(UMaterials.CLOUD, CloudType.NORMAL), "cloud_fence");
+    CloudFenceBlock cloud_fence = register(new CloudFenceBlock(CloudType.NORMAL), "cloud_fence");
 
     TallCropBlock alfalfa = register(new TallCropBlock(FabricBlockSettings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP).build()), "alfalfa");
 

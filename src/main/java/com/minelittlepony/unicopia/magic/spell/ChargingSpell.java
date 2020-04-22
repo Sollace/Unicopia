@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.magic.spell;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Line;
 
@@ -49,11 +50,9 @@ public class ChargingSpell extends AbstractAttachableSpell {
                 Shape line = new Line(start, target.getPos());
 
                 source.spawnParticles(line, (int)line.getVolumeOfSpawnableSpace(), pos -> {
-                    // TODO: ParticleTypeRegistry
-                    // ParticleTypeRegistry.getTnstance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos.add(start), 0, 0, 0, getTint());
+                    source.addParticle(new MagicParticleEffect(getTint()), pos.add(start), Vec3d.ZERO);
                 });
             }
-
         }
     }
 

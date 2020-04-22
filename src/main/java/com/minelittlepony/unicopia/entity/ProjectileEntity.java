@@ -54,14 +54,14 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
     }
 
     public ProjectileEntity(EntityType<ProjectileEntity> type, World world, LivingEntity thrower) {
-        this(type, world, thrower.x, thrower.y + thrower.getStandingEyeHeight(), thrower.z);
+        this(type, world, thrower.getX(), thrower.getY() + thrower.getStandingEyeHeight(), thrower.getZ());
         setOwner(thrower);
     }
 
     public ProjectileEntity(EntityType<ProjectileEntity> type, World world, double x, double y, double z) {
         super(type, world);
 
-        setPosition(x, y, z);
+        setPos(x, y, z);
     }
 
     @Override
@@ -224,7 +224,7 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
           ParticleEffect effect = getParticleParameters();
 
           for(int i = 0; i < 8; i++) {
-             world.addParticle(effect, x, y, z, 0, 0, 0);
+             world.addParticle(effect, getX(), getY(), getZ(), 0, 0, 0);
           }
        }
 
@@ -234,7 +234,7 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
     public void readCustomDataFromTag(CompoundTag compound) {
         super.readCustomDataFromTag(compound);
 
-        if (compound.containsKey("effect")) {
+        if (compound.contains("effect")) {
             setEffect(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
         }
     }

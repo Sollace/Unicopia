@@ -1,13 +1,9 @@
 package com.minelittlepony.unicopia.gas;
 
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceBlock;
-import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -16,13 +12,8 @@ public class CloudFenceBlock extends FenceBlock implements Gas {
 
     private final CloudType variant;
 
-    public CloudFenceBlock(Material material, CloudType variant) {
-        super(FabricBlockSettings.of(material)
-                .hardness(0.5F)
-                .resistance(1)
-                .sounds(BlockSoundGroup.WOOL)
-                .build());
-
+    public CloudFenceBlock(CloudType variant) {
+        super(variant.configure().build());
         this.variant = variant;
     }
 
@@ -32,18 +23,8 @@ public class CloudFenceBlock extends FenceBlock implements Gas {
     }
 
     @Override
-    public boolean isOpaque(BlockState state) {
-        return false;
-    }
-
-    @Override
     public CloudType getCloudMaterialType(BlockState blockState) {
         return variant;
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.TRANSLUCENT;
     }
 
     @Override

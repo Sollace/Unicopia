@@ -17,7 +17,8 @@ import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.magic.SuppressableEffect;
-import com.minelittlepony.unicopia.util.particles.UParticles;
+import com.minelittlepony.unicopia.particles.MagicParticleEffect;
+import com.minelittlepony.unicopia.particles.UParticles;
 import com.minelittlepony.unicopia.util.projectile.ProjectileUtil;
 import com.mojang.authlib.GameProfile;
 
@@ -207,19 +208,19 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
         to.onGround = from.onGround;
 
         if (isAttachedEntity(entity)) {
-            to.x = Math.floor(from.x) + 0.5;
-            to.y = Math.floor(from.y);
-            to.z = Math.floor(from.z) + 0.5;
+            double x = Math.floor(from.getX()) + 0.5;
+            double y = Math.floor(from.getX());
+            double z = Math.floor(from.getX()) + 0.5;
 
-            to.prevX = to.x;
-            to.prevY = to.y;
-            to.prevZ = to.z;
+            to.prevX = x;
+            to.prevY = y;
+            to.prevZ = z;
 
-            to.prevRenderX = to.x;
-            to.prevRenderY = to.x;
-            to.prevRenderZ = to.x;
+            to.lastRenderX = x;
+            to.lastRenderY = y;
+            to.lastRenderZ = z;
 
-            to.setPosition(to.x, to.y, to.z);
+            to.setPos(x, y, z);
         } else {
             to.copyPositionAndRotation(from);
 
@@ -227,35 +228,32 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
             to.prevY = from.prevY;
             to.prevZ = from.prevZ;
 
-            to.prevRenderX = from.prevRenderX;
-            to.prevRenderY = from.prevRenderY;
-            to.prevRenderZ = from.prevRenderZ;
+            to.lastRenderX = from.lastRenderX;
+            to.lastRenderY = from.lastRenderY;
+            to.lastRenderZ = from.lastRenderZ;
         }
 
         if (to instanceof PlayerEntity) {
             PlayerEntity l = (PlayerEntity)to;
 
-            l.field_7500 = l.x;
-            l.field_7521 = l.y;
-            l.field_7499 = l.z;
+            l.field_7500 = l.getX();
+            l.field_7521 = l.getY();
+            l.field_7499 = l.getZ();
         }
 
         to.setVelocity(from.getVelocity());
 
         to.prevPitch = from.prevPitch;
         to.prevYaw = from.prevYaw;
-
-        //to.distanceWalkedOnStepModified = from.distanceWalkedOnStepModified;
-        //to.distanceWalkedModified = from.distanceWalkedModified;
-        //to.prevDistanceWalkedModified = from.prevDistanceWalkedModified;
+        to.distanceTraveled = from.distanceTraveled;
 
         if (to instanceof LivingEntity) {
             LivingEntity l = (LivingEntity)to;
 
             l.headYaw = from.headYaw;
             l.prevHeadYaw = from.prevHeadYaw;
-            //l.renderYawOffset = from.renderYawOffset;
-            //l.prevRenderYawOffset = from.prevRenderYawOffset;
+            l.bodyYaw = from.bodyYaw;
+            l.prevBodyYaw = from.prevBodyYaw;
 
             l.limbDistance = from.limbDistance;
             l.limbAngle = from.limbAngle;
@@ -274,7 +272,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
                 ItemStack neu = from.getEquippedStack(i);
                 ItemStack old = l.getEquippedStack(i);
                 if (old != neu) {
-                    l.setEquippedStack(i, neu);
+                    l.equipStack(i, neu);
                 }
             }
         }
@@ -321,7 +319,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
 
             if (entity != null) {
                 entity.setInvisible(true);
-                entity.y = Integer.MIN_VALUE;
+                entity.setPos(entity.getX(), Integer.MIN_VALUE, entity.getY());
             }
 
             return true;
@@ -408,7 +406,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
 
             if (player.isClientPlayer() && InteractionManager.instance().getViewMode() == 0) {
                 entity.setInvisible(true);
-                entity.y = Integer.MIN_VALUE;
+                entity.setPos(entity.getX(), Integer.MIN_VALUE, entity.getY());
             }
 
             return player.getSpecies() == Race.CHANGELING;
@@ -426,7 +424,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
     @Override
     public void render(Caster<?> source) {
         if (getSuppressed()) {
-            source.spawnParticles(UParticles.UNICORN_MAGIC, 5);
+            source.spawnParticles(MagicParticleEffect.UNICORN, 5);
             source.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
         } else if (source.getWorld().random.nextInt(30) == 0) {
             source.spawnParticles(UParticles.CHANGELING_MAGIC, 2);
@@ -460,7 +458,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
             removeDisguise();
         }
 
-        if (compound.containsKey("entity")) {
+        if (compound.contains("entity")) {
             entityId = newId;
 
             entityNbt = compound.getCompound("entity");
@@ -529,7 +527,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
     static abstract class PlayerAccess extends PlayerEntity {
         public PlayerAccess() { super(null, null); }
         static TrackedData<Byte> getModelBitFlag() {
-            return PLAYER_MODEL_BIT_MASK;
+            return PLAYER_MODEL_PARTS;
         }
     }
 }

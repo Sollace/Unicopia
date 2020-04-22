@@ -115,7 +115,7 @@ public class LivingEntityCapabilities implements RaceContainer<LivingEntity>, Ca
 
     @Override
     public void fromNBT(CompoundTag compound) {
-        if (compound.containsKey("effect")) {
+        if (compound.contains("effect")) {
             setEffect(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
         }
     }

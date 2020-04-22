@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.magic.spell;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.SuppressableEffect;
-import com.minelittlepony.unicopia.util.particles.UParticles;
+import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -47,11 +47,12 @@ public class RevealingSpell extends AbstractSpell {
     public void render(Caster<?> source) {
         Shape area = new Sphere(false, 15);
 
-        source.spawnParticles(area, 5, pos -> {
-            source.addParticle(UParticles.UNICORN_MAGIC, pos, Vec3d.ZERO); // getTint()
-        });
+        MagicParticleEffect effect = new MagicParticleEffect(getTint());
 
-        source.spawnParticles(UParticles.UNICORN_MAGIC, 5); //getTint()
+        source.spawnParticles(area, 5, pos -> {
+            source.addParticle(effect, pos, Vec3d.ZERO);
+        });
+        source.spawnParticles(effect, 5);
     }
 
     @Override

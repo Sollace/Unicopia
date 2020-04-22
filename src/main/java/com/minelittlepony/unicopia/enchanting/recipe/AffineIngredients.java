@@ -38,12 +38,6 @@ public class AffineIngredients extends JsonDataLoader implements IdentifiableRes
     }
 
     @Override
-    protected Map<Identifier, JsonObject> prepare(ResourceManager manager, Profiler profiler) {
-        // TODO: broken synthetic
-        return super.method_20731(manager, profiler);
-    }
-
-    @Override
     protected void apply(Map<Identifier, JsonObject> data, ResourceManager manager, Profiler profiled) {
         storedIngredients.clear();
         data.forEach((id, json) -> {

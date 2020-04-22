@@ -4,11 +4,12 @@ import com.minelittlepony.unicopia.block.AbstractDoorBlock;
 import com.minelittlepony.unicopia.block.UMaterials;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
-import net.minecraft.block.BlockRenderLayer;
+import net.fabricmc.fabric.api.tools.FabricToolTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -16,20 +17,21 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class CloudDoorBlock extends AbstractDoorBlock implements Gas {
-
-    @SuppressWarnings("deprecation")
     public CloudDoorBlock() {
         super(FabricBlockSettings.of(UMaterials.CLOUD)
                 .sounds(BlockSoundGroup.WOOL)
                 .hardness(3)
                 .resistance(200)
-                .breakByTool(net.fabricmc.fabric.api.tools.FabricToolTags.SHOVELS, 0)
+                .breakByTool(FabricToolTags.SHOVELS, 0)
                 .build());
     }
 
     @Override
-    public boolean activate(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        return getCanInteract(state, player) && super.activate(state, worldIn, pos, player, hand, hit);
+    public ActionResult onUse(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (!getCanInteract(state, player)) {
+            return ActionResult.PASS;
+        }
+        return super.onUse(state, worldIn, pos, player, hand, hit);
     }
 
     @Deprecated
@@ -38,11 +40,6 @@ public class CloudDoorBlock extends AbstractDoorBlock implements Gas {
         float hardness = super.getHardness(blockState, world, pos);
 
         return Math.max(hardness, Math.min(60, hardness + (pos.getY() - 100)));
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.TRANSLUCENT;
     }
 
     @Override

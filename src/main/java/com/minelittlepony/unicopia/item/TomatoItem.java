@@ -23,7 +23,7 @@ public class TomatoItem extends Item {
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
         stack = super.finishUsing(stack, world, entity);
-        entity.removePotionEffect(StatusEffects.NAUSEA);
+        entity.removeStatusEffect(StatusEffects.NAUSEA);
         return stack;
     }
 

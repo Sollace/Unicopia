@@ -133,9 +133,9 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
                 if (dist <= rad + 3) {
                     double force = dist / 5;
                     i.addVelocity(
-                            -(player.x - i.x) / force,
-                            -(player.y - i.y - 2) / force + (dist < 1 ? dist : 0),
-                            -(player.z - i.z) / force);
+                            -(player.getX() - i.getX()) / force,
+                            -(player.getY() - i.getY() - 2) / force + (dist < 1 ? dist : 0),
+                            -(player.getZ() - i.getZ()) / force);
 
                     DamageSource damage = MagicalDamageSource.causePlayerDamage("smash", player);
 
@@ -157,7 +157,7 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
             });
 
             BlockPos.iterate(pos.add(-rad, -rad, -rad), pos.add(rad, rad, rad)).forEach(i -> {
-                if (i.getSquaredDistance(player.x, player.y, player.z, true) <= rad*rad) {
+                if (i.getSquaredDistance(player.getX(), player.getY(), player.getZ(), true) <= rad*rad) {
                     spawnEffect(player.world, i);
                 }
             });
@@ -169,7 +169,7 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
             iplayer.subtractEnergyCost(rad);
         } else if (data.hitType == 1) {
 
-            boolean harmed = player.getHealth() < player.getHealthMaximum();
+            boolean harmed = player.getHealth() < player.getMaximumHealth();
 
             if (harmed && player.world.random.nextInt(30) == 0) {
                 iplayer.subtractEnergyCost(3);
@@ -230,11 +230,11 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
             yVel *= y * 5;
 
             for (int i = 0; i < shape.getVolumeOfSpawnableSpace(); i++) {
-                Vec3d point = shape.computePoint(player.getEntityWorld().random);
+                Vec3d point = shape.computePoint(player.getEntityWorld().random).add(player.getPos());
                 player.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.DIRT.getDefaultState()),
-                        player.x + point.x,
-                        player.y + y + point.y,
-                        player.z + point.z,
+                        point.x,
+                        point.y + y,
+                        point.z,
                         0, yVel, 0
                 );
             }
@@ -350,7 +350,7 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
                     WorldEvent.DESTROY_BLOCK.play(w, pos, state);
 
                     ItemEntity item = new ItemEntity(EntityType.ITEM, w);
-                    item.setPosition(pos.getX() + w.random.nextFloat(), pos.getY() - 0.5, pos.getZ() + w.random.nextFloat());
+                    item.setPos(pos.getX() + w.random.nextFloat(), pos.getY() - 0.5, pos.getZ() + w.random.nextFloat());
                     item.setStack(getApple(w, log));
 
                     drops.add(item);

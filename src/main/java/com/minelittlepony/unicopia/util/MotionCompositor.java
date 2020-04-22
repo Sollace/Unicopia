@@ -28,9 +28,9 @@ public abstract class MotionCompositor {
     protected double calculateRoll(PlayerEntity player, double motionX, double motionY, double motionZ) {
 
         // since model roll should probably be calculated from model rotation rather than entity rotation...
-        double roll = sensibleAngle(player.field_6220 - player.field_6220);
+        double roll = sensibleAngle(player.prevBodyYaw - player.bodyYaw);
         double horMotion = Math.sqrt(motionX * motionX + motionZ * motionZ);
-        float modelYaw = sensibleAngle(player.field_6220);
+        float modelYaw = sensibleAngle(player.bodyYaw);
 
         // detecting that we're flying backwards and roll must be inverted
         if (Math.abs(sensibleAngle((float) Math.toDegrees(Math.atan2(motionX, motionZ)) + modelYaw)) > 90) {

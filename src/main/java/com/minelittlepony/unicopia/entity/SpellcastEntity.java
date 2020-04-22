@@ -79,14 +79,14 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
     }
 
     @Override
-    public boolean shouldRenderAtDistance(double distance) {
+    public boolean shouldRender(double distance) {
         if (getCurrentLevel() > 0) {
             distance /= getCurrentLevel();
         }
         if (distance > 0) {
             distance--;
         }
-        return super.shouldRenderAtDistance(distance);
+        return super.shouldRender(distance);
     }
 
     @Override
@@ -223,7 +223,7 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
                 } else if (world.random.nextInt((int)(exhaustionChance * 500)) == 0) {
                     setEffect(null);
                 } else if (world.random.nextInt((int)(exhaustionChance * 3500)) == 0) {
-                    world.createExplosion(this, x, y, z, getCurrentLevel()/2, DestructionType.BREAK);
+                    world.createExplosion(this, getX(), getY(), getZ(), getCurrentLevel()/2, DestructionType.BREAK);
                     remove();
                 }
             }
@@ -266,7 +266,7 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
     protected void onDeath() {
         BlockSoundGroup sound = BlockSoundGroup.STONE;
 
-        world.playSound(x, y, z, sound.getBreakSound(), SoundCategory.NEUTRAL, sound.getVolume(), sound.getPitch(), true);
+        world.playSound(getX(), getY(), getZ(), sound.getBreakSound(), SoundCategory.NEUTRAL, sound.getVolume(), sound.getPitch(), true);
 
         if (world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
             int level = getCurrentLevel();
@@ -352,14 +352,14 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
     @Override
     public void readCustomDataFromTag(CompoundTag compound) {
         super.readCustomDataFromTag(compound);
-        if (compound.containsKey("affinity")) {
+        if (compound.contains("affinity")) {
             setAffinity(Affinity.of(compound.getString("affinity")));
         }
 
         setOwner(compound.getUuid("owner"));
         setCurrentLevel(compound.getInt("level"));
 
-        if (compound.containsKey("effect")) {
+        if (compound.contains("effect")) {
             setEffect(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
         }
     }

@@ -16,11 +16,13 @@ import net.minecraft.block.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -48,11 +50,17 @@ public class FruitLeavesBlock extends LeavesBlock implements Colourful {
                 .build()
         );
 
-        setDefaultState(stateFactory.getDefaultState()
+        setDefaultState(stateManager.getDefaultState()
             .with(HEAVY, false)
             .with(DISTANCE, 7)
             .with(PERSISTENT, false)
         );
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        super.appendProperties(builder);
+        builder.add(HEAVY);
     }
 
     public FruitLeavesBlock hardy(boolean value) {
@@ -81,7 +89,7 @@ public class FruitLeavesBlock extends LeavesBlock implements Colourful {
     }
 
     @Override
-    public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         ItemStack stack = player.getStackInHand(hand);
 
         if (Pony.of(player).getSpecies().canUseEarth()) {
@@ -104,15 +112,15 @@ public class FruitLeavesBlock extends LeavesBlock implements Colourful {
                 }
             }
 
-            return true;
+            return ActionResult.SUCCESS;
         }
 
-        return false;
+        return ActionResult.PASS;
     }
 
     @Override
-    public void onScheduledTick(BlockState state, World world, BlockPos pos, Random rand) {
-        if (!world.isClient && world.isBlockLoaded(pos) && !state.get(PERSISTENT)) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random rand) {
+        if (!world.isClient && world.isChunkLoaded(pos) && !state.get(PERSISTENT)) {
             int growthChance = getGrowthChance(world, pos, state);
 
             if (!state.get(HEAVY) && (growthChance <= 0 || rand.nextInt(growthChance) == 0)) {
@@ -123,7 +131,7 @@ public class FruitLeavesBlock extends LeavesBlock implements Colourful {
                 if (state.get(HEAVY) && (growthChance <= 0 || rand.nextInt(growthChance) == 0)) {
                     dropContents(world, pos, state, 0);
                 } else {
-                    super.onScheduledTick(state, world, pos, rand);
+                    super.scheduledTick(state, world, pos, rand);
                 }
             }
         }
@@ -132,7 +140,7 @@ public class FruitLeavesBlock extends LeavesBlock implements Colourful {
     protected int getGrowthChance(World world, BlockPos pos, BlockState state) {
         int chance = baseGrowthChance;
 
-        if (!hardy && !world.isDaylight()) {
+        if (!hardy && !world.isDay()) {
             chance *= 40;
         }
 
@@ -168,11 +176,5 @@ public class FruitLeavesBlock extends LeavesBlock implements Colourful {
 
         world.playSound(null, pos, SoundEvents.ENTITY_ITEM_FRAME_PLACE, SoundCategory.BLOCKS, 0.3F, 1);
         world.setBlockState(pos, state.with(HEAVY, false));
-    }
-
-    @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-        super.appendProperties(builder);
-        builder.add(HEAVY);
     }
 }

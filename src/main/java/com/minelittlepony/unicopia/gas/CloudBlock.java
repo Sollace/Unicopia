@@ -7,15 +7,12 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.MossItem;
 import com.minelittlepony.unicopia.util.HoeUtil;
 
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
@@ -25,10 +22,8 @@ public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
 
     private final CloudType variant;
 
-    public CloudBlock(Material material, CloudType variant) {
-        super(FabricBlockSettings.of(material)
-                .strength(0.5F, 1)
-                .sounds(BlockSoundGroup.WOOL)
+    public CloudBlock(CloudType variant) {
+        super(variant.configure()
                 .ticksRandomly()
                 .build()
         );
@@ -42,12 +37,7 @@ public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
     }
 
     @Override
-    public boolean isOpaque(BlockState state) {
-        return variant != CloudType.NORMAL;
-    }
-
-    @Override
-    public void onScheduledTick(BlockState state, World world, BlockPos pos, Random rand) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random rand) {
         if (rand.nextInt(10) == 0) {
             pos = pos.offset(Direction.random(rand), 1 + rand.nextInt(2));
             state = world.getBlockState(pos);
@@ -58,11 +48,6 @@ public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
                 world.setBlockState(pos, converted);
             }
         }
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return variant == CloudType.NORMAL ? BlockRenderLayer.TRANSLUCENT : super.getRenderLayer();
     }
 
     @Override

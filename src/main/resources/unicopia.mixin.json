@@ -15,6 +15,7 @@
   ],
   "client": [
     "client.MixinCamera",
+    "client.MixinEntityRenderDispatcher",
     "client.MixinGameRenderer",
     "client.MixinKeyboardInput",
     "client.MixinMouse"

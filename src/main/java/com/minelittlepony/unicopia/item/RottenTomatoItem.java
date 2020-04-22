@@ -54,7 +54,7 @@ public class RottenTomatoItem extends TomatoItem implements TossableItem {
                 duration += Math.max(0, effect.getDuration());
             }
 
-            entity.addPotionEffect(new StatusEffectInstance(StatusEffects.NAUSEA, duration, 4));
+            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, duration, 4));
 
         }
         return entity.eatFood(world, stack);

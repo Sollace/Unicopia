@@ -10,6 +10,7 @@ import net.minecraft.block.DoorBlock;
 import net.minecraft.block.Material;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -31,7 +32,7 @@ public abstract class AbstractDoorBlock extends DoorBlock {
     }
 
     @Override
-    public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return toggleDoor(world, pos, false, true, player);
     }
 
@@ -52,15 +53,15 @@ public abstract class AbstractDoorBlock extends DoorBlock {
         return player == null || material != Material.METAL;
     }
 
-    protected boolean toggleDoor(World world, BlockPos pos, boolean open, boolean force, @Nullable PlayerEntity player) {
+    protected ActionResult toggleDoor(World world, BlockPos pos, boolean open, boolean force, @Nullable PlayerEntity player) {
         if (!canOpen(player)) {
-            return false;
+            return ActionResult.PASS;
         }
 
         BlockState state = world.getBlockState(pos);
 
         if (state.getBlock() != this) {
-            return false;
+            return ActionResult.PASS;
         }
 
         BlockPos lower = getPrimaryDoorPos(state, pos);
@@ -68,11 +69,11 @@ public abstract class AbstractDoorBlock extends DoorBlock {
         BlockState mainDoor = pos == lower ? state : world.getBlockState(lower);
 
         if (mainDoor.getBlock() != this) {
-            return false;
+            return ActionResult.PASS;
         }
 
         if (!force && mainDoor.get(OPEN) == open) {
-            return false;
+            return ActionResult.FAIL;
         }
 
         state = mainDoor.cycle(OPEN);
@@ -83,7 +84,7 @@ public abstract class AbstractDoorBlock extends DoorBlock {
 
         world.playLevelEvent(player, sound.getId(), pos, 0);
 
-        return true;
+        return ActionResult.SUCCESS;
     }
 
     protected BlockPos getPrimaryDoorPos(BlockState state, BlockPos pos) {

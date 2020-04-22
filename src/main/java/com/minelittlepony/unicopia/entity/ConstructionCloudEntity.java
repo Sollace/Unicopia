@@ -82,7 +82,7 @@ public class ConstructionCloudEntity extends CloudEntity {
         if (hit != null) {
             Direction direction = hit.getSide();
 
-            mc.hitResult = hit = new BlockHitResult(hit.getPos(), direction, new BlockPos(hit.getPos()), false);
+            mc.crosshairTarget = hit = new BlockHitResult(hit.getPos(), direction, new BlockPos(hit.getPos()), false);
 
             int oldCount = stack.getCount();
             ActionResult result = mc.interactionManager.interactBlock(((ClientPlayerEntity)player), (ClientWorld)player.world, hand, hit);

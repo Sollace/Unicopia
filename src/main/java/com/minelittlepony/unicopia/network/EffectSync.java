@@ -33,7 +33,7 @@ public class EffectSync {
     public boolean has() {
         CompoundTag comp = owned.getEntity().getDataTracker().get(param);
 
-        if (comp == null || !comp.containsKey("effect_id")) {
+        if (comp == null || !comp.contains("effect_id")) {
             if (effect != null) {
                 effect.setDead();
                 effect = null;
@@ -66,7 +66,7 @@ public class EffectSync {
 
         CompoundTag comp = owned.getEntity().getDataTracker().get(param);
 
-        if (comp == null || !comp.containsKey("effect_id")) {
+        if (comp == null || !comp.contains("effect_id")) {
             if (effect != null) {
                 effect.setDead();
                 effect = null;

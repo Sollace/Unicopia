@@ -10,8 +10,8 @@ import com.minelittlepony.unicopia.entity.FlightControl;
 import com.minelittlepony.unicopia.entity.Updatable;
 import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.mixin.MixinEntity;
+import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
-import com.minelittlepony.unicopia.util.particles.UParticles;
 import com.minelittlepony.unicopia.util.MutableVector;
 
 import net.minecraft.entity.Entity;
@@ -134,14 +134,14 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
                         rnd.nextGaussian() * entity.getWidth()
                 );
 
-                player.addParticle(UParticles.UNICORN_MAGIC, pos, velocity.toImmutable());
+                player.addParticle(MagicParticleEffect.UNICORN, pos, velocity.toImmutable());
             }
         }
 
         entity.abilities.allowFlying = checkCanFly(player);
 
         if (!entity.abilities.creativeMode) {
-            entity.abilities.flying |= entity.abilities.allowFlying && isFlying && !entity.onGround && !entity.isInWater();
+            entity.abilities.flying |= entity.abilities.allowFlying && isFlying && !entity.onGround && !entity.isTouchingWater();
         }
 
         isFlying = entity.abilities.flying && !entity.abilities.creativeMode;
@@ -153,7 +153,7 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
             }
 
             if (gravity < 0) {
-                entity.onGround = !entity.world.isAir(new BlockPos(entity.x, entity.y + entity.getHeight() + 0.5F, entity.z));
+                entity.onGround = !entity.world.isAir(new BlockPos(entity.getX(), entity.getY() + entity.getHeight() + 0.5F, entity.getZ()));
 
                 if (entity.onGround) {
                     entity.abilities.flying = false;
@@ -263,8 +263,8 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
             }
         }
 
-        lastTickPosX = entity.x;
-        lastTickPosZ = entity.z;
+        lastTickPosX = entity.getX();
+        lastTickPosZ = entity.getZ();
 
         entity.setVelocity(velocity.toImmutable());
     }
@@ -325,8 +325,8 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
     }
 
     protected double getHorizontalMotion(Entity e) {
-        double motionX = e.x - lastTickPosX;
-        double motionZ = e.z - lastTickPosZ;
+        double motionX = e.getX() - lastTickPosX;
+        double motionZ = e.getZ() - lastTickPosZ;
 
         return (motionX * motionX)
                + (motionZ * motionZ);
@@ -382,7 +382,7 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
         isFlying = compound.getBoolean("isFlying");
         isRainbooming = compound.getBoolean("isRainbooming");
 
-        if (compound.containsKey("gravity")) {
+        if (compound.contains("gravity")) {
             gravity = compound.getFloat("gravity");
         } else {
             gravity = 0;

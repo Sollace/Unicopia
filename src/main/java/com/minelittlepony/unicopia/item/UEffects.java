@@ -20,7 +20,7 @@ public interface UEffects {
                     StatusEffectInstance foodEffect = e.getStatusEffect(p);
                     nausea = new StatusEffectInstance(StatusEffects.NAUSEA, foodEffect.getDuration(), foodEffect.getAmplifier(), foodEffect.isAmbient(), foodEffect.shouldShowParticles());
 
-                    e.addPotionEffect(nausea);
+                    e.addStatusEffect(nausea);
                 }
 
                 e.damage(MagicalDamageSource.FOOD_POISONING, i);

@@ -44,7 +44,7 @@ public class StickItem extends Item {
             ItemStack itemstack = context.getStack();
 
             if (player instanceof ServerPlayerEntity) {
-                Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)player, pos.up(), itemstack);
+                Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)player, pos.up(), itemstack);
             }
 
             if (player == null || !player.abilities.creativeMode) {

@@ -1,16 +1,29 @@
 package com.minelittlepony.unicopia.gas;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.block.UMaterials;
 import com.minelittlepony.unicopia.entity.CloudEntity;
 
+import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.sound.BlockSoundGroup;
 
 public enum CloudType {
     NORMAL,
     PACKED,
     ENCHANTED;
+
+    public FabricBlockSettings configure() {
+        FabricBlockSettings settings = FabricBlockSettings.of(UMaterials.CLOUD)
+                .strength(0.5F, 1)
+                .sounds(BlockSoundGroup.WOOL);
+        if (this != NORMAL ) {
+            settings.nonOpaque();
+        }
+        return settings;
+    }
 
     public boolean canInteract(Entity e) {
         if (e == null) {

@@ -5,14 +5,15 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.TossedMagicEffect;
+import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.PosHelper;
-import com.minelittlepony.unicopia.util.particles.UParticles;
 import com.minelittlepony.unicopia.util.projectile.AdvancedProjectile;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.explosion.Explosion.DestructionType;
 
 public class ScorchSpell extends FireSpell implements TossedMagicEffect {
@@ -44,9 +45,7 @@ public class ScorchSpell extends FireSpell implements TossedMagicEffect {
         if (!state.equals(newState)) {
             source.getWorld().setBlockState(pos, newState, 3);
             source.spawnParticles(new Sphere(false, 1), 5, p -> {
-                p = PosHelper.offset(p, pos);
-
-                source.getWorld().addParticle(ParticleTypes.SMOKE, p.x, p.y, p.z, 0, 0, 0);
+                source.addParticle(ParticleTypes.SMOKE, PosHelper.offset(p, pos), Vec3d.ZERO);
             });
         }
 
@@ -56,7 +55,7 @@ public class ScorchSpell extends FireSpell implements TossedMagicEffect {
     @Override
     public void render(Caster<?> source) {
         source.spawnParticles(ParticleTypes.FLAME, 3);
-        source.spawnParticles(UParticles.UNICORN_MAGIC, 3); // getTint()
+        source.spawnParticles(new MagicParticleEffect(getTint()), 3);
     }
 
     @Override

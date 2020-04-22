@@ -144,7 +144,7 @@ class AbilityDelegate implements AbilityReceiver, Updatable, NbtSerialisable {
         warmup = compound.getInt("warmup");
         cooldown = compound.getInt("cooldown");
 
-        if (compound.containsKey("activeAbility")) {
+        if (compound.contains("activeAbility")) {
             Abilities.getInstance()
                 .getPowerFromName(compound.getString("activeAbility"))
                 .ifPresent(p -> activeAbility = p);

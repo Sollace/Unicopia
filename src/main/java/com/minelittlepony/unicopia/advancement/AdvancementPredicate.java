@@ -24,7 +24,7 @@ class AdvancementPredicate {
     }
 
     public boolean test(ServerWorld world, PlayerAdvancementTracker tracker) {
-        Advancement advancement = world.getServer().getAdvancementManager().get(id);
+        Advancement advancement = world.getServer().getAdvancementLoader().get(id);
 
         return advancement != null && tracker.getProgress(advancement).isDone();
     }

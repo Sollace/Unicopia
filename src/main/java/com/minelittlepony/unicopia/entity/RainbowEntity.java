@@ -42,7 +42,7 @@ public class RainbowEntity extends Entity implements InAnimate {
 
         float yaw = (int)MathHelper.nextDouble(random, 0, 360);
 
-        setPositionAndAngles(0, 0, 0, yaw, 0);
+        updatePositionAndAngles(0, 0, 0, yaw, 0);
 
         radius = MathHelper.nextDouble(random, RAINBOW_MIN_SIZE, RAINBOW_MAX_SIZE);
         ticksAlive = 10000;
@@ -59,10 +59,8 @@ public class RainbowEntity extends Entity implements InAnimate {
     }
 
     @Override
-    public void setPosition(double x, double y, double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public void setPos(double x, double y, double z) {
+        super.setPos(x, y, z);
 
         float width = getDimensions(getPose()).width;
         setBoundingBox(new Box(
@@ -77,7 +75,7 @@ public class RainbowEntity extends Entity implements InAnimate {
     }
 
     @Override
-    public boolean shouldRenderAtDistance(double distance) {
+    public boolean shouldRender(double distance) {
         return true;
     }
 
@@ -96,8 +94,8 @@ public class RainbowEntity extends Entity implements InAnimate {
         if (!removed) {
             Box bounds = SPAWN_COLLISSION_RADIUS.offset(getPos());
 
-            world.getEntities(RainbowEntity.class, bounds).forEach(this::attackCompetitor);
-            world.getEntities(RainbowEntity.Spawner.class, bounds).forEach(this::attackCompetitor);
+            world.getEntities(RainbowEntity.class, bounds, null).forEach(this::attackCompetitor);
+            world.getEntities(RainbowEntity.Spawner.class, bounds, null).forEach(this::attackCompetitor);
         }
     }
 
@@ -137,8 +135,8 @@ public class RainbowEntity extends Entity implements InAnimate {
             Box bounds = SPAWN_COLLISSION_RADIUS.offset(getPos());
 
             return super.canSpawn(world, type)
-                    && world.getEntities(RainbowEntity.class, bounds).isEmpty()
-                    && world.getEntities(RainbowEntity.Spawner.class, bounds).isEmpty();
+                    && world.getEntities(RainbowEntity.class, bounds, null).isEmpty()
+                    && world.getEntities(RainbowEntity.Spawner.class, bounds, null).isEmpty();
         }
 
         @Override
@@ -157,7 +155,7 @@ public class RainbowEntity extends Entity implements InAnimate {
 
         public void trySpawnRainbow() {
             RainbowEntity rainbow = UEntities.RAINBOW.create(world);
-            rainbow.setPosition(x, y, z);
+            rainbow.setPos(getX(), getY(), getZ());
             world.spawnEntity(rainbow);
         }
     }
@@ -168,7 +166,7 @@ public class RainbowEntity extends Entity implements InAnimate {
         }
 
         @Override
-        public void method_11188(ClientPlayPacketListener listener) {
+        public void apply(ClientPlayPacketListener listener) {
             // TODO: Packet needs to be registered, and handling separated
             MinecraftClient client = MinecraftClient.getInstance();
 

@@ -10,7 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
@@ -29,7 +29,7 @@ public class ChitinBlock extends Block {
                 .materialColor(MaterialColor.BLACK)
                 .build()
         );
-        setDefaultState(stateFactory.getDefaultState().with(COVERING, Covering.UNCOVERED));
+        setDefaultState(stateManager.getDefaultState().with(COVERING, Covering.UNCOVERED));
 
         // TODO: drops:
         //  UItems.chitin_shell x 3
@@ -72,7 +72,7 @@ public class ChitinBlock extends Block {
     }
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(COVERING);
     }
 

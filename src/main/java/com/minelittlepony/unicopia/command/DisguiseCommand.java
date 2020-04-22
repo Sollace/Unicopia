@@ -49,7 +49,7 @@ public class DisguiseCommand {
     }
 
     static int disguise(ServerCommandSource source, PlayerEntity player, Identifier id, CompoundTag nbt, boolean isSelf) throws CommandSyntaxException {
-        nbt = nbt.method_10553();
+        nbt = nbt.copy();
         nbt.putString("id", id.toString());
 
         Pony iplayer = Pony.of(player);

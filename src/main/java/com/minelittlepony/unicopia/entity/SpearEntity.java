@@ -67,8 +67,8 @@ public class SpearEntity extends ArrowEntity implements AdvancedProjectile {
     }
 
     @Override
-    public void method_7449(int amount) {
-        super.method_7449(amount);
+    public void setPunch(int amount) {
+        super.setPunch(amount);
         getDataTracker().set(KNOCKBACK, amount);
     }
 
@@ -99,7 +99,7 @@ public class SpearEntity extends ArrowEntity implements AdvancedProjectile {
                     LivingEntity target = (LivingEntity)entity;
 
                     if (!world.isClient) {
-                        target.setStuckArrows(target.getStuckArrows() + 1);
+                        target.setStuckArrowCount(target.getStuckArrowCount() + 1);
                     }
 
                     int knockback = getDataTracker().get(KNOCKBACK);
@@ -171,7 +171,7 @@ public class SpearEntity extends ArrowEntity implements AdvancedProjectile {
 
     @Override
     public void launch(Entity shooter, float pitch, float yaw, float pitchOffset, float velocity, float inaccuracy) {
-        method_7474(shooter, pitch, yaw, pitchOffset, velocity, inaccuracy);
+        setProperties(shooter, pitch, yaw, pitchOffset, velocity, inaccuracy);
     }
 
     @Override

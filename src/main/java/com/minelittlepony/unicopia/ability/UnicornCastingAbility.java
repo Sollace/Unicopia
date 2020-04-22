@@ -5,7 +5,7 @@ import org.lwjgl.glfw.GLFW;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.ShieldSpell;
-import com.minelittlepony.unicopia.util.particles.UParticles;
+import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 
 /**
  * A magic casting ability for unicorns.
@@ -60,11 +60,11 @@ public class UnicornCastingAbility implements Ability<Ability.Hit> {
 
     @Override
     public void preApply(Pony player) {
-        player.spawnParticles(UParticles.UNICORN_MAGIC, 5);
+        player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 
     @Override
     public void postApply(Pony player) {
-        player.spawnParticles(UParticles.UNICORN_MAGIC, 5);
+        player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 }

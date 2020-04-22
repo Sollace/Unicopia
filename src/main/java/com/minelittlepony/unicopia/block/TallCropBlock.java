@@ -12,7 +12,8 @@ import net.minecraft.block.CropBlock;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.state.StateFactory;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.StringIdentifiable;
@@ -21,8 +22,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class TallCropBlock extends CropBlock {
 
@@ -54,6 +55,11 @@ public class TallCropBlock extends CropBlock {
     }
 
     @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(AGE, HALF);
+    }
+
+    @Override
     public OffsetType getOffsetType() {
         return OffsetType.XZ;
     }
@@ -74,8 +80,8 @@ public class TallCropBlock extends CropBlock {
     }
 
     @Override
-    public void onScheduledTick(BlockState state, World world, BlockPos pos, Random rand) {
-        if (rand.nextInt(10) != 0 && world.isBlockLoaded(pos) && world.getLightLevel(pos.up()) >= 9) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random rand) {
+        if (rand.nextInt(10) != 0 && world.isChunkLoaded(pos) && world.getLightLevel(pos.up()) >= 9) {
             if (canGrow(world, rand, pos, state)) {
                 growUpwards(world, pos, state, 1);
             }
@@ -123,7 +129,7 @@ public class TallCropBlock extends CropBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState state, ViewableWorld world, BlockPos pos) {
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         return getHalf(state) != Half.BOTTOM || super.canPlaceAt(state, world, pos);
     }
 
@@ -158,11 +164,6 @@ public class TallCropBlock extends CropBlock {
     @Override
     protected int getGrowthAmount(World world) {
         return super.getGrowthAmount(world) / 2;
-    }
-
-    @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-        builder.add(AGE, HALF);
     }
 
     @Override

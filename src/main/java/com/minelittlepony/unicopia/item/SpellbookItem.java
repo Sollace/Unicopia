@@ -40,8 +40,8 @@ public class SpellbookItem extends BookItem implements Dispensable {
         if (!context.getWorld().isClient && EquinePredicates.MAGI.test(player)) {
             BlockPos pos = context.getBlockPos().offset(context.getSide());
 
-            double diffX = player.x - (pos.getX() + 0.5);
-            double diffZ = player.z - (pos.getZ() + 0.5);
+            double diffX = player.getX() - (pos.getX() + 0.5);
+            double diffZ = player.getZ() - (pos.getZ() + 0.5);
             float yaw = (float)Math.toDegrees(Math.atan2(diffZ, diffX) + Math.PI);
 
             placeBook(context.getWorld(), pos.getX(), pos.getY(), pos.getZ(), yaw);
@@ -58,8 +58,7 @@ public class SpellbookItem extends BookItem implements Dispensable {
     private static void placeBook(World world, int x, int y, int z, float yaw) {
         SpellbookEntity book = UEntities.SPELLBOOK.create(world);
 
-        book.setPositionAndAngles(x + 0.5, y, z + 0.5, yaw, 0);
-        //book.renderYawOffset = 0;
+        book.updatePositionAndAngles(x + 0.5, y, z + 0.5, yaw, 0);
         book.prevYaw = yaw;
 
         world.spawnEntity(book);

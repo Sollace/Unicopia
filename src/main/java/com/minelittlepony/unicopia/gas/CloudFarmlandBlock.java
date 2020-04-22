@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.gas;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.ducks.Farmland;
 
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FarmlandBlock;
 import net.minecraft.entity.Entity;
@@ -18,11 +17,6 @@ public class CloudFarmlandBlock extends FarmlandBlock implements Farmland, Gas {
 
     public CloudFarmlandBlock(Settings settings) {
         super(settings);
-    }
-
-    @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.TRANSLUCENT;
     }
 
     @Override

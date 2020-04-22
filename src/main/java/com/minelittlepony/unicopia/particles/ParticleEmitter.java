@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.util.particles;
+package com.minelittlepony.unicopia.particles;
 
 import java.util.EnumSet;
 import java.util.Random;

@@ -4,7 +4,7 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.item.UItems;
 
 import net.minecraft.container.Container;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -24,7 +24,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
-public class SpellbookEntity extends MobEntity implements NameableContainerProvider, IMagicals {
+public class SpellbookEntity extends MobEntity implements NameableContainerFactory, IMagicals {
 
     private static final TrackedData<Boolean> OPENED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> ALTERED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -85,7 +85,7 @@ public class SpellbookEntity extends MobEntity implements NameableContainerProvi
     @Override
     public void tick() {
         boolean open = getIsOpen();
-        jumping = open && isInWater();
+        jumping = open && isTouchingWater();
         super.tick();
         if (open && world.isClient) {
 
@@ -98,7 +98,7 @@ public class SpellbookEntity extends MobEntity implements NameableContainerProvi
                     if (random.nextInt(320) == 0) {
                         for (int offY = 0; offY <= 1; ++offY) {
                             world.addParticle(ParticleTypes.ENCHANT,
-                                    x, y, z,
+                                    getX(), getY(), getZ(),
                                     offX/2F + random.nextFloat(),
                                     offY/2F - random.nextFloat() + 0.5f,
                                     offZ/2F + random.nextFloat()
@@ -110,7 +110,7 @@ public class SpellbookEntity extends MobEntity implements NameableContainerProvi
         }
 
         if (world.random.nextInt(30) == 0) {
-            float celest = world.getStarsBrightness(1) * 4;
+            float celest = world.getSkyAngleRadians(1) * 4;
 
             boolean isDay = celest > 3 || celest < 1;
 
@@ -136,7 +136,7 @@ public class SpellbookEntity extends MobEntity implements NameableContainerProvi
 
             BlockSoundGroup sound = BlockSoundGroup.WOOD;
 
-            world.playSound(x, y, z, sound.getBreakSound(), SoundCategory.BLOCKS, sound.getVolume(), sound.getPitch(), true);
+            world.playSound(getX(), getY(), getZ(), sound.getBreakSound(), SoundCategory.BLOCKS, sound.getVolume(), sound.getPitch(), true);
 
             if (world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
                 dropItem(UItems.spellbook, 1);
@@ -178,7 +178,7 @@ public class SpellbookEntity extends MobEntity implements NameableContainerProvi
         super.readCustomDataFromTag(compound);
 
         setIsOpen(compound.getBoolean("open"));
-        setUserSetState(compound.containsKey("force_open") ? compound.getBoolean("force_open") : null);
+        setUserSetState(compound.contains("force_open") ? compound.getBoolean("force_open") : null);
     }
 
     @Override

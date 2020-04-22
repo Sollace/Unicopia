@@ -69,7 +69,7 @@ public class SpellRegistry {
 
     @Nullable
     public MagicEffect createEffectFromNBT(CompoundTag compound) {
-        if (compound.containsKey("effect_id")) {
+        if (compound.contains("effect_id")) {
             MagicEffect effect = getSpellFromName(compound.getString("effect_id"));
 
             if (effect != null) {
@@ -145,7 +145,7 @@ public class SpellRegistry {
     }
 
     public static boolean stackHasEnchantment(ItemStack stack) {
-        return !stack.isEmpty() && stack.hasTag() && stack.getTag().containsKey("spell");
+        return !stack.isEmpty() && stack.hasTag() && stack.getTag().contains("spell");
     }
 
     @Nonnull

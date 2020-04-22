@@ -73,7 +73,7 @@ public class FaithfulAssistantSpell extends AbstractSpell {
             living.getGoals().add(1, new SwimGoal(living));
             living.getGoals().add(2, new FollowCasterGoal<>((Caster<SpellcastEntity>)caster, 1, 4, 70));
 
-            living.setPosition(living.x, living.y, living.z);
+            living.setPos(living.getX(), living.getY(), living.getZ());
         }
     }
 
@@ -120,7 +120,7 @@ public class FaithfulAssistantSpell extends AbstractSpell {
     public void fromNBT(CompoundTag compound) {
         super.fromNBT(compound);
 
-        if (compound.containsKey("effect")) {
+        if (compound.contains("effect")) {
             if (piggyBackSpell != null) {
                 piggyBackSpell.fromNBT(compound.getCompound("effect"));
             } else {

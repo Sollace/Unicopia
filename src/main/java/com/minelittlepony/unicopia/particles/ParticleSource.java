@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.util.particles;
+package com.minelittlepony.unicopia.particles;
 
 import java.util.function.Consumer;
 

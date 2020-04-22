@@ -36,7 +36,7 @@ public class BOHDeathCriterion extends AbstractCriterion<BOHDeathCriterion.Entry
     }
 
     public void trigger(ServerPlayerEntity player) {
-        PlayerAdvancementTracker key = player.getAdvancementManager();
+        PlayerAdvancementTracker key = player.getAdvancementTracker();
 
         Optional.ofNullable(listeners.get(key)).ifPresent(e -> {
             e.trigger((ServerWorld)player.world, key);
@@ -68,7 +68,7 @@ public class BOHDeathCriterion extends AbstractCriterion<BOHDeathCriterion.Entry
         public void trigger(ServerWorld world, PlayerAdvancementTracker tracker) {
             listeners.stream()
                 .filter(listener -> listener.getConditions().test(world, tracker))
-                .forEach(winner -> winner.apply(advancement));
+                .forEach(winner -> winner.grant(advancement));
         }
     }
 }

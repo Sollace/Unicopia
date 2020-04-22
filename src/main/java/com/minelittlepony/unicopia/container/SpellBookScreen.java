@@ -1,10 +1,9 @@
-package com.minelittlepony.unicopia.client.gui;
+package com.minelittlepony.unicopia.container;
 
 import org.lwjgl.opengl.GL11;
 
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.container.SpellBookContainer;
 import com.minelittlepony.unicopia.container.SpellBookContainer.SpellbookSlot;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
 import com.minelittlepony.unicopia.enchanting.Page;
@@ -13,14 +12,14 @@ import com.minelittlepony.unicopia.enchanting.Pages;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.platform.GlStateManager;
 
-import net.minecraft.client.gui.screen.ingame.AbstractContainerScreen;
+import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 
-public class SpellBookScreen extends AbstractContainerScreen<SpellBookContainer> implements IPageUnlockListener {
+public class SpellBookScreen extends ContainerScreen<SpellBookContainer> implements IPageUnlockListener {
 
     private static Page currentPage;
 
@@ -48,11 +47,11 @@ public class SpellBookScreen extends AbstractContainerScreen<SpellBookContainer>
     public void init() {
         super.init();
 
-        addButton(nextPage = new PageButton(left + 360, top + 185, true)).onClick(v -> {
+        addButton(nextPage = new PageButton(x + 360, y + 185, true)).onClick(v -> {
             currentPage = currentPage.next();
             onPageChange();
         });
-        addButton(prevPage = new PageButton(left + 20, top + 185, false)).onClick(v -> {
+        addButton(prevPage = new PageButton(x + 20, y + 185, false)).onClick(v -> {
             currentPage = currentPage.prev();
             onPageChange();
         });

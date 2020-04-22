@@ -20,6 +20,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -30,8 +32,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion.DestructionType;
-import net.minecraft.world.loot.context.LootContext;
-import net.minecraft.world.loot.context.LootContextParameters;
 
 public class BagOfHoldingInventory extends BasicInventory implements NbtSerialisable {
 
@@ -54,14 +54,14 @@ public class BagOfHoldingInventory extends BasicInventory implements NbtSerialis
     }
 
     public static void iterateContents(ItemStack stack, BiFunction<Integer, ItemStack, Boolean> itemConsumer) {
-        if (stack.hasTag() && stack.getTag().containsKey("inventory")) {
+        if (stack.hasTag() && stack.getTag().contains("inventory")) {
             CompoundTag compound = stack.getSubTag("inventory");
 
-            if (compound.containsKey("items")) {
+            if (compound.contains("items")) {
                 ListTag list = compound.getList("items", NBT_COMPOUND);
 
                 for (int i = 0; i < list.size(); i++) {
-                    ItemStack item = ItemStack.fromTag(list.getCompoundTag(i));
+                    ItemStack item = ItemStack.fromTag(list.getCompound(i));
                     if (!item.isEmpty() && !itemConsumer.apply(i, item)) {
                         break;
                     }
@@ -135,7 +135,7 @@ public class BagOfHoldingInventory extends BasicInventory implements NbtSerialis
                 BOHDeathCriterion.INSTANCE.trigger((ServerPlayerEntity)player);
             }
             player.damage(MagicalDamageSource.create("paradox"), 1000);
-            player.world.createExplosion(player, player.x, player.y, player.z, 5, DestructionType.DESTROY);
+            player.world.createExplosion(player, player.getX(), player.getY(), player.getZ(), 5, DestructionType.DESTROY);
         }
     }
 
@@ -154,7 +154,7 @@ public class BagOfHoldingInventory extends BasicInventory implements NbtSerialis
 
         return isIllegalBlock(Block.getBlockFromItem(stack.getItem()))
                 || stack.getItem().isIn(UTags.HAMMERPACE_IMMUNE)
-                || (compound != null && compound.containsKey("invalid"));
+                || (compound != null && compound.contains("invalid"));
     }
 
     protected boolean isIllegalBlock(Block block) {

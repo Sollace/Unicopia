@@ -45,7 +45,7 @@ public class PlayerPageStats implements NbtSerialisable, PageOwner {
     @Override
     public void fromNBT(CompoundTag compound) {
         pageStates.clear();
-        if (compound.containsKey("pageStates")) {
+        if (compound.contains("pageStates")) {
             CompoundTag pages = compound.getCompound("pageStates");
 
             pages.getKeys().forEach(key -> {

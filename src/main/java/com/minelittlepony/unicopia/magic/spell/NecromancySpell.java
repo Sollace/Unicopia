@@ -87,7 +87,7 @@ public class NecromancySpell extends AbstractSpell.RangedAreaSpell {
     protected void spawnMonster(Caster<?> source, Vec3d pos) {
         int index = (int)MathHelper.nextDouble(source.getWorld().random, 0, spawns.size());
         LivingEntity zombie = spawns.get(index).create(source.getWorld());
-        zombie.setPosition(pos.x, pos.y, pos.z);
+        zombie.setPos(pos.x, pos.y, pos.z);
 
         zombie.setVelocity(0, 0.3, 0);
 
@@ -102,7 +102,7 @@ public class NecromancySpell extends AbstractSpell.RangedAreaSpell {
 
         source.spawnParticles(affectRegion, 5, pos -> {
             if (!source.getWorld().isAir(new BlockPos(pos).down())) {
-                source.getWorld().addParticle(ParticleTypes.FLAME, pos.x, pos.y, pos.z, 0, 0, 0);
+                source.addParticle(ParticleTypes.FLAME, pos, Vec3d.ZERO);
             }
         });
     }

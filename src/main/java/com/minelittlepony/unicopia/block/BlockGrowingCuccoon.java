@@ -8,8 +8,8 @@ import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.tools.FabricToolTags;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
@@ -18,22 +18,23 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class BlockGrowingCuccoon extends Block {
 
@@ -53,7 +54,6 @@ public class BlockGrowingCuccoon extends Block {
             Block.createCuboidShape(2, 0, 2, 14, 12, 14),
     };
 
-    @SuppressWarnings("deprecation")
     public BlockGrowingCuccoon() {
         super(FabricBlockSettings.of(UMaterials.HIVE)
                 .ticksRandomly()
@@ -61,11 +61,11 @@ public class BlockGrowingCuccoon extends Block {
                 .lightLevel(9)
                 .slipperiness(0.5F)
                 .sounds(BlockSoundGroup.SLIME)
-                .breakByTool(net.fabricmc.fabric.api.tools.FabricToolTags.SHOVELS, 2)
+                .breakByTool(FabricToolTags.SHOVELS, 2)
                 .build()
         );
 
-        setDefaultState(stateFactory.getDefaultState()
+        setDefaultState(stateManager.getDefaultState()
                 .with(AGE, 0)
                 .with(SHAPE, Shape.BULB));
     }
@@ -88,17 +88,12 @@ public class BlockGrowingCuccoon extends Block {
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
-        return BlockRenderLayer.TRANSLUCENT;
-    }
-
-    @Override
     public Block.OffsetType getOffsetType() {
         return Block.OffsetType.XZ;
     }
 
     @Override
-    public void onScheduledTick(BlockState state, World world, BlockPos pos, Random rand) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random rand) {
         if (!checkSupport(world, pos)) {
             breakConnected(world, pos);
             return;
@@ -108,7 +103,7 @@ public class BlockGrowingCuccoon extends Block {
 
         BlockPos below = pos.down();
 
-        if (world.isBlockLoaded(below)) {
+        if (world.isChunkLoaded(below)) {
             boolean spaceBelow = world.isAir(below);
 
             Shape shape = state.get(SHAPE);
@@ -163,7 +158,7 @@ public class BlockGrowingCuccoon extends Block {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState state, ViewableWorld world, BlockPos pos) {
+    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         return super.canPlaceAt(state, world, pos) && checkSupport(world, pos);
     }
 
@@ -200,7 +195,7 @@ public class BlockGrowingCuccoon extends Block {
                                 PlayerEntity player = (PlayerEntity)living;
 
                                 skull.setTag(new CompoundTag());
-                                skull.getTag().put("SkullOwner", TagHelper.serializeProfile(new CompoundTag(), player.getGameProfile()));
+                                skull.getTag().put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), player.getGameProfile()));
                                 player.dropItem(skull, true);
                             } else {
                                 living.dropItem(Items.SKELETON_SKULL, 1);
@@ -244,7 +239,7 @@ public class BlockGrowingCuccoon extends Block {
 
 
     @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(AGE, SHAPE);
     }
 
@@ -264,9 +259,9 @@ public class BlockGrowingCuccoon extends Block {
                         .offset(offset.x, offset.y, offset.z)
                         .getBoundingBox();
 
-                double x = bounds.minX + (bounds.maxX - bounds.minX) * rand.nextFloat();
-                double y = bounds.minY;
-                double z = bounds.minZ + (bounds.maxZ - bounds.minZ) * rand.nextFloat();
+                double x = bounds.x1 + (bounds.x2 - bounds.x1) * rand.nextFloat();
+                double y = bounds.y1;
+                double z = bounds.z1 + (bounds.z2 - bounds.z1) * rand.nextFloat();
 
                 world.addParticle(ParticleTypes.DRIPPING_LAVA, x, y, z, 0, 0, 0);
             }

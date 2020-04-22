@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.util.particles;
+package com.minelittlepony.unicopia.particles;
 
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -13,15 +13,15 @@ public final class ParticleUtils {
 
     public static void spawnParticles(ParticleEffect particleId, Entity entity, int count) {
         double halfDist = entity.getStandingEyeHeight() / 1.5;
-        double middle = entity.getBoundingBox().minY + halfDist;
+        double middle = entity.getBoundingBox().y1 + halfDist;
 
         Shape shape = new Sphere(false, (float)halfDist + entity.getWidth());
 
         shape.randomPoints(count, entity.world.random).forEach(point -> {
             entity.world.addParticle(particleId,
-                    entity.x + point.x,
+                    entity.getX() + point.x,
                     middle + point.y,
-                    entity.z + point.z,
+                    entity.getZ() + point.z,
                     0, 0, 0);
         });
     }

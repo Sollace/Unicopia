@@ -46,7 +46,7 @@ public class SiphoningSpell extends AbstractSpell.RangedAreaSpell {
         if (source.getAffinity() == Affinity.BAD) {
             if (owner != null) {
                 float healthGain = 0;
-                float maxHealthGain = owner.getHealthMaximum() - owner.getHealth();
+                float maxHealthGain = owner.getMaximumHealth() - owner.getHealth();
 
                 if (maxHealthGain > 0) {
                     float attackAmount = Math.max(maxHealthGain / target.size(), 0.5F);
@@ -80,7 +80,7 @@ public class SiphoningSpell extends AbstractSpell.RangedAreaSpell {
 
         } else {
             target.forEach(e -> {
-                float maxHealthGain = e.getHealthMaximum() - e.getHealth();
+                float maxHealthGain = e.getMaximumHealth() - e.getHealth();
 
                 if (maxHealthGain <= 0) {
                     if (source.getWorld().random.nextInt(30) == 0) {
@@ -118,10 +118,7 @@ public class SiphoningSpell extends AbstractSpell.RangedAreaSpell {
                 double dist = pos.distanceTo(origin);
                 Vec3d velocity = pos.subtract(origin).normalize().multiply(direction * dist);
 
-
-                source.getWorld().addParticle(
-                        direction == 1 ? ParticleTypes.HEART : ParticleTypes.ANGRY_VILLAGER,
-                        pos.x, pos.y, pos.z, velocity.x, velocity.y, velocity.z);
+                source.addParticle(direction == 1 ? ParticleTypes.HEART : ParticleTypes.ANGRY_VILLAGER, pos, velocity);
             }
         });
     }

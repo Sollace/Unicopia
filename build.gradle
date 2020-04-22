@@ -1,10 +1,6 @@
-// Fabric build script
-// 03/06/2019
-// https://github.com/FabricMC/fabric-example-mod/blob/master/build.gradle
-
 plugins {
     id 'java-library'
-    id 'fabric-loom' version '0.2.5-SNAPSHOT'
+    id 'fabric-loom' version '0.2.6-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -59,7 +55,9 @@ dependencies {
     modApi "com.minelittlepony:Kirin:${project.kirin_version}"
     include "com.minelittlepony:Kirin:${project.kirin_version}"
 
-    modImplementation "io.github.prospector.modmenu:ModMenu:1.6.2-93"
+    modCompileOnly("io.github.prospector:modmenu:${project.modmenu_version}") {
+        transitive = false
+    }
 }
 
 processResources {

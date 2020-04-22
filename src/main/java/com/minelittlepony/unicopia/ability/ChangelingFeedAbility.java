@@ -9,6 +9,8 @@ import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.particles.ParticleUtils;
+import com.minelittlepony.unicopia.particles.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -68,7 +70,7 @@ public class ChangelingFeedAbility implements Ability<Ability.Hit> {
     }
 
     private boolean canFeed(Pony player) {
-        return player.getOwner().getHealth() < player.getOwner().getHealthMaximum() || player.getOwner().canConsume(false);
+        return player.getOwner().getHealth() < player.getOwner().getMaximumHealth() || player.getOwner().canConsume(false);
     }
 
     private boolean canDrain(Entity e) {
@@ -101,7 +103,7 @@ public class ChangelingFeedAbility implements Ability<Ability.Hit> {
     public void apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.getOwner();
 
-        float maximumHealthGain = player.getHealthMaximum() - player.getHealth();
+        float maximumHealthGain = player.getMaximumHealth() - player.getHealth();
         int maximumFoodGain = player.canConsume(false) ? (20 - player.getHungerManager().getFoodLevel()) : 0;
 
         if (maximumHealthGain > 0 || maximumFoodGain > 0) {
@@ -134,13 +136,12 @@ public class ChangelingFeedAbility implements Ability<Ability.Hit> {
             living.damage(d, damage);
         }
 
-        // TODO: ParticleTypeRegistry
-        //ParticleTypeRegistry.spawnParticles(UParticles.CHANGELING_MAGIC, living, 7);
+        ParticleUtils.spawnParticles(UParticles.CHANGELING_MAGIC, living, 7);
 
         if (changeling.hasStatusEffect(StatusEffects.NAUSEA)) {
-            living.addPotionEffect(changeling.removePotionEffect(StatusEffects.NAUSEA));
+            living.addStatusEffect(changeling.removeStatusEffectInternal(StatusEffects.NAUSEA));
         } else if (changeling.getEntityWorld().random.nextInt(2300) == 0) {
-            living.addPotionEffect(new StatusEffectInstance(StatusEffects.WITHER, 20, 1));
+            living.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20, 1));
         }
 
         if (living instanceof PlayerEntity) {
@@ -148,7 +149,7 @@ public class ChangelingFeedAbility implements Ability<Ability.Hit> {
             damage *= 1.6F;
 
             if (!changeling.hasStatusEffect(StatusEffects.HEALTH_BOOST)) {
-                changeling.addPotionEffect(new StatusEffectInstance(StatusEffects.HEALTH_BOOST, 13000, 1));
+                changeling.addStatusEffect(new StatusEffectInstance(StatusEffects.HEALTH_BOOST, 13000, 1));
             }
         }
 

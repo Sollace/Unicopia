@@ -10,9 +10,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 
@@ -45,7 +47,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
             playerInfo = connection.getPlayerListEntry(getGameProfile().getId());
 
             if (playerInfo == null) {
-                playerInfo = new PlayerListEntry(getGameProfile());
+                playerInfo = new PlayerListEntry(new Packet().entry());
             }
         }
 
@@ -77,5 +79,15 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
         Text name = super.getDisplayName();
         name.getStyle().setItalic(true);
         return name;
+    }
+
+    private final class Packet extends PlayerListS2CPacket {
+        PlayerListS2CPacket.Entry entry() {
+            return new PlayerListS2CPacket.Entry(
+                    getGameProfile(),
+                    0,
+                    GameMode.NOT_SET,
+                    new LiteralText(getGameProfile().getName()));
+        }
     }
 }

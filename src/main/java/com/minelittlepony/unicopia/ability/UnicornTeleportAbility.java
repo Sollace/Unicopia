@@ -4,8 +4,8 @@ import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.VecHelper;
-import com.minelittlepony.unicopia.util.particles.UParticles;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -131,10 +131,10 @@ public class UnicornTeleportAbility implements Ability<Ability.Pos> {
             }
         }
 
-        player.setPosition(
-                data.x + (player.x - Math.floor(player.x)),
+        player.setPos(
+                data.x + (player.getX() - Math.floor(player.getX())),
                 data.y,
-                data.z + (player.z - Math.floor(player.z)));
+                data.z + (player.getZ() - Math.floor(player.getZ())));
         iplayer.subtractEnergyCost(distance);
 
         player.fallDistance /= distance;
@@ -166,11 +166,11 @@ public class UnicornTeleportAbility implements Ability<Ability.Pos> {
     @Override
     public void preApply(Pony player) {
         player.addExertion(3);
-        player.spawnParticles(UParticles.UNICORN_MAGIC, 5);
+        player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 
     @Override
     public void postApply(Pony player) {
-        player.spawnParticles(UParticles.UNICORN_MAGIC, 5);
+        player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 }

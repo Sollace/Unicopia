@@ -26,6 +26,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
@@ -64,7 +65,7 @@ public class AwkwardSpell extends AbstractSpell implements TossedMagicEffect, Us
 
             if (shouldSpawnParticle(type)) {
                 try {
-                    source.getWorld().addParticle(type.getParametersFactory().read(type, new StringReader("0 0 0")), pos.x, pos.y, pos.z, 0, 0, 0);
+                    source.addParticle(type.getParametersFactory().read(type, new StringReader("0 0 0")), pos, Vec3d.ZERO);
                 } catch (CommandSyntaxException e) {
                     e.printStackTrace();
                 }

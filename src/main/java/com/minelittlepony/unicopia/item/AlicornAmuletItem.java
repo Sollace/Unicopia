@@ -73,9 +73,9 @@ public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem
 
         World world = entity.world;
 
-        double x = entity.x + world.random.nextFloat() - 0.5;
-        double z = entity.z + world.random.nextFloat() - 0.5;
-        double y = entity.y + world.random.nextFloat();
+        double x = entity.getX() + world.random.nextFloat() - 0.5;
+        double z = entity.getY() + world.random.nextFloat() - 0.5;
+        double y = entity.getZ() + world.random.nextFloat();
 
         ParticleEffect particle = world.random.nextBoolean() ? ParticleTypes.LARGE_SMOKE : ParticleTypes.FLAME;
 
@@ -138,7 +138,7 @@ public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem
 
         int hideFlags = 0;
 
-        if (!compound.containsKey("HideFlags") || ((hideFlags = compound.getInt("HideFlags")) & 2) == 0) {
+        if (!compound.contains("HideFlags") || ((hideFlags = compound.getInt("HideFlags")) & 2) == 0) {
             compound.putInt("HideFlags", hideFlags | 2);
         }
 
@@ -153,7 +153,7 @@ public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem
 
         PlayerEntity player = (PlayerEntity)entity;
 
-        if (player.getHealth() < player.getHealthMaximum()) {
+        if (player.getHealth() < player.getMaximumHealth()) {
             player.heal(0.5F);
         } else if (player.canConsume(false)) {
             player.getHungerManager().add(1, 0);
@@ -210,7 +210,7 @@ public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem
         if (stack.getDamage() >= getMaxDamage() - 1) {
             stack.damage(10, player, p -> p.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
 
-            player.damage(MagicalDamageSource.ALICORN_AMULET, player.getHealthMaximum() - 0.01F);
+            player.damage(MagicalDamageSource.ALICORN_AMULET, player.getMaximumHealth() - 0.01F);
             player.getHungerManager().setFoodLevel(1);
 
             Vec3d pos = player.getPos();
@@ -233,7 +233,7 @@ public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem
         LocalDifficulty difficulty = player.getWorld().getLocalDifficulty(player.getOrigin());
         float amount = (attachedTime * (1 + needfulness)) * (1 + difficulty.getClampedLocalDifficulty());
 
-        amount = Math.min(amount, player.getOwner().getHealthMaximum());
+        amount = Math.min(amount, player.getOwner().getMaximumHealth());
 
         player.getOwner().damage(MagicalDamageSource.ALICORN_AMULET, amount);
 

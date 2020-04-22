@@ -36,7 +36,7 @@ public class CloudPlacerItem extends Item implements Dispensable {
 
     public void placeCloud(World world, BlockPos pos) {
         CloudEntity cloud = cloudSupplier.create(world);
-        cloud.setPositionAndAngles(pos, 0, 0);
+        cloud.refreshPositionAndAngles(pos, 0, 0);
         world.spawnEntity(cloud);
     }
 

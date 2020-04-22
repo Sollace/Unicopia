@@ -46,7 +46,7 @@ public interface TossedMagicEffect extends MagicEffect, Tossable<Caster<?>> {
 
         Entity entity = caster.getOwner();
 
-        world.playSound(null, entity.x, entity.y, entity.z, getThrowSound(caster), SoundCategory.NEUTRAL, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
+        world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), getThrowSound(caster), SoundCategory.NEUTRAL, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
         if (caster.isLocal()) {
             AdvancedProjectile projectile = new ProjectileEntity(null, world, caster.getOwner());

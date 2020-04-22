@@ -92,7 +92,7 @@ public class AppleItem extends Item implements Toxic, ItemEntityCapabilities.Tic
                 float bob = MathHelper.sin(((float)item.getAge() + 1) / 10F + entity.hoverHeight) * 0.1F + 0.1F;
 
                 for (int i = 0; i < 3; i++) {
-                    entity.world.addParticle(ParticleTypes.AMBIENT_ENTITY_EFFECT, entity.x, entity.y + bob, entity.z,
+                    entity.world.addParticle(ParticleTypes.AMBIENT_ENTITY_EFFECT, entity.getX(), entity.getY() + bob, entity.getZ(),
                             entity.world.random.nextGaussian() - 0.5F,
                             entity.world.random.nextGaussian() - 0.5F,
                             entity.world.random.nextGaussian() - 0.5F);

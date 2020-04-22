@@ -88,7 +88,7 @@ public class ButterflyEntity extends AmbientEntity {
         super.tick();
 
         Vec3d vel = getVelocity();
-        setVelocity(vel.x, y * 0.6, vel.z);
+        setVelocity(vel.x, getY() * 0.6, vel.z);
     }
 
     public boolean isResting() {
@@ -156,14 +156,18 @@ public class ButterflyEntity extends AmbientEntity {
 
             // select a new hovering position
             if (hoveringPosition == null || random.nextInt(30) == 0 || hoveringPosition.getSquaredDistance(pos) < 4) {
-                hoveringPosition = new BlockPos(x + random.nextInt(7) - random.nextInt(7), y + random.nextInt(6) - 2, z + random.nextInt(7) - random.nextInt(7));
+                hoveringPosition = new BlockPos(
+                        getX() + random.nextInt(7) - random.nextInt(7),
+                        getY() + random.nextInt(6) - 2,
+                        getZ() + random.nextInt(7) - random.nextInt(7)
+                );
             }
 
             // hover casually towards the chosen position
 
-            double changedX = hoveringPosition.getX() + 0.5D - x;
-            double changedY = hoveringPosition.getY() + 0.1D - y;
-            double changedZ = hoveringPosition.getZ() + 0.5D - z;
+            double changedX = hoveringPosition.getX() + 0.5D - getX();
+            double changedY = hoveringPosition.getY() + 0.1D - getY();
+            double changedZ = hoveringPosition.getZ() + 0.5D - getZ();
 
             Vec3d vel = getVelocity();
 
@@ -185,7 +189,8 @@ public class ButterflyEntity extends AmbientEntity {
     }
 
     @Override
-    public void handleFallDamage(float distance, float damageMultiplier) {
+    public boolean handleFallDamage(float distance, float damageMultiplier) {
+        return false;
     }
 
     @Override
@@ -195,7 +200,7 @@ public class ButterflyEntity extends AmbientEntity {
     @Override
     public boolean canSpawn(IWorld world, SpawnType type) {
         if (type == SpawnType.NATURAL) {
-            return y < world.getSeaLevel() && world.getLightLevel(getBlockPos()) > 7;
+            return getY() < world.getSeaLevel() && world.getLightLevel(getBlockPos()) > 7;
         }
         return true;
     }

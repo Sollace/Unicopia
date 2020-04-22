@@ -16,7 +16,7 @@ import com.minelittlepony.unicopia.util.VecHelper;
 import net.fabricmc.fabric.api.container.ContainerProviderRegistry;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.container.NameableContainerProvider;
+import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -122,7 +122,7 @@ public class BagOfHoldingItem extends Item implements MagicalItem {
         return Affinity.NEUTRAL;
     }
 
-    public static class ContainerProvider implements NameableContainerProvider {
+    public static class ContainerProvider implements NameableContainerFactory {
 
         private Text customname = null;
 

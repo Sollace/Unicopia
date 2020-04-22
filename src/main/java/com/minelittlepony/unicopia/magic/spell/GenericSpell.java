@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 
 public class GenericSpell extends AbstractSpell {
 
@@ -41,8 +42,7 @@ public class GenericSpell extends AbstractSpell {
 
     @Override
     public void render(Caster<?> source) {
-        // TODO: ParticleTypeRegistry
-        // source.spawnParticles(UParticles.UNICORN_MAGIC, 1, getTint());
+        source.spawnParticles(new MagicParticleEffect(getTint()), 1);
     }
 
     @Override

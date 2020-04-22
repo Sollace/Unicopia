@@ -86,13 +86,13 @@ public class ToxicBlockItem extends BlockItem implements Toxic, Toxin {
     public void addSecondaryEffects(PlayerEntity player, Toxicity toxicity, ItemStack stack) {
 
         if (toxicity.toxicWhenRaw()) {
-            player.addPotionEffect(toxicity.getPoisonEffect());
+            player.addStatusEffect(toxicity.getPoisonEffect());
         }
 
         if (toxicity.isLethal()) {
-            player.addPotionEffect(new StatusEffectInstance(UEffects.FOOD_POISONING, 300, 7, false, false));
+            player.addStatusEffect(new StatusEffectInstance(UEffects.FOOD_POISONING, 300, 7, false, false));
         } else if (toxicity.toxicWhenCooked()) {
-            player.addPotionEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 3, 1, false, false));
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 3, 1, false, false));
         }
     }
 }

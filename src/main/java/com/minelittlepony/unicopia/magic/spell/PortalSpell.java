@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.magic.Useable;
+import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -28,6 +29,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -150,7 +152,7 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements Useabl
     public boolean update(Caster<?> source) {
         if (!source.getWorld().isClient) {
             getDestinationPortal().ifPresent(dest ->
-                source.getWorld().getEntities(Entity.class, getTeleportBounds().offset(source.getOrigin())).stream()
+                source.getWorld().getEntities(Entity.class, getTeleportBounds().offset(source.getOrigin()), null).stream()
                     .filter(this::canTeleport)
                     .forEach(i -> teleportEntity(source, dest, i)));
         }
@@ -160,10 +162,9 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements Useabl
 
     @Override
     public void render(Caster<?> source) {
-        // TODO: ParticleTypeRegistry
-        /*source.spawnParticles(getPortalZone(), 10, pos -> {
-            ParticleTypeRegistry.getTnstance().spawnParticle(UParticles.UNICORN_MAGIC, false, pos, 0, 0, 0, getTint());
-        });*/
+        source.spawnParticles(getPortalZone(), 10, pos -> {
+            source.addParticle(new MagicParticleEffect(getTint()), pos, Vec3d.ZERO);
+        });
     }
 
     public Shape getPortalZone() {
@@ -184,7 +185,7 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements Useabl
     }
 
     protected boolean canTeleport(Entity i) {
-        return !(i instanceof IMagicals) && i.portalCooldown == 0;
+        return !(i instanceof IMagicals) && i.netherPortalCooldown == 0;
     }
 
     protected void teleportEntity(Caster<?> source, PortalSpell dest, Entity i) {
@@ -196,9 +197,9 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements Useabl
 
         Direction offset = i.getHorizontalFacing();
 
-        double destX = dest.position.getX() + (i.x - source.getOrigin().getX());
-        double destY = dest.position.getY() + (i.y - source.getOrigin().getY());
-        double destZ = dest.position.getZ() + (i.z - source.getOrigin().getZ());
+        double destX = dest.position.getX() + (i.getX() - source.getOrigin().getX());
+        double destY = dest.position.getY() + (i.getY() - source.getOrigin().getY());
+        double destZ = dest.position.getZ() + (i.getZ() - source.getOrigin().getZ());
 
         if (axis != Direction.Axis.Y) {
             destX += offset.getOffsetX();
@@ -206,17 +207,17 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements Useabl
             destZ += offset.getOffsetZ();
         }
 
-        i.portalCooldown = i.getDefaultPortalCooldown();
+        i.netherPortalCooldown = i.getDefaultNetherPortalCooldown();
 
         i.getEntityWorld().playSound(null, i.getBlockPos(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1, 1);
 
         if (dest.axis != axis) {
             if (xi != dest.axis) {
-                i.setPositionAndAngles(i.x, i.y, i.z, i.yaw + 90, i.pitch);
+                i.updatePositionAndAngles(i.getX(), i.getY(), i.getZ(), i.yaw + 90, i.pitch);
             }
         }
 
-        i.setPosition(destX, destY, destZ);
+        i.setPos(destX, destY, destZ);
         i.getEntityWorld().playSound(null, i.getBlockPos(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1, 1);
     }
 
@@ -312,19 +313,19 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements Useabl
     public void fromNBT(CompoundTag compound) {
         super.fromNBT(compound);
 
-        if (compound.containsKey("destination")) {
+        if (compound.contains("destination")) {
             destinationPos = NbtSerialisable.readBlockPos(compound.getCompound("destination"));
         }
 
-        if (compound.containsKey("casterId")) {
+        if (compound.contains("casterId")) {
             casterId = compound.getUuid("casterId");
         }
 
-        if (compound.containsKey("destinationId")) {
+        if (compound.contains("destinationId")) {
             destinationId = compound.getUuid("destinationId");
         }
 
-        if (compound.containsKey("axis")) {
+        if (compound.contains("axis")) {
             axis = Direction.Axis.fromName(compound.getString("axis").toLowerCase(Locale.ROOT));
 
             if (axis == null) {

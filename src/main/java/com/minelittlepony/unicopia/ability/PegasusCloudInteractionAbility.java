@@ -6,8 +6,9 @@ import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.particles.MagicParticleEffect;
+import com.minelittlepony.unicopia.particles.UParticles;
 import com.minelittlepony.unicopia.util.VecHelper;
-import com.minelittlepony.unicopia.util.particles.UParticles;
 
 import net.minecraft.entity.Entity;
 
@@ -76,7 +77,7 @@ public class PegasusCloudInteractionAbility implements Ability<Ability.Numeric> 
 
     @Override
     public void preApply(Pony player) {
-        player.spawnParticles(UParticles.UNICORN_MAGIC, 10);
+        player.spawnParticles(MagicParticleEffect.UNICORN, 10);
     }
 
     @Override

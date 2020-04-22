@@ -51,7 +51,7 @@ public interface TossableItem extends Tossable<ItemStack>, Dispensable {
 
     default void toss(World world, ItemStack itemstack, PlayerEntity player) {
 
-        world.playSound(null, player.x, player.y, player.z, getThrowSound(itemstack), SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
+        world.playSound(null, player.getX(), player.getY(), player.getZ(), getThrowSound(itemstack), SoundCategory.NEUTRAL, 0.5F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
         if (!world.isClient) {
             AdvancedProjectile projectile = createProjectile(world, player);

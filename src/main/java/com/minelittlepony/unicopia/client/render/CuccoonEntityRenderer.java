@@ -4,12 +4,14 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.render.model.CuccoonEntityModel;
 import com.minelittlepony.unicopia.entity.CuccoonEntity;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.fabricmc.fabric.api.client.render.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 
@@ -22,7 +24,7 @@ public class CuccoonEntityRenderer extends LivingEntityRenderer<CuccoonEntity, C
     }
 
     @Override
-    protected Identifier getTexture(CuccoonEntity entity) {
+    public Identifier getTexture(CuccoonEntity entity) {
         return TEXTURE;
     }
 
@@ -32,22 +34,21 @@ public class CuccoonEntityRenderer extends LivingEntityRenderer<CuccoonEntity, C
     }
 
     @Override
-    public void render(CuccoonEntity entity, double x, double y, double z, float entityYaw, float partialTicks) {
-
+    public void render(CuccoonEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
         if (entity.hasPassengers()) {
             Entity rider = entity.getPrimaryPassenger();
 
             if (!(rider == MinecraftClient.getInstance().player) || InteractionManager.instance().getViewMode() != 0) {
-                GlStateManager.enableAlphaTest();
-                GlStateManager.enableBlend();
+                RenderSystem.enableAlphaTest();
+                RenderSystem.enableBlend();
 
-                renderManager.render(rider, x, y + rider.getMountedHeightOffset(), z, entityYaw, partialTicks, true);
+                renderManager.render(rider, rider.getX(), rider.getY() + rider.getMountedHeightOffset(), rider.getZ(), rider.yaw, tickDelta, matrices, vertices, light);
 
-                GlStateManager.disableBlend();
-                GlStateManager.disableAlphaTest();
+                RenderSystem.disableBlend();
+                RenderSystem.disableAlphaTest();
             }
         }
 
-        super.render(entity, x, y, z, entityYaw, partialTicks);
+        super.render(entity, yaw, tickDelta, matrices, vertices, light);
     }
 }

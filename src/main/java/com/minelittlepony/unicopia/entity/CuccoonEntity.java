@@ -9,8 +9,8 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.particles.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.particles.UParticles;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -124,12 +124,12 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
             if (passenger instanceof LivingEntity) {
                 LivingEntity living = (LivingEntity)passenger;
 
-                if (!living.hasStatusEffect(StatusEffects.REGENERATION) && living.getHealth() < living.getHealthMaximum()) {
-                    living.addPotionEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 20, 2));
+                if (!living.hasStatusEffect(StatusEffects.REGENERATION) && living.getHealth() < living.getMaximumHealth()) {
+                    living.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 20, 2));
                 }
 
-                if (!living.hasStatusEffect(StatusEffects.SLOWNESS) && living.getHealth() < living.getHealthMaximum()) {
-                    living.addPotionEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 2000, 4));
+                if (!living.hasStatusEffect(StatusEffects.SLOWNESS) && living.getHealth() < living.getMaximumHealth()) {
+                    living.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 2000, 4));
                 }
             }
         }
@@ -137,9 +137,9 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
         if (world.isClient) {
             EntityDimensions dims = getDimensions(getPose());
 
-            double x = this.x + dims.width * random.nextFloat() - dims.width/2;
-            double y = this.y + dims.height * random.nextFloat();
-            double z = this.z + dims.width * random.nextFloat() - dims.width/2;
+            double x = getX() + dims.width * random.nextFloat() - dims.width/2;
+            double y = getY() + dims.height * random.nextFloat();
+            double z = getZ() + dims.width * random.nextFloat() - dims.width/2;
 
             world.addParticle(ParticleTypes.DRIPPING_LAVA, x, y, z, 0, 0, 0);
         }
@@ -153,22 +153,22 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
             if (hasPassengers()) {
                 Entity passenger = getPrimaryPassenger();
 
-                if (player.canConsume(false) || player.getHealth() < player.getHealthMaximum()) {
+                if (player.canConsume(false) || player.getHealth() < player.getMaximumHealth()) {
                     DamageSource d = MagicalDamageSource.causePlayerDamage("feed", player);
 
                     Pony.of(player).spawnParticles(UParticles.CHANGELING_MAGIC, 7);
 
                     if (passenger instanceof LivingEntity) {
                         if (player.hasStatusEffect(StatusEffects.NAUSEA)) {
-                            ((LivingEntity)passenger).addPotionEffect(player.removePotionEffect(StatusEffects.NAUSEA));
+                            ((LivingEntity)passenger).addStatusEffect(player.removeStatusEffectInternal(StatusEffects.NAUSEA));
                         } else if (random.nextInt(2300) == 0) {
-                            ((LivingEntity)passenger).addPotionEffect(new StatusEffectInstance(StatusEffects.WITHER, 20, 1));
+                            ((LivingEntity)passenger).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20, 1));
                         }
                     }
 
                     if (passenger instanceof PlayerEntity) {
                         if (!player.hasStatusEffect(StatusEffects.HEALTH_BOOST)) {
-                            player.addPotionEffect(new StatusEffectInstance(StatusEffects.HEALTH_BOOST, 13000, 1));
+                            player.addStatusEffect(new StatusEffectInstance(StatusEffects.HEALTH_BOOST, 13000, 1));
                         }
                     }
 
@@ -226,9 +226,9 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
             double d1 = random.nextGaussian() * 0.02;
 
             world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.SLIME_BLOCK.getDefaultState()),
-                    x + random.nextFloat() * dims.width * 2 - dims.width,
-                    y + random.nextFloat() * dims.height,
-                    z + random.nextFloat() * dims.width * 2 - dims.width,
+                    getX() + random.nextFloat() * dims.width * 2 - dims.width,
+                    getY() + random.nextFloat() * dims.height,
+                    getZ() + random.nextFloat() * dims.width * 2 - dims.width,
                     d2, d0, d1);
         }
     }
@@ -244,7 +244,7 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
 
                     i -= j;
 
-                    world.spawnEntity(new ExperienceOrbEntity(world, x, y, z, j));
+                    world.spawnEntity(new ExperienceOrbEntity(world, getX(), getY(), getZ(), j));
                 }
 
                 removeAllPassengers();
@@ -292,7 +292,7 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
     }
 
     @Override
-    public void setEquippedStack(EquipmentSlot slot, ItemStack stack) {
+    public void equipStack(EquipmentSlot slot, ItemStack stack) {
     }
 
     @Override

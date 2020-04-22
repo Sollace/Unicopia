@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.tools.FabricToolTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -22,18 +23,20 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.state.StateFactory;
+import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class HiveWallBlock extends FallingBlock {
 
@@ -42,7 +45,6 @@ public class HiveWallBlock extends FallingBlock {
 
     private static final Shape shape = new Sphere(false, 1.5);
 
-    @SuppressWarnings("deprecation")
     public HiveWallBlock() {
         super(FabricBlockSettings.of(UMaterials.HIVE)
                 .noCollision()
@@ -51,16 +53,21 @@ public class HiveWallBlock extends FallingBlock {
                 .ticksRandomly()
                 .lightLevel(1)
                 .sounds(BlockSoundGroup.SAND)
-                .breakByTool(net.fabricmc.fabric.api.tools.FabricToolTags.PICKAXES, 1)
+                .breakByTool(FabricToolTags.PICKAXES, 1)
                 .build()
         );
-        setDefaultState(stateFactory.getDefaultState()
+        setDefaultState(stateManager.getDefaultState()
                 .with(STATE, State.GROWING).with(AXIS, Axis.Y)
         );
     }
 
     @Override
-    public void onScheduledTick(BlockState state, World world, BlockPos pos, Random rand) {
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(STATE).add(AXIS);
+    }
+
+    @Override
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random rand) {
 
         if (rand.nextInt(300) == 0) {
             world.playSound(null, pos, USounds.INSECT, SoundCategory.BLOCKS, 1, 1);
@@ -137,7 +144,7 @@ public class HiveWallBlock extends FallingBlock {
     }
 
     @Override
-    public int getTickRate(ViewableWorld view) {
+    public int getTickRate(WorldView view) {
        return 10;
     }
 
@@ -200,7 +207,7 @@ public class HiveWallBlock extends FallingBlock {
     }
 
     @Override
-    public boolean activate(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         if (hand == Hand.MAIN_HAND && player.getStackInHand(hand).isEmpty()) {
             Pony iplayer = Pony.of(player);
@@ -214,11 +221,11 @@ public class HiveWallBlock extends FallingBlock {
                     }
                 });
 
-                return true;
+                return ActionResult.SUCCESS;
             }
         }
 
-        return false;
+        return ActionResult.PASS;
     }
 
     @Override
@@ -257,7 +264,7 @@ public class HiveWallBlock extends FallingBlock {
     }
 
     protected boolean canSpreadInto(World world, BlockPos pos, Axis axis) {
-        if (world.isBlockLoaded(pos) && isEmptySpace(world, pos)) {
+        if (world.isChunkLoaded(pos) && isEmptySpace(world, pos)) {
             boolean one = false;
 
             for (Direction facing : axis.getFacings()) {
@@ -275,11 +282,6 @@ public class HiveWallBlock extends FallingBlock {
         }
 
         return false;
-    }
-
-    @Override
-    protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-        builder.add(STATE).add(AXIS);
     }
 
     public enum State implements StringIdentifiable {

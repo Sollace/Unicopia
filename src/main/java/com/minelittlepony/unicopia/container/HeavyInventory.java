@@ -55,7 +55,7 @@ public class HeavyInventory {
             CompoundTag bet = stack.getSubTag("BlockEntityTag");
             CompoundTag compound = stack.getSubTag("inventory");
 
-            boolean hasWeight = compound != null && compound.containsKey("weight");
+            boolean hasWeight = compound != null && compound.contains("weight");
 
             if (deep) {
                 if (!hasWeight && bet != null) {
@@ -76,7 +76,7 @@ public class HeavyInventory {
                 }
             }
 
-            if (hasWeight && (deep || !compound.containsKey("deep"))) {
+            if (hasWeight && (deep || !compound.contains("deep"))) {
                 return compound.getDouble("weight");
             }
         }

@@ -16,8 +16,8 @@ import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -56,7 +56,7 @@ class RuinFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
                 Biomes.DARK_FOREST,
                 Biomes.DARK_FOREST_HILLS
         ).forEach(biome -> {
-            biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, Biome.configureFeature(UStructures.CLOUD_HOUSE, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT));
+            biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, UStructures.CLOUD_HOUSE.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
         });
     }
 
@@ -81,8 +81,8 @@ class RuinFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
     }
 
     public static class Start extends StructureStart {
-        public Start(StructureFeature<?> feature, int x, int z, Biome biome, MutableIntBoundingBox bound, int var6, long var7) {
-            super(feature, x, z, biome, bound, var6, var7);
+        public Start(StructureFeature<?> feature, int x, int z, BlockBox bound, int var6, long var7) {
+            super(feature, x, z, bound, var6, var7);
         }
 
         @Override
@@ -134,7 +134,7 @@ class RuinFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        protected void handleMetadata(String var1, BlockPos var2, IWorld var3, Random var4, MutableIntBoundingBox var5) {
+        protected void handleMetadata(String var1, BlockPos var2, IWorld var3, Random var4, BlockBox var5) {
         }
     }
 }

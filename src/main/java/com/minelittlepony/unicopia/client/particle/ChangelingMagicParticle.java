@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.SpriteProvider;
-import net.minecraft.particle.DustParticleEffect;
+import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 public class ChangelingMagicParticle extends MagicParticle {
@@ -31,7 +31,7 @@ public class ChangelingMagicParticle extends MagicParticle {
     }
 
     @Environment(EnvType.CLIENT)
-    public static class Factory implements ParticleFactory<DustParticleEffect> {
+    public static class Factory implements ParticleFactory<DefaultParticleType> {
         private final SpriteProvider provider;
 
         public Factory(SpriteProvider provider) {
@@ -39,7 +39,7 @@ public class ChangelingMagicParticle extends MagicParticle {
         }
 
         @Override
-        public Particle createParticle(DustParticleEffect effect, World world, double x, double y, double z, double dx, double dy, double dz) {
+        public Particle createParticle(DefaultParticleType effect, World world, double x, double y, double z, double dx, double dy, double dz) {
             MagicParticle particle = new MagicParticle(world, x, y, z, dx, dy, dz);
             particle.setSprite(provider);
             return particle;
