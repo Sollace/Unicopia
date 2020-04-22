@@ -1,45 +1,27 @@
 package com.minelittlepony.unicopia.client;
 
+import com.minelittlepony.client.MineLittlePony;
 import com.minelittlepony.unicopia.Race;
 
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
+
 public final class MineLPConnector {
-    private static boolean checkComplete;
-    private static boolean modIsActive;
-
-    // TODO: MineLP
-    /**
-     * Returns true if mine little pony is present. That's all we need.
-     */
-    static boolean modIsActive() {
-        if (!checkComplete) {
-            try {
-               // MineLittlePony.instance();
-
-                // always true, but this will throw if we don't have what we need.
-               // modIsActive = PonyRace.HUMAN.isHuman();
-            } catch (Exception e) {
-                modIsActive = false;
-            }
-        }
-        return modIsActive;
-    }
-
     public static Race getPlayerPonyRace() {
-
-        if (!modIsActive()) {
+        if (!FabricLoader.getInstance().isModLoaded("minelp")) {
             return Race.HUMAN;
         }
 
-        /*switch (IPony.forPlayer(MinecraftClient.getInstance().player).getRace(false)) {
+        switch (MineLittlePony.getInstance().getManager().getPony(MinecraftClient.getInstance().player).getRace(false)) {
             case ALICORN:
                 return Race.ALICORN;
             case CHANGELING:
-            case REFORMED_CHANGELING:
+            case CHANGEDLING:
                 return Race.CHANGELING;
             case ZEBRA:
             case EARTH:
                 return Race.EARTH;
-            case GRIFFIN:
+            case GRYPHON:
             case HIPPOGRIFF:
             case PEGASUS:
             case BATPONY:
@@ -49,8 +31,6 @@ public final class MineLPConnector {
                 return Race.UNICORN;
             default:
                 return Race.EARTH;
-
-        }*/
-        return Race.EARTH;
+        }
     }
 }

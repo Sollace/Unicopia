@@ -52,6 +52,8 @@ dependencies {
 
 	modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+	modApi "com.minelittlepony:MineLittlePony:${project.minelp_version}"
+
     modApi "com.minelittlepony:Kirin:${project.kirin_version}"
     include "com.minelittlepony:Kirin:${project.kirin_version}"
 
