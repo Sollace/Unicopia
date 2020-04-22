@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.util.collection;
+package com.minelittlepony.unicopia.blockstate;
 
 import java.util.ArrayList;
 import java.util.function.Predicate;
@@ -14,7 +14,7 @@ import net.minecraft.state.property.Property;
  * A collection of block-state mappings.
  *
  */
-public class BlockStateMap extends ArrayList<StateMapping> {
+class BlockStateMap extends ArrayList<StateMapping> implements BlockStateConverter {
     private static final long serialVersionUID = 2602772651960588745L;
 
     public void removeBlock(Predicate<BlockState> mapper) {
@@ -33,24 +33,12 @@ public class BlockStateMap extends ArrayList<StateMapping> {
         add(StateMapping.setProperty(block, property, to));
     }
 
-    /**
-     * Checks if this collection contains a mapping capable of converting the given state.
-     *
-     * @param state        State to check
-     *
-     * @return    True if the state can be converted
-     */
+    @Override
     public boolean canConvert(@Nullable BlockState state) {
         return state != null && stream().anyMatch(i -> i.test(state));
     }
 
-    /**
-     * Attempts to convert the given state based on the known mappings in this collection.
-     *
-     * @param state        State to convert
-     *
-     * @return    The converted state if there is one, otherwise null
-     */
+    @Override
     @Nonnull
     public BlockState getConverted(@Nonnull BlockState state) {
         for (StateMapping i : this) {

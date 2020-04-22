@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.magic.spell;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.blockstate.StateMaps;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.TossedMagicEffect;
@@ -40,7 +41,7 @@ public class ScorchSpell extends FireSpell implements TossedMagicEffect {
 
         BlockState state = source.getWorld().getBlockState(pos);
 
-        BlockState newState = affected.getConverted(state);
+        BlockState newState = StateMaps.FIRE_AFFECTED.getConverted(state);
 
         if (!state.equals(newState)) {
             source.getWorld().setBlockState(pos, newState, 3);

@@ -30,10 +30,6 @@ public class ChitinBlock extends Block {
                 .build()
         );
         setDefaultState(stateManager.getDefaultState().with(COVERING, Covering.UNCOVERED));
-
-        // TODO: loot table:
-        //  UItems.chitin_shell x 3
-        // setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     @Deprecated
@@ -54,7 +50,6 @@ public class ChitinBlock extends Block {
 
         return hardness;
     }
-
 
     @Override
     @Deprecated

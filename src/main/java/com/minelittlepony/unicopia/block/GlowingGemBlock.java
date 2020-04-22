@@ -172,21 +172,6 @@ public class GlowingGemBlock extends TorchBlock implements Gas {
         return CloudType.ENCHANTED;
     }
 
-    // TODO: loot table
-    /*@Override
-    public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder context) {
-
-        Random rand = context.world instanceof World ? ((World)world).random : random;
-
-        if (rand.nextInt(10) == 0) {
-            drops.add(new ItemStack(UItems.spell));
-        } else {
-            drops.add(new ItemStack(UItems.curse));
-        }
-
-        return drops;
-    }*/
-
     @Override
     public int getLuminance(BlockState state) {
         if (state.get(ON)) {

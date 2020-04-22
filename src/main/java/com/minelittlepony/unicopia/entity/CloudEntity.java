@@ -75,7 +75,6 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
         super(type, world);
         ignoreCameraFrustum = true;
         targetAltitude = getRandomFlyingHeight();
-        // TODO: drops cloud_matter x1
     }
 
     @Override

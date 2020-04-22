@@ -50,7 +50,7 @@ public class UnicornCastingAbility implements Ability<Ability.Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
-        // TODO: A way to pick the active effect
+        // TODO: A way for the player to select which effect they want
         if (player.getEffect() instanceof ShieldSpell) {
             player.setEffect(null);
         } else {

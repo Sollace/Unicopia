@@ -39,8 +39,6 @@ public class StickBlock extends Block {
                 .sounds(BlockSoundGroup.WOOD)
                 .build()
         );
-
-        // TODO: loot table Items.STICK x1
     }
 
     @Deprecated

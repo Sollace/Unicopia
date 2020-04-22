@@ -18,8 +18,6 @@ public class SlimeLayerBlock extends SnowBlock {
                 .materialColor(MaterialColor.GRASS)
                 .build()
         );
-
-        // TODO: drops Items.SLIME_BALL x1
     }
 
     @Override

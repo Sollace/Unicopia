@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.magic.spell;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.blockstate.StateMaps;
 import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
@@ -12,17 +13,13 @@ import com.minelittlepony.unicopia.magic.Useable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
-import com.minelittlepony.unicopia.util.collection.StateMapping;
-import com.minelittlepony.unicopia.util.collection.BlockStateMap;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.FarmlandBlock;
 import net.minecraft.block.Material;
-import net.minecraft.block.PlantBlock;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -43,26 +40,11 @@ import net.minecraft.world.World;
 
 public class FireSpell extends AbstractSpell.RangedAreaSpell implements Useable, DispenceableMagicEffect {
 
-    public final BlockStateMap affected = new BlockStateMap();
-
     private static final Shape visual_effect_region = new Sphere(false, 0.5);
     private static final Shape effect_range = new Sphere(false, 4);
 
     public FireSpell() {
-        affected.removeBlock(s -> s.getBlock() == Blocks.SNOW || s.getBlock() == Blocks.SNOW_BLOCK);
-        affected.removeBlock(s -> s.getBlock() instanceof PlantBlock);
-        affected.replaceBlock(Blocks.CLAY, Blocks.BROWN_CONCRETE);
-        affected.replaceBlock(Blocks.OBSIDIAN, Blocks.LAVA);
-        affected.replaceBlock(Blocks.GRASS, Blocks.DIRT);
-        affected.replaceBlock(Blocks.MOSSY_COBBLESTONE, Blocks.COBBLESTONE);
-        affected.replaceBlock(Blocks.MOSSY_COBBLESTONE_WALL, Blocks.COBBLESTONE_WALL);
-        affected.replaceBlock(Blocks.MOSSY_STONE_BRICKS, Blocks.STONE_BRICKS);
-        affected.replaceBlock(Blocks.INFESTED_MOSSY_STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
-        affected.replaceBlock(Blocks.PODZOL, Blocks.COARSE_DIRT);
-        affected.setProperty(Blocks.FARMLAND, FarmlandBlock.MOISTURE, 0);
-        affected.add(StateMapping.build(
-                s -> s.getBlock() == Blocks.DIRT,
-                s -> (Math.random() <= 0.15 ? Blocks.COARSE_DIRT.getDefaultState() : s)));
+
     }
 
     @Override
@@ -182,7 +164,7 @@ public class FireSpell extends AbstractSpell.RangedAreaSpell implements Useable,
                     return true;
                 }
             } else {
-                BlockState newState = affected.getConverted(state);
+                BlockState newState = StateMaps.FIRE_AFFECTED.getConverted(state);
 
                 if (!state.equals(newState)) {
                     world.setBlockState(pos, newState, 3);

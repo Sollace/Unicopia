@@ -34,12 +34,6 @@ public class SpecialRecipe extends AbstractSpecialRecipe {
     }
 
     @Override
-    public Identifier getId() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public RecipeSerializer<?> getSerializer() {
         // TODO Auto-generated method stub
         return null;

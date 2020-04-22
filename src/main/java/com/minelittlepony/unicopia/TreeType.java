@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public final class TreeType {
-    // TODO: Move this to a datapack
+    // TODO: move to datapack
     private static final Set<TreeType> REGISTRY = new HashSet<>();
 
     public static final TreeType NONE = new TreeType("none", new Weighted<Supplier<ItemStack>>());

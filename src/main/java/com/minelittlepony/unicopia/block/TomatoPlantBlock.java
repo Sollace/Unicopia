@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.block;
 
-import java.util.List;
-
 import com.minelittlepony.unicopia.gas.CloudFarmlandBlock;
 import com.minelittlepony.unicopia.item.UItems;
 
@@ -14,8 +12,6 @@ import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.loot.context.LootContext;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
@@ -45,9 +41,6 @@ public class TomatoPlantBlock extends CropBlock {
                 .build()
         );
         setDefaultState(getDefaultState().with(TYPE, Type.NORMAL));
-
-        // TODO: loot table UItems.tomato_seeds x1
-        // if mature: UItems.tomato
     }
 
     @Override
@@ -88,22 +81,6 @@ public class TomatoPlantBlock extends CropBlock {
                 || state.getBlock() == UBlocks.cloud_farmland
                 || state.getBlock() == UBlocks.tomato_plant
                 || state.getBlock() == UBlocks.stick;
-    }
-
-    @Override
-    @Deprecated
-    public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder context) {
-        List<ItemStack> drops = super.getDroppedStacks(state, context);
-
-        drops.add(new ItemStack(Items.STICK, 1));
-
-        if (isMature(state)) {
-            drops.add(new ItemStack(state.get(TYPE).getCrop(), 1));
-        } else {
-            drops.add(new ItemStack(getSeedsItem()));
-        }
-
-        return drops;
     }
 
     @Override

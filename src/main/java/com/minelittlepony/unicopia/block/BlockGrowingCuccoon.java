@@ -71,18 +71,6 @@ public class BlockGrowingCuccoon extends Block implements Climbable {
                 .with(SHAPE, Shape.BULB));
     }
 
-    // TODO: loot table
-    /*
-    @Override
-    public int quantityDropped(BlockState state, int fortune, Random random) {
-        return random.nextInt(3) == 0 ? state.get(AGE) : 0;
-    }
-
-    @Override
-    public Item getItemDropped(BlockState state, Random rand, int fortune) {
-        return Items.SLIME_BALL;
-    }*/
-
     @Override
     public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
         return true;

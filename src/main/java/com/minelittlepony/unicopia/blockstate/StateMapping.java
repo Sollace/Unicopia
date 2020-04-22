@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.util.collection;
+package com.minelittlepony.unicopia.blockstate;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -10,7 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.state.property.Property;
 
-public interface StateMapping extends Predicate<BlockState>, Function<BlockState, BlockState> {
+interface StateMapping extends Predicate<BlockState>, Function<BlockState, BlockState> {
 
     static StateMapping removeBlock(Predicate<BlockState> mapper) {
         return build(

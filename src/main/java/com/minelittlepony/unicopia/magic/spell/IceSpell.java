@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.magic.spell;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.block.UMaterials;
+import com.minelittlepony.unicopia.blockstate.StateMaps;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.Caster;
@@ -11,8 +12,6 @@ import com.minelittlepony.unicopia.magic.Useable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
-import com.minelittlepony.unicopia.util.collection.StateMapping;
-import com.minelittlepony.unicopia.util.collection.BlockStateMap;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -21,8 +20,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.block.PlantBlock;
-import net.minecraft.block.RedstoneWireBlock;
-import net.minecraft.block.SnowBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,29 +33,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class IceSpell extends AbstractSpell.RangedAreaSpell implements Useable, DispenceableMagicEffect {
-
-    public final BlockStateMap affected = new BlockStateMap();
-
-    public IceSpell() {
-        affected.add(StateMapping.build(
-                s -> s.getMaterial() == Material.WATER,
-                s -> Blocks.ICE.getDefaultState()));
-        affected.add(StateMapping.build(
-                s -> s.getMaterial() == Material.LAVA,
-                s -> Blocks.OBSIDIAN.getDefaultState()));
-        affected.add(StateMapping.build(
-                s -> s.getBlock() == Blocks.SNOW,
-                s -> {
-                    s = s.cycle(SnowBlock.LAYERS);
-                    if (s.get(SnowBlock.LAYERS) >= 7) {
-                        return Blocks.SNOW.getDefaultState();
-                    }
-
-                    return s;
-                }));
-        affected.replaceBlock(Blocks.FIRE, Blocks.AIR);
-        affected.setProperty(Blocks.REDSTONE_WIRE, RedstoneWireBlock.POWER, 0);
-    }
 
     private final int rad = 3;
     private final Shape effect_range = new Sphere(false, rad);
@@ -144,7 +118,7 @@ public class IceSpell extends AbstractSpell.RangedAreaSpell implements Useable, 
         BlockState state = world.getBlockState(pos);
         Block id = state.getBlock();
 
-        BlockState converted = affected.getConverted(state);
+        BlockState converted = StateMaps.ICE_AFFECTED.getConverted(state);
 
         if (!state.equals(converted)) {
             world.setBlockState(pos, converted, 3);

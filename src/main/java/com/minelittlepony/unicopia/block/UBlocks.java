@@ -53,7 +53,7 @@ public interface UBlocks {
     CloudFarmlandBlock cloud_farmland = register(new CloudFarmlandBlock(FabricBlockSettings.of(UMaterials.CLOUD).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.WOOL).build()), "cloud_farmland");
 
     HiveWallBlock hive = register(new HiveWallBlock(), "hive");
-    ChitinBlock chitin = register(new ChitinBlock(), "chitin_block");
+    ChitinBlock chitin_block = register(new ChitinBlock(), "chitin_block");
     Block chissled_chitin = register(new ChiselledChitinBlock(), "chissled_chitin");
 
     BlockGrowingCuccoon cuccoon = register(new BlockGrowingCuccoon(), "cuccoon");

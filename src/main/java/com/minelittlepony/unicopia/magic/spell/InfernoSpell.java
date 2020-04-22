@@ -1,19 +1,14 @@
 package com.minelittlepony.unicopia.magic.spell;
 
+import com.minelittlepony.unicopia.blockstate.StateMaps;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.collection.StateMapping;
-import com.minelittlepony.unicopia.util.collection.BlockStateMap;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.Material;
-import net.minecraft.block.OreBlock;
-import net.minecraft.block.PlantBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -23,30 +18,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class InfernoSpell extends FireSpell {
-
-    public final BlockStateMap hellFireAffected = new BlockStateMap();
-
-    public InfernoSpell() {
-        hellFireAffected.add(StateMapping.build(
-                s -> s.getBlock() == Blocks.GRASS || s.getBlock() == Blocks.DIRT || s.getBlock() == Blocks.STONE,
-                s -> Blocks.NETHERRACK.getDefaultState()));
-
-        hellFireAffected.replaceBlock(Blocks.SAND, Blocks.SOUL_SAND);
-        hellFireAffected.replaceBlock(Blocks.GRAVEL, Blocks.SOUL_SAND);
-
-        hellFireAffected.add(StateMapping.build(
-                s -> s.getMaterial() == Material.WATER,
-                s -> Blocks.OBSIDIAN.getDefaultState()));
-
-        hellFireAffected.add(StateMapping.build(
-                s -> s.getBlock() instanceof PlantBlock,
-                s -> Blocks.NETHER_WART.getDefaultState()));
-
-        hellFireAffected.add(StateMapping.build(
-                s -> (s.getBlock() != Blocks.NETHER_QUARTZ_ORE) && (s.getBlock() instanceof OreBlock),
-                s -> Blocks.NETHER_QUARTZ_ORE.getDefaultState()));
-    }
-
     @Override
     public String getName() {
         return "inferno";
@@ -81,7 +52,7 @@ public class InfernoSpell extends FireSpell {
                 BlockPos pos = new BlockPos(shape.computePoint(w.random).add(origin));
 
                 BlockState state = w.getBlockState(pos);
-                BlockState newState = hellFireAffected.getConverted(state);
+                BlockState newState = StateMaps.HELLFIRE_AFFECTED.getConverted(state);
 
                 if (!state.equals(newState)) {
                     w.setBlockState(pos, newState, 3);

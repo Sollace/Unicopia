@@ -63,7 +63,7 @@ public interface UItems {
 
     Item hive = register(new BlockItem(UBlocks.hive, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)), "hive");
     Item chitin_shell = register(new Item(new Item.Settings().group(ItemGroup.MATERIALS)), "chitin_shell");
-    Item chitin = register(new BlockItem(UBlocks.chitin, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)), "chitin_block");
+    Item chitin = register(new BlockItem(UBlocks.chitin_block, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)), "chitin_block");
     Item chissled_chitin = register(new BlockItem(UBlocks.chissled_chitin, new Item.Settings().group(ItemGroup.BUILDING_BLOCKS)), "chissled_chitin");
     Item cuccoon = register(new BlockItem(UBlocks.cuccoon, new Item.Settings().group(ItemGroup.MATERIALS)), "cuccoon");
     Item slime_layer = register(new BlockItem(UBlocks.slime_layer, new Item.Settings().group(ItemGroup.DECORATIONS)), "slime_layer");
