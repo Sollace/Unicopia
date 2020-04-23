@@ -1,15 +1,13 @@
 package com.minelittlepony.unicopia.entity.player;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.minelittlepony.jumpingcastle.api.Target;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.AbilityReceiver;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.entity.Updatable;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
+import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.CompoundTag;
@@ -112,7 +110,11 @@ class AbilityDelegate implements AbilityReceiver, Updatable, NbtSerialisable {
             cooldown = ability.getCooldownTime(player);
 
             if (player.isClientPlayer()) {
-                if (!activateAbility(ability)) {
+                Ability.IData data = ability.tryActivate(player);
+
+                if (data != null) {
+                    Channel.PLAYER_ABILITY.send(new MsgPlayerAbility(ability, data));
+                } else {
                     cooldown = 0;
                 }
             }
@@ -149,19 +151,5 @@ class AbilityDelegate implements AbilityReceiver, Updatable, NbtSerialisable {
                 .getPowerFromName(compound.getString("activeAbility"))
                 .ifPresent(p -> activeAbility = p);
         }
-    }
-
-    /**
-     * Attempts to activate the current stored ability.
-     * Returns true if the ability suceeded, otherwise false.
-     */
-    protected boolean activateAbility(@Nonnull Ability<?> ability) {
-        Ability.IData data = ability.tryActivate(player);
-
-        if (data != null) {
-            Unicopia.getConnection().send(new MsgPlayerAbility(player.getOwner(), ability, data), Target.SERVER);
-        }
-
-        return data != null;
     }
 }

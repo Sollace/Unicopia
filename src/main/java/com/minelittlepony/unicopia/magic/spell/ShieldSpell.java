@@ -55,7 +55,7 @@ public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements Attach
         particlEffect
             .ifMissing(source, () -> {
                 source.addParticle(UParticles.SPHERE, source.getOriginVector(), Vec3d.ZERO);
-                return null; // TODO: Attachables
+                return null; // XXX: Attachables
             }) // 1, getTint(), 10
             .ifPresent(p -> p.setAttribute(0, radius));
     }

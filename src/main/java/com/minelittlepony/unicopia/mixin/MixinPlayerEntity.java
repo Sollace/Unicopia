@@ -13,6 +13,8 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.PlayerImpl;
 import com.mojang.datafixers.util.Either;
 
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -58,7 +60,17 @@ public abstract class MixinPlayerEntity extends LivingEntity implements PonyCont
 
     @Inject(method = "setGameMode(Lnet/minecraft/world/GameMode;)V",
             at = @At("RETURN"))
-    public void setGameMode(GameMode mode, CallbackInfo info) {
+    private void onSetGameMode(GameMode mode, CallbackInfo info) {
         get().setSpecies(get().getSpecies());
+    }
+
+    @Inject(method = "getActiveEyeHeight(Lnet/minecraft/entity/EntityPose;Lnet/minecraft/entity/EntityDimensions;)F",
+            at = @At("RETURN"),
+            cancellable = true)
+    private void onGetActiveEyeHeight(EntityPose pose, EntityDimensions dimensions, CallbackInfoReturnable<Float> info) {
+        float h = get().getGravity().getEyeHeight();
+        if (h != 0) {
+            info.setReturnValue(h);
+        }
     }
 }

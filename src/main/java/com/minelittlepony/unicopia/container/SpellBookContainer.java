@@ -5,6 +5,7 @@ import javax.annotation.Nonnull;
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
+import com.minelittlepony.unicopia.enchanting.recipe.URecipes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 
@@ -16,7 +17,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeType;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
@@ -73,8 +73,7 @@ public class SpellBookContainer extends Container {
         ItemStack current = craftResult.getInvStack(0);
 
         if (!current.isEmpty()) {
-            // TODO: URecipeType.SPELL_BOOK
-            ItemStack crafted = player.world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftMatrix, worldObj)
+            ItemStack crafted = player.world.getRecipeManager().getFirstMatch(URecipes.SPELL_BOOK, craftMatrix, worldObj)
                     .map(Recipe::getOutput)
                     .orElse(ItemStack.EMPTY);
 

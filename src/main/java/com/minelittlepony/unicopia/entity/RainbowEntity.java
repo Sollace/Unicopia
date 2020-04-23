@@ -1,18 +1,17 @@
 package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgSpawnRainbow;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.packet.EntitySpawnGlobalS2CPacket;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
-import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -26,7 +25,7 @@ public class RainbowEntity extends Entity implements InAnimate {
 
     private int ticksAlive;
 
-    private double radius;
+    private final double radius;
 
     public static final int RAINBOW_MAX_SIZE = 180;
     public static final int RAINBOW_MIN_SIZE = 50;
@@ -49,8 +48,7 @@ public class RainbowEntity extends Entity implements InAnimate {
 
         ignoreCameraFrustum = true;
 
-        //width = (float)radius;
-        //height = width;
+        calculateDimensions();
     }
 
     @Override
@@ -67,6 +65,11 @@ public class RainbowEntity extends Entity implements InAnimate {
                 x - width, y - radius/2, z,
                 x + width, y + radius/2, z
         ));
+    }
+
+    @Override
+    public EntityDimensions getDimensions(EntityPose pose) {
+        return EntityDimensions.changing((float)getRadius(), (float)getRadius());
     }
 
     @Override
@@ -119,7 +122,7 @@ public class RainbowEntity extends Entity implements InAnimate {
 
     @Override
     public Packet<?> createSpawnPacket() {
-        return new SpawnPacket(this);
+        return Channel.SPAWN_RAINBOW.toPacket(new MsgSpawnRainbow(this));
     }
 
     public static class Spawner extends MobEntity {
@@ -157,29 +160,6 @@ public class RainbowEntity extends Entity implements InAnimate {
             RainbowEntity rainbow = UEntities.RAINBOW.create(world);
             rainbow.setPos(getX(), getY(), getZ());
             world.spawnEntity(rainbow);
-        }
-    }
-
-    static class SpawnPacket extends EntitySpawnGlobalS2CPacket {
-        public SpawnPacket(RainbowEntity entity) {
-            super(entity);
-        }
-
-        @Override
-        public void apply(ClientPlayPacketListener listener) {
-            // TODO: Packet needs to be registered, and handling separated
-            MinecraftClient client = MinecraftClient.getInstance();
-
-            NetworkThreadUtils.forceMainThread(this, listener, client);
-            double x = getX();
-            double y = getY();
-            double z = getZ();
-            LightningEntity entity = new LightningEntity(client.world, x, y, z, false);
-            entity.updateTrackedPosition(x, y, z);
-            entity.yaw = 0;
-            entity.pitch = 0;
-            entity.setEntityId(getId());
-            client.world.addLightning(entity);
         }
     }
 }

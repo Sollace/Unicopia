@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.MutableVector;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
@@ -41,6 +42,8 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
 
     private float gravity = 0;
 
+    private float eyeHeight;
+
     public GravityDelegate(Pony player) {
         this.player = player;
     }
@@ -65,6 +68,10 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
         return Math.sqrt(getHorizontalMotion(player.getOwner())) > 0.4F;
     }
 
+    public float getEyeHeight() {
+        return eyeHeight;
+    }
+
     @Override
     public float getTargetEyeHeight(Pony player) {
         if (player.hasEffect()) {
@@ -81,7 +88,8 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
             return 0.5F;
         }
 
-        return player.getOwner().getStandingEyeHeight();
+        EntityPose pose = player.getOwner().getPose();
+        return player.getOwner().getActiveEyeHeight(pose, player.getOwner().getDimensions(pose));
     }
 
     @Override
@@ -163,7 +171,8 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
         }
 
         float bodyHeight = getTargetBodyHeight(player);
-        float eyeHeight = getTargetEyeHeight(player);
+        eyeHeight = 0;
+        eyeHeight = getTargetEyeHeight(player);
 
         if (gravity < 0) {
             eyeHeight = bodyHeight - eyeHeight;
@@ -176,8 +185,6 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
 
 
         ((MixinEntity)entity).setSize(entity.getWidth(), bodyHeight);
-        // TODO: Change eye height
-        //entity.eyeHeight = eyeHeight;
 
         if (gravity < 0) {
             if (entity.isSneaking()) {

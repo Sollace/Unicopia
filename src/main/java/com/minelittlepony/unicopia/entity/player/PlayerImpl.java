@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UTags;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.AbilityReceiver;
 import com.minelittlepony.unicopia.enchanting.PageOwner;
 import com.minelittlepony.unicopia.entity.FlightControl;
@@ -16,6 +15,7 @@ import com.minelittlepony.unicopia.magic.HeldMagicEffect;
 import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.magic.MagicalItem;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.util.BasicEasingInterpolator;
@@ -85,6 +85,8 @@ public class PlayerImpl implements Pony {
         player.getDataTracker().startTracking(ENERGY, 0F);
         player.getDataTracker().startTracking(EFFECT, new CompoundTag());
         player.getDataTracker().startTracking(HELD_EFFECT, new CompoundTag());
+
+        player.getAttributes().register(PlayerAttributes.EXTENDED_REACH_DISTANCE);
     }
 
     @Override
@@ -169,11 +171,7 @@ public class PlayerImpl implements Pony {
         dirty = false;
 
         if (!getWorld().isClient()) {
-            if (full) {
-                Unicopia.getConnection().broadcast(new MsgPlayerCapabilities(this));
-            } else {
-                Unicopia.getConnection().broadcast(new MsgPlayerCapabilities(getSpecies(), getOwner()));
-            }
+            Channel.BROADCAST_CAPABILITIES.send(new MsgPlayerCapabilities(full, this));
         }
     }
 
@@ -197,6 +195,11 @@ public class PlayerImpl implements Pony {
     @Override
     public GravityDelegate getGravity() {
         return gravity;
+    }
+
+    @Override
+    public float getExtendedReach() {
+        return (float)entity.getAttributeInstance(PlayerAttributes.EXTENDED_REACH_DISTANCE).getValue();
     }
 
     @Override

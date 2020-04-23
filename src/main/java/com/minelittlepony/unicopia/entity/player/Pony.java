@@ -71,6 +71,12 @@ public interface Pony extends Caster<PlayerEntity>, RaceContainer<PlayerEntity>,
     void setExertion(float exertion);
 
     /**
+     *
+     * @return
+     */
+    float getExtendedReach();
+
+    /**
      * Adds player tiredness.
      */
     default void addExertion(int exertion) {

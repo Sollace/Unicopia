@@ -1,40 +1,38 @@
 package com.minelittlepony.unicopia.network;
 
-import java.util.UUID;
-
-import com.google.gson.annotations.Expose;
-import com.minelittlepony.jumpingcastle.api.Channel;
-import com.minelittlepony.jumpingcastle.api.Message;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.PacketByteBuf;
 
-public class MsgRequestCapabilities implements Message, Message.Handler<MsgRequestCapabilities> {
-    @Expose
-    public UUID senderId;
+public class MsgRequestCapabilities implements Channel.Packet {
 
-    @Expose
-    public Race race;
+    private final Race race;
+
+    public MsgRequestCapabilities(PacketByteBuf buffer) {
+        race = Race.values()[buffer.readInt()];
+    }
 
     public MsgRequestCapabilities(PlayerEntity player, Race preferredRace) {
-        senderId = player.getGameProfile().getId();
         race = preferredRace;
     }
 
     @Override
-    public void onPayload(MsgRequestCapabilities message, Channel channel) {
-        MinecraftServer server = channel.getServer();
+    public void toBuffer(PacketByteBuf buffer) {
+        buffer.writeInt(race.ordinal());
+    }
 
-        Unicopia.LOGGER.warn("[Unicopia] [SERVER] [MsgRequestCapabilities] Sending capabilities to player %s\n", senderId.toString());
-        Pony player = Pony.of(server.getPlayerManager().getPlayer(senderId));
+    @Override
+    public void handle(PacketContext context) {
+        Pony player = Pony.of(context.getPlayer());
 
         if (player.getSpecies().isDefault()) {
-            player.setSpecies(message.race);
+            player.setSpecies(race);
         }
 
-        channel.respond(new MsgPlayerCapabilities(player), senderId);
+        Channel.PLAYER_CAPABILITIES.send(context.getPlayer(), new MsgPlayerCapabilities(true, player));
     }
+
 }

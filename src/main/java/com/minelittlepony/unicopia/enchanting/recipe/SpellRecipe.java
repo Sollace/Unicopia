@@ -45,16 +45,15 @@ public class SpellRecipe extends AbstractSpecialRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return null;
+        return URecipes.SPELL_SERIALIZER;
     }
 
     @Override
     public RecipeType<?> getType() {
-        return null;
+        return URecipes.SPELL_BOOK;
     }
 
     public static class Serializer implements RecipeSerializer<SpellRecipe> {
-
         @Override
         public SpellRecipe read(Identifier id, JsonObject json) {
             JsonObject resultJson = json.get("result").getAsJsonObject();
@@ -93,4 +92,5 @@ public class SpellRecipe extends AbstractSpecialRecipe {
             ingredients.forEach(i -> i.write(buff));
         }
     }
+
 }

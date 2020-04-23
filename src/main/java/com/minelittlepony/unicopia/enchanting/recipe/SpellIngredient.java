@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.enchanting.recipe;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.gson.JsonElement;
@@ -20,6 +21,7 @@ public interface SpellIngredient {
         map.put("single", SingleSpellIngredient.SERIALIZER);
         map.put("affine", AffineIngredient.SERIALIZER);
     });
+    Map<Serializer<? extends SpellIngredient>, String> IDS = SERIALIZERS.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
 
     Serializer<SpellIngredient> SERIALIZER = new Serializer<SpellIngredient>() {
         @Override
@@ -40,7 +42,7 @@ public interface SpellIngredient {
 
         @Override
         public void write(PacketByteBuf buff, SpellIngredient recipe) {
-            buff.writeByte(recipe instanceof SingleSpellIngredient ? 0 : 1);
+            buff.writeString(IDS.get(recipe.getSerializer()));
             recipe.write(buff);
         }
     };

@@ -1,77 +1,60 @@
 package com.minelittlepony.unicopia.network;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.UUID;
-
-import com.google.gson.annotations.Expose;
-import com.minelittlepony.jumpingcastle.api.Channel;
-import com.minelittlepony.jumpingcastle.api.Message;
+import java.io.InputStream;
+import java.io.OutputStream;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
+import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.PacketByteBuf;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 
-public class MsgPlayerCapabilities implements Message, Message.Handler<MsgPlayerCapabilities> {
-    @Expose
-    Race newRace;
+public class MsgPlayerCapabilities implements Channel.Packet {
 
-    @Expose
-    UUID senderId;
+    private final Race newRace;
 
-    @Expose
-    byte[] compoundTag;
+    private final CompoundTag compoundTag;
+
+    public MsgPlayerCapabilities(PacketByteBuf buffer) {
+        newRace = Race.values()[buffer.readInt()];
+        try (InputStream in = new ByteBufInputStream(buffer)) {
+            compoundTag = NbtIo.readCompressed(in);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public MsgPlayerCapabilities(Race race, PlayerEntity player) {
         newRace = race;
-        senderId = player.getUuid();
-        compoundTag = new byte[0];
+        compoundTag = new CompoundTag();
     }
 
-    public MsgPlayerCapabilities(Pony player) {
+    public MsgPlayerCapabilities(boolean full, Pony player) {
         newRace = player.getSpecies();
-        senderId = player.getOwner().getUuid();
+        compoundTag = full ? player.toNBT() : new CompoundTag();
+    }
 
-        try (ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
-            CompoundTag nbt = player.toNBT();
-
-            NbtIo.write(nbt, new DataOutputStream(bytes));
-
-            compoundTag = bytes.toByteArray();
+    @Override
+    public void toBuffer(PacketByteBuf buffer) {
+        buffer.writeInt(newRace.ordinal());
+        try (OutputStream out = new ByteBufOutputStream(buffer)) {
+            NbtIo.writeCompressed(compoundTag, out);
         } catch (IOException e) {
         }
     }
 
     @Override
-    public void onPayload(MsgPlayerCapabilities message, Channel channel) {
-
-        MinecraftServer server = channel.getServer();
-
-        PlayerEntity self = server.getPlayerManager().getPlayer(senderId);
-
-        if (self == null) {
-            Unicopia.LOGGER.warn("[Unicopia] [CLIENT] [MsgPlayerCapabilities] Player with id %s was not found!\n", senderId.toString());
+    public void handle(PacketContext context) {
+        Pony player = Pony.of(context.getPlayer());
+        if (compoundTag.isEmpty()) {
+            player.setSpecies(newRace);
         } else {
-            Pony player = Pony.of(self);
-
-            if (compoundTag.length > 0) {
-                try (ByteArrayInputStream input = new ByteArrayInputStream(compoundTag)) {
-                    CompoundTag nbt = NbtIo.read(new DataInputStream(input));
-
-                    player.fromNBT(nbt);
-                } catch (IOException e) {
-
-                }
-            } else {
-                player.setSpecies(newRace);
-            }
+            player.fromNBT(compoundTag);
         }
     }
 }

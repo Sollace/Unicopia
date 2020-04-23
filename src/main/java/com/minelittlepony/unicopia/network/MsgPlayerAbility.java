@@ -1,43 +1,36 @@
 package com.minelittlepony.unicopia.network;
 
-import java.util.UUID;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.Expose;
-import com.minelittlepony.jumpingcastle.api.Channel;
-import com.minelittlepony.jumpingcastle.api.Message;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.MinecraftServer;
+import net.fabricmc.fabric.api.network.PacketContext;
+import net.minecraft.util.PacketByteBuf;
 
-public class MsgPlayerAbility implements Message, Message.Handler<MsgPlayerAbility> {
+public class MsgPlayerAbility implements Channel.Packet {
 
     private static final Gson gson = new GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
             .create();
 
-    @Expose
-    private UUID senderId;
+    private final String powerIdentifier;
 
-    @Expose
-    private String powerIdentifier;
+    private final String abilityJson;
 
-    @Expose
-    private String abilityJson;
-
-    public MsgPlayerAbility(PlayerEntity player, Ability<?> power, Ability.IData data) {
-        senderId = player.getUuid();
+    public MsgPlayerAbility(Ability<?> power, Ability.IData data) {
         powerIdentifier = power.getKeyName();
         abilityJson = gson.toJson(data, power.getPackageType());
     }
 
-    private <T extends Ability.IData> void apply(Ability<T> power, Channel channel) {
-        MinecraftServer server = channel.getServer();
-        Pony player = Pony.of(server.getPlayerManager().getPlayer(senderId));
+    public MsgPlayerAbility(PacketByteBuf buffer) {
+        powerIdentifier = buffer.readString();
+        abilityJson = buffer.readString();
+    }
+
+    private <T extends Ability.IData> void apply(Ability<T> power, PacketContext context) {
+        Pony player = Pony.of(context.getPlayer());
         if (player == null) {
             return;
         }
@@ -48,7 +41,13 @@ public class MsgPlayerAbility implements Message, Message.Handler<MsgPlayerAbili
     }
 
     @Override
-    public void onPayload(MsgPlayerAbility message, Channel channel) {
-        Abilities.getInstance().getPowerFromName(powerIdentifier).ifPresent(power -> apply(power, channel));
+    public void toBuffer(PacketByteBuf buffer) {
+        buffer.writeString(powerIdentifier);
+        buffer.writeString(abilityJson);
+    }
+
+    @Override
+    public void handle(PacketContext context) {
+        Abilities.getInstance().getPowerFromName(powerIdentifier).ifPresent(power -> apply(power, context));
     }
 }

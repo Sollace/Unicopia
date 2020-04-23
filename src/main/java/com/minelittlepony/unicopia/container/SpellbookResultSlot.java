@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.container;
 
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
 import com.minelittlepony.unicopia.enchanting.SpellCraftingEvent;
+import com.minelittlepony.unicopia.enchanting.recipe.URecipes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.MagicGemItem;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
@@ -12,7 +13,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MusicDiscItem;
-import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 
@@ -49,8 +49,7 @@ public class SpellbookResultSlot extends SpellBookContainer.SpellbookSlot {
             ItemStack current = craftMatrix.getCraftResultMatrix().getInvStack(0);
             craftMatrix.getCraftResultMatrix().setInvStack(0, stack);
 
-            // TODO: URecipeType.SPELL_BOOK
-            DefaultedList<ItemStack> remaining = player.world.getRecipeManager().getRemainingStacks(RecipeType.CRAFTING,  craftMatrix, player.world);
+            DefaultedList<ItemStack> remaining = player.world.getRecipeManager().getRemainingStacks(URecipes.SPELL_BOOK,  craftMatrix, player.world);
 
             craftMatrix.getCraftResultMatrix().setInvStack(0, current);
 

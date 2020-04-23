@@ -5,7 +5,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.MinecraftClient;
 
 @Deprecated
-// TODO: forge events
+// XXX: hud render events
 class HudHooks {
     public static void beforePreRenderHud() {
         MinecraftClient client = MinecraftClient.getInstance();

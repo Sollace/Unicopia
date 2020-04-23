@@ -6,11 +6,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.common.event.ClientReadyCallback;
-import com.minelittlepony.jumpingcastle.api.Target;
 import com.minelittlepony.unicopia.Config;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.container.SpellbookResultSlot;
@@ -19,6 +17,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.mixin.client.DefaultTexturesRegistry;
+import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.util.dummy.DummyClientPlayerEntity;
 import com.mojang.authlib.GameProfile;
@@ -84,7 +83,7 @@ public class UnicopiaClient extends InteractionManager implements ClientModIniti
             if (newRace != clientPlayerRace) {
                 clientPlayerRace = newRace;
 
-                Unicopia.getConnection().send(new MsgRequestCapabilities(player, clientPlayerRace), Target.SERVER);
+                Channel.REQUEST_CAPABILITIES.send(new MsgRequestCapabilities(player, clientPlayerRace));
             }
         }
 
