@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.particles;
 
 import java.util.Locale;
 
-import com.minelittlepony.unicopia.util.Color;
+import com.minelittlepony.util.Color;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 

@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * All of the Auxiliary effects used in minecraft for World.spawnEvent
+ * All of the Auxiliary effects used in minecraft for World.playGlobalEvent
  */
 public enum WorldEvent {
     DISPENSER_DISPENSE_BLOCK(1000),
@@ -82,16 +82,7 @@ public enum WorldEvent {
         play(world, pos, 0);
     }
 
-    public void play(World world, BlockPos pos, int data) {
+    private void play(World world, BlockPos pos, int data) {
         world.playGlobalEvent(getId(), pos, data);
-    }
-
-    public static WorldEvent fromId(int id) {
-        for (WorldEvent i : values()) {
-            if (i.id == id) {
-                return i;
-            }
-        }
-        return UNKNOWN;
     }
 }

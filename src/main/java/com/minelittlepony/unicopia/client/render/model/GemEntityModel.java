@@ -1,7 +1,8 @@
 package com.minelittlepony.unicopia.client.render.model;
 
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
-import com.minelittlepony.unicopia.util.Color;
+import com.minelittlepony.util.Color;
+
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;

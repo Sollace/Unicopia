@@ -30,7 +30,7 @@ public interface ParticleSource {
     default void spawnParticles(Shape area, int count, Consumer<Vec3d> particleSpawner) {
         Vec3d pos = getOriginVector();
 
-        area.randomPoints(count, getWorld().random).stream()
+        area.randomPoints(count, getWorld().random)
             .map(point -> point.add(pos))
             .forEach(particleSpawner);
     }

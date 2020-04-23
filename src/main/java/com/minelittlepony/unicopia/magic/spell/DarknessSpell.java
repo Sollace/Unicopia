@@ -101,7 +101,7 @@ public class DarknessSpell extends AbstractAttachableSpell {
     }
 
     private void applyBlocks(Caster<?> source, int radius) {
-        for (BlockPos pos : PosHelper.getAllInRegionMutable(source.getOrigin(), new Sphere(false, radius))) {
+        PosHelper.getAllInRegionMutable(source.getOrigin(), new Sphere(false, radius)).filter(pos -> {
             if (source.getWorld().random.nextInt(500) == 0) {
                 BlockState state = source.getWorld().getBlockState(pos);
 
@@ -112,11 +112,13 @@ public class DarknessSpell extends AbstractAttachableSpell {
                         if (source.getWorld() instanceof ServerWorld) {
                             growable.grow((ServerWorld)source.getWorld(), source.getWorld().random, pos, state);
                         }
-                        return;
+                        return true;
                     }
                 }
             }
-        }
+
+            return false;
+        }).findFirst();
     }
 
     private void applyEntities(Caster<?> source, int radius, Consumer<LivingEntity> consumer) {

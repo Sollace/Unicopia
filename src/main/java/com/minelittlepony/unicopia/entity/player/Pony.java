@@ -11,7 +11,7 @@ import com.minelittlepony.unicopia.entity.RaceContainer;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.HeldMagicEffect;
 import com.minelittlepony.unicopia.network.Transmittable;
-import com.minelittlepony.unicopia.util.IInterpolator;
+import com.minelittlepony.util.IInterpolator;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 

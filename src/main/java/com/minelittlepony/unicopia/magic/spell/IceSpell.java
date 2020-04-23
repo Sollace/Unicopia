@@ -88,9 +88,7 @@ public class IceSpell extends AbstractSpell.RangedAreaSpell implements Useable, 
 
     private boolean applyBlocks(PlayerEntity owner, World world, BlockPos pos) {
 
-        for (BlockPos i : PosHelper.getAllInRegionMutable(pos, effect_range)) {
-            applyBlockSingle(owner, world, i);
-        }
+        PosHelper.getAllInRegionMutable(pos, effect_range).forEach(i -> applyBlockSingle(owner, world, i));
 
         return applyEntities(owner, world, pos);
     }
@@ -136,7 +134,7 @@ public class IceSpell extends AbstractSpell.RangedAreaSpell implements Useable, 
     }
 
     public static boolean isSurroundedByIce(World w, BlockPos pos) {
-        return !PosHelper.adjacentNeighbours(pos).stream().anyMatch(i ->
+        return !PosHelper.adjacentNeighbours(pos).anyMatch(i ->
             w.getBlockState(i).getMaterial() == Material.ICE
         );
     }

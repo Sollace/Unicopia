@@ -85,10 +85,9 @@ public class FireSpell extends AbstractSpell.RangedAreaSpell implements Useable,
         if (player == null || player.isSneaking()) {
             result = applyBlocks(context.getWorld(), pos);
         } else {
-
-            for (BlockPos i : PosHelper.getAllInRegionMutable(pos, effect_range)) {
-                result |= applyBlocks(context.getWorld(), i);
-            }
+            result = PosHelper.getAllInRegionMutable(pos, effect_range).reduce(result,
+                    (r, i) -> applyBlocks(context.getWorld(), i),
+                    (a, b) -> a || b);
         }
 
         if (!result) {
@@ -111,17 +110,10 @@ public class FireSpell extends AbstractSpell.RangedAreaSpell implements Useable,
     public CastResult onDispenced(BlockPos pos, Direction facing, BlockPointer source, Affinity affinity) {
         pos = pos.offset(facing, 4);
 
-        boolean result = false;
-
-        for (BlockPos i : PosHelper.getAllInRegionMutable(pos, effect_range)) {
-            result |= applyBlocks(source.getWorld(), i);
-        }
-
-        if (!result) {
-            result = applyEntities(null, source.getWorld(), pos);
-        }
-
-        return result ? CastResult.NONE : CastResult.DEFAULT;
+        return CastResult.cancelled(PosHelper.getAllInRegionMutable(pos, effect_range).reduce(false,
+                (r, i) -> applyBlocks(source.getWorld(), i),
+                (a, b) -> a || b)
+                || applyEntities(null, source.getWorld(), pos));
     }
 
     protected boolean applyBlocks(World world, BlockPos pos) {

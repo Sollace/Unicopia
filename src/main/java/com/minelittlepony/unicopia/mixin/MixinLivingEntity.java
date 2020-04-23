@@ -69,6 +69,7 @@ public abstract class MixinLivingEntity extends Entity implements PonyContainer<
     }
 
     // ---------- temporary
+    @SuppressWarnings("deprecation")
     @Inject(method = "isClimbing()Z", at = @At("HEAD"), cancellable = true)
     public void onIsClimbing(CallbackInfoReturnable<Boolean> info) {
         LivingEntity self = (LivingEntity)(Object)this;

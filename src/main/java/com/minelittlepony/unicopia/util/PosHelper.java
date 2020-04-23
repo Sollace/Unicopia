@@ -1,9 +1,13 @@
 package com.minelittlepony.unicopia.util;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Spliterator;
+import java.util.Spliterators.AbstractSpliterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.google.common.collect.Lists;
 import com.minelittlepony.unicopia.util.shape.Shape;
@@ -44,46 +48,29 @@ public interface PosHelper {
         return false;
     }
 
-    static Iterators<BlockPos> adjacentNeighbours(BlockPos origin) {
+    static Stream<BlockPos> adjacentNeighbours(BlockPos origin) {
         BlockPos.Mutable pos = new BlockPos.Mutable(origin);
-        Iterator<Direction> directions = Lists.newArrayList(Direction.values()).iterator();
+        List<Direction> directions = Lists.newArrayList(Direction.values());
+        Iterator<Direction> iter = directions.iterator();
+        return StreamSupport.stream(new AbstractSpliterator<BlockPos>(directions.size(), Spliterator.SIZED) {
+            @Override
+            public boolean tryAdvance(Consumer<? super BlockPos> consumer) {
+                if (iter.hasNext()) {
+                    Direction next = iter.next();
 
-        return Iterators.iterate(() -> {
-            if (directions.hasNext()) {
-                Direction next = directions.next();
-
-                pos.set(origin.getX() + next.getOffsetX(), origin.getY() + next.getOffsetY(), origin.getZ() + next.getOffsetZ());
-                return pos;
-            }
-
-            return null;
-        });
-    }
-
-    static Iterators<BlockPos> getAllInRegionMutable(BlockPos origin, Shape shape) {
-        Iterator<BlockPos> iter = BlockPos.iterate(
-                origin.add(new BlockPos(shape.getLowerBound())),
-                origin.add(new BlockPos(shape.getUpperBound()))
-            ).iterator();
-
-        return Iterators.iterate(() -> {
-            while (iter.hasNext()) {
-                BlockPos pos = iter.next();
-
-                if (shape.isPointInside(new Vec3d(pos.subtract(origin)))) {
-                    return pos;
+                    pos.set(origin.getX() + next.getOffsetX(), origin.getY() + next.getOffsetY(), origin.getZ() + next.getOffsetZ());
+                    consumer.accept(pos);
+                    return true;
                 }
+                return false;
             }
-
-            return null;
-        });
+        }, false);
     }
 
-    /**
-     * Creates a stream of mutable block positions ranging from the beginning position to end.
-     */
-    @Deprecated
-    static Stream<BlockPos> inRegion(BlockPos from, BlockPos to) {
-        return BlockPos.stream(from, to);
+    static Stream<BlockPos> getAllInRegionMutable(BlockPos origin, Shape shape) {
+        return BlockPos.stream(
+            origin.add(new BlockPos(shape.getLowerBound())),
+            origin.add(new BlockPos(shape.getUpperBound()))
+        ).filter(pos -> shape.isPointInside(new Vec3d(pos.subtract(origin))));
     }
 }

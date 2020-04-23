@@ -1,9 +1,12 @@
 package com.minelittlepony.unicopia.util.shape;
 
 import java.util.Random;
+import java.util.Spliterator;
+import java.util.Spliterators.AbstractSpliterator;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import com.minelittlepony.unicopia.util.Iterators;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import net.minecraft.util.math.Vec3d;
 
@@ -75,16 +78,19 @@ public interface Shape {
     /**
      * Returns a sequence of N random points.
      */
-    default Iterators<Vec3d> randomPoints(int n, Random rand) {
+    default Stream<Vec3d> randomPoints(int n, Random rand) {
         AtomicInteger atom = new AtomicInteger(n);
-        return Iterators.iterate(() -> {
-            if (atom.get() <= 0) {
-                return null;
+        return StreamSupport.stream(new AbstractSpliterator<Vec3d>(n, Spliterator.SIZED) {
+            @Override
+            public boolean tryAdvance(Consumer<? super Vec3d> consumer) {
+
+                if (atom.decrementAndGet() >= 0) {
+                    consumer.accept(computePoint(rand));
+                    return true;
+                }
+
+                return false;
             }
-
-            atom.decrementAndGet();
-
-            return computePoint(rand);
-        });
+        }, false);
     }
 }

@@ -18,4 +18,8 @@ public enum CastResult {
      * When right clicking a block the itemstack will be decremented.
      */
     DEFAULT;
+
+    public static CastResult cancelled(boolean cancelled) {
+        return cancelled ? NONE : DEFAULT;
+    }
 }

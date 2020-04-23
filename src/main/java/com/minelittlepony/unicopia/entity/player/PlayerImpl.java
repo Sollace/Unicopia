@@ -18,8 +18,8 @@ import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
-import com.minelittlepony.unicopia.util.BasicEasingInterpolator;
-import com.minelittlepony.unicopia.util.IInterpolator;
+import com.minelittlepony.util.BasicEasingInterpolator;
+import com.minelittlepony.util.IInterpolator;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.client.network.packet.EntityPassengersSetS2CPacket;
