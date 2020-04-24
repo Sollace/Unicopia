@@ -19,9 +19,9 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome.SpawnEntry;
 
-public class RainbowEntity extends Entity implements InAnimate {
+public class RainbowEntity extends MobEntity implements InAnimate {
 
-    public static final SpawnEntry SPAWN_ENTRY = new SpawnEntry(UEntities.RAINBOW_SPAWNER, 1, 1, 1);
+    public static final SpawnEntry SPAWN_ENTRY = new SpawnEntry(UEntities.RAINBOW, 1, 1, 1);
 
     private int ticksAlive;
 
@@ -98,7 +98,6 @@ public class RainbowEntity extends Entity implements InAnimate {
             Box bounds = SPAWN_COLLISSION_RADIUS.offset(getPos());
 
             world.getEntities(RainbowEntity.class, bounds, null).forEach(this::attackCompetitor);
-            world.getEntities(RainbowEntity.Spawner.class, bounds, null).forEach(this::attackCompetitor);
         }
     }
 
@@ -109,57 +108,29 @@ public class RainbowEntity extends Entity implements InAnimate {
     }
 
     @Override
-    protected void initDataTracker() {
+    public boolean canSpawn(IWorld world, SpawnType type) {
+
+        Box bounds = SPAWN_COLLISSION_RADIUS.offset(getPos());
+
+        return super.canSpawn(world, type)
+                && world.getEntities(RainbowEntity.class, bounds, null).isEmpty();
     }
 
     @Override
-    protected void readCustomDataFromTag(CompoundTag var1) {
+    public int getLimitPerChunk() {
+        return 1;
     }
 
     @Override
-    protected void writeCustomDataToTag(CompoundTag var1) {
+    public void readCustomDataFromTag(CompoundTag var1) {
+    }
+
+    @Override
+    public void writeCustomDataToTag(CompoundTag var1) {
     }
 
     @Override
     public Packet<?> createSpawnPacket() {
         return Channel.SPAWN_RAINBOW.toPacket(new MsgSpawnRainbow(this));
-    }
-
-    public static class Spawner extends MobEntity {
-
-        public Spawner(EntityType<Spawner> type, World world) {
-            super(type, world);
-            this.setInvisible(true);
-        }
-
-        @Override
-        public boolean canSpawn(IWorld world, SpawnType type) {
-
-            Box bounds = SPAWN_COLLISSION_RADIUS.offset(getPos());
-
-            return super.canSpawn(world, type)
-                    && world.getEntities(RainbowEntity.class, bounds, null).isEmpty()
-                    && world.getEntities(RainbowEntity.Spawner.class, bounds, null).isEmpty();
-        }
-
-        @Override
-        public int getLimitPerChunk() {
-            return 1;
-        }
-
-        @Override
-        public void tick() {
-            super.tick();
-            if (!this.dead) {
-                remove();
-                trySpawnRainbow();
-            }
-        }
-
-        public void trySpawnRainbow() {
-            RainbowEntity rainbow = UEntities.RAINBOW.create(world);
-            rainbow.setPos(getX(), getY(), getZ());
-            world.spawnEntity(rainbow);
-        }
     }
 }

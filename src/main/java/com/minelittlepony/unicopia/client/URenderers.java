@@ -22,6 +22,9 @@ import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 public interface URenderers {
     static void bootstrap() {
         EntityRendererRegistry.INSTANCE.register(UEntities.CLOUD, CloudEntityRenderer::new);
+        EntityRendererRegistry.INSTANCE.register(UEntities.WILD_CLOUD, CloudEntityRenderer::new);
+        EntityRendererRegistry.INSTANCE.register(UEntities.CONSTRUCTION_CLOUD, CloudEntityRenderer::new);
+        EntityRendererRegistry.INSTANCE.register(UEntities.RACING_CLOUD, CloudEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(UEntities.MAGIC_SPELL, SpellcastEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(UEntities.THROWN_ITEM, (manager, context) -> new FlyingItemEntityRenderer<>(manager, context.getItemRenderer()));
         EntityRendererRegistry.INSTANCE.register(UEntities.SPELLBOOK, SpellbookEntityRender::new);

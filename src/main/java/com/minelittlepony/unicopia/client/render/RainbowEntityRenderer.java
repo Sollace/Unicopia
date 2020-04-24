@@ -18,12 +18,11 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.util.Identifier;
 
 public class RainbowEntityRenderer extends EntityRenderer<RainbowEntity> {
+    private static final Identifier TEXTURE = new Identifier("unicopia", "textures/environment/rainbow.png");
 
     public RainbowEntityRenderer(EntityRenderDispatcher manager, EntityRendererRegistry.Context context) {
         super(manager);
     }
-
-    private static final Identifier TEXTURE = new Identifier("unicopia", "textures/environment/rainbow.png");
 
     @Override
     public Identifier getTexture(RainbowEntity entity) {

@@ -15,8 +15,8 @@ import com.minelittlepony.unicopia.util.WorldHelper;
 import com.mojang.blaze3d.platform.GlStateManager;
 
 public class CloudEntityRenderer extends LivingEntityRenderer<CloudEntity, CloudEntityModel> {
-    private static final Identifier cloud = new Identifier("unicopia", "textures/entity/clouds.png");
-    private static final Identifier rainCloud = new Identifier("unicopia", "textures/entity/clouds_storm.png");
+    private static final Identifier NORMAL = new Identifier("unicopia", "textures/entity/clouds.png");
+    private static final Identifier RAINING = new Identifier("unicopia", "textures/entity/clouds_storm.png");
 
     public CloudEntityRenderer(EntityRenderDispatcher manager, EntityRendererRegistry.Context context) {
         super(manager, new CloudEntityModel(), 1f);
@@ -58,9 +58,9 @@ public class CloudEntityRenderer extends LivingEntityRenderer<CloudEntity, Cloud
     @Override
     public Identifier getTexture(CloudEntity entity) {
         if (entity.getIsRaining() && entity.getIsThundering()) {
-            return rainCloud;
+            return RAINING;
         }
-        return cloud;
+        return NORMAL;
     }
 
     @Override

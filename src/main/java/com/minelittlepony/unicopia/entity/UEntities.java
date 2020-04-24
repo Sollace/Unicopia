@@ -28,7 +28,6 @@ public interface UEntities {
     EntityType<ConstructionCloudEntity> CONSTRUCTION_CLOUD = register("construction_cloud", FabricEntityTypeBuilder.create(EntityCategory.CREATURE, ConstructionCloudEntity::new));
 
     EntityType<RainbowEntity> RAINBOW = register("rainbow", FabricEntityTypeBuilder.create(EntityCategory.AMBIENT, RainbowEntity::new));
-    EntityType<RainbowEntity.Spawner> RAINBOW_SPAWNER = register("rainbow_spawner", FabricEntityTypeBuilder.create(EntityCategory.MISC, RainbowEntity.Spawner::new));
 
     EntityType<CuccoonEntity> CUCCOON = register("cuccoon", FabricEntityTypeBuilder.create(EntityCategory.MISC, CuccoonEntity::new).size(EntityDimensions.changing(1.5F, 1.6F)));
 
