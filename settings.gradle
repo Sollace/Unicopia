@@ -8,4 +8,4 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = 'Unicopia'
+rootProject.name = 'Unicopia-redux'
