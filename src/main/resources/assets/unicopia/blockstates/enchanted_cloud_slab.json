@@ -1,7 +1,7 @@
 {
     "variants": {
-        "type=bottom": { "model": "unicopia:block/enchanted_cloud_slab_top" },
-        "type=top": { "model": "unicopia:block/enchanted_cloud_slab" },
+        "type=bottom": { "model": "unicopia:block/enchanted_cloud_slab" },
+        "type=top": { "model": "unicopia:block/enchanted_cloud_slab_top" },
         "type=double": { "model": "unicopia:block/enchanted_cloud_block" }
     }
 }
