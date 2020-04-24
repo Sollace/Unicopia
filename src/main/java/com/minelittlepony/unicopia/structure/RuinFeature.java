@@ -56,7 +56,9 @@ class RuinFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
                 Biomes.DARK_FOREST,
                 Biomes.DARK_FOREST_HILLS
         ).forEach(biome -> {
-            biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, UStructures.CLOUD_HOUSE.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
+            biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES,
+                    configure(FeatureConfig.DEFAULT)
+                    .createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
         });
     }
 

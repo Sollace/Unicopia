@@ -53,7 +53,9 @@ class CloudDungeonFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
                 Biomes.ICE_SPIKES,
                 Biomes.TAIGA
         ).forEach(biome -> {
-            biome.addFeature(GenerationStep.Feature.LOCAL_MODIFICATIONS, UStructures.CLOUD_HOUSE.configure(FeatureConfig.DEFAULT).createDecoratedFeature(Decorator.NOPE.configure(NopeDecoratorConfig.DEFAULT)));
+            biome.addFeature(GenerationStep.Feature.LOCAL_MODIFICATIONS, configure(FeatureConfig.DEFAULT)
+                    .createDecoratedFeature(Decorator.NOPE
+                            .configure(NopeDecoratorConfig.DEFAULT)));
         });
     }
 
