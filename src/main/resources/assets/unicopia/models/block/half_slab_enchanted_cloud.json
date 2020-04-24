@@ -1,8 +1,0 @@
-{
-    "parent": "block/half_slab",
-    "textures": {
-        "bottom": "unicopia:blocks/cloud_enchanted_top",
-        "top": "unicopia:blocks/cloud_enchanted",
-        "side": "unicopia:blocks/cloud_enchanted"
-    }
-}

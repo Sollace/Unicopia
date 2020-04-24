@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal": { "model": "unicopia:enchanted_cloud_block" }
+        "": { "model": "unicopia:block/enchanted_cloud_block" }
     }
 }

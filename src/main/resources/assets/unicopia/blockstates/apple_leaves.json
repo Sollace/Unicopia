@@ -1,13 +1,6 @@
 {
     "variants": {
-        "normal": { "model": "unicopia:apple_leaves" },
-        "check_decay=false,decayable=false,heavy=false": { "model": "unicopia:apple_leaves" },
-        "check_decay=true,decayable=false,heavy=false": { "model": "unicopia:apple_leaves" },
-        "check_decay=false,decayable=true,heavy=false": { "model": "unicopia:apple_leaves" },
-        "check_decay=true,decayable=true,heavy=false": { "model": "unicopia:apple_leaves" },
-        "check_decay=false,decayable=false,heavy=true": { "model": "unicopia:apple_leaves_heavy" },
-        "check_decay=true,decayable=false,heavy=true": { "model": "unicopia:apple_leaves_heavy" },
-        "check_decay=false,decayable=true,heavy=true": { "model": "unicopia:apple_leaves_heavy" },
-        "check_decay=true,decayable=true,heavy=true": { "model": "unicopia:apple_leaves_heavy" }
+        "heavy=false": { "model": "unicopia:block/apple_leaves" },
+        "heavy=true": { "model": "unicopia:block/apple_leaves_heavy" }
     }
 }

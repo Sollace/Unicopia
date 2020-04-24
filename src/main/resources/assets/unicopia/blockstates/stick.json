@@ -1,5 +1,5 @@
 {
     "variants": {
-        "normal": { "model": "unicopia:tomato_plant/stage0" }
+        "": { "model": "unicopia:block/tomato_plant/stage0" }
     }
 }

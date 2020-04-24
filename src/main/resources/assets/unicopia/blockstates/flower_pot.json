@@ -1,7 +1,7 @@
 {
     "variants": {
-    	"plant=empty":    { "model": "minecraft:flower_pot" },
-        "plant=quill": { "model": "unicopia:flower_pot/feather" },
-        "plant=meadowbrook": { "model": "unicopia:flower_pot/meadowbrook" }
+    	"plant=empty":    { "model": "minecraft:block/flower_pot" },
+        "plant=quill": { "model": "unicopia:block/flower_pot/feather" },
+        "plant=meadowbrook": { "model": "unicopia:block/flower_pot/meadowbrook" }
     }
 }

@@ -6,11 +6,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "unicopia:spell"
+          "name": "unicopia:gem"
         },
         {
           "type": "minecraft:item",
-          "name": "unicopia:curse"
+          "name": "unicopia:corrupted_gem"
         }
       ]
     }

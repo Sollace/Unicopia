@@ -1,0 +1,8 @@
+{
+    "parent": "block/slab_top",
+    "textures": {
+        "bottom": "unicopia:blocks/cloud_enchanted",
+        "top": "unicopia:blocks/cloud_enchanted_top",
+        "side": "unicopia:blocks/cloud_enchanted"
+    }
+}

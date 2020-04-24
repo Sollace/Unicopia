@@ -1,5 +1,5 @@
 {
-    "parent": "unicopia:block/normal_cloud_block",
+    "parent": "unicopia:block/cloud_block",
     "display": {
         "thirdperson": {
             "rotation": [ 10, -45, 170 ],

@@ -1,20 +1,20 @@
 {
     "variants": {
-        "age=0,type=normal": { "model": "unicopia:tomato_plant/stage0" },
-        "age=1,type=normal": { "model": "unicopia:tomato_plant/stage1" },
-        "age=2,type=normal": { "model": "unicopia:tomato_plant/stage1" },
-        "age=3,type=normal": { "model": "unicopia:tomato_plant/stage2" },
-        "age=4,type=normal": { "model": "unicopia:tomato_plant/stage2" },
-        "age=5,type=normal": { "model": "unicopia:tomato_plant/stage3" },
-        "age=6,type=normal": { "model": "unicopia:tomato_plant/stage4" },
-        "age=7,type=normal": { "model": "unicopia:tomato_plant/stage4" },
-        "age=0,type=cloudsdale": { "model": "unicopia:tomato_plant/stage0" },
-        "age=1,type=cloudsdale": { "model": "unicopia:tomato_plant/stage1" },
-        "age=2,type=cloudsdale": { "model": "unicopia:tomato_plant/stage1" },
-        "age=3,type=cloudsdale": { "model": "unicopia:tomato_plant/stage2" },
-        "age=4,type=cloudsdale": { "model": "unicopia:tomato_plant/stage2" },
-        "age=5,type=cloudsdale": { "model": "unicopia:tomato_plant/stage3" },
-        "age=6,type=cloudsdale": { "model": "unicopia:tomato_plant/stage4" },
-        "age=7,type=cloudsdale": { "model": "unicopia:tomato_plant/stage4" }
+        "age=0,type=normal": { "model": "unicopia:block/tomato_plant/stage0" },
+        "age=1,type=normal": { "model": "unicopia:block/tomato_plant/stage1" },
+        "age=2,type=normal": { "model": "unicopia:block/tomato_plant/stage1" },
+        "age=3,type=normal": { "model": "unicopia:block/tomato_plant/stage2" },
+        "age=4,type=normal": { "model": "unicopia:block/tomato_plant/stage2" },
+        "age=5,type=normal": { "model": "unicopia:block/tomato_plant/stage3" },
+        "age=6,type=normal": { "model": "unicopia:block/tomato_plant/stage4" },
+        "age=7,type=normal": { "model": "unicopia:block/tomato_plant/stage4" },
+        "age=0,type=cloudsdale": { "model": "unicopia:block/tomato_plant/stage0" },
+        "age=1,type=cloudsdale": { "model": "unicopia:block/tomato_plant/stage1" },
+        "age=2,type=cloudsdale": { "model": "unicopia:block/tomato_plant/stage1" },
+        "age=3,type=cloudsdale": { "model": "unicopia:block/tomato_plant/stage2" },
+        "age=4,type=cloudsdale": { "model": "unicopia:block/tomato_plant/stage2" },
+        "age=5,type=cloudsdale": { "model": "unicopia:block/tomato_plant/stage3" },
+        "age=6,type=cloudsdale": { "model": "unicopia:block/tomato_plant/stage4" },
+        "age=7,type=cloudsdale": { "model": "unicopia:block/tomato_plant/stage4" }
     }
 }

@@ -191,7 +191,7 @@
   "commands.race.usage": "/race <get|set|list|describe> [player] <species>",
   "commands.race.list": "The available races are:",
   "commands.race.permission": "Selected Race is not permitted by your current server",
-  "commands.race.fail": ""%s" is not a recognised Race",
+  "commands.race.fail": "\"%s\" is not a recognised Race",
 
   "commands.race.tell.self": "You are a ",
   "commands.race.tell.self.alt": "You are an ",

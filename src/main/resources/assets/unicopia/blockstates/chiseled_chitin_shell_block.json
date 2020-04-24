@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "facing=up": { "model": "unicopia:block/chiseled_chitin_shell_block" },
+        "facing=down": { "model": "unicopia:block/chiseled_chitin_shell_block", "x": 180 },
+        "facing=north": { "model": "unicopia:block/chiseled_chitin_shell_block", "x": 90 },
+        "facing=south": { "model": "unicopia:block/chiseled_chitin_shell_block", "x": -90 },
+        "facing=east": { "model": "unicopia:block/chiseled_chitin_shell_block", "x": 90, "y": 90 },
+		"facing=west": { "model": "unicopia:block/chiseled_chitin_shell_block", "x": 90, "y": -90 }
+    }
+}

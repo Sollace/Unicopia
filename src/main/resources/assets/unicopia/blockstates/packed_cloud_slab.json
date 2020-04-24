@@ -1,6 +1,0 @@
-{
-    "variants": {
-        "half=bottom,variant=normal": { "model": "unicopia:half_slab_packed_cloud" },
-        "half=top,variant=normal": { "model": "unicopia:upper_slab_packed_cloud" }
-    }
-}

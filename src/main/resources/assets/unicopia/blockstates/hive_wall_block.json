@@ -1,0 +1,13 @@
+{
+    "variants": {
+        "axis=x,state=growing": { "model": "unicopia:block/hive_growing" },
+        "axis=y,state=growing": { "model": "unicopia:block/hive_growing" },
+        "axis=z,state=growing": { "model": "unicopia:block/hive_growing" },
+        "axis=x,state=stable": { "model": "unicopia:block/hive_stable" },
+        "axis=y,state=stable": { "model": "unicopia:block/hive_stable" },
+        "axis=z,state=stable": { "model": "unicopia:block/hive_stable" },
+        "axis=x,state=dying": { "model": "unicopia:block/hive_dying" },
+        "axis=y,state=dying": { "model": "unicopia:block/hive_dying" },
+        "axis=z,state=dying": { "model": "unicopia:block/hive_dying" }
+    }
+}
