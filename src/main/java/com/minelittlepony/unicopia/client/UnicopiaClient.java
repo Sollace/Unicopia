@@ -57,6 +57,8 @@ public class UnicopiaClient extends InteractionManager implements ClientModIniti
         clientPlayerRace = getclientPlayerRace();
         InteractionManager.INSTANCE = this;
 
+        URenderers.bootstrap();
+
         ClientTickCallback.EVENT.register(this::tick);
         ClientReadyCallback.EVENT.register(client -> Abilities.getInstance().getValues().forEach(keyboard::addKeybind));
 
