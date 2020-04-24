@@ -16,7 +16,7 @@ import net.minecraft.entity.LivingEntity;
 @Mixin(LivingEntity.class)
 abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylike> {
 
-    private final Ponylike caster = create();
+    private Ponylike caster;
 
     private MixinLivingEntity() { super(null, null); }
 
@@ -27,12 +27,15 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylik
 
     @Override
     public Ponylike get() {
+        if (caster == null) {
+            caster = create();
+        }
         return caster;
     }
 
     @Inject(method = "canSee(Lnet/minecraft/entity/Entity;)Z", at = @At("HEAD"))
     private void onCanSee(Entity other, CallbackInfoReturnable<Boolean> info) {
-        if (caster.isInvisible()) {
+        if (get().isInvisible()) {
             info.setReturnValue(false);
         }
     }
@@ -42,25 +45,25 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylik
         LivingEntity self = (LivingEntity)(Object)this;
 
         if (!self.getActiveItem().isEmpty() && self.isUsingItem()) {
-            caster.onUse(self.getActiveItem());
+            get().onUse(self.getActiveItem());
         }
     }
 
     @Inject(method = "jump()V", at = @At("RETURN"))
     private void onJump(CallbackInfo info) {
-        caster.onJump();
+        get().onJump();
     }
 
     @Inject(method = "tick()V", at = @At("HEAD"), cancellable = true)
     private void beforeTick(CallbackInfo info) {
-        if (caster.beforeUpdate()) {
+        if (get().beforeUpdate()) {
             info.cancel();
         }
     }
 
     @Inject(method = "tick()V", at = @At("RETURN"))
     private void afterTick(CallbackInfo info) {
-        caster.onUpdate();
+        get().onUpdate();
     }
 
     @Inject(method = "<clinit>()V", at = @At("RETURN"), remap = false)
