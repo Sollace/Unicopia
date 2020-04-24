@@ -9,7 +9,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public interface ParticleSource {
+public interface ParticleSource extends ParticleSpawner {
 
     /**
      * gets the minecraft world
@@ -35,6 +35,7 @@ public interface ParticleSource {
             .forEach(particleSpawner);
     }
 
+    @Override
     default void addParticle(ParticleEffect effect, Vec3d position, Vec3d velocity) {
         getWorld().addParticle(effect, position.x, position.y, position.z, velocity.x, velocity.y, velocity.z);
     }

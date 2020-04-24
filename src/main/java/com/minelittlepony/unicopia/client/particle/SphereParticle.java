@@ -16,9 +16,10 @@ import net.minecraft.world.World;
 
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.particles.ParticleConnection.AttachableParticle;
+import com.minelittlepony.unicopia.particles.ParticleHandle.Attachment;
+import com.minelittlepony.util.Color;
 
-public class SphereParticle extends Particle implements AttachableParticle {
+public class SphereParticle extends Particle implements Attachment {
 
     protected float red;
     protected float green;
@@ -57,7 +58,7 @@ public class SphereParticle extends Particle implements AttachableParticle {
     }
 
     @Override
-    public void attachTo(Caster<?> caster) {
+    public void attach(Caster<?> caster) {
         setMaxAge(50000);
         this.caster = caster;
     }
@@ -68,16 +69,11 @@ public class SphereParticle extends Particle implements AttachableParticle {
             radius = (float)value;
         }
         if (key == 1) {
-            red = (int)value/255F;
-        }
-        if (key == 2) {
-            green = (int)value/255F;
-        }
-        if (key == 3) {
-            blue = (int)value/255F;
-        }
-        if (key == 4) {
-            alpha = (float)value;
+            int tint = (int)value;
+            red = Color.r(tint);
+            green = Color.g(tint);
+            blue = Color.b(tint);
+            alpha = Color.a(tint);
         }
     }
 

@@ -9,7 +9,7 @@ import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
-import com.minelittlepony.unicopia.particles.ParticleConnection;
+import com.minelittlepony.unicopia.particles.ParticleHandle;
 import com.minelittlepony.unicopia.particles.UParticles;
 import com.minelittlepony.unicopia.util.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -22,7 +22,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements AttachedMagicEffect {
 
-    private final ParticleConnection particlEffect = new ParticleConnection();
+    private final ParticleHandle particlEffect = new ParticleHandle();
 
     @Override
     public String getName() {
@@ -52,10 +52,13 @@ public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements Attach
             source.addParticle(new MagicParticleEffect(getTint()), pos, Vec3d.ZERO);
         });
 
-        particlEffect.ifMissing(source, () -> {
-            source.addParticle(UParticles.SPHERE, source.getOriginVector(), Vec3d.ZERO);
-            return null; // XXX: Attachables
-        }).ifPresent(p -> p.setAttribute(0, radius));  // 1, getTint(), 10
+        particlEffect.ifAbsent(source, spawner -> {
+            spawner.addParticle(UParticles.SPHERE, source.getOriginVector(), Vec3d.ZERO);
+        }).ifPresent(p -> {
+            p.attach(source);
+            p.setAttribute(0, radius);
+            p.setAttribute(1, getTint());
+        });
     }
 
     @Override
