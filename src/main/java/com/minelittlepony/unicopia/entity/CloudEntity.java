@@ -408,7 +408,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
 
     public void spawnHurtParticles() {
         for (int i = 0; i < 50 * getCloudSize(); i++) {
-            ParticleEmitter.instance().emitDiggingParticles(this, UBlocks.normal_cloud);
+            ParticleEmitter.instance().emitDiggingParticles(this, UBlocks.CLOUD_BLOCK);
         }
         playHurtSound(DamageSource.GENERIC);
     }
@@ -487,10 +487,10 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
         if (hitByPlayer) {
             int amount = 13 + world.random.nextInt(3);
 
-            dropItem(UItems.cloud_matter, amount * (1 + looting));
+            dropItem(UItems.CLOUD_MATTER, amount * (1 + looting));
 
             if (world.random.nextBoolean()) {
-                dropItem(UItems.dew_drop, 3 + looting);
+                dropItem(UItems.DEW_DROP, 3 + looting);
             }
         }
     }

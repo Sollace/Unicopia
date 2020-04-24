@@ -1,7 +1,9 @@
 package com.minelittlepony.unicopia;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 
@@ -23,12 +25,7 @@ public enum Race {
     private final boolean flight;
     private final boolean earth;
 
-    private final static Map<Integer, Race> raceIdMap = new HashMap<>();
-    static {
-        for (Race race : values()) {
-            raceIdMap.put(race.ordinal(), race);
-        }
-    }
+    private final static Map<Integer, Race> REGISTRY = Arrays.stream(values()).collect(Collectors.toMap(Enum::ordinal, Function.identity()));
 
     Race(boolean magic, boolean flight, boolean earth) {
         this.magic = magic;
@@ -114,6 +111,6 @@ public enum Race {
     }
 
     public static Race fromId(int id) {
-        return raceIdMap.getOrDefault(id, EARTH);
+        return REGISTRY.getOrDefault(id, EARTH);
     }
 }

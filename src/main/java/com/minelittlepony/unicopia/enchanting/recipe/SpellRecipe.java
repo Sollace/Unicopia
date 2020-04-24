@@ -25,7 +25,7 @@ public class SpellRecipe extends AbstractSpecialRecipe {
 
     @Override
     public ItemStack getRecipeKindIcon() {
-       return new ItemStack(UItems.spellbook);
+       return new ItemStack(UItems.SPELLBOOK);
     }
 
 	@Override

@@ -12,10 +12,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class InteractionManager {
-    public static InteractionManager instance = new InteractionManager();
+    public static InteractionManager INSTANCE = new InteractionManager();
 
     public static InteractionManager instance() {
-        return instance;
+        return INSTANCE;
     }
 
     public boolean isClientPlayer(@Nullable PlayerEntity player) {

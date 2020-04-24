@@ -23,30 +23,30 @@ public final class TreeType {
 
     public static final TreeType NONE = new TreeType("none", new Weighted<Supplier<ItemStack>>());
     public static final TreeType OAK = new TreeType("oak", new Weighted<Supplier<ItemStack>>()
-            .put(1, () -> new ItemStack(UItems.rotten_apple))
-            .put(2, () -> new ItemStack(UItems.green_apple))
-            .put(3, () -> new ItemStack(UItems.VanillaOverrides.red_apple)), Blocks.OAK_LOG, Blocks.OAK_LEAVES);
+            .put(1, () -> new ItemStack(UItems.ROTTEN_APPLE))
+            .put(2, () -> new ItemStack(UItems.GREEN_APPLE))
+            .put(3, () -> new ItemStack(UItems.VanillaOverrides.APPLE)), Blocks.OAK_LOG, Blocks.OAK_LEAVES);
     public static final TreeType BIRCH = new TreeType("birch", new Weighted<Supplier<ItemStack>>()
-            .put(1, () -> new ItemStack(UItems.rotten_apple))
-            .put(2, () -> new ItemStack(UItems.sweet_apple))
-            .put(5, () -> new ItemStack(UItems.green_apple)), Blocks.BIRCH_LOG, Blocks.BIRCH_LEAVES);
+            .put(1, () -> new ItemStack(UItems.ROTTEN_APPLE))
+            .put(2, () -> new ItemStack(UItems.SWEET_APPLE))
+            .put(5, () -> new ItemStack(UItems.GREEN_APPLE)), Blocks.BIRCH_LOG, Blocks.BIRCH_LEAVES);
     public static final TreeType SPRUCE = new TreeType("spruce", new Weighted<Supplier<ItemStack>>()
-            .put(1, () -> new ItemStack(UItems.sour_apple))
-            .put(2, () -> new ItemStack(UItems.green_apple))
-            .put(3, () -> new ItemStack(UItems.sweet_apple))
-            .put(4, () -> new ItemStack(UItems.rotten_apple)), Blocks.SPRUCE_LOG, Blocks.SPRUCE_LEAVES);
+            .put(1, () -> new ItemStack(UItems.SOUR_APPLE))
+            .put(2, () -> new ItemStack(UItems.GREEN_APPLE))
+            .put(3, () -> new ItemStack(UItems.SWEET_APPLE))
+            .put(4, () -> new ItemStack(UItems.ROTTEN_APPLE)), Blocks.SPRUCE_LOG, Blocks.SPRUCE_LEAVES);
     public static final TreeType ACACIA = new TreeType("acacia", new Weighted<Supplier<ItemStack>>()
-            .put(1, () -> new ItemStack(UItems.rotten_apple))
-            .put(2, () -> new ItemStack(UItems.sweet_apple))
-            .put(5, () -> new ItemStack(UItems.green_apple)), Blocks.ACACIA_LOG, Blocks.ACACIA_LEAVES);
+            .put(1, () -> new ItemStack(UItems.ROTTEN_APPLE))
+            .put(2, () -> new ItemStack(UItems.SWEET_APPLE))
+            .put(5, () -> new ItemStack(UItems.GREEN_APPLE)), Blocks.ACACIA_LOG, Blocks.ACACIA_LEAVES);
     public static final TreeType JUNGLE = new TreeType("jungle", new Weighted<Supplier<ItemStack>>()
-            .put(5, () -> new ItemStack(UItems.green_apple))
-            .put(2, () -> new ItemStack(UItems.sweet_apple))
-            .put(1, () -> new ItemStack(UItems.sour_apple)), Blocks.JUNGLE_LOG, Blocks.JUNGLE_LEAVES);
+            .put(5, () -> new ItemStack(UItems.GREEN_APPLE))
+            .put(2, () -> new ItemStack(UItems.SWEET_APPLE))
+            .put(1, () -> new ItemStack(UItems.SOUR_APPLE)), Blocks.JUNGLE_LOG, Blocks.JUNGLE_LEAVES);
     public static final TreeType DARK_OAK = new TreeType("dark_oak", new Weighted<Supplier<ItemStack>>()
-            .put(1, () -> new ItemStack(UItems.rotten_apple))
-            .put(2, () -> new ItemStack(UItems.sweet_apple))
-            .put(5, () -> new ItemStack(UItems.zap_apple)), Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_LEAVES);
+            .put(1, () -> new ItemStack(UItems.ROTTEN_APPLE))
+            .put(2, () -> new ItemStack(UItems.SWEET_APPLE))
+            .put(5, () -> new ItemStack(UItems.ZAP_APPLE)), Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_LEAVES);
 
     private final String name;
     private final Set<Identifier> blocks;

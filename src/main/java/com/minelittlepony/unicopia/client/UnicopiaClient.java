@@ -55,7 +55,7 @@ public class UnicopiaClient extends InteractionManager implements ClientModIniti
     @Override
     public void onInitializeClient() {
         clientPlayerRace = getclientPlayerRace();
-        InteractionManager.instance = this;
+        InteractionManager.INSTANCE = this;
 
         ClientTickCallback.EVENT.register(this::tick);
         ClientReadyCallback.EVENT.register(client -> Abilities.getInstance().getValues().forEach(keyboard::addKeybind));
@@ -64,14 +64,14 @@ public class UnicopiaClient extends InteractionManager implements ClientModIniti
 
         ColorProviderRegistry.ITEM.register((stack, tint) -> {
             return getLeavesColor(((BlockItem)stack.getItem()).getBlock().getDefaultState(), null, null, tint);
-        }, UItems.apple_leaves);
-        ColorProviderRegistry.BLOCK.register(UnicopiaClient::getLeavesColor, UBlocks.apple_leaves);
+        }, UItems.APPLE_LEAVES);
+        ColorProviderRegistry.BLOCK.register(UnicopiaClient::getLeavesColor, UBlocks.APPLE_LEAVES);
         ColorProviderRegistry.ITEM.register((stack, tint) -> {
             if (MAGI.test(MinecraftClient.getInstance().player)) {
                 return SpellRegistry.instance().getSpellTintFromStack(stack);
             }
             return 0xFFFFFF;
-        }, UItems.spell, UItems.curse);
+        }, UItems.GEM, UItems.CORRUPTED_GEM);
     }
 
     private void tick(MinecraftClient client) {
@@ -126,7 +126,6 @@ public class UnicopiaClient extends InteractionManager implements ClientModIniti
                 return race;
             }
         }
-
 
         return Config.getInstance().getPrefferedRace();
     }

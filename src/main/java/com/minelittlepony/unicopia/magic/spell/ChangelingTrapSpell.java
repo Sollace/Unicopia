@@ -94,10 +94,10 @@ public class ChangelingTrapSpell extends AbstractSpell implements TossedMagicEff
             }
 
             BlockState state = caster.getWorld().getBlockState(origin);
-            BlockState slimeState = UBlocks.slime_layer.getDefaultState();
+            BlockState slimeState = UBlocks.SLIME_LAYER.getDefaultState();
 
             if (slimeState.canPlaceAt(caster.getWorld(), origin)) {
-                if (caster.getWorld().isAir(origin) || (state.getBlock() != UBlocks.slime_layer && state.canReplace(new AutomaticItemPlacementContext(caster.getWorld(), origin, Direction.DOWN, new ItemStack(UBlocks.slime_layer), Direction.UP)))) {
+                if (caster.getWorld().isAir(origin) || (state.getBlock() != UBlocks.SLIME_LAYER && state.canReplace(new AutomaticItemPlacementContext(caster.getWorld(), origin, Direction.DOWN, new ItemStack(UBlocks.SLIME_LAYER), Direction.UP)))) {
                     caster.getWorld().setBlockState(origin, slimeState);
                 }
             }

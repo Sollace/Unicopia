@@ -35,11 +35,11 @@ import net.minecraft.world.World;
 public class ZapAppleItem extends AppleItem {
 
     private static final List<Item> ALIASABLE_ITEMS = Lists.newArrayList(
-            UItems.VanillaOverrides.red_apple,
-            UItems.green_apple,
-            UItems.sweet_apple,
-            UItems.sour_apple,
-            UItems.rotten_apple,
+            UItems.VanillaOverrides.APPLE,
+            UItems.GREEN_APPLE,
+            UItems.SWEET_APPLE,
+            UItems.SOUR_APPLE,
+            UItems.ROTTEN_APPLE,
             UItems.cooked_zap_apple
     );
 

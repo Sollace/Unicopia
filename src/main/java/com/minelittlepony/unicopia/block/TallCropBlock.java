@@ -76,7 +76,7 @@ public class TallCropBlock extends CropBlock {
 
     @Override
     protected Item getSeedsItem() {
-        return UItems.alfalfa_seeds;
+        return UItems.ALFALFA_SEEDS;
     }
 
     @Override

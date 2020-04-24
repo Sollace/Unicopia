@@ -25,7 +25,7 @@ public class TomatoSeedsItem extends Item {
         Block block = state.getBlock();
 
         if (block instanceof StickBlock) {
-            if (UBlocks.tomato_plant.plant(context.getWorld(), context.getBlockPos(), state)) {
+            if (UBlocks.TOMATO_PLANT.plant(context.getWorld(), context.getBlockPos(), state)) {
                 PlayerEntity player = context.getPlayer();
 
                 if (player == null || !player.isCreative()) {

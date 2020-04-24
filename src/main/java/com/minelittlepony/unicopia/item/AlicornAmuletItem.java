@@ -278,7 +278,7 @@ public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem
 
         @Override
         public Ingredient getRepairIngredient() {
-            return Ingredient.ofItems(UItems.alicorn_amulet);
+            return Ingredient.ofItems(UItems.ALICORN_AMULET);
         }
 
         @Override

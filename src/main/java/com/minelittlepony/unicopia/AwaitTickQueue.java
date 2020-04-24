@@ -12,29 +12,29 @@ import net.minecraft.world.World;
 
 public class AwaitTickQueue {
 
-    private static final Queue<Consumer<World>> tickTasks = Queues.newArrayDeque();
-    private static List<DelayedTask> delayedTasks = Lists.newArrayList();
+    private static final Queue<Consumer<World>> SCHEDULED_TASKS = Queues.newArrayDeque();
+    private static List<DelayedTask> DELAYED_TASKS = Lists.newArrayList();
 
-    private static final Object locker = new Object();
+    private static final Object LOCKER = new Object();
 
     public static void enqueueTask(Consumer<World> task) {
-        synchronized (locker) {
-            tickTasks.add(task);
+        synchronized (LOCKER) {
+            SCHEDULED_TASKS.add(task);
         }
     }
 
     public static void scheduleTask(Consumer<World> task, int ticksLater) {
-        synchronized (locker) {
-            delayedTasks.add(new DelayedTask(task, ticksLater));
+        synchronized (LOCKER) {
+            DELAYED_TASKS.add(new DelayedTask(task, ticksLater));
         }
     }
 
     public void tick(World world) {
-        synchronized (locker) {
-            delayedTasks = delayedTasks.stream().filter(DelayedTask::tick).collect(Collectors.toList());
+        synchronized (LOCKER) {
+            DELAYED_TASKS = DELAYED_TASKS.stream().filter(DelayedTask::tick).collect(Collectors.toList());
 
             Consumer<World> task;
-            while ((task = tickTasks.poll()) != null) {
+            while ((task = SCHEDULED_TASKS.poll()) != null) {
                 try {
                     task.accept(world);
                 } catch (Exception e) {
@@ -56,7 +56,7 @@ public class AwaitTickQueue {
 
         boolean tick() {
             if (ticksDelay-- <= 0) {
-                tickTasks.add(task);
+                SCHEDULED_TASKS.add(task);
 
                 return false;
             }

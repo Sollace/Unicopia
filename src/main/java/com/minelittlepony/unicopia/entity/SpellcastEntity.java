@@ -139,7 +139,7 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
     }
 
     protected Item getItem() {
-        return getAffinity() == Affinity.BAD ? UItems.curse : UItems.spell;
+        return getAffinity() == Affinity.BAD ? UItems.CORRUPTED_GEM : UItems.GEM;
     }
 
     @Override

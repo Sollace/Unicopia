@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.magic;
 
+import java.util.Optional;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.Material;
@@ -37,15 +39,15 @@ public interface Dispensable {
      */
     TypedActionResult<ItemStack> dispenseStack(BlockPointer source, ItemStack stack);
 
-    static DispenserBehavior getBehaviorForItem(ItemStack stack) {
-        return DispenserAccess.INSTANCE.getBehaviorForItem(stack);
+    default Optional<DispenserBehavior> getBehavior(ItemStack stack) {
+        return Optional.ofNullable(DispenserAccess.INSTANCE.getBehaviorForItem(stack));
     }
 }
 
-class DispenserAccess extends DispenserBlock {
+final class DispenserAccess extends DispenserBlock {
     static final DispenserAccess INSTANCE = new DispenserAccess();
     private DispenserAccess() {
-        super(Block.Settings.of(Material.BUBBLE_COLUMN));
+        super(Block.Settings.of(Material.AIR));
     }
 
     @Override

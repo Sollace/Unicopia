@@ -206,7 +206,7 @@ public class BlockGrowingCuccoon extends Block implements Climbable {
 
         BlockState above = world.getBlockState(pos);
 
-        if (above.getBlock() == this || above.getBlock() == UBlocks.hive) {
+        if (above.getBlock() == this || above.getBlock() == UBlocks.HIVE_WALL_BLOCK) {
             return true;
         }
 

@@ -26,19 +26,19 @@ public class CustomDrops {
             if (world.random.nextInt(500 / fortuneFactor) == 0) {
                 for (int i = 0; i < 1 + fortune; i++) {
                     if (world.random.nextInt(10) > 3) {
-                        drops.add(new ItemStack(UItems.curse));
+                        drops.add(new ItemStack(UItems.CORRUPTED_GEM));
                     } else {
-                        drops.add(new ItemStack(UItems.spell));
+                        drops.add(new ItemStack(UItems.GEM));
                     }
                 }
             }
 
             if (world.random.nextInt(5000) == 0) {
-                drops.add(SpellRegistry.instance().enchantStack(new ItemStack(UItems.spell), "awkward"));
+                drops.add(SpellRegistry.instance().enchantStack(new ItemStack(UItems.GEM), "awkward"));
             }
-        } else if (block == Blocks.DIRT || block == Blocks.CLAY || block == Blocks.GRASS_PATH || block == Blocks.GRASS || block == UBlocks.hive) {
+        } else if (block == Blocks.DIRT || block == Blocks.CLAY || block == Blocks.GRASS_PATH || block == Blocks.GRASS || block == UBlocks.HIVE_WALL_BLOCK) {
             if (world.random.nextInt(25 / fortuneFactor) == 0) {
-                drops.add(new ItemStack(UItems.wheat_worms, 1 + fortune));
+                drops.add(new ItemStack(UItems.WHEAT_WORMS, 1 + fortune));
             }
         } else if (block instanceof GrassBlock) {
             if (world.random.nextInt(25 / fortuneFactor) == 0) {
@@ -46,11 +46,11 @@ public class CustomDrops {
                     int chance = world.random.nextInt(3);
 
                     if (chance == 0) {
-                        drops.add(new ItemStack(UItems.alfalfa_seeds));
+                        drops.add(new ItemStack(UItems.ALFALFA_SEEDS));
                     } else if (chance == 1) {
-                        drops.add(new ItemStack(UItems.apple_seeds));
+                        drops.add(new ItemStack(UItems.APPLE_SEEDS));
                     } else {
-                        drops.add(new ItemStack(UItems.tomato_seeds));
+                        drops.add(new ItemStack(UItems.TOMATO_SEEDS));
                     }
                 }
             }

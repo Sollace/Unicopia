@@ -51,7 +51,7 @@ public class SpellbookEntity extends MobEntity implements NameableContainerFacto
 
     @Override
     public ItemStack getPickedStack() {
-        return new ItemStack(UItems.spellbook);
+        return new ItemStack(UItems.SPELLBOOK);
     }
 
     @Override
@@ -146,7 +146,7 @@ public class SpellbookEntity extends MobEntity implements NameableContainerFacto
             world.playSound(getX(), getY(), getZ(), sound.getBreakSound(), SoundCategory.BLOCKS, sound.getVolume(), sound.getPitch(), true);
 
             if (world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
-                dropItem(UItems.spellbook, 1);
+                dropItem(UItems.SPELLBOOK, 1);
             }
         }
         return false;

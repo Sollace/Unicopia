@@ -63,7 +63,7 @@ public class TomatoPlantBlock extends CropBlock {
 
     @Override
     protected Item getSeedsItem() {
-        return UItems.tomato_seeds;
+        return UItems.TOMATO_SEEDS;
     }
 
     @Override
@@ -78,9 +78,9 @@ public class TomatoPlantBlock extends CropBlock {
     @Override
     protected boolean canPlantOnTop(BlockState state, BlockView view, BlockPos pos) {
         return super.canPlantOnTop(state, view, pos)
-                || state.getBlock() == UBlocks.cloud_farmland
-                || state.getBlock() == UBlocks.tomato_plant
-                || state.getBlock() == UBlocks.stick;
+                || state.getBlock() == UBlocks.CLOUD_FARMLAND
+                || state.getBlock() == UBlocks.TOMATO_PLANT
+                || state.getBlock() == UBlocks.STICK;
     }
 
     @Override
@@ -164,11 +164,11 @@ public class TomatoPlantBlock extends CropBlock {
         }
 
         public Item getCrop() {
-            return this == CLOUDSDALE ? UItems.cloudsdale_tomato : UItems.tomato;
+            return this == CLOUDSDALE ? UItems.CLOUDSDALE_TOMATO : UItems.TOMATO;
         }
 
         public Item getWaste() {
-            return this == CLOUDSDALE ? UItems.rotten_cloudsdale_tomato : UItems.rotten_tomato;
+            return this == CLOUDSDALE ? UItems.ROTTEN_CLOUDSDALE_TOMATO : UItems.ROTTEN_TOMATO;
         }
     }
 }

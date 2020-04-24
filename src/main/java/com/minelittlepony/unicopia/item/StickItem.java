@@ -35,7 +35,7 @@ public class StickItem extends Item {
 
         if (facing == Direction.UP && world.isAir(pos.up()) && (player == null || world.canPlayerModifyAt(player, pos.offset(facing)))) {
 
-            world.setBlockState(pos.up(), UBlocks.stick.getDefaultState());
+            world.setBlockState(pos.up(), UBlocks.STICK.getDefaultState());
 
             BlockSoundGroup sound = world.getBlockState(pos).getSoundGroup();
 

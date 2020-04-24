@@ -30,7 +30,7 @@ public interface TossedMagicEffect extends MagicEffect, Tossable<Caster<?>> {
      * Gets the appearance to be used when projecting this spell.
      */
     default ItemStack getCastAppearance(Caster<?> caster) {
-        Item item = getAffinity() == Affinity.BAD ? UItems.curse : UItems.spell;
+        Item item = getAffinity() == Affinity.BAD ? UItems.CORRUPTED_GEM : UItems.GEM;
 
         return SpellRegistry.instance().enchantStack(new ItemStack(item), getName());
     }

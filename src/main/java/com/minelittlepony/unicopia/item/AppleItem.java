@@ -39,7 +39,7 @@ public class AppleItem extends Item implements Toxic, ItemEntityCapabilities.Tic
 
                 ItemEntity neu = EntityType.ITEM.create(entity.world);
                 neu.copyPositionAndRotation(entity);
-                neu.setStack(new ItemStack(UItems.rotten_apple));
+                neu.setStack(new ItemStack(UItems.ROTTEN_APPLE));
 
                 entity.world.spawnEntity(neu);
 

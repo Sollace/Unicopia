@@ -14,15 +14,15 @@ import com.google.gson.stream.JsonWriter;
 
 public class Config {
 
-    private static Config instance = new Config();
+    private static Config INSTANCE = new Config();
 
-    private static final Gson gson = new GsonBuilder()
+    private static final Gson GSON = new GsonBuilder()
             .excludeFieldsWithoutExposeAnnotation()
             .setPrettyPrinting()
             .create();
 
     public static Config getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     static void init(Path directory) {
@@ -31,19 +31,19 @@ public class Config {
         try {
             if (Files.exists(file)) {
                 try(JsonReader reader = new JsonReader(Files.newBufferedReader(file))) {
-                    instance = gson.fromJson(reader, Config.class);
+                    INSTANCE = GSON.fromJson(reader, Config.class);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (instance == null) {
-                instance = new Config();
+            if (INSTANCE == null) {
+                INSTANCE = new Config();
             }
         }
 
-        instance.file = file;
-        instance.save();
+        INSTANCE.file = file;
+        INSTANCE.save();
     }
 
     private Path file;
@@ -111,7 +111,7 @@ public class Config {
         try (JsonWriter writer = new JsonWriter(Files.newBufferedWriter(file))) {
             writer.setIndent("    ");
 
-            gson.toJson(this, Config.class, writer);
+            GSON.toJson(this, Config.class, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }

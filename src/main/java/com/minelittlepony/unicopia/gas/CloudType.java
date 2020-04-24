@@ -12,7 +12,7 @@ import net.minecraft.sound.BlockSoundGroup;
 
 public enum CloudType {
     NORMAL,
-    PACKED,
+    DENSE,
     ENCHANTED;
 
     public FabricBlockSettings configure() {
@@ -36,7 +36,7 @@ public enum CloudType {
 
         if (e instanceof PlayerEntity) {
 
-            if (this == PACKED) {
+            if (this == DENSE) {
                 return true;
             }
 

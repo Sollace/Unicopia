@@ -28,7 +28,7 @@ public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
                 .build()
         );
         this.variant = variant;
-        HoeUtil.registerTillingAction(this, UBlocks.cloud_farmland.getDefaultState());
+        HoeUtil.registerTillingAction(this, UBlocks.CLOUD_FARMLAND.getDefaultState());
     }
 
     @Override

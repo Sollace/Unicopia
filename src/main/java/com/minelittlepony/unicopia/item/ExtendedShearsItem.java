@@ -1,13 +1,12 @@
 package com.minelittlepony.unicopia.item;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 import com.minelittlepony.unicopia.magic.Dispensable;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
-import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -16,43 +15,37 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShearsItem;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class ExtendedShearsItem extends ShearsItem {
+public class ExtendedShearsItem extends ShearsItem implements Dispensable {
 
-    @Nullable
-    private static DispenserBehavior vanillaDispenserBehaviour;
-    private static final DispenserBehavior dispenserBehavior = new ItemDispenserBehavior() {
-        @Override
-        protected ItemStack dispenseSilently(BlockPointer source, ItemStack stack) {
-
-            Direction facing = source.getBlockState().get(DispenserBlock.FACING);
-            BlockPos pos = source.getBlockPos().offset(facing);
-            World w = source.getWorld();
-
-            if (UItems.moss.tryConvert(w, w.getBlockState(pos), pos, null)) {
-                stack.damage(1, w.random, null);
-
-                return stack;
-            }
-
-            if (vanillaDispenserBehaviour != null) {
-                return vanillaDispenserBehaviour.dispense(source, stack);
-            }
-
-            return stack;
-        }
-    };
+    private final Optional<DispenserBehavior> vanillaDispenserBehaviour = getBehavior(new ItemStack(Items.SHEARS));
 
     public ExtendedShearsItem() {
         super(new Item.Settings().maxDamage(238).group(ItemGroup.TOOLS));
+        setDispenseable();
+        DispenserBlock.registerBehavior(Items.SHEARS, getBehavior(new ItemStack(this)).get());
+    }
 
-        vanillaDispenserBehaviour = Dispensable.getBehaviorForItem(new ItemStack(Items.SHEARS));
-        DispenserBlock.registerBehavior(Items.SHEARS, dispenserBehavior);
-        DispenserBlock.registerBehavior(this, dispenserBehavior);
+    @Override
+    public TypedActionResult<ItemStack> dispenseStack(BlockPointer source, ItemStack stack) {
+        Direction facing = source.getBlockState().get(DispenserBlock.FACING);
+        BlockPos pos = source.getBlockPos().offset(facing);
+        World w = source.getWorld();
+
+        if (UItems.MOSS.tryConvert(w, w.getBlockState(pos), pos, null)) {
+            stack.damage(1, w.random, null);
+
+            return TypedActionResult.success(stack);
+        }
+
+        return vanillaDispenserBehaviour
+                .map(action -> TypedActionResult.success(action.dispense(source, stack)))
+                .orElseGet(() -> TypedActionResult.fail(stack));
     }
 
     @Override
@@ -61,7 +54,7 @@ public class ExtendedShearsItem extends ShearsItem {
 
         PlayerEntity player = context.getPlayer();
 
-        if (UItems.moss.tryConvert(context.getWorld(), state, context.getBlockPos(), context.getPlayer())) {
+        if (UItems.MOSS.tryConvert(context.getWorld(), state, context.getBlockPos(), context.getPlayer())) {
             if (player != null) {
                 ItemStack stack = context.getStack();
 

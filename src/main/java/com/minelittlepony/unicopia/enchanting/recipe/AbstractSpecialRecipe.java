@@ -82,7 +82,7 @@ public abstract class AbstractSpecialRecipe implements Recipe<CraftingInventory>
 
     @Override
     public ItemStack getRecipeKindIcon() {
-       return new ItemStack(UItems.spell);
+       return new ItemStack(UItems.GEM);
     }
 
     public SpellIngredient getSpellItem() {

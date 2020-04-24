@@ -114,8 +114,8 @@ public class HiveWallBlock extends FallingBlock {
             }
         } else {
 
-            if (pos.getX() % 3 == 0 && pos.getZ() % 4 == 0 && isEmptySpace(world, pos.down()) && UBlocks.cuccoon.getDefaultState().canPlaceAt(world, pos.down())) {
-                world.setBlockState(pos.down(), UBlocks.cuccoon.getDefaultState());
+            if (pos.getX() % 3 == 0 && pos.getZ() % 4 == 0 && isEmptySpace(world, pos.down()) && UBlocks.SLIME_DROP.getDefaultState().canPlaceAt(world, pos.down())) {
+                world.setBlockState(pos.down(), UBlocks.SLIME_DROP.getDefaultState());
             } else if (!testForAxis(world, pos, axis)) {
                 world.setBlockState(pos, state.with(STATE, State.GROWING));
             } else if (matchedNeighbours >= 27) {

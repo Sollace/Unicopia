@@ -72,6 +72,6 @@ public class CloudFarmlandBlock extends FarmlandBlock implements Farmland, Gas {
 
     @Override
     public BlockState getDirtState(BlockState state, World world, BlockPos pos) {
-        return UBlocks.normal_cloud.getDefaultState();
+        return UBlocks.CLOUD_BLOCK.getDefaultState();
     }
 }
