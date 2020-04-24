@@ -14,7 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
 @Mixin(LivingEntity.class)
-public abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylike> {
+abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylike> {
 
     private final Ponylike caster = create();
 
@@ -30,15 +30,15 @@ public abstract class MixinLivingEntity extends Entity implements PonyContainer<
         return caster;
     }
 
-    @Inject(method = "canSee(Lnet/minecraft/entity/Entity)Z", at = @At("HEAD"))
+    @Inject(method = "canSee(Lnet/minecraft/entity/Entity;)Z", at = @At("HEAD"))
     private void onCanSee(Entity other, CallbackInfoReturnable<Boolean> info) {
         if (caster.isInvisible()) {
             info.setReturnValue(false);
         }
     }
 
-    @Inject(method = "method_6040()V", at = @At("HEAD"))
-    protected void onFinishUsing(CallbackInfo info) {
+    @Inject(method = "tickActiveItemStack()V", at = @At("HEAD"))
+    private void onFinishUsing(CallbackInfo info) {
         LivingEntity self = (LivingEntity)(Object)this;
 
         if (!self.getActiveItem().isEmpty() && self.isUsingItem()) {
@@ -63,7 +63,7 @@ public abstract class MixinLivingEntity extends Entity implements PonyContainer<
         caster.onUpdate();
     }
 
-    @Inject(method = "<clinit>()V", at = @At("RETURN"))
+    @Inject(method = "<clinit>()V", at = @At("RETURN"), remap = false)
     private static void clinit(CallbackInfo info) {
         LivingEntityCapabilities.boostrap();
     }

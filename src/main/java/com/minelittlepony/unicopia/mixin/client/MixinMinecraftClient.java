@@ -16,10 +16,11 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 
 @Mixin(MinecraftClient.class)
-public class MixinMinecraftClient {
-    @Redirect(method = "doItemPick()V", at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/item/SpawnEggItem;forEntity(Lnet/minecraft/entity/EntityType;)Lnet/minecraft/item/SpawnEggItem;"))
+abstract class MixinMinecraftClient {
+    @Redirect(method = "doItemPick()V",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/item/SpawnEggItem;forEntity(Lnet/minecraft/entity/EntityType;)Lnet/minecraft/item/SpawnEggItem;")
+    )
     private SpawnEggItem redirectSpawnEggForEntity(EntityType<?> type) {
 
         MinecraftClient self = MinecraftClient.getInstance();

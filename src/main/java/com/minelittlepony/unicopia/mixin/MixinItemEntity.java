@@ -13,7 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 
 @Mixin(ItemEntity.class)
-public abstract class MixinItemEntity extends Entity implements IItemEntity {
+abstract class MixinItemEntity extends Entity implements IItemEntity {
 
     private final ItemEntityCapabilities caster = create();
 

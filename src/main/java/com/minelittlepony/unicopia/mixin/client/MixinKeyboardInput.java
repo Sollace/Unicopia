@@ -13,8 +13,8 @@ import net.minecraft.client.input.KeyboardInput;
 
 @Mixin(KeyboardInput.class)
 abstract class MixinKeyboardInput extends Input {
-    @Inject(method = "tick(ZZ)V", at = @At("RETURN"))
-    private void onTick(boolean one, boolean two, CallbackInfo info) {
+    @Inject(method = "tick(Z)V", at = @At("RETURN"))
+    private void onTick(boolean strafe, CallbackInfo info) {
         Pony player = Pony.of(MinecraftClient.getInstance().player);
 
         if (player.getGravity().getGravitationConstant() < 0) {

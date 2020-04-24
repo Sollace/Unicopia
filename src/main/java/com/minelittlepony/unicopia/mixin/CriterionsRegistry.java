@@ -8,7 +8,7 @@ import net.minecraft.advancement.criterion.Criterions;
 
 @Mixin(Criterions.class)
 public interface CriterionsRegistry {
-    @Invoker
+    @Invoker("register")
     static <T extends Criterion<?>> T register(T object) {
         throw new NullPointerException("mixin y u fail");
     }

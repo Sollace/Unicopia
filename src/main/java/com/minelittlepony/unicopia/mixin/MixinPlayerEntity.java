@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.mixin;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -24,7 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
 
 @Mixin(PlayerEntity.class)
-public abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<Pony> {
+abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<Pony> {
     private MixinPlayerEntity() { super(null, null); }
 
     @Override
@@ -32,9 +32,10 @@ public abstract class MixinPlayerEntity extends LivingEntity implements PonyCont
         return new PlayerImpl((PlayerEntity)(Object)this);
     }
 
-    @ModifyArg(method = "Lnet/minecraft/entity/LivingEntity;handleFallDamage(FF)V",
+    @ModifyVariable(method = "handleFallDamage(FF)Z",
             at = @At("HEAD"),
-            index = 0)
+            ordinal = 0,
+            argsOnly = true)
     private float onHandleFallDamage(float distance) {
         return get().onImpact(distance);
     }
@@ -68,9 +69,13 @@ public abstract class MixinPlayerEntity extends LivingEntity implements PonyCont
             at = @At("RETURN"),
             cancellable = true)
     private void onGetActiveEyeHeight(EntityPose pose, EntityDimensions dimensions, CallbackInfoReturnable<Float> info) {
-        float h = get().getGravity().getEyeHeight();
-        if (h != 0) {
-            info.setReturnValue(h);
-        }
+        info.setReturnValue(get().getGravity().getDimensions().getActiveEyeHeight(info.getReturnValue()));
+    }
+
+    @Inject(method = "getDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;",
+            at = @At("RETURN"),
+            cancellable = true)
+    public void onGetDimensions(EntityPose pose, CallbackInfoReturnable<EntityDimensions> info) {
+        info.setReturnValue(get().getGravity().getDimensions().getDimensions(pose, info.getReturnValue()));
     }
 }

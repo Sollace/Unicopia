@@ -5,17 +5,14 @@ import java.util.Random;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.FlightPredicate;
-import com.minelittlepony.unicopia.ability.HeightPredicate;
 import com.minelittlepony.unicopia.entity.FlightControl;
 import com.minelittlepony.unicopia.entity.Updatable;
 import com.minelittlepony.unicopia.magic.MagicEffect;
-import com.minelittlepony.unicopia.mixin.MixinEntity;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.MutableVector;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
@@ -25,9 +22,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class GravityDelegate implements Updatable, FlightControl, NbtSerialisable, FlightPredicate, HeightPredicate {
+public class GravityDelegate implements Updatable, FlightControl, NbtSerialisable, FlightPredicate {
 
-    private final Pony player;
+    final Pony player;
 
     private static final float MAXIMUM_FLIGHT_EXPERIENCE = 1500;
 
@@ -42,10 +39,11 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
 
     private float gravity = 0;
 
-    private float eyeHeight;
+    private final PlayerDimensionsDelegate dimensions;
 
     public GravityDelegate(Pony player) {
         this.player = player;
+        this.dimensions = new PlayerDimensionsDelegate(this);
     }
 
     @Override
@@ -64,53 +62,12 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
         return player.getSpecies().canFly();
     }
 
-    protected boolean isRainboom(Pony player) {
+    protected boolean isRainboom() {
         return Math.sqrt(getHorizontalMotion(player.getOwner())) > 0.4F;
     }
 
-    public float getEyeHeight() {
-        return eyeHeight;
-    }
-
-    @Override
-    public float getTargetEyeHeight(Pony player) {
-        if (player.hasEffect()) {
-            MagicEffect effect = player.getEffect();
-            if (!effect.isDead() && effect instanceof HeightPredicate) {
-                float val = ((HeightPredicate)effect).getTargetEyeHeight(player);
-                if (val > 0) {
-                    return val;
-                }
-            }
-        }
-
-        if (isFlying && isRainboom(player)) {
-            return 0.5F;
-        }
-
-        EntityPose pose = player.getOwner().getPose();
-        return player.getOwner().getActiveEyeHeight(pose, player.getOwner().getDimensions(pose));
-    }
-
-    @Override
-    public float getTargetBodyHeight(Pony player) {
-        if (player.hasEffect()) {
-            MagicEffect effect = player.getEffect();
-            if (!effect.isDead() && effect instanceof HeightPredicate) {
-                float val = ((HeightPredicate)effect).getTargetBodyHeight(player);
-                if (val > 0) {
-                    return val;
-                }
-            }
-        }
-
-        // Player height is reset at this point, so we can use it as our baseline.
-
-        if (isFlying && isRainboom(player)) {
-            return player.getOwner().getHeight() / 2;
-        }
-
-        return player.getOwner().getHeight();
+    public PlayerDimensionsDelegate getDimensions() {
+        return dimensions;
     }
 
     public void setGraviationConstant(float constant) {
@@ -170,26 +127,8 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
             }
         }
 
-        float bodyHeight = getTargetBodyHeight(player);
-        eyeHeight = 0;
-        eyeHeight = getTargetEyeHeight(player);
-
-        if (gravity < 0) {
-            eyeHeight = bodyHeight - eyeHeight;
-        }
-
-        if (entity.age > 10) {
-            bodyHeight = player.getInterpolator().interpolate("standingHeight", bodyHeight, 10);
-            eyeHeight = player.getInterpolator().interpolate("eyeHeight", eyeHeight, 10);
-        }
-
-
-        ((MixinEntity)entity).setSize(entity.getWidth(), bodyHeight);
-
-        if (gravity < 0) {
-            if (entity.isSneaking()) {
-                //entity.eyeHeight += 0.2F;
-            }
+        if (dimensions.update()) {
+            player.getOwner().calculateDimensions();
         }
 
         if (!entity.abilities.creativeMode && !entity.isFallFlying()) {
@@ -228,7 +167,7 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
                         player.addEnergy(2);
                     }
 
-                    if (isRainbooming || (entity.isSneaking() && isRainboom(player))) {
+                    if (isRainbooming || (entity.isSneaking() && isRainboom())) {
                         float forward = 0.5F * flightExperience / MAXIMUM_FLIGHT_EXPERIENCE;
 
                         velocity.x += - forward * MathHelper.sin(entity.yaw * 0.017453292F);

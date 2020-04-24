@@ -4,20 +4,23 @@
   "package": "com.minelittlepony.unicopia.mixin",
   "refmap": "unicopia.client.mixin.refmap.json",
   "compatibilityLevel": "JAVA_8",
-  "main": [
-  	"MixinEntity",
-  	"MixinFarmlandBlock",
-  	"MixinHoeItem",
-  	"MixinItemEntity",
-  	"MixinPlayerEntity",
-  	"MixinProjectileEntity",
-  	"Walker"
+  "mixins": [
+    "CriterionsRegistry",
+    "MixinFarmlandBlock",
+    "MixinHoeItem",
+    "MixinItemEntity",
+    "MixinLivingEntity",
+    "MixinPlayerEntity",
+    "MixinProjectileEntity",
+    "Walker"
   ],
   "client": [
+    "client.DefaultTexturesRegistry",
     "client.MixinCamera",
     "client.MixinEntityRenderDispatcher",
     "client.MixinGameRenderer",
     "client.MixinKeyboardInput",
+    "client.MixinMinecraftClient",
     "client.MixinMouse"
   ],
   "injectors": {

@@ -13,9 +13,8 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.hit.EntityHitResult;
 
 @Mixin(ProjectileEntity.class)
-public abstract class MixinProjectileEntity extends Entity implements Projectile {
-
-    public MixinProjectileEntity() { super(null, null); }
+abstract class MixinProjectileEntity extends Entity implements Projectile {
+    private MixinProjectileEntity() { super(null, null); }
 
     @Inject(method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",
             at = @At("HEAD"),
