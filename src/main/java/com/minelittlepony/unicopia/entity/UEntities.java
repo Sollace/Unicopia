@@ -37,9 +37,6 @@ public interface UEntities {
     EntityType<ProjectileEntity> THROWN_ITEM = register("thrown_item", FabricEntityTypeBuilder.<ProjectileEntity>create(EntityCategory.MISC, ProjectileEntity::new).trackable(100, 10));
     EntityType<SpearEntity> THROWN_SPEAR = register("thrown_spear", FabricEntityTypeBuilder.<SpearEntity>create(EntityCategory.MISC, SpearEntity::new).trackable(100, 10));
 
-    //builder.creature(CloudEntity.class, "cloud").withEgg(0x4169e1, 0x7fff00),
-    //builder.creature(ButterflyEntity.class, "butterfly").withEgg(0x222200, 0xaaeeff),
-
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         return Registry.register(Registry.ENTITY_TYPE, new Identifier(Unicopia.MODID, name), builder.build());
     }

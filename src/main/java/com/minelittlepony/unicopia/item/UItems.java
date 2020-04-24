@@ -23,6 +23,7 @@ import net.minecraft.item.FoodComponent;
 import net.minecraft.item.FoodComponents;
 import net.minecraft.item.Items;
 import net.minecraft.item.MusicDiscItem;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.TallBlockItem;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
@@ -149,6 +150,9 @@ public interface UItems {
     Item apple_cider = register(new ToxicItem(new Item.Settings().recipeRemainder(mug), 4, 2, UseAction.DRINK, Toxicity.MILD), "apple_cider");
     Item juice = register(new ToxicItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE), 2, 2, UseAction.DRINK, Toxicity.SAFE), "juice");
     Item burned_juice = register(new ToxicItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE), 3, 1, UseAction.DRINK, Toxicity.FAIR), "burned_juice");
+
+    Item cloud_spawn_egg = register(new SpawnEggItem(UEntities.CLOUD, 0x4169e1, 0x7fff00, new Item.Settings().group(ItemGroup.MISC)), "cloud_spawn_egg");
+    Item butterfly_spawn_egg = register(new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xaaeeff, new Item.Settings().group(ItemGroup.MISC)), "cloud_spawn_egg");
 
     static <T extends Item> T register(T item, String name) {
         return Registry.ITEM.add(new Identifier(Unicopia.MODID, name), item);
