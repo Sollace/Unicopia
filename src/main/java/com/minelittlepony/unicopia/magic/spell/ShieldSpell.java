@@ -52,12 +52,10 @@ public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements Attach
             source.addParticle(new MagicParticleEffect(getTint()), pos, Vec3d.ZERO);
         });
 
-        particlEffect
-            .ifMissing(source, () -> {
-                source.addParticle(UParticles.SPHERE, source.getOriginVector(), Vec3d.ZERO);
-                return null; // XXX: Attachables
-            }) // 1, getTint(), 10
-            .ifPresent(p -> p.setAttribute(0, radius));
+        particlEffect.ifMissing(source, () -> {
+            source.addParticle(UParticles.SPHERE, source.getOriginVector(), Vec3d.ZERO);
+            return null; // XXX: Attachables
+        }).ifPresent(p -> p.setAttribute(0, radius));  // 1, getTint(), 10
     }
 
     @Override

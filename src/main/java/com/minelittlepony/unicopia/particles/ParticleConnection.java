@@ -12,9 +12,9 @@ public class ParticleConnection {
 
     private Optional<AttachableParticle> particleEffect = Optional.empty();
 
-    public Optional<AttachableParticle> ifMissing(Caster<?> source, Supplier<Optional<AttachableParticle>> constructor) {
+    public Optional<AttachableParticle> ifMissing(Caster<?> source, Supplier<AttachableParticle> constructor) {
         particleEffect.filter(AttachableParticle::isStillAlive).orElseGet(() -> {
-            particleEffect = constructor.get();
+            particleEffect = Optional.ofNullable(constructor.get());
             particleEffect.ifPresent(p -> p.attachTo(source));
             return null;
         });

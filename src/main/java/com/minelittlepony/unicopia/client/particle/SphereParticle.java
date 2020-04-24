@@ -121,17 +121,12 @@ public class SphereParticle extends Particle implements AttachableParticle {
     }
 
     public static class Factory implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider provider;
-
         public Factory(SpriteProvider provider) {
-            this.provider = provider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType type, World world, double x, double y, double z, double dx, double dy, double dz) {
-            RaindropsParticle particle = new RaindropsParticle(world, x, y, z, dx, dy, dz);
-            particle.setSprite(provider);
-            return particle;
+            return new RaindropsParticle(world, x, y, z, dx, dy, dz);
         }
     }
 }
