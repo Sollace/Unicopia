@@ -2,9 +2,11 @@ package com.minelittlepony.unicopia.entity;
 
 import java.util.List;
 
+import com.minelittlepony.unicopia.Unicopia;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.EndBiome;
 import net.minecraft.world.biome.ForestBiome;
@@ -38,7 +40,8 @@ public interface UEntities {
     // builder.projectile(SpearEntity.class, "spear", 100, 10)
 
     static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder) {
-        return Registry.register(Registry.ENTITY_TYPE, name, builder.build(name));
+        name = Unicopia.MODID + ":" + name;
+        return Registry.register(Registry.ENTITY_TYPE, new Identifier(name), builder.build(name));
     }
 
     static void bootstrap() {

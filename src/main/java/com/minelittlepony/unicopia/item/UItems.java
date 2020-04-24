@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.item;
 import static com.minelittlepony.unicopia.EquinePredicates.*;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.magic.spell.ScorchSpell;
@@ -24,6 +25,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.MusicDiscItem;
 import net.minecraft.item.TallBlockItem;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.registry.Registry;
@@ -148,12 +150,8 @@ public interface UItems {
     Item juice = register(new ToxicItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE), 2, 2, UseAction.DRINK, Toxicity.SAFE), "juice");
     Item burned_juice = register(new ToxicItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE), 3, 1, UseAction.DRINK, Toxicity.FAIR), "burned_juice");
 
-    static <T extends Item> T register(T newItem, Item oldItem) {
-        return Registry.ITEM.add(Registry.ITEM.getId(oldItem), newItem);
-    }
-
     static <T extends Item> T register(T item, String name) {
-        return register(item, name);
+        return Registry.ITEM.add(new Identifier(Unicopia.MODID, name), item);
     }
 
     static MusicDiscItem createRecord(SoundEvent sound) {
@@ -196,5 +194,9 @@ public interface UItems {
         Item peony = register(new ToxicBlockItem(Blocks.PEONY, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.PEONY);
         Item tall_grass = register(new ToxicBlockItem(Blocks.TALL_GRASS, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.TALL_GRASS);
         Item large_fern = register(new DynamicToxicBlockItem(Blocks.LARGE_FERN, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE, Toxin.DAMAGE), Items.LARGE_FERN);
+
+        static <T extends Item> T register(T newItem, Item oldItem) {
+            return Registry.ITEM.set(Registry.ITEM.getRawId(oldItem), Registry.ITEM.getId(oldItem), newItem);
+        }
     }
 }

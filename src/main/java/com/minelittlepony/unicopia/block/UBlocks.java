@@ -24,6 +24,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public interface UBlocks {
+    CloudFarmlandBlock cloud_farmland = register(new CloudFarmlandBlock(FabricBlockSettings.of(UMaterials.CLOUD).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.WOOL).build()), "cloud_farmland");
     CloudBlock normal_cloud = register(new CloudBlock(CloudType.NORMAL), "cloud_block");
     CloudBlock enchanted_cloud = register(new CloudBlock(CloudType.ENCHANTED), "enchanted_cloud_block");
     CloudBlock packed_cloud = register(new CloudBlock(CloudType.PACKED), "packed_cloud_block");
@@ -50,8 +51,6 @@ public interface UBlocks {
     StickBlock stick = register(new StickBlock(), "stick");
     TomatoPlantBlock tomato_plant = register(new TomatoPlantBlock(), "tomato_plant");
 
-    CloudFarmlandBlock cloud_farmland = register(new CloudFarmlandBlock(FabricBlockSettings.of(UMaterials.CLOUD).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.WOOL).build()), "cloud_farmland");
-
     HiveWallBlock hive = register(new HiveWallBlock(), "hive");
     ChitinBlock chitin_block = register(new ChitinBlock(), "chitin_block");
     Block chissled_chitin = register(new ChiselledChitinBlock(), "chissled_chitin");
@@ -60,16 +59,16 @@ public interface UBlocks {
     SlimeLayerBlock slime_layer = register(new SlimeLayerBlock(), "slime_layer");
 
     Block sugar_block = register(new SugarBlock(), "sugar_block");
-
-    SaplingBlock apple_tree = register(new SaplingBlock(
-            new CustomSaplingGenerator(5, Blocks.OAK_LOG.getDefaultState(), UBlocks.apple_leaves.getDefaultState()),
-            FabricBlockSettings.of(Material.WOOD).build()
-        ) {}, "apple_sapling");
     Block apple_leaves = register(new FruitLeavesBlock()
             .growthChance(1200)
             .tint(0xFFEE81)
             .fruit(W -> TreeType.OAK.pickRandomStack())
             .compost(w -> new ItemStack(UItems.rotten_apple)), "apple_leaves");
+
+    SaplingBlock apple_tree = register(new SaplingBlock(
+            new CustomSaplingGenerator(5, Blocks.OAK_LOG.getDefaultState(), apple_leaves.getDefaultState()),
+            FabricBlockSettings.of(Material.WOOD).build()
+        ) {}, "apple_sapling");
 
 
     static <T extends Block> T register(T block, String name) {
