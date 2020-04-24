@@ -151,7 +151,7 @@ public interface UItems {
     Item BURNED_JUICE = register(new ToxicItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE), 3, 1, UseAction.DRINK, Toxicity.FAIR), "burned_juice");
 
     Item CLOUD_SPAWN_EGG = register(new SpawnEggItem(UEntities.CLOUD, 0x4169e1, 0x7fff00, new Item.Settings().group(ItemGroup.MISC)), "cloud_spawn_egg");
-    Item BUTTERFLY_SPAWN_EGG = register(new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xaaeeff, new Item.Settings().group(ItemGroup.MISC)), "cloud_spawn_egg");
+    Item BUTTERFLY_SPAWN_EGG = register(new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xaaeeff, new Item.Settings().group(ItemGroup.MISC)), "butterfly_spawn_egg");
 
     static <T extends Item> T register(T item, String name) {
         return Registry.ITEM.add(new Identifier(Unicopia.MODID, name), item);
