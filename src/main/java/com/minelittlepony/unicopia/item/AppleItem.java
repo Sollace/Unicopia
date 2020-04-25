@@ -9,9 +9,7 @@ import com.minelittlepony.unicopia.toxin.Toxicity;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.text.Text;
@@ -21,10 +19,8 @@ import net.minecraft.world.World;
 
 public class AppleItem extends Item implements ItemEntityCapabilities.TickableItem {
 
-    public AppleItem(FoodComponent components) {
-        super(new Item.Settings()
-                .group(ItemGroup.FOOD)
-                .food(components));
+    public AppleItem(Settings settings) {
+        super(settings);
     }
 
     @Override

@@ -16,7 +16,6 @@ import net.minecraft.item.Item.Settings;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.AliasedBlockItem;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.FoodComponent;
 import net.minecraft.item.FoodComponents;
 import net.minecraft.item.Items;
 import net.minecraft.item.MusicDiscItem;
@@ -30,14 +29,14 @@ import net.minecraft.util.registry.Registry;
 
 public interface UItems {
 
-    AppleItem GREEN_APPLE = register(new AppleItem(FoodComponents.APPLE), "apple_green");
-    AppleItem SWEET_APPLE = register(new AppleItem(FoodComponents.APPLE), "apple_sweet");
-    AppleItem SOUR_APPLE = register(new AppleItem(FoodComponents.APPLE), "apple_sour");
+    AppleItem GREEN_APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "apple_green");
+    AppleItem SWEET_APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "apple_sweet");
+    AppleItem SOUR_APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "apple_sour");
 
-    ZapAppleItem ZAP_APPLE = register(new ZapAppleItem(), "zap_apple");
+    ZapAppleItem ZAP_APPLE = register(new ZapAppleItem(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.ZAP_APPLE)), "zap_apple");
 
-    AppleItem ROTTEN_APPLE = register(new RottenAppleItem(FoodComponents.APPLE), "rotten_apple");
-    AppleItem COOKED_ZAP_APPLE = register(new AppleItem(FoodComponents.APPLE), "cooked_zap_apple");
+    AppleItem ROTTEN_APPLE = register(new RottenAppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "rotten_apple");
+    AppleItem COOKED_ZAP_APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "cooked_zap_apple");
 
     Item CLOUD_MATTER = register(new Item(new Settings().group(ItemGroup.MATERIALS)), "cloud_matter");
     Item DEW_DROP = register(new Item(new Settings().group(ItemGroup.MATERIALS)), "dew_drop");
@@ -79,45 +78,33 @@ public interface UItems {
     Item ENCHANTED_CLOUD_SLAB = register(new PredicatedBlockItem(UBlocks.ENCHANTED_CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), INTERACT_WITH_CLOUDS), "enchanted_cloud_slab");
     Item DENSE_CLOUD_SLAB = register(new PredicatedBlockItem(UBlocks.DENSE_CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), INTERACT_WITH_CLOUDS), "dense_cloud_slab");
 
-    MagicGemItem GEM = register(new MagicGemItem(), "gem");
-    MagicGemItem CORRUPTED_GEM = register(new CursedMagicGemItem(), "corrupted_gem");
+    MagicGemItem GEM = register(new MagicGemItem(new Settings().maxCount(16).group(ItemGroup.BREWING)), "gem");
+    MagicGemItem CORRUPTED_GEM = register(new CursedMagicGemItem(new Settings().maxCount(16).group(ItemGroup.BREWING)), "corrupted_gem");
 
-    BagOfHoldingItem BAG_OF_HOLDING = register(new BagOfHoldingItem(), "bag_of_holding");
-    AlicornAmuletItem ALICORN_AMULET = register(new AlicornAmuletItem(), "alicorn_amulet");
+    BagOfHoldingItem BAG_OF_HOLDING = register(new BagOfHoldingItem(new Settings().group(ItemGroup.TRANSPORTATION).rarity(Rarity.UNCOMMON).maxCount(1)), "bag_of_holding");
+    AlicornAmuletItem ALICORN_AMULET = register(new AlicornAmuletItem(new Settings().group(ItemGroup.COMBAT).rarity(Rarity.RARE).maxCount(1)), "alicorn_amulet");
 
-    SpellbookItem SPELLBOOK = register(new SpellbookItem(), "spellbook");
-    Item STAFF_MEADOW_BROOK = register(new StaffItem(new Settings().maxCount(1).maxDamage(2)), "staff_meadow_brook");
-    Item STAFF_REMEMBERANCE = register(new EnchantedStaffItem(new Settings(), new ScorchSpell()), "staff_remembrance");
+    SpellbookItem SPELLBOOK = register(new SpellbookItem(new Item.Settings().maxCount(1).group(ItemGroup.BREWING)), "spellbook");
+    Item STAFF_MEADOW_BROOK = register(new StaffItem(new Settings().group(ItemGroup.TOOLS).rarity(Rarity.UNCOMMON).maxCount(1).maxDamage(2)), "staff_meadow_brook");
+    Item STAFF_REMEMBERANCE = register(new EnchantedStaffItem(new Settings().group(ItemGroup.TOOLS).rarity(Rarity.UNCOMMON).maxCount(1), new ScorchSpell()), "staff_remembrance");
 
-    Item SPEAR = register(new SpearItem(new Settings().maxCount(1).maxDamage(500)), "spear");
+    Item SPEAR = register(new SpearItem(new Settings().group(ItemGroup.TOOLS).maxCount(1).maxDamage(500)), "spear");
 
-    MossItem MOSS = register(new MossItem(new Settings()
-            .food(UFoodComponents.RANDOM_FOLIAGE)), "moss");
+    MossItem MOSS = register(new MossItem(new Settings().group(ItemGroup.FOOD).food(UFoodComponents.RANDOM_FOLIAGE)), "moss");
 
-    Item ALFALFA_SEEDS = register(new AliasedBlockItem(UBlocks.ALFALFA_CROPS, new Settings()
-            .group(ItemGroup.MATERIALS)
-            .food(UFoodComponents.ALFALFA_SEEDS)), "alfalfa_seeds");
-    Item ALFALFA_LEAVES = register(new Item(new Settings()
-            .group(ItemGroup.FOOD)
-            .food(UFoodComponents.ALFALFA_LEAVES)), "alfalfa_leaves");
+    Item ALFALFA_SEEDS = register(new AliasedBlockItem(UBlocks.ALFALFA_CROPS, new Settings().group(ItemGroup.MATERIALS).food(UFoodComponents.ALFALFA_SEEDS)), "alfalfa_seeds");
+    Item ALFALFA_LEAVES = register(new Item(new Settings().group(ItemGroup.FOOD).food(UFoodComponents.ALFALFA_LEAVES)), "alfalfa_leaves");
 
     Item ENCHANTED_TORCH = register(new BlockItem(UBlocks.ENCHANTED_TORCH, new Settings().group(ItemGroup.DECORATIONS)), "enchanted_torch");
 
-
     Item CEREAL = register(new SugaryItem(new Settings()
             .group(ItemGroup.FOOD)
-            .food(new FoodComponent.Builder()
-                    .hunger(9)
-                    .saturationModifier(0.8F)
-                    .build())
+            .food(UFoodComponents.CEREAL)
             .maxCount(1)
             .recipeRemainder(Items.BOWL), 1), "cereal");
     Item SUGAR_CEREAL = register(new SugaryItem(new Settings()
             .group(ItemGroup.FOOD)
-            .food(new FoodComponent.Builder()
-                    .hunger(20)
-                    .saturationModifier(-2)
-                    .build())
+            .food(UFoodComponents.SUGAR)
             .maxCount(1)
             .recipeRemainder(Items.BOWL), 110), "sugar_cereal");
 
@@ -130,35 +117,45 @@ public interface UItems {
             .food(UFoodComponents.BAD_TOMATO)), "rotten_tomato");
 
     TomatoItem CLOUDSDALE_TOMATO = register(new TomatoItem(new Settings()
+            .rarity(Rarity.UNCOMMON)
             .group(ItemGroup.FOOD)
             .food(UFoodComponents.GOOD_TOMATO)), "cloudsdale_tomato");
     RottenTomatoItem ROTTEN_CLOUDSDALE_TOMATO = register(new RottenTomatoItem(new Settings()
             .group(ItemGroup.FOOD)
+            .rarity(Rarity.UNCOMMON)
             .food(UFoodComponents.BAD_TOMATO)), "rotten_cloudsdale_tomato");
 
     Item APPLE_SEEDS = register(new BlockItem(UBlocks.APPLE_SAPLING, new Settings().group(ItemGroup.DECORATIONS)), "apple_seeds");
     Item APPLE_LEAVES = register(new BlockItem(UBlocks.APPLE_LEAVES, new Settings().group(ItemGroup.DECORATIONS)), "apple_leaves");
 
     Item DAFFODIL_DAISY_SANDWICH = register(new ToxicItem(new Settings()
+            .group(ItemGroup.FOOD)
             .food(UFoodComponents.DAFODIL_DAISY_SANDWICH), UseAction.EAT, Toxicity::fromStack, Toxin.FOOD), "daffodil_daisy_sandwich");
     Item HAY_BURGER = register(new ToxicItem(new Settings()
+            .group(ItemGroup.FOOD)
             .food(UFoodComponents.HAY_BURGER), UseAction.EAT, Toxicity::fromStack, Toxin.FOOD), "hay_burger");
     Item HAY_FRIES = register(new ToxicItem(new Settings()
+            .group(ItemGroup.FOOD)
             .food(UFoodComponents.HAY_FRIES), UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), "hay_fries");
     Item SALAD = register(new ToxicItem(new Settings()
+            .group(ItemGroup.FOOD)
             .food(UFoodComponents.SALAD)
             .recipeRemainder(Items.BOWL), UseAction.EAT, Toxicity::fromStack, Toxin.FOOD), "salad");
 
     Item WHEAT_WORMS = register(new ToxicItem(new Settings()
+            .group(ItemGroup.MISC)
             .food(UFoodComponents.WORMS), UseAction.EAT, Toxicity.SEVERE, Toxin.FOOD), "wheat_worms");
     Item MUG = register(new Item(new Settings().group(ItemGroup.MATERIALS)), "mug");
     Item CIDER = register(new ToxicItem(new Settings()
+            .group(ItemGroup.FOOD)
             .food(UFoodComponents.SALAD)
             .recipeRemainder(MUG), UseAction.DRINK, Toxicity.MILD, Toxin.FOOD), "apple_cider");
     Item JUICE = register(new ToxicItem(new Settings()
+            .group(ItemGroup.FOOD)
             .recipeRemainder(Items.GLASS_BOTTLE)
             .food(UFoodComponents.JUICE), UseAction.DRINK, Toxicity.SAFE, Toxin.FOOD), "juice");
     Item BURNED_JUICE = register(new ToxicItem(new Settings()
+            .group(ItemGroup.FOOD)
             .recipeRemainder(Items.GLASS_BOTTLE)
             .food(UFoodComponents.BURNED_JUICE), UseAction.DRINK, Toxicity.FAIR, Toxin.FOOD), "burned_juice");
 
@@ -186,10 +183,10 @@ public interface UItems {
     }
 
     interface VanillaOverrides {
-        StickItem STICK = register(new StickItem(), Items.STICK);
-        ExtendedShearsItem SHEARS = register(new ExtendedShearsItem(), Items.SHEARS);
+        StickItem STICK = register(new StickItem(new Item.Settings().group(ItemGroup.MATERIALS)), Items.STICK);
+        ExtendedShearsItem SHEARS = register(new ExtendedShearsItem(new Item.Settings().maxDamage(238).group(ItemGroup.TOOLS)), Items.SHEARS);
 
-        AppleItem APPLE = register(new AppleItem(FoodComponents.APPLE), Items.APPLE);
+        AppleItem APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), Items.APPLE);
 
         static <T extends Item> T register(T newItem, Item oldItem) {
             return Registry.ITEM.set(Registry.ITEM.getRawId(oldItem), Registry.ITEM.getId(oldItem), newItem);

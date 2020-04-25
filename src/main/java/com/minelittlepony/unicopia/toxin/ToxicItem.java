@@ -9,7 +9,6 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -26,7 +25,7 @@ public class ToxicItem extends Item {
     }
 
     public ToxicItem(Item.Settings settings, UseAction action, Function<ItemStack, Toxicity> toxicity, Toxin toxin) {
-        super(settings.group(ItemGroup.FOOD));
+        super(settings);
         this.toxic = new Toxic(this, action, toxin, toxicity);
     }
 

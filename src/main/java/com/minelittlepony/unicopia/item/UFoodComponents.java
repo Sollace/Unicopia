@@ -19,6 +19,11 @@ public interface UFoodComponents {
     FoodComponent BURNED_JUICE = builder(3, 1).build();
     FoodComponent WORMS = builder(1, 0).alwaysEdible().build();
 
+    FoodComponent CEREAL = builder(9, 0.8F).build();
+    FoodComponent SUGAR = builder(20, -2).build();
+
+    FoodComponent ZAP_APPLE = builder(4, 0.3F).alwaysEdible().snack().build();
+
     static FoodComponent.Builder builder(int hunger, float saturation) {
         return new FoodComponent.Builder()
                 .hunger(hunger)

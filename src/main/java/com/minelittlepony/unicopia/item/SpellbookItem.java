@@ -10,8 +10,6 @@ import com.minelittlepony.unicopia.magic.Dispensable;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BookItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
@@ -21,10 +19,8 @@ import net.minecraft.world.World;
 
 public class SpellbookItem extends BookItem {
 
-    public SpellbookItem() {
-        super(new Item.Settings()
-                .maxCount(1)
-                .group(ItemGroup.BREWING));
+    public SpellbookItem(Settings settings) {
+        super(settings);
         Dispensable.setDispenseable(this, (source, stack) -> {
             Direction facing = source.getBlockState().get(DispenserBlock.FACING);
             BlockPos pos = source.getBlockPos().offset(facing);

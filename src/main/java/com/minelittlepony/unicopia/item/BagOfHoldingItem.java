@@ -23,7 +23,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -39,8 +38,8 @@ import net.minecraft.world.World;
 
 public class BagOfHoldingItem extends Item implements MagicalItem {
 
-    public BagOfHoldingItem() {
-        super(new Settings().maxCount(1).group(ItemGroup.TRANSPORTATION));
+    public BagOfHoldingItem(Settings settings) {
+        super(settings);
     }
 
     @Override

@@ -56,8 +56,8 @@ public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem
             UUID.fromString("2AD3F246-FEE1-4E67-B886-69FD380BB150")
     };
 
-    public AlicornAmuletItem() {
-        super(new Material(), EquipmentSlot.CHEST, new Settings().maxCount(1));
+    public AlicornAmuletItem(Settings settings) {
+        super(new Material(), EquipmentSlot.CHEST, settings);
     }
 
     @Override

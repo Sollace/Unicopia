@@ -8,8 +8,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
@@ -21,8 +19,8 @@ import net.minecraft.world.World;
 
 public class ExtendedShearsItem extends ShearsItem {
 
-    public ExtendedShearsItem() {
-        super(new Item.Settings().maxDamage(238).group(ItemGroup.TOOLS));
+    public ExtendedShearsItem(Settings settings) {
+        super(settings);
         final Optional<DispenserBehavior> vanillaDispenserBehaviour = Dispensable.getBehavior(new ItemStack(Items.SHEARS));
         DispenserBlock.registerBehavior(Items.SHEARS, Dispensable.setDispenseable(this, (source, stack) -> {
 

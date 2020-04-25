@@ -37,10 +37,8 @@ import net.minecraft.world.World;
 
 public class MagicGemItem extends Item implements Castable {
 
-    public MagicGemItem() {
-        super(new Settings()
-                .maxCount(16)
-                .group(ItemGroup.BREWING));
+    public MagicGemItem(Settings settings) {
+        super(settings);
         Dispensable.setDispenseable(this, this::dispenseStack);
     }
 

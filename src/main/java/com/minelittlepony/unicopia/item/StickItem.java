@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.block.UBlocks;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,8 +18,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class StickItem extends Item {
-    public StickItem() {
-        super(new Item.Settings().group(ItemGroup.MATERIALS));
+    public StickItem(Settings settings) {
+        super(settings);
     }
 
     @Override

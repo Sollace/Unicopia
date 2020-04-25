@@ -15,6 +15,10 @@ import net.minecraft.world.explosion.Explosion.DestructionType;
 
 public class CursedMagicGemItem extends MagicGemItem {
 
+    public CursedMagicGemItem(Settings settings) {
+        super(settings);
+    }
+
     @Override
     public CastResult onDispenseSpell(BlockPointer source, ItemStack stack, DispenceableMagicEffect effect) {
 

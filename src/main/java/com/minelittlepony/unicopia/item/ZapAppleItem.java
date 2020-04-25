@@ -15,7 +15,6 @@ import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -43,11 +42,8 @@ public class ZapAppleItem extends AppleItem {
             UItems.COOKED_ZAP_APPLE
     );
 
-    public ZapAppleItem() {
-        super(new FoodComponent.Builder()
-                .hunger(4)
-                .saturationModifier(0.3F)
-                .alwaysEdible().build());
+    public ZapAppleItem(Settings settings) {
+        super(settings);
     }
 
     @Override
