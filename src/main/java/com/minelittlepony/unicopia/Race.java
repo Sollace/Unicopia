@@ -19,6 +19,7 @@ public enum Race {
     EARTH(false, false, true),
     UNICORN(true, false, false),
     PEGASUS(false, true, false),
+    BAT(false, true, false),
     ALICORN(true, true, true),
     CHANGELING(false, true, false);
 
@@ -59,7 +60,7 @@ public enum Race {
     }
 
     public boolean canInteractWithClouds() {
-        return canFly() && this != CHANGELING;
+        return canFly() && this != CHANGELING && this != BAT;
     }
 
     public String getTranslationKey() {

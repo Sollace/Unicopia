@@ -1,25 +1,22 @@
 {
   "tile.cloud_block.name": "Block of Cloud",
-  "tile.packed_cloud_block.name": "Dense Cloud",
+  "tile.dense_cloud_block.name": "Dense Cloud",
   "tile.enchanted_cloud_block.name": "Enchanted Cloud",
 
   "tile.cloud_slab.name": "Cloud Slab",
-  "tile.double_cloud_slab.name": "Double Cloud Slab",
-  "tile.packed_cloud_slab.name": "Dense Cloud Slab",
-  "tile.packed_normal_cloud_slab.name": "Double Dense Cloud Slab",
+  "tile.dense_cloud_slab.name": "Dense Cloud Slab",
   "tile.enchanted_cloud_slab.name": "Enchanted Cloud Slab",
-  "tile.double_enchanted_cloud_slab.name": "Double Enchanted Cloud Slab",
 
   "tile.cloud_stairs.name": "Cloud Stairs",
   "tile.cloud_fence.name": "Cloud Fence",
   "tile.cloud_banister.name": "Banister",
   "tile.cloud_farmland.name": "Tilled Clouds",
 
-  "tile.hive.name": "Hive Wall",
-  "tile.chitin_block.name": "Chitin Block",
-  "tile.chissled_chitin.name": "Chiseled Chitin Block",
+  "tile.hive_wall_block.name": "Hive Wall Block",
+  "tile.chitin_shell_block.name": "Chitin Shell Block",
+  "tile.chiseled_chitin_shell_block.name": "Chiseled Chitin Shell Block",
   "tile.chitin_shell.name": "Chitin Shell",
-  "tile.cuccoon.name": "Cocoon",
+  "tile.slime_drop.name": "Slime Droplet",
   "tile.slime_layer.name": "Slime",
 
   "tile.apple_leaves.name": "Apple Leaves",
@@ -34,7 +31,7 @@
   "item.construction_cloud_spawner.name": "Construction Cloud",
   "item.wild_cloud_spawner.name": "Wild Cloud",
 
-  "item.mist_door.name": "Cloud Door",
+  "item.misted_glass_door.name": "Misted Glass Door",
   "item.library_door.name": "Dutch Library Door",
   "item.bakery_door.name": "Dutch Bakery Door",
   "item.diamond_door.name": "Diamond Door",
@@ -158,7 +155,7 @@
   "item.hay_fries.name": "Hay Fries",
   "item.salad.name": "Salad",
   "item.wheat_worms.name": "Wheat Worms",
-  "item.apple_cider.name": "Apple Cider",
+  "item.cider.name": "Cider",
   "item.mug.name": "Mug",
 
   "item.juice.name": "Juice",
@@ -222,6 +219,10 @@
   "commands.race.describe.changeling.1": "Beware the changeling, for they can appear when least expected.",
   "commands.race.describe.changeling.2": "Changelings can fly but but do not interact with clouds.",
   "commands.race.describe.changeling.3": "They have to feed on mobs and other players to eat.",
+  
+  "commands.race.describe.bat.1": "I am the night! EEEEEEEEEEEEE!!!",
+  "commands.race.describe.bat.2": "Bat Ponies can fly but but do not interact with clouds.",
+  "commands.race.describe.bat.3": "They love mangoes. Give them one, and they will follow you forever.",
 
   "commands.racelist.usage": "/racelist <allow|disallow> <species>",
   "commands.racelist.illegal": "The default race %s cannot be used with this command.",
@@ -258,6 +259,8 @@
   "unicopia.race.alicorn.alt": "Alicorns",
   "unicopia.race.changeling": "Changeling",
   "unicopia.race.changeling.alt": "Changelings",
+  "unicopia.race.bat": "Bat Pony",
+  "unicopia.race.bat.alt": "Bat Ponies",
 
   "unicopia.category.name": "Pony Abilities",
 

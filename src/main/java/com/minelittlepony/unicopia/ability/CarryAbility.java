@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 /**
  * Pegasi ability to pick up and carry other players
  */
-public class PegasusCarryAbility implements Ability<Hit> {
+public class CarryAbility implements Ability<Hit> {
 
     @Override
     public int getWarmupTime(Pony player) {

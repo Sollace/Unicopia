@@ -10,16 +10,18 @@ public interface Abilities {
     MutableRegistry<Integer> KEYS_CODES = new SimpleRegistry<>();
     MutableRegistry<Ability<?>> REGISTRY = new SimpleRegistry<>();
 
-    // unicorn
+    // unicorn / alicorn
     Ability<?> TELEPORT = register(new UnicornTeleportAbility(), "teleport", GLFW.GLFW_KEY_O);
     Ability<?> CAST = register(new UnicornCastingAbility(), "cast", GLFW.GLFW_KEY_P);
 
-    // earth
+    // earth / alicorn
     Ability<?> GROW = register(new EarthPonyGrowAbility(), "grow", GLFW.GLFW_KEY_N);
     Ability<?> STOMP = register(new EarthPonyStompAbility(), "stomp", GLFW.GLFW_KEY_M);
 
-    // pegasus
-    Ability<?> CARRY = register(new PegasusCarryAbility(), "carry", GLFW.GLFW_KEY_K);
+    // pegasus / bat / alicorn / changeling
+    Ability<?> CARRY = register(new CarryAbility(), "carry", GLFW.GLFW_KEY_K);
+
+    // pegasus / alicorn
     Ability<?> CLOUD = register(new PegasusCloudInteractionAbility(), "cloud", GLFW.GLFW_KEY_J);
 
     // changeling
