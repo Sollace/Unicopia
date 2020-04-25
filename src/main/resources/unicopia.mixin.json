@@ -6,8 +6,10 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "CriterionsRegistry",
+    "MixinBlockItem",
     "MixinFarmlandBlock",
     "MixinHoeItem",
+    "MixinItem",
     "MixinItemEntity",
     "MixinLivingEntity",
     "MixinPlayerEntity",

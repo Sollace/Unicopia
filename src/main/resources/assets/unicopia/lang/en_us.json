@@ -1,62 +1,116 @@
 {
-  "tile.cloud_block.name": "Block of Cloud",
-  "tile.dense_cloud_block.name": "Dense Cloud",
-  "tile.enchanted_cloud_block.name": "Enchanted Cloud",
+  "block.unicopia.cloud_block": "Block of Cloud",
+  "block.unicopia.dense_cloud_block": "Dense Cloud",
+  "block.unicopia.enchanted_cloud_block": "Enchanted Cloud",
 
-  "tile.cloud_slab.name": "Cloud Slab",
-  "tile.dense_cloud_slab.name": "Dense Cloud Slab",
-  "tile.enchanted_cloud_slab.name": "Enchanted Cloud Slab",
+  "block.unicopia.cloud_slab": "Cloud Slab",
+  "block.unicopia.dense_cloud_slab": "Dense Cloud Slab",
+  "block.unicopia.enchanted_cloud_slab": "Enchanted Cloud Slab",
 
-  "tile.cloud_stairs.name": "Cloud Stairs",
-  "tile.cloud_fence.name": "Cloud Fence",
-  "tile.cloud_banister.name": "Banister",
-  "tile.cloud_farmland.name": "Tilled Clouds",
+  "block.unicopia.cloud_stairs": "Cloud Stairs",
+  "block.unicopia.cloud_fence": "Cloud Fence",
+  "block.unicopia.cloud_farmland": "Tilled Clouds",
 
-  "tile.hive_wall_block.name": "Hive Wall Block",
-  "tile.chitin_shell_block.name": "Chitin Shell Block",
-  "tile.chiseled_chitin_shell_block.name": "Chiseled Chitin Shell Block",
-  "tile.chitin_shell.name": "Chitin Shell",
-  "tile.slime_drop.name": "Slime Droplet",
-  "tile.slime_layer.name": "Slime",
+  "block.unicopia.hive_wall_block": "Hive Wall Block",
+  "block.unicopia.chitin_shell_block": "Chitin Shell Block",
+  "block.unicopia.chiseled_chitin_shell_block": "Chiseled Chitin Shell Block",
+  "block.unicopia.chitin_shell": "Chitin Shell",
+  "block.unicopia.slime_drop": "Slime Droplet",
+  "block.unicopia.slime_layer": "Slime",
 
-  "tile.apple_leaves.name": "Apple Leaves",
-  "tile.apple_sapling.name": "Apple Seeds",
+  "block.unicopia.apple_leaves": "Apple Leaves",
+  "block.unicopia.apple_sapling": "Apple Seeds",
 
-  "tile.sugar_block.name": "Block of Sugar",
+  "block.unicopia.sugar_block": "Block of Sugar",
 
-  "tile.enchanted_torch.name": "Stone Lamp",
+  "block.unicopia.enchanted_torch": "Enchanted Torch",
 
-  "item.cloud_matter.name": "Lump of Cloud",
-  "item.racing_cloud_spawner.name": "Racing Cloud",
-  "item.construction_cloud_spawner.name": "Construction Cloud",
-  "item.wild_cloud_spawner.name": "Wild Cloud",
+  "item.unicopia.cloud_spawn_egg": "Cloud Spawn Egg",
+  "item.unicopia.butterfly_spawn_egg": "Butterfly Spawn Egg",
 
-  "item.misted_glass_door.name": "Misted Glass Door",
-  "item.library_door.name": "Dutch Library Door",
-  "item.bakery_door.name": "Dutch Bakery Door",
-  "item.diamond_door.name": "Diamond Door",
-  "item.dew_drop.name": "Dew Drop",
-  "item.cloud_anvil.name": "Anvilhead Anvil",
-  "item.chitin_shell.name": "Chitinous Shell",
+  "item.unicopia.cloud_matter": "Lump of Cloud",
+  "item.unicopia.racing_cloud_spawner": "Racing Cloud",
+  "item.unicopia.construction_cloud_spawner": "Construction Cloud",
+  "item.unicopia.wild_cloud_spawner": "Wild Cloud",
 
-  "item.moss.name": "Moss",
-  "item.staff_meadow_brook.name": "Meadow Brook's Staff",
-  "item.staff_meadow_brook.tagline": "It's a big stick",
-  "item.staff_remembrance.name": "Staff of Remembrance",
-  "item.spear.name": "Spear",
-  "item.alicorn_amulet.name": "The Alicorn Amulet",
-  "item.alicorn_amulet.tagline": "Time Worn: %s",
+  "item.unicopia.misted_glass_door": "Misted Glass Door",
+  "item.unicopia.library_door": "Dutch Library Door",
+  "item.unicopia.bakery_door": "Dutch Bakery Door",
+  "item.unicopia.diamond_door": "Diamond Door",
+  "item.unicopia.dew_drop": "Dew Drop",
+  "item.unicopia.cloud_anvil": "Cloud Anvil",
+  "item.unicopia.chitin_shell": "Chitinous Shell",
 
-  "tile.bed.youAreAMonster": "You may not rest here, you are the monster",
+  "item.unicopia.moss": "Moss",
+  "item.unicopia.staff_meadow_brook": "Meadow Brook's Staff",
+  "item.unicopia.staff_meadow_brook.tagline": "It's a big stick",
+  "item.unicopia.staff_remembrance": "Staff of Remembrance",
+  "item.unicopia.spear": "Spear",
+  "item.unicopia.alicorn_amulet": "The Alicorn Amulet",
+  "item.unicopia.alicorn_amulet.tagline": "Time Worn: %s",
 
-  "item.gem.name": "Gem",
-  "item.gem.enchanted.name": "Gem of %s",
-  "item.corrupted_gem.name": "Fractured Gem",
-  "item.corrupted_gem.enchanted.name": "Fractured Gem of %s",
+  "block.unicopia.bed.youAreAMonster": "You may not rest here, you are the monster",
 
-  "affinity.good.name": "Pure",
-  "affinity.neutral.name": "Neutral",
-  "affinity.bad.name": "Corrupt",
+  "item.unicopia.gem": "Gem",
+  "item.unicopia.gem.enchanted": "Gem of %s",
+  "item.unicopia.corrupted_gem": "Fractured Gem",
+  "item.unicopia.corrupted_gem.enchanted": "Fractured Gem of %s",
+
+  "item.unicopia.spellbook": "Spellbook",
+  "item.unicopia.bag_of_holding": "Bag of Holding",
+
+  "item.unicopia.apple_green": "Granny Smith Apple",
+  "item.unicopia.apple_sweet": "Sweet Apple Acres Apple",
+  "item.unicopia.apple_sour": "Sour Apple",
+
+  "item.unicopia.rotten_apple": "Rotten Apple",
+
+  "item.unicopia.cooked_zap_apple": "Cooked Zap Apple",
+
+  "item.unicopia.zap_apple": "Zap Apple",
+  "item.unicopia.zap_apple.red": "Apple",
+  "item.unicopia.zap_apple.green": "Granny Smith Apple",
+  "item.unicopia.zap_apple.sweet": "Sweet Apple Acres Apple",
+  "item.unicopia.zap_apple.sour": "Sour Apple",
+  "item.unicopia.zap_apple.zap": "Cooked Zap Apple",
+
+  "item.unicopia.apple_seeds": "Apple Seeds",
+
+  "item.unicopia.tomato": "Tomato",
+  "item.unicopia.rotten_tomato": "Rotten Tomato",
+  "item.unicopia.tomato_seeds": "Tomato Seeds",
+
+  "item.unicopia.cloudsdale_tomato": "Cloudsdale Tomato",
+  "item.unicopia.rotten_cloudsdale_tomato": "Rotten Cloudsdale Tomato",
+
+  "item.unicopia.alfalfa_leaves": "Alfalfa",
+  "item.unicopia.alfalfa_seeds": "Grain",
+
+  "item.unicopia.cereal": "Breakfast Cereal",
+  "item.unicopia.sugar_cereal": "Boop 'o Roops",
+  "item.unicopia.daffodil_daisy_sandwich": "Daffodil Daisy Sandwich",
+  "item.unicopia.hay_burger": "Hay Burger",
+  "item.unicopia.hay_fries": "Hay Fries",
+  "item.unicopia.salad": "Salad",
+  "item.unicopia.wheat_worms": "Wheat Worms",
+  "item.unicopia.apple_cider": "Apple Cider",
+  "item.unicopia.mug": "Mug",
+
+  "item.unicopia.juice": "Juice",
+  "item.unicopia.burned_juice": "Burned Juice",
+
+  "item.unicopia.music_disc_pet": "Music Disc",
+  "item.unicopia.music_disc_pet.pet.desc": "Danial Ingram - pet",
+  "item.unicopia.music_disc_popular": "Music Disc",
+  "item.unicopia.music_disc_popular.desc": "Danial Ingram - popular",
+  "item.unicopia.music_disc_crusade": "Music Disc",
+  "item.unicopia.music_disc_crusade.desc": "Danial Ingram - crusade",
+  "item.unicopia.music_disc_funk": "Music Disc",
+  "item.unicopia.music_disc_funk.desc": "funk, just funk",
+
+  "affinity.good": "Pure",
+  "affinity.neutral": "Neutral",
+  "affinity.curse": "Corrupt",
 
   "spell.shield.name": "Defense",
   "spell.shield.tagline": "Protection I",
@@ -117,54 +171,6 @@
 
   "curse.siphon.name": "Siphoning",
   "curse.siphon.tagline": "Energy III",
-
-  "item.spellbook.name": "Spellbook",
-  "item.bag_of_holding.name": "Bag of Holding",
-
-  "item.apple_green.name": "Granny Smith Apple",
-  "item.apple_sweet.name": "Sweet Apple Acres Apple",
-  "item.apple_sour.name": "Sour Apple",
-
-  "item.rotten_apple.name": "Rotten Apple",
-
-  "item.cooked_zap_apple.name": "Cooked Zap Apple",
-
-  "item.zap_apple.name": "Zap Apple",
-  "item.zap_apple.red.name": "Apple",
-  "item.zap_apple.green.name": "Granny Smith Apple",
-  "item.zap_apple.sweet.name": "Sweet Apple Acres Apple",
-  "item.zap_apple.sour.name": "Sour Apple",
-  "item.zap_apple.zap.name": "Cooked Zap Apple",
-
-  "item.apple_seeds.name": "Apple Seeds",
-
-  "item.tomato.name": "Tomato",
-  "item.rotten_tomato.name": "Rotten Tomato",
-  "item.tomato_seeds.name": "Tomato Seeds",
-
-  "item.cloudsdale_tomato.name": "Cloudsdale Tomato",
-  "item.rotten_cloudsdale_tomato.name": "Rotten Cloudsdale Tomato",
-
-  "item.alfalfa_leaves.name": "Alfalfa",
-  "item.alfalfa_seeds.name": "Grain",
-
-  "item.cereal.name": "Breakfast Cereal",
-  "item.sugar_cereal.name": "Boop 'o Roops",
-  "item.daffodil_daisy_sandwich.name": "Daffodil Daisy Sandwich",
-  "item.hay_burger.name": "Hay Burger",
-  "item.hay_fries.name": "Hay Fries",
-  "item.salad.name": "Salad",
-  "item.wheat_worms.name": "Wheat Worms",
-  "item.cider.name": "Cider",
-  "item.mug.name": "Mug",
-
-  "item.juice.name": "Juice",
-  "item.burned_juice.name": "Burned Juice",
-
-  "item.record.pet.desc": "Danial Ingram - pet",
-  "item.record.popular.desc": "Danial Ingram - popular",
-  "item.record.crusade.desc": "Danial Ingram - crusade",
-  "item.record.funk.desc": "funk, just funk",
 
   "entity.racing_cloud.name": "Bucking Bronco",
   "entity.construction_cloud.name": "Construction Cloud",
