@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.TreeType;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.gas.CloudAnvilBlock;
 import com.minelittlepony.unicopia.gas.CloudBlock;
 import com.minelittlepony.unicopia.gas.CloudDoorBlock;
@@ -72,7 +71,7 @@ public interface UBlocks {
 
 
     static <T extends Block> T register(T block, String name) {
-        return Registry.BLOCK.add(new Identifier(Unicopia.MODID, name), block);
+        return Registry.BLOCK.add(new Identifier("unicopia", name), block);
     }
 
     static void bootstrap() { }

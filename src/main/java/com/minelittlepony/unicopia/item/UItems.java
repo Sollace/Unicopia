@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.item;
 import static com.minelittlepony.unicopia.EquinePredicates.*;
 
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.magic.spell.ScorchSpell;
@@ -71,7 +70,7 @@ public interface UItems {
     Item SLIME_DROP = register(new BlockItem(UBlocks.SLIME_DROP, new Item.Settings().group(ItemGroup.MATERIALS)), "slime_drop");
     Item SLIME_LAYER = register(new BlockItem(UBlocks.SLIME_LAYER, new Item.Settings().group(ItemGroup.DECORATIONS)), "slime_layer");
 
-    Item MISTED_DOOR = register(new TallBlockItem(UBlocks.MISTED_GLASS_DOOR, new Item.Settings().group(ItemGroup.REDSTONE)), "misted_door");
+    Item MISTED_GLASS_DOOR = register(new TallBlockItem(UBlocks.MISTED_GLASS_DOOR, new Item.Settings().group(ItemGroup.REDSTONE)), "misted_glass_door");
     Item LIBRARY_DOOR = register(new TallBlockItem(UBlocks.LIBRARY_DOOR, new Item.Settings().group(ItemGroup.REDSTONE)), "library_door");
     Item BAKERY_DOOR = register(new TallBlockItem(UBlocks.BAKERY_DOOR, new Item.Settings().group(ItemGroup.REDSTONE)), "bakery_door");
     Item DIAMOND_DOOR = register(new TallBlockItem(UBlocks.DIAMOND_DOOR, new Item.Settings().group(ItemGroup.REDSTONE)), "diamond_door");
@@ -154,7 +153,7 @@ public interface UItems {
     Item BUTTERFLY_SPAWN_EGG = register(new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xaaeeff, new Item.Settings().group(ItemGroup.MISC)), "butterfly_spawn_egg");
 
     static <T extends Item> T register(T item, String name) {
-        return Registry.ITEM.add(new Identifier(Unicopia.MODID, name), item);
+        return Registry.ITEM.add(new Identifier("unicopia", name), item);
     }
 
     static MusicDiscItem createRecord(SoundEvent sound) {

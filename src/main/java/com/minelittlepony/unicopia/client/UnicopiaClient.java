@@ -2,25 +2,20 @@ package com.minelittlepony.unicopia.client;
 
 import static com.minelittlepony.unicopia.EquinePredicates.MAGI;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.common.event.ClientReadyCallback;
-import com.minelittlepony.unicopia.Config;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.container.SpellbookResultSlot;
 import com.minelittlepony.unicopia.ducks.Colourful;
-import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.mixin.client.DefaultTexturesRegistry;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
-import com.minelittlepony.unicopia.util.dummy.DummyClientPlayerEntity;
-import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;
@@ -31,31 +26,21 @@ import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
 
-public class UnicopiaClient extends InteractionManager implements ClientModInitializer {
+public class UnicopiaClient implements ClientModInitializer {
 
     private final KeyBindingsHandler keyboard = new KeyBindingsHandler();
 
-    /**
-     * The race preferred by the client - as determined by mine little pony.
-     * Human if minelp was not installed.
-     *
-     * This is not neccessarily the _actual_ race used for the player,
-     * as the server may not allow certain race types, or the player may override
-     * this option in-game themselves.
-     */
-    private static Race clientPlayerRace = getclientPlayerRace();
+    private Race lastPreferredRace = InteractionManager.instance().getPreferredRace();
 
     @Override
     public void onInitializeClient() {
-        clientPlayerRace = getclientPlayerRace();
-        InteractionManager.INSTANCE = this;
+        lastPreferredRace = InteractionManager.instance().getPreferredRace();
+        InteractionManager.INSTANCE = new ClientInteractionManager();
 
         URenderers.bootstrap();
 
@@ -80,56 +65,16 @@ public class UnicopiaClient extends InteractionManager implements ClientModIniti
         PlayerEntity player = client.player;
 
         if (player != null && !player.removed) {
-            Race newRace = getclientPlayerRace();
+            Race newRace = InteractionManager.instance().getPreferredRace();
 
-            if (newRace != clientPlayerRace) {
-                clientPlayerRace = newRace;
+            if (newRace != lastPreferredRace) {
+                lastPreferredRace = newRace;
 
-                Channel.REQUEST_CAPABILITIES.send(new MsgRequestCapabilities(player, clientPlayerRace));
+                Channel.REQUEST_CAPABILITIES.send(new MsgRequestCapabilities(lastPreferredRace));
             }
         }
 
         keyboard.onKeyInput();
-    }
-
-    @Override
-    @Nonnull
-    public PlayerEntity createPlayer(Entity observer, GameProfile profile) {
-        if (observer.world instanceof ClientWorld) {
-            return new DummyClientPlayerEntity((ClientWorld)observer.world, profile);
-        }
-        return super.createPlayer(observer, profile);
-    }
-
-    @Override
-    public boolean isClientPlayer(@Nullable PlayerEntity player) {
-        if (MinecraftClient.getInstance().player == player) {
-            return true;
-        }
-
-        if (MinecraftClient.getInstance().player == null || player == null) {
-            return false;
-        }
-
-        return Pony.equal(MinecraftClient.getInstance().player, player);
-    }
-
-    @Override
-    public int getViewMode() {
-        return MinecraftClient.getInstance().options.perspective;
-    }
-
-    private static Race getclientPlayerRace() {
-        if (!Config.getInstance().ignoresMineLittlePony()
-                && MinecraftClient.getInstance().player != null) {
-            Race race = MineLPConnector.getPlayerPonyRace();
-
-            if (!race.isDefault()) {
-                return race;
-            }
-        }
-
-        return Config.getInstance().getPrefferedRace();
     }
 
     private static int getLeavesColor(BlockState state, @Nullable BlockRenderView world, @Nullable BlockPos pos, int tint) {

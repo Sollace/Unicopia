@@ -1,52 +1,22 @@
 package com.minelittlepony.unicopia;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import com.minelittlepony.common.util.GamePaths;
+import com.minelittlepony.common.util.settings.JsonConfig;
 
-public class Config {
+public class Config extends JsonConfig {
 
-    private static Config INSTANCE = new Config();
-
-    private static final Gson GSON = new GsonBuilder()
-            .excludeFieldsWithoutExposeAnnotation()
-            .setPrettyPrinting()
-            .create();
-
+    @Deprecated
     public static Config getInstance() {
-        return INSTANCE;
+        return Unicopia.getConfig();
     }
 
-    static void init(Path directory) {
-        Path file = directory.resolve("unicopia.json");
-
-        try {
-            if (Files.exists(file)) {
-                try(JsonReader reader = new JsonReader(Files.newBufferedReader(file))) {
-                    INSTANCE = GSON.fromJson(reader, Config.class);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (INSTANCE == null) {
-                INSTANCE = new Config();
-            }
-        }
-
-        INSTANCE.file = file;
-        INSTANCE.save();
+    public Config() {
+        super(GamePaths.getConfigDirectory().resolve("unicopia.json"));
     }
-
-    private Path file;
 
     @Expose(deserialize = false)
     private final String speciesWhiteListComment =
@@ -54,7 +24,7 @@ public class Config {
             "Races added to this list can be used by anyone, whilst any ones left off are not permitted. " +
             "An empty list disables whitelisting entirely.";
     @Expose
-    private final List<Race> speciesWhiteList = Lists.newArrayList();
+    private final Set<Race> speciesWhiteList = new HashSet<>();
 
     @Expose(deserialize = false)
     private final String preferredRaceComment =
@@ -71,7 +41,7 @@ public class Config {
     @Expose
     private boolean ignoreMineLP = false;
 
-    public List<Race> getSpeciesWhiteList() {
+    public Set<Race> getSpeciesWhiteList() {
         return speciesWhiteList;
     }
 
@@ -99,21 +69,5 @@ public class Config {
         }
 
         return preferredRace;
-    }
-
-    public void save() {
-        try {
-            Files.deleteIfExists(file);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-
-        try (JsonWriter writer = new JsonWriter(Files.newBufferedWriter(file))) {
-            writer.setIndent("    ");
-
-            GSON.toJson(this, Config.class, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

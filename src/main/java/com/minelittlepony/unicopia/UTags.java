@@ -6,8 +6,8 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 
 public interface UTags {
-    Tag<Item> CURSED_ARTEFACTS = TagRegistry.item(new Identifier(Unicopia.MODID, "cursed_artefacts"));
-    Tag<Item> HAMMERPACE_IMMUNE = TagRegistry.item(new Identifier(Unicopia.MODID, "hammerspace_immune"));
+    Tag<Item> CURSED_ARTEFACTS = TagRegistry.item(new Identifier("unicopia", "cursed_artefacts"));
+    Tag<Item> HAMMERPACE_IMMUNE = TagRegistry.item(new Identifier("unicopia", "hammerspace_immune"));
 
     static void bootstrap() { }
 }

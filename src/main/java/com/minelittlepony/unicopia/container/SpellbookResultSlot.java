@@ -17,7 +17,7 @@ import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
 
 public class SpellbookResultSlot extends SpellBookContainer.SpellbookSlot {
-    public static final Identifier EMPTY_GEM_SLOT = new Identifier("unicopia", "empty_slot_gem");
+    public static final Identifier EMPTY_GEM_SLOT = new Identifier("unicopia", "item/empty_gem_slot");
 
     private final Pony player;
     private final SpellBookInventory craftMatrix;

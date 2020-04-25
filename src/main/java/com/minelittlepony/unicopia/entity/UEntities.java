@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.entity;
 
 import java.util.List;
 
-import com.minelittlepony.unicopia.Unicopia;
-
 import net.fabricmc.fabric.api.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCategory;
@@ -37,7 +35,7 @@ public interface UEntities {
     EntityType<SpearEntity> THROWN_SPEAR = register("thrown_spear", FabricEntityTypeBuilder.<SpearEntity>create(EntityCategory.MISC, SpearEntity::new).trackable(100, 10));
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
-        return Registry.register(Registry.ENTITY_TYPE, new Identifier(Unicopia.MODID, name), builder.build());
+        return Registry.register(Registry.ENTITY_TYPE, new Identifier("unicopia", name), builder.build());
     }
 
     static void bootstrap() {

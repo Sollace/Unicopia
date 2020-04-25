@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.minelittlepony.unicopia.KeyBind;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -14,7 +13,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.Identifier;
-
 
 class KeyBindingsHandler {
     private final MinecraftClient client = MinecraftClient.getInstance();
@@ -27,7 +25,7 @@ class KeyBindingsHandler {
     public void addKeybind(KeyBind p) {
         KeyBindingRegistry.INSTANCE.addCategory(p.getKeyCategory());
 
-        FabricKeyBinding b = FabricKeyBinding.Builder.create(new Identifier(Unicopia.MODID, p.getKeyName()), InputUtil.Type.KEYSYM, p.getKeyCode(), p.getKeyCategory()).build();
+        FabricKeyBinding b = FabricKeyBinding.Builder.create(new Identifier("unicopia", p.getKeyName()), InputUtil.Type.KEYSYM, p.getKeyCode(), p.getKeyCategory()).build();
         KeyBindingRegistry.INSTANCE.register(b);
 
         bindings.add(b);

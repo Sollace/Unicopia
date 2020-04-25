@@ -26,6 +26,10 @@ public class InteractionManager {
         return 0;
     }
 
+    public Race getPreferredRace() {
+        return Unicopia.getConfig().getPrefferedRace();
+    }
+
     /**
      * Side-independent method to create a new player.
      *

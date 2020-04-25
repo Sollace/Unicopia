@@ -20,7 +20,7 @@ public class MsgPlayerCapabilities implements Channel.Packet {
 
     private final CompoundTag compoundTag;
 
-    public MsgPlayerCapabilities(PacketByteBuf buffer) {
+    MsgPlayerCapabilities(PacketByteBuf buffer) {
         newRace = Race.values()[buffer.readInt()];
         try (InputStream in = new ByteBufInputStream(buffer)) {
             compoundTag = NbtIo.readCompressed(in);

@@ -19,7 +19,7 @@ public class MsgPlayerAbility implements Channel.Packet {
 
     private final String abilityJson;
 
-    public MsgPlayerAbility(Ability<?> power, Ability.IData data) {
+    MsgPlayerAbility(Ability<?> power, Ability.IData data) {
         powerIdentifier = power.getKeyName();
         abilityJson = gson.toJson(data, power.getPackageType());
     }

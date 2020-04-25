@@ -56,7 +56,7 @@ public class MagicParticle extends SpriteBillboardParticle {
 
     @Override
     public ParticleTextureSheet getType() {
-       return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
+       return ParticleTextureSheet.TERRAIN_SHEET;
     }
 
     @Override

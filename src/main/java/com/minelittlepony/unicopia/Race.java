@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -71,7 +72,11 @@ public enum Race {
             return false;
         }
 
-        return isDefault() || Config.getInstance().getSpeciesWhiteList().isEmpty() || Config.getInstance().getSpeciesWhiteList().contains(this);
+        Set<Race> whitelist = Unicopia.getConfig().getSpeciesWhiteList();
+
+        return isDefault()
+                || whitelist.isEmpty()
+                || whitelist.contains(this);
     }
 
     public Race validate(PlayerEntity sender) {

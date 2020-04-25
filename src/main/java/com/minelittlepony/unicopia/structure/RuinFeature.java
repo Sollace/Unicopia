@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
 
-import com.minelittlepony.unicopia.Unicopia;
 import com.mojang.datafixers.Dynamic;
 
 import net.minecraft.nbt.CompoundTag;
@@ -33,11 +32,11 @@ import net.minecraft.world.gen.feature.StructureFeature;
 class RuinFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
     private static final BlockPos POS = new BlockPos(4, 0, 15);
     private static final Identifier[] VARIANTS = new Identifier[] {
-            new Identifier(Unicopia.MODID, "ground/tower"),
-            new Identifier(Unicopia.MODID, "ground/temple_with_book"),
-            new Identifier(Unicopia.MODID, "ground/temple_without_book"),
-            new Identifier(Unicopia.MODID, "ground/wizard_tower_red"),
-            new Identifier(Unicopia.MODID, "ground/wizard_tower_blue")
+            new Identifier("unicopia", "ground/tower"),
+            new Identifier("unicopia", "ground/temple_with_book"),
+            new Identifier("unicopia", "ground/temple_without_book"),
+            new Identifier("unicopia", "ground/wizard_tower_red"),
+            new Identifier("unicopia", "ground/wizard_tower_blue")
     };
 
     public RuinFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> func) {

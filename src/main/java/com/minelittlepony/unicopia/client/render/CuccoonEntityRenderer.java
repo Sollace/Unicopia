@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.InteractionManager;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.render.model.CuccoonEntityModel;
 import com.minelittlepony.unicopia.entity.CuccoonEntity;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -17,7 +16,7 @@ import net.minecraft.util.Identifier;
 
 public class CuccoonEntityRenderer extends LivingEntityRenderer<CuccoonEntity, CuccoonEntityModel> {
 
-    private static final Identifier TEXTURE = new Identifier(Unicopia.MODID, "textures/entity/cuccoon.png");
+    private static final Identifier TEXTURE = new Identifier("unicopia", "textures/entity/cuccoon.png");
 
     public CuccoonEntityRenderer(EntityRenderDispatcher manager, EntityRendererRegistry.Context context) {
         super(manager, new CuccoonEntityModel(), 1);

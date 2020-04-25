@@ -21,7 +21,7 @@ public interface USounds {
     SoundEvent RECORD_FUNK = register("record.funk");
 
     static SoundEvent register(String name) {
-        Identifier id = new Identifier(Unicopia.MODID, name);
+        Identifier id = new Identifier("unicopia", name);
         return Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(id));
     }
 

@@ -22,7 +22,7 @@ public class MsgSpawnRainbow implements Channel.Packet {
         z = entity.getZ();
      }
 
-    public MsgSpawnRainbow(PacketByteBuf buffer) {
+    MsgSpawnRainbow(PacketByteBuf buffer) {
         id = buffer.readVarInt();
         x = buffer.readDouble();
         y = buffer.readDouble();

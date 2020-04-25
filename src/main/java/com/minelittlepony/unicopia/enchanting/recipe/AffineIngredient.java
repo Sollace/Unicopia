@@ -37,17 +37,17 @@ class AffineIngredient implements SpellIngredient {
 
     @Override
     public ItemStack getStack() {
-        return AffineIngredients.instance().getIngredient(res).getStack();
+        return AffineIngredients.getInstance().getIngredient(res).getStack();
     }
 
     @Override
     public Stream<ItemStack> getStacks() {
-        return AffineIngredients.instance().getIngredient(res).getStacks();
+        return AffineIngredients.getInstance().getIngredient(res).getStacks();
     }
 
     @Override
     public boolean matches(ItemStack other, int materialMult) {
-        return AffineIngredients.instance().getIngredient(res).matches(other, materialMult);
+        return AffineIngredients.getInstance().getIngredient(res).matches(other, materialMult);
     }
 
     @Nonnull

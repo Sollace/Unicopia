@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
 
-import com.minelittlepony.unicopia.Unicopia;
 import com.mojang.datafixers.Dynamic;
 
 import net.minecraft.nbt.CompoundTag;
@@ -33,9 +32,9 @@ import net.minecraft.world.gen.feature.StructureFeature;
 class CloudDungeonFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
     private static final BlockPos POS = new BlockPos(4, 0, 15);
     private static final Identifier[] VARIANTS = new Identifier[] {
-            new Identifier(Unicopia.MODID, "cloud/temple_small"),
-            new Identifier(Unicopia.MODID, "cloud/house_small"),
-            new Identifier(Unicopia.MODID, "cloud/island_small")
+            new Identifier("unicopia", "cloud/temple_small"),
+            new Identifier("unicopia", "cloud/house_small"),
+            new Identifier("unicopia", "cloud/island_small")
     };
 
     public CloudDungeonFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> func) {

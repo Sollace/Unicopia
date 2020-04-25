@@ -5,8 +5,6 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.Unicopia;
-
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
@@ -14,16 +12,16 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
 public class AffineIngredients extends JsonDataLoader implements IdentifiableResourceReloadListener {
-    private static final Identifier ID = new Identifier(Unicopia.MODID, "ingredients");
+    private static final Identifier ID = new Identifier("unicopia", "ingredients");
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .disableHtmlEscaping()
             .create();
 
-    private static final AffineIngredients instance = new AffineIngredients();
+    private static final AffineIngredients INSTANCE = new AffineIngredients();
 
-    public static AffineIngredients instance() {
-        return instance;
+    public static AffineIngredients getInstance() {
+        return INSTANCE;
     }
 
     private final Map<Identifier, SpellIngredient> storedIngredients = Maps.newHashMap();
