@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.toxin;
 
+import com.minelittlepony.unicopia.item.UEffects;
+
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,6 +28,24 @@ public interface Toxin {
     Toxin BLINDNESS = (player, toxicity, stack) -> {
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 30, 1, false, false));
     };
+    Toxin FOOD = (player, toxicity, stack) -> {
+        if (toxicity.toxicWhenRaw()) {
+            player.addStatusEffect(toxicity.getPoisonEffect());
+        }
+
+        if (toxicity.isLethal()) {
+            player.addStatusEffect(new StatusEffectInstance(UEffects.FOOD_POISONING, 300, 7, false, false));
+        } else if (toxicity.toxicWhenCooked()) {
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 3, 1, false, false));
+        }
+    };
 
     void addSecondaryEffects(PlayerEntity player, Toxicity toxicity, ItemStack stack);
+
+    default Toxin and(Toxin other) {
+        return (player, toxicity, stack) -> {
+            other.addSecondaryEffects(player, toxicity, stack);
+            this.addSecondaryEffects(player, toxicity, stack);
+        };
+    }
 }

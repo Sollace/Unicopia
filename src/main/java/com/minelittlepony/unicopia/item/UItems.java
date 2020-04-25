@@ -6,8 +6,6 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.magic.spell.ScorchSpell;
-import com.minelittlepony.unicopia.toxin.DynamicToxicBlockItem;
-import com.minelittlepony.unicopia.toxin.DynamicToxicItem;
 import com.minelittlepony.unicopia.toxin.ToxicBlockItem;
 import com.minelittlepony.unicopia.toxin.ToxicItem;
 import com.minelittlepony.unicopia.toxin.Toxicity;
@@ -138,16 +136,16 @@ public interface UItems {
     Item APPLE_SEEDS = register(new BlockItem(UBlocks.APPLE_SAPLING, new Item.Settings().group(ItemGroup.DECORATIONS)), "apple_seeds");
     Item APPLE_LEAVES = register(new BlockItem(UBlocks.APPLE_LEAVES, new Item.Settings().group(ItemGroup.DECORATIONS)), "apple_leaves");
 
-    Item DAFFODIL_DAISY_SANDWICH = register(new DynamicToxicItem(new Item.Settings(), 3, 2, UseAction.EAT, Toxicity::fromStack), "daffodil_daisy_sandwich");
-    Item HAY_BURGER = register(new DynamicToxicItem(new Item.Settings(), 3, 4, UseAction.EAT, Toxicity::fromStack), "hay_burger");
-    Item HAY_FRIES = register(new ToxicItem(new Item.Settings(), 1, 5, UseAction.EAT, Toxicity.SAFE), "hay_fries");
-    Item SALAD = register(new DynamicToxicItem(new Item.Settings().recipeRemainder(Items.BOWL), 4, 2, UseAction.EAT, Toxicity::fromStack), "salad");
+    Item DAFFODIL_DAISY_SANDWICH = register(new ToxicItem(new Item.Settings(), 3, 2, UseAction.EAT, Toxicity::fromStack, Toxin.FOOD), "daffodil_daisy_sandwich");
+    Item HAY_BURGER = register(new ToxicItem(new Item.Settings(), 3, 4, UseAction.EAT, Toxicity::fromStack, Toxin.FOOD), "hay_burger");
+    Item HAY_FRIES = register(new ToxicItem(new Item.Settings(), 1, 5, UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), "hay_fries");
+    Item SALAD = register(new ToxicItem(new Item.Settings().recipeRemainder(Items.BOWL), 4, 2, UseAction.EAT, Toxicity::fromStack, Toxin.FOOD), "salad");
 
-    Item WHEAT_WORMS = register(new ToxicItem(new Item.Settings(), 1, 0, UseAction.EAT, Toxicity.SEVERE), "wheat_worms");
+    Item WHEAT_WORMS = register(new ToxicItem(new Item.Settings(), 1, 0, UseAction.EAT, Toxicity.SEVERE, Toxin.FOOD), "wheat_worms");
     Item MUG = register(new Item(new Item.Settings().group(ItemGroup.MATERIALS)), "mug");
-    Item CIDER = register(new ToxicItem(new Item.Settings().recipeRemainder(MUG), 4, 2, UseAction.DRINK, Toxicity.MILD), "apple_cider");
-    Item JUICE = register(new ToxicItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE), 2, 2, UseAction.DRINK, Toxicity.SAFE), "juice");
-    Item BURNED_JUICE = register(new ToxicItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE), 3, 1, UseAction.DRINK, Toxicity.FAIR), "burned_juice");
+    Item CIDER = register(new ToxicItem(new Item.Settings().recipeRemainder(MUG), 4, 2, UseAction.DRINK, Toxicity.MILD, Toxin.FOOD), "apple_cider");
+    Item JUICE = register(new ToxicItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE), 2, 2, UseAction.DRINK, Toxicity.SAFE, Toxin.FOOD), "juice");
+    Item BURNED_JUICE = register(new ToxicItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE), 3, 1, UseAction.DRINK, Toxicity.FAIR, Toxin.FOOD), "burned_juice");
 
     Item CLOUD_SPAWN_EGG = register(new SpawnEggItem(UEntities.CLOUD, 0x4169e1, 0x7fff00, new Item.Settings().group(ItemGroup.MISC)), "cloud_spawn_egg");
     Item BUTTERFLY_SPAWN_EGG = register(new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xaaeeff, new Item.Settings().group(ItemGroup.MISC)), "butterfly_spawn_egg");
@@ -176,26 +174,26 @@ public interface UItems {
 
         AppleItem APPLE = register(new AppleItem(FoodComponents.APPLE), Items.APPLE);
 
-        Item GRASS = register(new DynamicToxicBlockItem(Blocks.GRASS, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.NAUSEA), Items.GRASS);
-        Item FERN = register(new DynamicToxicBlockItem(Blocks.FERN, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE, Toxin.STRENGTH), Items.FERN);
-        Item DEAD_BUSH = register(new DynamicToxicBlockItem(Blocks.DEAD_BUSH, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE, Toxin.NAUSEA), Items.DEAD_BUSH);
+        Item GRASS = register(new ToxicBlockItem(Blocks.GRASS, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.FOOD.and(Toxin.NAUSEA)), Items.GRASS);
+        Item FERN = register(new ToxicBlockItem(Blocks.FERN, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE, Toxin.FOOD.and(Toxin.STRENGTH)), Items.FERN);
+        Item DEAD_BUSH = register(new ToxicBlockItem(Blocks.DEAD_BUSH, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE, Toxin.FOOD.and(Toxin.NAUSEA)), Items.DEAD_BUSH);
 
-        Item DANDELION = register(new ToxicBlockItem(Blocks.DANDELION, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.DANDELION);
-        Item POPPY = register(new ToxicBlockItem(Blocks.POPPY, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE), Items.POPPY);
-        Item BLUE_ORCHID = register(new ToxicBlockItem(Blocks.BLUE_ORCHID, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.BLUE_ORCHID);
-        Item ALLIUM = register(new ToxicBlockItem(Blocks.ALLIUM, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.FAIR), Items.ALLIUM);
-        Item AZUER_BLUET = register(new DynamicToxicBlockItem(Blocks.AZURE_BLUET, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.RADIOACTIVITY), Items.AZURE_BLUET);
-        Item RED_TULIP = register(new ToxicBlockItem(Blocks.RED_TULIP, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.RED_TULIP);
-        Item ORANGE_TULIP = register(new ToxicBlockItem(Blocks.ORANGE_TULIP, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.ORANGE_TULIP);
-        Item WHITE_TULIP = register(new ToxicBlockItem(Blocks.WHITE_TULIP, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.FAIR), Items.WHITE_TULIP);
-        Item PINK_TULIP = register(new ToxicBlockItem(Blocks.PINK_TULIP, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.PINK_TULIP);
-        Item OXEYE_DAISY = register(new DynamicToxicBlockItem(Blocks.OXEYE_DAISY, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE, Toxin.BLINDNESS), Items.OXEYE_DAISY);
-        Item CORNFLOWER = register(new ToxicBlockItem(Blocks.CORNFLOWER, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.CORNFLOWER);
+        Item DANDELION = register(new ToxicBlockItem(Blocks.DANDELION, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.DANDELION);
+        Item POPPY = register(new ToxicBlockItem(Blocks.POPPY, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE, Toxin.FOOD), Items.POPPY);
+        Item BLUE_ORCHID = register(new ToxicBlockItem(Blocks.BLUE_ORCHID, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.BLUE_ORCHID);
+        Item ALLIUM = register(new ToxicBlockItem(Blocks.ALLIUM, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.FAIR, Toxin.FOOD), Items.ALLIUM);
+        Item AZUER_BLUET = register(new ToxicBlockItem(Blocks.AZURE_BLUET, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.FOOD.and(Toxin.RADIOACTIVITY)), Items.AZURE_BLUET);
+        Item RED_TULIP = register(new ToxicBlockItem(Blocks.RED_TULIP, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.RED_TULIP);
+        Item ORANGE_TULIP = register(new ToxicBlockItem(Blocks.ORANGE_TULIP, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.ORANGE_TULIP);
+        Item WHITE_TULIP = register(new ToxicBlockItem(Blocks.WHITE_TULIP, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.FAIR, Toxin.FOOD), Items.WHITE_TULIP);
+        Item PINK_TULIP = register(new ToxicBlockItem(Blocks.PINK_TULIP, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.PINK_TULIP);
+        Item OXEYE_DAISY = register(new ToxicBlockItem(Blocks.OXEYE_DAISY, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE, Toxin.FOOD.and(Toxin.BLINDNESS)), Items.OXEYE_DAISY);
+        Item CORNFLOWER = register(new ToxicBlockItem(Blocks.CORNFLOWER, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.CORNFLOWER);
 
-        Item ROSE_BUSH = register(new DynamicToxicBlockItem(Blocks.ROSE_BUSH, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.DAMAGE), Items.ROSE_BUSH);
-        Item PEONY = register(new ToxicBlockItem(Blocks.PEONY, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.PEONY);
-        Item TALL_GRASS = register(new ToxicBlockItem(Blocks.TALL_GRASS, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE), Items.TALL_GRASS);
-        Item LARGE_FERN = register(new DynamicToxicBlockItem(Blocks.LARGE_FERN, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE, Toxin.DAMAGE), Items.LARGE_FERN);
+        Item ROSE_BUSH = register(new ToxicBlockItem(Blocks.ROSE_BUSH, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.FOOD.and(Toxin.DAMAGE)), Items.ROSE_BUSH);
+        Item PEONY = register(new ToxicBlockItem(Blocks.PEONY, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.PEONY);
+        Item TALL_GRASS = register(new ToxicBlockItem(Blocks.TALL_GRASS, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.TALL_GRASS);
+        Item LARGE_FERN = register(new ToxicBlockItem(Blocks.LARGE_FERN, new Item.Settings().group(ItemGroup.DECORATIONS), 2, 1, UseAction.EAT, Toxicity.SEVERE, Toxin.FOOD.and(Toxin.DAMAGE)), Items.LARGE_FERN);
 
         static <T extends Item> T register(T newItem, Item oldItem) {
             return Registry.ITEM.set(Registry.ITEM.getRawId(oldItem), Registry.ITEM.getId(oldItem), newItem);

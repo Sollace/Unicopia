@@ -6,13 +6,9 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.UEffects;
-
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
@@ -26,12 +22,13 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
-public class ToxicBlockItem extends BlockItem implements Toxic, Toxin {
+public class ToxicBlockItem extends BlockItem {
 
     private final UseAction action;
     private final Toxicity toxicity;
+    private final Toxin toxin;
 
-    public ToxicBlockItem(Block block, Item.Settings settings, int hunger, float saturation, UseAction action, Toxicity toxicity) {
+    public ToxicBlockItem(Block block, Item.Settings settings, int hunger, float saturation, UseAction action, Toxicity toxicity, Toxin toxin) {
         super(block, settings
                 .group(ItemGroup.FOOD)
                 .food(new FoodComponent.Builder()
@@ -40,11 +37,7 @@ public class ToxicBlockItem extends BlockItem implements Toxic, Toxin {
                         .build()));
         this.toxicity = toxicity;
         this.action = action;
-    }
-
-    @Override
-    public Toxicity getToxicity(ItemStack stack) {
-        return toxicity;
+        this.toxin = toxin;
     }
 
     @Override
@@ -54,7 +47,7 @@ public class ToxicBlockItem extends BlockItem implements Toxic, Toxin {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(getToxicity(stack).getTooltip());
+        tooltip.add(toxicity.getTooltip());
     }
 
     @Override
@@ -63,9 +56,9 @@ public class ToxicBlockItem extends BlockItem implements Toxic, Toxin {
 
         if (entity instanceof PlayerEntity) {
             Race race = Pony.of((PlayerEntity)entity).getSpecies();
-            Toxicity toxicity = (race.isDefault() || race == Race.CHANGELING) ? Toxicity.LETHAL : getToxicity(stack);
+            Toxicity toxicity = (race.isDefault() || race == Race.CHANGELING) ? Toxicity.LETHAL : this.toxicity;
 
-            addSecondaryEffects((PlayerEntity)entity, toxicity, stack);
+            toxin.addSecondaryEffects((PlayerEntity)entity, toxicity, stack);
         }
 
         return new ItemStack(getRecipeRemainder());
@@ -80,19 +73,5 @@ public class ToxicBlockItem extends BlockItem implements Toxic, Toxin {
         }
 
         return super.use(world, player, hand);
-    }
-
-    @Override
-    public void addSecondaryEffects(PlayerEntity player, Toxicity toxicity, ItemStack stack) {
-
-        if (toxicity.toxicWhenRaw()) {
-            player.addStatusEffect(toxicity.getPoisonEffect());
-        }
-
-        if (toxicity.isLethal()) {
-            player.addStatusEffect(new StatusEffectInstance(UEffects.FOOD_POISONING, 300, 7, false, false));
-        } else if (toxicity.toxicWhenCooked()) {
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 3, 1, false, false));
-        }
     }
 }
