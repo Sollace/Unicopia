@@ -16,36 +16,31 @@ import net.minecraft.item.Items;
 import net.minecraft.item.ShearsItem;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class ExtendedShearsItem extends ShearsItem implements Dispensable {
-
-    private final Optional<DispenserBehavior> vanillaDispenserBehaviour = getBehavior(new ItemStack(Items.SHEARS));
+public class ExtendedShearsItem extends ShearsItem {
 
     public ExtendedShearsItem() {
         super(new Item.Settings().maxDamage(238).group(ItemGroup.TOOLS));
-        setDispenseable();
-        DispenserBlock.registerBehavior(Items.SHEARS, getBehavior(new ItemStack(this)).get());
-    }
+        final Optional<DispenserBehavior> vanillaDispenserBehaviour = Dispensable.getBehavior(new ItemStack(Items.SHEARS));
+        DispenserBlock.registerBehavior(Items.SHEARS, Dispensable.setDispenseable(this, (source, stack) -> {
 
-    @Override
-    public TypedActionResult<ItemStack> dispenseStack(BlockPointer source, ItemStack stack) {
-        Direction facing = source.getBlockState().get(DispenserBlock.FACING);
-        BlockPos pos = source.getBlockPos().offset(facing);
-        World w = source.getWorld();
+            BlockPos pos = source.getBlockPos().offset(source.getBlockState().get(DispenserBlock.FACING));
+            World w = source.getWorld();
 
-        if (UItems.MOSS.tryConvert(w, w.getBlockState(pos), pos, null)) {
-            stack.damage(1, w.random, null);
+            if (UItems.MOSS.tryConvert(w, w.getBlockState(pos), pos, null)) {
+                stack.damage(1, w.random, null);
 
-            return TypedActionResult.success(stack);
-        }
+                return TypedActionResult.success(stack);
+            }
 
-        return vanillaDispenserBehaviour
-                .map(action -> TypedActionResult.success(action.dispense(source, stack)))
-                .orElseGet(() -> TypedActionResult.fail(stack));
+            return vanillaDispenserBehaviour
+                    .map(action -> {
+                        return TypedActionResult.pass(action.dispense(source, stack));
+                    })
+                    .orElseGet(() -> TypedActionResult.fail(stack));
+        }));
     }
 
     @Override

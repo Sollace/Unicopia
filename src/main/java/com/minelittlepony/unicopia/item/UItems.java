@@ -6,15 +6,14 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.magic.spell.ScorchSpell;
-import com.minelittlepony.unicopia.toxin.ToxicBlockItem;
 import com.minelittlepony.unicopia.toxin.ToxicItem;
 import com.minelittlepony.unicopia.toxin.Toxicity;
 import com.minelittlepony.unicopia.toxin.Toxin;
+import com.minelittlepony.unicopia.toxin.Toxics;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.block.Blocks;
 import net.minecraft.item.AliasedBlockItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
@@ -182,6 +181,8 @@ public interface UItems {
         // FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(zap_apple), new ItemStack(cooked_zap_apple), 0.1F);
         // FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(juice), new ItemStack(burned_juice), 0);
         // FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(cuccoon), new ItemStack(chitin_shell), 0.3F);
+
+        Toxics.bootstrap();
     }
 
     interface VanillaOverrides {
@@ -189,63 +190,6 @@ public interface UItems {
         ExtendedShearsItem SHEARS = register(new ExtendedShearsItem(), Items.SHEARS);
 
         AppleItem APPLE = register(new AppleItem(FoodComponents.APPLE), Items.APPLE);
-
-        Item GRASS = register(new ToxicBlockItem(Blocks.GRASS, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SAFE, Toxin.FOOD.and(Toxin.NAUSEA)), Items.GRASS);
-        Item FERN = register(new ToxicBlockItem(Blocks.FERN, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SEVERE, Toxin.FOOD.and(Toxin.STRENGTH)), Items.FERN);
-        Item DEAD_BUSH = register(new ToxicBlockItem(Blocks.DEAD_BUSH, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SEVERE, Toxin.FOOD.and(Toxin.NAUSEA)), Items.DEAD_BUSH);
-
-        Item DANDELION = register(new ToxicBlockItem(Blocks.DANDELION, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.DANDELION);
-        Item POPPY = register(new ToxicBlockItem(Blocks.POPPY, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SEVERE, Toxin.FOOD), Items.POPPY);
-        Item BLUE_ORCHID = register(new ToxicBlockItem(Blocks.BLUE_ORCHID, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.BLUE_ORCHID);
-        Item ALLIUM = register(new ToxicBlockItem(Blocks.ALLIUM, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.FAIR, Toxin.FOOD), Items.ALLIUM);
-        Item AZUER_BLUET = register(new ToxicBlockItem(Blocks.AZURE_BLUET, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SAFE, Toxin.FOOD.and(Toxin.RADIOACTIVITY)), Items.AZURE_BLUET);
-        Item RED_TULIP = register(new ToxicBlockItem(Blocks.RED_TULIP, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.RED_TULIP);
-        Item ORANGE_TULIP = register(new ToxicBlockItem(Blocks.ORANGE_TULIP, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.ORANGE_TULIP);
-        Item WHITE_TULIP = register(new ToxicBlockItem(Blocks.WHITE_TULIP, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.FAIR, Toxin.FOOD), Items.WHITE_TULIP);
-        Item PINK_TULIP = register(new ToxicBlockItem(Blocks.PINK_TULIP, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.PINK_TULIP);
-        Item OXEYE_DAISY = register(new ToxicBlockItem(Blocks.OXEYE_DAISY, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SEVERE, Toxin.FOOD.and(Toxin.BLINDNESS)), Items.OXEYE_DAISY);
-        Item CORNFLOWER = register(new ToxicBlockItem(Blocks.CORNFLOWER, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.CORNFLOWER);
-
-        Item ROSE_BUSH = register(new ToxicBlockItem(Blocks.ROSE_BUSH, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SAFE, Toxin.FOOD.and(Toxin.DAMAGE)), Items.ROSE_BUSH);
-        Item PEONY = register(new ToxicBlockItem(Blocks.PEONY, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.PEONY);
-        Item TALL_GRASS = register(new ToxicBlockItem(Blocks.TALL_GRASS, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), Items.TALL_GRASS);
-        Item LARGE_FERN = register(new ToxicBlockItem(Blocks.LARGE_FERN, new Settings()
-                .food(UFoodComponents.RANDOM_FOLIAGE)
-                .group(ItemGroup.DECORATIONS), UseAction.EAT, Toxicity.SEVERE, Toxin.FOOD.and(Toxin.DAMAGE)), Items.LARGE_FERN);
 
         static <T extends Item> T register(T newItem, Item oldItem) {
             return Registry.ITEM.set(Registry.ITEM.getRawId(oldItem), Registry.ITEM.getId(oldItem), newItem);

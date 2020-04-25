@@ -30,14 +30,9 @@ public class MossItem extends ToxicItem {
 
         if (!state.equals(converted)) {
             world.setBlockState(pos, converted, 3);
-
             world.playSound(null, pos, SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.PLAYERS, 1, 1);
 
-            int amount = 1;
-
-            if (player != null && Pony.of(player).getSpecies().canUseEarth()) {
-                amount = world.random.nextInt(4);
-            }
+            int amount = player != null && Pony.of(player).getSpecies().canUseEarth() ? world.random.nextInt(4) : 1;
 
             Block.dropStack(world, pos, new ItemStack(this, amount));
 

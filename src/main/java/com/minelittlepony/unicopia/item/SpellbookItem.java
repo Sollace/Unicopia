@@ -12,23 +12,29 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class SpellbookItem extends BookItem implements Dispensable {
+public class SpellbookItem extends BookItem {
 
     public SpellbookItem() {
         super(new Item.Settings()
                 .maxCount(1)
                 .group(ItemGroup.BREWING));
+        Dispensable.setDispenseable(this, (source, stack) -> {
+            Direction facing = source.getBlockState().get(DispenserBlock.FACING);
+            BlockPos pos = source.getBlockPos().offset(facing);
 
-        setDispenseable();
+            int yaw = facing.getOpposite().getHorizontal() * 90;
+            placeBook(source.getWorld(), pos.getX(), pos.getY(), pos.getZ(), yaw);
+            stack.decrement(1);
+
+            return new TypedActionResult<>(ActionResult.SUCCESS, stack);
+        });
     }
 
     @Override
@@ -62,30 +68,6 @@ public class SpellbookItem extends BookItem implements Dispensable {
         book.prevYaw = yaw;
 
         world.spawnEntity(book);
-    }
-
-    @Override
-    public TypedActionResult<ItemStack> dispenseStack(BlockPointer source, ItemStack stack) {
-        Direction facing = source.getBlockState().get(DispenserBlock.FACING);
-        BlockPos pos = source.getBlockPos().offset(facing);
-
-        //0deg == SOUTH
-        //90deg == WEST
-        //180deg == NORTH
-        //270deg == EAST
-
-        /*switch (facing) {
-        case NORTH: yaw -= 90; break;
-        case SOUTH: yaw += 90; break;
-        case EAST: yaw += 180; break;
-        default:
-        }*/
-
-        int yaw = facing.getOpposite().getHorizontal() * 90;
-        placeBook(source.getWorld(), pos.getX(), pos.getY(), pos.getZ(), yaw);
-        stack.decrement(1);
-
-        return new TypedActionResult<>(ActionResult.SUCCESS, stack);
     }
 }
 

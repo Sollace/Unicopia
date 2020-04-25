@@ -25,6 +25,10 @@ public class Toxic {
     private final Function<ItemStack, Toxicity> toxicity;
     private final Toxin toxin;
 
+    Toxic(Item item, UseAction action, Toxin toxin, Toxicity toxicity) {
+        this(item, action, toxin, stack -> toxicity);
+    }
+
     Toxic(Item item, UseAction action, Toxin toxin, Function<ItemStack, Toxicity> toxicity) {
         this.item = item;
         this.action = action;

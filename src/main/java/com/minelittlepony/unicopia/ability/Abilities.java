@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.util.Identifier;
@@ -7,7 +10,7 @@ import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.SimpleRegistry;
 
 public interface Abilities {
-    MutableRegistry<Integer> KEYS_CODES = new SimpleRegistry<>();
+    Map<Identifier, Integer> KEYS_CODES = new HashMap<>();
     MutableRegistry<Ability<?>> REGISTRY = new SimpleRegistry<>();
 
     // unicorn / alicorn
@@ -32,7 +35,7 @@ public interface Abilities {
 
     static <T extends Ability<?>> T register(T power, String name, int keyCode) {
         Identifier id = new Identifier("unicopia", name);
-        KEYS_CODES.add(id, keyCode);
+        KEYS_CODES.put(id, keyCode);
         return REGISTRY.add(id, power);
     }
 }

@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.Castable;
 import com.minelittlepony.unicopia.magic.DispenceableMagicEffect;
+import com.minelittlepony.unicopia.magic.Dispensable;
 import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.magic.Useable;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
@@ -40,8 +41,7 @@ public class MagicGemItem extends Item implements Castable {
         super(new Settings()
                 .maxCount(16)
                 .group(ItemGroup.BREWING));
-
-        setDispenseable();
+        Dispensable.setDispenseable(this, this::dispenseStack);
     }
 
     @Override

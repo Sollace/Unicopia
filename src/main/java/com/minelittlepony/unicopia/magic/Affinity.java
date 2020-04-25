@@ -29,7 +29,7 @@ public enum Affinity {
     }
 
     public Text getName() {
-        Text text = new TranslatableText("affinity." + getTranslationKey() + ".name");
+        Text text = new TranslatableText("affinity." + getTranslationKey());
         text.getStyle().setColor(getColourCode());
         return text;
     }

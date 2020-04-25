@@ -12,26 +12,43 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
+import net.minecraft.util.math.Direction;
 
 public interface Dispensable {
     /**
      * Enables dispensing behaviours for this item.
      */
-    default Item setDispenseable() {
-        DispenserBlock.registerBehavior((Item)this, new ItemDispenserBehavior() {
+    static DispenserBehavior setDispenseable(Item item, Dispensable action) {
+        ItemDispenserBehavior behaviour = new ItemDispenserBehavior() {
+            private ActionResult result;
             @Override
             protected ItemStack dispenseSilently(BlockPointer source, ItemStack stack) {
-                TypedActionResult<ItemStack> result = dispenseStack(source, stack);
+                TypedActionResult<ItemStack> result = action.dispenseStack(source, stack);
+                this.result = result.getResult();
 
-                if (result.getResult() != ActionResult.SUCCESS) {
+                if (this.result != ActionResult.SUCCESS) {
                     return super.dispenseSilently(source, stack);
                 }
 
                 return result.getValue();
             }
-        });
 
-        return (Item)this;
+            @Override
+            protected void playSound(BlockPointer pointer) {
+                if (result != ActionResult.PASS) {
+                    super.playSound(pointer);
+                }
+            }
+
+            @Override
+            protected void spawnParticles(BlockPointer pointer, Direction side) {
+                if (result != ActionResult.PASS) {
+                    super.spawnParticles(pointer, side);
+                }
+            }
+        };
+        DispenserBlock.registerBehavior(item, behaviour);
+        return behaviour;
     }
 
     /**
@@ -39,7 +56,7 @@ public interface Dispensable {
      */
     TypedActionResult<ItemStack> dispenseStack(BlockPointer source, ItemStack stack);
 
-    default Optional<DispenserBehavior> getBehavior(ItemStack stack) {
+    static Optional<DispenserBehavior> getBehavior(ItemStack stack) {
         return Optional.ofNullable(DispenserAccess.INSTANCE.getBehaviorForItem(stack));
     }
 }

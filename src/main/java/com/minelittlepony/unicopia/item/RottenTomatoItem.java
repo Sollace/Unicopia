@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.Dispensable;
 import com.minelittlepony.unicopia.util.projectile.TossableItem;
 
 import net.minecraft.block.BlockState;
@@ -21,7 +22,7 @@ public class RottenTomatoItem extends TomatoItem implements TossableItem {
 
     public RottenTomatoItem(Settings settings) {
         super(settings);
-        setDispenseable();
+        Dispensable.setDispenseable(this, this::dispenseStack);
     }
 
     @Override
