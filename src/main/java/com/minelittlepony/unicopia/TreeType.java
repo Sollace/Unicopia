@@ -14,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -25,7 +26,7 @@ public final class TreeType {
     public static final TreeType OAK = new TreeType("oak", new Weighted<Supplier<ItemStack>>()
             .put(1, () -> new ItemStack(UItems.ROTTEN_APPLE))
             .put(2, () -> new ItemStack(UItems.GREEN_APPLE))
-            .put(3, () -> new ItemStack(UItems.VanillaOverrides.APPLE)), Blocks.OAK_LOG, Blocks.OAK_LEAVES);
+            .put(3, () -> new ItemStack(Items.APPLE)), Blocks.OAK_LOG, Blocks.OAK_LEAVES);
     public static final TreeType BIRCH = new TreeType("birch", new Weighted<Supplier<ItemStack>>()
             .put(1, () -> new ItemStack(UItems.ROTTEN_APPLE))
             .put(2, () -> new ItemStack(UItems.SWEET_APPLE))

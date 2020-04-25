@@ -34,7 +34,7 @@ import net.minecraft.world.World;
 public class ZapAppleItem extends AppleItem {
 
     private static final List<Item> ALIASABLE_ITEMS = Lists.newArrayList(
-            UItems.VanillaOverrides.APPLE,
+            Items.APPLE,
             UItems.GREEN_APPLE,
             UItems.SWEET_APPLE,
             UItems.SOUR_APPLE,
@@ -96,7 +96,11 @@ public class ZapAppleItem extends AppleItem {
     public void appendStacks(ItemGroup tab, DefaultedList<ItemStack> items) {
         super.appendStacks(tab, items);
         if (isIn(tab)) {
-            ALIASABLE_ITEMS.forEach(item -> items.add(new ItemStack(item)));
+            ALIASABLE_ITEMS.forEach(item -> {
+                ItemStack stack = new ItemStack(this);
+                stack.getOrCreateTag().putString("appearance", Registry.ITEM.getId(item).toString());
+                items.add(stack);
+            });
         }
     }
 

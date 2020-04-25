@@ -27,7 +27,7 @@ public class AppleItem extends Item implements ItemEntityCapabilities.TickableIt
     public ActionResult onGroundTick(IItemEntity item) {
         ItemEntity entity = item.get().getOwner();
 
-        if (!entity.removed && item.getAge() > item.getPickupDelay()) {
+        if (!entity.removed && item.getPickupDelay() == 0 && item.getAge() > 200230 && entity.world.random.nextInt(200) < 10) {
 
             if (!entity.world.isClient) {
                 entity.remove();

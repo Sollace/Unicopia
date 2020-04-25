@@ -22,7 +22,7 @@ public class ExtendedShearsItem extends ShearsItem {
     public ExtendedShearsItem(Settings settings) {
         super(settings);
         final Optional<DispenserBehavior> vanillaDispenserBehaviour = Dispensable.getBehavior(new ItemStack(Items.SHEARS));
-        DispenserBlock.registerBehavior(Items.SHEARS, Dispensable.setDispenseable(this, (source, stack) -> {
+        /*DispenserBlock.registerBehavior(Items.SHEARS,*/ Dispensable.setDispenseable(this, (source, stack) -> {
 
             BlockPos pos = source.getBlockPos().offset(source.getBlockState().get(DispenserBlock.FACING));
             World w = source.getWorld();
@@ -38,7 +38,7 @@ public class ExtendedShearsItem extends ShearsItem {
                         return TypedActionResult.pass(action.dispense(source, stack));
                     })
                     .orElseGet(() -> TypedActionResult.fail(stack));
-        }));
+        })/*)*/;
     }
 
     @Override

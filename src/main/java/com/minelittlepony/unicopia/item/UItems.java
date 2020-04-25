@@ -163,6 +163,9 @@ public interface UItems {
     Item BUTTERFLY_SPAWN_EGG = register(new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xaaeeff, new Settings().group(ItemGroup.MISC)), "butterfly_spawn_egg");
 
     static <T extends Item> T register(T item, String name) {
+        if (item instanceof BlockItem) {
+            ((BlockItem)item).appendBlocks(Item.BLOCK_ITEMS, item);
+        }
         return Registry.ITEM.add(new Identifier("unicopia", name), item);
     }
 
@@ -180,16 +183,5 @@ public interface UItems {
         // FurnaceRecipes.instance().addSmeltingRecipe(new ItemStack(cuccoon), new ItemStack(chitin_shell), 0.3F);
 
         Toxics.bootstrap();
-    }
-
-    interface VanillaOverrides {
-        StickItem STICK = register(new StickItem(new Item.Settings().group(ItemGroup.MATERIALS)), Items.STICK);
-        ExtendedShearsItem SHEARS = register(new ExtendedShearsItem(new Item.Settings().maxDamage(238).group(ItemGroup.TOOLS)), Items.SHEARS);
-
-        AppleItem APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), Items.APPLE);
-
-        static <T extends Item> T register(T newItem, Item oldItem) {
-            return Registry.ITEM.set(Registry.ITEM.getRawId(oldItem), Registry.ITEM.getId(oldItem), newItem);
-        }
     }
 }

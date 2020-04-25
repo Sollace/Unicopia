@@ -10,6 +10,7 @@
     "MixinFarmlandBlock",
     "MixinHoeItem",
     "MixinItem",
+    "MixinItems",
     "MixinItemEntity",
     "MixinLivingEntity",
     "MixinPlayerEntity",
