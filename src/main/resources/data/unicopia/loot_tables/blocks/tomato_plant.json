@@ -94,7 +94,7 @@
             },
             {
               "type": "minecraft:item",
-              "name": "minecraft:tomato_seeds"
+              "name": "unicopia:tomato_seeds"
             }
           ]
         }
