@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
@@ -29,11 +28,7 @@ import net.minecraft.world.biome.Biome.SpawnEntry;
 
 public class ButterflyEntity extends AmbientEntity {
 
-    public static final EntityType<ButterflyEntity> TYPE = EntityType.Builder.create(ButterflyEntity::new, EntityCategory.AMBIENT)
-            .setDimensions(0.1F, 0.1F)
-            .build("butterfly");
-
-    public static final SpawnEntry SPAWN_ENTRY = new SpawnEntry(TYPE, 15, 9, 15);
+    public static final SpawnEntry SPAWN_ENTRY = new SpawnEntry(UEntities.BUTTERFLY, 15, 9, 15);
 
     private static final TrackedData<Boolean> RESTING = DataTracker.registerData(ButterflyEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 

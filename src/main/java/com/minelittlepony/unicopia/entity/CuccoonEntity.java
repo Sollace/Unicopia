@@ -110,8 +110,9 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
     public void tick() {
         super.tick();
 
-        if (hasPassengers()) {
-            Entity passenger = getPrimaryPassenger();
+        Entity passenger = getPrimaryPassenger();
+
+        if (passenger != null) {
 
             boolean sneaking = passenger.isSneaking();
 

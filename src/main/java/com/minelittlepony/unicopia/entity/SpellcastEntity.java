@@ -46,17 +46,14 @@ import net.minecraft.world.explosion.Explosion.DestructionType;
 
 public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caster<LivingEntity>, InAnimate, PickedItemSupplier {
 
+    private static final TrackedData<Integer> LEVEL = DataTracker.registerData(SpellcastEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Optional<UUID>> OWNER = DataTracker.registerData(SpellcastEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+    private static final TrackedData<CompoundTag> EFFECT = DataTracker.registerData(SpellcastEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+    private static final TrackedData<Integer> AFFINITY = DataTracker.registerData(SpellcastEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
     private LivingEntity owner = null;
 
     public float hoverStart;
-
-    private static final TrackedData<Integer> LEVEL = DataTracker.registerData(SpellcastEntity.class, TrackedDataHandlerRegistry.INTEGER);
-
-    private static final TrackedData<Optional<UUID>> OWNER = DataTracker.registerData(SpellcastEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
-
-    private static final TrackedData<CompoundTag> EFFECT = DataTracker.registerData(SpellcastEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
-
-    private static final TrackedData<Integer> AFFINITY = DataTracker.registerData(SpellcastEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
 
