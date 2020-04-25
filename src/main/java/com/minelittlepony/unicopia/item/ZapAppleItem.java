@@ -40,7 +40,7 @@ public class ZapAppleItem extends AppleItem {
             UItems.SWEET_APPLE,
             UItems.SOUR_APPLE,
             UItems.ROTTEN_APPLE,
-            UItems.cooked_zap_apple
+            UItems.COOKED_ZAP_APPLE
     );
 
     public ZapAppleItem() {

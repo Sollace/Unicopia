@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ducks.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemEntityCapabilities;
-import com.minelittlepony.unicopia.toxin.Toxic;
 import com.minelittlepony.unicopia.toxin.Toxicity;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
@@ -20,7 +19,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class AppleItem extends Item implements Toxic, ItemEntityCapabilities.TickableItem {
+public class AppleItem extends Item implements ItemEntityCapabilities.TickableItem {
 
     public AppleItem(FoodComponent components) {
         super(new Item.Settings()
@@ -69,7 +68,6 @@ public class AppleItem extends Item implements Toxic, ItemEntityCapabilities.Tic
         tooltip.add(getToxicity(stack).getTooltip());
     }
 
-    @Override
     public Toxicity getToxicity(ItemStack stack) {
         return Toxicity.SAFE;
     }

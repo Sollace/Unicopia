@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.blockstate.StateMaps;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.toxin.ToxicItem;
 import com.minelittlepony.unicopia.toxin.Toxicity;
+import com.minelittlepony.unicopia.toxin.Toxin;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,7 +22,7 @@ import net.minecraft.world.World;
 public class MossItem extends ToxicItem {
 
     public MossItem(Item.Settings settings) {
-        super(settings, 2, 1, UseAction.EAT, Toxicity.FAIR);
+        super(settings, UseAction.EAT, Toxicity.MILD, Toxin.FOOD);
     }
 
     public boolean tryConvert(World world, BlockState state, BlockPos pos, @Nullable PlayerEntity player) {
@@ -44,10 +45,5 @@ public class MossItem extends ToxicItem {
         }
 
         return false;
-    }
-
-    @Override
-    public Toxicity getToxicity(ItemStack stack) {
-        return Toxicity.MILD;
     }
 }

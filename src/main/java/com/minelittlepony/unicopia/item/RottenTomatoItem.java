@@ -19,9 +19,8 @@ import net.minecraft.world.World;
 
 public class RottenTomatoItem extends TomatoItem implements TossableItem {
 
-    public RottenTomatoItem(int hunger, float saturation) {
-        super(hunger, saturation);
-
+    public RottenTomatoItem(Settings settings) {
+        super(settings);
         setDispenseable();
     }
 
