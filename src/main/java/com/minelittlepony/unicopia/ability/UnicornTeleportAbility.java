@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.ability;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -27,18 +27,7 @@ import net.minecraft.world.World;
 /**
  * Unicorn teleport ability
  */
-public class UnicornTeleportAbility implements Ability<Ability.Pos> {
-
-    @Override
-    public String getKeyName() {
-        return "unicopia.power.teleport";
-    }
-
-    @Override
-    public int getKeyCode() {
-        return GLFW.GLFW_KEY_O;
-    }
-
+public class UnicornTeleportAbility implements Ability<Pos> {
     @Override
     public int getWarmupTime(Pony player) {
         return 20;
@@ -107,11 +96,9 @@ public class UnicornTeleportAbility implements Ability<Ability.Pos> {
         return new Pos(pos.getX(), pos.getY(), pos.getZ());
     }
 
-
-
     @Override
-    public Class<Pos> getPackageType() {
-        return Pos.class;
+    public Hit.Serializer<Pos> getSerializer() {
+        return Pos.SERIALIZER;
     }
 
     @Override

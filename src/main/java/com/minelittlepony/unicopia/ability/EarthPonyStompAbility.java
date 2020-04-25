@@ -2,13 +2,12 @@ package com.minelittlepony.unicopia.ability;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.lwjgl.glfw.GLFW;
-
 import com.google.common.collect.Lists;
-import com.google.gson.annotations.Expose;
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.TreeType;
+import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.ability.data.Multi;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
@@ -41,7 +40,7 @@ import net.minecraft.world.World;
 /**
  * Earth Pony stomping ability
  */
-public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data> {
+public class EarthPonyStompAbility implements Ability<Multi> {
 
     private final double rad = 4;
 
@@ -49,16 +48,6 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
             -rad, -rad, -rad,
              rad,  rad,  rad
      );
-
-    @Override
-    public String getKeyName() {
-        return "unicopia.power.earth";
-    }
-
-    @Override
-    public int getKeyCode() {
-        return GLFW.GLFW_KEY_M;
-    }
 
     @Override
     public int getWarmupTime(Pony player) {
@@ -76,7 +65,7 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
     }
 
     @Override
-    public EarthPonyStompAbility.Data tryActivate(Pony player) {
+    public Multi tryActivate(Pony player) {
         HitResult mop = VecHelper.getObjectMouseOver(player.getOwner(), 6, 1);
 
         if (mop instanceof BlockHitResult && mop.getType() == HitResult.Type.BLOCK) {
@@ -86,21 +75,21 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
             if (state.getBlock() instanceof LogBlock) {
                 pos = getBaseOfTree(player.getWorld(), state, pos);
                 if (measureTree(player.getWorld(), state, pos) > 0) {
-                    return new Data(pos.getX(), pos.getY(), pos.getZ(), 1);
+                    return new Multi(pos.getX(), pos.getY(), pos.getZ(), 1);
                 }
             }
         }
 
         if (!player.getOwner().onGround && !player.getOwner().abilities.flying) {
             player.getOwner().addVelocity(0, -6, 0);
-            return new Data(0, 0, 0, 0);
+            return new Multi(0, 0, 0, 0);
         }
         return null;
     }
 
     @Override
-    public Class<EarthPonyStompAbility.Data> getPackageType() {
-        return EarthPonyStompAbility.Data.class;
+    public Hit.Serializer<Multi> getSerializer() {
+        return Multi.SERIALIZER;
     }
 
     public static BlockPos getSolidBlockBelow(BlockPos pos, World w) {
@@ -116,7 +105,7 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
     }
 
     @Override
-    public void apply(Pony iplayer, Data data) {
+    public void apply(Pony iplayer, Multi data) {
 
         PlayerEntity player = iplayer.getOwner();
 
@@ -451,15 +440,5 @@ public class EarthPonyStompAbility implements Ability<EarthPonyStompAbility.Data
 
     private boolean variantEquals(BlockState one, BlockState two) {
         return TreeType.get(one).equals(TreeType.get(two));
-    }
-
-    protected static class Data extends Ability.Pos {
-        @Expose
-        public int hitType;
-
-        public Data(int x, int y, int z, int hit) {
-            super(x, y, z);
-            hitType = hit;
-        }
     }
 }

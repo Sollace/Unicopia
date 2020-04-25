@@ -1,8 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -16,17 +15,7 @@ import net.minecraft.world.World;
 /**
  * Pegasi ability to pick up and carry other players
  */
-public class PegasusCarryAbility implements Ability<Ability.Hit> {
-
-    @Override
-    public String getKeyName() {
-        return "unicopia.power.carry";
-    }
-
-    @Override
-    public int getKeyCode() {
-        return GLFW.GLFW_KEY_K;
-    }
+public class PegasusCarryAbility implements Ability<Hit> {
 
     @Override
     public int getWarmupTime(Pony player) {
@@ -45,7 +34,7 @@ public class PegasusCarryAbility implements Ability<Ability.Hit> {
 
     @Override
     public Hit tryActivate(Pony player) {
-        return new Hit();
+        return Hit.INSTANCE;
     }
 
     protected LivingEntity findRider(PlayerEntity player, World w) {
@@ -61,8 +50,8 @@ public class PegasusCarryAbility implements Ability<Ability.Hit> {
     }
 
     @Override
-    public Class<Hit> getPackageType() {
-        return Hit.class;
+    public Hit.Serializer<Hit> getSerializer() {
+        return Hit.SERIALIZER;
     }
 
     @Override

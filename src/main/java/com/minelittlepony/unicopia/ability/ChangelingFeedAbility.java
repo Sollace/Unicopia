@@ -5,9 +5,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particles.ParticleUtils;
 import com.minelittlepony.unicopia.particles.UParticles;
@@ -30,17 +29,7 @@ import net.minecraft.particle.ParticleTypes;
 /**
  * Changeling ability to restore health from mobs
  */
-public class ChangelingFeedAbility implements Ability<Ability.Hit> {
-
-    @Override
-    public String getKeyName() {
-        return "unicopia.power.feed";
-    }
-
-    @Override
-    public int getKeyCode() {
-        return GLFW.GLFW_KEY_O;
-    }
+public class ChangelingFeedAbility implements Ability<Hit> {
 
     @Override
     public int getWarmupTime(Pony player) {
@@ -62,7 +51,7 @@ public class ChangelingFeedAbility implements Ability<Ability.Hit> {
     public Hit tryActivate(Pony player) {
         if (canFeed(player)) {
             if (!getTargets(player).isEmpty()) {
-                return new Hit();
+                return Hit.INSTANCE;
             }
         }
 
@@ -84,8 +73,8 @@ public class ChangelingFeedAbility implements Ability<Ability.Hit> {
     }
 
     @Override
-    public Class<Hit> getPackageType() {
-        return Hit.class;
+    public Hit.Serializer<Hit> getSerializer() {
+        return Hit.SERIALIZER;
     }
 
     protected List<LivingEntity> getTargets(Pony player) {

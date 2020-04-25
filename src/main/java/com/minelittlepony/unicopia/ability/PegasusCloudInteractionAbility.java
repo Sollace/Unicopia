@@ -2,9 +2,9 @@ package com.minelittlepony.unicopia.ability;
 
 import java.util.Optional;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.ability.data.Numeric;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.particles.UParticles;
@@ -12,17 +12,7 @@ import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.Entity;
 
-public class PegasusCloudInteractionAbility implements Ability<Ability.Numeric> {
-
-    @Override
-    public String getKeyName() {
-        return "unicopia.power.cloud";
-    }
-
-    @Override
-    public int getKeyCode() {
-        return GLFW.GLFW_KEY_J;
-    }
+public class PegasusCloudInteractionAbility implements Ability<Numeric> {
 
     @Override
     public int getWarmupTime(Pony player) {
@@ -50,8 +40,8 @@ public class PegasusCloudInteractionAbility implements Ability<Ability.Numeric> 
     }
 
     @Override
-    public Class<Numeric> getPackageType() {
-        return Numeric.class;
+    public Hit.Serializer<Numeric> getSerializer() {
+        return Numeric.SERIALIZER;
     }
 
     @Override

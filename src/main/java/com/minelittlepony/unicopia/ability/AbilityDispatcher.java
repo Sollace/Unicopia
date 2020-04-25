@@ -1,18 +1,20 @@
-package com.minelittlepony.unicopia.entity.player;
+package com.minelittlepony.unicopia.ability;
+
+import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.ability.AbilityReceiver;
-import com.minelittlepony.unicopia.ability.Ability;
-import com.minelittlepony.unicopia.ability.Abilities;
+import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.Updatable;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
 
-class AbilityDelegate implements AbilityReceiver, Updatable, NbtSerialisable {
+public class AbilityDispatcher implements Updatable, NbtSerialisable {
 
     private final Pony player;
 
@@ -31,10 +33,9 @@ class AbilityDelegate implements AbilityReceiver, Updatable, NbtSerialisable {
      */
     private boolean triggered;
 
-    @Nullable
-    private Ability<?> activeAbility = null;
+    private Optional<Ability<?>> activeAbility = Optional.empty();
 
-    public AbilityDelegate(Pony player) {
+    public AbilityDispatcher(Pony player) {
         this.player = player;
     }
 
@@ -42,53 +43,47 @@ class AbilityDelegate implements AbilityReceiver, Updatable, NbtSerialisable {
      * Returns true if the currrent ability can we swapped out.
      */
     boolean canSwitchStates() {
-        return activeAbility == null || (warmup != 0) || (triggered && cooldown == 0);
+        return !activeAbility.isPresent() || (warmup != 0) || (triggered && cooldown == 0);
     }
 
-    @Override
     public void tryUseAbility(Ability<?> power) {
         if (canSwitchStates()) {
             setAbility(power);
         }
     }
 
-    @Override
     public void tryClearAbility() {
         if (canSwitchStates()) {
             setAbility(null);
         }
     }
 
-    protected synchronized void setAbility(@Nullable Ability<?> power) {
-        if (activeAbility != power) {
+    protected synchronized void setAbility(Ability<?> power) {
+        if (activeAbility.orElse(null) != power) {
             triggered = false;
-            activeAbility = power;
-            warmup = power == null ? 0 : power.getWarmupTime(player);
+            activeAbility = Optional.ofNullable(power);
+            warmup = activeAbility.map(p -> p.getWarmupTime(player)).orElse(0);
             cooldown = 0;
         }
     }
 
     @Nullable
-    protected synchronized Ability<?> getUsableAbility() {
-        if (!(activeAbility == null || (triggered && warmup == 0 && cooldown == 0)) && activeAbility.canUse(player.getSpecies())) {
-            return activeAbility;
-        }
-        return null;
+    protected synchronized Optional<Ability<?>> getUsableAbility() {
+        return activeAbility.filter(ability -> {
+            return (triggered && warmup == 0 && cooldown == 0) && ability.canUse(player.getSpecies());
+        });
     }
 
-    @Override
     public int getRemainingCooldown() {
         return cooldown;
     }
 
     @Override
     public void onUpdate() {
-        Ability<?> ability = getUsableAbility();
+        getUsableAbility().ifPresent(this::activate);
+    }
 
-        if (ability == null) {
-            return;
-        }
-
+    private <T extends Hit> void activate(Ability<T> ability) {
         if (warmup > 0) {
             warmup--;
             ability.preApply(player);
@@ -110,10 +105,10 @@ class AbilityDelegate implements AbilityReceiver, Updatable, NbtSerialisable {
             cooldown = ability.getCooldownTime(player);
 
             if (player.isClientPlayer()) {
-                Ability.IData data = ability.tryActivate(player);
+                T data = ability.tryActivate(player);
 
                 if (data != null) {
-                    Channel.PLAYER_ABILITY.send(new MsgPlayerAbility(ability, data));
+                    Channel.PLAYER_ABILITY.send(new MsgPlayerAbility<>(ability, data));
                 } else {
                     cooldown = 0;
                 }
@@ -130,26 +125,16 @@ class AbilityDelegate implements AbilityReceiver, Updatable, NbtSerialisable {
         compound.putBoolean("triggered", triggered);
         compound.putInt("warmup", warmup);
         compound.putInt("cooldown", cooldown);
-
-        Ability<?> ability = getUsableAbility();
-
-        if (ability != null) {
-            compound.putString("activeAbility", ability.getKeyName());
-        }
+        getUsableAbility().ifPresent(ability -> {
+            compound.putString("activeAbility", Abilities.REGISTRY.getId(ability).toString());
+        });
     }
 
     @Override
     public void fromNBT(CompoundTag compound) {
-        activeAbility = null;
-
         triggered = compound.getBoolean("triggered");
         warmup = compound.getInt("warmup");
         cooldown = compound.getInt("cooldown");
-
-        if (compound.contains("activeAbility")) {
-            Abilities.getInstance()
-                .getPowerFromName(compound.getString("activeAbility"))
-                .ifPresent(p -> activeAbility = p);
-        }
+        activeAbility = Abilities.REGISTRY.getOrEmpty(new Identifier(compound.getString("activeAbility")));
     }
 }

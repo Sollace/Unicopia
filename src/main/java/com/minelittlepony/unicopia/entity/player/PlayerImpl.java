@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UTags;
-import com.minelittlepony.unicopia.ability.AbilityReceiver;
+import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.enchanting.PageOwner;
 import com.minelittlepony.unicopia.entity.FlightControl;
 import com.minelittlepony.unicopia.entity.Trap;
@@ -54,7 +54,7 @@ public class PlayerImpl implements Pony {
 
     private final PlayerPageStats pageStates = new PlayerPageStats();
 
-    private final AbilityDelegate powers = new AbilityDelegate(this);
+    private final AbilityDispatcher powers = new AbilityDispatcher(this);
 
     private final GravityDelegate gravity = new GravityDelegate(this);
 
@@ -183,7 +183,7 @@ public class PlayerImpl implements Pony {
     }
 
     @Override
-    public AbilityReceiver getAbilities() {
+    public AbilityDispatcher getAbilities() {
         return powers;
     }
 

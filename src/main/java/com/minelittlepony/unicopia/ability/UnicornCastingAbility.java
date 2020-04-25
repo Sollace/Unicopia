@@ -1,8 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.ShieldSpell;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
@@ -11,17 +10,7 @@ import com.minelittlepony.unicopia.particles.MagicParticleEffect;
  * A magic casting ability for unicorns.
  * (only shields for now)
  */
-public class UnicornCastingAbility implements Ability<Ability.Hit> {
-
-    @Override
-    public String getKeyName() {
-        return "unicopia.power.magic";
-    }
-
-    @Override
-    public int getKeyCode() {
-        return GLFW.GLFW_KEY_P;
-    }
+public class UnicornCastingAbility implements Ability<Hit> {
 
     @Override
     public int getWarmupTime(Pony player) {
@@ -40,12 +29,12 @@ public class UnicornCastingAbility implements Ability<Ability.Hit> {
 
     @Override
     public Hit tryActivate(Pony player) {
-        return new Hit();
+        return Hit.INSTANCE;
     }
 
     @Override
-    public Class<Hit> getPackageType() {
-        return Hit.class;
+    public Hit.Serializer<Hit> getSerializer() {
+        return Hit.SERIALIZER;
     }
 
     @Override

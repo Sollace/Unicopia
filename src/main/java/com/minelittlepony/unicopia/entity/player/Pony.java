@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.entity.player;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
-import com.minelittlepony.unicopia.ability.AbilityReceiver;
+import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.enchanting.PageOwner;
 import com.minelittlepony.unicopia.entity.FlightControl;
 import com.minelittlepony.unicopia.entity.Ponylike;
@@ -30,7 +30,7 @@ public interface Pony extends Caster<PlayerEntity>, RaceContainer<PlayerEntity>,
     /**
      * Gets the player's magical abilities delegate responsible for all spell casting and persisting/updating.
      */
-    AbilityReceiver getAbilities();
+    AbilityDispatcher getAbilities();
 
     /**
      * Gets the gravity delegate responsible for updating flight states

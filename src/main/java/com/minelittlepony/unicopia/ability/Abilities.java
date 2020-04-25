@@ -1,65 +1,36 @@
 package com.minelittlepony.unicopia.ability;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import org.lwjgl.glfw.GLFW;
 
-import com.minelittlepony.unicopia.Race;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.MutableRegistry;
+import net.minecraft.util.registry.SimpleRegistry;
 
-public final class Abilities {
+public interface Abilities {
+    MutableRegistry<Integer> KEYS_CODES = new SimpleRegistry<>();
+    MutableRegistry<Ability<?>> REGISTRY = new SimpleRegistry<>();
 
-    private static final Abilities INSTANCE = new Abilities();
+    // unicorn
+    Ability<?> TELEPORT = register(new UnicornTeleportAbility(), "teleport", GLFW.GLFW_KEY_O);
+    Ability<?> CAST = register(new UnicornCastingAbility(), "cast", GLFW.GLFW_KEY_P);
 
-    public static Abilities getInstance() {
-        return INSTANCE;
-    }
+    // earth
+    Ability<?> GROW = register(new EarthPonyGrowAbility(), "grow", GLFW.GLFW_KEY_N);
+    Ability<?> STOMP = register(new EarthPonyStompAbility(), "stomp", GLFW.GLFW_KEY_M);
 
-    private final Map<Integer, List<Ability<? extends Ability.IData>>> keyToPowerMap = new HashMap<>();
+    // pegasus
+    Ability<?> CARRY = register(new PegasusCarryAbility(), "carry", GLFW.GLFW_KEY_K);
+    Ability<?> CLOUD = register(new PegasusCloudInteractionAbility(), "cloud", GLFW.GLFW_KEY_J);
 
-    private final Map<String, Ability<? extends Ability.IData>> powerNamesMap = new HashMap<>();
+    // changeling
+    Ability<?> FEED = register(new ChangelingFeedAbility(), "feed", GLFW.GLFW_KEY_O);
+    Ability<?> TRAP = register(new ChangelingTrapAbility(), "trap", GLFW.GLFW_KEY_L);
 
-    private Abilities() {
-    }
+    Ability<?> DISGUISE = register(new ChangelingDisguiseAbility(), "disguise", GLFW.GLFW_KEY_P);
 
-    public void init() {
-        register(new UnicornTeleportAbility());
-        register(new UnicornCastingAbility());
-        register(new EarthPonyGrowAbility());
-        register(new ChangelingFeedAbility());
-        register(new PegasusCarryAbility());
-        register(new PegasusCloudInteractionAbility());
-        register(new ChangelingTrapAbility());
-        register(new EarthPonyStompAbility());
-        register(new ChangelingDisguiseAbility());
-    }
-
-    public boolean hasRegisteredPower(int keyCode) {
-        return keyToPowerMap.containsKey(keyCode);
-    }
-
-    public Optional<Ability<? extends Ability.IData>> getCapablePowerFromKey(int keyCode, Race race) {
-        return getKeyCodePool(keyCode).stream()
-                .filter(power -> power.canUse(race))
-                .findFirst();
-    }
-
-    public Optional<Ability<? extends Ability.IData>> getPowerFromName(String name) {
-        return Optional.ofNullable(powerNamesMap.get(name));
-    }
-
-    private List<Ability<? extends Ability.IData>> getKeyCodePool(int keyCode) {
-        return keyToPowerMap.computeIfAbsent(keyCode, ArrayList::new);
-    }
-
-    public void register(Ability<? extends Ability.IData> power) {
-        getKeyCodePool(power.getKeyCode()).add(power);
-        powerNamesMap.put(power.getKeyName(), power);
-    }
-
-    public Collection<Ability<? extends Ability.IData>> getValues() {
-        return powerNamesMap.values();
+    static <T extends Ability<?>> T register(T power, String name, int keyCode) {
+        Identifier id = new Identifier("unicopia", name);
+        KEYS_CODES.add(id, keyCode);
+        return REGISTRY.add(id, power);
     }
 }

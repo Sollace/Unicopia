@@ -7,7 +7,6 @@ import net.minecraft.resource.ResourceType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.advancement.BOHDeathCriterion;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.command.Commands;
@@ -47,7 +46,6 @@ public class Unicopia implements ModInitializer {
         UContainers.bootstrap();
         UStructures.bootstrap();
         URecipes.bootstrap();
-        Abilities.getInstance().init();
 
         CriterionsRegistry.register(BOHDeathCriterion.INSTANCE);
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(Pages.instance());

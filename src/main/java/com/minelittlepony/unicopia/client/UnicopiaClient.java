@@ -45,7 +45,7 @@ public class UnicopiaClient implements ClientModInitializer {
         URenderers.bootstrap();
 
         ClientTickCallback.EVENT.register(this::tick);
-        ClientReadyCallback.EVENT.register(client -> Abilities.getInstance().getValues().forEach(keyboard::addKeybind));
+        ClientReadyCallback.EVENT.register(client -> Abilities.REGISTRY.stream().forEach(keyboard::addKeybind));
 
         DefaultTexturesRegistry.getDefaultTextures().add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, SpellbookResultSlot.EMPTY_GEM_SLOT));
 
@@ -74,7 +74,7 @@ public class UnicopiaClient implements ClientModInitializer {
             }
         }
 
-        keyboard.onKeyInput();
+        keyboard.tick(client);
     }
 
     private static int getLeavesColor(BlockState state, @Nullable BlockRenderView world, @Nullable BlockPos pos, int tint) {

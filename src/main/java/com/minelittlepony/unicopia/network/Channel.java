@@ -12,7 +12,7 @@ import net.minecraft.util.PacketByteBuf;
 
 public interface Channel {
 
-    SPacketType<MsgPlayerAbility> PLAYER_ABILITY = clientToServer(new Identifier("unicopia", "player_ability"), MsgPlayerAbility::new);
+    SPacketType<MsgPlayerAbility<?>> PLAYER_ABILITY = clientToServer(new Identifier("unicopia", "player_ability"), MsgPlayerAbility::new);
 
     SPacketType<MsgRequestCapabilities> REQUEST_CAPABILITIES = clientToServer(new Identifier("unicopia", "request_capabilities"), MsgRequestCapabilities::new);
     CPacketType<MsgPlayerCapabilities> PLAYER_CAPABILITIES = serverToClient(new Identifier("unicopia", "player_capabilities"), MsgPlayerCapabilities::new);

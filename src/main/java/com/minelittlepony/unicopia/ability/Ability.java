@@ -2,21 +2,13 @@ package com.minelittlepony.unicopia.ability;
 
 import javax.annotation.Nullable;
 
-import com.google.gson.annotations.Expose;
-import com.minelittlepony.unicopia.KeyBind;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public interface Ability<T extends Ability.IData> extends KeyBind {
-
-    @Override
-    default String getKeyCategory() {
-        return "unicopia.category.name";
-    }
-
+public interface Ability<T extends Hit> {
     /**
      * Returns the number of ticks the player must hold the ability key to trigger this ability.
      */
@@ -53,7 +45,7 @@ public interface Ability<T extends Ability.IData> extends KeyBind {
     @Nullable
     T tryActivate(Pony player);
 
-    Class<T> getPackageType();
+    Hit.Serializer<T> getSerializer();
 
     /**
      * Called to actually apply the ability.
@@ -75,48 +67,4 @@ public interface Ability<T extends Ability.IData> extends KeyBind {
      * @param player    The current player
      */
     void postApply(Pony player);
-
-    public interface IData {
-
-    }
-
-    class Pos implements Ability.IData {
-        @Expose
-        public int x;
-
-        @Expose
-        public int y;
-
-        @Expose
-        public int z;
-
-        public Pos(int x, int y, int z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-
-        public Pos(BlockPos pos) {
-            x = pos.getX();
-            y = pos.getY();
-            z = pos.getZ();
-        }
-
-        public BlockPos pos() {
-            return new BlockPos(x, y, z);
-        }
-    }
-
-    class Hit implements Ability.IData {
-
-    }
-
-    class Numeric implements IData {
-        @Expose
-        public int type;
-
-        public Numeric(int t) {
-            type = t;
-        }
-    }
 }
