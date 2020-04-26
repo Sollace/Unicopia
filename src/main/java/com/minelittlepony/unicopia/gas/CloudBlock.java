@@ -7,6 +7,8 @@ import com.minelittlepony.unicopia.blockstate.StateMaps;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.HoeUtil;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -19,6 +21,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
 
 public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
@@ -76,13 +79,13 @@ public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public boolean isSideInvisible(BlockState state, BlockState beside, Direction face) {
         if (beside.getBlock() instanceof Gas) {
-            Gas cloud = ((Gas)beside.getBlock());
+            VoxelShape myShape = state.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+            VoxelShape otherShape = beside.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 
-            if (cloud.getGasType(beside) == getGasType(state)) {
-                return true;
-            }
+            return VoxelShapes.isSideCovered(myShape, otherShape, face);
         }
 
         return super.isSideInvisible(state, beside, face);

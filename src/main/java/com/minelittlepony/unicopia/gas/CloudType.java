@@ -11,13 +11,10 @@ public enum CloudType {
     ENCHANTED;
 
     public FabricBlockSettings configure() {
-        FabricBlockSettings settings = FabricBlockSettings.of(UMaterials.CLOUD)
+        return FabricBlockSettings.of(UMaterials.CLOUD)
                 .strength(0.5F, 1)
-                .sounds(BlockSoundGroup.WOOL);
-        if (this != NORMAL ) {
-            settings.nonOpaque();
-        }
-        return settings;
+                .sounds(BlockSoundGroup.WOOL)
+                .nonOpaque();
     }
 
     public boolean isTranslucent() {
