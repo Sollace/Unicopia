@@ -1,9 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.toxin.Toxicity;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -32,15 +30,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class ZapAppleItem extends AppleItem {
-
-    private static final List<Item> ALIASABLE_ITEMS = Lists.newArrayList(
-            Items.APPLE,
-            UItems.GREEN_APPLE,
-            UItems.SWEET_APPLE,
-            UItems.SOUR_APPLE,
-            UItems.ROTTEN_APPLE,
-            UItems.COOKED_ZAP_APPLE
-    );
 
     public ZapAppleItem(Settings settings) {
         super(settings);
@@ -96,10 +85,12 @@ public class ZapAppleItem extends AppleItem {
     public void appendStacks(ItemGroup tab, DefaultedList<ItemStack> items) {
         super.appendStacks(tab, items);
         if (isIn(tab)) {
-            ALIASABLE_ITEMS.forEach(item -> {
-                ItemStack stack = new ItemStack(this);
-                stack.getOrCreateTag().putString("appearance", Registry.ITEM.getId(item).toString());
-                items.add(stack);
+            UTags.APPLES.values().forEach(item -> {
+                if (item != this) {
+                    ItemStack stack = new ItemStack(this);
+                    stack.getOrCreateTag().putString("appearance", Registry.ITEM.getId(item).toString());
+                    items.add(stack);
+                }
             });
         }
     }

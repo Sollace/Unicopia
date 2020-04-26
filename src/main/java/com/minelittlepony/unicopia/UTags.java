@@ -8,6 +8,7 @@ import net.minecraft.util.Identifier;
 public interface UTags {
     Tag<Item> CURSED_ARTEFACTS = TagRegistry.item(new Identifier("unicopia", "cursed_artefacts"));
     Tag<Item> HAMMERPACE_IMMUNE = TagRegistry.item(new Identifier("unicopia", "hammerspace_immune"));
+    Tag<Item> APPLES = TagRegistry.item(new Identifier("unicopia", "apples"));
 
     static void bootstrap() { }
 }
