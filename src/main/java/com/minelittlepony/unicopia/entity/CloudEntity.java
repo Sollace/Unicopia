@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.PegasusCloudInteractionAbility.ICloudEntity;
@@ -584,12 +585,17 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
     }
 
     public static int getFeatherEnchantStrength(LivingEntity entity) {
-        for (ItemStack stack : entity.getArmorItems()) {
-            if (stack != null) {
-                Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
-                if (enchantments.containsKey(Enchantments.FEATHER_FALLING)) {
-                    return enchantments.get(Enchantments.FEATHER_FALLING);
-                }
+        return Streams.stream(entity.getArmorItems())
+                .map(CloudEntity::getFeatherEnchantStrength).filter(i -> i > 0)
+                .findFirst()
+                .orElse(0);
+    }
+
+    public static int getFeatherEnchantStrength(ItemStack stack) {
+        if (stack != null && !stack.isEmpty()) {
+            Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
+            if (enchantments.containsKey(Enchantments.FEATHER_FALLING)) {
+                return enchantments.get(Enchantments.FEATHER_FALLING);
             }
         }
         return 0;
