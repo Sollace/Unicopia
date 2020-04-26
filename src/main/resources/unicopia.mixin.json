@@ -8,6 +8,7 @@
     "CriterionsRegistry",
     "MixinBlockItem",
     "MixinEntityContextImpl",
+    "MixinFallingBlock",
     "MixinFarmlandBlock",
     "MixinHoeItem",
     "MixinItem",

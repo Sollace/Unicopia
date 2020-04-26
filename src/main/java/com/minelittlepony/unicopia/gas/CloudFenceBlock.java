@@ -13,20 +13,20 @@ import net.minecraft.world.World;
 
 public class CloudFenceBlock extends FenceBlock implements Gas {
 
-    private final CloudType variant;
+    private final GasState variant;
 
-    public CloudFenceBlock(CloudType variant) {
+    public CloudFenceBlock(GasState variant) {
         super(variant.configure().build());
         this.variant = variant;
     }
 
     @Override
     public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
-        return getGasType(state).isTranslucent();
+        return getGasState(state).isTranslucent();
     }
 
     @Override
-    public CloudType getGasType(BlockState blockState) {
+    public GasState getGasState(BlockState blockState) {
         return variant;
     }
 
@@ -48,7 +48,7 @@ public class CloudFenceBlock extends FenceBlock implements Gas {
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         CloudInteractionContext ctx = (CloudInteractionContext)context;
 
-        if (!ctx.canTouch(getGasType(state))) {
+        if (!getGasState(state).canPlace(ctx)) {
             return VoxelShapes.empty();
         }
 
@@ -59,7 +59,7 @@ public class CloudFenceBlock extends FenceBlock implements Gas {
     public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         CloudInteractionContext ctx = (CloudInteractionContext)context;
 
-        if (!ctx.canTouch(getGasType(state))) {
+        if (!getGasState(state).canTouch(ctx)) {
             return VoxelShapes.empty();
         }
 
@@ -76,7 +76,7 @@ public class CloudFenceBlock extends FenceBlock implements Gas {
     @Deprecated
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
-        if (CloudType.NORMAL.canInteract(player)) {
+        if (GasState.NORMAL.canTouch(player)) {
             return super.calcBlockBreakingDelta(state, player, world, pos);
         }
         return -1;

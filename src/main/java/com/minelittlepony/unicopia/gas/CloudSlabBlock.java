@@ -21,15 +21,15 @@ public class CloudSlabBlock<T extends Block & Gas> extends AbstractSlabBlock<T> 
     }
 
     @Override
-    public CloudType getGasType(BlockState blockState) {
-        return modelBlock.getGasType(blockState);
+    public GasState getGasState(BlockState blockState) {
+        return modelBlock.getGasState(blockState);
     }
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         CloudInteractionContext ctx = (CloudInteractionContext)context;
 
-        if (!ctx.canTouch(getGasType(state))) {
+        if (!getGasState(state).canTouch(ctx)) {
             return VoxelShapes.empty();
         }
 
@@ -40,7 +40,7 @@ public class CloudSlabBlock<T extends Block & Gas> extends AbstractSlabBlock<T> 
     public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         CloudInteractionContext ctx = (CloudInteractionContext)context;
 
-        if (!ctx.canTouch(getGasType(state))) {
+        if (!getGasState(state).canPlace(ctx)) {
             return VoxelShapes.empty();
         }
 

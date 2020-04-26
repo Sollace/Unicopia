@@ -21,15 +21,15 @@ public class CloudStairsBlock<T extends Block & Gas> extends AbstractStairsBlock
     }
 
     @Override
-    public CloudType getGasType(BlockState state) {
-        return baseBlock.getGasType(baseBlockState);
+    public GasState getGasState(BlockState state) {
+        return baseBlock.getGasState(baseBlockState);
     }
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         CloudInteractionContext ctx = (CloudInteractionContext)context;
 
-        if (!ctx.canTouch(getGasType(state))) {
+        if (!getGasState(state).canPlace(ctx)) {
             return VoxelShapes.empty();
         }
 
@@ -40,7 +40,7 @@ public class CloudStairsBlock<T extends Block & Gas> extends AbstractStairsBlock
     public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         CloudInteractionContext ctx = (CloudInteractionContext)context;
 
-        if (!ctx.canTouch(getGasType(state))) {
+        if (!getGasState(state).canPlace(ctx)) {
             return VoxelShapes.empty();
         }
 

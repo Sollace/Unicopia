@@ -26,13 +26,13 @@ public class CloudDoorBlock extends AbstractDoorBlock implements Gas {
     }
 
     @Override
-    public CloudType getGasType(BlockState blockState) {
-        return CloudType.NORMAL;
+    public GasState getGasState(BlockState blockState) {
+        return GasState.NORMAL;
     }
 
     @Override
     public ActionResult onUse(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!getCanInteract(state, player)) {
+        if (!getGasState(state).canTouch(player)) {
             return ActionResult.PASS;
         }
         return super.onUse(state, worldIn, pos, player, hand, hit);
@@ -56,7 +56,7 @@ public class CloudDoorBlock extends AbstractDoorBlock implements Gas {
     @Deprecated
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView worldIn, BlockPos pos) {
-        if (CloudType.NORMAL.canInteract(player)) {
+        if (GasState.NORMAL.canTouch(player)) {
             return super.calcBlockBreakingDelta(state, player, worldIn, pos);
         }
         return -1;

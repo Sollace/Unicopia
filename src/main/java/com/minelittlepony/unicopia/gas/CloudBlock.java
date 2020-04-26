@@ -26,9 +26,9 @@ import net.minecraft.world.World;
 
 public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
 
-    private final CloudType variant;
+    private final GasState variant;
 
-    public CloudBlock(CloudType variant) {
+    public CloudBlock(GasState variant) {
         super(variant.configure()
                 .ticksRandomly()
                 .build()
@@ -39,29 +39,29 @@ public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
 
     @Override
     public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
-        return getGasType(state).isTranslucent();
+        return getGasState(state).isTranslucent();
     }
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         CloudInteractionContext ctx = (CloudInteractionContext)context;
 
-        if (!ctx.canTouch(getGasType(state))) {
+        if (!getGasState(state).canPlace(ctx)) {
             return VoxelShapes.empty();
         }
 
-        return super.getOutlineShape(state, view, pos, context);
+        return VoxelShapes.fullCube();
     }
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         CloudInteractionContext ctx = (CloudInteractionContext)context;
 
-        if (!ctx.canTouch(getGasType(state))) {
+        if (!getGasState(state).canTouch(ctx)) {
             return VoxelShapes.empty();
         }
 
-        return super.getCollisionShape(state, view, pos, context);
+        return collidable ? VoxelShapes.fullCube() : VoxelShapes.empty();
     }
 
     @Override
@@ -115,14 +115,14 @@ public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
     @Deprecated
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView worldIn, BlockPos pos) {
-        if (CloudType.NORMAL.canInteract(player)) {
+        if (GasState.NORMAL.canTouch(player)) {
             return super.calcBlockBreakingDelta(state, player, worldIn, pos);
         }
         return -1;
     }
 
     @Override
-    public CloudType getGasType(BlockState blockState) {
+    public GasState getGasState(BlockState blockState) {
         return variant;
     }
 

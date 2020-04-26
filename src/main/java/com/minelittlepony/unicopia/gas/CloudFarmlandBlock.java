@@ -29,7 +29,7 @@ public class CloudFarmlandBlock extends FarmlandBlock implements Farmland, Gas {
             Gas cloud = ((Gas)beside.getBlock());
 
             if (face.getAxis() == Axis.Y || cloud == this) {
-                if (cloud.getGasType(beside) == getGasType(state)) {
+                if (cloud.getGasState(beside) == getGasState(state)) {
                     return true;
                 }
             }
@@ -63,7 +63,7 @@ public class CloudFarmlandBlock extends FarmlandBlock implements Farmland, Gas {
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         CloudInteractionContext ctx = (CloudInteractionContext)context;
 
-        if (!ctx.canTouch(getGasType(state))) {
+        if (!getGasState(state).canPlace(ctx)) {
             return VoxelShapes.empty();
         }
 
@@ -74,7 +74,7 @@ public class CloudFarmlandBlock extends FarmlandBlock implements Farmland, Gas {
     public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         CloudInteractionContext ctx = (CloudInteractionContext)context;
 
-        if (!ctx.canTouch(getGasType(state))) {
+        if (!getGasState(state).canTouch(ctx)) {
             return VoxelShapes.empty();
         }
 
@@ -84,15 +84,15 @@ public class CloudFarmlandBlock extends FarmlandBlock implements Farmland, Gas {
     @Deprecated
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
-        if (CloudType.NORMAL.canInteract(player)) {
+        if (GasState.NORMAL.canTouch(player)) {
             return super.calcBlockBreakingDelta(state, player, world, pos);
         }
         return -1;
     }
 
     @Override
-    public CloudType getGasType(BlockState blockState) {
-        return CloudType.NORMAL;
+    public GasState getGasState(BlockState blockState) {
+        return GasState.NORMAL;
     }
 
     @Override

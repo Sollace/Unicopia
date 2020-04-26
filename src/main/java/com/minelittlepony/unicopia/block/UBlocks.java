@@ -8,7 +8,7 @@ import com.minelittlepony.unicopia.gas.CloudFarmlandBlock;
 import com.minelittlepony.unicopia.gas.CloudFenceBlock;
 import com.minelittlepony.unicopia.gas.CloudSlabBlock;
 import com.minelittlepony.unicopia.gas.CloudStairsBlock;
-import com.minelittlepony.unicopia.gas.CloudType;
+import com.minelittlepony.unicopia.gas.GasState;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.structure.CustomSaplingGenerator;
 
@@ -24,15 +24,15 @@ import net.minecraft.util.registry.Registry;
 
 public interface UBlocks {
     CloudFarmlandBlock CLOUD_FARMLAND = register(new CloudFarmlandBlock(FabricBlockSettings.of(UMaterials.CLOUD).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.WOOL).build()), "cloud_farmland");
-    CloudBlock CLOUD_BLOCK = register(new CloudBlock(CloudType.NORMAL), "cloud_block");
-    CloudBlock ENCHANTED_CLOUD_BLOCK = register(new CloudBlock(CloudType.ENCHANTED), "enchanted_cloud_block");
-    CloudBlock DENSE_CLOUD_BLOCK = register(new CloudBlock(CloudType.DENSE), "dense_cloud_block");
+    CloudBlock CLOUD_BLOCK = register(new CloudBlock(GasState.NORMAL), "cloud_block");
+    CloudBlock ENCHANTED_CLOUD_BLOCK = register(new CloudBlock(GasState.ENCHANTED), "enchanted_cloud_block");
+    CloudBlock DENSE_CLOUD_BLOCK = register(new CloudBlock(GasState.DENSE), "dense_cloud_block");
 
-    CloudStairsBlock<CloudBlock> CLOUD_STAIRS = register(new CloudStairsBlock<>(CLOUD_BLOCK.getDefaultState(), CloudType.NORMAL.configure().build()), "cloud_stairs");
+    CloudStairsBlock<CloudBlock> CLOUD_STAIRS = register(new CloudStairsBlock<>(CLOUD_BLOCK.getDefaultState(), GasState.NORMAL.configure().build()), "cloud_stairs");
 
-    CloudSlabBlock<CloudBlock> CLOUD_SLAB = register(new CloudSlabBlock<>(CLOUD_BLOCK.getDefaultState(), CloudType.NORMAL.configure().build()), "cloud_slab");
-    CloudSlabBlock<CloudBlock> ENCHANTED_CLOUD_SLAB = register(new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK.getDefaultState(), CloudType.ENCHANTED.configure().build()), "enchanted_cloud_slab");
-    CloudSlabBlock<CloudBlock> DENSE_CLOUD_SLAB = register(new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK.getDefaultState(), CloudType.DENSE.configure().build()), "dense_cloud_slab");
+    CloudSlabBlock<CloudBlock> CLOUD_SLAB = register(new CloudSlabBlock<>(CLOUD_BLOCK.getDefaultState(), GasState.NORMAL.configure().build()), "cloud_slab");
+    CloudSlabBlock<CloudBlock> ENCHANTED_CLOUD_SLAB = register(new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK.getDefaultState(), GasState.ENCHANTED.configure().build()), "enchanted_cloud_slab");
+    CloudSlabBlock<CloudBlock> DENSE_CLOUD_SLAB = register(new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK.getDefaultState(), GasState.DENSE.configure().build()), "dense_cloud_slab");
 
     CloudDoorBlock MISTED_GLASS_DOOR = register(new CloudDoorBlock(), "misted_glass_door");
     DutchDoorBlock LIBRARY_DOOR = register(new DutchDoorBlock(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(3).build()), "library_door");
@@ -43,7 +43,7 @@ public interface UBlocks {
 
     CloudAnvilBlock CLOUD_ANVIL = register(new CloudAnvilBlock(), "cloud_anvil");
 
-    CloudFenceBlock CLOUD_FENCE = register(new CloudFenceBlock(CloudType.NORMAL), "cloud_fence");
+    CloudFenceBlock CLOUD_FENCE = register(new CloudFenceBlock(GasState.NORMAL), "cloud_fence");
 
     TallCropBlock ALFALFA_CROPS = register(new TallCropBlock(FabricBlockSettings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP).build()), "alfalfa_crops");
 

@@ -20,6 +20,6 @@ abstract class MixinEntityContextImpl implements CloudInteractionContext.Holder 
 
     @Override
     public CloudInteractionContext getCloudInteractionContext() {
-        return cloudContext == null ? CloudInteractionContext.Impl.EMPTY : cloudContext;
+        return cloudContext == null ? CloudInteractionContext.empty() : cloudContext;
     }
 }

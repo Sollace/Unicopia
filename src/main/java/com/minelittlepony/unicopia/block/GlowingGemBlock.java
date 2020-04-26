@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.block;
 
 import java.util.Random;
 
-import com.minelittlepony.unicopia.gas.CloudType;
+import com.minelittlepony.unicopia.gas.GasState;
 import com.minelittlepony.unicopia.gas.Gas;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 
@@ -168,8 +168,8 @@ public class GlowingGemBlock extends TorchBlock implements Gas {
     }
 
     @Override
-    public CloudType getGasType(BlockState blockState) {
-        return CloudType.ENCHANTED;
+    public GasState getGasState(BlockState blockState) {
+        return GasState.ENCHANTED;
     }
 
     @Override
