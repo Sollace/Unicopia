@@ -95,6 +95,17 @@ public class ZapAppleItem extends AppleItem {
         }
     }
 
+    public ItemStack getAppearanceStack(ItemStack stack) {
+        Item appearance = ((ZapAppleItem)stack.getItem()).getAppearance(stack);
+        if (appearance != Items.AIR) {
+            ItemStack newAppearance = new ItemStack(appearance, stack.getCount());
+            newAppearance.setTag(stack.getTag().copy());
+            newAppearance.removeSubTag("appearance");
+            return newAppearance;
+        }
+        return stack;
+    }
+
     public Item getAppearance(ItemStack stack) {
         if (stack.hasTag() && stack.getTag().contains("appearance")) {
             return Registry.ITEM.get(new Identifier(stack.getTag().getString("appearance")));

@@ -24,6 +24,7 @@
     "client.MixinCamera",
     "client.MixinEntityRenderDispatcher",
     "client.MixinGameRenderer",
+    "client.MixinItemModels",
     "client.MixinKeyboardInput",
     "client.MixinMinecraftClient",
     "client.MixinMouse"
