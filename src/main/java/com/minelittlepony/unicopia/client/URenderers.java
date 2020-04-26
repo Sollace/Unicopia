@@ -47,7 +47,9 @@ public interface URenderers {
                 UBlocks.CLOUD_ANVIL, UBlocks.CLOUD_FARMLAND,
                 UBlocks.CLOUD_BLOCK, UBlocks.CLOUD_SLAB, UBlocks.CLOUD_STAIRS, UBlocks.CLOUD_FENCE,
                 UBlocks.DENSE_CLOUD_BLOCK, UBlocks.DENSE_CLOUD_SLAB,
-                UBlocks.ENCHANTED_CLOUD_BLOCK, UBlocks.ENCHANTED_CLOUD_SLAB
+                UBlocks.ENCHANTED_CLOUD_BLOCK, UBlocks.ENCHANTED_CLOUD_SLAB,
+
+                UBlocks.SLIME_DROP, UBlocks.SLIME_LAYER
         );
     }
 }

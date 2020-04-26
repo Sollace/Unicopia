@@ -13,9 +13,11 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.structure.CustomSaplingGenerator;
 
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.tools.FabricToolTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.block.MaterialColor;
 import net.minecraft.block.SaplingBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.BlockSoundGroup;
@@ -63,8 +65,19 @@ public interface UBlocks {
     ChitinBlock CHITIN_SHELL_BLOCK = register(new ChitinBlock(), "chitin_shell_block");
     Block CHISELED_CHITIN_SHELL_BLOCK = register(new ChiselledChitinBlock(), "chiseled_chitin_shell_block");
 
-    SlimeDropBlock SLIME_DROP = register(new SlimeDropBlock(), "slime_drop");
-    SlimeLayerBlock SLIME_LAYER = register(new SlimeLayerBlock(), "slime_layer");
+    SlimeDropBlock SLIME_DROP = register(new SlimeDropBlock(FabricBlockSettings.of(UMaterials.HIVE)
+            .ticksRandomly()
+            .breakInstantly()
+            .lightLevel(9)
+            .slipperiness(0.5F)
+            .sounds(BlockSoundGroup.SLIME)
+            .breakByTool(FabricToolTags.SHOVELS, 2)
+            .build()), "slime_drop");
+    SlimeLayerBlock SLIME_LAYER = register(new SlimeLayerBlock(FabricBlockSettings.of(Material.CLAY, MaterialColor.GRASS)
+            .sounds(BlockSoundGroup.SLIME)
+            .slipperiness(0.8F)
+            .nonOpaque()
+            .build()), "slime_layer");
 
     Block SUGAR_BLOCK = register(new SugarBlock(), "sugar_block");
     Block APPLE_LEAVES = register(new FruitLeavesBlock()

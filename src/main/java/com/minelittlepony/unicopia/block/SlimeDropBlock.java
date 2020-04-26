@@ -8,8 +8,6 @@ import com.minelittlepony.unicopia.ducks.Climbable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
-import net.fabricmc.fabric.api.tools.FabricToolTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -22,7 +20,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
@@ -55,25 +52,11 @@ public class SlimeDropBlock extends Block implements Climbable {
             Block.createCuboidShape(2, 0, 2, 14, 12, 14),
     };
 
-    public SlimeDropBlock() {
-        super(FabricBlockSettings.of(UMaterials.HIVE)
-                .ticksRandomly()
-                .breakInstantly()
-                .lightLevel(9)
-                .slipperiness(0.5F)
-                .sounds(BlockSoundGroup.SLIME)
-                .breakByTool(FabricToolTags.SHOVELS, 2)
-                .build()
-        );
-
+    public SlimeDropBlock(Settings settings) {
+        super(settings);
         setDefaultState(stateManager.getDefaultState()
                 .with(AGE, 0)
                 .with(SHAPE, Shape.BULB));
-    }
-
-    @Override
-    public boolean isTranslucent(BlockState state, BlockView view, BlockPos pos) {
-        return true;
     }
 
     @Override
