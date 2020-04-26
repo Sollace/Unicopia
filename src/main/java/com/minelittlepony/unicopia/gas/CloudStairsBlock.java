@@ -40,7 +40,7 @@ public class CloudStairsBlock<T extends Block & Gas> extends AbstractStairsBlock
     public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         CloudInteractionContext ctx = (CloudInteractionContext)context;
 
-        if (!getGasState(state).canPlace(ctx)) {
+        if (!getGasState(state).canTouch(ctx)) {
             return VoxelShapes.empty();
         }
 
