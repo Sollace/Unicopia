@@ -58,8 +58,8 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
         int count = 0;
 
         for (BlockPos pos : BlockPos.iterate(
-                new BlockPos(data.x - 2, data.y - 2, data.z - 2),
-                new BlockPos(data.x + 2, data.y + 2, data.z + 2))) {
+                data.pos().add(-2, -2, -2),
+                data.pos().add( 2,  2,  2))) {
             count += applySingle(player.getWorld(), player.getWorld().getBlockState(pos), pos);
         }
 
@@ -82,7 +82,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
 
     @Override
     public void preApply(Pony player) {
-        player.addExertion(3);
+        player.getMagicalReserves().addExertion(3);
 
         if (player.getWorld().isClient()) {
             player.spawnParticles(MagicParticleEffect.UNICORN, 1);

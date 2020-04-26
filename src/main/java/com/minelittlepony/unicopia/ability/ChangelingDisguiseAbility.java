@@ -79,13 +79,13 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
 
     @Override
     public void preApply(Pony player) {
-        player.addEnergy(2);
+        player.getMagicalReserves().addEnergy(2);
         player.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
     }
 
     @Override
     public void postApply(Pony player) {
-        player.setEnergy(0);
+        player.getMagicalReserves().setEnergy(0);
         player.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
     }
 }

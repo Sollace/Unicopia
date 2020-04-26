@@ -20,7 +20,7 @@ public class SugaryItem extends Item {
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
         if (sugarAmount != 0 && entity instanceof PlayerEntity) {
-            Pony.of((PlayerEntity)entity).addEnergy(sugarAmount);
+            Pony.of((PlayerEntity)entity).getMagicalReserves().addEnergy(sugarAmount);
         }
 
         return super.finishUsing(stack, world, entity);

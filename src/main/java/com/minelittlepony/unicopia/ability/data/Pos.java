@@ -7,9 +7,9 @@ public class Pos extends Hit {
 
     public static final Serializer<Pos> SERIALIZER = Pos::new;
 
-    public int x;
-    public int y;
-    public int z;
+    public final int x;
+    public final int y;
+    public final int z;
 
     Pos(PacketByteBuf buf) {
         x = buf.readInt();

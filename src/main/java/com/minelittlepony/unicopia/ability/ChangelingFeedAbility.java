@@ -147,7 +147,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
 
     @Override
     public void preApply(Pony player) {
-        player.addExertion(6);
+        player.getMagicalReserves().addExertion(6);
     }
 
     @Override

@@ -16,10 +16,4 @@ public interface Owned<E> {
      * Gets the owner that holds this object.
      */
     E getOwner();
-
-
-    @SuppressWarnings("unchecked")
-    static <T> Owned<T> cast(Object o) {
-        return (Owned<T>)o;
-    }
 }

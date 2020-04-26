@@ -2,9 +2,13 @@ package com.minelittlepony.unicopia.ability;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
+
 import com.google.common.collect.Lists;
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.TreeTraverser;
 import com.minelittlepony.unicopia.TreeType;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Multi;
@@ -34,6 +38,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
 /**
@@ -63,6 +68,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
         return playerSpecies.canUseEarth();
     }
 
+    @Nullable
     @Override
     public Multi tryActivate(Pony player) {
         HitResult mop = VecHelper.getObjectMouseOver(player.getOwner(), 6, 1);
@@ -72,36 +78,27 @@ public class EarthPonyStompAbility implements Ability<Multi> {
             BlockState state = player.getWorld().getBlockState(pos);
 
             if (state.getBlock() instanceof LogBlock) {
-                pos = getBaseOfTree(player.getWorld(), state, pos);
-                if (measureTree(player.getWorld(), state, pos) > 0) {
-                    return new Multi(pos.getX(), pos.getY(), pos.getZ(), 1);
+                pos = TreeTraverser.descendTree(player.getWorld(), state, pos).get();
+                if (TreeTraverser.measureTree(player.getWorld(), state, pos) > 0) {
+                    return new Multi(pos, 1);
                 }
             }
         }
 
         if (!player.getOwner().onGround && !player.getOwner().abilities.flying) {
             player.getOwner().addVelocity(0, -6, 0);
-            return new Multi(0, 0, 0, 0);
+            return new Multi(Vec3i.ZERO, 0);
         }
+
         return null;
     }
+
 
     @Override
     public Hit.Serializer<Multi> getSerializer() {
         return Multi.SERIALIZER;
     }
 
-    public static BlockPos getSolidBlockBelow(BlockPos pos, World w) {
-        while (World.isValid(pos)) {
-            pos = pos.down();
-
-            if (Block.isFaceFullSquare(w.getBlockState(pos).getCollisionShape(w, pos, EntityContext.absent()), Direction.UP)) {
-                return pos;
-            }
-        }
-
-        return pos;
-    }
 
     @Override
     public void apply(Pony iplayer, Multi data) {
@@ -150,7 +147,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
             });
 
             for (int i = 1; i < 202; i+= 2) {
-                spawnParticleRing(player, i);
+                spawnParticleRing(player, i, 0);
             }
 
             iplayer.subtractEnergyCost(rad);
@@ -166,7 +163,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
             if (harmed || player.world.random.nextInt(5) == 0) {
 
                 if (!harmed || player.world.random.nextInt(30) == 0) {
-                    AwaitTickQueue.enqueueTask(w -> removeTree(w, data.pos()));
+                    AwaitTickQueue.enqueueTask(w -> TreeTraverser.removeTree(w, data.pos()));
                 }
 
                 iplayer.subtractEnergyCost(3);
@@ -190,7 +187,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
 
     @Override
     public void preApply(Pony player) {
-        player.addExertion(40);
+        player.getMagicalReserves().addExertion(40);
         player.getOwner().attemptSprintingParticles();
     }
 
@@ -201,10 +198,6 @@ public class EarthPonyStompAbility implements Ability<Multi> {
         if (player.getOwner().getEntityWorld().getTime() % 1 == 0 || timeDiff == 0) {
             spawnParticleRing(player.getOwner(), timeDiff, 1);
         }
-    }
-
-    private void spawnParticleRing(PlayerEntity player, int timeDiff) {
-        spawnParticleRing(player, timeDiff, 0);
     }
 
     private void spawnParticleRing(PlayerEntity player, int timeDiff, double yVel) {
@@ -228,85 +221,9 @@ public class EarthPonyStompAbility implements Ability<Multi> {
         }
     }
 
-    private void removeTree(World w, BlockPos pos) {
-        BlockState log = w.getBlockState(pos);
-
-        int size = measureTree(w, log, pos);
-
-        if (size > 0) {
-            removeTreePart( w, log, ascendTrunk(new ArrayList<BlockPos>(), w, pos, log, 0), 0);
-        }
-    }
-
-    private BlockPos ascendTrunk(List<BlockPos> done, World w, BlockPos pos, BlockState log, int level) {
-        if (level < 3 && !done.contains(pos)) {
-            done.add(pos);
-
-            BlockPos result = ascendTree(w, log, pos, true);
-
-            if (variantAndBlockEquals(w.getBlockState(pos.east()), log)) {
-                result = ascendTrunk(done, w, pos.east(), log, level + 1);
-            }
-
-            if (variantAndBlockEquals(w.getBlockState(pos.west()), log)) {
-                result = ascendTrunk(done, w, pos.west(), log, level + 1);
-            }
-
-            if (variantAndBlockEquals(w.getBlockState(pos.north()), log)) {
-                result = ascendTrunk(done, w, pos.north(), log, level + 1);
-            }
-
-            if (variantAndBlockEquals(w.getBlockState(pos.south()), log)) {
-                result = ascendTrunk(done, w, pos.south(), log, level + 1);
-            }
-
-            return result;
-        }
-        return pos;
-    }
-
-    private void removeTreePart(World w, BlockState log, BlockPos pos, int level) {
-        if (level < 10 && isWoodOrLeaf(w, log, pos)) {
-            if (level < 5) {
-                w.breakBlock(pos, true);
-            } else {
-                Block.dropStacks(w.getBlockState(pos), w, pos);
-                w.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
-            }
-
-            PosHelper.all(pos, p -> {
-                removeTreePart(w, log, p, level + 1);
-            }, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
-
-        }
-    }
-
-    private BlockPos ascendTree(World w, BlockState log, BlockPos pos, boolean remove) {
-        int breaks = 0;
-        BlockState state;
-        while (variantAndBlockEquals(w.getBlockState(pos.up()), log)) {
-            if (PosHelper.some(pos, p -> isLeaves(w.getBlockState(p), log), Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST)) {
-                break;
-            }
-
-            if (remove) {
-                if (breaks < 10) {
-                    w.breakBlock(pos, true);
-                } else {
-                    state = w.getBlockState(pos);
-                    Block.dropStacks(state, w, pos);
-                    w.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
-                }
-                breaks++;
-            }
-            pos = pos.up();
-        }
-        return pos;
-    }
-
     private int dropApples(World w, BlockPos pos) {
         BlockState log = w.getBlockState(pos);
-        int size = measureTree(w, log, pos);
+        int size = TreeTraverser.measureTree(w, log, pos);
         if (size > 0) {
 
             List<ItemEntity> capturedDrops = Lists.newArrayList();
@@ -326,11 +243,11 @@ public class EarthPonyStompAbility implements Ability<Multi> {
         return 0;
     }
 
-    private void dropApplesPart(List<ItemEntity> drops, List<BlockPos> done, World w, BlockState log, BlockPos pos, int level) {
+    private static void dropApplesPart(List<ItemEntity> drops, List<BlockPos> done, World w, BlockState log, BlockPos pos, int level) {
         if (!done.contains(pos)) {
             done.add(pos);
-            pos = ascendTree(w, log, pos, false);
-            if (level < 10 && isWoodOrLeaf(w, log, pos)) {
+            pos = TreeTraverser.ascendTree(w, log, pos, false);
+            if (level < 10 && TreeTraverser.isWoodOrLeaf(w, log, pos)) {
                 BlockState state = w.getBlockState(pos);
 
                 if (state.getBlock() instanceof LeavesBlock && w.getBlockState(pos.down()).isAir()) {
@@ -350,94 +267,15 @@ public class EarthPonyStompAbility implements Ability<Multi> {
         }
     }
 
-    private int measureTree(World w, BlockState log, BlockPos pos) {
-        List<BlockPos> logs = new ArrayList<>();
-        List<BlockPos> leaves = new ArrayList<>();
-
-        countParts(logs, leaves, w, log, pos);
-
-        return logs.size() <= (leaves.size() / 2) ? logs.size() + leaves.size() : 0;
-    }
-
-    private BlockPos getBaseOfTree(World w, BlockState log, BlockPos pos) {
-        return getBaseOfTreePart(new ArrayList<BlockPos>(), w, log, pos);
-    }
-
-    private BlockPos getBaseOfTreePart(List<BlockPos> done, World w, BlockState log, BlockPos pos) {
-        if (done.contains(pos) || !variantAndBlockEquals(w.getBlockState(pos), log)) {
-            return null;
-        }
-        done.add(pos);
-
-        while (variantAndBlockEquals(w.getBlockState(pos.down()), log)) {
+    private static BlockPos getSolidBlockBelow(BlockPos pos, World w) {
+        while (World.isValid(pos)) {
             pos = pos.down();
-            done.add(pos);
-        }
 
-        BlockPos adjacent = getBaseOfTreePart(done, w, log, pos.north());
-        if (adjacent != null && adjacent.getY() < pos.getY()) {
-            pos = adjacent;
-        }
-
-        adjacent = getBaseOfTreePart(done, w, log, pos.south());
-        if (adjacent != null && adjacent.getY() < pos.getY()) {
-            pos = adjacent;
-        }
-
-        adjacent = getBaseOfTreePart(done, w, log, pos.east());
-        if (adjacent != null && adjacent.getY() < pos.getY()) {
-            pos = adjacent;
-        }
-
-        adjacent = getBaseOfTreePart(done, w, log, pos.west());
-        if (adjacent != null && adjacent.getY() < pos.getY()) {
-            pos = adjacent;
-        }
-
-        if (!done.contains(pos)) {
-            done.add(pos);
+            if (Block.isFaceFullSquare(w.getBlockState(pos).getCollisionShape(w, pos, EntityContext.absent()), Direction.UP)) {
+                return pos;
+            }
         }
 
         return pos;
-    }
-
-    private boolean isWoodOrLeaf(World w, BlockState log, BlockPos pos) {
-        BlockState state = w.getBlockState(pos);
-        return variantAndBlockEquals(state, log) || (isLeaves(state, log) && state.get(LeavesBlock.PERSISTENT));
-    }
-
-    private void countParts(List<BlockPos> logs, List<BlockPos> leaves, World w, BlockState log, BlockPos pos) {
-        if (logs.contains(pos) || leaves.contains(pos)) {
-            return;
-        }
-
-        BlockState state = w.getBlockState(pos);
-        boolean yay = false;
-
-        if (state.getBlock() instanceof LeavesBlock && state.get(LeavesBlock.PERSISTENT) && variantEquals(state, log)) {
-            leaves.add(pos);
-            yay = true;
-        } else if (variantAndBlockEquals(state, log)) {
-            logs.add(pos);
-            yay = true;
-        }
-
-        if (yay) {
-            PosHelper.all(pos, p -> {
-                countParts(logs, leaves, w, log, p);
-            }, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
-        }
-    }
-
-    private boolean isLeaves(BlockState state, BlockState log) {
-        return state.getBlock() instanceof LeavesBlock && variantEquals(state, log);
-    }
-
-    private boolean variantAndBlockEquals(BlockState one, BlockState two) {
-        return (one.getBlock() == two.getBlock()) && variantEquals(one, two);
-    }
-
-    private boolean variantEquals(BlockState one, BlockState two) {
-        return TreeType.get(one).equals(TreeType.get(two));
     }
 }

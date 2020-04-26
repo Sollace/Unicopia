@@ -305,6 +305,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
         return update(caster);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean update(Caster<?> source) {
         LivingEntity owner = source.getOwner();
@@ -397,7 +398,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
             source.getOwner().setInvisible(true);
 
             if (entity instanceof Owned) {
-                Owned.cast(entity).setOwner(player.getOwner());
+                ((Owned<LivingEntity>)entity).setOwner(player.getOwner());
             }
 
             if (entity instanceof PlayerEntity) {

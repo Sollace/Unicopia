@@ -9,14 +9,12 @@ import com.minelittlepony.unicopia.entity.FlightControl;
 import com.minelittlepony.unicopia.entity.Ponylike;
 import com.minelittlepony.unicopia.entity.RaceContainer;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.HeldMagicEffect;
 import com.minelittlepony.unicopia.network.Transmittable;
 import com.minelittlepony.util.IInterpolator;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 
@@ -47,6 +45,8 @@ public interface Pony extends Caster<PlayerEntity>, RaceContainer<PlayerEntity>,
      */
     PlayerCamera getCamera();
 
+    MagicReserves getMagicalReserves();
+
     /**
      * Gets the inventory delegate for this player.
      */
@@ -60,46 +60,8 @@ public interface Pony extends Caster<PlayerEntity>, RaceContainer<PlayerEntity>,
     PageOwner getPages();
 
     /**
-     * Gets the amount of exertion this player has put toward any given activity.
-     * This is simillar to tiredness.
-     */
-    float getExertion();
-
-    /**
-     * Sets the player's exertion level.
-     */
-    void setExertion(float exertion);
-
-    /**
-     *
-     * @return
      */
     float getExtendedReach();
-
-    /**
-     * Adds player tiredness.
-     */
-    default void addExertion(int exertion) {
-        setExertion(getExertion() + exertion/100F);
-    }
-
-    /**
-     * Gets the amount of excess energy the player has.
-     * This is increased by eating sugar.
-     */
-    float getEnergy();
-
-    /**
-     * Sets the player's energy level.
-     */
-    void setEnergy(float energy);
-
-    /**
-     * Adds energy to the player's existing energy level.
-     */
-    default void addEnergy(int energy) {
-        setEnergy(getEnergy() + energy / 100F);
-    }
 
     void copyFrom(Pony oldPlayer);
 
@@ -107,15 +69,6 @@ public interface Pony extends Caster<PlayerEntity>, RaceContainer<PlayerEntity>,
      * Called when the player steps on clouds.
      */
     boolean stepOnCloud();
-
-    /**
-     * Gets the held effect for the given item.
-     * Updates it if the current held effect doesn't match or is empty.
-     *
-     * Returns null if the passed item has no held effect.
-     */
-    @Nullable
-    HeldMagicEffect getHeldEffect(ItemStack stack);
 
     /**
      * Called when this player falls.

@@ -44,7 +44,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 
-public class PlayerImpl implements Pony {
+public class PlayerImpl implements Pony, MagicReserves {
 
     private static final TrackedData<Integer> PLAYER_RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Float> ENERGY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -109,6 +109,11 @@ public class PlayerImpl implements Pony {
     }
 
     @Override
+    public MagicReserves getMagicalReserves() {
+        return this;
+    }
+
+    @Override
     public float getExertion() {
         return getOwner().getDataTracker().get(EXERTION);
     }
@@ -139,7 +144,6 @@ public class PlayerImpl implements Pony {
     }
 
     @Nullable
-    @Override
     public HeldMagicEffect getHeldEffect(ItemStack stack) {
 
         if (!getSpecies().canCast()) {
@@ -457,5 +461,4 @@ public class PlayerImpl implements Pony {
     @Override
     public void setCurrentLevel(int level) {
     }
-
 }

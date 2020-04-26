@@ -163,8 +163,8 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
 
                 if (isExperienceCritical()) {
 
-                    if (player.getEnergy() <= 0.25F) {
-                        player.addEnergy(2);
+                    if (player.getMagicalReserves().getEnergy() <= 0.25F) {
+                        player.getMagicalReserves().addEnergy(2);
                     }
 
                     if (isRainbooming || (entity.isSneaking() && isRainboom())) {

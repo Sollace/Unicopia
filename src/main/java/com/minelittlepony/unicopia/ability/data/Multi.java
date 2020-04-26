@@ -1,11 +1,12 @@
 package com.minelittlepony.unicopia.ability.data;
 
 import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.math.Vec3i;
 
 public class Multi extends Pos {
     public static final Serializer<Multi> SERIALIZER = Multi::new;
 
-    public int hitType;
+    public final int hitType;
 
     Multi(PacketByteBuf buf) {
         super(buf);
@@ -18,8 +19,8 @@ public class Multi extends Pos {
         buf.writeInt(hitType);
     }
 
-    public Multi(int x, int y, int z, int hit) {
-        super(x, y, z);
+    public Multi(Vec3i pos, int hit) {
+        super(pos.getX(), pos.getY(), pos.getZ());
         hitType = hit;
     }
 }

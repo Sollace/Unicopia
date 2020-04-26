@@ -9,6 +9,7 @@ import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.ducks.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemEntityCapabilities;
+import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.AddictiveMagicalItem;
@@ -163,12 +164,14 @@ public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem
 
         float attachedTime = iplayer.getInventory().getTicksAttached(this);
 
-        if (iplayer.getExertion() < 1) {
-            iplayer.addExertion(2);
+        MagicReserves reserves = iplayer.getMagicalReserves();
+
+        if (reserves.getExertion() < 1) {
+            reserves.addExertion(2);
         }
 
-        if (iplayer.getEnergy() < 0.005F + (attachedTime / 1000000)) {
-            iplayer.addEnergy(2);
+        if (reserves.getEnergy() < 0.005F + (attachedTime / 1000000)) {
+            reserves.addEnergy(2);
         }
 
         if (attachedTime == 1) {
