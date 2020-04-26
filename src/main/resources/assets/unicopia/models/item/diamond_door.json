@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "unicopia:items/door_diamond"
+        "layer0": "unicopia:item/diamond_door"
     }
 }

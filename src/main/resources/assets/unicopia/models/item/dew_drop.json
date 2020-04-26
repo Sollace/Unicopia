@@ -1,7 +1,7 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "unicopia:items/dew_drop"
+        "layer0": "unicopia:item/dew_drop"
     },
     "display": {
         "thirdperson": {

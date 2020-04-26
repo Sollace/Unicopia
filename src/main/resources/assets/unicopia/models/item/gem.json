@@ -1,8 +1,8 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "unicopia:items/gem",
-        "layer1": "unicopia:items/gem_overlay"
+        "layer0": "unicopia:item/gem",
+        "layer1": "unicopia:item/gem_overlay"
     },
     "display": {
         "thirdperson": {

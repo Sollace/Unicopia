@@ -29,9 +29,9 @@ import net.minecraft.util.registry.Registry;
 
 public interface UItems {
 
-    AppleItem GREEN_APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "apple_green");
-    AppleItem SWEET_APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "apple_sweet");
-    AppleItem SOUR_APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "apple_sour");
+    AppleItem GREEN_APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "green_apple");
+    AppleItem SWEET_APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "sweet_apple");
+    AppleItem SOUR_APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "sour_apple");
 
     ZapAppleItem ZAP_APPLE = register(new ZapAppleItem(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.ZAP_APPLE)), "zap_apple");
 
@@ -47,12 +47,10 @@ public interface UItems {
 
     Item CLOUD_BLOCK = register(new PredicatedBlockItem(UBlocks.CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), INTERACT_WITH_CLOUDS), "cloud_block");
     Item ENCHANTED_CLOUD_BLOCK = register(new PredicatedBlockItem(UBlocks.ENCHANTED_CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), INTERACT_WITH_CLOUDS), "enchanted_cloud_block");
-    Item PACKED_CLOUD_BLOCK = register(new PredicatedBlockItem(UBlocks.DENSE_CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), INTERACT_WITH_CLOUDS), "packed_cloud_block");
+    Item DENSE_CLOUD_BLOCK = register(new PredicatedBlockItem(UBlocks.DENSE_CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), INTERACT_WITH_CLOUDS), "dense_cloud_block");
 
     Item CLOUD_STAIRS = register(new PredicatedBlockItem(UBlocks.CLOUD_STAIRS, new Settings().group(ItemGroup.BUILDING_BLOCKS), INTERACT_WITH_CLOUDS), "cloud_stairs");
-
     Item CLOUD_FENCE = register(new PredicatedBlockItem(UBlocks.CLOUD_FENCE, new Settings().group(ItemGroup.DECORATIONS), INTERACT_WITH_CLOUDS), "cloud_fence");
-
     Item CLOUD_ANVIL = register(new PredicatedBlockItem(UBlocks.CLOUD_ANVIL, new Settings().group(ItemGroup.DECORATIONS), INTERACT_WITH_CLOUDS), "cloud_anvil");
 
     Item MUSIC_DISC_CRUSADE = register(createRecord(USounds.RECORD_CRUSADE), "music_disc_crusade");
@@ -85,8 +83,8 @@ public interface UItems {
     AlicornAmuletItem ALICORN_AMULET = register(new AlicornAmuletItem(new Settings().group(ItemGroup.COMBAT).rarity(Rarity.RARE).maxCount(1)), "alicorn_amulet");
 
     SpellbookItem SPELLBOOK = register(new SpellbookItem(new Item.Settings().maxCount(1).group(ItemGroup.BREWING)), "spellbook");
-    Item STAFF_MEADOW_BROOK = register(new StaffItem(new Settings().group(ItemGroup.TOOLS).rarity(Rarity.UNCOMMON).maxCount(1).maxDamage(2)), "staff_meadow_brook");
-    Item STAFF_REMEMBERANCE = register(new EnchantedStaffItem(new Settings().group(ItemGroup.TOOLS).rarity(Rarity.UNCOMMON).maxCount(1), new ScorchSpell()), "staff_remembrance");
+    Item MEADOW_BROOK_STAFF = register(new StaffItem(new Settings().group(ItemGroup.TOOLS).rarity(Rarity.UNCOMMON).maxCount(1).maxDamage(2)), "meadow_brook_staff");
+    Item REMEMBERANCE_STAFF = register(new EnchantedStaffItem(new Settings().group(ItemGroup.TOOLS).rarity(Rarity.UNCOMMON).maxCount(1), new ScorchSpell()), "remembrance_staff");
 
     Item SPEAR = register(new SpearItem(new Settings().group(ItemGroup.TOOLS).maxCount(1).maxDamage(500)), "spear");
 
@@ -102,11 +100,11 @@ public interface UItems {
             .food(UFoodComponents.CEREAL)
             .maxCount(1)
             .recipeRemainder(Items.BOWL), 1), "cereal");
-    Item SUGAR_CEREAL = register(new SugaryItem(new Settings()
+    Item BOOP_O_ROOPS = register(new SugaryItem(new Settings()
             .group(ItemGroup.FOOD)
             .food(UFoodComponents.SUGAR)
             .maxCount(1)
-            .recipeRemainder(Items.BOWL), 110), "sugar_cereal");
+            .recipeRemainder(Items.BOWL), 110), "boop_o_roops");
 
     TomatoSeedsItem TOMATO_SEEDS = register(new TomatoSeedsItem(new Settings().group(ItemGroup.MATERIALS)), "tomato_seeds");
     TomatoItem TOMATO = register(new TomatoItem(new Settings()

@@ -2,7 +2,7 @@
     "parent": "block/leaves",
     "textures": {
         "all": "unicopia:blocks/leaves_apple",
-        "fruit": "minecraft:items/apple"
+        "fruit": "minecraft:item/apple"
     },
     "elements": [
          {   "from": [ 0, 0, 0 ],

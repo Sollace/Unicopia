@@ -1,8 +1,8 @@
 {
     "textures": {
-		"stick_top": "minecraft:blocks/log_oak_top",
-        "stick_side": "minecraft:blocks/log_oak",
-        "particle": "minecraft:blocks/log_oak"
+		"stick_top": "minecraft:block/oak_log_top",
+        "stick_side": "minecraft:block/oak_log",
+        "particle": "minecraft:block/oak_log"
     },
     "elements": [
 	     {   "from": [ 7, -1, 7 ],

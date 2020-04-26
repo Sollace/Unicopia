@@ -1,6 +1,0 @@
-{
-    "parent": "unicopia:block/flower_pot/cross_rotated",
-    "textures": {
-        "plant": "minecraft:items/feather"
-    }
-}

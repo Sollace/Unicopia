@@ -1,7 +1,7 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "unicopia:items/cloud_matter"
+        "layer0": "unicopia:item/cloud_matter"
     },
     "display": {
         "thirdperson": {

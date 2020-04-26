@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "unicopia:items/alfalfa_leaves"
+        "layer0": "unicopia:item/alfalfa_leaves"
     }
 }

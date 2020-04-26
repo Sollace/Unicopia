@@ -25,6 +25,11 @@
 
   "block.unicopia.enchanted_torch": "Enchanted Torch",
 
+  "block.unicopia.misted_glass_door": "Misted Glass Door",
+  "block.unicopia.library_door": "Dutch Library Door",
+  "block.unicopia.bakery_door": "Dutch Bakery Door",
+  "block.unicopia.diamond_door": "Diamond Door",
+
   "item.unicopia.cloud_spawn_egg": "Cloud Spawn Egg",
   "item.unicopia.butterfly_spawn_egg": "Butterfly Spawn Egg",
 
@@ -33,18 +38,14 @@
   "item.unicopia.construction_cloud_spawner": "Construction Cloud",
   "item.unicopia.wild_cloud_spawner": "Wild Cloud",
 
-  "item.unicopia.misted_glass_door": "Misted Glass Door",
-  "item.unicopia.library_door": "Dutch Library Door",
-  "item.unicopia.bakery_door": "Dutch Bakery Door",
-  "item.unicopia.diamond_door": "Diamond Door",
   "item.unicopia.dew_drop": "Dew Drop",
   "item.unicopia.cloud_anvil": "Cloud Anvil",
   "item.unicopia.chitin_shell": "Chitinous Shell",
 
   "item.unicopia.moss": "Moss",
-  "item.unicopia.staff_meadow_brook": "Meadow Brook's Staff",
-  "item.unicopia.staff_meadow_brook.tagline": "It's a big stick",
-  "item.unicopia.staff_remembrance": "Staff of Remembrance",
+  "item.unicopia.meadow_brook_staff": "Meadow Brook's Staff",
+  "item.unicopia.meadow_brook_staff.tagline": "It's a big stick",
+  "item.unicopia.remembrance_staff": "Staff of Remembrance",
   "item.unicopia.spear": "Spear",
   "item.unicopia.alicorn_amulet": "The Alicorn Amulet",
   "item.unicopia.alicorn_amulet.tagline": "Time Worn: %s",
@@ -59,20 +60,12 @@
   "item.unicopia.spellbook": "Spellbook",
   "item.unicopia.bag_of_holding": "Bag of Holding",
 
-  "item.unicopia.apple_green": "Granny Smith Apple",
-  "item.unicopia.apple_sweet": "Sweet Apple Acres Apple",
-  "item.unicopia.apple_sour": "Sour Apple",
-
+  "item.unicopia.green_apple": "Granny Smith Apple",
+  "item.unicopia.sweet_apple": "Sweet Apple Acres Apple",
+  "item.unicopia.sour_apple": "Sour Apple",
   "item.unicopia.rotten_apple": "Rotten Apple",
-
   "item.unicopia.cooked_zap_apple": "Cooked Zap Apple",
-
   "item.unicopia.zap_apple": "Zap Apple",
-  "item.unicopia.zap_apple.red": "Apple",
-  "item.unicopia.zap_apple.green": "Granny Smith Apple",
-  "item.unicopia.zap_apple.sweet": "Sweet Apple Acres Apple",
-  "item.unicopia.zap_apple.sour": "Sour Apple",
-  "item.unicopia.zap_apple.zap": "Cooked Zap Apple",
 
   "item.unicopia.apple_seeds": "Apple Seeds",
 
@@ -87,7 +80,7 @@
   "item.unicopia.alfalfa_seeds": "Grain",
 
   "item.unicopia.cereal": "Breakfast Cereal",
-  "item.unicopia.sugar_cereal": "Boop 'o Roops",
+  "item.unicopia.boop_o_roops": "Boop 'o Roops",
   "item.unicopia.daffodil_daisy_sandwich": "Daffodil Daisy Sandwich",
   "item.unicopia.hay_burger": "Hay Burger",
   "item.unicopia.hay_fries": "Hay Fries",
@@ -100,7 +93,7 @@
   "item.unicopia.burned_juice": "Burned Juice",
 
   "item.unicopia.music_disc_pet": "Music Disc",
-  "item.unicopia.music_disc_pet.pet.desc": "Danial Ingram - pet",
+  "item.unicopia.music_disc_pet.desc": "Danial Ingram - pet",
   "item.unicopia.music_disc_popular": "Music Disc",
   "item.unicopia.music_disc_popular.desc": "Danial Ingram - popular",
   "item.unicopia.music_disc_crusade": "Music Disc",
@@ -112,64 +105,64 @@
   "affinity.neutral": "Neutral",
   "affinity.curse": "Corrupt",
 
-  "spell.shield.name": "Defense",
+  "spell.shield": "Defense",
   "spell.shield.tagline": "Protection I",
 
-  "spell.awkward.name": "Awkwardness",
+  "spell.awkward": "Awkwardness",
   "spell.awkward.tagline": "*Derp*",
 
-  "spell.portal.name": "Transportation",
+  "spell.portal": "Transportation",
   "spell.portal.tagline": "Teleportation I",
 
-  "spell.light.name": "Illumination",
+  "spell.light": "Illumination",
   "spell.light.tagline": "Discovery I",
 
-  "spell.reveal.name": "Revealing",
+  "spell.reveal": "Revealing",
   "spell.reveal.tagline": "Discovery II",
 
-  "spell.flame.name": "Burning",
+  "spell.flame": "Burning",
   "spell.flame.tagline": "Fire I",
 
-  "spell.fire.name": "Flame",
+  "spell.fire": "Flame",
   "spell.fire.tagline": "Fire II",
 
-  "spell.vortex.name": "Retention",
+  "spell.vortex": "Retention",
   "spell.vortex.tagline": "Containment I",
 
-  "spell.charge.name": "Channeling",
+  "spell.charge": "Channeling",
   "spell.charge.tagline": "Energy I",
 
-  "spell.siphon.name": "Pilon",
+  "spell.siphon": "Pilon",
   "spell.siphon.tagline": "Energy II",
 
-  "spell.ice.name": "Frost",
+  "spell.ice": "Frost",
   "spell.ice.tagline": "Ice I",
 
-  "spell.drake.name": "Assistance",
+  "spell.drake": "Assistance",
   "spell.drake.tagline": "Golomancy I",
 
-  "curse.shield.name": "Repulsion",
+  "curse.shield": "Repulsion",
   "curse.shield.tagline": "Hostility I",
 
-  "curse.darkness.name": "Darkness",
+  "curse.darkness": "Darkness",
   "curse.darkness.tagline": "Golomancy I/Resurrection II",
 
-  "curse.harm.name": "Hurting",
+  "curse.harm": "Hurting",
   "curse.harm.tagline": "Hostility II",
 
-  "curse.awkward.name": "Awkwardness",
+  "curse.awkward": "Awkwardness",
   "curse.awkward.tagline": "*Derp*",
 
-  "curse.vortex.name": "Suffering",
+  "curse.vortex": "Suffering",
   "curse.vortex.tagline": "Torture I",
 
-  "curse.necromancy.name": "Necromancy",
+  "curse.necromancy": "Necromancy",
   "curse.necromancy.tagline": "Resurrection I",
 
-  "curse.inferno.name": "Inferno",
+  "curse.inferno": "Inferno",
   "curse.inferno.tagline": "Fire III",
 
-  "curse.siphon.name": "Siphoning",
+  "curse.siphon": "Siphoning",
   "curse.siphon.tagline": "Energy III",
 
   "entity.racing_cloud.name": "Bucking Bronco",

@@ -1,6 +1,6 @@
 {
     "parent": "unicopia:item/handheld_staff",
     "textures": {
-        "layer0": "unicopia:items/spear_wood"
+        "layer0": "unicopia:item/wooden_spear"
     }
 }

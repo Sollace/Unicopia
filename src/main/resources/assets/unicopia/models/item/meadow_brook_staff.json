@@ -1,6 +1,6 @@
 {
     "parent": "unicopia:item/handheld_staff",
     "textures": {
-        "layer0": "unicopia:items/staff_meadow_brook"
+        "layer0": "unicopia:item/meadow_brook_staff"
     }
 }

@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "unicopia:items/hay_fries"
+        "layer0": "unicopia:item/hay_fries"
     }
 }

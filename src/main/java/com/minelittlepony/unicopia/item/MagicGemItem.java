@@ -156,8 +156,8 @@ public class MagicGemItem extends Item implements Castable {
     @Override
     public Text getName(ItemStack stack) {
         if (SpellRegistry.stackHasEnchantment(stack)) {
-            return new TranslatableText(getTranslationKey(stack) + ".enchanted.name",
-                    new TranslatableText(String.format("%s.%s.name", getAffinity(stack).getTranslationKey(), SpellRegistry.getKeyFromStack(stack)
+            return new TranslatableText(getTranslationKey(stack) + ".enchanted",
+                    new TranslatableText(String.format("%s.%s", getAffinity(stack).getTranslationKey(), SpellRegistry.getKeyFromStack(stack)
             )));
         }
 

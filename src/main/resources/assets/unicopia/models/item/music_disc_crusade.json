@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "unicopia:items/record_crusade"
+        "layer0": "unicopia:item/music_disc_crusade"
     }
 }

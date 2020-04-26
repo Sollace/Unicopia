@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "unicopia:items/tomato"
+        "layer0": "unicopia:item/tomato"
     }
 }
