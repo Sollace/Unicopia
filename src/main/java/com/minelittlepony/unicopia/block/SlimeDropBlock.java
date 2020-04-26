@@ -37,7 +37,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class BlockGrowingCuccoon extends Block implements Climbable {
+public class SlimeDropBlock extends Block implements Climbable {
 
     public static final IntProperty AGE = IntProperty.of("age", 0, 7);
     public static final EnumProperty<Shape> SHAPE = EnumProperty.of("shape", Shape.class);
@@ -55,7 +55,7 @@ public class BlockGrowingCuccoon extends Block implements Climbable {
             Block.createCuboidShape(2, 0, 2, 14, 12, 14),
     };
 
-    public BlockGrowingCuccoon() {
+    public SlimeDropBlock() {
         super(FabricBlockSettings.of(UMaterials.HIVE)
                 .ticksRandomly()
                 .breakInstantly()
@@ -135,7 +135,7 @@ public class BlockGrowingCuccoon extends Block implements Climbable {
             }
 
             return Math.min(higher.get(AGE),
-                    ((BlockGrowingCuccoon)higher.getBlock()).getMaximumAge(world, pos.up(), higher, false) - 1
+                    ((SlimeDropBlock)higher.getBlock()).getMaximumAge(world, pos.up(), higher, false) - 1
                 );
         }
 

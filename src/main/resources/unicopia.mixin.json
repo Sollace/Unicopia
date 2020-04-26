@@ -7,6 +7,7 @@
   "mixins": [
     "CriterionsRegistry",
     "MixinBlockItem",
+    "MixinEntityContextImpl",
     "MixinFarmlandBlock",
     "MixinHoeItem",
     "MixinItem",

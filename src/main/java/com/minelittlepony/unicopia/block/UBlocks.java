@@ -28,11 +28,11 @@ public interface UBlocks {
     CloudBlock ENCHANTED_CLOUD_BLOCK = register(new CloudBlock(CloudType.ENCHANTED), "enchanted_cloud_block");
     CloudBlock DENSE_CLOUD_BLOCK = register(new CloudBlock(CloudType.DENSE), "dense_cloud_block");
 
-    CloudStairsBlock CLOUD_STAIRS = register(new CloudStairsBlock(CLOUD_BLOCK.getDefaultState(), FabricBlockSettings.of(UMaterials.CLOUD).build()), "cloud_stairs");
+    CloudStairsBlock<CloudBlock> CLOUD_STAIRS = register(new CloudStairsBlock<>(CLOUD_BLOCK.getDefaultState(), FabricBlockSettings.of(UMaterials.CLOUD).build()), "cloud_stairs");
 
-    CloudSlabBlock<CloudBlock> CLOUD_SLAB = register(new CloudSlabBlock<>(CLOUD_BLOCK, UMaterials.CLOUD), "cloud_slab");
-    CloudSlabBlock<CloudBlock> ENCHANTED_CLOUD_SLAB = register(new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK, UMaterials.CLOUD), "enchanted_cloud_slab");
-    CloudSlabBlock<CloudBlock> DENSE_CLOUD_SLAB = register(new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK, UMaterials.CLOUD), "dense_cloud_slab");
+    CloudSlabBlock<CloudBlock> CLOUD_SLAB = register(new CloudSlabBlock<>(CLOUD_BLOCK.getDefaultState(), UMaterials.CLOUD), "cloud_slab");
+    CloudSlabBlock<CloudBlock> ENCHANTED_CLOUD_SLAB = register(new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK.getDefaultState(), UMaterials.CLOUD), "enchanted_cloud_slab");
+    CloudSlabBlock<CloudBlock> DENSE_CLOUD_SLAB = register(new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK.getDefaultState(), UMaterials.CLOUD), "dense_cloud_slab");
 
     CloudDoorBlock MISTED_GLASS_DOOR = register(new CloudDoorBlock(), "misted_glass_door");
     DutchDoorBlock LIBRARY_DOOR = register(new DutchDoorBlock(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(3).build()), "library_door");
@@ -54,7 +54,7 @@ public interface UBlocks {
     ChitinBlock CHITIN_SHELL_BLOCK = register(new ChitinBlock(), "chitin_shell_block");
     Block CHISELED_CHITIN_SHELL_BLOCK = register(new ChiselledChitinBlock(), "chiseled_chitin_shell_block");
 
-    BlockGrowingCuccoon SLIME_DROP = register(new BlockGrowingCuccoon(), "slime_drop");
+    SlimeDropBlock SLIME_DROP = register(new SlimeDropBlock(), "slime_drop");
     SlimeLayerBlock SLIME_LAYER = register(new SlimeLayerBlock(), "slime_layer");
 
     Block SUGAR_BLOCK = register(new SugarBlock(), "sugar_block");

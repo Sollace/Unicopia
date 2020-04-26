@@ -5,7 +5,6 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SlabBlock;
-import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -13,13 +12,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public abstract class USlab<T extends Block> extends SlabBlock {
+public abstract class AbstractSlabBlock<T extends Block> extends SlabBlock {
 
     protected final T modelBlock;
+    protected final BlockState modelState;
 
-    public USlab(T model, Block.Settings settings) {
+    @SuppressWarnings("unchecked")
+    public AbstractSlabBlock(BlockState inherited, Block.Settings settings) {
         super(settings);
-        this.modelBlock = model;
+        modelState = inherited;
+        modelBlock = (T)inherited.getBlock();
     }
 
     @Deprecated
@@ -31,10 +33,6 @@ public abstract class USlab<T extends Block> extends SlabBlock {
     @Override
     public boolean isAir(BlockState state) {
         return modelBlock.isAir(state);
-    }
-
-    public boolean isDouble(BlockState state) {
-        return state.get(TYPE) == SlabType.DOUBLE;
     }
 
     @Override

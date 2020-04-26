@@ -66,7 +66,7 @@ public class CloudAnvilBlock extends AnvilBlock implements Gas {
         BlockState below = world.getBlockState(pos.down());
 
         if (below.getBlock() instanceof Gas) {
-            if (((Gas)below.getBlock()).isDense(below)) {
+            if (((Gas)below.getBlock()).getGasType(below).isDense()) {
                 return;
             }
         }
@@ -92,7 +92,7 @@ public class CloudAnvilBlock extends AnvilBlock implements Gas {
 
 
     @Override
-    public CloudType getCloudMaterialType(BlockState blockState) {
+    public CloudType getGasType(BlockState blockState) {
         return CloudType.NORMAL;
     }
 }

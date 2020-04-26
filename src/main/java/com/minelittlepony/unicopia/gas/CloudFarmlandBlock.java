@@ -6,10 +6,13 @@ import com.minelittlepony.unicopia.ducks.Farmland;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FarmlandBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
@@ -26,7 +29,7 @@ public class CloudFarmlandBlock extends FarmlandBlock implements Farmland, Gas {
             Gas cloud = ((Gas)beside.getBlock());
 
             if (face.getAxis() == Axis.Y || cloud == this) {
-                if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
+                if (cloud.getGasType(beside) == getGasType(state)) {
                     return true;
                 }
             }
@@ -56,6 +59,28 @@ public class CloudFarmlandBlock extends FarmlandBlock implements Farmland, Gas {
         }
     }
 
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+        CloudInteractionContext ctx = (CloudInteractionContext)context;
+
+        if (!ctx.canTouch(getGasType(state))) {
+            return VoxelShapes.empty();
+        }
+
+        return super.getOutlineShape(state, view, pos, context);
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+        CloudInteractionContext ctx = (CloudInteractionContext)context;
+
+        if (!ctx.canTouch(getGasType(state))) {
+            return VoxelShapes.empty();
+        }
+
+        return super.getCollisionShape(state, view, pos, context);
+    }
+
     @Deprecated
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
@@ -66,7 +91,7 @@ public class CloudFarmlandBlock extends FarmlandBlock implements Farmland, Gas {
     }
 
     @Override
-    public CloudType getCloudMaterialType(BlockState blockState) {
+    public CloudType getGasType(BlockState blockState) {
         return CloudType.NORMAL;
     }
 

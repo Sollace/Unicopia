@@ -10,10 +10,13 @@ import com.minelittlepony.unicopia.util.HoeUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -33,7 +36,29 @@ public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
 
     @Override
     public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
-        return variant == CloudType.NORMAL;
+        return getGasType(state).isTranslucent();
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+        CloudInteractionContext ctx = (CloudInteractionContext)context;
+
+        if (!ctx.canTouch(getGasType(state))) {
+            return VoxelShapes.empty();
+        }
+
+        return super.getOutlineShape(state, view, pos, context);
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+        CloudInteractionContext ctx = (CloudInteractionContext)context;
+
+        if (!ctx.canTouch(getGasType(state))) {
+            return VoxelShapes.empty();
+        }
+
+        return super.getCollisionShape(state, view, pos, context);
     }
 
     @Override
@@ -55,7 +80,7 @@ public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
         if (beside.getBlock() instanceof Gas) {
             Gas cloud = ((Gas)beside.getBlock());
 
-            if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
+            if (cloud.getGasType(beside) == getGasType(state)) {
                 return true;
             }
         }
@@ -94,7 +119,7 @@ public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
     }
 
     @Override
-    public CloudType getCloudMaterialType(BlockState blockState) {
+    public CloudType getGasType(BlockState blockState) {
         return variant;
     }
 

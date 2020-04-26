@@ -1,13 +1,8 @@
 package com.minelittlepony.unicopia.gas;
 
-import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.block.UMaterials;
-import com.minelittlepony.unicopia.entity.CloudEntity;
-
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 
 public enum CloudType {
@@ -25,33 +20,19 @@ public enum CloudType {
         return settings;
     }
 
+    public boolean isTranslucent() {
+        return this == NORMAL;
+    }
+
+    public boolean isDense() {
+        return this != NORMAL;
+    }
+
+    public boolean isTouchable(boolean isPlayer) {
+        return this == ENCHANTED || (this == DENSE && isPlayer);
+    }
+
     public boolean canInteract(Entity e) {
-        if (e == null) {
-            return false;
-        }
-
-        if (this == ENCHANTED) {
-            return true;
-        }
-
-        if (e instanceof PlayerEntity) {
-
-            if (this == DENSE) {
-                return true;
-            }
-
-            return EquinePredicates.INTERACT_WITH_CLOUDS.test((PlayerEntity)e)
-                || (EquinePredicates.MAGI.test(e) && CloudEntity.getFeatherEnchantStrength((PlayerEntity)e) > 0);
-        }
-
-        if (e instanceof ItemEntity) {
-            return EquinePredicates.ITEM_INTERACT_WITH_CLOUDS.test((ItemEntity)e);
-        }
-
-        if (e instanceof CloudEntity && e.hasVehicle()) {
-            return canInteract(e.getVehicle());
-        }
-
-        return false;
+        return CloudInteractionContext.of(e).canTouch(this);
     }
 }

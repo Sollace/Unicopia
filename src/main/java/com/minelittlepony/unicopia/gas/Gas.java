@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 
 public interface Gas {
 
-    CloudType getCloudMaterialType(BlockState blockState);
+    CloudType getGasType(BlockState blockState);
 
     default boolean handleRayTraceSpecialCases(World world, BlockPos pos, BlockState state) {
         if (world.isClient) {
@@ -35,7 +35,7 @@ public interface Gas {
                 return true;
             }
 
-            CloudType type = getCloudMaterialType(state);
+            CloudType type = getGasType(state);
 
             ItemStack main = player.getMainHandStack();
             if (main.isEmpty()) {
@@ -51,7 +51,7 @@ public interface Gas {
                 }
 
                 if (block instanceof Gas) {
-                    CloudType other = ((Gas)block).getCloudMaterialType(heldState);
+                    CloudType other = ((Gas)block).getGasType(heldState);
 
                     if (other.canInteract(player)) {
                         return false;
@@ -88,7 +88,6 @@ public interface Gas {
     }
 
     default boolean applyRebound(Entity entity) {
-
         Vec3d vel = entity.getVelocity();
         double y = vel.y;
 
@@ -124,9 +123,8 @@ public interface Gas {
         return false;
     }
 
-
     default boolean getCanInteract(BlockState state, Entity e) {
-        if (getCloudMaterialType(state).canInteract(e)) {
+        if (getGasType(state).canInteract(e)) {
             if (e instanceof ItemEntity) {
                 // @FUF(reason = "There is no TickEvents.EntityTickEvent. Waiting on mixins...")
                 e.setNoGravity(true);
@@ -135,10 +133,6 @@ public interface Gas {
         }
 
         return false;
-    }
-
-    default boolean isDense(BlockState blockState) {
-        return getCloudMaterialType(blockState) != CloudType.NORMAL;
     }
 
     /**
@@ -152,7 +146,7 @@ public interface Gas {
      * @fuf Hacked until we can get mixins to implement a proper hook
      */
     default boolean allowsFallingBlockToPass(BlockState state, BlockView world, BlockPos pos) {
-        if (isDense(state)) {
+        if (this.getGasType(state).isDense()) {
             return false;
         }
 

@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.gas;
 
-import com.minelittlepony.unicopia.block.UStairs;
+import com.minelittlepony.unicopia.block.AbstractStairsBlock;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -8,13 +8,43 @@ import net.minecraft.block.SlabBlock;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 
-public class CloudStairsBlock extends UStairs implements Gas {
+public class CloudStairsBlock<T extends Block & Gas> extends AbstractStairsBlock<T> implements Gas {
 
     public CloudStairsBlock(BlockState inherited, Settings settings) {
         super(inherited, settings);
+    }
+
+    @Override
+    public CloudType getGasType(BlockState state) {
+        return baseBlock.getGasType(baseBlockState);
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+        CloudInteractionContext ctx = (CloudInteractionContext)context;
+
+        if (!ctx.canTouch(getGasType(state))) {
+            return VoxelShapes.empty();
+        }
+
+        return super.getOutlineShape(state, view, pos, context);
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+        CloudInteractionContext ctx = (CloudInteractionContext)context;
+
+        if (!ctx.canTouch(getGasType(state))) {
+            return VoxelShapes.empty();
+        }
+
+        return super.getCollisionShape(state, view, pos, context);
     }
 
     @Override
@@ -22,7 +52,7 @@ public class CloudStairsBlock extends UStairs implements Gas {
         if (beside.getBlock() instanceof Gas) {
             Gas cloud = ((Gas)beside.getBlock());
 
-            if (cloud.getCloudMaterialType(beside) == getCloudMaterialType(state)) {
+            if (cloud.getGasType(beside) == getGasType(state)) {
                 Direction front = state.get(FACING);
                 BlockHalf half = state.get(HALF);
 
@@ -70,10 +100,5 @@ public class CloudStairsBlock extends UStairs implements Gas {
         }
 
         return false;
-    }
-
-    @Override
-    public CloudType getCloudMaterialType(BlockState blockState) {
-        return CloudType.NORMAL;
     }
 }

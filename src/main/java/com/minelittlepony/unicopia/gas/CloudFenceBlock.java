@@ -3,8 +3,11 @@ package com.minelittlepony.unicopia.gas;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
@@ -19,11 +22,11 @@ public class CloudFenceBlock extends FenceBlock implements Gas {
 
     @Override
     public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
-        return variant == CloudType.NORMAL;
+        return getGasType(state) == CloudType.NORMAL;
     }
 
     @Override
-    public CloudType getCloudMaterialType(BlockState blockState) {
+    public CloudType getGasType(BlockState blockState) {
         return variant;
     }
 
@@ -39,6 +42,28 @@ public class CloudFenceBlock extends FenceBlock implements Gas {
         if (!applyRebound(entity)) {
             super.onEntityLand(world, entity);
         }
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+        CloudInteractionContext ctx = (CloudInteractionContext)context;
+
+        if (!ctx.canTouch(getGasType(state))) {
+            return VoxelShapes.empty();
+        }
+
+        return super.getOutlineShape(state, view, pos, context);
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
+        CloudInteractionContext ctx = (CloudInteractionContext)context;
+
+        if (!ctx.canTouch(getGasType(state))) {
+            return VoxelShapes.empty();
+        }
+
+        return super.getCollisionShape(state, view, pos, context);
     }
 
     @Override

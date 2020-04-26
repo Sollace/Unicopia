@@ -9,14 +9,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class UStairs extends StairsBlock {
+public abstract class AbstractStairsBlock<T extends Block> extends StairsBlock {
 
-    protected final Block baseBlock;
+    protected final T baseBlock;
     protected final BlockState baseBlockState;
 
-    public UStairs(BlockState inherited, Settings settings) {
+    @SuppressWarnings("unchecked")
+    public AbstractStairsBlock(BlockState inherited, Settings settings) {
         super(inherited, settings);
-        baseBlock = inherited.getBlock();
+        baseBlock = (T)inherited.getBlock();
         baseBlockState = inherited;
     }
 

@@ -168,7 +168,7 @@ public class GlowingGemBlock extends TorchBlock implements Gas {
     }
 
     @Override
-    public CloudType getCloudMaterialType(BlockState blockState) {
+    public CloudType getGasType(BlockState blockState) {
         return CloudType.ENCHANTED;
     }
 
