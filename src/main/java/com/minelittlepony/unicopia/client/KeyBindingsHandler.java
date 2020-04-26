@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.data.Hit;
@@ -23,14 +24,14 @@ import net.minecraft.util.Identifier;
 class KeyBindingsHandler {
     private final String KEY_CATEGORY = "unicopia.category.name";
 
-    private final Map<KeyBinding, List<Ability<? extends Hit>>> keyPools = new HashMap<>();
+    private final Map<InputUtil.KeyCode, List<Ability<? extends Hit>>> keyPools = new HashMap<>();
 
     private final Set<KeyBinding> bindings = new HashSet<>();
 
     private final Set<KeyBinding> pressed = new HashSet<>();
 
     private Collection<Ability<?>> getKeyCodePool(KeyBinding keyCode) {
-        return keyPools.computeIfAbsent(keyCode, i -> new ArrayList<>());
+        return keyPools.computeIfAbsent(keyCode.getDefaultKeyCode(), i -> new ArrayList<>());
     }
 
     public void addKeybind(Ability<?> p) {
@@ -40,7 +41,7 @@ class KeyBindingsHandler {
         int code = Abilities.KEYS_CODES.get(id);
 
         FabricKeyBinding b = FabricKeyBinding.Builder.create(id, InputUtil.Type.KEYSYM, code, KEY_CATEGORY).build();
-        KeyBindingRegistry.INSTANCE.register(b);
+
         getKeyCodePool(b).add(p);
         bindings.add(b);
     }
@@ -54,15 +55,16 @@ class KeyBindingsHandler {
 
         for (KeyBinding i : bindings) {
             if (i.isPressed()) {
-
                 if (pressed.add(i)) {
-                    getKeyCodePool(i)
-                        .stream()
-                        .filter(power -> power.canUse(iplayer.getSpecies()))
+                    System.out.println("key press " + i);
+                    Race race = iplayer.getSpecies();
+                    getKeyCodePool(i).stream()
+                        .filter(power -> power.canUse(race))
                         .findFirst()
                         .ifPresent(iplayer.getAbilities()::tryUseAbility);
                 }
             } else if (pressed.remove(i)) {
+                System.out.println("key release " + i);
                 iplayer.getAbilities().tryClearAbility();
             }
         }

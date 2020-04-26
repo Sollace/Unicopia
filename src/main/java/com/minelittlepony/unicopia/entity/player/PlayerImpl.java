@@ -172,6 +172,7 @@ public class PlayerImpl implements Pony, MagicReserves {
         dirty = false;
 
         if (entity instanceof ServerPlayerEntity) {
+            System.out.println("Sending capabilities for player");
             Channel.BROADCAST_CAPABILITIES.send(new MsgPlayerCapabilities(full, this));
         }
     }

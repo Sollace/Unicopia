@@ -118,7 +118,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             }
         }
 
-        player.setPos(
+        player.teleport(
                 data.x + (player.getX() - Math.floor(player.getX())),
                 data.y,
                 data.z + (player.getZ() - Math.floor(player.getZ())));

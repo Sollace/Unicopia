@@ -70,7 +70,7 @@ public class AbilityDispatcher implements Updatable, NbtSerialisable {
     @Nullable
     protected synchronized Optional<Ability<?>> getUsableAbility() {
         return activeAbility.filter(ability -> {
-            return (triggered && warmup == 0 && cooldown == 0) && ability.canUse(player.getSpecies());
+            return (!(ability == null || (triggered && warmup == 0 && cooldown == 0)) && ability.canUse(player.getSpecies()));
         });
     }
 
@@ -86,13 +86,19 @@ public class AbilityDispatcher implements Updatable, NbtSerialisable {
     private <T extends Hit> void activate(Ability<T> ability) {
         if (warmup > 0) {
             warmup--;
+            System.out.println("warming up");
             ability.preApply(player);
             return;
         }
 
         if (cooldown > 0) {
             cooldown--;
+            System.out.println("cooling down");
             ability.postApply(player);
+
+            if (cooldown <= 0) {
+                setAbility(null);
+            }
             return;
         }
 
