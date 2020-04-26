@@ -10,6 +10,7 @@
   "block.unicopia.cloud_stairs": "Cloud Stairs",
   "block.unicopia.cloud_fence": "Cloud Fence",
   "block.unicopia.cloud_farmland": "Tilled Clouds",
+  "block.unicopia.cloud_anvil": "Cloud Anvil",
 
   "block.unicopia.hive_wall_block": "Hive Wall Block",
   "block.unicopia.chitin_shell_block": "Chitin Shell Block",
@@ -39,7 +40,6 @@
   "item.unicopia.wild_cloud_spawner": "Wild Cloud",
 
   "item.unicopia.dew_drop": "Dew Drop",
-  "item.unicopia.cloud_anvil": "Cloud Anvil",
   "item.unicopia.chitin_shell": "Chitinous Shell",
 
   "item.unicopia.moss": "Moss",
