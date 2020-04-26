@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client;
 
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.client.particle.ChangelingMagicParticle;
 import com.minelittlepony.unicopia.client.particle.DiskParticle;
 import com.minelittlepony.unicopia.client.particle.MagicParticle;
@@ -15,8 +16,10 @@ import com.minelittlepony.unicopia.client.render.SpellcastEntityRenderer;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.particles.UParticles;
 
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 
 public interface URenderers {
@@ -38,5 +41,29 @@ public interface URenderers {
         ParticleFactoryRegistry.getInstance().register(UParticles.RAIN_DROPS, RaindropsParticle.Factory::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.SPHERE, SphereParticle.Factory::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.DISK, DiskParticle.Factory::new);
+
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), UBlocks.ENCHANTED_TORCH, UBlocks.ENCHANTED_WALL_TORCH);
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(),
+                UBlocks.CLOUD_ANVIL, UBlocks.CLOUD_FARMLAND,
+                UBlocks.CLOUD_BLOCK, UBlocks.CLOUD_SLAB, UBlocks.CLOUD_STAIRS, UBlocks.CLOUD_FENCE,
+                UBlocks.DENSE_CLOUD_BLOCK, UBlocks.DENSE_CLOUD_SLAB,
+                UBlocks.ENCHANTED_CLOUD_BLOCK, UBlocks.ENCHANTED_CLOUD_SLAB
+        );
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
