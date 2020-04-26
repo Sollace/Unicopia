@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.block;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -32,24 +33,25 @@ public class DutchDoorBlock extends AbstractDoorBlock {
         return result;
     }
 
-    // UPPER - HALF/HINGE/POWER{/OPEN}
-    // LOWER - HALF/FACING/FACING/OPEN
-
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction face, BlockState other, IWorld world, BlockPos pos, BlockPos otherPos) {
 
-        // copy properties in stored by the sibling block
-        if (state.get(HALF) == DoubleBlockHalf.LOWER) {
-            if (other.getBlock() == this) {
-                return state.with(HINGE, other.get(HINGE))
-                    .with(POWERED, other.get(POWERED));
+        DoubleBlockHalf half = state.get(HALF);
+
+        if (face.getAxis() == Direction.Axis.Y && half == DoubleBlockHalf.LOWER == (face == Direction.UP)) {
+            if (other.getBlock() == this && other.get(HALF) != half) {
+                return state
+                        .with(FACING, other.get(FACING))
+                        .with(HINGE, other.get(HINGE))
+                        .with(POWERED, other.get(POWERED));
             }
-        } else {
-            if (other.getBlock() == this) {
-                return state.with(FACING, other.get(FACING));
-            }
+
+            return Blocks.AIR.getDefaultState();
         }
 
+        if (half == DoubleBlockHalf.LOWER && face == Direction.DOWN && !state.canPlaceAt(world, pos)) {
+            return Blocks.AIR.getDefaultState();
+        }
 
         return state;
     }
