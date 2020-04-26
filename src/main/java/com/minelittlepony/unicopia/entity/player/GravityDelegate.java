@@ -290,22 +290,19 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
     }
 
     public void updateFlightStat(PlayerEntity entity, boolean flying) {
-        if (!entity.abilities.creativeMode) {
-            entity.abilities.allowFlying = player.getSpecies().canFly();
+        entity.abilities.allowFlying = checkCanFly(Pony.of(entity));
 
-            if (entity.abilities.allowFlying) {
-                entity.abilities.flying |= flying;
+        if (entity.abilities.allowFlying) {
+            entity.abilities.flying |= flying;
 
-                isFlying = entity.abilities.flying;
+            isFlying = entity.abilities.flying;
 
-                if (isFlying) {
-                    ticksNextLevel = 0;
-                }
-
-            } else {
-                entity.abilities.flying = false;
-                isFlying = false;
+            if (isFlying) {
+                ticksNextLevel = 0;
             }
+        } else {
+            entity.abilities.flying = false;
+            isFlying = false;
         }
     }
 

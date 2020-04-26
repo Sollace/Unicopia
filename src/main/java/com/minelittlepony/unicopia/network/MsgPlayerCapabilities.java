@@ -50,6 +50,7 @@ public class MsgPlayerCapabilities implements Channel.Packet {
 
     @Override
     public void handle(PacketContext context) {
+        System.out.println("Got capabilities for player " + newRace + " " + context.getPacketEnvironment());
         Pony player = Pony.of(context.getPlayer());
         if (compoundTag.isEmpty()) {
             player.setSpecies(newRace);

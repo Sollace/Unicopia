@@ -104,11 +104,8 @@ public class PlayerImpl implements Pony {
 
         entity.getDataTracker().set(PLAYER_RACE, race.ordinal());
 
-        entity.abilities.allowFlying = race.canFly();
         gravity.updateFlightStat(entity, entity.abilities.flying);
         entity.sendAbilitiesUpdate();
-
-        sendCapabilities(false);
     }
 
     @Override
@@ -170,7 +167,7 @@ public class PlayerImpl implements Pony {
     public void sendCapabilities(boolean full) {
         dirty = false;
 
-        if (!getWorld().isClient()) {
+        if (entity instanceof ServerPlayerEntity) {
             Channel.BROADCAST_CAPABILITIES.send(new MsgPlayerCapabilities(full, this));
         }
     }
@@ -422,6 +419,7 @@ public class PlayerImpl implements Pony {
     public void copyFrom(Pony oldPlayer) {
         setEffect(oldPlayer.getEffect());
         setSpecies(oldPlayer.getSpecies());
+        sendCapabilities(true);
     }
 
     @Override

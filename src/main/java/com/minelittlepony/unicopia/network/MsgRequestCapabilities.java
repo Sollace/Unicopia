@@ -25,6 +25,7 @@ public class MsgRequestCapabilities implements Channel.Packet {
 
     @Override
     public void handle(PacketContext context) {
+        System.out.println("Requesting player capabilities " + context.getPacketEnvironment());
         Pony player = Pony.of(context.getPlayer());
 
         if (player.getSpecies().isDefault()) {

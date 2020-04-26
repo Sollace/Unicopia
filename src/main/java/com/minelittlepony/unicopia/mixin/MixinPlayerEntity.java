@@ -63,6 +63,7 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
             at = @At("RETURN"))
     private void onSetGameMode(GameMode mode, CallbackInfo info) {
         get().setSpecies(get().getSpecies());
+        get().sendCapabilities(true);
     }
 
     @Inject(method = "getActiveEyeHeight(Lnet/minecraft/entity/EntityPose;Lnet/minecraft/entity/EntityDimensions;)F",

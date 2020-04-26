@@ -47,7 +47,9 @@ class SpeciesCommand {
     static int set(ServerCommandSource source, PlayerEntity player, Race race, boolean isSelf) {
 
         if (race.isPermitted(player)) {
-            Pony.of(player).setSpecies(race);
+            Pony pony = Pony.of(player);
+            pony.setSpecies(race);
+            pony.sendCapabilities(false);
 
             Text formattedName = new TranslatableText(race.name().toLowerCase());
 
