@@ -2,9 +2,9 @@
   "replace": false,
   "values": [
     "minecraft:apple",
-    "unicopia:apple_green",
-    "unicopia:apple_sweet",
-    "unicopia:apple_sour",
+    "unicopia:green_apple",
+    "unicopia:sweet_apple",
+    "unicopia:sour_apple",
     "unicopia:rotten_apple",
     "unicopia:zap_apple",
     "unicopia:cooked_zap_apple"
