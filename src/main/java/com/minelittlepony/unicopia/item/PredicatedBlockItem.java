@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -13,9 +14,9 @@ import net.minecraft.world.World;
 
 public class PredicatedBlockItem extends BlockItem {
 
-    private final Predicate<PlayerEntity> abilityTest;
+    private final Predicate<Entity> abilityTest;
 
-    public PredicatedBlockItem(Block block, Item.Settings settings, Predicate<PlayerEntity> abilityTest) {
+    public PredicatedBlockItem(Block block, Item.Settings settings, Predicate<Entity> abilityTest) {
         super(block, settings);
 
         this.abilityTest = abilityTest;

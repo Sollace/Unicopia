@@ -58,7 +58,7 @@ public interface Gas {
                     }
                 }
 
-                if (!EquinePredicates.INTERACT_WITH_CLOUDS.apply(player)) {
+                if (!EquinePredicates.PLAYER_PEGASUS.test(player)) {
                     return type != CloudType.ENCHANTED;
                 }
 

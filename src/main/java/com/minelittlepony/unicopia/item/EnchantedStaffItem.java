@@ -51,7 +51,7 @@ public class EnchantedStaffItem extends StaffItem implements Affine, TossableIte
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        if (EquinePredicates.MAGI.test(player) && hand == Hand.MAIN_HAND) {
+        if (EquinePredicates.PLAYER_UNICORN.test(player) && hand == Hand.MAIN_HAND) {
             ItemStack itemstack =  player.getStackInHand(hand);
 
             player.swingHand(hand);
@@ -64,8 +64,7 @@ public class EnchantedStaffItem extends StaffItem implements Affine, TossableIte
 
     @Override
     public void onStoppedUsing(ItemStack itemstack, World world, LivingEntity entity, int timeLeft) {
-        if (EquinePredicates.MAGI.test(entity) && entity instanceof PlayerEntity) {
-
+        if (EquinePredicates.PLAYER_UNICORN.test(entity)) {
             int i = getMaxUseTime(itemstack) - timeLeft;
 
             if (i > 10 && canBeThrown(itemstack)) {

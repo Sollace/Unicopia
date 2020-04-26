@@ -71,7 +71,7 @@ public class MagicGemItem extends Item implements Castable {
         Hand hand = context.getHand();
         PlayerEntity player = context.getPlayer();
 
-        if (hand != Hand.MAIN_HAND || !EquinePredicates.MAGI.test(player)) {
+        if (hand != Hand.MAIN_HAND || !EquinePredicates.PLAYER_UNICORN.test(player)) {
             return ActionResult.PASS;
         }
 
@@ -113,7 +113,7 @@ public class MagicGemItem extends Item implements Castable {
 
         ItemStack stack = player.getStackInHand(hand);
 
-        if (!EquinePredicates.MAGI.test(player)) {
+        if (!EquinePredicates.PLAYER_UNICORN.test(player)) {
             return new TypedActionResult<>(ActionResult.PASS, stack);
         }
 

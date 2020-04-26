@@ -1,10 +1,7 @@
 package com.minelittlepony.unicopia.gas;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.entity.CloudEntity;
-
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 public interface CloudInteractionContext {
@@ -23,32 +20,34 @@ public interface CloudInteractionContext {
 
     boolean canTouch(CloudType type);
 
+    interface Holder extends CloudInteractionContext {
+        CloudInteractionContext getCloudInteractionContext();
+
+        @Override
+        default boolean isPlayer() {
+            return getCloudInteractionContext().isPlayer();
+        }
+
+        @Override
+        default boolean isPegasis() {
+            return getCloudInteractionContext().isPegasis();
+        }
+
+        @Override
+        default boolean canTouch(CloudType type) {
+            return getCloudInteractionContext().canTouch(type);
+        }
+    }
+
     class Impl implements CloudInteractionContext {
-        private static final CloudInteractionContext EMPTY = type -> false;
+        public static final CloudInteractionContext EMPTY = type -> true;
 
         private final boolean isPlayer;
         private final boolean isPegasis;
 
         private Impl(Entity entity) {
             this.isPlayer = entity instanceof PlayerEntity;
-            this.isPegasis = isPegasis(entity);
-        }
-
-        private boolean isPegasis(Entity entity) {
-            if (entity instanceof PlayerEntity) {
-                return EquinePredicates.INTERACT_WITH_CLOUDS.test((PlayerEntity)entity)
-                    || (EquinePredicates.MAGI.test(entity) && CloudEntity.getFeatherEnchantStrength((PlayerEntity)entity) > 0);
-            }
-
-            if (entity instanceof ItemEntity) {
-                return EquinePredicates.ITEM_INTERACT_WITH_CLOUDS.test((ItemEntity)entity);
-            }
-
-            if (entity instanceof CloudEntity && entity.hasVehicle()) {
-                return isPegasis(entity.getVehicle());
-            }
-
-            return false;
+            this.isPegasis = EquinePredicates.ENTITY_INTERACT_WITH_CLOUD_BLOCKS.test(entity);
         }
 
         @Override

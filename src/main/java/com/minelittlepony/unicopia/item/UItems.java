@@ -45,13 +45,13 @@ public interface UItems {
     CloudPlacerItem CONSTRUCTION_CLOUD_SPAWNER = register(new CloudPlacerItem(UEntities.CONSTRUCTION_CLOUD), "construction_cloud_spawner");
     CloudPlacerItem WILD_CLOUD_SPAWNER = register(new CloudPlacerItem(UEntities.WILD_CLOUD), "wild_cloud_spawner");
 
-    Item CLOUD_BLOCK = register(new PredicatedBlockItem(UBlocks.CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), INTERACT_WITH_CLOUDS), "cloud_block");
-    Item ENCHANTED_CLOUD_BLOCK = register(new PredicatedBlockItem(UBlocks.ENCHANTED_CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), INTERACT_WITH_CLOUDS), "enchanted_cloud_block");
-    Item DENSE_CLOUD_BLOCK = register(new PredicatedBlockItem(UBlocks.DENSE_CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), INTERACT_WITH_CLOUDS), "dense_cloud_block");
+    Item CLOUD_BLOCK = register(new PredicatedBlockItem(UBlocks.CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), PLAYER_PEGASUS), "cloud_block");
+    Item ENCHANTED_CLOUD_BLOCK = register(new PredicatedBlockItem(UBlocks.ENCHANTED_CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), PLAYER_PEGASUS), "enchanted_cloud_block");
+    Item DENSE_CLOUD_BLOCK = register(new PredicatedBlockItem(UBlocks.DENSE_CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), PLAYER_PEGASUS), "dense_cloud_block");
 
-    Item CLOUD_STAIRS = register(new PredicatedBlockItem(UBlocks.CLOUD_STAIRS, new Settings().group(ItemGroup.BUILDING_BLOCKS), INTERACT_WITH_CLOUDS), "cloud_stairs");
-    Item CLOUD_FENCE = register(new PredicatedBlockItem(UBlocks.CLOUD_FENCE, new Settings().group(ItemGroup.DECORATIONS), INTERACT_WITH_CLOUDS), "cloud_fence");
-    Item CLOUD_ANVIL = register(new PredicatedBlockItem(UBlocks.CLOUD_ANVIL, new Settings().group(ItemGroup.DECORATIONS), INTERACT_WITH_CLOUDS), "cloud_anvil");
+    Item CLOUD_STAIRS = register(new PredicatedBlockItem(UBlocks.CLOUD_STAIRS, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS), "cloud_stairs");
+    Item CLOUD_FENCE = register(new PredicatedBlockItem(UBlocks.CLOUD_FENCE, new Settings().group(ItemGroup.DECORATIONS), PLAYER_PEGASUS), "cloud_fence");
+    Item CLOUD_ANVIL = register(new PredicatedBlockItem(UBlocks.CLOUD_ANVIL, new Settings().group(ItemGroup.DECORATIONS), PLAYER_PEGASUS), "cloud_anvil");
 
     Item MUSIC_DISC_CRUSADE = register(createRecord(USounds.RECORD_CRUSADE), "music_disc_crusade");
     Item MUSIC_DISC_PET = register(createRecord(USounds.RECORD_PET), "music_disc_pet");
@@ -72,9 +72,9 @@ public interface UItems {
 
     Item SUGAR_BLOCK = register(new BlockItem(UBlocks.SUGAR_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)), "sugar_block");
 
-    Item CLOUD_SLAB = register(new PredicatedBlockItem(UBlocks.CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), INTERACT_WITH_CLOUDS), "cloud_slab");
-    Item ENCHANTED_CLOUD_SLAB = register(new PredicatedBlockItem(UBlocks.ENCHANTED_CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), INTERACT_WITH_CLOUDS), "enchanted_cloud_slab");
-    Item DENSE_CLOUD_SLAB = register(new PredicatedBlockItem(UBlocks.DENSE_CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), INTERACT_WITH_CLOUDS), "dense_cloud_slab");
+    Item CLOUD_SLAB = register(new PredicatedBlockItem(UBlocks.CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS), "cloud_slab");
+    Item ENCHANTED_CLOUD_SLAB = register(new PredicatedBlockItem(UBlocks.ENCHANTED_CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS), "enchanted_cloud_slab");
+    Item DENSE_CLOUD_SLAB = register(new PredicatedBlockItem(UBlocks.DENSE_CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS), "dense_cloud_slab");
 
     MagicGemItem GEM = register(new MagicGemItem(new Settings().maxCount(16).group(ItemGroup.BREWING)), "gem");
     MagicGemItem CORRUPTED_GEM = register(new CursedMagicGemItem(new Settings().maxCount(16).group(ItemGroup.BREWING)), "corrupted_gem");

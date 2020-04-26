@@ -6,13 +6,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.gas.CloudInteractionContext;
-import com.minelittlepony.unicopia.gas.CloudType;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContextImpl;
 
 @Mixin(EntityContextImpl.class)
-abstract class MixinEntityContextImpl implements CloudInteractionContext {
+abstract class MixinEntityContextImpl implements CloudInteractionContext.Holder {
     private CloudInteractionContext cloudContext;
 
     @Inject(method = "<init>(Lnet/minecraft/entity/Entity;)V", at = @At("RETURN"))
@@ -21,17 +19,7 @@ abstract class MixinEntityContextImpl implements CloudInteractionContext {
     }
 
     @Override
-    public boolean isPlayer() {
-        return cloudContext != null && cloudContext.isPlayer();
-    }
-
-    @Override
-    public boolean isPegasis() {
-        return cloudContext != null && cloudContext.isPegasis();
-    }
-
-    @Override
-    public boolean canTouch(CloudType type) {
-        return cloudContext != null && cloudContext.canTouch(type);
+    public CloudInteractionContext getCloudInteractionContext() {
+        return cloudContext == null ? CloudInteractionContext.Impl.EMPTY : cloudContext;
     }
 }

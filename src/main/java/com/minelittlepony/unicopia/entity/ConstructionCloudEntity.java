@@ -39,7 +39,7 @@ public class ConstructionCloudEntity extends CloudEntity {
     @Override
     public ActionResult interactAt(PlayerEntity player, Vec3d vec, Hand hand) {
         if (!(hasPassengers() || isConnectedThroughVehicle(player)) && hand == Hand.MAIN_HAND) {
-            if (EquinePredicates.INTERACT_WITH_CLOUDS.test(player)) {
+            if (EquinePredicates.PLAYER_PEGASUS.test(player)) {
 
                 if (player.getItemUseTime() > 0) {
                     return ActionResult.FAIL;

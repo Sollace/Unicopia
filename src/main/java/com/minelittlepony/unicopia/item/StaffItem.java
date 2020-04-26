@@ -63,7 +63,7 @@ public class StaffItem extends SwordItem {
     public boolean postHit(ItemStack stack, LivingEntity entity, LivingEntity attacker) {
         super.postHit(stack, entity, attacker);
 
-        if (EquinePredicates.MAGI.test(entity)) {
+        if (EquinePredicates.PLAYER_UNICORN.test(entity)) {
             return castContainedEffect(stack, entity, attacker);
         }
 

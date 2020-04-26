@@ -39,7 +39,7 @@ public class SpellbookItem extends BookItem {
         @Nullable
         PlayerEntity player = context.getPlayer();
 
-        if (!context.getWorld().isClient && EquinePredicates.MAGI.test(player)) {
+        if (!context.getWorld().isClient && EquinePredicates.PLAYER_UNICORN.test(player)) {
             BlockPos pos = context.getBlockPos().offset(context.getSide());
 
             double diffX = player.getX() - (pos.getX() + 0.5);

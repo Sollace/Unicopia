@@ -163,7 +163,7 @@ public class SpellbookEntity extends MobEntity implements NameableContainerFacto
             return ActionResult.SUCCESS;
         }
 
-        if (EquinePredicates.MAGI.test(player)) {
+        if (EquinePredicates.PLAYER_UNICORN.test(player)) {
 
             player.playSound(SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, 2, 1);
 

@@ -157,7 +157,7 @@ public class SpellBookContainer extends Container {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return EquinePredicates.MAGI.test(player);
+        return EquinePredicates.PLAYER_UNICORN.test(player);
     }
 
     public static class SpellbookSlot extends Slot {

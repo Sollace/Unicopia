@@ -28,6 +28,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.damage.DamageSource;
@@ -154,7 +155,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
     @Override
     public void pushAwayFrom(Entity other) {
         if (other instanceof PlayerEntity) {
-            if (EquinePredicates.INTERACT_WITH_CLOUDS.test((PlayerEntity)other)) {
+            if (EquinePredicates.PLAYER_PEGASUS.test(other)) {
                 super.pushAwayFrom(other);
             }
         } else if (other instanceof CloudEntity) {
@@ -429,7 +430,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
         ItemStack stack = player.getMainHandStack();
 
         boolean canFly = EnchantmentHelper.getEnchantments(stack).containsKey(Enchantments.FEATHER_FALLING)
-                || EquinePredicates.INTERACT_WITH_CLOUDS.test(player);
+                || EquinePredicates.PLAYER_PEGASUS.test(player);
         boolean stat = getStationary();
 
         if (stat || canFly) {
@@ -479,7 +480,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
 
     private boolean entityIsFloatingItem(Entity e) {
         return e instanceof ItemEntity
-                && EquinePredicates.ITEM_INTERACT_WITH_CLOUDS.test((ItemEntity)e);
+                && EquinePredicates.ITEM_INTERACT_WITH_CLOUDS.test(e);
     }
 
     @Override
@@ -575,15 +576,15 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
             return 3;
         }
 
-        if (entity instanceof PlayerEntity) {
-            return getFeatherEnchantStrength((PlayerEntity)entity);
+        if (entity instanceof LivingEntity) {
+            return getFeatherEnchantStrength((LivingEntity)entity);
         }
 
         return 0;
     }
 
-    public static int getFeatherEnchantStrength(PlayerEntity player) {
-        for (ItemStack stack : player.getArmorItems()) {
+    public static int getFeatherEnchantStrength(LivingEntity entity) {
+        for (ItemStack stack : entity.getArmorItems()) {
             if (stack != null) {
                 Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(stack);
                 if (enchantments.containsKey(Enchantments.FEATHER_FALLING)) {

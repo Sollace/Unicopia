@@ -63,7 +63,7 @@ public class BagOfHoldingItem extends Item implements MagicalItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
 
-        if (!EquinePredicates.MAGI.test(player)) {
+        if (!EquinePredicates.PLAYER_UNICORN.test(player)) {
             return super.use(world, player, hand);
         }
 
@@ -91,7 +91,7 @@ public class BagOfHoldingItem extends Item implements MagicalItem {
 
                     Box box = new Box(pos.offset(bhit.getSide())).expand(0.5);
 
-                    List<Entity> itemsAround = world.getEntities(player, box, EquinePredicates.ITEMS);
+                    List<Entity> itemsAround = world.getEntities(player, box, EquinePredicates.IS_VALID_ITEM);
 
                     if (itemsAround.size() > 0) {
                         BagOfHoldingInventory inventory = BagOfHoldingInventory.getInventoryFromStack(stack);

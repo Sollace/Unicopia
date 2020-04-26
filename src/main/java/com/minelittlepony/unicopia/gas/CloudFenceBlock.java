@@ -22,7 +22,7 @@ public class CloudFenceBlock extends FenceBlock implements Gas {
 
     @Override
     public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
-        return getGasType(state) == CloudType.NORMAL;
+        return getGasType(state).isTranslucent();
     }
 
     @Override

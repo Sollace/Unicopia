@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client;
 
-import static com.minelittlepony.unicopia.EquinePredicates.MAGI;
+import static com.minelittlepony.unicopia.EquinePredicates.PLAYER_UNICORN;
 
 import javax.annotation.Nullable;
 
@@ -54,7 +54,7 @@ public class UnicopiaClient implements ClientModInitializer {
         }, UItems.APPLE_LEAVES);
         ColorProviderRegistry.BLOCK.register(UnicopiaClient::getLeavesColor, UBlocks.APPLE_LEAVES);
         ColorProviderRegistry.ITEM.register((stack, tint) -> {
-            if (MAGI.test(MinecraftClient.getInstance().player)) {
+            if (PLAYER_UNICORN.test(MinecraftClient.getInstance().player)) {
                 return SpellRegistry.instance().getSpellTintFromStack(stack);
             }
             return 0xFFFFFF;

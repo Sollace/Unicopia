@@ -170,7 +170,7 @@ public class SlimeDropBlock extends Block implements Climbable {
         if (entity instanceof LivingEntity && !entity.removed) {
             LivingEntity living = (LivingEntity)entity;
 
-            if (!EquinePredicates.BUGGY.test(living) && living.getHealth() > 0) {
+            if (!EquinePredicates.PLAYER_CHANGELING.test(living) && living.getHealth() > 0) {
                 living.damage(MagicalDamageSource.ACID, 1);
                 living.slowMovement(state, new Vec3d(0.25D, 0.05000000074505806D, 0.25D));
 

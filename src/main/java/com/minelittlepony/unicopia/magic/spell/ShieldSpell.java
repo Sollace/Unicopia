@@ -95,7 +95,7 @@ public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements Attach
 
         Entity owner = source.getOwner();
 
-        boolean ownerIsValid = source.getAffinity() != Affinity.BAD && EquinePredicates.MAGI.test(owner);
+        boolean ownerIsValid = source.getAffinity() != Affinity.BAD && EquinePredicates.PLAYER_UNICORN.test(owner);
 
         Vec3d origin = source.getOriginVector();
 

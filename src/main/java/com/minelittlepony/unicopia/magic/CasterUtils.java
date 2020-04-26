@@ -44,7 +44,7 @@ public class CasterUtils {
     }
 
     static Stream<Caster<?>> findAllSpellsInRange(Caster<?> source, Box bb) {
-        return source.getWorld().getEntities(source.getEntity(), bb, e -> !e.removed && (e instanceof Caster || EquinePredicates.MAGI.test(e))).stream()
+        return source.getWorld().getEntities(source.getEntity(), bb, e -> !e.removed && (e instanceof Caster || EquinePredicates.PLAYER_UNICORN.test(e))).stream()
             .map(CasterUtils::toCaster)
             .filter(o -> o.isPresent() && o.get() != source)
             .map(Optional::get);

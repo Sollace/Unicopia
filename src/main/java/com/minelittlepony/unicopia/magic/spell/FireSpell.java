@@ -179,7 +179,7 @@ public class FireSpell extends AbstractSpell.RangedAreaSpell implements Useable,
 
     protected boolean applyEntitySingle(Entity owner, World world, Entity e) {
         if ((!e.equals(owner) ||
-                (owner instanceof PlayerEntity && !EquinePredicates.MAGI.test(owner))) && !(e instanceof ItemEntity)
+                (owner instanceof PlayerEntity && !EquinePredicates.PLAYER_UNICORN.test(owner))) && !(e instanceof ItemEntity)
         && !(e instanceof IMagicals)) {
             e.setOnFireFor(60);
             e.damage(getDamageCause(e, (LivingEntity)owner), 0.1f);

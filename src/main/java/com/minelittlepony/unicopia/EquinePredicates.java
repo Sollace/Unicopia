@@ -1,54 +1,31 @@
 package com.minelittlepony.unicopia;
 
-import com.google.common.base.Predicate;
-import com.minelittlepony.unicopia.entity.Ponylike;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import java.util.function.Predicate;
 
+import com.minelittlepony.unicopia.entity.CloudEntity;
+import com.minelittlepony.unicopia.entity.Ponylike;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 public interface EquinePredicates {
-    Predicate<PlayerEntity> INTERACT_WITH_CLOUDS = player -> {
-        return player != null && Pony.of(player).getSpecies().canInteractWithClouds();
-    };
+    Predicate<Entity> IS_CLOUD = e -> e instanceof CloudEntity;
+    Predicate<Entity> IS_PLAYER = e -> e instanceof PlayerEntity;
+    Predicate<Entity> IS_VALID_ITEM = entity -> entity instanceof ItemEntity && entity.isAlive() && entity.age > 1;
 
-    Predicate<Entity> MAGI = entity -> {
-        return entity instanceof PlayerEntity && Pony.of((PlayerEntity)entity).getSpecies().canCast();
-    };
+    Predicate<Entity> RACE_INTERACT_WITH_CLOUDS = entity -> Ponylike.of(entity).getSpecies().canInteractWithClouds();
 
-    Predicate<Entity> ITEMS = entity -> {
-        return entity instanceof ItemEntity && entity.isAlive() && entity.age > 1;
-    };
+    Predicate<Entity> PLAYER_UNICORN = IS_PLAYER.and(entity -> Ponylike.of(entity).getSpecies().canCast());
+    Predicate<Entity> PLAYER_CHANGELING = IS_PLAYER.and(entity -> Ponylike.of(entity).getSpecies() == Race.CHANGELING);
+    Predicate<Entity> PLAYER_PEGASUS = IS_PLAYER.and(entity -> ((PlayerEntity)entity).abilities.creativeMode || RACE_INTERACT_WITH_CLOUDS.test(entity));
 
-    Predicate<ItemEntity> ITEM_INTERACT_WITH_CLOUDS = item -> {
-        return ITEMS.test(item) && Ponylike.of(item).getSpecies().canInteractWithClouds();
-    };
+    Predicate<Entity> ITEM_INTERACT_WITH_CLOUDS = IS_VALID_ITEM.and(RACE_INTERACT_WITH_CLOUDS);
 
-    Predicate<Entity> ENTITY_INTERACT_WITH_CLOUDS = entity -> {
-        return entity != null && (
-                    (entity instanceof PlayerEntity && INTERACT_WITH_CLOUDS.test((PlayerEntity)entity))
-                 || (entity instanceof ItemEntity && ITEM_INTERACT_WITH_CLOUDS.test((ItemEntity)entity))
-              );
-    };
+    Predicate<Entity> ENTITY_INTERACT_WITH_CLOUDS = PLAYER_PEGASUS.or(ITEM_INTERACT_WITH_CLOUDS);
+    Predicate<Entity> ENTITY_WALK_ON_CLOUDS = entity -> entity instanceof LivingEntity && CloudEntity.getFeatherEnchantStrength((LivingEntity)entity) > 0;
 
-    Predicate<Entity> BUGGY = entity -> {
-        return entity instanceof PlayerEntity
-                && Pony.of((PlayerEntity)entity).getSpecies() == Race.CHANGELING;
-    };
-
-    static PlayerEntity getPlayerFromEntity(Entity entity) {
-        if (entity instanceof PlayerEntity) {
-            return (PlayerEntity) entity;
-        }
-
-        if (entity instanceof ItemEntity) {
-            ItemEntity item = (ItemEntity)entity;
-            if (item.getOwner() != null) {
-                return item.getEntityWorld().getPlayerByUuid(item.getOwner());
-            }
-        }
-
-        return null;
-    }
+    Predicate<Entity> ENTITY_INTERACT_WITH_CLOUD_BLOCKS = IS_CLOUD.or(PLAYER_PEGASUS).or(ENTITY_WALK_ON_CLOUDS).or(ITEM_INTERACT_WITH_CLOUDS).or(entity -> {
+        return entity != null && EquinePredicates.ENTITY_INTERACT_WITH_CLOUD_BLOCKS.test(entity.getVehicle());
+    });
 }

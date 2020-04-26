@@ -24,7 +24,7 @@ public class DiamondDoorBlock extends AbstractDoorBlock {
 
     @Override
     protected boolean canOpen(@Nullable PlayerEntity player) {
-        return EquinePredicates.MAGI.test(player);
+        return EquinePredicates.PLAYER_UNICORN.test(player);
     }
 
     @Override

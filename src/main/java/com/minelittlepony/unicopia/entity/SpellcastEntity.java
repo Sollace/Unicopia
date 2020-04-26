@@ -287,7 +287,7 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
 
     @Override
     public ActionResult interactAt(PlayerEntity player, Vec3d vec, Hand hand) {
-        if (EquinePredicates.MAGI.test(player)) {
+        if (EquinePredicates.PLAYER_UNICORN.test(player)) {
             ItemStack currentItem = player.getStackInHand(Hand.MAIN_HAND);
 
             if (currentItem != null

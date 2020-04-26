@@ -80,7 +80,7 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
     @Override
     public boolean damage(DamageSource source, float amount) {
 
-        if (EquinePredicates.BUGGY.test(source.getSource())) {
+        if (EquinePredicates.PLAYER_CHANGELING.test(source.getSource())) {
             amount = 0;
         }
 
@@ -93,7 +93,7 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
                 && !entity.isSneaking()
                 && !hasPassengers()
                 && entity instanceof LivingEntity
-                && !EquinePredicates.BUGGY.test(entity);
+                && !EquinePredicates.PLAYER_CHANGELING.test(entity);
     }
 
     @Override
@@ -149,7 +149,7 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
     @Override
     public ActionResult interactAt(PlayerEntity player, Vec3d vec, Hand hand) {
 
-        if (hand == Hand.MAIN_HAND && EquinePredicates.BUGGY.test(player)) {
+        if (hand == Hand.MAIN_HAND && EquinePredicates.PLAYER_CHANGELING.test(player)) {
 
             if (hasPassengers()) {
                 Entity passenger = getPrimaryPassenger();
