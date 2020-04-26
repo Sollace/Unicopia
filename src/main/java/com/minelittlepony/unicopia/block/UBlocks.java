@@ -23,7 +23,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public interface UBlocks {
-    CloudFarmlandBlock CLOUD_FARMLAND = register(new CloudFarmlandBlock(FabricBlockSettings.of(UMaterials.CLOUD).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.WOOL).build()), "cloud_farmland");
+    CloudFarmlandBlock CLOUD_FARMLAND = register(new CloudFarmlandBlock(GasState.NORMAL.configure().build()), "cloud_farmland");
     CloudBlock CLOUD_BLOCK = register(new CloudBlock(GasState.NORMAL), "cloud_block");
     CloudBlock ENCHANTED_CLOUD_BLOCK = register(new CloudBlock(GasState.ENCHANTED), "enchanted_cloud_block");
     CloudBlock DENSE_CLOUD_BLOCK = register(new CloudBlock(GasState.DENSE), "dense_cloud_block");

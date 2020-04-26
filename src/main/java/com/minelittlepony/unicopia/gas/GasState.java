@@ -64,7 +64,7 @@ public enum GasState {
                     || block instanceof ChestBlock);
         }
 
-        return main.isEmpty();
+        return true;
     }
 
 }
