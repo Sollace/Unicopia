@@ -21,11 +21,11 @@ public class MagicParticle extends SpriteBillboardParticle {
         velocityX = vX;
         velocityY = vY;
         velocityZ = vZ;
-        startX = x;
-        startY = y;
-        startZ = z;
-        scale = random.nextFloat() * 0.2F + 0.5F;
-        maxAge = (int)(Math.random() * 10) + 40;
+        startX = x + random.nextGaussian()/3;
+        startY = y + random.nextGaussian()/3;
+        startZ = z + random.nextGaussian()/3;
+        scale = random.nextFloat() * 0.12F;
+        maxAge = (int)(Math.random() * 10) + 20;
 
         colorRed = r;
         colorGreen = g;
@@ -35,6 +35,7 @@ public class MagicParticle extends SpriteBillboardParticle {
     MagicParticle(World w, double x, double y, double z, double vX, double vY, double vZ) {
         this(w, x, y, z, vX, vY, vZ, 1, 1, 1);
 
+        colorAlpha = 0.7F;
         colorGreen *= 0.3F;
 
         if (random.nextBoolean()) {
@@ -56,7 +57,7 @@ public class MagicParticle extends SpriteBillboardParticle {
 
     @Override
     public ParticleTextureSheet getType() {
-       return ParticleTextureSheet.TERRAIN_SHEET;
+       return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     @Override
