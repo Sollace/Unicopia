@@ -1,0 +1,12 @@
+{
+    "variants": {
+        "facing=east,lit=true": { "model": "unicopia:block/enchanted_wall_torch_lit" },
+        "facing=south,lit=true": { "model": "unicopia:block/enchanted_wall_torch_lit", "y": 90 },
+        "facing=west,lit=true": { "model": "unicopia:block/enchanted_wall_torch_lit", "y": 180 },
+        "facing=north,lit=true": { "model": "unicopia:block/enchanted_wall_torch_lit", "y": 270 },
+        "facing=east,lit=false": { "model": "unicopia:block/enchanted_wall_torch" },
+        "facing=south,lit=false": { "model": "unicopia:block/enchanted_wall_torch", "y": 90 },
+        "facing=west,lit=false": { "model": "unicopia:block/enchanted_wall_torch", "y": 180 },
+        "facing=north,lit=false": { "model": "unicopia:block/enchanted_wall_torch", "y": 270 }
+    }
+}

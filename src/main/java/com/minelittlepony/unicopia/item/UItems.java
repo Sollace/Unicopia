@@ -21,6 +21,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.MusicDiscItem;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.TallBlockItem;
+import net.minecraft.item.WallStandingBlockItem;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
@@ -93,7 +94,7 @@ public interface UItems {
     Item ALFALFA_SEEDS = register(new AliasedBlockItem(UBlocks.ALFALFA_CROPS, new Settings().group(ItemGroup.MATERIALS).food(UFoodComponents.ALFALFA_SEEDS)), "alfalfa_seeds");
     Item ALFALFA_LEAVES = register(new Item(new Settings().group(ItemGroup.FOOD).food(UFoodComponents.ALFALFA_LEAVES)), "alfalfa_leaves");
 
-    Item ENCHANTED_TORCH = register(new BlockItem(UBlocks.ENCHANTED_TORCH, new Settings().group(ItemGroup.DECORATIONS)), "enchanted_torch");
+    Item ENCHANTED_TORCH = register(new WallStandingBlockItem(UBlocks.ENCHANTED_TORCH, UBlocks.ENCHANTED_WALL_TORCH, new Settings().group(ItemGroup.DECORATIONS)), "enchanted_torch");
 
     Item CEREAL = register(new SugaryItem(new Settings()
             .group(ItemGroup.FOOD)

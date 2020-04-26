@@ -39,7 +39,16 @@ public interface UBlocks {
     DutchDoorBlock BAKERY_DOOR = register(new DutchDoorBlock(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(3).build()), "bakery_door");
     DiamondDoorBlock DIAMOND_DOOR = register(new DiamondDoorBlock(), "diamond_door");
 
-    GlowingGemBlock ENCHANTED_TORCH = register(new GlowingGemBlock(), "enchanted_torch");
+    GemTorchBlock ENCHANTED_TORCH = register(new GemTorchBlock(FabricBlockSettings.of(Material.PART)
+            .noCollision()
+            .breakInstantly()
+            .ticksRandomly()
+            .lightLevel(1).sounds(BlockSoundGroup.GLASS).build()), "enchanted_torch");
+    GemTorchBlock ENCHANTED_WALL_TORCH = register(new WallGemTorchBlock(FabricBlockSettings.of(Material.PART)
+            .noCollision()
+            .breakInstantly()
+            .ticksRandomly()
+            .lightLevel(1).sounds(BlockSoundGroup.GLASS).build()), "enchanted_wall_torch");
 
     CloudAnvilBlock CLOUD_ANVIL = register(new CloudAnvilBlock(), "cloud_anvil");
 

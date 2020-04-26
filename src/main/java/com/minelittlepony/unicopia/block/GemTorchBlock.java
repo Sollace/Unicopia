@@ -5,11 +5,10 @@ import java.util.Random;
 import com.minelittlepony.unicopia.gas.GasState;
 import com.minelittlepony.unicopia.gas.Gas;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
+import com.minelittlepony.unicopia.util.PosHelper;
 
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
 import net.minecraft.block.TorchBlock;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,87 +16,64 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
-public class GlowingGemBlock extends TorchBlock implements Gas {
+public class GemTorchBlock extends TorchBlock implements Gas {
+    private static final VoxelShape STANDING = createCuboidShape(7, 0, 7, 9, 16, 9);
 
-    public static BooleanProperty ON = BooleanProperty.of("on");
-
-    private static final double A = 5/16D;
-    private static final double B = 6/16D;
-
-    private static final double C = 10/16D;
-
-    // tiltedOffWall
-    private static final double F = 10/16D;
-
-    // tiltedMinY
-    private static final double E = 3/16D;
-
-    protected static final VoxelShape STANDING_AABB = VoxelShapes.cuboid(new Box(
-            7/16D, 0, 7/16D,
-            9/16D, 1, 9/16D
-    ));
-    protected static final VoxelShape TORCH_NORTH_AABB = VoxelShapes.cuboid(new Box(B, E, F, C, 1, 1));
-    protected static final VoxelShape TORCH_SOUTH_AABB = VoxelShapes.cuboid(new Box(B, E, 0, C, 1, A));
-    protected static final VoxelShape TORCH_WEST_AABB  = VoxelShapes.cuboid(new Box(F, E, B, 1, 1, C));
-    protected static final VoxelShape TORCH_EAST_AABB  = VoxelShapes.cuboid(new Box(0, E, B, A, 1, C));
-
-    public GlowingGemBlock() {
-        super(FabricBlockSettings.of(Material.PART)
-                .noCollision()
-                .strength(0, 0)
-                .ticksRandomly()
-                .lightLevel(1)
-                .sounds(BlockSoundGroup.GLASS)
-                .build()
-        );
-        setDefaultState(stateManager.getDefaultState()
-                .with(Properties.FACING, Direction.UP)
-                .with(ON, true)
-        );
+    public GemTorchBlock(Settings settings) {
+        super(settings);
+        setDefaultState(stateManager.getDefaultState().with(Properties.LIT, true));
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(Properties.FACING).add(ON);
+        builder.add(Properties.LIT);
+    }
+
+    @Override
+    public int getTickRate(WorldView worldView) {
+        return 2;
+    }
+
+    @Override
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean moved) {
+        PosHelper.all(pos, p -> world.updateNeighborsAlways(p, this), Direction.values());
+    }
+
+    @Override
+    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (!moved) {
+            PosHelper.all(pos, p -> world.updateNeighborsAlways(p, this), Direction.values());
+        }
     }
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView source, BlockPos pos, EntityContext context) {
-        switch (state.get(Properties.FACING)) {
-            case EAST: return TORCH_EAST_AABB;
-            case WEST: return TORCH_WEST_AABB;
-            case SOUTH: return TORCH_SOUTH_AABB;
-            case NORTH: return TORCH_NORTH_AABB;
-            default: return STANDING_AABB;
-        }
+        return STANDING;
     }
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
-        if (!state.get(ON)) {
+        if (!state.get(Properties.LIT)) {
             ItemStack held = player.getStackInHand(hand);
             if (!held.isEmpty() && (held.getItem() == Items.FLINT_AND_STEEL || held.getItem() == Items.FIRE_CHARGE)) {
 
                 world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
-                world.setBlockState(pos, state.with(ON, true));
+                world.setBlockState(pos, state.with(Properties.LIT, true));
 
                 if (held.getItem() == Items.FLINT_AND_STEEL) {
                     held.damage(1, player, p -> p.sendToolBreakStatus(hand));
@@ -114,24 +90,25 @@ public class GlowingGemBlock extends TorchBlock implements Gas {
 
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random rand) {
-        Direction facing = state.get(Properties.FACING);
-
         double x = pos.getX() + 0.5;
         double y = pos.getY() + 1;
         double z = pos.getZ() + 0.5;
 
-        double drop = 0.22D;
-        double variance = 0.27D;
+        Direction facing = getDirection(state);
 
         if (facing.getAxis().isHorizontal()) {
+
+            double drop = 0.22D;
+            double offsetDistance = 0.27D;
+
             facing = facing.getOpposite();
 
-            x += variance * facing.getOffsetX();
+            x += offsetDistance * facing.getOffsetX();
             y += drop;
-            z += variance * facing.getOffsetZ();
+            z += offsetDistance * facing.getOffsetZ();
         }
 
-        if (state.get(ON)) {
+        if (state.get(Properties.LIT)) {
             for (int i = 0; i < 3; i++) {
                 world.addParticle(MagicParticleEffect.UNICORN,
                         x - 0.3, y - 0.3, z - 0.3,
@@ -142,29 +119,23 @@ public class GlowingGemBlock extends TorchBlock implements Gas {
         }
     }
 
+    protected Direction getDirection(BlockState state) {
+        return Direction.UP;
+    }
+
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (world.hasRain(pos)) {
-            if (state.get(ON)) {
+            if (state.get(Properties.LIT)) {
                 world.playSound(null, pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
-                world.setBlockState(pos, state.with(ON, false));
+                world.setBlockState(pos, state.with(Properties.LIT, false));
             }
         } else {
-            if (!state.get(ON)) {
+            if (!state.get(Properties.LIT)) {
                 world.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
-                world.setBlockState(pos, state.with(ON, true));
+                world.setBlockState(pos, state.with(Properties.LIT, true));
             }
         }
-    }
-
-    @Override
-    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction side) {
-        return state.get(ON) && side == Direction.DOWN ? state.getWeakRedstonePower(world, pos, side) : 0;
-    }
-
-    @Override
-    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction side) {
-        return state.get(ON) && state.get(Properties.FACING) != side ? 12 : 0;
     }
 
     @Override
@@ -173,11 +144,17 @@ public class GlowingGemBlock extends TorchBlock implements Gas {
     }
 
     @Override
-    public int getLuminance(BlockState state) {
-        if (state.get(ON)) {
-            return super.getLuminance(state);
-        }
+    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction side) {
+        return side == Direction.DOWN ? state.getWeakRedstonePower(world, pos, side) : 0;
+    }
 
-        return 0;
+    @Override
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction side) {
+        return state.get(Properties.LIT) ? 12 : 0;
+    }
+
+    @Override
+    public int getLuminance(BlockState state) {
+        return state.get(Properties.LIT) ? super.getLuminance(state) : 0;
     }
 }
