@@ -4,27 +4,40 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ducks.IItemEntity;
 
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
 
 public class ItemEntityCapabilities implements RaceContainer<ItemEntity>, Owned<ItemEntity> {
-
-    private Race race = Race.HUMAN;
+    private static final TrackedData<Integer> ITEM_RACE = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     private final ItemEntity owner;
+    private Race serverRace;
 
     public ItemEntityCapabilities(ItemEntity owner) {
         this.owner = owner;
+        owner.getDataTracker().startTracking(ITEM_RACE, Race.HUMAN.ordinal());
     }
 
     @Override
     public void onUpdate() {
-
     }
 
     @Override
     public boolean beforeUpdate() {
+
+        if (!owner.world.isClient) {
+            Race race = getSpecies();
+            if (race != serverRace) {
+                serverRace = race;
+                setSpecies(Race.HUMAN);
+                setSpecies(race);
+            }
+        }
+
         ItemStack stack = owner.getStack();
 
         if (!stack.isEmpty() && stack.getItem() instanceof TickableItem) {
@@ -36,23 +49,23 @@ public class ItemEntityCapabilities implements RaceContainer<ItemEntity>, Owned<
 
     @Override
     public Race getSpecies() {
-        return race;
+        return Race.fromId(getOwner().getDataTracker().get(ITEM_RACE));
     }
 
     @Override
     public void setSpecies(Race race) {
-        this.race = race;
+        getOwner().getDataTracker().set(ITEM_RACE, race.ordinal());
     }
 
     @Override
     public void toNBT(CompoundTag compound) {
-        compound.putString("owner_species", race.name());
+        compound.putString("owner_species", getSpecies().name());
     }
 
 
     @Override
     public void fromNBT(CompoundTag compound) {
-        race = Race.fromName(compound.getString("owner_species"));
+        setSpecies(Race.fromName(compound.getString("owner_species")));
     }
 
     @Override

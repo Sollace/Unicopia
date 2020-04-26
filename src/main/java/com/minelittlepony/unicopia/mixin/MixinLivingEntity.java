@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.entity.LivingEntityCapabilities;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.nbt.CompoundTag;
 
 @Mixin(LivingEntity.class)
 abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylike> {
@@ -69,6 +70,18 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylik
     @Inject(method = "<clinit>()V", at = @At("RETURN"), remap = false)
     private static void clinit(CallbackInfo info) {
         LivingEntityCapabilities.boostrap();
+    }
+
+    @Inject(method = "writeCustomDataToTag(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("HEAD"))
+    private void onWriteCustomDataToTag(CompoundTag tag, CallbackInfo info) {
+        if (tag.contains("unicopia_caster")) {
+            get().fromNBT(tag.getCompound("unicopia_caster"));
+        }
+    }
+
+    @Inject(method = "readCustomDataFromTag(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("HEAD"))
+    private void onReadCustomDataFromTag(CompoundTag tag, CallbackInfo info) {
+        tag.put("unicopia_caster", get().toNBT());
     }
 
     // ---------- temporary

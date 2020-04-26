@@ -11,11 +11,12 @@ import com.minelittlepony.unicopia.entity.ItemEntityCapabilities;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.nbt.CompoundTag;
 
 @Mixin(ItemEntity.class)
 abstract class MixinItemEntity extends Entity implements IItemEntity {
 
-    private final ItemEntityCapabilities caster = create();
+    private ItemEntityCapabilities caster;
 
     private MixinItemEntity() { super(null, null); }
 
@@ -26,19 +27,34 @@ abstract class MixinItemEntity extends Entity implements IItemEntity {
 
     @Override
     public ItemEntityCapabilities get() {
+        if (caster == null) {
+            caster = create();
+        }
         return caster;
     }
 
     @Inject(method = "tick()V", at = @At("HEAD"), cancellable = true)
     private void beforeTick(CallbackInfo info) {
-        if (caster.beforeUpdate()) {
+        if (get().beforeUpdate()) {
             info.cancel();
         }
     }
 
     @Inject(method = "tick()V", at = @At("RETURN"))
     private void afterTick(CallbackInfo info) {
-        caster.onUpdate();
+        get().onUpdate();
+    }
+
+    @Inject(method = "writeCustomDataToTag(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("HEAD"))
+    private void onWriteCustomDataToTag(CompoundTag tag, CallbackInfo info) {
+        if (tag.contains("unicopia_caster")) {
+            get().fromNBT(tag.getCompound("unicopia_caster"));
+        }
+    }
+
+    @Inject(method = "readCustomDataFromTag(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("HEAD"))
+    private void onReadCustomDataFromTag(CompoundTag tag, CallbackInfo info) {
+        tag.put("unicopia_caster", get().toNBT());
     }
 
     @Accessor("age")
@@ -48,4 +64,5 @@ abstract class MixinItemEntity extends Entity implements IItemEntity {
     @Accessor("pickupDelay")
     @Override
     public abstract int getPickupDelay();
+
 }

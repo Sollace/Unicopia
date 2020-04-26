@@ -52,10 +52,10 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
     }
 
     @Inject(method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;",
-            at = @At("HEAD"))
-    private void onDropItem(ItemStack itemStack_1, boolean a, boolean b, CallbackInfoReturnable<ItemEntity> info) {
-        PonyContainer.of(info.getReturnValue()).ifPresent(o -> {
-            o.get().setSpecies(get().getSpecies());
+            at = @At("RETURN"))
+    private void onDropItem(ItemStack itemStack_1, boolean scatter, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info) {
+        PonyContainer.of(info.getReturnValue()).ifPresent(container -> {
+            container.get().setSpecies(get().getSpecies());
         });
     }
 

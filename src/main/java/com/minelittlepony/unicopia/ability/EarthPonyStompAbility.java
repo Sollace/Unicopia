@@ -22,7 +22,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.LogBlock;
 import net.minecraft.entity.EntityContext;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -336,12 +335,12 @@ public class EarthPonyStompAbility implements Ability<Multi> {
 
                 if (state.getBlock() instanceof LeavesBlock && w.getBlockState(pos.down()).isAir()) {
                     WorldEvent.DESTROY_BLOCK.play(w, pos, state);
-
-                    ItemEntity item = new ItemEntity(EntityType.ITEM, w);
-                    item.setPos(pos.getX() + w.random.nextFloat(), pos.getY() - 0.5, pos.getZ() + w.random.nextFloat());
-                    item.setStack(TreeType.get(log).pickRandomStack());
-
-                    drops.add(item);
+                    drops.add(new ItemEntity(w,
+                            pos.getX() + w.random.nextFloat(),
+                            pos.getY() - 0.5,
+                            pos.getZ() + w.random.nextFloat(),
+                            TreeType.get(log).pickRandomStack()
+                        ));
                 }
 
                 PosHelper.all(pos, p -> {
