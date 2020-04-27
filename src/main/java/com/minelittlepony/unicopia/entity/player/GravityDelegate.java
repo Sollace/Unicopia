@@ -155,7 +155,7 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
                     ticksNextLevel = 0;
 
                     entity.addExperience(1);
-                    addFlightExperience(entity, 1);
+                    addFlightExperience(1);
                     entity.playSound(SoundEvents.ENTITY_GUARDIAN_FLOP, 1, 1);
                 }
 
@@ -198,9 +198,9 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
                 ticksNextLevel = 0;
 
                 if (isExperienceCritical()) {
-                    addFlightExperience(entity, -0.39991342F);
+                    addFlightExperience(-0.39991342F);
                 } else {
-                    addFlightExperience(entity, -0.019991342F);
+                    addFlightExperience(-0.019991342F);
                 }
 
                 if (flightExperience < 0.02) {
@@ -282,7 +282,7 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
         return distance > 4 ? SoundEvents.ENTITY_PLAYER_BIG_FALL : SoundEvents.ENTITY_PLAYER_SMALL_FALL;
     }
 
-    private void addFlightExperience(PlayerEntity entity, float factor) {
+    private void addFlightExperience(float factor) {
         float maximumGain = MAXIMUM_FLIGHT_EXPERIENCE - flightExperience;
         float gainSteps = 20;
 

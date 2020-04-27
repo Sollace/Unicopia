@@ -91,10 +91,8 @@ public class SlimeDropBlock extends Block implements Climbable {
                     world.playSound(null, pos, USounds.SLIME_ADVANCE, SoundCategory.BLOCKS, 1, 1);
                 }
             } else {
-                if (age < getMaximumAge(world, pos, state, spaceBelow)) {
-                    if (rand.nextInt(5 * (age + 1)) == 0) {
-                        world.setBlockState(pos, state.cycle(AGE));
-                    }
+                if (age < getMaximumAge(world, pos, state, spaceBelow) && rand.nextInt(5 * (age + 1)) == 0) {
+                    world.setBlockState(pos, state.cycle(AGE));
                 }
             }
         }
@@ -143,9 +141,9 @@ public class SlimeDropBlock extends Block implements Climbable {
     }
 
     @Override
-    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState replacement, boolean boolean_1) {
+    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState replacement, boolean moved) {
         world.updateNeighborsAlways(pos, this);
-        super.onBlockRemoved(state, world, pos, replacement, boolean_1);
+        super.onBlockRemoved(state, world, pos, replacement, moved);
     }
 
     @Override
@@ -157,21 +155,19 @@ public class SlimeDropBlock extends Block implements Climbable {
                 living.damage(MagicalDamageSource.ACID, 1);
                 living.slowMovement(state, new Vec3d(0.25D, 0.05000000074505806D, 0.25D));
 
-                if (!world.isClient) {
-                    if (living.getHealth() <= 0) {
-                        living.dropItem(Items.BONE, 3);
+                if (!world.isClient && living.getHealth() <= 0) {
+                    living.dropItem(Items.BONE, 3);
 
-                        if (living instanceof PlayerEntity) {
-                            if (world.random.nextInt(13000) == 0) {
-                                ItemStack skull = new ItemStack(Items.PLAYER_HEAD);
-                                PlayerEntity player = (PlayerEntity)living;
+                    if (living instanceof PlayerEntity) {
+                        if (world.random.nextInt(13000) == 0) {
+                            ItemStack skull = new ItemStack(Items.PLAYER_HEAD);
+                            PlayerEntity player = (PlayerEntity)living;
 
-                                skull.setTag(new CompoundTag());
-                                skull.getTag().put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), player.getGameProfile()));
-                                player.dropItem(skull, true);
-                            } else {
-                                living.dropItem(Items.SKELETON_SKULL, 1);
-                            }
+                            skull.setTag(new CompoundTag());
+                            skull.getTag().put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), player.getGameProfile()));
+                            player.dropItem(skull, true);
+                        } else {
+                            living.dropItem(Items.SKELETON_SKULL, 1);
                         }
                     }
                 }
@@ -216,20 +212,17 @@ public class SlimeDropBlock extends Block implements Climbable {
 
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random rand) {
-        if (state.get(SHAPE) == Shape.BULB) {
-            if (rand.nextInt(8) == 0) {
+        if (state.get(SHAPE) == Shape.BULB && rand.nextInt(8) == 0) {
+            Vec3d offset = state.getOffsetPos(world, pos).add(pos.getX(), pos.getY(), pos.getZ());
+            Box bounds = BULBS[state.get(AGE) / 2]
+                    .offset(offset.x, offset.y, offset.z)
+                    .getBoundingBox();
 
-                Vec3d offset = state.getOffsetPos(world, pos).add(pos.getX(), pos.getY(), pos.getZ());
-                Box bounds = BULBS[state.get(AGE) / 2]
-                        .offset(offset.x, offset.y, offset.z)
-                        .getBoundingBox();
+            double x = bounds.x1 + (bounds.x2 - bounds.x1) * rand.nextFloat();
+            double y = bounds.y1;
+            double z = bounds.z1 + (bounds.z2 - bounds.z1) * rand.nextFloat();
 
-                double x = bounds.x1 + (bounds.x2 - bounds.x1) * rand.nextFloat();
-                double y = bounds.y1;
-                double z = bounds.z1 + (bounds.z2 - bounds.z1) * rand.nextFloat();
-
-                world.addParticle(ParticleTypes.DRIPPING_LAVA, x, y, z, 0, 0, 0);
-            }
+            world.addParticle(ParticleTypes.DRIPPING_LAVA, x, y, z, 0, 0, 0);
         }
     }
 

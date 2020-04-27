@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.client.gui;
 
-import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.MinecraftClient;
 
