@@ -3,11 +3,9 @@ package com.minelittlepony.unicopia.block;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.MaterialColor;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.StateManager;
@@ -22,13 +20,8 @@ public class ChitinBlock extends Block {
 
     public static final EnumProperty<Covering> COVERING = EnumProperty.of("covering", Covering.class);
 
-    public ChitinBlock() {
-        super(FabricBlockSettings.of(UMaterials.HIVE)
-                .hardness(50)
-                .strength(2000, 2000)
-                .materialColor(MaterialColor.BLACK)
-                .build()
-        );
+    public ChitinBlock(Settings settings) {
+        super(settings);
         setDefaultState(stateManager.getDefaultState().with(COVERING, Covering.UNCOVERED));
     }
 

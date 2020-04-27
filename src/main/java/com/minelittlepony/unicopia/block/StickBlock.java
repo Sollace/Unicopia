@@ -1,16 +1,13 @@
 package com.minelittlepony.unicopia.block;
 
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FarmlandBlock;
-import net.minecraft.block.Material;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.LeadItem;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -30,15 +27,8 @@ public class StickBlock extends Block {
             9/16F, 15/16F, 9/16F
     ));
 
-    public StickBlock() {
-        super(FabricBlockSettings.of(Material.PLANT)
-                .noCollision()
-                .strength(0.2F, 0.2F)
-                .ticksRandomly()
-                .lightLevel(1)
-                .sounds(BlockSoundGroup.WOOD)
-                .build()
-        );
+    public StickBlock(Settings settings) {
+        super(settings);
     }
 
     @Deprecated

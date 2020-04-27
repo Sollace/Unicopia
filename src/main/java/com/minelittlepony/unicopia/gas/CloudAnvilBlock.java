@@ -6,16 +6,12 @@ import com.minelittlepony.unicopia.util.WorldEvent;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
-import net.fabricmc.fabric.api.tools.FabricToolTags;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -26,15 +22,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class CloudAnvilBlock extends AnvilBlock implements Gas {
-    public CloudAnvilBlock() {
-        super(FabricBlockSettings.of(Material.WOOL)
-                .strength(0.025F, 1)
-                .resistance(2000)
-                .breakByTool(FabricToolTags.SHOVELS, 0)
-                .sounds(BlockSoundGroup.WOOL)
-                .ticksRandomly()
-                .build()
-        );
+    public CloudAnvilBlock(Settings settings) {
+        super(settings);
     }
 
     @Override

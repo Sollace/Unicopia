@@ -11,8 +11,6 @@ import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
-import net.fabricmc.fabric.api.tools.FabricToolTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,7 +22,6 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
@@ -45,17 +42,8 @@ public class HiveWallBlock extends FallingBlock {
 
     private static final Shape shape = new Sphere(false, 1.5);
 
-    public HiveWallBlock() {
-        super(FabricBlockSettings.of(UMaterials.HIVE)
-                .noCollision()
-                .strength(10, 10)
-                .hardness(2)
-                .ticksRandomly()
-                .lightLevel(1)
-                .sounds(BlockSoundGroup.SAND)
-                .breakByTool(FabricToolTags.PICKAXES, 1)
-                .build()
-        );
+    public HiveWallBlock(Settings settings) {
+        super(settings);
         setDefaultState(stateManager.getDefaultState()
                 .with(STATE, State.GROWING).with(AXIS, Axis.Y)
         );

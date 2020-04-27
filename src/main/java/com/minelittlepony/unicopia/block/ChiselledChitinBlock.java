@@ -5,10 +5,8 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.MaterialColor;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
@@ -21,12 +19,8 @@ import net.minecraft.world.BlockView;
 
 public class ChiselledChitinBlock extends Block {
 
-    public ChiselledChitinBlock() {
-        super(FabricBlockSettings.of(UMaterials.HIVE)
-                .strength(50, 2000)
-                .materialColor(MaterialColor.BLACK)
-                .build()
-        );
+    public ChiselledChitinBlock(Settings settings) {
+        super(settings);
         setDefaultState(stateManager.getDefaultState()
                 .with(Properties.FACING, Direction.UP)
         );

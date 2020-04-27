@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.tools.FabricToolTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FallingBlock;
 import net.minecraft.block.Material;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.block.SaplingBlock;
@@ -37,8 +38,14 @@ public interface UBlocks {
     CloudSlabBlock<CloudBlock> DENSE_CLOUD_SLAB = register(new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK.getDefaultState(), GasState.DENSE.configure().build()), "dense_cloud_slab");
 
     CloudDoorBlock MISTED_GLASS_DOOR = register(new CloudDoorBlock(), "misted_glass_door");
-    DutchDoorBlock LIBRARY_DOOR = register(new DutchDoorBlock(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(3).build()), "library_door");
-    DutchDoorBlock BAKERY_DOOR = register(new DutchDoorBlock(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD).hardness(3).build()), "bakery_door");
+    DutchDoorBlock LIBRARY_DOOR = register(new DutchDoorBlock(FabricBlockSettings.of(Material.WOOD).
+            sounds(BlockSoundGroup.WOOD)
+            .hardness(3)
+            .build()), "library_door");
+    DutchDoorBlock BAKERY_DOOR = register(new DutchDoorBlock(FabricBlockSettings.of(Material.WOOD)
+            .sounds(BlockSoundGroup.WOOD)
+            .hardness(3)
+            .build()), "bakery_door");
     DiamondDoorBlock DIAMOND_DOOR = register(new DiamondDoorBlock(), "diamond_door");
 
     GemTorchBlock ENCHANTED_TORCH = register(new GemTorchBlock(FabricBlockSettings.of(Material.PART)
@@ -52,20 +59,51 @@ public interface UBlocks {
             .ticksRandomly()
             .lightLevel(1).sounds(BlockSoundGroup.GLASS).build()), "enchanted_wall_torch");
 
-    CloudAnvilBlock CLOUD_ANVIL = register(new CloudAnvilBlock(), "cloud_anvil");
+    CloudAnvilBlock CLOUD_ANVIL = register(new CloudAnvilBlock(GasState.NORMAL.configure()
+            .strength(0.025F, 1)
+            .resistance(2000)
+            .breakByTool(FabricToolTags.SHOVELS, 0)
+            .ticksRandomly()
+            .build()), "cloud_anvil");
 
     CloudFenceBlock CLOUD_FENCE = register(new CloudFenceBlock(GasState.NORMAL), "cloud_fence");
 
-    TallCropBlock ALFALFA_CROPS = register(new TallCropBlock(FabricBlockSettings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP).build()), "alfalfa_crops");
+    TallCropBlock ALFALFA_CROPS = register(new TallCropBlock(FabricBlockSettings.of(Material.PLANT)
+            .noCollision()
+            .ticksRandomly()
+            .breakInstantly()
+            .sounds(BlockSoundGroup.CROP).build()), "alfalfa_crops");
 
-    StickBlock STICK = register(new StickBlock(), "stick");
-    TomatoPlantBlock TOMATO_PLANT = register(new TomatoPlantBlock(), "tomato_plant");
+    StickBlock STICK = register(new StickBlock(FabricBlockSettings.of(Material.WOOD)
+            .noCollision()
+            .strength(0.2F, 0.2F)
+            .build()), "stick");
+    TomatoPlantBlock TOMATO_PLANT = register(new TomatoPlantBlock(FabricBlockSettings.of(Material.PLANT)
+            .noCollision()
+            .strength(0.2F, 0.2F)
+            .ticksRandomly()
+            .lightLevel(1)
+            .sounds(BlockSoundGroup.WOOD)
+            .build()), "tomato_plant");
 
-    HiveWallBlock HIVE_WALL_BLOCK = register(new HiveWallBlock(), "hive_wall_block");
-    ChitinBlock CHITIN_SHELL_BLOCK = register(new ChitinBlock(), "chitin_shell_block");
-    Block CHISELED_CHITIN_SHELL_BLOCK = register(new ChiselledChitinBlock(), "chiseled_chitin_shell_block");
+    HiveWallBlock HIVE_WALL_BLOCK = register(new HiveWallBlock(FabricBlockSettings.of(UMaterials.HIVE)
+            .noCollision()
+            .strength(10, 10)
+            .hardness(2)
+            .ticksRandomly()
+            .lightLevel(1)
+            .sounds(BlockSoundGroup.SAND)
+            .breakByTool(FabricToolTags.PICKAXES, 1)
+            .build()), "hive_wall_block");
+    ChitinBlock CHITIN_SHELL_BLOCK = register(new ChitinBlock(FabricBlockSettings.of(UMaterials.CHITIN)
+            .hardness(50)
+            .strength(2000, 2000)
+            .build()), "chitin_shell_block");
+    Block CHISELED_CHITIN_SHELL_BLOCK = register(new ChiselledChitinBlock(FabricBlockSettings.of(UMaterials.CHITIN)
+            .strength(50, 2000)
+            .build()), "chiseled_chitin_shell_block");
 
-    SlimeDropBlock SLIME_DROP = register(new SlimeDropBlock(FabricBlockSettings.of(UMaterials.HIVE)
+    SlimeDropBlock SLIME_DROP = register(new SlimeDropBlock(FabricBlockSettings.of(UMaterials.HIVE, MaterialColor.GRASS)
             .ticksRandomly()
             .breakInstantly()
             .lightLevel(9)
@@ -79,8 +117,16 @@ public interface UBlocks {
             .nonOpaque()
             .build()), "slime_layer");
 
-    Block SUGAR_BLOCK = register(new SugarBlock(), "sugar_block");
-    Block APPLE_LEAVES = register(new FruitLeavesBlock()
+    Block SUGAR_BLOCK = register(new FallingBlock(FabricBlockSettings.of(Material.SAND)
+            .strength(10, 10)
+            .hardness(0.7F)
+            .sounds(BlockSoundGroup.SAND)
+            .build()), "sugar_block");
+    Block APPLE_LEAVES = register(new FruitLeavesBlock(FabricBlockSettings.of(Material.LEAVES)
+            .strength(0.2F, 0.2F)
+            .ticksRandomly()
+            .sounds(BlockSoundGroup.GRASS)
+            .build())
             .growthChance(1200)
             .tint(0xFFEE81)
             .fruit(W -> TreeType.OAK.pickRandomStack())
@@ -88,8 +134,12 @@ public interface UBlocks {
 
     SaplingBlock APPLE_SAPLING = register(new SaplingBlock(
             new CustomSaplingGenerator(5, Blocks.OAK_LOG.getDefaultState(), APPLE_LEAVES.getDefaultState()),
-            FabricBlockSettings.of(Material.WOOD).build()
-        ) {}, "apple_sapling");
+            FabricBlockSettings.of(Material.WOOD)
+                .noCollision()
+                .ticksRandomly()
+                .breakInstantly()
+                .sounds(BlockSoundGroup.GRASS)
+                .build()) {}, "apple_sapling");
 
 
     static <T extends Block> T register(T block, String name) {

@@ -8,16 +8,13 @@ import javax.annotation.Nonnull;
 import com.minelittlepony.unicopia.ducks.Colourful;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
-import net.minecraft.block.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
@@ -42,14 +39,8 @@ public class FruitLeavesBlock extends LeavesBlock implements Colourful {
     private Function<World, ItemStack> fruitProducer = w -> ItemStack.EMPTY;
     private Function<World, ItemStack> compostProducer = w -> ItemStack.EMPTY;
 
-    public FruitLeavesBlock() {
-        super(FabricBlockSettings.of(Material.LEAVES)
-                .strength(0.2F, 0.2F)
-                .ticksRandomly()
-                .sounds(BlockSoundGroup.GRASS)
-                .build()
-        );
-
+    public FruitLeavesBlock(Settings settings) {
+        super(settings);
         setDefaultState(stateManager.getDefaultState()
             .with(HEAVY, false)
             .with(DISTANCE, 7)

@@ -3,11 +3,9 @@ package com.minelittlepony.unicopia.block;
 import com.minelittlepony.unicopia.gas.CloudFarmlandBlock;
 import com.minelittlepony.unicopia.item.UItems;
 
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropBlock;
-import net.minecraft.block.Material;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -31,15 +29,8 @@ public class TomatoPlantBlock extends CropBlock {
 
     public static final EnumProperty<Type> TYPE = EnumProperty.of("type", Type.class);
 
-    public TomatoPlantBlock() {
-        super(FabricBlockSettings.of(Material.PLANT)
-                .noCollision()
-                .strength(0.2F, 0.2F)
-                .ticksRandomly()
-                .lightLevel(1)
-                .sounds(BlockSoundGroup.WOOD)
-                .build()
-        );
+    public TomatoPlantBlock(Settings settings) {
+        super(settings);
         setDefaultState(getDefaultState().with(TYPE, Type.NORMAL));
     }
 
