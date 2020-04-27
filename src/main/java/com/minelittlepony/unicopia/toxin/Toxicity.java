@@ -5,15 +5,18 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.minelittlepony.unicopia.item.UEffects;
+
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
-public enum Toxicity {
+public enum Toxicity implements Toxin {
     SAFE(0, 0),
     MILD(1, 160),
     FAIR(1, 30),
@@ -23,8 +26,7 @@ public enum Toxicity {
     private final int level;
     private final int duration;
 
-    private static final Map<String, Toxicity> REGISTRY;
-    private static final Toxicity[] values = values();
+    private static final Map<String, Toxicity> REGISTRY = Arrays.stream(values()).collect(Collectors.toMap(Toxicity::name, Function.identity()));
 
     Toxicity(int level, int duration) {
         this.level = level;
@@ -47,10 +49,6 @@ public enum Toxicity {
         return this == LETHAL;
     }
 
-    public StatusEffectInstance getPoisonEffect() {
-        return new StatusEffectInstance(isMild() ? StatusEffects.NAUSEA : StatusEffects.POISON, duration, level);
-    }
-
     public String getTranslationKey() {
         return String.format("toxicity.%s.name", name().toLowerCase());
     }
@@ -61,6 +59,19 @@ public enum Toxicity {
         return text;
     }
 
+    @Override
+    public void afflict(PlayerEntity player, Toxicity toxicity, ItemStack stack) {
+        if (toxicWhenRaw()) {
+            player.addStatusEffect(new StatusEffectInstance(isMild() ? StatusEffects.NAUSEA : StatusEffects.POISON, duration, level));
+        }
+
+        if (isLethal()) {
+            player.addStatusEffect(new StatusEffectInstance(UEffects.FOOD_POISONING, 300, 7, false, false));
+        } else if (toxicWhenCooked()) {
+            WEAK_NAUSEA.afflict(player, toxicity, stack);
+        }
+    }
+
     public static Toxicity fromStack(ItemStack stack) {
         if (stack.hasTag()) {
             CompoundTag tag = stack.getSubTag("toxicity");
@@ -69,25 +80,5 @@ public enum Toxicity {
             }
         }
         return SAFE;
-    }
-
-    @Deprecated
-    public static Toxicity byMetadata(int metadata) {
-        return values[metadata % values.length];
-    }
-
-    @Deprecated
-    public static String[] getVariants(String key) {
-        String[] result = new String[values.length];
-
-        for (int i = 0; i < result.length; i++) {
-            result[i] = values[i].name() + key;
-        }
-
-        return result;
-    }
-
-    static {
-        REGISTRY = Arrays.stream(values()).collect(Collectors.toMap(Toxicity::name, Function.identity()));
     }
 }

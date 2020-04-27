@@ -30,150 +30,150 @@ import net.minecraft.util.registry.Registry;
 
 public interface UItems {
 
-    AppleItem GREEN_APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "green_apple");
-    AppleItem SWEET_APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "sweet_apple");
-    AppleItem SOUR_APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "sour_apple");
+    AppleItem GREEN_APPLE = register("green_apple", new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)));
+    AppleItem SWEET_APPLE = register("sweet_apple", new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)));
+    AppleItem SOUR_APPLE = register("sour_apple", new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)));
 
-    ZapAppleItem ZAP_APPLE = register(new ZapAppleItem(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.ZAP_APPLE)), "zap_apple");
+    ZapAppleItem ZAP_APPLE = register("zap_apple", new ZapAppleItem(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.ZAP_APPLE)));
 
-    AppleItem ROTTEN_APPLE = register(new RottenAppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "rotten_apple");
-    AppleItem COOKED_ZAP_APPLE = register(new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)), "cooked_zap_apple");
+    AppleItem ROTTEN_APPLE = register("rotten_apple", new RottenAppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)));
+    AppleItem COOKED_ZAP_APPLE = register("cooked_zap_apple", new AppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)));
 
-    Item CLOUD_MATTER = register(new Item(new Settings().group(ItemGroup.MATERIALS)), "cloud_matter");
-    Item DEW_DROP = register(new Item(new Settings().group(ItemGroup.MATERIALS)), "dew_drop");
+    Item CLOUD_MATTER = register("cloud_matter", new Item(new Settings().group(ItemGroup.MATERIALS)));
+    Item DEW_DROP = register("dew_drop", new Item(new Settings().group(ItemGroup.MATERIALS)));
 
-    CloudPlacerItem RACING_CLOUD_SPAWNER = register(new CloudPlacerItem(UEntities.RACING_CLOUD), "racing_cloud_spawner");
-    CloudPlacerItem CONSTRUCTION_CLOUD_SPAWNER = register(new CloudPlacerItem(UEntities.CONSTRUCTION_CLOUD), "construction_cloud_spawner");
-    CloudPlacerItem WILD_CLOUD_SPAWNER = register(new CloudPlacerItem(UEntities.WILD_CLOUD), "wild_cloud_spawner");
+    CloudPlacerItem RACING_CLOUD_SPAWNER = register("racing_cloud_spawner", new CloudPlacerItem(UEntities.RACING_CLOUD));
+    CloudPlacerItem CONSTRUCTION_CLOUD_SPAWNER = register("construction_cloud_spawner", new CloudPlacerItem(UEntities.CONSTRUCTION_CLOUD));
+    CloudPlacerItem WILD_CLOUD_SPAWNER = register("wild_cloud_spawner", new CloudPlacerItem(UEntities.WILD_CLOUD));
 
-    Item CLOUD_BLOCK = register(new PredicatedBlockItem(UBlocks.CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), PLAYER_PEGASUS), "cloud_block");
-    Item ENCHANTED_CLOUD_BLOCK = register(new PredicatedBlockItem(UBlocks.ENCHANTED_CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), PLAYER_PEGASUS), "enchanted_cloud_block");
-    Item DENSE_CLOUD_BLOCK = register(new PredicatedBlockItem(UBlocks.DENSE_CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), PLAYER_PEGASUS), "dense_cloud_block");
+    Item CLOUD_BLOCK = register("cloud_block", new PredicatedBlockItem(UBlocks.CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), PLAYER_PEGASUS));
+    Item ENCHANTED_CLOUD_BLOCK = register("enchanted_cloud_block", new PredicatedBlockItem(UBlocks.ENCHANTED_CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), PLAYER_PEGASUS));
+    Item DENSE_CLOUD_BLOCK = register("dense_cloud_block", new PredicatedBlockItem(UBlocks.DENSE_CLOUD_BLOCK, new Settings().group(ItemGroup.MATERIALS), PLAYER_PEGASUS));
 
-    Item CLOUD_STAIRS = register(new PredicatedBlockItem(UBlocks.CLOUD_STAIRS, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS), "cloud_stairs");
-    Item CLOUD_FENCE = register(new PredicatedBlockItem(UBlocks.CLOUD_FENCE, new Settings().group(ItemGroup.DECORATIONS), PLAYER_PEGASUS), "cloud_fence");
-    Item CLOUD_ANVIL = register(new PredicatedBlockItem(UBlocks.CLOUD_ANVIL, new Settings().group(ItemGroup.DECORATIONS), PLAYER_PEGASUS), "cloud_anvil");
+    Item CLOUD_STAIRS = register("cloud_stairs", new PredicatedBlockItem(UBlocks.CLOUD_STAIRS, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS));
+    Item CLOUD_FENCE = register("cloud_fence", new PredicatedBlockItem(UBlocks.CLOUD_FENCE, new Settings().group(ItemGroup.DECORATIONS), PLAYER_PEGASUS));
+    Item CLOUD_ANVIL = register("cloud_anvil", new PredicatedBlockItem(UBlocks.CLOUD_ANVIL, new Settings().group(ItemGroup.DECORATIONS), PLAYER_PEGASUS));
 
-    Item MUSIC_DISC_CRUSADE = register(createRecord(USounds.RECORD_CRUSADE), "music_disc_crusade");
-    Item MUSIC_DISC_PET = register(createRecord(USounds.RECORD_PET), "music_disc_pet");
-    Item MUSIC_DISC_POPULAR = register(createRecord(USounds.RECORD_POPULAR), "music_disc_popular");
-    Item MUSIC_DISC_FUNK = register(createRecord(USounds.RECORD_FUNK), "music_disc_funk");
+    Item MUSIC_DISC_CRUSADE = register("music_disc_crusade", USounds.RECORD_CRUSADE);
+    Item MUSIC_DISC_PET = register("music_disc_pet", USounds.RECORD_PET);
+    Item MUSIC_DISC_POPULAR = register("music_disc_popular", USounds.RECORD_POPULAR);
+    Item MUSIC_DISC_FUNK = register("music_disc_funk", USounds.RECORD_FUNK);
 
-    Item HIVE_WALL_BLOCK = register(new BlockItem(UBlocks.HIVE_WALL_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)), "hive_wall_block");
-    Item CHITIN_SHELL = register(new Item(new Settings().group(ItemGroup.MATERIALS)), "chitin_shell");
-    Item CHITIN_SHELL_BLOCK = register(new BlockItem(UBlocks.CHITIN_SHELL_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)), "chitin_shell_block");
-    Item CHISELED_CHITIN_SHELL_BLOCK = register(new BlockItem(UBlocks.CHISELED_CHITIN_SHELL_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)), "chiseled_chitin_shell_block");
-    Item SLIME_DROP = register(new BlockItem(UBlocks.SLIME_DROP, new Settings().group(ItemGroup.MATERIALS)), "slime_drop");
-    Item SLIME_LAYER = register(new BlockItem(UBlocks.SLIME_LAYER, new Settings().group(ItemGroup.DECORATIONS)), "slime_layer");
+    Item HIVE_WALL_BLOCK = register("hive_wall_block", new BlockItem(UBlocks.HIVE_WALL_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
+    Item CHITIN_SHELL = register("chitin_shell", new Item(new Settings().group(ItemGroup.MATERIALS)));
+    Item CHITIN_SHELL_BLOCK = register("chitin_shell_block", new BlockItem(UBlocks.CHITIN_SHELL_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
+    Item CHISELED_CHITIN_SHELL_BLOCK = register("chiseled_chitin_shell_block", new BlockItem(UBlocks.CHISELED_CHITIN_SHELL_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
+    Item SLIME_DROP = register("slime_drop", new BlockItem(UBlocks.SLIME_DROP, new Settings().group(ItemGroup.MATERIALS)));
+    Item SLIME_LAYER = register("slime_layer", new BlockItem(UBlocks.SLIME_LAYER, new Settings().group(ItemGroup.DECORATIONS)));
 
-    Item MISTED_GLASS_DOOR = register(new TallBlockItem(UBlocks.MISTED_GLASS_DOOR, new Settings().group(ItemGroup.REDSTONE)), "misted_glass_door");
-    Item LIBRARY_DOOR = register(new TallBlockItem(UBlocks.LIBRARY_DOOR, new Settings().group(ItemGroup.REDSTONE)), "library_door");
-    Item BAKERY_DOOR = register(new TallBlockItem(UBlocks.BAKERY_DOOR, new Settings().group(ItemGroup.REDSTONE)), "bakery_door");
-    Item DIAMOND_DOOR = register(new TallBlockItem(UBlocks.DIAMOND_DOOR, new Settings().group(ItemGroup.REDSTONE)), "diamond_door");
+    Item MISTED_GLASS_DOOR = register("misted_glass_door", new TallBlockItem(UBlocks.MISTED_GLASS_DOOR, new Settings().group(ItemGroup.REDSTONE)));
+    Item LIBRARY_DOOR = register("library_door", new TallBlockItem(UBlocks.LIBRARY_DOOR, new Settings().group(ItemGroup.REDSTONE)));
+    Item BAKERY_DOOR = register("bakery_door", new TallBlockItem(UBlocks.BAKERY_DOOR, new Settings().group(ItemGroup.REDSTONE)));
+    Item DIAMOND_DOOR = register("diamond_door", new TallBlockItem(UBlocks.DIAMOND_DOOR, new Settings().group(ItemGroup.REDSTONE)));
 
-    Item SUGAR_BLOCK = register(new BlockItem(UBlocks.SUGAR_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)), "sugar_block");
+    Item SUGAR_BLOCK = register("sugar_block", new BlockItem(UBlocks.SUGAR_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
 
-    Item CLOUD_SLAB = register(new PredicatedBlockItem(UBlocks.CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS), "cloud_slab");
-    Item ENCHANTED_CLOUD_SLAB = register(new PredicatedBlockItem(UBlocks.ENCHANTED_CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS), "enchanted_cloud_slab");
-    Item DENSE_CLOUD_SLAB = register(new PredicatedBlockItem(UBlocks.DENSE_CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS), "dense_cloud_slab");
+    Item CLOUD_SLAB = register("cloud_slab", new PredicatedBlockItem(UBlocks.CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS));
+    Item ENCHANTED_CLOUD_SLAB = register("enchanted_cloud_slab", new PredicatedBlockItem(UBlocks.ENCHANTED_CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS));
+    Item DENSE_CLOUD_SLAB = register("dense_cloud_slab", new PredicatedBlockItem(UBlocks.DENSE_CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS));
 
-    MagicGemItem GEM = register(new MagicGemItem(new Settings().maxCount(16).group(ItemGroup.BREWING)), "gem");
-    MagicGemItem CORRUPTED_GEM = register(new CursedMagicGemItem(new Settings().maxCount(16).group(ItemGroup.BREWING)), "corrupted_gem");
+    MagicGemItem GEM = register("gem", new MagicGemItem(new Settings().maxCount(16).group(ItemGroup.BREWING)));
+    MagicGemItem CORRUPTED_GEM = register("corrupted_gem", new CursedMagicGemItem(new Settings().maxCount(16).group(ItemGroup.BREWING)));
 
-    BagOfHoldingItem BAG_OF_HOLDING = register(new BagOfHoldingItem(new Settings().group(ItemGroup.TRANSPORTATION).rarity(Rarity.UNCOMMON).maxCount(1)), "bag_of_holding");
-    AlicornAmuletItem ALICORN_AMULET = register(new AlicornAmuletItem(new Settings().group(ItemGroup.COMBAT).rarity(Rarity.RARE).maxCount(1)), "alicorn_amulet");
+    BagOfHoldingItem BAG_OF_HOLDING = register("bag_of_holding", new BagOfHoldingItem(new Settings().group(ItemGroup.TRANSPORTATION).rarity(Rarity.UNCOMMON).maxCount(1)));
+    AlicornAmuletItem ALICORN_AMULET = register("alicorn_amulet", new AlicornAmuletItem(new Settings().group(ItemGroup.COMBAT).rarity(Rarity.RARE).maxCount(1)));
 
-    SpellbookItem SPELLBOOK = register(new SpellbookItem(new Item.Settings().maxCount(1).group(ItemGroup.BREWING)), "spellbook");
-    Item MEADOW_BROOK_STAFF = register(new StaffItem(new Settings().group(ItemGroup.TOOLS).rarity(Rarity.UNCOMMON).maxCount(1).maxDamage(2)), "meadow_brook_staff");
-    Item REMEMBERANCE_STAFF = register(new EnchantedStaffItem(new Settings().group(ItemGroup.TOOLS).rarity(Rarity.UNCOMMON).maxCount(1), new ScorchSpell()), "remembrance_staff");
+    SpellbookItem SPELLBOOK = register("spellbook", new SpellbookItem(new Item.Settings().maxCount(1).group(ItemGroup.BREWING)));
+    Item MEADOW_BROOK_STAFF = register("meadow_brook_staff", new StaffItem(new Settings().group(ItemGroup.TOOLS).rarity(Rarity.UNCOMMON).maxCount(1).maxDamage(2)));
+    Item REMEMBERANCE_STAFF = register("remembrance_staff", new EnchantedStaffItem(new Settings().group(ItemGroup.TOOLS).rarity(Rarity.UNCOMMON).maxCount(1), new ScorchSpell()));
 
-    Item SPEAR = register(new SpearItem(new Settings().group(ItemGroup.TOOLS).maxCount(1).maxDamage(500)), "spear");
+    Item SPEAR = register("spear", new SpearItem(new Settings().group(ItemGroup.TOOLS).maxCount(1).maxDamage(500)));
 
-    MossItem MOSS = register(new MossItem(new Settings().group(ItemGroup.FOOD).food(UFoodComponents.RANDOM_FOLIAGE)), "moss");
+    MossItem MOSS = register("moss", new MossItem(new Settings().group(ItemGroup.FOOD).food(UFoodComponents.RANDOM_FOLIAGE)));
 
-    Item ALFALFA_SEEDS = register(new AliasedBlockItem(UBlocks.ALFALFA_CROPS, new Settings().group(ItemGroup.MATERIALS).food(UFoodComponents.ALFALFA_SEEDS)), "alfalfa_seeds");
-    Item ALFALFA_LEAVES = register(new Item(new Settings().group(ItemGroup.FOOD).food(UFoodComponents.ALFALFA_LEAVES)), "alfalfa_leaves");
+    Item ALFALFA_SEEDS = register("alfalfa_seeds", new AliasedBlockItem(UBlocks.ALFALFA_CROPS, new Settings().group(ItemGroup.MATERIALS).food(UFoodComponents.ALFALFA_SEEDS)));
+    Item ALFALFA_LEAVES = register("alfalfa_leaves", new Item(new Settings().group(ItemGroup.FOOD).food(UFoodComponents.ALFALFA_LEAVES)));
 
-    Item ENCHANTED_TORCH = register(new WallStandingBlockItem(UBlocks.ENCHANTED_TORCH, UBlocks.ENCHANTED_WALL_TORCH, new Settings().group(ItemGroup.DECORATIONS)), "enchanted_torch");
+    Item ENCHANTED_TORCH = register("enchanted_torch", new WallStandingBlockItem(UBlocks.ENCHANTED_TORCH, UBlocks.ENCHANTED_WALL_TORCH, new Settings().group(ItemGroup.DECORATIONS)));
 
-    Item CEREAL = register(new SugaryItem(new Settings()
-            .group(ItemGroup.FOOD)
-            .food(UFoodComponents.CEREAL)
-            .maxCount(1)
-            .recipeRemainder(Items.BOWL), 1), "cereal");
-    Item BOOP_O_ROOPS = register(new SugaryItem(new Settings()
-            .group(ItemGroup.FOOD)
-            .food(UFoodComponents.SUGAR)
-            .maxCount(1)
-            .recipeRemainder(Items.BOWL), 110), "boop_o_roops");
+    Item CEREAL = register("cereal", new SugaryItem(new Settings()
+                    .group(ItemGroup.FOOD)
+                    .food(UFoodComponents.CEREAL)
+                    .maxCount(1)
+                    .recipeRemainder(Items.BOWL), 1));
+    Item BOOP_O_ROOPS = register("boop_o_roops", new SugaryItem(new Settings()
+                    .group(ItemGroup.FOOD)
+                    .food(UFoodComponents.SUGAR)
+                    .maxCount(1)
+                    .recipeRemainder(Items.BOWL), 110));
 
-    TomatoSeedsItem TOMATO_SEEDS = register(new TomatoSeedsItem(new Settings().group(ItemGroup.MATERIALS)), "tomato_seeds");
-    TomatoItem TOMATO = register(new TomatoItem(new Settings()
-            .group(ItemGroup.FOOD)
-            .food(UFoodComponents.TOMATO)), "tomato");
-    RottenTomatoItem ROTTEN_TOMATO = register(new RottenTomatoItem(new Settings()
-            .group(ItemGroup.FOOD)
-            .food(UFoodComponents.BAD_TOMATO)), "rotten_tomato");
+    TomatoSeedsItem TOMATO_SEEDS = register("tomato_seeds", new TomatoSeedsItem(new Settings().group(ItemGroup.MATERIALS)));
+    TomatoItem TOMATO = register("tomato", new TomatoItem(new Settings()
+                    .group(ItemGroup.FOOD)
+                    .food(UFoodComponents.TOMATO)));
+    RottenTomatoItem ROTTEN_TOMATO = register("rotten_tomato", new RottenTomatoItem(new Settings()
+                    .group(ItemGroup.FOOD)
+                    .food(UFoodComponents.BAD_TOMATO)));
 
-    TomatoItem CLOUDSDALE_TOMATO = register(new TomatoItem(new Settings()
-            .rarity(Rarity.UNCOMMON)
-            .group(ItemGroup.FOOD)
-            .food(UFoodComponents.GOOD_TOMATO)), "cloudsdale_tomato");
-    RottenTomatoItem ROTTEN_CLOUDSDALE_TOMATO = register(new RottenTomatoItem(new Settings()
-            .group(ItemGroup.FOOD)
-            .rarity(Rarity.UNCOMMON)
-            .food(UFoodComponents.BAD_TOMATO)), "rotten_cloudsdale_tomato");
+    TomatoItem CLOUDSDALE_TOMATO = register("cloudsdale_tomato", new TomatoItem(new Settings()
+                    .rarity(Rarity.UNCOMMON)
+                    .group(ItemGroup.FOOD)
+                    .food(UFoodComponents.GOOD_TOMATO)));
+    RottenTomatoItem ROTTEN_CLOUDSDALE_TOMATO = register("rotten_cloudsdale_tomato", new RottenTomatoItem(new Settings()
+                    .group(ItemGroup.FOOD)
+                    .rarity(Rarity.UNCOMMON)
+                    .food(UFoodComponents.BAD_TOMATO)));
 
-    Item APPLE_SEEDS = register(new BlockItem(UBlocks.APPLE_SAPLING, new Settings().group(ItemGroup.DECORATIONS)), "apple_seeds");
-    Item APPLE_LEAVES = register(new BlockItem(UBlocks.APPLE_LEAVES, new Settings().group(ItemGroup.DECORATIONS)), "apple_leaves");
+    Item APPLE_SEEDS = register("apple_seeds", new BlockItem(UBlocks.APPLE_SAPLING, new Settings().group(ItemGroup.DECORATIONS)));
+    Item APPLE_LEAVES = register("apple_leaves", new BlockItem(UBlocks.APPLE_LEAVES, new Settings().group(ItemGroup.DECORATIONS)));
 
-    Item DAFFODIL_DAISY_SANDWICH = register(new ToxicItem(new Settings()
-            .group(ItemGroup.FOOD)
-            .food(UFoodComponents.DAFODIL_DAISY_SANDWICH), UseAction.EAT, Toxicity::fromStack, Toxin.FOOD), "daffodil_daisy_sandwich");
-    Item HAY_BURGER = register(new ToxicItem(new Settings()
-            .group(ItemGroup.FOOD)
-            .food(UFoodComponents.HAY_BURGER), UseAction.EAT, Toxicity::fromStack, Toxin.FOOD), "hay_burger");
-    Item HAY_FRIES = register(new ToxicItem(new Settings()
-            .group(ItemGroup.FOOD)
-            .food(UFoodComponents.HAY_FRIES), UseAction.EAT, Toxicity.SAFE, Toxin.FOOD), "hay_fries");
-    Item SALAD = register(new ToxicItem(new Settings()
-            .group(ItemGroup.FOOD)
-            .food(UFoodComponents.SALAD)
-            .recipeRemainder(Items.BOWL), UseAction.EAT, Toxicity::fromStack, Toxin.FOOD), "salad");
+    Item DAFFODIL_DAISY_SANDWICH = register("daffodil_daisy_sandwich", new ToxicItem(new Settings()
+                    .group(ItemGroup.FOOD)
+                    .food(UFoodComponents.DAFODIL_DAISY_SANDWICH), UseAction.EAT, Toxicity::fromStack, Toxin.FOOD));
+    Item HAY_BURGER = register("hay_burger", new ToxicItem(new Settings()
+                    .group(ItemGroup.FOOD)
+                    .food(UFoodComponents.HAY_BURGER), UseAction.EAT, Toxicity::fromStack, Toxin.FOOD));
+    Item HAY_FRIES = register("hay_fries", new ToxicItem(new Settings()
+                    .group(ItemGroup.FOOD)
+                    .food(UFoodComponents.HAY_FRIES), UseAction.EAT, Toxicity.SAFE, Toxin.FOOD));
+    Item SALAD = register("salad", new ToxicItem(new Settings()
+                    .group(ItemGroup.FOOD)
+                    .food(UFoodComponents.SALAD)
+                    .recipeRemainder(Items.BOWL), UseAction.EAT, Toxicity::fromStack, Toxin.FOOD));
 
-    Item WHEAT_WORMS = register(new ToxicItem(new Settings()
-            .group(ItemGroup.MISC)
-            .food(UFoodComponents.WORMS), UseAction.EAT, Toxicity.SEVERE, Toxin.FOOD), "wheat_worms");
-    Item MUG = register(new Item(new Settings().group(ItemGroup.MATERIALS)), "mug");
-    Item CIDER = register(new ToxicItem(new Settings()
-            .group(ItemGroup.FOOD)
-            .food(UFoodComponents.SALAD)
-            .recipeRemainder(MUG), UseAction.DRINK, Toxicity.MILD, Toxin.FOOD), "apple_cider");
-    Item JUICE = register(new ToxicItem(new Settings()
-            .group(ItemGroup.FOOD)
-            .recipeRemainder(Items.GLASS_BOTTLE)
-            .food(UFoodComponents.JUICE), UseAction.DRINK, Toxicity.SAFE, Toxin.FOOD), "juice");
-    Item BURNED_JUICE = register(new ToxicItem(new Settings()
-            .group(ItemGroup.FOOD)
-            .recipeRemainder(Items.GLASS_BOTTLE)
-            .food(UFoodComponents.BURNED_JUICE), UseAction.DRINK, Toxicity.FAIR, Toxin.FOOD), "burned_juice");
+    Item WHEAT_WORMS = register("wheat_worms", new ToxicItem(new Settings()
+                    .group(ItemGroup.MISC)
+                    .food(UFoodComponents.WORMS), UseAction.EAT, Toxicity.SEVERE, Toxin.FOOD));
+    Item MUG = register("mug", new Item(new Settings().group(ItemGroup.MATERIALS)));
+    Item CIDER = register("apple_cider", new ToxicItem(new Settings()
+                    .group(ItemGroup.FOOD)
+                    .food(UFoodComponents.SALAD)
+                    .recipeRemainder(MUG), UseAction.DRINK, Toxicity.MILD, Toxin.FOOD));
+    Item JUICE = register("juice", new ToxicItem(new Settings()
+                    .group(ItemGroup.FOOD)
+                    .recipeRemainder(Items.GLASS_BOTTLE)
+                    .food(UFoodComponents.JUICE), UseAction.DRINK, Toxicity.SAFE, Toxin.FOOD));
+    Item BURNED_JUICE = register("burned_juice", new ToxicItem(new Settings()
+                    .group(ItemGroup.FOOD)
+                    .recipeRemainder(Items.GLASS_BOTTLE)
+                    .food(UFoodComponents.BURNED_JUICE), UseAction.DRINK, Toxicity.FAIR, Toxin.FOOD));
 
-    Item CLOUD_SPAWN_EGG = register(new SpawnEggItem(UEntities.CLOUD, 0x4169e1, 0x7fff00, new Settings().group(ItemGroup.MISC)), "cloud_spawn_egg");
-    Item BUTTERFLY_SPAWN_EGG = register(new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xaaeeff, new Settings().group(ItemGroup.MISC)), "butterfly_spawn_egg");
+    Item CLOUD_SPAWN_EGG = register("cloud_spawn_egg", new SpawnEggItem(UEntities.CLOUD, 0x4169e1, 0x7fff00, new Settings().group(ItemGroup.MISC)));
+    Item BUTTERFLY_SPAWN_EGG = register("butterfly_spawn_egg", new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xaaeeff, new Settings().group(ItemGroup.MISC)));
 
-    static <T extends Item> T register(T item, String name) {
+    static <T extends Item> T register(String name, T item) {
         if (item instanceof BlockItem) {
             ((BlockItem)item).appendBlocks(Item.BLOCK_ITEMS, item);
         }
         return Registry.ITEM.add(new Identifier("unicopia", name), item);
     }
 
-    static MusicDiscItem createRecord(SoundEvent sound) {
-        return new MusicDiscItem(1, sound, new Settings()
+    static MusicDiscItem register(String name, SoundEvent sound) {
+        return register(name, new MusicDiscItem(1, sound, new Settings()
                 .maxCount(1)
                 .group(ItemGroup.MISC)
                 .rarity(Rarity.RARE)
-            ) {};
+            ) {});
     }
 
     static void bootstrap() {

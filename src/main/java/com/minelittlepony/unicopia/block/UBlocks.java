@@ -26,123 +26,123 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public interface UBlocks {
-    CloudFarmlandBlock CLOUD_FARMLAND = register(new CloudFarmlandBlock(GasState.NORMAL.configure().build()), "cloud_farmland");
-    CloudBlock CLOUD_BLOCK = register(new CloudBlock(GasState.NORMAL), "cloud_block");
-    CloudBlock ENCHANTED_CLOUD_BLOCK = register(new CloudBlock(GasState.ENCHANTED), "enchanted_cloud_block");
-    CloudBlock DENSE_CLOUD_BLOCK = register(new CloudBlock(GasState.DENSE), "dense_cloud_block");
+    CloudFarmlandBlock CLOUD_FARMLAND = register("cloud_farmland", new CloudFarmlandBlock(GasState.NORMAL.configure().build()));
+    CloudBlock CLOUD_BLOCK = register("cloud_block", new CloudBlock(GasState.NORMAL));
+    CloudBlock ENCHANTED_CLOUD_BLOCK = register("enchanted_cloud_block", new CloudBlock(GasState.ENCHANTED));
+    CloudBlock DENSE_CLOUD_BLOCK = register("dense_cloud_block", new CloudBlock(GasState.DENSE));
 
-    CloudStairsBlock<CloudBlock> CLOUD_STAIRS = register(new CloudStairsBlock<>(CLOUD_BLOCK.getDefaultState(), GasState.NORMAL.configure().build()), "cloud_stairs");
+    CloudStairsBlock<CloudBlock> CLOUD_STAIRS = register("cloud_stairs", new CloudStairsBlock<>(CLOUD_BLOCK.getDefaultState(), GasState.NORMAL.configure().build()));
 
-    CloudSlabBlock<CloudBlock> CLOUD_SLAB = register(new CloudSlabBlock<>(CLOUD_BLOCK.getDefaultState(), GasState.NORMAL.configure().build()), "cloud_slab");
-    CloudSlabBlock<CloudBlock> ENCHANTED_CLOUD_SLAB = register(new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK.getDefaultState(), GasState.ENCHANTED.configure().build()), "enchanted_cloud_slab");
-    CloudSlabBlock<CloudBlock> DENSE_CLOUD_SLAB = register(new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK.getDefaultState(), GasState.DENSE.configure().build()), "dense_cloud_slab");
+    CloudSlabBlock<CloudBlock> CLOUD_SLAB = register("cloud_slab", new CloudSlabBlock<>(CLOUD_BLOCK.getDefaultState(), GasState.NORMAL.configure().build()));
+    CloudSlabBlock<CloudBlock> ENCHANTED_CLOUD_SLAB = register("enchanted_cloud_slab", new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK.getDefaultState(), GasState.ENCHANTED.configure().build()));
+    CloudSlabBlock<CloudBlock> DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK.getDefaultState(), GasState.DENSE.configure().build()));
 
-    CloudDoorBlock MISTED_GLASS_DOOR = register(new CloudDoorBlock(), "misted_glass_door");
-    DutchDoorBlock LIBRARY_DOOR = register(new DutchDoorBlock(FabricBlockSettings.of(Material.WOOD).
-            sounds(BlockSoundGroup.WOOD)
-            .hardness(3)
-            .build()), "library_door");
-    DutchDoorBlock BAKERY_DOOR = register(new DutchDoorBlock(FabricBlockSettings.of(Material.WOOD)
-            .sounds(BlockSoundGroup.WOOD)
-            .hardness(3)
-            .build()), "bakery_door");
-    DiamondDoorBlock DIAMOND_DOOR = register(new DiamondDoorBlock(), "diamond_door");
+    CloudDoorBlock MISTED_GLASS_DOOR = register("misted_glass_door", new CloudDoorBlock());
+    DutchDoorBlock LIBRARY_DOOR = register("library_door", new DutchDoorBlock(FabricBlockSettings.of(Material.WOOD).
+                    sounds(BlockSoundGroup.WOOD)
+                    .hardness(3)
+                    .build()));
+    DutchDoorBlock BAKERY_DOOR = register("bakery_door", new DutchDoorBlock(FabricBlockSettings.of(Material.WOOD)
+                    .sounds(BlockSoundGroup.WOOD)
+                    .hardness(3)
+                    .build()));
+    DiamondDoorBlock DIAMOND_DOOR = register("diamond_door", new DiamondDoorBlock());
 
-    GemTorchBlock ENCHANTED_TORCH = register(new GemTorchBlock(FabricBlockSettings.of(Material.PART)
-            .noCollision()
-            .breakInstantly()
-            .ticksRandomly()
-            .lightLevel(1).sounds(BlockSoundGroup.GLASS).build()), "enchanted_torch");
-    GemTorchBlock ENCHANTED_WALL_TORCH = register(new WallGemTorchBlock(FabricBlockSettings.of(Material.PART)
-            .noCollision()
-            .breakInstantly()
-            .ticksRandomly()
-            .lightLevel(1).sounds(BlockSoundGroup.GLASS).build()), "enchanted_wall_torch");
+    GemTorchBlock ENCHANTED_TORCH = register("enchanted_torch", new GemTorchBlock(FabricBlockSettings.of(Material.PART)
+                    .noCollision()
+                    .breakInstantly()
+                    .ticksRandomly()
+                    .lightLevel(1).sounds(BlockSoundGroup.GLASS).build()));
+    GemTorchBlock ENCHANTED_WALL_TORCH = register("enchanted_wall_torch", new WallGemTorchBlock(FabricBlockSettings.of(Material.PART)
+                    .noCollision()
+                    .breakInstantly()
+                    .ticksRandomly()
+                    .lightLevel(1).sounds(BlockSoundGroup.GLASS).build()));
 
-    CloudAnvilBlock CLOUD_ANVIL = register(new CloudAnvilBlock(GasState.NORMAL.configure()
-            .strength(0.025F, 1)
-            .resistance(2000)
-            .breakByTool(FabricToolTags.SHOVELS, 0)
-            .ticksRandomly()
-            .build()), "cloud_anvil");
+    CloudAnvilBlock CLOUD_ANVIL = register("cloud_anvil", new CloudAnvilBlock(GasState.NORMAL.configure()
+                    .strength(0.025F, 1)
+                    .resistance(2000)
+                    .breakByTool(FabricToolTags.SHOVELS, 0)
+                    .ticksRandomly()
+                    .build()));
 
-    CloudFenceBlock CLOUD_FENCE = register(new CloudFenceBlock(GasState.NORMAL), "cloud_fence");
+    CloudFenceBlock CLOUD_FENCE = register("cloud_fence", new CloudFenceBlock(GasState.NORMAL));
 
-    TallCropBlock ALFALFA_CROPS = register(new TallCropBlock(FabricBlockSettings.of(Material.PLANT)
-            .noCollision()
-            .ticksRandomly()
-            .breakInstantly()
-            .sounds(BlockSoundGroup.CROP).build()), "alfalfa_crops");
+    TallCropBlock ALFALFA_CROPS = register("alfalfa_crops", new TallCropBlock(FabricBlockSettings.of(Material.PLANT)
+                    .noCollision()
+                    .ticksRandomly()
+                    .breakInstantly()
+                    .sounds(BlockSoundGroup.CROP).build()));
 
-    StickBlock STICK = register(new StickBlock(FabricBlockSettings.of(Material.WOOD)
-            .noCollision()
-            .strength(0.2F, 0.2F)
-            .build()), "stick");
-    TomatoPlantBlock TOMATO_PLANT = register(new TomatoPlantBlock(FabricBlockSettings.of(Material.PLANT)
-            .noCollision()
-            .strength(0.2F, 0.2F)
-            .ticksRandomly()
-            .lightLevel(1)
-            .sounds(BlockSoundGroup.WOOD)
-            .build()), "tomato_plant");
+    StickBlock STICK = register("stick", new StickBlock(FabricBlockSettings.of(Material.WOOD)
+                    .noCollision()
+                    .strength(0.2F, 0.2F)
+                    .build()));
+    TomatoPlantBlock TOMATO_PLANT = register("tomato_plant", new TomatoPlantBlock(FabricBlockSettings.of(Material.PLANT)
+                    .noCollision()
+                    .strength(0.2F, 0.2F)
+                    .ticksRandomly()
+                    .lightLevel(1)
+                    .sounds(BlockSoundGroup.WOOD)
+                    .build()));
 
-    HiveWallBlock HIVE_WALL_BLOCK = register(new HiveWallBlock(FabricBlockSettings.of(UMaterials.HIVE)
-            .noCollision()
-            .strength(10, 10)
-            .hardness(2)
-            .ticksRandomly()
-            .lightLevel(1)
-            .sounds(BlockSoundGroup.SAND)
-            .breakByTool(FabricToolTags.PICKAXES, 1)
-            .build()), "hive_wall_block");
-    ChitinBlock CHITIN_SHELL_BLOCK = register(new ChitinBlock(FabricBlockSettings.of(UMaterials.CHITIN)
-            .hardness(50)
-            .strength(2000, 2000)
-            .build()), "chitin_shell_block");
-    Block CHISELED_CHITIN_SHELL_BLOCK = register(new ChiselledChitinBlock(FabricBlockSettings.of(UMaterials.CHITIN)
-            .strength(50, 2000)
-            .build()), "chiseled_chitin_shell_block");
+    HiveWallBlock HIVE_WALL_BLOCK = register("hive_wall_block", new HiveWallBlock(FabricBlockSettings.of(UMaterials.HIVE)
+                    .noCollision()
+                    .strength(10, 10)
+                    .hardness(2)
+                    .ticksRandomly()
+                    .lightLevel(1)
+                    .sounds(BlockSoundGroup.SAND)
+                    .breakByTool(FabricToolTags.PICKAXES, 1)
+                    .build()));
+    ChitinBlock CHITIN_SHELL_BLOCK = register("chitin_shell_block", new ChitinBlock(FabricBlockSettings.of(UMaterials.CHITIN)
+                    .hardness(50)
+                    .strength(2000, 2000)
+                    .build()));
+    Block CHISELED_CHITIN_SHELL_BLOCK = register("chiseled_chitin_shell_block", new ChiselledChitinBlock(FabricBlockSettings.of(UMaterials.CHITIN)
+                    .strength(50, 2000)
+                    .build()));
 
-    SlimeDropBlock SLIME_DROP = register(new SlimeDropBlock(FabricBlockSettings.of(UMaterials.HIVE, MaterialColor.GRASS)
-            .ticksRandomly()
-            .breakInstantly()
-            .lightLevel(9)
-            .slipperiness(0.5F)
-            .sounds(BlockSoundGroup.SLIME)
-            .breakByTool(FabricToolTags.SHOVELS, 2)
-            .build()), "slime_drop");
-    SlimeLayerBlock SLIME_LAYER = register(new SlimeLayerBlock(FabricBlockSettings.of(Material.CLAY, MaterialColor.GRASS)
-            .sounds(BlockSoundGroup.SLIME)
-            .slipperiness(0.8F)
-            .nonOpaque()
-            .build()), "slime_layer");
+    SlimeDropBlock SLIME_DROP = register("slime_drop", new SlimeDropBlock(FabricBlockSettings.of(UMaterials.HIVE, MaterialColor.GRASS)
+                    .ticksRandomly()
+                    .breakInstantly()
+                    .lightLevel(9)
+                    .slipperiness(0.5F)
+                    .sounds(BlockSoundGroup.SLIME)
+                    .breakByTool(FabricToolTags.SHOVELS, 2)
+                    .build()));
+    SlimeLayerBlock SLIME_LAYER = register("slime_layer", new SlimeLayerBlock(FabricBlockSettings.of(Material.CLAY, MaterialColor.GRASS)
+                    .sounds(BlockSoundGroup.SLIME)
+                    .slipperiness(0.8F)
+                    .nonOpaque()
+                    .build()));
 
-    Block SUGAR_BLOCK = register(new FallingBlock(FabricBlockSettings.of(Material.SAND)
-            .strength(10, 10)
-            .hardness(0.7F)
-            .sounds(BlockSoundGroup.SAND)
-            .build()), "sugar_block");
-    Block APPLE_LEAVES = register(new FruitLeavesBlock(FabricBlockSettings.of(Material.LEAVES)
-            .strength(0.2F, 0.2F)
-            .ticksRandomly()
-            .sounds(BlockSoundGroup.GRASS)
-            .build())
-            .growthChance(1200)
-            .tint(0xFFEE81)
-            .fruit(W -> TreeType.OAK.pickRandomStack())
-            .compost(w -> new ItemStack(UItems.ROTTEN_APPLE)), "apple_leaves");
+    Block SUGAR_BLOCK = register("sugar_block", new FallingBlock(FabricBlockSettings.of(Material.SAND)
+                    .strength(10, 10)
+                    .hardness(0.7F)
+                    .sounds(BlockSoundGroup.SAND)
+                    .build()));
+    Block APPLE_LEAVES = register("apple_leaves", new FruitLeavesBlock(FabricBlockSettings.of(Material.LEAVES)
+                    .strength(0.2F, 0.2F)
+                    .ticksRandomly()
+                    .sounds(BlockSoundGroup.GRASS)
+                    .build())
+                    .growthChance(1200)
+                    .tint(0xFFEE81)
+                    .fruit(W -> TreeType.OAK.pickRandomStack())
+                    .compost(w -> new ItemStack(UItems.ROTTEN_APPLE)));
 
-    SaplingBlock APPLE_SAPLING = register(new SaplingBlock(
-            new CustomSaplingGenerator(5, Blocks.OAK_LOG.getDefaultState(), APPLE_LEAVES.getDefaultState()),
-            FabricBlockSettings.of(Material.WOOD)
-                .noCollision()
-                .ticksRandomly()
-                .breakInstantly()
-                .sounds(BlockSoundGroup.GRASS)
-                .build()) {}, "apple_sapling");
+    SaplingBlock APPLE_SAPLING = register("apple_sapling", new SaplingBlock(
+                        new CustomSaplingGenerator(5, Blocks.OAK_LOG.getDefaultState(), APPLE_LEAVES.getDefaultState()),
+                        FabricBlockSettings.of(Material.WOOD)
+                            .noCollision()
+                            .ticksRandomly()
+                            .breakInstantly()
+                            .sounds(BlockSoundGroup.GRASS)
+                            .build()) {});
 
 
-    static <T extends Block> T register(T block, String name) {
+    static <T extends Block> T register(String name, T block) {
         return Registry.BLOCK.add(new Identifier("unicopia", name), block);
     }
 

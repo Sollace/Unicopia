@@ -21,7 +21,7 @@ public interface UStructures {
 
     static <C extends FeatureConfig, F extends Feature<C>> F feature(String id, F feature) {
         return Registry.register(Registry.FEATURE, new Identifier("unicopia", id), feature);
-     }
+    }
 
     static void bootstrap() { }
 }

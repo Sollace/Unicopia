@@ -35,6 +35,10 @@ public enum Race {
         this.earth = earth;
     }
 
+    public boolean hasIronGut() {
+        return isUsable() && this != CHANGELING;
+    }
+
     public boolean isUsable() {
         return !isDefault();
     }

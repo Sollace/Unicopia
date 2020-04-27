@@ -47,9 +47,9 @@ public class Toxic {
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
         if (entity instanceof PlayerEntity) {
             Race race = Pony.of((PlayerEntity)entity).getSpecies();
-            Toxicity toxicity = (race.isDefault() || race == Race.CHANGELING) ? Toxicity.LETHAL : this.toxicity.apply(stack);
+            Toxicity t = race.hasIronGut() ? toxicity.apply(stack) : Toxicity.LETHAL;
 
-            toxin.addSecondaryEffects((PlayerEntity)entity, toxicity, stack);
+            toxin.afflict((PlayerEntity)entity, t, stack);
         }
 
         return new ItemStack(item.getRecipeRemainder());
@@ -58,10 +58,10 @@ public class Toxic {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand, Supplier<TypedActionResult<ItemStack>> sup) {
         Race race = Pony.of(player).getSpecies();
 
-        if (race.isDefault() || race == Race.CHANGELING) {
-            return new TypedActionResult<>(ActionResult.FAIL, player.getStackInHand(hand));
+        if (race.hasIronGut()) {
+            return sup.get();
         }
 
-        return sup.get();
+        return new TypedActionResult<>(ActionResult.FAIL, player.getStackInHand(hand));
     }
 }
