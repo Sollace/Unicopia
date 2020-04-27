@@ -6,14 +6,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:slime_ball",
+          "name": "unicopia:chitin_shell",
           "functions": [
             {
               "function": "minecraft:set_count",
-              "count": {
-                "min": 3,
-                "max": 5
-              }
+              "count": 9
             }
           ]
         }
