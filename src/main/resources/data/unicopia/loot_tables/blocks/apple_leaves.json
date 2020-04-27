@@ -35,7 +35,7 @@
                   ]
                 }
               ],
-              "name": "unicopia:apple_leaves"
+              "name": "unicopia:apple_seeds"
             },
             {
               "type": "minecraft:item",
@@ -54,7 +54,7 @@
                   ]
                 }
               ],
-              "name": "unicopia:apple_sapling"
+              "name": "unicopia:apple_seeds"
             }
           ]
         }

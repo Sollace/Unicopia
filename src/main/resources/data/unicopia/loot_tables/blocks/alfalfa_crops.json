@@ -9,14 +9,13 @@
           "children": [
             {
               "type": "minecraft:item",
-              "name": "unicopia:alfalfa",
+              "name": "unicopia:alfalfa_leaves",
               "conditions": [
                 {
                   "condition": "minecraft:block_state_property",
                   "block": "unicopia:alfalfa_crops",
                   "properties": {
-                    "age": "7",
-                    "type": "normal"
+                    "age": "7"
                   }
                 }
               ],

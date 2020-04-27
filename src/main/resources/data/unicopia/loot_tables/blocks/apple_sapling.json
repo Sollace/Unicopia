@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "unicopia:apple_sapling"
+          "name": "unicopia:apple_seeds"
         }
       ],
       "conditions": [
