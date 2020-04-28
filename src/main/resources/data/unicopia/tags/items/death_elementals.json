@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:red_glazed_terracotta",
+    "minecraft:red_dye",
+    "minecraft:redstone_block",
+    "minecraft:redstone",
+    "minecraft:emerald",
+    "minecraft:ghast_tear",
+    "minecraft:red_nether_brick"
+  ]
+}

@@ -10,7 +10,7 @@
       { "item": "unicopia:sugar_block" }
     ],
     "*": [
-      { "item": "minecraft:dye", "data": 9 }
+      { "item": "minecraft:pink_dye" }
     ]
   },
   "result": { "item": "unicopia:bakery_door", "count": 3 }

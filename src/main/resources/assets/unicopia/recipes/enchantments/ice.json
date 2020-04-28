@@ -1,0 +1,10 @@
+{
+	"type": "unicopia:enchanting_spell",
+	"input": { "item": "unicopia:gem" },
+	"ingredients": [
+		{ "tag": "unicopia:ice" },
+		{ "tag": "unicopia:ice" },
+		{ "tag": "unicopia:ice" }
+    ],
+	"result": { "item": "unicopia:gem", "spell": "ice" }
+}

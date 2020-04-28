@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:netherbrick",
+    "minecraft:brick",
+    "minecraft:red_nether_brick",
+    "minecraft:coal_block",
+    "minecraft:coal",
+    "unicopia:chitin_shell",
+    "unicopia:slime_drop"
+  ]
+}

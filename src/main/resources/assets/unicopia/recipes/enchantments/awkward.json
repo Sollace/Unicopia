@@ -1,0 +1,16 @@
+{
+	"type": "unicopia:enchanting_spell",
+	"input": { "item": "unicopia:gem" },
+	"ingredients": [
+        { "tag": "#unicopia:unaligned" },
+        { "tag": "#unicopia:unaligned" },
+        { "tag": "#unicopia:unaligned" }
+    ],
+	"result": {
+		"item": [
+			{ "item": "unicopia:gem" },
+			{ "item": "unicopia:corrupted_gem" }
+		],
+		"spell": "awkward"
+	}
+}

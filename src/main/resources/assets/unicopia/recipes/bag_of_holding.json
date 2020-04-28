@@ -16,5 +16,5 @@
       { "item": "minecraft:leather" }
     ]
   },
-  "result": { "item": "unicopia:bag_of_holding", "data": 0, "count": 1 }
+  "result": { "item": "unicopia:bag_of_holding" }
 }

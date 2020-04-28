@@ -1,0 +1,10 @@
+{
+	"type": "unicopia:enchanting_spell",
+	"input": { "item": "unicopia:gem" },
+	"ingredients": [
+        { "item": "unicopia:gem", "spell": "fire" },
+        { "tag": "unicopia:fire" },
+        { "tag": "unicopia:fire" }
+    ],
+	"result": { "item": "unicopia:corrupted_gem", "spell": "inferno" }
+}

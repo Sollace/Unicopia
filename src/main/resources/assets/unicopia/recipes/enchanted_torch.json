@@ -12,5 +12,5 @@
       { "item": "unicopia:gem", "nbt": { "spell": "light" } }
     ]
   },
-  "result": { "item": "unicopia:enchanted_torch", "count": 1 }
+  "result": { "item": "unicopia:enchanted_torch" }
 }

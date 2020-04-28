@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:brown_mushroom",
+    "unicopia:rotten_apple",
+    "minecraft:golden_carrot",
+    "minecraft:wheat",
+    "minecraft:wheat_seeds",
+    "minecraft:grain",
+    "minecraft:alfalfa_leaves",
+    "unicopia:moss"
+  ]
+}

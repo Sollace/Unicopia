@@ -13,5 +13,5 @@
       { "item": "minecraft:iron_nugget" }
     ]
   },
-  "result": { "item": "unicopia:mug", "count": 1 }
+  "result": { "item": "unicopia:mug" }
 }

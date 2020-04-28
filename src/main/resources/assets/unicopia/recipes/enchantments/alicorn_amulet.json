@@ -1,0 +1,9 @@
+{
+	"type": "unicopia:shapeless_crafting_spell",
+	"ingredients": [
+        { "item": "unicopia:gem", "spell": "inferno" },
+        { "item": "unicopia:gem", "spell": "darkness" },
+        { "item": "unicopia:gem", "spell": "necromancy" }
+    ],
+	"result": { "item": "unicopia:alicorn_amulet" }
+}

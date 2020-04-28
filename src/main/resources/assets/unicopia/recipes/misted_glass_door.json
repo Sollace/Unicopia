@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+     "##",
+     "##",
+     "##"
+  ],
+  "key": {
+    "#": [
+      { "item": "minecraft:stained_white_glass_block" }
+    ]
+  },
+  "result": { "item": "unicopia:misted_glass_door", "data": 0, "count": 1 }
+}

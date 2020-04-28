@@ -15,35 +15,7 @@
     "*": [
       {
     	"item": "minecraft:enchanted_book",
-    	"nbt": {
-    	  "ench": [
-             { "id": 2, "lvl": 1 }
-          ]
-      	}
-      },
-      {
-      	"item": "minecraft:enchanted_book",
-      	"nbt": {
-      	  "ench": [
-               { "id": 2, "lvl": 2 }
-            ]
-          }
-      },
-      {
-    	"item": "minecraft:enchanted_book",
-    	"nbt": {
-    	  "ench": [
-             { "id": 2, "lvl": 3 }
-          ]
-        }
-      },
-      {
-    	"item": "minecraft:enchanted_book",
-    	"nbt": {
-    	  "ench": [
-             { "id": 2, "lvl": 4 }
-          ]
-        }
+	    "ench": "minecraft:feather_falling"
       }
     ]
   },

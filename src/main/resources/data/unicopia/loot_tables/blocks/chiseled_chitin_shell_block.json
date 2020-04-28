@@ -6,13 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "unicopia:chitin_shell",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": 9
-            }
-          ]
+          "name": "unicopia:chiseled_chitin_shell_block"
         }
       ]
     }

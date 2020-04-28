@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:ender_eye",
+    "minecraft:spider_eye",
+    "minecraft:speckled_mellon",
+    "minecraft:ender_pearl"
+  ]
+}

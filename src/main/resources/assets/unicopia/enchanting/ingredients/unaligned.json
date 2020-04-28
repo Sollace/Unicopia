@@ -1,9 +1,0 @@
-{
-	"items": [
-		{ "item": "minecraft:red_flower" },
-		{ "item": "minecraft:yellow_flower" },
-		{ "item": "minecraft:tallgrass" },
-		{ "item": "minecraft:sapling" },
-		{ "item": "minecraft:stick" }
-	]
-}

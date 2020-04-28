@@ -1,0 +1,7 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+        { "item": "unicopia:chitin_shell_block" }
+    ],
+	"result": { "item": "unicopia:chitin_shell", "count": 9 }
+}

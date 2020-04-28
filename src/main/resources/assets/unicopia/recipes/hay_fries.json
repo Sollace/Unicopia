@@ -10,5 +10,5 @@
       { "item": "unicopia:alfalfa_leaves" }
     ]
   },
-  "result": { "item": "unicopia:hay_fries", "data": 0, "count": 7 }
+  "result": { "item": "unicopia:hay_fries", "count": 7 }
 }

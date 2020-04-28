@@ -1,14 +1,20 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " # ",
-    "###",
-    " # "
+    "SCB",
+    "CSC",
+    "BCS"
   ],
   "key": {
-    "#": [
-      { "item": "unicopia:corrupted_gem" }
+    "S": [
+      { "item": "minecraft:andesite" }
+    ],
+    "C": [
+      { "item": "#minecraft:stained_hardened_clay" }
+    ],
+    "B": [
+      { "item": "minecraft:black_dye" }
     ]
   },
-  "result": { "item": "unicopia:gem", "count": 1 }
+  "result": { "item": "unicopia:gem", "count": 4 }
 }

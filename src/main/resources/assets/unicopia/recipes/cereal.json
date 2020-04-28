@@ -6,5 +6,5 @@
       { "item": "unicopia:alfalfa_leaves" },
       { "item": "minecraft:milk_bucket" }
   ],
-  "result": { "item": "unicopia:cereal", "data": 0, "count": 1 }
+  "result": { "item": "unicopia:cereal" }
 }

@@ -1,0 +1,10 @@
+{
+	"type": "unicopia:enchanting_spell",
+	"input": { "item": "unicopia:gem" },
+	"ingredients": [
+        { "item": "unicopia:gem", "spell": "light" },
+        { "item": "unicopia:gem", "spell": "charge" },
+        { "item": "unicopia:gem", "spell": "light" }
+    ],
+	"result": { "item": "unicopia:gem", "spell": "reveal" }
+}

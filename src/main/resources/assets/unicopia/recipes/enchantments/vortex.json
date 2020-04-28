@@ -1,0 +1,10 @@
+{
+	"type": "unicopia:enchanting_spell",
+	"input": { "item": "unicopia:gem" },
+	"ingredients": [
+        { "tag": "unicopia:shell" },
+        { "item": "unicopia:gem", "spell": "shield" },
+        { "item": "unicopia:gem", "spell": "portal" }
+    ],
+	"result": { "item": "unicopia:gem", "spell": "vortex" }
+}

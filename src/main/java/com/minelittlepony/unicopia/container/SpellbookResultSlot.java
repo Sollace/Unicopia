@@ -2,10 +2,10 @@ package com.minelittlepony.unicopia.container;
 
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
 import com.minelittlepony.unicopia.enchanting.SpellCraftingEvent;
-import com.minelittlepony.unicopia.enchanting.recipe.URecipes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.MagicGemItem;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.container.PlayerContainer;

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "unicopia:zap_apple",
+    "minecraft:redstone_torch",
+    "minecraft:redstone_block",
+    "minecraft:redstone"
+  ]
+}

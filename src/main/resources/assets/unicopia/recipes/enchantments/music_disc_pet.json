@@ -1,0 +1,12 @@
+{
+	"type": "unicopia:enchanting_spell",
+	"input": { "tag": "unicopia:sound"},
+	"ingredients": [
+        { "item": "unicopia:gem", "spell": "awkward" },
+        { "item": "minecraft:feather" },
+        { "item": "minecraft:carrot" }
+    ],
+	"output": {
+		"item": "unicopia:music_disc_pet"
+	}
+}

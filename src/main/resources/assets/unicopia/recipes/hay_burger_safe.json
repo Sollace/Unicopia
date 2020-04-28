@@ -10,8 +10,8 @@
       { "item": "unicopia:alfalfa_leaves" }
     ],
     "T": [
-	  { "item": "unicopia:tomato", "data": 0 },
-	  { "item": "unicopia:cloudsdale_tomato", "data": 0 }
+	  { "item": "unicopia:tomato" },
+	  { "item": "unicopia:cloudsdale_tomato" }
     ],
     "F": [
       { "item": "minecraft:red_flower", "data": 1 },
@@ -24,5 +24,5 @@
       { "item": "minecraft:yellow_flower", "data": 0 }
     ]
   },
-  "result": { "item": "unicopia:hay_burger", "data": 0, "count": 1 }
+  "result": { "item": "unicopia:hay_burger" }
 }

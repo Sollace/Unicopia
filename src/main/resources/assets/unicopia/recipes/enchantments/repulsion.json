@@ -1,0 +1,14 @@
+{
+	"type": "unicopia:enchanting_spell",
+	"input": { "item": "unicopia:gem" },
+	"ingredients": [
+        { "tag": "unicopia:fire" },
+        { "tag": "unicopia:shell" },
+        { "item": "unicopia:gem", "spell": "shield" },
+        { "tag": "unicopia:shell" }
+    ],
+	"result": {
+		"item": "unicopia:corrupted_gem",
+		"spell": "shield"
+	}
+}

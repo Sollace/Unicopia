@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:red_flower",
+    "#minecraft:yellow_flower",
+    "minecraft:tallgrass",
+    "minecraft:sapling",
+    "minecraft:stick"
+  ]
+}

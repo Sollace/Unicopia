@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": [
+      { "item": "unicopia:chitin_block" }
+    ]
+  },
+  "result": { "item": "unicopia:chiseled_chitin_shell_block", "count": 4 }
+}

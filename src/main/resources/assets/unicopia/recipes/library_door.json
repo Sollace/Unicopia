@@ -7,10 +7,10 @@
   ],
   "key": {
     "#": [
-      { "item": "minecraft:planks", "data": 5 }
+      { "item": "minecraft:dark_oak_planks" }
     ],
     "*": [
-      { "item": "minecraft:planks", "data": 1 }
+      { "item": "minecraft:oak_planks" }
     ]
   },
   "result": { "item": "unicopia:library_door", "count": 3 }

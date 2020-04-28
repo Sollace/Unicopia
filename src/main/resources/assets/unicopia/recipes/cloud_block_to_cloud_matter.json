@@ -1,0 +1,7 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+        { "item": "unicopia:cloud_block" }
+    ],
+	"result": { "item": "unicopia:cloud_matter", "count": 4 }
+}

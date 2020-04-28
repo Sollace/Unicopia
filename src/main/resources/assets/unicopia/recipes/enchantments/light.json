@@ -1,0 +1,15 @@
+{
+	"type": "unicopia:enchanting_spell",
+	"input": { "item": "unicopia:gem" },
+	"ingredients": [
+        { "tag": "unicopia:light" },
+        { "item": "unicopia:gem", "spell": "fire" },
+        [
+        	{ "item": "minecraft:apple" },
+        	{ "item": "unicopia:apple_green" },
+        	{ "item": "unicopia:apple_sweet" },
+        	{ "item": "unicopia:apple_sour" }
+        ]
+    ],
+	"result": { "item": "unicopia:gem", "spell": "light" }
+}

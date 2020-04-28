@@ -1,0 +1,12 @@
+{
+	"type": "unicopia:enchanting_spell",
+	"input": { "tag": "unicopia:sound"},
+	"ingredients": [
+        { "tag": "unicopia:apple_bloom" },
+		{ "tag": "unicopia:scootaloo" },
+		{ "tag": "unicopia:sweetie_belle" }
+    ],
+	"output": {
+		"item": "unicopia:music_disc_crusade"
+	}
+}

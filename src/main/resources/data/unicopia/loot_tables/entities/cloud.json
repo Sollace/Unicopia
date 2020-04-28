@@ -6,6 +6,27 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "name": "unicopia:dew_drop",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 0,
+                "max": 4,
+                "type": "minecraft:uniform"
+              }
+            },
+            {
+              "function": "minecraft:looting_enchant",
+              "count": {
+                "min": 0,
+                "max": 9
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
           "functions": [
             {
               "function": "minecraft:set_count",

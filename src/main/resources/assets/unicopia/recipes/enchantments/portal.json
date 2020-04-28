@@ -1,0 +1,11 @@
+{
+	"type": "unicopia:enchanting_spell",
+	"input": { "item": "unicopia:gem" },
+	"ingredients": [
+        { "tag": "unicopia:sight" },
+        { "item": "minecraft:ghast_tear" },
+        { "tag": "unicopia:energy" },
+        { "item": "unicopia:gem", "spell": "fire" }
+    ],
+	"result": { "item": "unicopia:gem", "spell": "portal" }
+}

@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:rotten_flesh",
+    "unicopia:rotten_cloudsdale_tomato",
+    "unicopia:rotten_tomato",
+    "unicopia:rotten_apple",
+    "minecraft:red_mushroom",
+    "minecraft:brown_mushroom",
+    "unicopia:moss"
+  ]
+}

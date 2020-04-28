@@ -56,6 +56,28 @@
             },
             {
               "type": "minecraft:item",
+              "name": "unicopia:rotten_tomato",
+              "conditions": [
+                {
+                  "condition": "minecraft:block_state_property",
+                  "block": "unicopia:tomato_plant",
+                  "properties": { "age": "7" }
+                }
+              ],
+              "functions": [
+                { "function": "minecraft:set_count", "count": 2 },
+	            {
+	              "function": "minecraft:apply_bonus",
+	              "enchantment": "minecraft:fortune",
+	              "formula": "minecraft:uniform_bonus_count",
+	              "parameters": {
+	                "bonusMultiplier": 1
+	              }
+	            }
+              ]
+            },
+            {
+              "type": "minecraft:item",
               "name": "unicopia:cloudsdale_tomato",
               "conditions": [
                 {
@@ -88,6 +110,34 @@
 	              "limit": {
 	                "max": 9,
 	                "min": 1
+	              }
+	            }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "unicopia:rotten_cloudsdale_tomato",
+              "conditions": [
+                {
+                  "condition": "minecraft:block_state_property",
+                  "block": "unicopia:tomato_plant",
+                  "properties": {
+                    "age": "7",
+                    "type": "cloudsdale"
+                  }
+                }
+              ],
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 2
+                },
+	            {
+	              "function": "minecraft:apply_bonus",
+	              "enchantment": "minecraft:fortune",
+	              "formula": "minecraft:uniform_bonus_count",
+	              "parameters": {
+	                "bonusMultiplier": 1
 	              }
 	            }
               ]
