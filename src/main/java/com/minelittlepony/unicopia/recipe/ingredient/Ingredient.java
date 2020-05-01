@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.concurrent.Immutable;
 
-import com.google.common.collect.Streams;
+import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -19,29 +19,20 @@ import net.minecraft.util.PacketByteBuf;
 
 @Immutable
 public class Ingredient {
-    public static final Ingredient EMPTY = new Ingredient(Predicate.EMPTY, Predicate.EMPTY, Predicate.EMPTY, Predicate.EMPTY);
+    public static final Ingredient EMPTY = new Ingredient(Predicate.EMPTY, Predicate.EMPTY, Predicate.EMPTY, Predicate.EMPTY, Predicate.EMPTY);
 
-    private final Predicate stack;
-    private final Predicate tag;
-    private final Predicate spell;
-    private final Predicate enchantment;
+    private final List<Predicate> predicates;
 
     private final Lazy<List<ItemStack>> matchingStacks;
     private final Lazy<net.minecraft.recipe.Ingredient> preview;
 
-    Ingredient(Predicate stack, Predicate tag, Predicate spell, Predicate enchantment) {
-        this.stack = stack;
-        this.tag = tag;
-        this.spell = spell;
-        this.enchantment = enchantment;
+    Ingredient(Predicate... predicates) {
+        this.predicates = Lists.newArrayList(predicates);
         this.matchingStacks = new Lazy<>(() -> {
-            return Streams.concat(
-                    stack.getMatchingStacks(),
-                    tag.getMatchingStacks(),
-                    spell.getMatchingStacks(),
-                    enchantment.getMatchingStacks()
-                ).filter(s -> matches(s, 1))
-            .collect(Collectors.toList());
+            return this.predicates.stream()
+                    .flatMap(Predicate::getMatchingStacks)
+                    .filter(s -> matches(s, 1))
+                    .collect(Collectors.toList());
         });
         this.preview = new Lazy<>(() -> {
             return net.minecraft.recipe.Ingredient.ofStacks(getMatchingStacks().toArray(ItemStack[]::new));
@@ -57,26 +48,19 @@ public class Ingredient {
     }
 
     public ItemStack getStack(Random random) {
-        ItemStack output = ItemStack.EMPTY.copy();
-        stack.applyModifiers(output, random);
-        tag.applyModifiers(output, random);
-        spell.applyModifiers(output, random);
-        enchantment.applyModifiers(output, random);
-        return output;
+        ItemStack[] output = new ItemStack[] { ItemStack.EMPTY.copy() };
+
+        predicates.forEach(p -> output[0] = p.applyModifiers(output[0], random));
+
+        return output[0];
     }
 
     public boolean matches(ItemStack other,  int materialMult) {
-        return stack.matches(other, materialMult)
-            && tag.matches(other, materialMult)
-            && spell.matches(other, materialMult)
-            && enchantment.matches(other, materialMult);
+        return predicates.stream().allMatch(p -> p.matches(other, materialMult));
     }
 
     public void write(PacketByteBuf buf) {
-        stack.write(buf);
-        tag.write(buf);
-        spell.write(buf);
-        enchantment.write(buf);
+        predicates.forEach(p -> p.write(buf));
     }
 
     public static Ingredient read(PacketByteBuf buf) {
@@ -84,7 +68,8 @@ public class Ingredient {
                 StackPredicate.read(buf),
                 TagPredicate.read(buf),
                 SpellPredicate.read(buf),
-                EnchantmentPredicate.read(buf));
+                EnchantmentPredicate.read(buf),
+                ToxicityPredicate.read(buf));
     }
 
     public static Ingredient one(JsonElement json) {
@@ -92,6 +77,7 @@ public class Ingredient {
         if (json.isJsonArray()) {
             return new Ingredient(
                     ChoicePredicate.read(json.getAsJsonArray()),
+                    Predicate.EMPTY,
                     Predicate.EMPTY,
                     Predicate.EMPTY,
                     Predicate.EMPTY);
@@ -102,7 +88,8 @@ public class Ingredient {
                 StackPredicate.read(obj),
                 TagPredicate.read(obj),
                 SpellPredicate.read(obj),
-                EnchantmentPredicate.read(obj));
+                EnchantmentPredicate.read(obj),
+                ToxicityPredicate.read(obj));
     }
 
     public static DefaultedList<Ingredient> many(JsonArray arr) {

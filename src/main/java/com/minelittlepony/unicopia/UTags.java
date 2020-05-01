@@ -35,6 +35,10 @@ public interface UTags {
     Tag<Item> SCOOTALOO_SPIRIT = register("scootaloo_spirit");
     Tag<Item> SWEETIE_BELLE_SPIRIT = register("sweetie_belle_spirit");
 
+    Tag<Item> NON_TOXIC = register("non_toxic");
+    Tag<Item> FAIRLY_TOXIC = register("fairly_toxic");
+    Tag<Item> SEVERELY_TOXIC = register("severely_toxic");
+
     static Tag<Item> register(String name) {
         return TagRegistry.item(new Identifier("unicopia", name));
     }

@@ -11,7 +11,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -59,6 +59,11 @@ public enum Toxicity implements Toxin {
         return text;
     }
 
+    public ItemStack ontoStack(ItemStack stack) {
+        stack.getOrCreateTag().putString("toxicity", name());
+        return stack;
+    }
+
     @Override
     public void afflict(PlayerEntity player, Toxicity toxicity, ItemStack stack) {
         if (toxicWhenRaw()) {
@@ -74,11 +79,15 @@ public enum Toxicity implements Toxin {
 
     public static Toxicity fromStack(ItemStack stack) {
         if (stack.hasTag()) {
-            CompoundTag tag = stack.getSubTag("toxicity");
+            Tag tag = stack.getTag().get("toxicity");
             if (tag != null) {
-                return REGISTRY.getOrDefault(tag.asString(), SAFE);
+                return byName(tag.asString());
             }
         }
         return SAFE;
+    }
+
+    public static Toxicity byName(String name) {
+        return REGISTRY.getOrDefault(name.toUpperCase(), SAFE);
     }
 }

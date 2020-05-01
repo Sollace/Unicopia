@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "unicopia:crafting_shaped",
   "pattern": [
 	"FFF",
 	"FFF",
@@ -13,24 +13,12 @@
 	  { "item": "minecraft:golden_apple", "data": 0 },
 	  { "item": "unicopia:zap_apple", "data": 0 },
 	  { "item": "unicopia:corrupted_gem" },
-      { "item": "minecraft:double_plant", "data": 0 },
-      { "item": "minecraft:double_plant", "data": 1 },
-      { "item": "minecraft:tallgrass", "data": 1 },
-      { "item": "minecraft:tallgrass", "data": 2 },
-      { "item": "minecraft:double_plant", "data": 4 },
-      { "item": "minecraft:double_plant", "data": 5 },
+      { "tag": "#unicopia:non_toxic" },
+      { "tag": "#unicopia:fairly_toxic" },
+      { "tag": "#unicopia:severely_toxic" },
       { "item": "unicopia:alfalfa_leaves" },
-      { "item": "minecraft:red_flower", "data": 0 },
-      { "item": "minecraft:red_flower", "data": 1 },
-      { "item": "minecraft:red_flower", "data": 2 },
-      { "item": "minecraft:red_flower", "data": 3 },
-      { "item": "minecraft:red_flower", "data": 4 },
-      { "item": "minecraft:red_flower", "data": 5 },
-      { "item": "minecraft:red_flower", "data": 6 },
-      { "item": "minecraft:red_flower", "data": 7 },
-      { "item": "minecraft:red_flower", "data": 8 },
-      { "item": "minecraft:yellow_flower", "data": 0 }
+      { "item": "unicopia:wheat_worms" }
     ]
   },
-  "result": { "item": "unicopia:salad", "data": 4, "count": 1 }
+  "result": { "item": "unicopia:salad", "toxicity": "lethal" }
 }

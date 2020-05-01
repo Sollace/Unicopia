@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:fern",
+    "minecraft:dead_bush",
+    "minecraft:poppy",
+    "minecraft:oxey_daisy",
+    "minecraft:large_fern"
+  ]
+}
