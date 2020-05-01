@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.recipe;
+package com.minelittlepony.unicopia.recipe.ingredient;
 
 import java.util.Random;
 import java.util.stream.Stream;
@@ -13,6 +13,10 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
+/**
+ * Tests for whether a tag contains the input when matching.
+ * Supplies a random item from the tag as the output when crafting.
+ */
 class TagPredicate implements Ingredient.Predicate {
     static Ingredient.Predicate read(PacketByteBuf buf) {
         int count = buf.readInt();

@@ -10,7 +10,8 @@ public interface URecipes {
     RecipeType<SpellBookRecipe> SPELL_BOOK = register("spell_book");
 
     RecipeSerializer<SpellBookRecipe> ENCHANTING_SPELL_SERIALIZER = register("enchanting_spell", new SpellBookRecipe.Serializer());
-    RecipeSerializer<SpellBookRecipe> CRAFTING_SPELL_SERIALIZER = register("crafting_spell", new SpellBookRecipe.Serializer());
+    RecipeSerializer<ShapelessSpecialRecipe> CRAFTING_SHAPELESS = register("crafting_shapeless", new ShapelessSpecialRecipe.Serializer());
+    RecipeSerializer<ShapedSpecialRecipe> CRAFTING_SHAPED = register("crafting_shaped", new ShapedSpecialRecipe.Serializer());
 
     static <T extends Recipe<?>> RecipeType<T> register(final String id) {
         return Registry.register(Registry.RECIPE_TYPE, new Identifier("unicopia", id), new RecipeType<T>() {

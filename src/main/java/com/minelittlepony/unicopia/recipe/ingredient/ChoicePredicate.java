@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.recipe;
+package com.minelittlepony.unicopia.recipe.ingredient;
 
 import java.util.List;
 import java.util.Random;
@@ -8,8 +8,11 @@ import com.google.gson.JsonArray;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.PacketByteBuf;
 
+/**
+ * Requires only one of the sub-ingredients to match when matching.
+ * Makes a random choice from a pool of alternatives when crafting.
+ */
 class ChoicePredicate implements Ingredient.Predicate {
-
     static Ingredient.Predicate read(JsonArray arr) {
         return new ChoicePredicate(Ingredient.many(arr));
     }

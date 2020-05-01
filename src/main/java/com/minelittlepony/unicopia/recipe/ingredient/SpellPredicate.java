@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.recipe;
+package com.minelittlepony.unicopia.recipe.ingredient;
 
 import java.util.Random;
 import java.util.stream.Stream;
@@ -9,6 +9,10 @@ import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.PacketByteBuf;
 
+/**
+ * A predicate that tests for a specific spell on an input when matching.
+ * Appends that spell to the output when crafting.
+ */
 class SpellPredicate implements Ingredient.Predicate {
     static Ingredient.Predicate read(PacketByteBuf buf) {
         int level = buf.readInt();

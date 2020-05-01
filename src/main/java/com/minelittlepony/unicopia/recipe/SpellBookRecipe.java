@@ -1,52 +1,80 @@
 package com.minelittlepony.unicopia.recipe;
 
-import java.util.Random;
-
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.container.SpellBookInventory;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.recipe.ingredient.Ingredient;
 
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.world.World;
 
 /**
  * Spellbook recipe accepting an item to enchant, a number of ingredients to use, an ingredient to compose the output.
  */
-public class SpellBookRecipe extends AbstractShapelessPredicatedRecipe<CraftingInventory> {
+public class SpellBookRecipe implements Recipe<CraftingInventory> {
 
-    private static final Random RANDOM = new Random();
+    private final Ingredient input;
 
-    protected final Ingredient input;
+    private final Ingredient output;
+
+    private final DefaultedList<Ingredient> ingredients;
+
+    private final Identifier id;
 
     public SpellBookRecipe(Identifier id, Ingredient input, Ingredient output, DefaultedList<Ingredient> ingredients) {
-        super(id, output, ingredients);
+        this.id = id;
+        this.output = output;
+        this.ingredients = ingredients;
         this.input = input;
     }
 
     @Override
-    protected int getInputMultiplier(CraftingInventory inv, World worldIn) {
+    public boolean matches(CraftingInventory inv, World world) {
+
         ItemStack enchantedStack = ((SpellBookInventory)inv).getCraftResultMatrix().getInvStack(0);
 
         if (enchantedStack.isEmpty() || enchantedStack.getItem() == null) {
-            return 0;
+            return false;
         }
 
         if (!input.matches(enchantedStack, enchantedStack.getCount())) {
-            return 0;
+            return false;
         }
 
-        return enchantedStack.getCount();
+        return Utils.matchShapeless(ingredients, inv, enchantedStack.getCount());
+    }
+
+    @Override
+    public Identifier getId() {
+        return id;
+    }
+
+    @Override
+    public ItemStack craft(CraftingInventory inv) {
+        return getOutput();
+    }
+
+    @Override
+    public boolean fits(int width, int height) {
+        return width * height < ingredients.size();
+    }
+
+    @Override
+    public DefaultedList<net.minecraft.recipe.Ingredient> getPreviewInputs() {
+        return Ingredient.preview(ingredients, DefaultedList.copyOf(null, input.getPreview()));
     }
 
     @Override
     public ItemStack getOutput() {
-        return output.getStack(RANDOM);
+        return output.getStack(Utils.RANDOM);
     }
 
     @Override
@@ -70,30 +98,24 @@ public class SpellBookRecipe extends AbstractShapelessPredicatedRecipe<CraftingI
             return new SpellBookRecipe(id,
                     Ingredient.one(json.get("input")),
                     Ingredient.one(json.get("result")),
-                    Ingredient.many(json.get("ingredients").getAsJsonArray())
+                    Ingredient.many(JsonHelper.getArray(json, "ingredients"))
             );
         }
 
         @Override
         public SpellBookRecipe read(Identifier id, PacketByteBuf buf) {
-            Ingredient input = Ingredient.read(buf);
-            Ingredient output = Ingredient.read(buf);
-            int length = buf.readInt();
-            DefaultedList<Ingredient> ingredients = DefaultedList.copyOf(Ingredient.EMPTY);
-            while (ingredients.size() < length) {
-                ingredients.add(Ingredient.read(buf));
-            }
-
-            return new SpellBookRecipe(id, input, output, ingredients);
+            return new SpellBookRecipe(id,
+                    Ingredient.read(buf),
+                    Ingredient.read(buf),
+                    Utils.read(buf, Ingredient.EMPTY, Ingredient::read)
+            );
         }
 
         @Override
         public void write(PacketByteBuf buf, SpellBookRecipe recipe) {
             recipe.input.write(buf);
             recipe.output.write(buf);
-            DefaultedList<Ingredient> ingredients = recipe.ingredients;
-            buf.writeInt(ingredients.size());
-            ingredients.forEach(i -> i.write(buf));
+            Utils.write(buf, recipe.ingredients, Ingredient::write);
         }
     }
 }

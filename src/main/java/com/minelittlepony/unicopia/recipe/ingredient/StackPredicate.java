@@ -1,10 +1,8 @@
-package com.minelittlepony.unicopia.recipe;
+package com.minelittlepony.unicopia.recipe.ingredient;
 
-import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
 
-import com.google.common.collect.Streams;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -17,6 +15,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
+/**
+ * Tests for a specific item, stack size, and damage value when matching.
+ * Presents that item as the output when crafting.
+ */
 class StackPredicate implements Ingredient.Predicate {
     static Ingredient.Predicate read(PacketByteBuf buf) {
         int count = buf.readInt();
@@ -81,7 +83,7 @@ class StackPredicate implements Ingredient.Predicate {
             return subItems.stream();
         }
 
-        return Streams.stream(Optional.ofNullable(stack));
+        return Stream.of(stack);
     }
 
     @Override

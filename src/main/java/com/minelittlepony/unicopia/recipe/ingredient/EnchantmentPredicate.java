@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.recipe;
+package com.minelittlepony.unicopia.recipe.ingredient;
 
 import java.util.Random;
 import java.util.stream.Stream;
@@ -15,10 +15,10 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 /**
- * A predicate that tests for a specific enchantment on an input item.
+ * A predicate that tests for a specific enchantment on an input when matching.
+ * Appends that enchantment to the output when crafting.
  */
 class EnchantmentPredicate implements Ingredient.Predicate {
-
     public static Ingredient.Predicate read(PacketByteBuf buf) {
         int level = buf.readInt();
         if (level == 0) {

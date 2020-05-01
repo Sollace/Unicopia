@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.recipe;
+package com.minelittlepony.unicopia.recipe.ingredient;
 
 import java.util.List;
 import java.util.Random;
@@ -18,7 +18,7 @@ import net.minecraft.util.Lazy;
 import net.minecraft.util.PacketByteBuf;
 
 @Immutable
-class Ingredient {
+public class Ingredient {
     public static final Ingredient EMPTY = new Ingredient(Predicate.EMPTY, Predicate.EMPTY, Predicate.EMPTY, Predicate.EMPTY);
 
     private final Predicate stack;
@@ -27,6 +27,7 @@ class Ingredient {
     private final Predicate enchantment;
 
     private final Lazy<List<ItemStack>> matchingStacks;
+    private final Lazy<net.minecraft.recipe.Ingredient> preview;
 
     Ingredient(Predicate stack, Predicate tag, Predicate spell, Predicate enchantment) {
         this.stack = stack;
@@ -42,10 +43,17 @@ class Ingredient {
                 ).filter(s -> matches(s, 1))
             .collect(Collectors.toList());
         });
+        this.preview = new Lazy<>(() -> {
+            return net.minecraft.recipe.Ingredient.ofStacks(getMatchingStacks().toArray(ItemStack[]::new));
+        });
     }
 
     public Stream<ItemStack> getMatchingStacks() {
         return matchingStacks.get().stream();
+    }
+
+    public net.minecraft.recipe.Ingredient getPreview() {
+        return preview.get();
     }
 
     public ItemStack getStack(Random random) {
@@ -63,7 +71,6 @@ class Ingredient {
             && spell.matches(other, materialMult)
             && enchantment.matches(other, materialMult);
     }
-
 
     public void write(PacketByteBuf buf) {
         stack.write(buf);
@@ -108,6 +115,15 @@ class Ingredient {
         }
 
         return ingredients;
+    }
+
+    public static DefaultedList<net.minecraft.recipe.Ingredient> preview(DefaultedList<Ingredient> input) {
+        return preview(input, DefaultedList.of());
+    }
+
+    public static DefaultedList<net.minecraft.recipe.Ingredient> preview(DefaultedList<Ingredient> input, DefaultedList<net.minecraft.recipe.Ingredient> output) {
+        input.stream().map(Ingredient::getPreview).forEach(output::add);
+        return output;
     }
 
     public interface Predicate {
