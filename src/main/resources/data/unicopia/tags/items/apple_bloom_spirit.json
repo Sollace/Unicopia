@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#unicopia:regular_apples",
+    "#unicopia:fresh_apples",
     "unicopia:apple_cider",
     "unicopia:apple_seeds",
     "minecraft:red_dye"

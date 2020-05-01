@@ -6,8 +6,7 @@
     "minecraft:golden_carrot",
     "minecraft:wheat",
     "minecraft:wheat_seeds",
-    "minecraft:grain",
-    "minecraft:alfalfa_leaves",
+    "#minecraft:leaves",
     "unicopia:moss"
   ]
 }

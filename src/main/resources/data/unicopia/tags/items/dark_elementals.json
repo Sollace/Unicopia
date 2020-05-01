@@ -1,9 +1,9 @@
 {
   "replace": false,
   "values": [
-    "minecraft:netherbrick",
+    "minecraft:nether_bricks",
     "minecraft:brick",
-    "minecraft:red_nether_brick",
+    "minecraft:red_nether_bricks",
     "minecraft:coal_block",
     "minecraft:coal",
     "unicopia:chitin_shell",
