@@ -3,10 +3,11 @@ package com.minelittlepony.unicopia.recipe;
 import java.util.Random;
 
 import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.recipe.ingredient.Ingredient;
+import com.minelittlepony.unicopia.recipe.ingredient.PredicatedIngredient;
 
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.util.DefaultedList;
@@ -20,10 +21,10 @@ public class ShapedSpecialRecipe extends SpecialCraftingRecipe {
     private static final Random RANDOM = new Random();
 
     private final Pattern pattern;
-    private final Ingredient output;
+    private final PredicatedIngredient output;
     private final String group;
 
-    public ShapedSpecialRecipe(Identifier id, String group, Pattern pattern, Ingredient output) {
+    public ShapedSpecialRecipe(Identifier id, String group, Pattern pattern, PredicatedIngredient output) {
         super(id);
         this.group = group;
         this.pattern = pattern;
@@ -57,7 +58,7 @@ public class ShapedSpecialRecipe extends SpecialCraftingRecipe {
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return null;
+        return URecipes.CRAFTING_SHAPED;
     }
 
     @Override
@@ -66,8 +67,8 @@ public class ShapedSpecialRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public DefaultedList<net.minecraft.recipe.Ingredient> getPreviewInputs() {
-        return Ingredient.preview(pattern.matrix);
+    public DefaultedList<Ingredient> getPreviewInputs() {
+        return PredicatedIngredient.preview(pattern.matrix);
     }
 
     public static class Serializer implements RecipeSerializer<ShapedSpecialRecipe> {
@@ -76,7 +77,7 @@ public class ShapedSpecialRecipe extends SpecialCraftingRecipe {
             return new ShapedSpecialRecipe(id,
                     JsonHelper.getString(json, "group", ""),
                     Pattern.read(json),
-                    Ingredient.one(json.get("result"))
+                    PredicatedIngredient.one(json.get("result"))
             );
         }
 
@@ -85,7 +86,7 @@ public class ShapedSpecialRecipe extends SpecialCraftingRecipe {
             return new ShapedSpecialRecipe(id,
                     buf.readString(32767),
                     Pattern.read(buf),
-                    Ingredient.read(buf)
+                    PredicatedIngredient.read(buf)
             );
         }
 

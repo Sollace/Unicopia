@@ -7,11 +7,11 @@
   ],
   "key": {
     "#": [
-      { "item": "minecraft:slime" }
+      { "item": "minecraft:slime_block" }
     ],
     "*": [
       { "item": "unicopia:gem" }
     ]
   },
-  "result": { "item": "unicopia:cuccoon", "count": 1 }
+  "result": { "item": "unicopia:slime_drop", "count": 1 }
 }

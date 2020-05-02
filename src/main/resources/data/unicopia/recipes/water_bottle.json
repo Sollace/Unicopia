@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "unicopia:crafting_shaped",
   "pattern": [
     "***",
     " * ",
@@ -15,8 +15,6 @@
   },
   "result": {
     "item": "minecraft:potion",
-    "data": 0,
-    "count": 1,
-    "nbt": { "Potion": "minecraft:water" }
+    "potion": "minecraft:water"
   }
 }

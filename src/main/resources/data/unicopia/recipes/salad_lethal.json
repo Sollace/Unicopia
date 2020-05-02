@@ -13,9 +13,9 @@
 	  { "item": "minecraft:golden_apple", "data": 0 },
 	  { "item": "unicopia:zap_apple", "data": 0 },
 	  { "item": "unicopia:corrupted_gem" },
-      { "tag": "#unicopia:non_toxic" },
-      { "tag": "#unicopia:fairly_toxic" },
-      { "tag": "#unicopia:severely_toxic" },
+      { "tag": "unicopia:non_toxic" },
+      { "tag": "unicopia:fairly_toxic" },
+      { "tag": "unicopia:severely_toxic" },
       { "item": "unicopia:alfalfa_leaves" },
       { "item": "unicopia:wheat_worms" }
     ]

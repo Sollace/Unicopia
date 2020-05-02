@@ -81,13 +81,13 @@ public enum Toxicity implements Toxin {
         if (stack.hasTag()) {
             Tag tag = stack.getTag().get("toxicity");
             if (tag != null) {
-                return byName(tag.asString());
+                return REGISTRY.getOrDefault(tag.asString(), SAFE);
             }
         }
         return SAFE;
     }
 
     public static Toxicity byName(String name) {
-        return REGISTRY.getOrDefault(name.toUpperCase(), SAFE);
+        return REGISTRY.get(name.toUpperCase());
     }
 }

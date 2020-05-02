@@ -5,35 +5,21 @@ import java.util.stream.Stream;
 
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.toxin.Toxicity;
+import com.minelittlepony.unicopia.recipe.Utils;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.JsonHelper;
 import net.minecraft.util.PacketByteBuf;
 
 /**
  * A predicate that tests for a specific spell on an input when matching.
  * Appends that spell to the output when crafting.
  */
-class ToxicityPredicate implements Ingredient.Predicate {
-    static Ingredient.Predicate read(PacketByteBuf buf) {
-        int ordinal = buf.readInt();
-        if (ordinal == 0) {
-            return EMPTY;
-        }
-        return new ToxicityPredicate(Toxicity.values()[ordinal - 1]);
-    }
-
-    static Ingredient.Predicate read(JsonObject json) {
-        if (!json.has("toxicity")) {
-            return EMPTY;
-        }
-
-        return new ToxicityPredicate(Toxicity.byName(json.get("toxicity").getAsString()));
-    }
-
+class ToxicityPredicate implements Predicate {
     private final Toxicity toxicity;
 
-    ToxicityPredicate(Toxicity toxicity) {
-        this.toxicity = toxicity;
+    ToxicityPredicate(String name) {
+        this.toxicity = Utils.require(Toxicity.byName(name), "Unknown toxicity tag '" + name + "'");
     }
 
     @Override
@@ -47,12 +33,36 @@ class ToxicityPredicate implements Ingredient.Predicate {
     }
 
     @Override
-    public void write(PacketByteBuf buf) {
-        buf.writeInt(toxicity.ordinal() + 1);
-    }
-
-    @Override
     public Stream<ItemStack> getMatchingStacks() {
         return Stream.empty();
     }
+
+    @Override
+    public PredicateSerializer<?> getSerializer() {
+        return PredicateSerializer.TOXICITY;
+    }
+
+    public static final class Serializer implements PredicateSerializer<ToxicityPredicate>, PredicateSerializer.JsonReader {
+
+        @Override
+        public Predicate read(PacketByteBuf buf) {
+            return new ToxicityPredicate(Toxicity.values()[buf.readInt()].name());
+        }
+
+        @Override
+        public void write(PacketByteBuf buf, ToxicityPredicate predicate) {
+            buf.writeInt(predicate.toxicity.ordinal());
+        }
+
+        @Override
+        public Predicate read(JsonObject json) {
+            if (!json.has("toxicity")) {
+                return Predicate.EMPTY;
+            }
+
+            return new ToxicityPredicate(JsonHelper.getString(json, "toxicity"));
+        }
+
+    }
+
 }

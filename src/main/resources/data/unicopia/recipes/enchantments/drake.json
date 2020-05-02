@@ -4,8 +4,8 @@
 	"ingredients": [
         { "item": "unicopia:gem", "spell": "charge" },
         { "item": "unicopia:corrupted_gem" },
-        { "tag": "unicopia:life" },
-        { "item": "minecraft:red_flower", "data": 0 }
+        { "tag": "unicopia:life_elementals" },
+        { "item": "minecraft:poppy" }
     ],
 	"result": { "item": "unicopia:gem", "spell": "drake" }
 }

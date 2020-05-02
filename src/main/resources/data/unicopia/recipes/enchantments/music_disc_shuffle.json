@@ -1,12 +1,12 @@
 {
 	"type": "unicopia:enchanting_spell",
-	"input": { "tag": "unicopia:sound"},
+	"input": { "tag": "unicopia:sound_elementals"},
 	"ingredients": [
         { "item": "unicopia:gem", "spell": "awkward" },
 		{ "item": "unicopia:gem", "spell": "awkward" },
 		{ "item": "unicopia:gem", "spell": "awkward" }
     ],
-	"output": {
-		"tag": "unicopia:sound"
+	"result": {
+		"tag": "unicopia:sound_elementals"
 	}
 }

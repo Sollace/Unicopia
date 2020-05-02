@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "unicopia:crafting_shaped",
   "pattern": [
 	" B ",
 	"FFF",
@@ -10,15 +10,8 @@
       { "item": "minecraft:bread" }
     ],
     "F": [
-      { "item": "minecraft:red_flower", "data": 1 },
-      { "item": "minecraft:red_flower", "data": 2 },
-      { "item": "minecraft:red_flower", "data": 3 },
-      { "item": "minecraft:red_flower", "data": 4 },
-      { "item": "minecraft:red_flower", "data": 5 },
-      { "item": "minecraft:red_flower", "data": 6 },
-      { "item": "minecraft:red_flower", "data": 7 },
-      { "item": "minecraft:yellow_flower", "data": 0 }
+      { "tag": "unicopia:non_toxic" }
     ]
   },
-  "result": { "item": "unicopia:daffodil_daisy_sandwich", "data": 0, "count": 2 }
+  "result": { "item": "unicopia:daffodil_daisy_sandwich", "tocicity": "safe", "count": 2 }
 }

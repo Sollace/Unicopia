@@ -2,9 +2,9 @@
 	"type": "unicopia:enchanting_spell",
 	"input": { "item": "unicopia:gem" },
 	"ingredients": [
-        { "id": "unicopia:shell" },
-        { "id": "unicopia:shell" },
-        { "id": "unicopia:shard" }
+        { "tag": "unicopia:shells" },
+        { "tag": "unicopia:shells" },
+        { "tag": "unicopia:shards" }
     ],
 	"result": { "item": "unicopia:gem", "spell": "shield" }
 }

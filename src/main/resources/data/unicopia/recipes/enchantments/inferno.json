@@ -3,8 +3,8 @@
 	"input": { "item": "unicopia:gem" },
 	"ingredients": [
         { "item": "unicopia:gem", "spell": "fire" },
-        { "tag": "unicopia:fire" },
-        { "tag": "unicopia:fire" }
+        { "tag": "unicopia:fire_elementals" },
+        { "tag": "unicopia:fire_elementals" }
     ],
 	"result": { "item": "unicopia:corrupted_gem", "spell": "inferno" }
 }

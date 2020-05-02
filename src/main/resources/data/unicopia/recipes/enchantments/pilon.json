@@ -2,8 +2,8 @@
 	"type": "unicopia:enchanting_spell",
 	"input": { "item": "unicopia:gem" },
 	"ingredients": [
-        { "tag": "unicopia:energy" },
-        { "tag": "unicopia:life" },
+        { "tag": "unicopia:knowledge_elementals" },
+        { "tag": "unicopia:life_elementals" },
         { "item": "unicopia:gem", "spell": "charge" }
     ],
 	"result": { "item": "unicopia:gem", "spell": "siphon" }

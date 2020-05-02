@@ -5,7 +5,7 @@
   ],
   "key": {
     "#": [
-      { "item": "minecraft:slime" }
+      { "item": "minecraft:slime_block" }
     ]
   },
   "result": { "item": "unicopia:slime_layer", "count": 6 }

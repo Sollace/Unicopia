@@ -10,8 +10,8 @@
       { "item": "minecraft:bowl" }
     ],
     "F": [
-      { "tag": "#unicopia:non_toxic" },
-      { "tag": "#unicopia:fairly_toxic" },
+      { "tag": "unicopia:non_toxic" },
+      { "tag": "unicopia:fairly_toxic" },
       { "item": "unicopia:alfalfa_leaves" }
     ]
   },

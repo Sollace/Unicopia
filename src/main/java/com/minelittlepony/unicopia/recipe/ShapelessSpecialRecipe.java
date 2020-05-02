@@ -2,10 +2,11 @@ package com.minelittlepony.unicopia.recipe;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.minelittlepony.unicopia.recipe.ingredient.Ingredient;
+import com.minelittlepony.unicopia.recipe.ingredient.PredicatedIngredient;
 
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.util.DefaultedList;
@@ -17,11 +18,11 @@ import net.minecraft.world.World;
 public class ShapelessSpecialRecipe extends SpecialCraftingRecipe {
 
     private final String group;
-    private final Ingredient output;
+    private final PredicatedIngredient output;
 
-    private final DefaultedList<Ingredient> input;
+    private final DefaultedList<PredicatedIngredient> input;
 
-    public ShapelessSpecialRecipe(Identifier id, String group, Ingredient output, DefaultedList<Ingredient> input) {
+    public ShapelessSpecialRecipe(Identifier id, String group, PredicatedIngredient output, DefaultedList<PredicatedIngredient> input) {
         super(id);
         this.group = group;
         this.output = output;
@@ -66,8 +67,8 @@ public class ShapelessSpecialRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public DefaultedList<net.minecraft.recipe.Ingredient> getPreviewInputs() {
-        return Ingredient.preview(input);
+    public DefaultedList<Ingredient> getPreviewInputs() {
+        return PredicatedIngredient.preview(input);
     }
 
     @Override
@@ -77,11 +78,11 @@ public class ShapelessSpecialRecipe extends SpecialCraftingRecipe {
 
     public static class Serializer implements RecipeSerializer<ShapelessSpecialRecipe> {
         @Override
-        public ShapelessSpecialRecipe read(Identifier identifier, JsonObject jsonObject) {
+        public ShapelessSpecialRecipe read(Identifier identifier, JsonObject json) {
             return new ShapelessSpecialRecipe(identifier,
-                    JsonHelper.getString(jsonObject, "group", ""),
-                    Ingredient.one(jsonObject.get("output")),
-                    Ingredient.many(JsonHelper.getArray(jsonObject, "ingredients"))
+                    JsonHelper.getString(json, "group", ""),
+                    PredicatedIngredient.one(json.get("result")),
+                    PredicatedIngredient.many(JsonHelper.getArray(json, "ingredients"))
             );
         }
 
@@ -89,8 +90,8 @@ public class ShapelessSpecialRecipe extends SpecialCraftingRecipe {
         public ShapelessSpecialRecipe read(Identifier identifier, PacketByteBuf buf) {
             return new ShapelessSpecialRecipe(identifier,
                     buf.readString(32767),
-                    Ingredient.read(buf),
-                    Utils.read(buf, Ingredient.EMPTY, Ingredient::read));
+                    PredicatedIngredient.read(buf),
+                    Utils.read(buf, PredicatedIngredient.EMPTY, PredicatedIngredient::read));
         }
 
         @Override
@@ -98,7 +99,7 @@ public class ShapelessSpecialRecipe extends SpecialCraftingRecipe {
             buf.writeString(recipe.group);
             recipe.output.write(buf);
             buf.writeVarInt(recipe.input.size());
-            Utils.write(buf, recipe.input, Ingredient::write);
+            Utils.write(buf, recipe.input, PredicatedIngredient::write);
         }
     }
 }

@@ -7,7 +7,7 @@
   ],
   "key": {
     "#": [
-      { "item": "unicopia:chitin_block" }
+      { "item": "unicopia:chitin_shell_block" }
     ]
   },
   "result": { "item": "unicopia:chiseled_chitin_shell_block", "count": 4 }

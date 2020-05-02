@@ -2,9 +2,9 @@
 	"type": "unicopia:enchanting_spell",
 	"input": { "item": "unicopia:gem" },
 	"ingredients": [
-        { "tag": "unicopia:magic_energetic" },
+        { "tag": "unicopia:knowledge_elementals" },
         { "item": "unicopia:gem", "spell": "fire" },
-        { "tag": "unicopia:magic_firey" }
+        { "tag": "unicopia:fire_elementals" }
     ],
 	"result": { "item": "unicopia:gem", "spell": "charge" }
 }

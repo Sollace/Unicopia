@@ -2,12 +2,9 @@
 	"type": "unicopia:enchanting_spell",
 	"input": { "item": "unicopia:gem" },
 	"ingredients": [
-        { "tag": "unicopia:blood" },
-        { "tag": "unicopia:energy" },
-        { "tag": "unicopia:rot" }
+        { "tag": "unicopia:death_elementals" },
+        { "tag": "unicopia:knowledge_elementals" },
+        { "tag": "unicopia:rotting_elementals" }
     ],
-	"result": {
-		"item": "unicopia:corrupted_gem",
-		"spell": "necromancy"
-	}
+	"result": { "item": "unicopia:corrupted_gem", "spell": "necromancy" }
 }

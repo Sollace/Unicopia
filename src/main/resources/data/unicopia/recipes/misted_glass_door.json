@@ -7,8 +7,8 @@
   ],
   "key": {
     "#": [
-      { "item": "minecraft:stained_white_glass_block" }
+      { "item": "minecraft:white_stained_glass" }
     ]
   },
-  "result": { "item": "unicopia:misted_glass_door", "data": 0, "count": 1 }
+  "result": { "item": "unicopia:misted_glass_door", "count": 1 }
 }

@@ -10,7 +10,7 @@
       { "item": "unicopia:sugar_block" }
     ],
     "*": [
-      { "item": "unicopia:crereal" }
+      { "item": "unicopia:cereal" }
     ]
   },
   "result": { "item": "unicopia:boop_o_roops" }

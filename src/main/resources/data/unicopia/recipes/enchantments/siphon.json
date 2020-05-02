@@ -2,9 +2,9 @@
 	"type": "unicopia:enchanting_spell",
 	"input": { "item": "unicopia:gem" },
 	"ingredients": [
-        { "id": "unicopia:energy" },
-        { "id": "unicopia:life" },
-        { "id": "unicopia:dark" },
+        { "tag": "unicopia:knowledge_elementals" },
+        { "tag": "unicopia:life_elementals" },
+        { "tag": "unicopia:dark_elementals" },
         { "item": "unicopia:gem", "spell": "siphon" }
     ],
 	"result": { "item": "unicopia:corrupted_gem", "spell": "siphon" }

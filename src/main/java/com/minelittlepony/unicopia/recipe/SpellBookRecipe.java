@@ -3,10 +3,11 @@ package com.minelittlepony.unicopia.recipe;
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.container.SpellBookInventory;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.recipe.ingredient.Ingredient;
+import com.minelittlepony.unicopia.recipe.ingredient.PredicatedIngredient;
 
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
@@ -21,19 +22,17 @@ import net.minecraft.world.World;
  */
 public class SpellBookRecipe implements Recipe<CraftingInventory> {
 
-    private final Ingredient input;
-
-    private final Ingredient output;
-
-    private final DefaultedList<Ingredient> ingredients;
-
     private final Identifier id;
+    private final PredicatedIngredient input;
+    private final PredicatedIngredient output;
+    private final DefaultedList<PredicatedIngredient> ingredients;
 
-    public SpellBookRecipe(Identifier id, Ingredient input, Ingredient output, DefaultedList<Ingredient> ingredients) {
+
+    public SpellBookRecipe(Identifier id, String group, PredicatedIngredient input, PredicatedIngredient output, DefaultedList<PredicatedIngredient> ingredients) {
         this.id = id;
+        this.input = input;
         this.output = output;
         this.ingredients = ingredients;
-        this.input = input;
     }
 
     @Override
@@ -68,8 +67,8 @@ public class SpellBookRecipe implements Recipe<CraftingInventory> {
     }
 
     @Override
-    public DefaultedList<net.minecraft.recipe.Ingredient> getPreviewInputs() {
-        return Ingredient.preview(ingredients, DefaultedList.copyOf(null, input.getPreview()));
+    public DefaultedList<Ingredient> getPreviewInputs() {
+        return PredicatedIngredient.preview(ingredients, DefaultedList.copyOf(null, input.getPreview()));
     }
 
     @Override
@@ -96,18 +95,20 @@ public class SpellBookRecipe implements Recipe<CraftingInventory> {
         @Override
         public SpellBookRecipe read(Identifier id, JsonObject json) {
             return new SpellBookRecipe(id,
-                    Ingredient.one(json.get("input")),
-                    Ingredient.one(json.get("result")),
-                    Ingredient.many(JsonHelper.getArray(json, "ingredients"))
+                    JsonHelper.getString(json, "group", ""),
+                    PredicatedIngredient.one(JsonHelper.getObject(json, "input")),
+                    PredicatedIngredient.one(JsonHelper.getObject(json, "result")),
+                    PredicatedIngredient.many(JsonHelper.getArray(json, "ingredients"))
             );
         }
 
         @Override
         public SpellBookRecipe read(Identifier id, PacketByteBuf buf) {
             return new SpellBookRecipe(id,
-                    Ingredient.read(buf),
-                    Ingredient.read(buf),
-                    Utils.read(buf, Ingredient.EMPTY, Ingredient::read)
+                    buf.readString(32767),
+                    PredicatedIngredient.read(buf),
+                    PredicatedIngredient.read(buf),
+                    Utils.read(buf, PredicatedIngredient.EMPTY, PredicatedIngredient::read)
             );
         }
 
@@ -115,7 +116,7 @@ public class SpellBookRecipe implements Recipe<CraftingInventory> {
         public void write(PacketByteBuf buf, SpellBookRecipe recipe) {
             recipe.input.write(buf);
             recipe.output.write(buf);
-            Utils.write(buf, recipe.ingredients, Ingredient::write);
+            Utils.write(buf, recipe.ingredients, PredicatedIngredient::write);
         }
     }
 }

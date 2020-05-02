@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "unicopia:crafting_shaped",
   "pattern": [
     "AAA",
     "FTF",
@@ -10,23 +10,15 @@
       { "item": "unicopia:alfalfa_leaves" }
     ],
     "T": [
-      { "item": "unicopia:tomato", "data": 0 },
-	  { "item": "unicopia:tomato", "data": 1 },
-	  { "item": "unicopia:cloudsdale_tomato", "data": 0 },
-	  { "item": "unicopia:cloudsdale_tomato", "data": 1 }
+      { "item": "unicopia:tomato" },
+	  { "item": "unicopia:rotten_tomato" },
+	  { "item": "unicopia:cloudsdale_tomato" },
+	  { "item": "unicopia:rotten_cloudsdale_tomato" }
     ],
     "F": [
-      { "item": "minecraft:red_flower", "data": 0 },
-      { "item": "minecraft:red_flower", "data": 1 },
-      { "item": "minecraft:red_flower", "data": 2 },
-      { "item": "minecraft:red_flower", "data": 3 },
-      { "item": "minecraft:red_flower", "data": 4 },
-      { "item": "minecraft:red_flower", "data": 5 },
-      { "item": "minecraft:red_flower", "data": 6 },
-      { "item": "minecraft:red_flower", "data": 7 },
-      { "item": "minecraft:red_flower", "data": 8 },
-      { "item": "minecraft:yellow_flower", "data": 0 }
+      { "tag": "unicopia:non_toxic" },
+      { "tag": "unicopia:fairly_toxic" }
     ]
   },
-  "result": { "item": "unicopia:hay_burger", "data": 2, "count": 1 }
+  "result": { "item": "unicopia:hay_burger", "toxicity": "fair", "count": 1 }
 }

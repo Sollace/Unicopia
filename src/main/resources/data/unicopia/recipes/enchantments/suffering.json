@@ -3,7 +3,7 @@
 	"input": { "item": "unicopia:gem" },
 	"ingredients": [
         { "item": "minecraft:fire_charge" },
-        { "tag": "unicopia:blood" },
+        { "tag": "unicopia:death_elementals" },
         { "item": "unicopia:gem", "spell": "fire" }
     ],
 	"result": { "item": "unicopia:corrupted_gem", "spell": "vortex" }

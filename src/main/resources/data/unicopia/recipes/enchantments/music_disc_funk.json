@@ -1,12 +1,12 @@
 {
 	"type": "unicopia:enchanting_spell",
-	"input": { "tag": "unicopia:sound"},
+	"input": { "tag": "unicopia:sound_elementals"},
 	"ingredients": [
         { "item": "minecraft:diamond" },
 		{ "item": "minecraft:diamond" },
 		{ "item": "unicopia:boop_o_roops" }
     ],
-	"output": {
+	"result": {
 		"item": "unicopia:music_disc_funk"
 	}
 }
