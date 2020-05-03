@@ -7,7 +7,9 @@ import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.magic.TossedMagicEffect;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.EffectSync;
+import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
 import com.minelittlepony.unicopia.util.projectile.AdvancedProjectile;
 import com.minelittlepony.unicopia.util.projectile.Tossable;
 import com.minelittlepony.unicopia.util.projectile.TossableItem;
@@ -24,6 +26,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Packet;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -205,7 +208,7 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
 
     @Override
     public void launch(Entity entityThrower, float pitch, float yaw, float wobble, float velocity, float inaccuracy) {
-        setVelocity(pitch, yaw, wobble, velocity, inaccuracy);
+        setProperties(entityThrower, pitch, yaw, wobble, velocity, inaccuracy);
     }
 
     private ParticleEffect getParticleParameters() {
@@ -288,5 +291,10 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
             world.sendEntityStatus(this, (byte)3);
             remove();
         }
+    }
+
+    @Override
+    public Packet<?> createSpawnPacket() {
+        return Channel.SPAWN_PROJECTILE.toPacket(new MsgSpawnProjectile(this));
     }
 }

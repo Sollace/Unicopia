@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.magic;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.entity.ProjectileEntity;
+import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.util.projectile.AdvancedProjectile;
@@ -49,7 +50,7 @@ public interface TossedMagicEffect extends MagicEffect, Tossable<Caster<?>> {
         world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), getThrowSound(caster), SoundCategory.NEUTRAL, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
         if (caster.isLocal()) {
-            AdvancedProjectile projectile = new ProjectileEntity(null, world, caster.getOwner());
+            AdvancedProjectile projectile = new ProjectileEntity(UEntities.THROWN_ITEM, world, caster.getOwner());
 
             projectile.setItem(getCastAppearance(caster));
             projectile.setThrowDamage(getThrowDamage(caster));

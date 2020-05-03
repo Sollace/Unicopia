@@ -16,7 +16,6 @@ import com.minelittlepony.unicopia.util.projectile.TossableItem;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -26,7 +25,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -54,9 +52,8 @@ public class EnchantedStaffItem extends StaffItem implements Affine, TossableIte
         if (EquinePredicates.PLAYER_UNICORN.test(player) && hand == Hand.MAIN_HAND) {
             ItemStack itemstack =  player.getStackInHand(hand);
 
-            player.swingHand(hand);
-
-            return new TypedActionResult<>(ActionResult.SUCCESS, itemstack);
+            player.setCurrentHand(hand);
+            return TypedActionResult.consume(itemstack);
         }
 
         return super.use(world, player, hand);
@@ -91,15 +88,15 @@ public class EnchantedStaffItem extends StaffItem implements Affine, TossableIte
         return false;
     }
 
-    public void onUpdate(ItemStack stack, World world, Entity entity, int itemSlot, boolean isSelected) {
-
+    @Override
+    public void usageTick(World world, LivingEntity entity, ItemStack stack, int ticksRemaining) {
         if (entity instanceof LivingEntity) {
-            LivingEntity living = (LivingEntity)entity;
+            LivingEntity living = entity;
 
             if (living.getActiveItem().getItem() == this) {
                 Vec3d eyes = entity.getCameraPosVec(1);
 
-                float i = getMaxUseTime(stack) - living.getItemUseTimeLeft();
+                float i = getMaxUseTime(stack) - ticksRemaining;
 
                 world.addParticle(i > 150 ? ParticleTypes.LARGE_SMOKE : ParticleTypes.CLOUD, eyes.x, eyes.y, eyes.z,
                         (world.random.nextGaussian() - 0.5) / 10,

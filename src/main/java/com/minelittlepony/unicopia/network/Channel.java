@@ -20,6 +20,7 @@ public interface Channel {
     SPacketType<MsgPlayerCapabilities> BROADCAST_CAPABILITIES = broadcast(PLAYER_CAPABILITIES, MsgPlayerCapabilities::new);
 
     CPacketType<MsgSpawnRainbow> SPAWN_RAINBOW = serverToClient(new Identifier("unicopia", "rainbow_entity"), MsgSpawnRainbow::new);
+    CPacketType<MsgSpawnProjectile> SPAWN_PROJECTILE = serverToClient(new Identifier("unicopia", "projectile_entity"), MsgSpawnProjectile::new);
 
     static void bootstrap() { }
 

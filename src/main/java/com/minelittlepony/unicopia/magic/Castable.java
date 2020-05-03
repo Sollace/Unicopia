@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.magic;
 
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
+import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 
 import net.minecraft.item.ItemStack;
@@ -46,7 +47,7 @@ public interface Castable extends MagicalItem, Dispensable {
      * Called to cast a spell. The result is an entity spawned with the spell attached.
      */
     default SpellcastEntity castContainedSpell(World world, BlockPos pos, ItemStack stack, MagicEffect effect) {
-        SpellcastEntity spell = new SpellcastEntity(null, world);
+        SpellcastEntity spell = new SpellcastEntity(UEntities.MAGIC_SPELL, world);
 
         spell.setAffinity(getAffinity(stack));
         spell.updatePositionAndAngles(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0);
