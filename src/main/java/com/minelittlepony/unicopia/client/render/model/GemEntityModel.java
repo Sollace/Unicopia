@@ -1,13 +1,18 @@
 package com.minelittlepony.unicopia.client.render.model;
 
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.util.Color;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 
 public class GemEntityModel extends EntityModel<SpellcastEntity> {
@@ -56,8 +61,21 @@ public class GemEntityModel extends EntityModel<SpellcastEntity> {
             green = Color.g(tint);
             blue = Color.b(tint);
         }
+        matrices.push();
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(body.yaw));
+        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(body.pitch));
+        matrices.translate(body.pivotX, body.pivotY, body.pivotZ);
 
-        body.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        MinecraftClient.getInstance().getItemRenderer().renderItem(
+                new ItemStack(UItems.GEM),
+                ModelTransformation.Mode.GROUND, light,
+                overlay,
+                matrices,
+                MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers()
+        );
+
+        matrices.pop();
+        //body.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 
 }

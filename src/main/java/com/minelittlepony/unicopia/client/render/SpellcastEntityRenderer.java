@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.client.render.model.GemEntityModel;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
-import com.mojang.blaze3d.platform.GlStateManager;
-
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -58,7 +56,7 @@ public class SpellcastEntityRenderer extends LivingEntityRenderer<SpellcastEntit
 
         @Override
         public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, SpellcastEntity entity, float limbAngle, float limbDistance, float tickDelta, float customAngle, float headYaw, float headPitch) {
-
+            matrices.push();
             int tiers = Math.min(entity.getCurrentLevel(), 5);
 
             for (int i = 0; i <= tiers; i++) {
@@ -78,10 +76,11 @@ public class SpellcastEntityRenderer extends LivingEntityRenderer<SpellcastEntit
 
             for (int i = entity.getCurrentLevel(); i > 0; i--) {
                 matrices.push();
-                GlStateManager.translatef(0.6F, 0, 0);
+                matrices.translate(0.6F, 0, 0);
                 FeatureRenderer.render(model, model, TEXTURE, matrices, vertexConsumers, light, entity, limbAngle, limbDistance, entity.age, headYaw, headPitch, 1, 1, 1, 1);
                 matrices.pop();
             }
+            matrices.pop();
         }
     }
 }
