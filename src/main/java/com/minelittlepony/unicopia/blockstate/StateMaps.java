@@ -22,7 +22,7 @@ public class StateMaps {
                 s -> {
                     s = s.cycle(SnowBlock.LAYERS);
                     if (s.get(SnowBlock.LAYERS) >= 7) {
-                        return Blocks.SNOW.getDefaultState();
+                        return Blocks.SNOW_BLOCK.getDefaultState();
                     }
 
                     return s;
