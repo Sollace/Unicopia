@@ -35,7 +35,7 @@ public class CuccoonEntityRenderer extends LivingEntityRenderer<CuccoonEntity, C
     @Override
     public void render(CuccoonEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
         if (entity.hasPassengers()) {
-            Entity rider = entity.getPrimaryPassenger();
+            Entity rider = entity.getPassengerList().get(0);
 
             if (!(rider == MinecraftClient.getInstance().player) || InteractionManager.instance().getViewMode() != 0) {
                 RenderSystem.enableAlphaTest();
