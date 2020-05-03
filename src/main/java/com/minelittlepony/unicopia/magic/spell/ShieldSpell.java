@@ -10,7 +10,7 @@ import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.particles.ParticleHandle;
-import com.minelittlepony.unicopia.particles.UParticles;
+import com.minelittlepony.unicopia.particles.SphereParticleEffect;
 import com.minelittlepony.unicopia.util.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -53,7 +53,7 @@ public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements Attach
         });
 
         particlEffect.ifAbsent(source, spawner -> {
-            spawner.addParticle(UParticles.SPHERE, source.getOriginVector(), Vec3d.ZERO);
+            spawner.addParticle(new SphereParticleEffect(getTint(), 0.3F, radius), source.getOriginVector(), Vec3d.ZERO);
         }).ifPresent(p -> {
             p.attach(source);
             p.setAttribute(0, radius);
@@ -69,7 +69,6 @@ public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements Attach
                 double cost = 4 + (source.getCurrentLevel() * 2);
 
                 cost *= costMultiplier / 5F;
-                System.out.println("Taking " + cost);
 
                 if (!source.subtractEnergyCost(cost)) {
                     setDead();

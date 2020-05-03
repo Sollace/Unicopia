@@ -2,21 +2,19 @@ package com.minelittlepony.unicopia.client.particle;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
-import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.particles.ParticleHandle.Attachment;
+import com.minelittlepony.unicopia.particles.SphereParticleEffect;
 import com.minelittlepony.util.Color;
 
 public class SphereParticle extends Particle implements Attachment {
@@ -32,22 +30,22 @@ public class SphereParticle extends Particle implements Attachment {
 
     private static final SphereModel model = new SphereModel();
 
-    public SphereParticle(World w, double x, double y, double z, float radius, int red, int green, int blue, float alpha, double vX, double vY, double vZ) {
-        this(w, x, y, z, radius, red, green, blue, alpha);
+    public SphereParticle(SphereParticleEffect effect, World w, double x, double y, double z, double vX, double vY, double vZ) {
+        this(effect, w, x, y, z);
 
         this.velocityX = vX;
         this.velocityY = vY;
         this.velocityZ = vZ;
     }
 
-    public SphereParticle(World w, double x, double y, double z, float radius, int red, int green, int blue, float alpha) {
+    public SphereParticle(SphereParticleEffect effect, World w, double x, double y, double z) {
         super(w, x, y, z);
 
-        this.radius = radius;
-        this.red = red/255F;
-        this.green = green/255F;
-        this.blue = blue/255F;
-        this.alpha = alpha;
+        this.radius = effect.getRadius();
+        this.red = effect.getRed()/255F;
+        this.green = effect.getGreen()/255F;
+        this.blue = effect.getBlue()/255F;
+        this.alpha = effect.getAlpha();
 
         setMaxAge(10);
     }
@@ -73,7 +71,6 @@ public class SphereParticle extends Particle implements Attachment {
             red = Color.r(tint);
             green = Color.g(tint);
             blue = Color.b(tint);
-            alpha = Color.a(tint);
         }
     }
 
@@ -112,18 +109,9 @@ public class SphereParticle extends Particle implements Attachment {
         MatrixStack matrices = new MatrixStack();
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         model.setPosition(x, y, z);
+        model.setRotation(0, 0, 0);
         model.render(matrices, radius, immediate.getBuffer(RenderLayer.getTranslucent()), 1, 1, red, green, blue, alpha);
         immediate.draw();
-    }
-
-    public static class Factory implements ParticleFactory<DefaultParticleType> {
-        public Factory(SpriteProvider provider) {
-        }
-
-        @Override
-        public Particle createParticle(DefaultParticleType type, World world, double x, double y, double z, double dx, double dy, double dz) {
-            return new RaindropsParticle(world, x, y, z, dx, dy, dz);
-        }
     }
 }
 

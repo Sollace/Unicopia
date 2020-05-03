@@ -39,8 +39,8 @@ public interface URenderers {
         ParticleFactoryRegistry.getInstance().register(UParticles.UNICORN_MAGIC, MagicParticle.Factory::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.CHANGELING_MAGIC, ChangelingMagicParticle.Factory::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.RAIN_DROPS, RaindropsParticle.Factory::new);
-        ParticleFactoryRegistry.getInstance().register(UParticles.SPHERE, SphereParticle.Factory::new);
-        ParticleFactoryRegistry.getInstance().register(UParticles.DISK, DiskParticle.Factory::new);
+        ParticleFactoryRegistry.getInstance().register(UParticles.SPHERE, SphereParticle::new);
+        ParticleFactoryRegistry.getInstance().register(UParticles.DISK, DiskParticle::new);
 
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), UBlocks.ENCHANTED_TORCH, UBlocks.ENCHANTED_WALL_TORCH,
                 UBlocks.BAKERY_DOOR, UBlocks.LIBRARY_DOOR, UBlocks.MISTED_GLASS_DOOR, UBlocks.DIAMOND_DOOR);

@@ -41,6 +41,7 @@ class KeyBindingsHandler {
         int code = Abilities.KEYS_CODES.get(id);
 
         FabricKeyBinding b = FabricKeyBinding.Builder.create(id, InputUtil.Type.KEYSYM, code, KEY_CATEGORY).build();
+        KeyBindingRegistry.INSTANCE.register(b);
 
         getKeyCodePool(b).add(p);
         bindings.add(b);

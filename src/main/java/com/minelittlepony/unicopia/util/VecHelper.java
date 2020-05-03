@@ -59,18 +59,12 @@ public interface VecHelper {
     }
 
     static Stream<Entity> findAllEntitiesInRange(@Nullable Entity origin, World w, BlockPos pos, double radius) {
-
-        BlockPos begin = pos.add(-radius, -radius, -radius);
-        BlockPos end = pos.add(radius, radius, radius);
-
-        Box bb = new Box(begin, end);
-
-        return w.getEntities(origin, bb, null).stream().filter(e -> {
+        return w.getEntities(origin, new Box(pos).expand(radius), e -> {
             double dist = e.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ());
             double dist2 = e.squaredDistanceTo(pos.getX(), pos.getY() - e.getStandingEyeHeight(), pos.getZ());
 
             return dist <= radius || dist2 <= radius;
-        });
+        }).stream();
     }
 
     /**

@@ -15,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FallingBlock;
+import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -126,7 +127,7 @@ public class HiveWallBlock extends FallingBlock {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean uuuuh) {
-        if (state.get(STATE) != State.STABLE) {
+        if (getState(state) != State.STABLE) {
             super.onBlockAdded(state, world, pos, oldState, uuuuh);
         }
     }
@@ -218,7 +219,7 @@ public class HiveWallBlock extends FallingBlock {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext context) {
-        return getDefaultState().with(AXIS, Axis.fromVanilla(context.getPlayerFacing().getAxis()));
+        return getDefaultState().with(AXIS, Axis.fromVanilla(context.getSide().getAxis()));
     }
 
     @Override
@@ -257,8 +258,9 @@ public class HiveWallBlock extends FallingBlock {
 
             for (Direction facing : axis.getFacings()) {
                 BlockPos op = pos.offset(facing);
+                Material m = world.getBlockState(op).getMaterial();
 
-                if (world.getBlockState(op).getMaterial() == UMaterials.HIVE) {
+                if (m == UMaterials.HIVE || m == UMaterials.CHITIN) {
                     if (one) {
                         return true;
                     }
@@ -266,7 +268,6 @@ public class HiveWallBlock extends FallingBlock {
                     one = true;
                 }
             }
-
         }
 
         return false;

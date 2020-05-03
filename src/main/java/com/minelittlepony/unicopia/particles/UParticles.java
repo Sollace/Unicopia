@@ -13,8 +13,8 @@ public interface UParticles {
 
     DefaultParticleType RAIN_DROPS = register("rain_drops", FabricParticleTypes.simple());
 
-    DefaultParticleType SPHERE = register("sphere", FabricParticleTypes.simple(true));
-    DefaultParticleType DISK = register("disk", FabricParticleTypes.simple());
+    ParticleType<SphereParticleEffect> SPHERE = register("sphere", FabricParticleTypes.complex(true, SphereParticleEffect.FACTORY));
+    ParticleType<DiskParticleEffect> DISK = register("disk", FabricParticleTypes.complex(true, DiskParticleEffect.FACTORY));
 
     static <T extends ParticleType<?>> T register(String name, T type) {
         return Registry.register(Registry.PARTICLE_TYPE, new Identifier("unicopia", name), type);

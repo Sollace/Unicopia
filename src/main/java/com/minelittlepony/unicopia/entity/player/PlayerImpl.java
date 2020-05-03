@@ -414,7 +414,7 @@ public class PlayerImpl implements Pony, MagicReserves {
         gravity.fromNBT(compound.getCompound("gravity"));
 
         if (compound.contains("effect")) {
-            setEffect(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
+            effectDelegate.set(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
         }
 
         pageStates.fromNBT(compound);

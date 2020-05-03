@@ -102,11 +102,10 @@ public interface UBlocks {
                     .build()));
 
     HiveWallBlock HIVE_WALL_BLOCK = register("hive_wall_block", new HiveWallBlock(FabricBlockSettings.of(UMaterials.HIVE)
-                    .noCollision()
                     .strength(10, 10)
                     .hardness(2)
                     .ticksRandomly()
-                    .lightLevel(1)
+                    .lightLevel(3)
                     .sounds(BlockSoundGroup.SAND)
                     .breakByTool(FabricToolTags.SHOVELS, 1)
                     .build()));

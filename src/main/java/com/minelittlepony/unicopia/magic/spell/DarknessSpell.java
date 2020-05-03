@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
-import com.minelittlepony.unicopia.particles.UParticles;
+import com.minelittlepony.unicopia.particles.SphereParticleEffect;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
@@ -236,9 +236,9 @@ public class DarknessSpell extends AbstractAttachableSpell {
             double vX = (source.getWorld().random.nextFloat() - 0.5) * particleSpeed;
             double vZ = (source.getWorld().random.nextFloat() - 0.5) * particleSpeed;
 
-            source.getWorld().addParticle(UParticles.SPHERE,
+            source.getWorld().addParticle(new SphereParticleEffect(tint, 0.3F, (int)(size * 1000)),
                     pos.x, pos.y, pos.z,
-                    vX, 0, vZ);//(int)(size * 1000), tint, 30
+                    vX, 0, vZ);
         }
     }
 

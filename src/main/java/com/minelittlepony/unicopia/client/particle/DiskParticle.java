@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.client.particle;
 
 import com.minelittlepony.unicopia.client.render.model.DiskModel;
+import com.minelittlepony.unicopia.particles.SphereParticleEffect;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
@@ -18,16 +19,12 @@ public class DiskParticle extends SphereParticle {
     protected float rotY;
     protected float rotZ;
 
-    public DiskParticle(World w,
-            double x, double y, double z,
-            float radius,
-            int red, int green, int blue, float alpha,
-            float rX, float rY, float rZ) {
-        super(w, x, y, z, radius, red, green, blue, alpha);
+    public DiskParticle(SphereParticleEffect effect, World w, double x, double y, double z, double rX, double rY, double rZ) {
+        super(effect, w, x, y, z, 0, 0, 0);
 
-        rotX = rX;
-        rotY = rY;
-        rotZ = rZ;
+        rotX = (float)rX;
+        rotY = (float)rY;
+        rotZ = (float)rZ;
     }
 
     @Override

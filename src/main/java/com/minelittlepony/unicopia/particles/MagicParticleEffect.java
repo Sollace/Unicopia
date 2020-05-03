@@ -56,7 +56,7 @@ public class MagicParticleEffect implements ParticleEffect {
 
 
     public boolean hasTint() {
-        return false;
+        return tinted;
     }
 
     public float getRed() {

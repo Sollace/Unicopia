@@ -22,9 +22,7 @@ public class CoverableCloudBlock extends CloudBlock {
     @Override
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext context) {
-        Direction side = context.getSide();
-
-        return getDefaultState().with(Covering.PROPERTY, Covering.getCovering(context.getWorld(), context.getBlockPos().offset(side)));
+        return getDefaultState().with(Covering.PROPERTY, Covering.getCovering(context.getWorld(), context.getBlockPos().up()));
     }
 
     @Override

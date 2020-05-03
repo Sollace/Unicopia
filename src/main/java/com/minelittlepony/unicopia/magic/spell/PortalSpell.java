@@ -116,11 +116,11 @@ public class PortalSpell extends AbstractSpell.RangedAreaSpell implements Useabl
         if (other != null) {
             other.getActualInstance().setDestinationPortal(this);
 
-            if (!world.isClient) {
+            if (!context.getWorld().isClient) {
                 prop.setEffect(null);
             }
         } else {
-            if (!world.isClient) {
+            if (!context.getWorld().isClient) {
                 bridge = (PortalSpell)copy();
 
                 prop.setEffect(bridge);

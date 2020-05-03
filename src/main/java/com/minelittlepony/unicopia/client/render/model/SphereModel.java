@@ -13,9 +13,9 @@ public class SphereModel {
 
     protected Vec3d pos;
 
-    protected Quaternion rotX;
-    protected Quaternion rotY;
-    protected Quaternion rotZ;
+    protected Quaternion rotX = Quaternion.IDENTITY;
+    protected Quaternion rotY = Quaternion.IDENTITY;
+    protected Quaternion rotZ = Quaternion.IDENTITY;
 
     public void setPosition(double x, double y, double z) {
         pos = new Vec3d(x, y, z).subtract(BlockEntityRenderDispatcher.INSTANCE.camera.getPos());

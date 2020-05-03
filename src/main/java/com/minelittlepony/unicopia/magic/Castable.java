@@ -50,9 +50,8 @@ public interface Castable extends MagicalItem, Dispensable {
 
         spell.setAffinity(getAffinity(stack));
         spell.updatePositionAndAngles(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0);
-        spell.setEffect(effect);
-
         world.spawnEntity(spell);
+        spell.setEffect(effect);
 
         return spell;
     }
