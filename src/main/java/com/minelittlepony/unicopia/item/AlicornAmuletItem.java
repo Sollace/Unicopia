@@ -17,6 +17,8 @@ import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.util.ChatUtil;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -41,8 +43,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -75,8 +75,8 @@ public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem
         World world = entity.world;
 
         double x = entity.getX() + world.random.nextFloat() - 0.5;
-        double z = entity.getY() + world.random.nextFloat() - 0.5;
-        double y = entity.getZ() + world.random.nextFloat();
+        double y = entity.getY() + world.random.nextFloat() - 0.5;
+        double z = entity.getZ() + world.random.nextFloat() - 0.5;
 
         ParticleEffect particle = world.random.nextBoolean() ? ParticleTypes.LARGE_SMOKE : ParticleTypes.FLAME;
 
@@ -87,7 +87,7 @@ public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem
         }
 
         Vec3d position = entity.getPos();
-        VecHelper.findAllEntitiesInRange(entity, world, entity.getBlockPos(), 10)
+        VecHelper.findAllEntitiesInRange(entity, world, entity.getBlockPos(), 20)
             .filter(e -> e instanceof PlayerEntity)
             .sorted((a, b) -> (int)(a.getPos().distanceTo(position) - b.getPos().distanceTo(position)))
             .findFirst()
@@ -103,12 +103,16 @@ public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem
         if (!player.world.isClient && !entity.removed) {
             if (player.getPos().distanceTo(entity.getPos()) < 3) {
                if (entity.world.random.nextInt(150) == 0) {
+                   entity.setPickupDelay(0);
+                   entity.onPlayerCollision(player);
 
-                   TypedActionResult<ItemStack> result = use(player.world, player, Hand.MAIN_HAND);
+                   if (player.getMainHandStack().getItem() == this) {
+                       TypedActionResult<ItemStack> result = use(player.world, player, Hand.MAIN_HAND);
 
-                   if (result.getResult() == ActionResult.SUCCESS) {
-                       entity.setPickupDelay(1000);
-                       entity.remove();
+                       if (result.getResult() == ActionResult.SUCCESS) {
+                           entity.setPickupDelay(1000);
+                           entity.remove();
+                       }
                    }
                }
             }
@@ -148,6 +152,7 @@ public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+
         if (!(entity instanceof PlayerEntity)) {
             return;
         }
@@ -161,6 +166,15 @@ public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem
         }
 
         Pony iplayer = Pony.of(player);
+
+        if (!iplayer.getInventory().isWearing(this)) {
+
+            if (world.random.nextInt(12200) == 0 && player.getMainHandStack().getItem() == this) {
+                use(world, player, Hand.MAIN_HAND);
+            }
+
+            return;
+        }
 
         float attachedTime = iplayer.getInventory().getTicksAttached(this);
 

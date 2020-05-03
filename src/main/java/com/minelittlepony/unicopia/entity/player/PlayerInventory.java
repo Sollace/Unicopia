@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.google.common.collect.Maps;
 import com.minelittlepony.unicopia.entity.Updatable;
+import com.minelittlepony.unicopia.item.MagicGemItem;
 import com.minelittlepony.unicopia.magic.AddictiveMagicalItem;
 import com.minelittlepony.unicopia.magic.MagicalItem;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
@@ -92,7 +93,7 @@ public class PlayerInventory implements Updatable, NbtSerialisable {
             }
         }
 
-        return item instanceof Item;
+        return item instanceof MagicGemItem;
     }
 
     public boolean matches(Tag<Item> tag) {
@@ -155,7 +156,7 @@ public class PlayerInventory implements Updatable, NbtSerialisable {
             if (isWearing(item)) {
                 ticksAttached ++;
                 needfulness *= 0.9F;
-            } else {
+            } else if (ticksAttached > 0) {
                 item.onRemoved(player, needfulness);
                 needfulness = 0;
             }
