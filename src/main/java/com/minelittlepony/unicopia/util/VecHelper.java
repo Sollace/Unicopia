@@ -60,8 +60,8 @@ public interface VecHelper {
 
     static Stream<Entity> findAllEntitiesInRange(@Nullable Entity origin, World w, BlockPos pos, double radius) {
         return w.getEntities(origin, new Box(pos).expand(radius), e -> {
-            double dist = e.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ());
-            double dist2 = e.squaredDistanceTo(pos.getX(), pos.getY() - e.getStandingEyeHeight(), pos.getZ());
+            double dist = Math.sqrt(e.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()));
+            double dist2 = Math.sqrt(e.squaredDistanceTo(pos.getX(), pos.getY() - e.getStandingEyeHeight(), pos.getZ()));
 
             return dist <= radius || dist2 <= radius;
         }).stream();
