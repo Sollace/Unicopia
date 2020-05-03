@@ -1,7 +1,7 @@
 {
     "parent": "block/cube_column",
     "textures": {
-        "end": "unicopia:blocks/cloud_packed_top",
-        "side": "unicopia:blocks/cloud_packed"
+        "end": "unicopia:blocks/dense_cloud_block_top",
+        "side": "unicopia:blocks/dense_cloud_block"
     }
 }

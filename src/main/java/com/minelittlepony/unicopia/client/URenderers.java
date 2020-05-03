@@ -42,7 +42,8 @@ public interface URenderers {
         ParticleFactoryRegistry.getInstance().register(UParticles.SPHERE, SphereParticle.Factory::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.DISK, DiskParticle.Factory::new);
 
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), UBlocks.ENCHANTED_TORCH, UBlocks.ENCHANTED_WALL_TORCH);
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), UBlocks.ENCHANTED_TORCH, UBlocks.ENCHANTED_WALL_TORCH,
+                UBlocks.BAKERY_DOOR, UBlocks.LIBRARY_DOOR, UBlocks.MISTED_GLASS_DOOR, UBlocks.DIAMOND_DOOR);
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(),
                 UBlocks.CLOUD_ANVIL, UBlocks.CLOUD_FARMLAND,
                 UBlocks.CLOUD_BLOCK, UBlocks.CLOUD_SLAB, UBlocks.CLOUD_STAIRS, UBlocks.CLOUD_FENCE,

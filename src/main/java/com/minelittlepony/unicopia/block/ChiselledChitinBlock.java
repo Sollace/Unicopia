@@ -39,7 +39,16 @@ public class ChiselledChitinBlock extends Block {
     @Override
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext context) {
-        return getDefaultState().with(Properties.FACING, context.getPlayerFacing());
+        PlayerEntity player = context.getPlayer();
+
+
+        Direction direction = player == null ? context.getSide() : context.getPlayerLookDirection().getOpposite();
+
+        if (player != null && player.isSneaking()) {
+            direction = direction.getOpposite();
+        }
+
+        return getDefaultState().with(Properties.FACING, direction);
     }
 
     @Override

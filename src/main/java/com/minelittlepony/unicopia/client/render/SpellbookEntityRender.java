@@ -30,23 +30,21 @@ public class SpellbookEntityRender extends LivingEntityRenderer<SpellbookEntity,
     }
 
     @Override
-    protected void setupTransforms(SpellbookEntity entity, MatrixStack matrices, float p_77043_2_, float p_77043_3_, float partialTicks) {
+    protected void setupTransforms(SpellbookEntity entity, MatrixStack matrices, float f, float g, float partialTicks) {
+        super.setupTransforms(entity, matrices, f, g + 90, partialTicks);
 
-        if (!entity.getIsOpen()) {
-            matrices.translate(0, 1.44f, 0);
-        } else {
-            matrices.translate(0, 1.2f + MathHelper.sin((entity.age + partialTicks) / 20) * 0.01F + 0.1F, 0);
-        }
+        if (entity.getIsOpen()) {
+            matrices.translate(-1.25F, -0.35F, 0);
 
-        if (!entity.getIsOpen()) {
-            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90));
-            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90));
-            matrices.translate(-0.25f, 0, 0);
-        } else {
+            float floatPosition = MathHelper.sin((entity.age + partialTicks + entity.getEntityId()) / 20) * 0.04F;
+
+            matrices.translate(0, floatPosition, 0);
             matrices.multiply(Vector3f.NEGATIVE_Z.getDegreesQuaternion(60));
+        } else {
+            matrices.translate(-1.5F, 0.1F, 0.2F);
+            matrices.multiply(Vector3f.NEGATIVE_Z.getDegreesQuaternion(90));
+            matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(90));
         }
-
-        matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(MathHelper.lerp(entity.prevYaw, entity.yaw, partialTicks)));
     }
 
     @Override

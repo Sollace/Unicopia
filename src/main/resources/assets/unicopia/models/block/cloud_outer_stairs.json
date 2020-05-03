@@ -1,9 +1,9 @@
 {
     "textures": {
-		"bottom": "unicopia:blocks/cloud_normal",
-		"top": "unicopia:blocks/cloud_normal",
-		"side": "unicopia:blocks/cloud_normal",
-        "particle": "unicopia:blocks/cloud_normal"
+		"bottom": "unicopia:blocks/cloud_block",
+		"top": "#bottom",
+		"side": "#bottom",
+        "particle": "#bottom"
     },
     "elements": [
         {   "from": [ 0, 0, 0 ],

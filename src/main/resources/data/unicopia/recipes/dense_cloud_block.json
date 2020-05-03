@@ -9,5 +9,5 @@
       { "item": "unicopia:cloud_block" }
     ]
   },
-  "result": { "item": "unicopia:dense_cloud_block", "count": 1 }
+  "result": { "item": "unicopia:dense_cloud_block" }
 }

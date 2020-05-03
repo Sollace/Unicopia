@@ -13,8 +13,8 @@
     },
     "ambientocclusion": false,
     "textures": {
-    	"texture": "unicopia:blocks/cloud_normal",
-        "particle": "unicopia:blocks/cloud_normal"
+    	"texture": "unicopia:blocks/dense_cloud_block",
+        "particle": "#texture"
     },
     "elements": [
         {   "from": [ 6, 0, 0 ],

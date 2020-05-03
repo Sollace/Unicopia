@@ -1,44 +1,22 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.gas;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.block.Covering;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 
-public class ChitinBlock extends Block {
+public class CoverableCloudBlock extends CloudBlock {
 
-    public ChitinBlock(Settings settings) {
-        super(settings);
+    public CoverableCloudBlock(GasState variant) {
+        super(variant);
         setDefaultState(stateManager.getDefaultState().with(Covering.PROPERTY, Covering.UNCOVERED));
-    }
-
-    @Deprecated
-    @Override
-    public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
-        float hardness = super.calcBlockBreakingDelta(state, player, world, pos);
-
-        Pony iplayer = Pony.of(player);
-        Race race = iplayer.getSpecies();
-
-        if (race == Race.CHANGELING) {
-            hardness *= 80;
-        } else if (race.canInteractWithClouds()) {
-            hardness /= 4;
-        } else if (race.canUseEarth()) {
-            hardness *= 10;
-        }
-
-        return hardness;
     }
 
     @Override

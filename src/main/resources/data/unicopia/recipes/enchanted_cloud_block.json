@@ -1,5 +1,5 @@
 {
-  "type": "minecraft:crafting_shaped",
+  "type": "unicopia:crafting_shaped",
   "pattern": [
     "$$$",
     "#*#",
@@ -15,7 +15,7 @@
     "*": [
       {
     	"item": "minecraft:enchanted_book",
-	    "ench": "minecraft:feather_falling"
+	    "enchantment": "minecraft:feather_falling"
       }
     ]
   },

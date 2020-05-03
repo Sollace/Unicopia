@@ -1,8 +1,8 @@
 {
     "parent": "block/slab",
     "textures": {
-        "bottom": "unicopia:blocks/cloud_normal",
-        "top": "unicopia:blocks/cloud_normal",
-        "side": "unicopia:blocks/cloud_normal"
+        "bottom": "unicopia:blocks/cloud_block",
+        "top": "#bottom",
+        "side": "#bottom"
     }
 }

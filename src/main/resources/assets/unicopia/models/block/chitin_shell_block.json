@@ -2,9 +2,9 @@
     "parent": "block/cube_all",
     "textures": {
         "bottom": "unicopia:blocks/chitin_block_covered",
-        "particle": "unicopia:blocks/chitin_block_uncovered",
         "top": "unicopia:blocks/chitin_block_top",
-        "side": "unicopia:blocks/chitin_block_uncovered"
+        "side": "unicopia:blocks/chitin_block_uncovered",
+        "particle": "#side"
     },
     "elements": [
         {   "from": [ 0, 0, 0 ],

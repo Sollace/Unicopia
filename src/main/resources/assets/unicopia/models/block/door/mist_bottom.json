@@ -1,7 +1,7 @@
 {
     "parent": "minecraft:block/door_bottom",
     "textures": {
-	    "bottom": "unicopia:blocks/door_mist_lower",
-	    "top": "unicopia:blocks/door_mist_upper"
+        "bottom": "unicopia:blocks/misted_glass_door_lower",
+        "top": "unicopia:blocks/misted_glass_door_upper"
     }
 }

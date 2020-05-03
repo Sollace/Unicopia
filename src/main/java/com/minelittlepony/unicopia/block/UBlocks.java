@@ -7,7 +7,9 @@ import com.minelittlepony.unicopia.gas.CloudDoorBlock;
 import com.minelittlepony.unicopia.gas.CloudFarmlandBlock;
 import com.minelittlepony.unicopia.gas.CloudFenceBlock;
 import com.minelittlepony.unicopia.gas.CloudSlabBlock;
+import com.minelittlepony.unicopia.gas.CloudSoilBlock;
 import com.minelittlepony.unicopia.gas.CloudStairsBlock;
+import com.minelittlepony.unicopia.gas.CoverableCloudBlock;
 import com.minelittlepony.unicopia.gas.GasState;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.structure.CustomSaplingGenerator;
@@ -27,26 +29,39 @@ import net.minecraft.util.registry.Registry;
 
 public interface UBlocks {
     CloudFarmlandBlock CLOUD_FARMLAND = register("cloud_farmland", new CloudFarmlandBlock(GasState.NORMAL.configure().build()));
-    CloudBlock CLOUD_BLOCK = register("cloud_block", new CloudBlock(GasState.NORMAL));
-    CloudBlock ENCHANTED_CLOUD_BLOCK = register("enchanted_cloud_block", new CloudBlock(GasState.ENCHANTED));
+    CloudBlock CLOUD_BLOCK = register("cloud_block", new CloudSoilBlock(GasState.NORMAL));
+    CloudBlock ENCHANTED_CLOUD_BLOCK = register("enchanted_cloud_block", new CoverableCloudBlock(GasState.ENCHANTED));
     CloudBlock DENSE_CLOUD_BLOCK = register("dense_cloud_block", new CloudBlock(GasState.DENSE));
 
     CloudStairsBlock<CloudBlock> CLOUD_STAIRS = register("cloud_stairs", new CloudStairsBlock<>(CLOUD_BLOCK.getDefaultState(), GasState.NORMAL.configure().build()));
 
     CloudSlabBlock<CloudBlock> CLOUD_SLAB = register("cloud_slab", new CloudSlabBlock<>(CLOUD_BLOCK.getDefaultState(), GasState.NORMAL.configure().build()));
     CloudSlabBlock<CloudBlock> ENCHANTED_CLOUD_SLAB = register("enchanted_cloud_slab", new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK.getDefaultState(), GasState.ENCHANTED.configure().build()));
-    CloudSlabBlock<CloudBlock> DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK.getDefaultState(), GasState.DENSE.configure().build()));
+    CloudSlabBlock<CloudBlock> DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock<>(DENSE_CLOUD_BLOCK.getDefaultState(), GasState.DENSE.configure().build()));
 
-    CloudDoorBlock MISTED_GLASS_DOOR = register("misted_glass_door", new CloudDoorBlock());
+    CloudDoorBlock MISTED_GLASS_DOOR = register("misted_glass_door", new CloudDoorBlock(FabricBlockSettings.of(Material.GLASS)
+                    .sounds(BlockSoundGroup.GLASS)
+                    .hardness(3)
+                    .resistance(200)
+                    .nonOpaque()
+                    .breakByTool(FabricToolTags.PICKAXES, 0)
+                    .build()));
     DutchDoorBlock LIBRARY_DOOR = register("library_door", new DutchDoorBlock(FabricBlockSettings.of(Material.WOOD).
                     sounds(BlockSoundGroup.WOOD)
                     .hardness(3)
+                    .nonOpaque()
                     .build()));
     DutchDoorBlock BAKERY_DOOR = register("bakery_door", new DutchDoorBlock(FabricBlockSettings.of(Material.WOOD)
                     .sounds(BlockSoundGroup.WOOD)
                     .hardness(3)
+                    .nonOpaque()
                     .build()));
-    DiamondDoorBlock DIAMOND_DOOR = register("diamond_door", new DiamondDoorBlock());
+    DiamondDoorBlock DIAMOND_DOOR = register("diamond_door", new DiamondDoorBlock(FabricBlockSettings.of(Material.METAL)
+                    .sounds(BlockSoundGroup.METAL)
+                    .materialColor(MaterialColor.DIAMOND)
+                    .strength(6, 20)
+                    .nonOpaque()
+                    .build()));
 
     GemTorchBlock ENCHANTED_TORCH = register("enchanted_torch", new GemTorchBlock(FabricBlockSettings.of(Material.PART)
                     .noCollision()
@@ -93,14 +108,15 @@ public interface UBlocks {
                     .ticksRandomly()
                     .lightLevel(1)
                     .sounds(BlockSoundGroup.SAND)
-                    .breakByTool(FabricToolTags.PICKAXES, 1)
+                    .breakByTool(FabricToolTags.SHOVELS, 1)
                     .build()));
     ChitinBlock CHITIN_SHELL_BLOCK = register("chitin_shell_block", new ChitinBlock(FabricBlockSettings.of(UMaterials.CHITIN)
-                    .hardness(50)
-                    .strength(2000, 2000)
+                    .strength(50, 2000)
+                    .breakByTool(FabricToolTags.PICKAXES, 2)
                     .build()));
     Block CHISELED_CHITIN_SHELL_BLOCK = register("chiseled_chitin_shell_block", new ChiselledChitinBlock(FabricBlockSettings.of(UMaterials.CHITIN)
                     .strength(50, 2000)
+                    .breakByTool(FabricToolTags.PICKAXES, 2)
                     .build()));
 
     SlimeDropBlock SLIME_DROP = register("slime_drop", new SlimeDropBlock(FabricBlockSettings.of(UMaterials.HIVE, MaterialColor.GRASS)
@@ -121,6 +137,7 @@ public interface UBlocks {
                     .strength(10, 10)
                     .hardness(0.7F)
                     .sounds(BlockSoundGroup.SAND)
+                    .breakByTool(FabricToolTags.SHOVELS)
                     .build()));
     Block APPLE_LEAVES = register("apple_leaves", new FruitLeavesBlock(FabricBlockSettings.of(Material.LEAVES)
                     .strength(0.2F, 0.2F)

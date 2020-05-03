@@ -25,7 +25,7 @@ public class SpellbookItem extends BookItem {
             Direction facing = source.getBlockState().get(DispenserBlock.FACING);
             BlockPos pos = source.getBlockPos().offset(facing);
 
-            int yaw = facing.getOpposite().getHorizontal() * 90;
+            float yaw = facing.getOpposite().asRotation();
             placeBook(source.getWorld(), pos.getX(), pos.getY(), pos.getZ(), yaw);
             stack.decrement(1);
 
@@ -42,11 +42,7 @@ public class SpellbookItem extends BookItem {
         if (!context.getWorld().isClient && EquinePredicates.PLAYER_UNICORN.test(player)) {
             BlockPos pos = context.getBlockPos().offset(context.getSide());
 
-            double diffX = player.getX() - (pos.getX() + 0.5);
-            double diffZ = player.getZ() - (pos.getZ() + 0.5);
-            float yaw = (float)Math.toDegrees(Math.atan2(diffZ, diffX) + Math.PI);
-
-            placeBook(context.getWorld(), pos.getX(), pos.getY(), pos.getZ(), yaw);
+            placeBook(context.getWorld(), pos.getX(), pos.getY(), pos.getZ(), context.getPlayerYaw() + 180);
 
             if (!player.abilities.creativeMode) {
                 player.getStackInHand(context.getHand()).decrement(1);
@@ -60,9 +56,9 @@ public class SpellbookItem extends BookItem {
     private static void placeBook(World world, int x, int y, int z, float yaw) {
         SpellbookEntity book = UEntities.SPELLBOOK.create(world);
 
-        book.updatePositionAndAngles(x + 0.5, y, z + 0.5, yaw, 0);
-        book.prevYaw = yaw;
-
+        book.refreshPositionAndAngles(x + 0.5, y, z + 0.5, 0, 0);
+        book.setHeadYaw(yaw);
+        book.setYaw(yaw);
         world.spawnEntity(book);
     }
 }

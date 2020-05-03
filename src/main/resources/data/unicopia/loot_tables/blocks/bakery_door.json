@@ -9,7 +9,7 @@
           "conditions": [
             {
               "condition": "minecraft:block_state_property",
-              "block": "minecraft:oak_door",
+              "block": "unicopia:bakery_door",
               "properties": {
                 "half": "lower"
               }

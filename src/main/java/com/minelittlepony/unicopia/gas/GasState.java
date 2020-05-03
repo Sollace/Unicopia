@@ -49,6 +49,10 @@ public enum GasState {
     }
 
     private boolean heldCanTouch(CloudInteractionContext context) {
+        if (this == ENCHANTED) {
+            return true;
+        }
+
         ItemStack main = context.getHeldStack();
 
         if (main.getItem() instanceof BlockItem) {
@@ -58,7 +62,7 @@ public enum GasState {
                 return true;
             }
 
-            return this == GasState.NORMAL && (
+            return this == NORMAL && (
                        block instanceof TorchBlock
                     || block instanceof BedBlock
                     || block instanceof ChestBlock);

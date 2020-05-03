@@ -2,11 +2,7 @@ package com.minelittlepony.unicopia.gas;
 
 import java.util.Random;
 
-import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.blockstate.StateMaps;
-import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.util.HoeUtil;
-
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -14,7 +10,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -24,7 +19,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
 
-public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
+public class CloudBlock extends Block implements Gas {
 
     private final GasState variant;
 
@@ -34,7 +29,6 @@ public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
                 .build()
         );
         this.variant = variant;
-        HoeUtil.registerTillingAction(this, UBlocks.CLOUD_FARMLAND.getDefaultState());
     }
 
     @Override
@@ -81,7 +75,7 @@ public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
     @Override
     @Environment(EnvType.CLIENT)
     public boolean isSideInvisible(BlockState state, BlockState beside, Direction face) {
-        if (beside.getBlock() instanceof Gas) {
+        if (beside.getBlock() instanceof Gas && ((Gas)beside.getBlock()).getGasState(beside) == getGasState(state)) {
             VoxelShape myShape = state.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
             VoxelShape otherShape = beside.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 
@@ -124,10 +118,5 @@ public class CloudBlock extends Block implements Gas, HoeUtil.Tillable {
     @Override
     public GasState getGasState(BlockState blockState) {
         return variant;
-    }
-
-    @Override
-    public boolean canTill(ItemUsageContext context) {
-        return context.getPlayer() == null || Pony.of(context.getPlayer()).getSpecies().canInteractWithClouds();
     }
 }

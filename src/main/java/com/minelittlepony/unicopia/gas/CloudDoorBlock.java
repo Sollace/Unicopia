@@ -1,13 +1,9 @@
 package com.minelittlepony.unicopia.gas;
 
 import com.minelittlepony.unicopia.block.AbstractDoorBlock;
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
-import net.fabricmc.fabric.api.tools.FabricToolTags;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -16,13 +12,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class CloudDoorBlock extends AbstractDoorBlock implements Gas {
-    public CloudDoorBlock() {
-        super(FabricBlockSettings.of(Material.GLASS)
-                .sounds(BlockSoundGroup.GLASS)
-                .hardness(3)
-                .resistance(200)
-                .breakByTool(FabricToolTags.PICKAXES, 0)
-                .build());
+    public CloudDoorBlock(Settings settings) {
+        super(settings);
     }
 
     @Override

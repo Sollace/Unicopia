@@ -17,6 +17,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -95,7 +96,6 @@ public class SpellbookEntity extends MobEntity implements NameableContainerFacto
         jumping = open && isTouchingWater();
         super.tick();
         if (open && world.isClient) {
-
             for (int offX = -2; offX <= 1; ++offX) {
                 for (int offZ = -2; offZ <= 1; ++offZ) {
                     if (offX > -1 && offX < 1 && offZ == -1) {
@@ -114,6 +114,17 @@ public class SpellbookEntity extends MobEntity implements NameableContainerFacto
                     }
                 }
             }
+        }
+
+        if (open) {
+            world.getEntities(this, getBoundingBox().expand(2), EntityPredicates.EXCEPT_SPECTATOR.and(e -> e instanceof PlayerEntity)).stream().findFirst().ifPresent(player -> {
+
+                Vec3d diff = player.getPosVector().subtract(getPosVector());
+                double yaw = Math.atan2(diff.z, diff.x) * 180D / Math.PI - 90;
+
+                setHeadYaw((float)yaw);
+                setYaw((float)yaw);
+            });
         }
 
         if (world.random.nextInt(30) == 0) {
@@ -164,11 +175,8 @@ public class SpellbookEntity extends MobEntity implements NameableContainerFacto
         }
 
         if (EquinePredicates.PLAYER_UNICORN.test(player)) {
-
             player.playSound(SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, 2, 1);
-
             player.openContainer(this);
-
             return ActionResult.SUCCESS;
         }
 

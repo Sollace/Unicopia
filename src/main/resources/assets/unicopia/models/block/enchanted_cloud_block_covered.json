@@ -2,7 +2,7 @@
     "parent": "unicopia:block/chitin_shell_block",
     "textures": {
         "top": "unicopia:blocks/enchanted_cloud_block_top",
-        "side": "unicopia:blocks/enchanted_cloud_block",
+        "side": "unicopia:blocks/enchanted_cloud_block_bottom",
         "bottom": "unicopia:blocks/enchanted_cloud_block_bottom"
     }
 }
