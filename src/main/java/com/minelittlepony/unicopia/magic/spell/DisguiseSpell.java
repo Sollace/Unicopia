@@ -27,6 +27,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.FallingBlockEntity;
+import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.data.TrackedData;
@@ -43,7 +44,6 @@ import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.MathHelper;
 
 public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect, SuppressableEffect, FlightPredicate, HeightPredicate {
 
@@ -204,13 +204,15 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
     protected void copyBaseAttributes(LivingEntity from, Entity to) {
 
         // Set first because position calculations rely on it
+        to.age = from.age;
         to.removed = from.removed;
         to.onGround = from.onGround;
 
         if (isAttachedEntity(entity)) {
+
             double x = Math.floor(from.getX()) + 0.5;
-            double y = Math.floor(from.getX());
-            double z = Math.floor(from.getX()) + 0.5;
+            double y = Math.floor(from.getY());
+            double z = Math.floor(from.getZ()) + 0.5;
 
             to.prevX = x;
             to.prevY = y;
@@ -220,13 +222,21 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
             to.lastRenderY = y;
             to.lastRenderZ = z;
 
-            to.setPos(x, y, z);
+            to.updatePosition(x, y, z);
+
+            if (entity instanceof FallingBlockEntity) {
+                ((FallingBlockEntity)entity).setFallingBlockPos(from.getBlockPos());
+            }
         } else {
             to.copyPositionAndRotation(from);
 
             to.prevX = from.prevX;
             to.prevY = from.prevY;
             to.prevZ = from.prevZ;
+
+            to.trackedX = from.trackedX;
+            to.trackedY = from.trackedY;
+            to.trackedZ = from.trackedZ;
 
             to.lastRenderX = from.lastRenderX;
             to.lastRenderY = from.lastRenderY;
@@ -243,8 +253,13 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
 
         to.setVelocity(from.getVelocity());
 
+        to.pitch = from.pitch;
         to.prevPitch = from.prevPitch;
+        to.yaw = from.yaw;
         to.prevYaw = from.prevYaw;
+        to.horizontalSpeed = from.horizontalSpeed;
+        to.prevHorizontalSpeed = from.prevHorizontalSpeed;
+
         to.distanceTraveled = from.distanceTraveled;
 
         if (to instanceof LivingEntity) {
@@ -266,6 +281,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
 
             l.hurtTime = from.hurtTime;
             l.deathTime = from.deathTime;
+            l.field_20347 = from.field_20347;
             l.setHealth(from.getHealth());
 
             for (EquipmentSlot i : EquipmentSlot.values()) {
@@ -305,9 +321,13 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
         return update(caster);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public boolean update(Caster<?> source) {
+        return update(source, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean update(Caster<?> source, boolean tick) {
         LivingEntity owner = source.getOwner();
 
         if (getSuppressed()) {
@@ -355,7 +375,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
 
         copyBaseAttributes(owner, entity);
 
-        if (!skipsUpdate(entity)) {
+        if (tick && !skipsUpdate(entity)) {
             entity.tick();
         }
 
@@ -363,24 +383,26 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
             ShulkerEntity shulker = ((ShulkerEntity)entity);
 
             shulker.yaw = 0;
-            //shulker.renderYawOffset = 0;
-            //shulker.prevRenderYawOffset = 0;
+            shulker.prevHeadYaw = 0;
+            shulker.headYaw = 0;
+            shulker.prevBodyYaw = 0;
+            shulker.bodyYaw = 0;
 
             shulker.setAttachedBlock(null);
 
             if (source.isClient() && source instanceof Pony) {
-                Pony player = (Pony)source;
+                //Pony player = (Pony)source;
 
 
-                float peekAmount = 0.3F;
+                float peekAmount = 30;
 
-                if (!owner.isSneaking()) {
-                    double speed = Math.sqrt(Entity.squaredHorizontalLength(owner.getVelocity()));
+                //if (!owner.isSneaking()) {
+                    //Math.sqrt(Entity.squaredHorizontalLength(owner.getVelocity()));
 
-                    peekAmount = (float)MathHelper.clamp(speed * 30, 0, 1);
-                }
+                    //peekAmount = (float)MathHelper.clamp(speed * 30, 0, 1);
+                //}
 
-                peekAmount = player.getInterpolator().interpolate("peek", peekAmount, 5);
+                //peekAmount = player.getInterpolator().interpolate("peek", peekAmount, 5);
 
                 shulker.setPeekAmount((int)peekAmount);
             }
@@ -488,6 +510,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
                 || entity instanceof EnderDragonEntity
                 || entity instanceof VexEntity
                 || entity instanceof ShulkerBulletEntity
+                || entity instanceof Flutterer
                 || ProjectileUtil.isProjectile(entity);
     }
 
