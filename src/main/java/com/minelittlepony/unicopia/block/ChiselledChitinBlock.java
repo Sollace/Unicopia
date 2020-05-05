@@ -40,9 +40,7 @@ public class ChiselledChitinBlock extends Block {
     @Nullable
     public BlockState getPlacementState(ItemPlacementContext context) {
         PlayerEntity player = context.getPlayer();
-
-
-        Direction direction = player == null ? context.getSide() : context.getPlayerLookDirection().getOpposite();
+        Direction direction = context.getSide();
 
         if (player != null && player.isSneaking()) {
             direction = direction.getOpposite();
