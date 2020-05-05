@@ -1,22 +1,38 @@
 package com.minelittlepony.unicopia.toxin;
 
+import com.minelittlepony.unicopia.item.UEffects;
+
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.Difficulty;
 
 @FunctionalInterface
 public interface Toxin {
     Predicate ONE_EVERY_30_TICKS = (player, toxicity, stack) -> player.world.random.nextInt(30) == 0;
 
+    Toxin FOOD = (player, toxicity, stack) -> toxicity.afflict(player, toxicity, stack);
     Toxin DAMAGE = ONE_EVERY_30_TICKS.then(of(StatusEffects.INSTANT_DAMAGE, 1, 1));
     Toxin RADIOACTIVITY = ONE_EVERY_30_TICKS.then(of(StatusEffects.GLOWING, 10, 1));
     Toxin NAUSEA = of(StatusEffects.NAUSEA, 30, 1);
     Toxin WEAK_NAUSEA = of(StatusEffects.NAUSEA, 3, 1);
     Toxin STRENGTH = of(StatusEffects.STRENGTH, 30, 1);
     Toxin BLINDNESS = of(StatusEffects.BLINDNESS, 30, 1);
-    Toxin FOOD = (player, toxicity, stack) -> toxicity.afflict(player, toxicity, stack);
+    Toxin POISON = (player, toxicity, stack) -> {
+        FoodComponent food = stack.getItem().getFoodComponent();
+
+        player.getHungerManager().add(-food.getHunger()/2, -food.getSaturationModifier()/2);
+        afflict(player, StatusEffects.NAUSEA, 1700, 10);
+
+        if (player.world.getDifficulty() != Difficulty.PEACEFUL && player.world.random.nextInt(20) == 0) {
+            afflict(player, UEffects.FOOD_POISONING, 150, 2);
+        }
+
+        afflict(player, StatusEffects.WEAKNESS, 2000, 20);
+    };
 
     void afflict(PlayerEntity player, Toxicity toxicity, ItemStack stack);
 
@@ -29,9 +45,11 @@ public interface Toxin {
     }
 
     static Toxin of(StatusEffect effect, int duration, int amplifier) {
-        return (player, toxicity, stack) -> {
-            player.addStatusEffect(new StatusEffectInstance(effect, duration, amplifier, false, false));
-        };
+        return (player, toxicity, stack) -> afflict(player, effect, duration, amplifier);
+    }
+
+    static void afflict(PlayerEntity player, StatusEffect effect, int duration, int amplifier) {
+        player.addStatusEffect(new StatusEffectInstance(effect, duration, amplifier, false, false));
     }
 
     interface Predicate {

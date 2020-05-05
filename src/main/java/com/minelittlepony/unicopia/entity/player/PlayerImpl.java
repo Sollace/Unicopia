@@ -8,7 +8,6 @@ import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.enchanting.PageOwner;
 import com.minelittlepony.unicopia.entity.FlightControl;
 import com.minelittlepony.unicopia.entity.Trap;
-import com.minelittlepony.unicopia.item.UEffects;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
 import com.minelittlepony.unicopia.magic.HeldMagicEffect;
@@ -18,6 +17,8 @@ import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
+import com.minelittlepony.unicopia.toxin.Toxicity;
+import com.minelittlepony.unicopia.toxin.Toxin;
 import com.minelittlepony.util.BasicEasingInterpolator;
 import com.minelittlepony.util.IInterpolator;
 import com.mojang.datafixers.util.Either;
@@ -28,12 +29,9 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerEntity.SleepFailureReason;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -42,7 +40,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.Difficulty;
 
 public class PlayerImpl implements Pony, MagicReserves {
 
@@ -365,28 +362,9 @@ public class PlayerImpl implements Pony, MagicReserves {
     }
 
     @Override
-    public void onUse(ItemStack stack) {
+    public void onEat(ItemStack stack) {
         if (getSpecies() == Race.CHANGELING) {
-            PlayerEntity player = getOwner();
-
-            FoodComponent food = stack.getItem().getFoodComponent();
-
-            if (food != null) {
-                int health = food.getHunger();
-                float saturation = food.getSaturationModifier();
-
-                player.getHungerManager().add(-health/2, -saturation/2);
-
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 3, true, true));
-            } else {
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 3, true, true));
-            }
-
-            if (player.world.getDifficulty() != Difficulty.PEACEFUL && player.world.random.nextInt(20) == 0) {
-                player.addStatusEffect(new StatusEffectInstance(UEffects.FOOD_POISONING, 3, 2, true, true));
-            }
-
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 2000, 2, true, true));
+            Toxin.POISON.afflict(getOwner(), Toxicity.SAFE, stack);
         }
     }
 

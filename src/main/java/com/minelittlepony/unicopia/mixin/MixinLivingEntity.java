@@ -41,15 +41,6 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylik
         }
     }
 
-    @Inject(method = "tickActiveItemStack()V", at = @At("HEAD"))
-    private void onFinishUsing(CallbackInfo info) {
-        LivingEntity self = (LivingEntity)(Object)this;
-
-        if (!self.getActiveItem().isEmpty() && self.isUsingItem()) {
-            get().onUse(self.getActiveItem());
-        }
-    }
-
     @Inject(method = "jump()V", at = @At("RETURN"))
     private void onJump(CallbackInfo info) {
         get().onJump();

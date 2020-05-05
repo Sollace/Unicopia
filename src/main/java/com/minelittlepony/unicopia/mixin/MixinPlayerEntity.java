@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.World;
 
 @Mixin(PlayerEntity.class)
 abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<Pony> {
@@ -38,6 +39,14 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
             argsOnly = true)
     private float onHandleFallDamage(float distance) {
         return get().onImpact(distance);
+    }
+
+    @Inject(method = "eatFood(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/world/World;net/minecraft/item/ItemStack;",
+            at = @At("HEAD"))
+    public void onEatFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> info) {
+        if (stack.isFood()) {
+            get().onEat(stack);
+        }
     }
 
     @Inject(method = "trySleep(Lnet/minecraft/util/math/BlockPos;)Lcom/mojang/datafixers/util/Either;",

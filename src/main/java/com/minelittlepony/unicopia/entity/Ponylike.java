@@ -8,7 +8,6 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ItemStack;
 
 public interface Ponylike extends NbtSerialisable, Updatable {
     Race getSpecies();
@@ -45,13 +44,6 @@ public interface Ponylike extends NbtSerialisable, Updatable {
      */
     default boolean onProjectileImpact(ProjectileEntity projectile) {
         return false;
-    }
-
-    /**
-     * Called when this player finishes eating food.
-     */
-    default void onUse(ItemStack stack) {
-
     }
 
     /**

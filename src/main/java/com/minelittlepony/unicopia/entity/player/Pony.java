@@ -15,6 +15,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 
@@ -74,6 +75,11 @@ public interface Pony extends Caster<PlayerEntity>, RaceContainer<PlayerEntity>,
      * Called when this player falls.
      */
     float onImpact(float distance);
+
+    /**
+     * Called whenever the player eats something.
+     */
+    void onEat(ItemStack food);
 
     /**
      * Attempts to sleep in a bed.
