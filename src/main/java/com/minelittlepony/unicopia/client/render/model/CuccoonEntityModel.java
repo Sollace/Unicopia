@@ -1,11 +1,8 @@
 package com.minelittlepony.unicopia.client.render.model;
 
 import com.minelittlepony.unicopia.entity.CuccoonEntity;
-import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
-import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -17,6 +14,7 @@ public class CuccoonEntityModel extends EntityModel<CuccoonEntity> {
     private float breatheAmount;
 
     public CuccoonEntityModel() {
+        super(RenderLayer::getEntityTranslucentCull);
         body = new ModelPart(this, 0, 0);
         body.setTextureSize(250, 250);
 
@@ -35,12 +33,6 @@ public class CuccoonEntityModel extends EntityModel<CuccoonEntity> {
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
         matrices.push();
 
-        RenderSystem.enableBlend();
-        RenderSystem.enableAlphaTest();
-        RenderSystem.enableRescaleNormal();
-
-        RenderSystem.blendFunc(SrcFactor.SRC_ALPHA, DstFactor.ONE_MINUS_SRC_ALPHA);
-
         matrices.scale(1 - breatheAmount, 1 + breatheAmount, 1 - breatheAmount);
         matrices.translate(0, -breatheAmount * 1.3F, 0);
 
@@ -50,10 +42,6 @@ public class CuccoonEntityModel extends EntityModel<CuccoonEntity> {
         matrices.translate(0, 0.2F, 0);
 
         body.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
-
-        RenderSystem.disableRescaleNormal();
-        RenderSystem.disableAlphaTest();
-        RenderSystem.disableBlend();
 
         matrices.pop();
     }

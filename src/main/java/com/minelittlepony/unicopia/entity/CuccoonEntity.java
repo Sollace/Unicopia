@@ -1,10 +1,9 @@
 package com.minelittlepony.unicopia.entity;
 
-import java.util.List;
+import java.util.Collections;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Lists;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
@@ -12,6 +11,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particles.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
+import net.fabricmc.fabric.api.tools.FabricToolTags;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -43,8 +43,6 @@ import net.minecraft.world.World;
 public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate {
 
     private static final TrackedData<Integer> STRUGGLE_COUNT = DataTracker.registerData(CuccoonEntity.class, TrackedDataHandlerRegistry.INTEGER);
-
-    private final List<ItemStack> armour = Lists.newArrayList();
 
     private boolean captiveLastSneakState;
 
@@ -81,7 +79,11 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
     public boolean damage(DamageSource source, float amount) {
 
         if (EquinePredicates.PLAYER_CHANGELING.test(source.getSource())) {
-            amount = 0;
+
+            PlayerEntity player = (PlayerEntity)source.getSource();
+            if (!FabricToolTags.SHOVELS.contains(player.getMainHandStack().getItem())) {
+                amount = 0;
+            }
         }
 
         return super.damage(source, amount);
@@ -93,6 +95,7 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
                 && !entity.isSneaking()
                 && !hasPassengers()
                 && entity instanceof LivingEntity
+                && !(entity instanceof CuccoonEntity)
                 && !EquinePredicates.PLAYER_CHANGELING.test(entity);
     }
 
@@ -104,6 +107,12 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
     @Override
     public double getMountedHeightOffset() {
         return 0;
+    }
+
+    @Override
+    @Nullable
+    public Entity getPrimaryPassenger() {
+       return getPassengerList().isEmpty() ? null : getPassengerList().get(0);
     }
 
     @Override
@@ -150,39 +159,36 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
     public ActionResult interactAt(PlayerEntity player, Vec3d vec, Hand hand) {
 
         if (hand == Hand.MAIN_HAND && EquinePredicates.PLAYER_CHANGELING.test(player)) {
+            Entity passenger = getPrimaryPassenger();
 
-            if (hasPassengers()) {
-                Entity passenger = getPrimaryPassenger();
+            if (passenger != null && (player.canConsume(false) || player.getHealth() < player.getMaximumHealth())) {
+                DamageSource d = MagicalDamageSource.causePlayerDamage("feed", player);
 
-                if (player.canConsume(false) || player.getHealth() < player.getMaximumHealth()) {
-                    DamageSource d = MagicalDamageSource.causePlayerDamage("feed", player);
+                Pony.of(player).spawnParticles(UParticles.CHANGELING_MAGIC, 7);
 
-                    Pony.of(player).spawnParticles(UParticles.CHANGELING_MAGIC, 7);
-
-                    if (passenger instanceof LivingEntity) {
-                        if (player.hasStatusEffect(StatusEffects.NAUSEA)) {
-                            ((LivingEntity)passenger).addStatusEffect(player.removeStatusEffectInternal(StatusEffects.NAUSEA));
-                        } else if (random.nextInt(2300) == 0) {
-                            ((LivingEntity)passenger).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20, 1));
-                        }
+                if (passenger instanceof LivingEntity) {
+                    if (player.hasStatusEffect(StatusEffects.NAUSEA)) {
+                        ((LivingEntity)passenger).addStatusEffect(player.removeStatusEffectInternal(StatusEffects.NAUSEA));
+                    } else if (random.nextInt(2300) == 0) {
+                        ((LivingEntity)passenger).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20, 1));
                     }
-
-                    if (passenger instanceof PlayerEntity) {
-                        if (!player.hasStatusEffect(StatusEffects.HEALTH_BOOST)) {
-                            player.addStatusEffect(new StatusEffectInstance(StatusEffects.HEALTH_BOOST, 13000, 1));
-                        }
-                    }
-
-                    passenger.damage(d, 5);
-
-                    if (player.canConsume(false)) {
-                        player.getHungerManager().add(5, 0);
-                    } else {
-                        player.heal(5);
-                    }
-
-                    return ActionResult.SUCCESS;
                 }
+
+                if (passenger instanceof PlayerEntity) {
+                    if (!player.hasStatusEffect(StatusEffects.HEALTH_BOOST)) {
+                        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HEALTH_BOOST, 13000, 1));
+                    }
+                }
+
+                passenger.damage(d, 5);
+
+                if (player.canConsume(false)) {
+                    player.getHungerManager().add(5, 0);
+                } else {
+                    player.heal(5);
+                }
+
+                return ActionResult.SUCCESS;
             }
         }
 
@@ -196,7 +202,7 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
 
     @Override
     public boolean isAttackable() {
-        return false;
+        return true;
     }
 
     public boolean attemptDismount(Entity captive) {
@@ -284,7 +290,7 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
 
     @Override
     public Iterable<ItemStack> getArmorItems() {
-        return armour;
+        return Collections.emptyList();
     }
 
     @Override
