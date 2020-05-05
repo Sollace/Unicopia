@@ -1,5 +1,5 @@
 {
     "variants": {
-        "": { "model": "unicopia:block/dense_cloud_block" }
+        "":    { "model": "unicopia:block/dense_cloud_block" }
     }
 }

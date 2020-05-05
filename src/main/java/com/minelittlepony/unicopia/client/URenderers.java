@@ -46,8 +46,7 @@ public interface URenderers {
                 UBlocks.BAKERY_DOOR, UBlocks.LIBRARY_DOOR, UBlocks.MISTED_GLASS_DOOR, UBlocks.DIAMOND_DOOR);
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(),
                 UBlocks.CLOUD_ANVIL, UBlocks.CLOUD_FARMLAND,
-                UBlocks.CLOUD_BLOCK, UBlocks.CLOUD_SLAB, UBlocks.CLOUD_STAIRS, UBlocks.CLOUD_FENCE,
-                UBlocks.DENSE_CLOUD_BLOCK, UBlocks.DENSE_CLOUD_SLAB,
+                UBlocks.CLOUD_BLOCK, UBlocks.CLOUD_SLAB, UBlocks.CLOUD_STAIRS,
                 UBlocks.ENCHANTED_CLOUD_BLOCK, UBlocks.ENCHANTED_CLOUD_SLAB,
 
                 UBlocks.SLIME_DROP, UBlocks.SLIME_LAYER

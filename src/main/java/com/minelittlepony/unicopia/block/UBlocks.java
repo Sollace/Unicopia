@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.gas.CloudSoilBlock;
 import com.minelittlepony.unicopia.gas.CloudStairsBlock;
 import com.minelittlepony.unicopia.gas.CoverableCloudBlock;
 import com.minelittlepony.unicopia.gas.GasState;
+import com.minelittlepony.unicopia.gas.PillarCloudBlock;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.structure.CustomSaplingGenerator;
 
@@ -32,12 +33,13 @@ public interface UBlocks {
     CloudBlock CLOUD_BLOCK = register("cloud_block", new CloudSoilBlock(GasState.NORMAL));
     CloudBlock ENCHANTED_CLOUD_BLOCK = register("enchanted_cloud_block", new CoverableCloudBlock(GasState.ENCHANTED));
     CloudBlock DENSE_CLOUD_BLOCK = register("dense_cloud_block", new CloudBlock(GasState.DENSE));
+    CloudBlock DENSE_CLOUD_PILLAR = register("dense_cloud_pillar", new PillarCloudBlock(GasState.DENSE));
 
-    CloudStairsBlock<CloudBlock> CLOUD_STAIRS = register("cloud_stairs", new CloudStairsBlock<>(CLOUD_BLOCK.getDefaultState(), GasState.NORMAL.configure().build()));
+    CloudStairsBlock CLOUD_STAIRS = register("cloud_stairs", new CloudStairsBlock(CLOUD_BLOCK.getDefaultState(), GasState.NORMAL.configure().build()));
 
-    CloudSlabBlock<CloudBlock> CLOUD_SLAB = register("cloud_slab", new CloudSlabBlock<>(CLOUD_BLOCK.getDefaultState(), GasState.NORMAL.configure().build()));
-    CloudSlabBlock<CloudBlock> ENCHANTED_CLOUD_SLAB = register("enchanted_cloud_slab", new CloudSlabBlock<>(ENCHANTED_CLOUD_BLOCK.getDefaultState(), GasState.ENCHANTED.configure().build()));
-    CloudSlabBlock<CloudBlock> DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock<>(DENSE_CLOUD_BLOCK.getDefaultState(), GasState.DENSE.configure().build()));
+    CloudSlabBlock CLOUD_SLAB = register("cloud_slab", new CloudSlabBlock(CLOUD_BLOCK.getDefaultState(), GasState.NORMAL.configure().build()));
+    CloudSlabBlock ENCHANTED_CLOUD_SLAB = register("enchanted_cloud_slab", new CloudSlabBlock(ENCHANTED_CLOUD_BLOCK.getDefaultState(), GasState.ENCHANTED.configure().build()));
+    CloudSlabBlock DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock(DENSE_CLOUD_BLOCK.getDefaultState(), GasState.DENSE.configure().build()));
 
     CloudDoorBlock MISTED_GLASS_DOOR = register("misted_glass_door", new CloudDoorBlock(FabricBlockSettings.of(Material.GLASS)
                     .sounds(BlockSoundGroup.GLASS)

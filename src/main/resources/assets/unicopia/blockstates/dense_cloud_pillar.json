@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "axis=y":    { "model": "unicopia:block/dense_cloud_pillar" },
+        "axis=z":     { "model": "unicopia:block/dense_cloud_pillar", "x": 90 },
+        "axis=x":     { "model": "unicopia:block/dense_cloud_pillar", "x": 90, "y": 90 }
+    }
+}

@@ -79,33 +79,27 @@ public class CloudAnvilBlock extends AnvilBlock implements Gas {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-        CloudInteractionContext ctx = (CloudInteractionContext)context;
-
-        if (!getGasState(state).canPlace(ctx)) {
-            return VoxelShapes.empty();
+        if (getGasState(state).canPlace((CloudInteractionContext)context)) {
+            return super.getOutlineShape(state, view, pos, context);
         }
-
-        return super.getOutlineShape(state, view, pos, context);
+        return VoxelShapes.empty();
     }
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-        CloudInteractionContext ctx = (CloudInteractionContext)context;
-
-        if (!getGasState(state).canTouch(ctx)) {
-            return VoxelShapes.empty();
+        if (getGasState(state).canTouch((CloudInteractionContext)context)) {
+            return super.getCollisionShape(state, view, pos, context);
         }
-
-        return super.getCollisionShape(state, view, pos, context);
+        return VoxelShapes.empty();
     }
 
     @Deprecated
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
-        if (!GasState.NORMAL.canTouch(player)) {
-            return -1;
+        if (GasState.NORMAL.canTouch(player)) {
+            return super.calcBlockBreakingDelta(state, player, world, pos);
         }
-        return super.calcBlockBreakingDelta(state, player, world, pos);
+        return -1;
     }
 
 

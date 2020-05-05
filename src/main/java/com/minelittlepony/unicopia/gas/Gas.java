@@ -2,7 +2,11 @@ package com.minelittlepony.unicopia.gas;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.EmptyBlockView;
 
 public interface Gas {
 
@@ -15,6 +19,14 @@ public interface Gas {
 
         entity.handleFallDamage(fallDistance, 0);
         return false;
+    }
+
+    default boolean isFaceCoverd(BlockState state, BlockState beside, Direction face) {
+        return beside.getBlock() instanceof Gas
+                && ((Gas)beside.getBlock()).getGasState(beside) == getGasState(state)
+                && VoxelShapes.isSideCovered(
+                    state.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN),
+                    beside.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN), face);
     }
 
     default boolean applyRebound(Entity entity) {

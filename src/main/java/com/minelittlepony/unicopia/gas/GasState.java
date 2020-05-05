@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.gas;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.block.UMaterials;
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
+import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.ChestBlock;
@@ -58,14 +59,15 @@ public enum GasState {
         if (main.getItem() instanceof BlockItem) {
             Block block = ((BlockItem)main.getItem()).getBlock();
 
-            if (block instanceof Gas && ((Gas)block).getGasState(block.getDefaultState()).canTouch(context)) {
+            if (block instanceof Gas) {
                 return true;
             }
 
-            return this == NORMAL && (
+            return this == DENSE && (
                        block instanceof TorchBlock
                     || block instanceof BedBlock
-                    || block instanceof ChestBlock);
+                    || block instanceof ChestBlock
+                    || block instanceof AbstractRailBlock);
         }
 
         return true;

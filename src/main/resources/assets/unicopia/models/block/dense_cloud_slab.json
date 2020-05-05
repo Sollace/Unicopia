@@ -2,7 +2,7 @@
     "parent": "block/slab",
     "textures": {
         "bottom": "unicopia:blocks/dense_cloud_block",
-        "top": "unicopia:blocks/dense_cloud_block_top",
+        "top": "unicopia:blocks/dense_cloud_block",
         "side": "unicopia:blocks/dense_cloud_block"
     }
 }

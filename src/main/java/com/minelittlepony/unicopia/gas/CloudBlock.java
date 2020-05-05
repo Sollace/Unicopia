@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityContext;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Direction;
@@ -16,7 +17,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
 
 public class CloudBlock extends Block implements Gas {
@@ -32,30 +32,44 @@ public class CloudBlock extends Block implements Gas {
     }
 
     @Override
+    public GasState getGasState(BlockState blockState) {
+        return variant;
+    }
+
+    @Override
+    public boolean canSuffocate(BlockState state, BlockView view, BlockPos pos) {
+       return !getGasState(state).isTranslucent();
+    }
+
+    @Override
     public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
         return getGasState(state).isTranslucent();
     }
 
     @Override
+    public boolean isSimpleFullBlock(BlockState state, BlockView view, BlockPos pos) {
+        return !getGasState(state).isTranslucent() && super.isSimpleFullBlock(state, view, pos);
+    }
+
+    @Override
+    public boolean allowsSpawning(BlockState state, BlockView view, BlockPos pos, EntityType<?> type) {
+        return getGasState(state).isTranslucent();
+    }
+
+    @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-        CloudInteractionContext ctx = (CloudInteractionContext)context;
-
-        if (!getGasState(state).canPlace(ctx)) {
-            return VoxelShapes.empty();
+        if (getGasState(state).canPlace((CloudInteractionContext)context)) {
+            return VoxelShapes.fullCube();
         }
-
-        return VoxelShapes.fullCube();
+        return VoxelShapes.empty();
     }
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
-        CloudInteractionContext ctx = (CloudInteractionContext)context;
-
-        if (!getGasState(state).canTouch(ctx)) {
-            return VoxelShapes.empty();
+        if (getGasState(state).canTouch((CloudInteractionContext)context)) {
+            return collidable ? VoxelShapes.fullCube() : VoxelShapes.empty();
         }
-
-        return collidable ? VoxelShapes.fullCube() : VoxelShapes.empty();
+        return VoxelShapes.empty();
     }
 
     @Override
@@ -75,14 +89,7 @@ public class CloudBlock extends Block implements Gas {
     @Override
     @Environment(EnvType.CLIENT)
     public boolean isSideInvisible(BlockState state, BlockState beside, Direction face) {
-        if (beside.getBlock() instanceof Gas && ((Gas)beside.getBlock()).getGasState(beside) == getGasState(state)) {
-            VoxelShape myShape = state.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-            VoxelShape otherShape = beside.getCollisionShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-
-            return VoxelShapes.isSideCovered(myShape, otherShape, face);
-        }
-
-        return super.isSideInvisible(state, beside, face);
+        return isFaceCoverd(state, beside, face);
     }
 
     @Override
@@ -113,10 +120,5 @@ public class CloudBlock extends Block implements Gas {
             return super.calcBlockBreakingDelta(state, player, worldIn, pos);
         }
         return -1;
-    }
-
-    @Override
-    public GasState getGasState(BlockState blockState) {
-        return variant;
     }
 }
