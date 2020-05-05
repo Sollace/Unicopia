@@ -23,6 +23,7 @@
     "client.DefaultTexturesRegistry",
     "client.MixinCamera",
     "client.MixinEntityRenderDispatcher",
+    "client.MixinInGameHud",
     "client.MixinGameRenderer",
     "client.MixinItemModels",
     "client.MixinKeyboardInput",

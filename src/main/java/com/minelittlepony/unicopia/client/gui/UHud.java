@@ -1,82 +1,94 @@
 package com.minelittlepony.unicopia.client.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.lwjgl.opengl.GL11;
-
-import com.minelittlepony.unicopia.entity.player.Pony;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.util.Window;
+import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
-public class UHud {
+public class UHud extends DrawableHelper {
 
     public static final UHud instance = new UHud();
 
-    private List<HudElement> elements = new ArrayList<>();
+    public static final Identifier HUD_TEXTURE = new Identifier("unicopia", "textures/gui/hud.png");
 
-    MinecraftClient mc = MinecraftClient.getInstance();
+    private Slot secondarySlot = new Slot(26, 0);
+    private Slot tertiarySlot = new Slot(36, 24);
 
-    TextRenderer fonts = mc.textRenderer;
+    public void render(InGameHud hud, float tickDelta) {
+        MinecraftClient client = MinecraftClient.getInstance();
 
-    Pony player;
+        int scaledWidth = client.getWindow().getScaledWidth();
+        int scaledHeight = client.getWindow().getScaledHeight();
 
-    int width;
+        int x = 104 + (scaledWidth - 50) / 2;
+        int y = 20 + scaledHeight - 70;
 
-    int height;
+        RenderSystem.enableAlphaTest();
+        RenderSystem.enableBlend();
 
-    boolean begin;
+        client.getTextureManager().bindTexture(HUD_TEXTURE);
 
-    private UHud() {
-        elements.add(new FlightExperienceBar());
+        int frameHeight = 54;
+        int frameWidth = 54;
+
+        blit(x, y, 0, 0, frameWidth, frameHeight, 128, 128); // background
+
+        float progressPercent = 0.25F;
+        int progressHeight = (int)(frameHeight * progressPercent);
+
+        blit(x, y + (frameHeight - progressHeight),
+            61, frameHeight - progressHeight,
+            frameWidth, progressHeight, 128, 128); // progress
+
+        blit(x, y, 0, 54, frameWidth, frameHeight, 128, 128); // frame
+
+
+
+        secondarySlot.render(x, y, 50, 100, tickDelta);
+        tertiarySlot.render(x, y, 5, 10, tickDelta);
+
+        RenderSystem.disableBlend();
+        RenderSystem.disableAlphaTest();
     }
 
-    public void renderHud(Pony player, Window resolution) {
-        this.width = resolution.getScaledWidth();
-        this.height = resolution.getScaledHeight();
-        this.player = player;
-        this.begin = true;
 
-        elements.forEach(this::renderElement);
-    }
+    static class Slot {
 
-    public void repositionElements(Pony player, Window window, boolean begin) {
-        this.width = window.getScaledWidth();
-        this.height = window.getScaledHeight();
-        this.player = player;
-        this.begin = begin;
+        private int x;
+        private int y;
 
-        elements.forEach(this::positionElement);
-    }
+        private float lastCooldown;
 
-    private void positionElement(HudElement element) {
-        if (!element.shouldRender(player)) {
-            return;
+        public Slot(int x, int y) {
+            this.x = x;
+            this.y = y;
         }
 
-        element.repositionHud(this);
-    }
+        void render(int x, int y, float cooldown, float maxCooldown, float tickDelta) {
+            x += this.x;
+            y += this.y;
 
-    private void renderElement(HudElement element) {
-        if (!element.shouldRender(player)) {
-            return;
+            if (cooldown > 0 && maxCooldown > 0 && cooldown < maxCooldown) {
+                float lerpCooldown = MathHelper.lerp(tickDelta, cooldown, lastCooldown);
+
+                lastCooldown = lerpCooldown;
+
+                float cooldownPercent = 1 - lerpCooldown / maxCooldown;
+
+                int slotPadding = 4;
+                int slotSize = 15;
+
+                int progressBottom = y + slotPadding + slotSize;
+                int progressTop = progressBottom - (int)(15F * cooldownPercent);
+
+                fill(x + slotPadding, progressTop, x + slotPadding + slotSize, progressBottom, 0xAAFFFFFF);
+            }
+
+            blit(x, y, 105, 105, 30, 30, 128, 128);
         }
 
-        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-
-        GlStateManager.pushMatrix();
-        GlStateManager.disableLighting();
-        GlStateManager.color4f(1, 1, 1, 1);
-
-        element.renderHud(this);
-
-        GlStateManager.popMatrix();
-
-        GL11.glPopAttrib();
-
     }
-
 }
