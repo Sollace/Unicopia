@@ -52,6 +52,9 @@ public interface UItems {
     Item DENSE_CLOUD_PILLAR = register("dense_cloud_pillar", new PredicatedBlockItem(UBlocks.DENSE_CLOUD_PILLAR, new Settings().group(ItemGroup.MATERIALS), PLAYER_PEGASUS));
 
     Item CLOUD_STAIRS = register("cloud_stairs", new PredicatedBlockItem(UBlocks.CLOUD_STAIRS, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS));
+    Item ENCHANTED_CLOUD_STAIRS = register("enchanted_cloud_stairs", new PredicatedBlockItem(UBlocks.ENCHANTED_CLOUD_STAIRS, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS));
+    Item DENSE_CLOUD_STAIRS = register("dense_cloud_stairs", new PredicatedBlockItem(UBlocks.DENSE_CLOUD_STAIRS, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS));
+
     Item CLOUD_FENCE = register("cloud_fence", new PredicatedBlockItem(UBlocks.CLOUD_FENCE, new Settings().group(ItemGroup.DECORATIONS), PLAYER_PEGASUS));
     Item CLOUD_ANVIL = register("cloud_anvil", new PredicatedBlockItem(UBlocks.CLOUD_ANVIL, new Settings().group(ItemGroup.DECORATIONS), PLAYER_PEGASUS));
 

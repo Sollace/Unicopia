@@ -36,6 +36,8 @@ public interface UBlocks {
     CloudBlock DENSE_CLOUD_PILLAR = register("dense_cloud_pillar", new PillarCloudBlock(GasState.DENSE));
 
     CloudStairsBlock CLOUD_STAIRS = register("cloud_stairs", new CloudStairsBlock(CLOUD_BLOCK.getDefaultState(), GasState.NORMAL.configure().build()));
+    CloudStairsBlock ENCHANTED_CLOUD_STAIRS = register("enchanted_cloud_stairs", new CloudStairsBlock(ENCHANTED_CLOUD_BLOCK.getDefaultState(), GasState.ENCHANTED.configure().build()));
+    CloudStairsBlock DENSE_CLOUD_STAIRS = register("dense_cloud_stairs", new CloudStairsBlock(DENSE_CLOUD_BLOCK.getDefaultState(), GasState.DENSE.configure().build()));
 
     CloudSlabBlock CLOUD_SLAB = register("cloud_slab", new CloudSlabBlock(CLOUD_BLOCK.getDefaultState(), GasState.NORMAL.configure().build()));
     CloudSlabBlock ENCHANTED_CLOUD_SLAB = register("enchanted_cloud_slab", new CloudSlabBlock(ENCHANTED_CLOUD_BLOCK.getDefaultState(), GasState.ENCHANTED.configure().build()));

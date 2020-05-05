@@ -10,6 +10,9 @@
   "block.unicopia.enchanted_cloud_slab": "Enchanted Cloud Slab",
 
   "block.unicopia.cloud_stairs": "Cloud Stairs",
+  "block.unicopia.dense_cloud_stairs": "Dense Cloud Stairs",
+  "block.unicopia.enchanted_cloud_stairs": "Enchanted Cloud Stairs",
+  
   "block.unicopia.cloud_fence": "Cloud Fence",
   "block.unicopia.cloud_farmland": "Tilled Clouds",
   "block.unicopia.cloud_anvil": "Cloud Anvil",

@@ -47,7 +47,7 @@ public interface URenderers {
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(),
                 UBlocks.CLOUD_ANVIL, UBlocks.CLOUD_FARMLAND,
                 UBlocks.CLOUD_BLOCK, UBlocks.CLOUD_SLAB, UBlocks.CLOUD_STAIRS,
-                UBlocks.ENCHANTED_CLOUD_BLOCK, UBlocks.ENCHANTED_CLOUD_SLAB,
+                UBlocks.ENCHANTED_CLOUD_BLOCK, UBlocks.ENCHANTED_CLOUD_SLAB, UBlocks.ENCHANTED_CLOUD_STAIRS,
 
                 UBlocks.SLIME_DROP, UBlocks.SLIME_LAYER
         );
