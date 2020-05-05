@@ -95,6 +95,7 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
                 && !entity.isSneaking()
                 && !hasPassengers()
                 && entity instanceof LivingEntity
+                && !entity.hasVehicle()
                 && !(entity instanceof CuccoonEntity)
                 && !EquinePredicates.PLAYER_CHANGELING.test(entity);
     }
