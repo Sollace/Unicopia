@@ -128,7 +128,9 @@ public class ChangelingFeedAbility implements Ability<Hit> {
         ParticleUtils.spawnParticles(UParticles.CHANGELING_MAGIC, living, 7);
 
         if (changeling.hasStatusEffect(StatusEffects.NAUSEA)) {
-            living.addStatusEffect(changeling.removeStatusEffectInternal(StatusEffects.NAUSEA));
+            StatusEffectInstance effect = changeling.getStatusEffect(StatusEffects.NAUSEA);
+            changeling.removeStatusEffect(StatusEffects.NAUSEA);
+            living.addStatusEffect(effect);
         } else if (changeling.getEntityWorld().random.nextInt(2300) == 0) {
             living.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20, 1));
         }
