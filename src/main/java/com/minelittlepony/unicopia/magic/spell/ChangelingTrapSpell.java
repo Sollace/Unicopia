@@ -186,6 +186,8 @@ public class ChangelingTrapSpell extends AbstractSpell implements TossedMagicEff
         } else {
             existing.enforce(e);
         }
+
+        e.spawnParticles(ParticleTypes.DRIPPING_LAVA, 20);
     }
 
     protected boolean canAffect(Entity e) {
@@ -199,6 +201,7 @@ public class ChangelingTrapSpell extends AbstractSpell implements TossedMagicEff
         if (caster.isLocal()) {
             caster.findAllEntitiesInRange(5)
                 .filter(this::canAffect)
+                .filter(e -> e != caster.getOwner())
                 .map(e -> CasterUtils.toCaster(e))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
