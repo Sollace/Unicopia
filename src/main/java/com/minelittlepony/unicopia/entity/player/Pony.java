@@ -4,9 +4,9 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
+import com.minelittlepony.unicopia.ducks.PonyContainer;
 import com.minelittlepony.unicopia.enchanting.PageOwner;
 import com.minelittlepony.unicopia.entity.FlightControl;
-import com.minelittlepony.unicopia.entity.Ponylike;
 import com.minelittlepony.unicopia.entity.RaceContainer;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.network.Transmittable;
@@ -97,9 +97,10 @@ public interface Pony extends Caster<PlayerEntity>, RaceContainer<PlayerEntity>,
         return InteractionManager.instance().isClientPlayer(getOwner());
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
     static Pony of(@Nullable PlayerEntity player) {
-        return Ponylike.<Pony>of(player);
+        return player == null ? null : ((PonyContainer<Pony>)player).get();
     }
 
     static boolean equal(GameProfile one, GameProfile two) {

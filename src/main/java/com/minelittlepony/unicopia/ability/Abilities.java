@@ -1,41 +1,40 @@
 package com.minelittlepony.unicopia.ability;
 
-import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.Map;
-
-import org.lwjgl.glfw.GLFW;
+import java.util.Set;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.SimpleRegistry;
 
 public interface Abilities {
-    Map<Identifier, Integer> KEYS_CODES = new HashMap<>();
+    Map<AbilitySlot, Set<Ability<?>>> BY_SLOT = new EnumMap<>(AbilitySlot.class);
     MutableRegistry<Ability<?>> REGISTRY = new SimpleRegistry<>();
 
     // unicorn / alicorn
-    Ability<?> TELEPORT = register(new UnicornTeleportAbility(), "teleport", GLFW.GLFW_KEY_O);
-    Ability<?> CAST = register(new UnicornCastingAbility(), "cast", GLFW.GLFW_KEY_P);
+    Ability<?> TELEPORT = register(new UnicornTeleportAbility(), "teleport", AbilitySlot.PRIMARY);
+    Ability<?> CAST = register(new UnicornCastingAbility(), "cast", AbilitySlot.SECONDARY);
 
     // earth / alicorn
-    Ability<?> GROW = register(new EarthPonyGrowAbility(), "grow", GLFW.GLFW_KEY_N);
-    Ability<?> STOMP = register(new EarthPonyStompAbility(), "stomp", GLFW.GLFW_KEY_M);
+    Ability<?> STOMP = register(new EarthPonyStompAbility(), "stomp", AbilitySlot.PRIMARY);
+    Ability<?> GROW = register(new EarthPonyGrowAbility(), "grow", AbilitySlot.SECONDARY);
 
     // pegasus / bat / alicorn / changeling
-    Ability<?> CARRY = register(new CarryAbility(), "carry", GLFW.GLFW_KEY_K);
+    Ability<?> CARRY = register(new CarryAbility(), "carry", AbilitySlot.PASSIVE);
 
     // pegasus / alicorn
-    Ability<?> CLOUD = register(new PegasusCloudInteractionAbility(), "cloud", GLFW.GLFW_KEY_J);
+    Ability<?> CLOUD = register(new PegasusCloudInteractionAbility(), "cloud", AbilitySlot.TERTIARY);
 
     // changeling
-    Ability<?> FEED = register(new ChangelingFeedAbility(), "feed", GLFW.GLFW_KEY_O);
-    Ability<?> TRAP = register(new ChangelingTrapAbility(), "trap", GLFW.GLFW_KEY_L);
+    Ability<?> DISGUISE = register(new ChangelingDisguiseAbility(), "disguise", AbilitySlot.PRIMARY);
+    Ability<?> FEED = register(new ChangelingFeedAbility(), "feed", AbilitySlot.SECONDARY);
+    Ability<?> TRAP = register(new ChangelingTrapAbility(), "trap", AbilitySlot.TERTIARY);
 
-    Ability<?> DISGUISE = register(new ChangelingDisguiseAbility(), "disguise", GLFW.GLFW_KEY_P);
-
-    static <T extends Ability<?>> T register(T power, String name, int keyCode) {
+    static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {
         Identifier id = new Identifier("unicopia", name);
-        KEYS_CODES.put(id, keyCode);
+        BY_SLOT.computeIfAbsent(slot, s -> new HashSet<>()).add(power);
         return REGISTRY.add(id, power);
     }
 }

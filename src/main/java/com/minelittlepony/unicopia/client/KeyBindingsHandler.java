@@ -1,17 +1,13 @@
 package com.minelittlepony.unicopia.client;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.ability.Abilities;
-import com.minelittlepony.unicopia.ability.Ability;
-import com.minelittlepony.unicopia.ability.data.Hit;
+import org.lwjgl.glfw.GLFW;
+
+import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
@@ -24,27 +20,25 @@ import net.minecraft.util.Identifier;
 class KeyBindingsHandler {
     private final String KEY_CATEGORY = "unicopia.category.name";
 
-    private final Map<InputUtil.KeyCode, List<Ability<? extends Hit>>> keyPools = new HashMap<>();
-
-    private final Set<KeyBinding> bindings = new HashSet<>();
+    private final Map<KeyBinding, AbilitySlot> keys = new HashMap<>();
 
     private final Set<KeyBinding> pressed = new HashSet<>();
 
-    private Collection<Ability<?>> getKeyCodePool(KeyBinding keyCode) {
-        return keyPools.computeIfAbsent(keyCode.getDefaultKeyCode(), i -> new ArrayList<>());
-    }
-
-    public void addKeybind(Ability<?> p) {
+    public KeyBindingsHandler() {
         KeyBindingRegistry.INSTANCE.addCategory(KEY_CATEGORY);
 
-        Identifier id = Abilities.REGISTRY.getId(p);
-        int code = Abilities.KEYS_CODES.get(id);
+        addKeybind(GLFW.GLFW_KEY_O, AbilitySlot.PRIMARY);
+        addKeybind(GLFW.GLFW_KEY_P, AbilitySlot.SECONDARY);
+        addKeybind(GLFW.GLFW_KEY_L, AbilitySlot.TERTIARY);
+    }
 
-        FabricKeyBinding b = FabricKeyBinding.Builder.create(id, InputUtil.Type.KEYSYM, code, KEY_CATEGORY).build();
+    public void addKeybind(int code, AbilitySlot slot) {
+        KeyBindingRegistry.INSTANCE.addCategory(KEY_CATEGORY);
+
+        FabricKeyBinding b = FabricKeyBinding.Builder.create(new Identifier("unicopia", slot.name().toLowerCase()), InputUtil.Type.KEYSYM, code, KEY_CATEGORY).build();
         KeyBindingRegistry.INSTANCE.register(b);
 
-        getKeyCodePool(b).add(p);
-        bindings.add(b);
+        keys.put(b, slot);
     }
 
     public void tick(MinecraftClient client) {
@@ -54,19 +48,20 @@ class KeyBindingsHandler {
         }
         Pony iplayer = Pony.of(client.player);
 
-        for (KeyBinding i : bindings) {
+        for (KeyBinding i : keys.keySet()) {
+            AbilitySlot slot = keys.get(i);
+            if (slot == AbilitySlot.PRIMARY && client.options.keySneak.isPressed()) {
+                slot = AbilitySlot.PASSIVE;
+            }
+
             if (i.isPressed()) {
                 if (pressed.add(i)) {
-                    System.out.println("key press " + i);
-                    Race race = iplayer.getSpecies();
-                    getKeyCodePool(i).stream()
-                        .filter(power -> power.canUse(race))
-                        .findFirst()
-                        .ifPresent(iplayer.getAbilities()::tryUseAbility);
+                    System.out.println("Key down " + slot);
+                    iplayer.getAbilities().activate(slot);
                 }
             } else if (pressed.remove(i)) {
-                System.out.println("key release " + i);
-                iplayer.getAbilities().tryClearAbility();
+                System.out.println("Key up " + slot);
+                iplayer.getAbilities().cancelAbility(slot);
             }
         }
     }

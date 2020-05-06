@@ -193,7 +193,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
 
     @Override
     public void postApply(Pony player) {
-        int timeDiff = getCooldownTime(player) - player.getAbilities().getRemainingCooldown();
+        int timeDiff = getCooldownTime(player) - player.getAbilities().getStat(player.getAbilities().getActiveSlot()).getRemainingCooldown();
 
         if (player.getOwner().getEntityWorld().getTime() % 1 == 0 || timeDiff == 0) {
             spawnParticleRing(player.getOwner(), timeDiff, 1);

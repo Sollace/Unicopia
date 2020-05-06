@@ -4,10 +4,8 @@ import static com.minelittlepony.unicopia.EquinePredicates.PLAYER_UNICORN;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.common.event.ClientReadyCallback;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.container.SpellbookResultSlot;
 import com.minelittlepony.unicopia.ducks.Colourful;
@@ -45,8 +43,6 @@ public class UnicopiaClient implements ClientModInitializer {
         URenderers.bootstrap();
 
         ClientTickCallback.EVENT.register(this::tick);
-        ClientReadyCallback.EVENT.register(client -> Abilities.REGISTRY.stream().forEach(keyboard::addKeybind));
-
         DefaultTexturesRegistry.getDefaultTextures().add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEX, SpellbookResultSlot.EMPTY_GEM_SLOT));
 
         ColorProviderRegistry.ITEM.register((stack, tint) -> {
