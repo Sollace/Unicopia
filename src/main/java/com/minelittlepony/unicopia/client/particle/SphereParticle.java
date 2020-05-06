@@ -4,13 +4,14 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
+import com.minelittlepony.client.render.MagicGlow;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.particles.ParticleHandle.Attachment;
@@ -24,7 +25,12 @@ public class SphereParticle extends Particle implements Attachment {
     protected float blue;
     protected float alpha;
 
+    protected float prevRadius;
     protected float radius;
+
+    protected int steps;
+    protected float lerpIncrement;
+    protected float toRadius;
 
     private Caster<?> caster;
 
@@ -64,7 +70,9 @@ public class SphereParticle extends Particle implements Attachment {
     @Override
     public void setAttribute(int key, Object value) {
         if (key == 0) {
-            radius = (float)value;
+            toRadius = (float)value;
+            steps = 20;
+            lerpIncrement = (toRadius - radius) / steps;
         }
         if (key == 1) {
             int tint = (int)value;
@@ -94,6 +102,14 @@ public class SphereParticle extends Particle implements Attachment {
                 }
 
                 setPos(e.getX(), e.getY(), e.getZ());
+
+                prevPosX = e.lastRenderX;
+                prevPosY = e.lastRenderY;
+                prevPosZ = e.lastRenderZ;
+            }
+
+            if (steps-- > 0) {
+                radius += lerpIncrement;
             }
         } else {
             radius *= 0.9998281;
@@ -102,16 +118,29 @@ public class SphereParticle extends Particle implements Attachment {
 
     @Override
     public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
+
         if (alpha <= 0 || radius <= 0) {
             return;
         }
 
         MatrixStack matrices = new MatrixStack();
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        model.setPosition(x, y, z);
+        model.setPosition(
+                MathHelper.lerp(tickDelta, prevPosX, x) - camera.getPos().x,
+                MathHelper.lerp(tickDelta, prevPosY, y) - camera.getPos().y,
+                MathHelper.lerp(tickDelta, prevPosZ, z) - camera.getPos().z
+        );
         model.setRotation(0, 0, 0);
-        model.render(matrices, radius, immediate.getBuffer(RenderLayer.getTranslucent()), 1, 1, red, green, blue, alpha);
+
+        float lerpedRad = MathHelper.lerp(tickDelta, prevRadius, radius);
+
+        model.render(matrices, lerpedRad + 0.1F, immediate.getBuffer(MagicGlow.getRenderLayer()), 1, 1, red, green, blue, alpha);
+
+        model.render(matrices, lerpedRad - 0.1F, immediate.getBuffer(MagicGlow.getRenderLayer()), 1, 1, red * 0.9F, green * 0.9F, blue * 0.9F, Math.min(1, alpha + 0.2F));
+
         immediate.draw();
+
+        prevRadius = radius;
     }
 }
 
