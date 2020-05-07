@@ -12,10 +12,10 @@ import net.minecraft.particle.ParticleEffect;
 public final class ParticleUtils {
 
     public static void spawnParticles(ParticleEffect particleId, Entity entity, int count) {
-        double halfDist = entity.getStandingEyeHeight() / 1.5;
+        double halfDist = Math.abs(entity.getStandingEyeHeight() / 1.5);
         double middle = entity.getBoundingBox().y1 + halfDist;
 
-        Shape shape = new Sphere(false, (float)halfDist + entity.getWidth());
+        Shape shape = new Sphere(false, Math.abs((float)halfDist + entity.getWidth()));
 
         shape.randomPoints(count, entity.world.random).forEach(point -> {
             entity.world.addParticle(particleId,
