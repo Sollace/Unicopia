@@ -105,7 +105,7 @@ public class MagicGemItem extends Item implements Castable {
             return ActionResult.SUCCESS;
         }
 
-        return ActionResult.FAIL;
+        return ActionResult.SUCCESS;
     }
 
     @Override

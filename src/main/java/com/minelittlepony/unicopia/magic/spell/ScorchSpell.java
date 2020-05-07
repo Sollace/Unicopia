@@ -55,6 +55,7 @@ public class ScorchSpell extends FireSpell implements TossedMagicEffect {
 
     @Override
     public void render(Caster<?> source) {
+        source.addParticle(ParticleTypes.END_ROD, source.getOriginVector(), Vec3d.ZERO);
         source.spawnParticles(ParticleTypes.FLAME, 3);
         source.spawnParticles(new MagicParticleEffect(getTint()), 3);
     }

@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.entity.Owned;
 import com.minelittlepony.unicopia.particles.ParticleSource;
 import com.minelittlepony.unicopia.util.VecHelper;
