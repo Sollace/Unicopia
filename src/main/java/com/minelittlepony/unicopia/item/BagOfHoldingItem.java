@@ -6,9 +6,9 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.container.BagOfHoldingContainer;
 import com.minelittlepony.unicopia.container.BagOfHoldingInventory;
 import com.minelittlepony.unicopia.container.UContainers;
+import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.MagicalItem;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -16,14 +16,14 @@ import com.minelittlepony.unicopia.util.VecHelper;
 import net.fabricmc.fabric.api.container.ContainerProviderRegistry;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.container.NameableContainerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -31,6 +31,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.BlockPos;
@@ -55,9 +56,9 @@ public class BagOfHoldingItem extends Item implements MagicalItem {
             return true;
         });
 
-        for (Text name : counts.keySet()) {
-            tooltip.add(name.append(" ").append(counts.get(name).toString()));
-        }
+        counts.forEach((line, count) -> {
+            tooltip.add(line.deepCopy().append(" ").append(count.toString()));
+        });
     }
 
     @Override
@@ -80,12 +81,13 @@ public class BagOfHoldingItem extends Item implements MagicalItem {
                     BlockEntity tile = world.getBlockEntity(pos);
 
                     if (tile instanceof Inventory) {
-                        BagOfHoldingInventory inventory = BagOfHoldingInventory.getInventoryFromStack(stack);
+                        if (!world.isClient) {
+                            BagOfHoldingInventory inventory = BagOfHoldingInventory.getInventoryFromStack(stack);
 
-                        inventory.addBlockEntity(world, pos, (BlockEntity & Inventory)tile);
-                        inventory.writeTostack(stack);
-                        inventory.onInvClose(player);
-
+                            inventory.addBlockEntity(world, pos, (BlockEntity & Inventory)tile);
+                            inventory.writeTostack(stack);
+                            inventory.onInvClose(player);
+                        }
                         return new TypedActionResult<>(ActionResult.SUCCESS, stack);
                     }
 
@@ -94,12 +96,27 @@ public class BagOfHoldingItem extends Item implements MagicalItem {
                     List<Entity> itemsAround = world.getEntities(player, box, EquinePredicates.IS_VALID_ITEM);
 
                     if (itemsAround.size() > 0) {
-                        BagOfHoldingInventory inventory = BagOfHoldingInventory.getInventoryFromStack(stack);
+                        if (!world.isClient) {
+                            BagOfHoldingInventory inventory = BagOfHoldingInventory.getInventoryFromStack(stack);
 
-                        inventory.addItem((ItemEntity)itemsAround.get(0));
-                        inventory.writeTostack(stack);
-                        inventory.onInvClose(player);
+                            inventory.addItem((ItemEntity)itemsAround.get(0));
+                            inventory.writeTostack(stack);
+                            inventory.onInvClose(player);
+                        }
+                        return new TypedActionResult<>(ActionResult.SUCCESS, stack);
+                    }
+                } else if (hit.getType() == HitResult.Type.ENTITY) {
 
+                    Entity e = ((EntityHitResult)hit).getEntity();
+
+                    if (e instanceof LivingEntity && !(e instanceof PlayerEntity) && !(e instanceof IMagicals)) {
+                        if (!world.isClient) {
+                            BagOfHoldingInventory inventory = BagOfHoldingInventory.getInventoryFromStack(stack);
+
+                            inventory.addEntity(world, e);
+                            inventory.writeTostack(stack);
+                            inventory.onInvClose(player);
+                        }
                         return new TypedActionResult<>(ActionResult.SUCCESS, stack);
                     }
                 }
@@ -108,9 +125,16 @@ public class BagOfHoldingItem extends Item implements MagicalItem {
             return new TypedActionResult<>(ActionResult.FAIL, stack);
         }
 
-        ContainerProviderRegistry.INSTANCE.openContainer(UContainers.BAG_OF_HOLDING, player, o -> {});
-        player.openContainer(new ContainerProvider(stack));
-
+        if (player instanceof ServerPlayerEntity) {
+            ContainerProviderRegistry.INSTANCE.openContainer(UContainers.BAG_OF_HOLDING, player, o -> {
+                if (stack.hasCustomName()) {
+                    o.writeText(stack.getName());
+                } else {
+                    o.writeText(new TranslatableText("unicopi.gui.title.itemofholding"));
+                }
+            });
+            // player.openContainer(new ContainerProvider(stack));
+        }
         player.playSound(SoundEvents.BLOCK_ENDER_CHEST_OPEN, 0.5F, 1);
 
         return new TypedActionResult<>(ActionResult.SUCCESS, stack);
@@ -119,29 +143,5 @@ public class BagOfHoldingItem extends Item implements MagicalItem {
     @Override
     public Affinity getAffinity() {
         return Affinity.NEUTRAL;
-    }
-
-    public static class ContainerProvider implements NameableContainerFactory {
-
-        private Text customname = null;
-
-        ContainerProvider(ItemStack stack) {
-            if (stack.hasCustomName()) {
-                customname = stack.getName();
-            }
-        }
-
-        @Override
-        public Text getDisplayName() {
-            if (customname != null) {
-                return customname;
-            }
-            return new TranslatableText("unicopi.gui.title.itemofholding");
-        }
-
-        @Override
-        public BagOfHoldingContainer createMenu(int id, PlayerInventory inv, PlayerEntity player) {
-            return new BagOfHoldingContainer(id, null, player, null);
-        }
     }
 }

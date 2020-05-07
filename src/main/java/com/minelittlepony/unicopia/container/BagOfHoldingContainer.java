@@ -88,6 +88,8 @@ public class BagOfHoldingContainer extends Container {
             }
         }
 
+        sendContentUpdates();
+
         return resultingStack;
     }
 

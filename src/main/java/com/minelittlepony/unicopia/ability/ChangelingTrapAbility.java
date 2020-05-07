@@ -7,6 +7,8 @@ import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.ChangelingTrapSpell;
 
+// TODO: Make this a throwable item instead
+@Deprecated
 public class ChangelingTrapAbility implements Ability<Hit> {
 
     @Override

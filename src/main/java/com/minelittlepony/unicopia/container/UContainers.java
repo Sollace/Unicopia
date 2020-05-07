@@ -12,7 +12,7 @@ public interface UContainers {
 
     static Identifier register(String name, ContainerFactory<Container> factory) {
         Identifier id = new Identifier("unicopia", name);
-        ContainerProviderRegistry.INSTANCE.registerFactory(BAG_OF_HOLDING, factory);
+        ContainerProviderRegistry.INSTANCE.registerFactory(id, factory);
         return id;
     }
 

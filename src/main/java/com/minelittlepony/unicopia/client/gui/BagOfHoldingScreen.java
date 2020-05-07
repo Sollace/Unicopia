@@ -1,13 +1,14 @@
-package com.minelittlepony.unicopia.container;
+package com.minelittlepony.unicopia.client.gui;
 
 import com.minelittlepony.common.client.gui.element.Scrollbar;
-import com.minelittlepony.unicopia.item.BagOfHoldingItem;
+import com.minelittlepony.unicopia.container.BagOfHoldingContainer;
 import com.mojang.blaze3d.platform.GlStateManager;
 
 import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.PacketByteBuf;
 
 public class BagOfHoldingScreen extends ContainerScreen<BagOfHoldingContainer> {
     private static final Identifier CHEST_GUI_TEXTURE = new Identifier("textures/gui/container/generic_54.png");
@@ -17,12 +18,11 @@ public class BagOfHoldingScreen extends ContainerScreen<BagOfHoldingContainer> {
 
     private final Scrollbar scrollbar = new Scrollbar();
 
-    public BagOfHoldingScreen(PlayerEntity player, BagOfHoldingItem.ContainerProvider provider) {
-        super(provider.createMenu(0, player.inventory, player), player.inventory, provider.getDisplayName());
+    public BagOfHoldingScreen(int sync, Identifier id, PlayerEntity player, PacketByteBuf buf) {
+        super(new BagOfHoldingContainer(sync, id, player, buf), player.inventory, buf.readText());
 
         playerRows = playerInventory.getInvSize() / 9;
         inventoryRows = (container.slots.size() / 9) - 1;
-
     }
 
     @Override
@@ -70,6 +70,11 @@ public class BagOfHoldingScreen extends ContainerScreen<BagOfHoldingContainer> {
 
     @Override
     public boolean mouseDragged(double x, double y, int button, double dx, double dy) {
+
+        if (scrollbar.isMouseOver(x, y)) {
+            return scrollbar.mouseDragged(x, y + scrollbar.getScrollAmount(), button, dx, dy);
+        }
+
         return super.mouseDragged(x, y + scrollbar.getScrollAmount(), button, dx, dy);
     }
 

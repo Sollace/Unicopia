@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.client;
 
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.client.gui.UScreens;
 import com.minelittlepony.unicopia.client.particle.ChangelingMagicParticle;
 import com.minelittlepony.unicopia.client.particle.DiskParticle;
 import com.minelittlepony.unicopia.client.particle.MagicParticle;
@@ -51,6 +52,8 @@ public interface URenderers {
 
                 UBlocks.SLIME_DROP, UBlocks.SLIME_LAYER
         );
+
+        UScreens.bootstrap();
     }
 }
 

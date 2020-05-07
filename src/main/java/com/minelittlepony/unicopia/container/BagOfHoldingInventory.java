@@ -15,11 +15,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.EnderChestBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.CompoundTag;
@@ -90,6 +93,34 @@ public class BagOfHoldingInventory extends BasicInventory implements NbtSerialis
         return name;
     }
 
+    public void addEntity(World world, Entity entity) {
+
+        SpawnEggItem item = SpawnEggItem.forEntity(entity.getType());
+
+        ItemStack stack = new ItemStack(item);
+
+        CompoundTag tag = entity.toTag(stack.getOrCreateSubTag("EntityTag"));
+        tag.remove("Pos");
+        tag.remove("UUIDMost");
+        tag.remove("UUIDLeast");
+
+        for (ItemStack i : entity.getItemsEquipped()) {
+            if (isIllegalItem(i)) {
+                stack.getTag().putBoolean("invalid", true);
+                break;
+            }
+        }
+
+        add(stack);
+        entity.remove();
+
+        if (entity instanceof MobEntity) {
+            ((MobEntity)entity).playAmbientSound();
+        }
+
+        world.playSound(null, entity.getBlockPos(), SoundEvents.UI_TOAST_IN, SoundCategory.PLAYERS, 3.5F, 0.25F);
+    }
+
     public <T extends BlockEntity & Inventory> void addBlockEntity(World world, BlockPos pos, T blockInventory) {
         BlockState state = world.getBlockState(pos);
 
@@ -101,7 +132,7 @@ public class BagOfHoldingInventory extends BasicInventory implements NbtSerialis
 
         ItemStack blockStack = state.getDroppedStacks(context).get(0);
 
-        blockInventory.toTag(blockStack.getSubTag("BlockEntityTag"));
+        blockInventory.toTag(blockStack.getOrCreateSubTag("BlockEntityTag"));
 
         for (int i = 0; i < blockInventory.getInvSize(); i++) {
             ItemStack stack = blockInventory.getInvStack(i);

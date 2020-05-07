@@ -1,9 +1,10 @@
-package com.minelittlepony.unicopia.container;
+package com.minelittlepony.unicopia.client.gui;
 
 import org.lwjgl.opengl.GL11;
 
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.container.SpellBookContainer;
 import com.minelittlepony.unicopia.container.SpellBookContainer.SpellbookSlot;
 import com.minelittlepony.unicopia.enchanting.IPageUnlockListener;
 import com.minelittlepony.unicopia.enchanting.Page;
