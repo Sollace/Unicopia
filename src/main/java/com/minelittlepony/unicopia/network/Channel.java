@@ -36,7 +36,7 @@ public interface Channel {
             T p = factory.apply(buffer);
             p.handle(context);
             sender.world.getPlayers().forEach(player -> {
-                if (player != null && player != sender) {
+                if (player != null) {
                     redirect.send(player, p);
                 }
             });
