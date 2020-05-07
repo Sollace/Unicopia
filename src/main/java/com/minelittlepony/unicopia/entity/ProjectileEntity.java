@@ -222,8 +222,8 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
     }
 
     @Override
-    public void handleStatus(byte byte_1) {
-       if (byte_1 == 3) {
+    public void handleStatus(byte id) {
+       if (id == 3) {
           ParticleEffect effect = getParticleParameters();
 
           for(int i = 0; i < 8; i++) {
@@ -253,10 +253,14 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
 
     @Override
     protected void onCollision(HitResult result) {
-        if (result.getType() == HitResult.Type.BLOCK) {
-            onHitBlock((BlockHitResult)result);
-        } else if (result.getType() == HitResult.Type.ENTITY) {
-            onHitEntity((EntityHitResult)result);
+        if (!removed) {
+            remove();
+
+            if (result.getType() == HitResult.Type.BLOCK) {
+                onHitBlock((BlockHitResult)result);
+            } else if (result.getType() == HitResult.Type.ENTITY) {
+                onHitEntity((EntityHitResult)result);
+            }
         }
     }
 
