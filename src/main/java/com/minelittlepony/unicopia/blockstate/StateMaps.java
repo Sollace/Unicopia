@@ -48,7 +48,7 @@ public class StateMaps {
         a.removeBlock(s -> s.getBlock() instanceof PlantBlock);
         a.replaceBlock(Blocks.CLAY, Blocks.BROWN_CONCRETE);
         a.replaceBlock(Blocks.OBSIDIAN, Blocks.LAVA);
-        a.replaceBlock(Blocks.GRASS, Blocks.DIRT);
+        a.replaceBlock(Blocks.GRASS_BLOCK, Blocks.DIRT);
         a.replaceBlock(Blocks.MOSSY_COBBLESTONE, Blocks.COBBLESTONE);
         a.replaceBlock(Blocks.MOSSY_COBBLESTONE_WALL, Blocks.COBBLESTONE_WALL);
         a.replaceBlock(Blocks.MOSSY_STONE_BRICKS, Blocks.STONE_BRICKS);
@@ -62,7 +62,7 @@ public class StateMaps {
 
     public static final BlockStateConverter HELLFIRE_AFFECTED = register(Util.make(new BlockStateMap(), a -> {
         a.add(StateMapping.build(
-                s -> s.getBlock() == Blocks.GRASS || s.getBlock() == Blocks.DIRT || s.getBlock() == Blocks.STONE,
+                s -> s.getBlock() == Blocks.GRASS_BLOCK || s.getBlock() == Blocks.DIRT || s.getBlock() == Blocks.STONE,
                 s -> Blocks.NETHERRACK.getDefaultState()));
         a.replaceBlock(Blocks.SAND, Blocks.SOUL_SAND);
         a.replaceBlock(Blocks.GRAVEL, Blocks.SOUL_SAND);
