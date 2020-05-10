@@ -71,11 +71,11 @@ public class CarryAbility implements Ability<Hit> {
     }
 
     @Override
-    public void preApply(Pony player) {
+    public void preApply(Pony player, AbilitySlot slot) {
     }
 
     @Override
-    public void postApply(Pony player) {
+    public void postApply(Pony player, AbilitySlot slot) {
     }
 
     public interface IPickupImmuned {

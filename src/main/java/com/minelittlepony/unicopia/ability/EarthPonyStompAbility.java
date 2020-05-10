@@ -186,14 +186,14 @@ public class EarthPonyStompAbility implements Ability<Multi> {
     }
 
     @Override
-    public void preApply(Pony player) {
+    public void preApply(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().addExertion(40);
         player.getOwner().attemptSprintingParticles();
     }
 
     @Override
-    public void postApply(Pony player) {
-        int timeDiff = getCooldownTime(player) - player.getAbilities().getStat(player.getAbilities().getActiveSlot()).getRemainingCooldown();
+    public void postApply(Pony player, AbilitySlot slot) {
+        int timeDiff = getCooldownTime(player) - player.getAbilities().getStat(slot).getRemainingCooldown();
 
         if (player.getOwner().getEntityWorld().getTime() % 1 == 0 || timeDiff == 0) {
             spawnParticleRing(player.getOwner(), timeDiff, 1);

@@ -66,12 +66,12 @@ public class PegasusCloudInteractionAbility implements Ability<Numeric> {
     }
 
     @Override
-    public void preApply(Pony player) {
+    public void preApply(Pony player, AbilitySlot slot) {
         player.spawnParticles(MagicParticleEffect.UNICORN, 10);
     }
 
     @Override
-    public void postApply(Pony player) {
+    public void postApply(Pony player, AbilitySlot slot) {
         player.spawnParticles(UParticles.RAIN_DROPS, 5);
     }
 

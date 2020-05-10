@@ -14,8 +14,8 @@ public interface Abilities {
     MutableRegistry<Ability<?>> REGISTRY = new SimpleRegistry<>();
 
     // unicorn / alicorn
-    Ability<?> TELEPORT = register(new UnicornTeleportAbility(), "teleport", AbilitySlot.PRIMARY);
-    Ability<?> CAST = register(new UnicornCastingAbility(), "cast", AbilitySlot.SECONDARY);
+    Ability<?> TELEPORT = register(new UnicornTeleportAbility(), "teleport", AbilitySlot.SECONDARY);
+    Ability<?> CAST = register(new UnicornCastingAbility(), "cast", AbilitySlot.PRIMARY);
 
     // earth / alicorn
     Ability<?> STOMP = register(new EarthPonyStompAbility(), "stomp", AbilitySlot.PRIMARY);
@@ -30,7 +30,7 @@ public interface Abilities {
     // changeling
     Ability<?> DISGUISE = register(new ChangelingDisguiseAbility(), "disguise", AbilitySlot.PRIMARY);
     Ability<?> FEED = register(new ChangelingFeedAbility(), "feed", AbilitySlot.SECONDARY);
-    Ability<?> TRAP = register(new ChangelingTrapAbility(), "trap", AbilitySlot.TERTIARY);
+    //Ability<?> TRAP = register(new ChangelingTrapAbility(), "trap", AbilitySlot.TERTIARY);
 
     static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {
         Identifier id = new Identifier("unicopia", name);

@@ -4,8 +4,6 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.Nullable;
-
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -23,39 +21,22 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
     private final Map<AbilitySlot, Stat> stats = new EnumMap<>(AbilitySlot.class);
 
-    /**
-     * True once the current ability has been triggered.
-     */
-    private boolean triggered;
-
-    private Optional<Ability<?>> activeAbility = Optional.empty();
-
-    private AbilitySlot activeSlot = AbilitySlot.NONE;
-
     public AbilityDispatcher(Pony player) {
         this.player = player;
     }
 
-    /**
-     * Returns true if the current ability can we swapped out.
-     */
-    boolean canSwitchStates() {
-        return !activeAbility.isPresent() || getStat(getActiveSlot()).canSwitchStates();
-    }
+    public void clear(AbilitySlot slot) {
+        Stat stat = getStat(slot);
 
-    public AbilitySlot getActiveSlot() {
-        return activeSlot;
-    }
-
-    public void cancelAbility(AbilitySlot slot) {
-        if (getActiveSlot() == slot && canSwitchStates()) {
-            setActiveAbility(slot, null);
+        if (stat.canSwitchStates()) {
+            stat.setActiveAbility(null);
         }
     }
 
     public void activate(AbilitySlot slot) {
-        if (canSwitchStates()) {
-            getAbility(slot).ifPresent(ability -> setActiveAbility(slot, ability));
+        Stat stat = getStat(slot);
+        if (stat.canSwitchStates()) {
+            stat.getAbility().ifPresent(stat::setActiveAbility);
         }
     }
 
@@ -63,88 +44,13 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         return stats.computeIfAbsent(slot, Stat::new);
     }
 
-    public Optional<Ability<?>> getAbility(AbilitySlot slot) {
-        Race race = player.getSpecies();
-        return Abilities.BY_SLOT.get(slot).stream().filter(a -> a.canUse(race)).findFirst();
-    }
-
-    protected synchronized void setActiveAbility(AbilitySlot slot, Ability<?> power) {
-        if (activeAbility.orElse(null) != power) {
-            activeSlot = slot;
-            triggered = false;
-            activeAbility = Optional.ofNullable(power);
-            Stat stat = getStat(slot);
-            stat.setWarmup(activeAbility.map(p -> p.getWarmupTime(player)).orElse(0));
-            stat.setCooldown(0);
-        }
-    }
-
-    @Nullable
-    protected synchronized Optional<Ability<?>> getActiveAbility() {
-        Stat stat = getStat(getActiveSlot());
-        return activeAbility.filter(ability -> {
-            return (!(ability == null || (triggered && stat.warmup == 0 && stat.cooldown == 0)) && ability.canUse(player.getSpecies()));
-        });
-    }
-
     @Override
     public void tick() {
-        getActiveAbility().ifPresent(this::activate);
-    }
-
-    private <T extends Hit> void activate(Ability<T> ability) {
-        Stat stat = getStat(getActiveSlot());
-
-        stats.values().forEach(s -> {
-            if (s != stat) {
-                s.idle();
-            }
-        });
-
-        if (stat.warmup > 0) {
-            stat.warmup--;
-            System.out.println("warming up");
-            ability.preApply(player);
-            return;
-        }
-
-        if (stat.tickInactive()) {
-            System.out.println("cooling down");
-            ability.postApply(player);
-
-            if (stat.cooldown <= 0) {
-                setActiveAbility(AbilitySlot.NONE, null);
-            }
-            return;
-        }
-
-        if (triggered) {
-            return;
-        }
-
-        if (ability.canActivate(player.getWorld(), player)) {
-            triggered = true;
-            stat.setCooldown(ability.getCooldownTime(player));
-
-            if (player.isClientPlayer()) {
-                T data = ability.tryActivate(player);
-
-                if (data != null) {
-                    Channel.PLAYER_ABILITY.send(new MsgPlayerAbility<>(ability, data));
-                } else {
-                    stat.setCooldown(0);
-                }
-            }
-        }
-
-        if (stat.cooldown <= 0) {
-            setActiveAbility(AbilitySlot.NONE, null);
-        }
+        stats.values().forEach(Stat::tick);
     }
 
     @Override
     public void toNBT(CompoundTag compound) {
-        compound.putBoolean("triggered", triggered);
         if (compound.contains("stats")) {
             stats.clear();
             CompoundTag li = compound.getCompound("stats");
@@ -152,20 +58,13 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
                 getStat(AbilitySlot.valueOf(key)).fromNBT(li.getCompound(key));
             });
         }
-        compound.putInt("activeSlot", activeSlot.ordinal());
-        getActiveAbility().ifPresent(ability -> {
-            compound.putString("activeAbility", Abilities.REGISTRY.getId(ability).toString());
-        });
     }
 
     @Override
     public void fromNBT(CompoundTag compound) {
-        triggered = compound.getBoolean("triggered");
         CompoundTag li = new CompoundTag();
         stats.forEach((key, value) -> li.put(key.name(), value.toNBT()));
         compound.put("stats", li);
-        activeSlot = compound.contains("activeSlot") ? AbilitySlot.values()[compound.getInt("activeSlot")] : activeSlot;
-        activeAbility = Abilities.REGISTRY.getOrEmpty(new Identifier(compound.getString("activeAbility")));
     }
 
     public class Stat implements NbtSerialisable {
@@ -184,6 +83,13 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
         public final AbilitySlot slot;
 
+        /**
+         * True once the current ability has been triggered.
+         */
+        private boolean triggered;
+
+        private Optional<Ability<?>> activeAbility = Optional.empty();
+
         private Stat(AbilitySlot slot) {
             this.slot = slot;
         }
@@ -192,7 +98,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
          * Returns true if the current ability can we swapped out.
          */
         boolean canSwitchStates() {
-            return (warmup != 0) || (triggered && cooldown == 0);
+            return !activeAbility.isPresent() || (warmup != 0) || (triggered && cooldown == 0);
         }
 
         public int getRemainingCooldown() {
@@ -225,17 +131,68 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
             warmup = value;
         }
 
-        public void idle() {
+        public void tick() {
+            getActiveAbility().ifPresent(this::activate);
+        }
+
+        private <T extends Hit> void activate(Ability<T> ability) {
             if (warmup > 0) {
                 warmup--;
+                ability.preApply(player, slot);
+                return;
             }
-            if (cooldown > 0) {
-                cooldown--;
+
+            if (cooldown > 0 && cooldown-- > 0) {
+                ability.postApply(player, slot);
+
+                if (cooldown <= 0) {
+                    setActiveAbility(null);
+                }
+                return;
+            }
+
+            if (triggered) {
+                return;
+            }
+
+            if (ability.canActivate(player.getWorld(), player)) {
+                triggered = true;
+                setCooldown(ability.getCooldownTime(player));
+
+                if (player.isClientPlayer()) {
+                    T data = ability.tryActivate(player);
+
+                    if (data != null) {
+                        Channel.PLAYER_ABILITY.send(new MsgPlayerAbility<>(ability, data));
+                    } else {
+                        setCooldown(0);
+                    }
+                }
+            }
+
+            if (cooldown <= 0) {
+                setActiveAbility(null);
             }
         }
 
-        public boolean tickInactive() {
-            return cooldown > 0 && cooldown-- > 0;
+        public Optional<Ability<?>> getAbility() {
+            Race race = player.getSpecies();
+            return Abilities.BY_SLOT.get(slot).stream().filter(a -> a.canUse(race)).findFirst();
+        }
+
+        protected synchronized void setActiveAbility(Ability<?> power) {
+            if (activeAbility.orElse(null) != power) {
+                triggered = false;
+                activeAbility = Optional.ofNullable(power);
+                setWarmup(activeAbility.map(p -> p.getWarmupTime(player)).orElse(0));
+                setCooldown(0);
+            }
+        }
+
+        protected synchronized Optional<Ability<?>> getActiveAbility() {
+            return activeAbility.filter(ability -> {
+                return (!(ability == null || (triggered && warmup == 0 && cooldown == 0)) && ability.canUse(player.getSpecies()));
+            });
         }
 
         @Override
@@ -244,6 +201,10 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
             compound.putInt("cooldown", cooldown);
             compound.putInt("maxWarmup", maxWarmup);
             compound.putInt("maxCooldown", maxCooldown);
+            compound.putBoolean("triggered", triggered);
+            getActiveAbility().ifPresent(ability -> {
+                compound.putString("activeAbility", Abilities.REGISTRY.getId(ability).toString());
+            });
         }
 
         @Override
@@ -252,6 +213,8 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
             cooldown = compound.getInt("cooldown");
             maxWarmup = compound.getInt("maxWarmup");
             maxCooldown = compound.getInt("maxCooldown");
+            triggered = compound.getBoolean("triggered");
+            activeAbility = Abilities.REGISTRY.getOrEmpty(new Identifier(compound.getString("activeAbility")));
         }
     }
 }

@@ -148,12 +148,12 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     @Override
-    public void preApply(Pony player) {
+    public void preApply(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().addExertion(6);
     }
 
     @Override
-    public void postApply(Pony player) {
+    public void postApply(Pony player, AbilitySlot slot) {
         player.spawnParticles(ParticleTypes.HEART, 1);
     }
 }

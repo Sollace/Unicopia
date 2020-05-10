@@ -60,11 +60,11 @@ public interface Ability<T extends Hit> {
      * Called every tick until the warmup timer runs out.
      * @param player    The current player
      */
-    void preApply(Pony player);
+    void preApply(Pony player, AbilitySlot slot);
 
     /**
      * Called every tick until the cooldown timer runs out.
      * @param player    The current player
      */
-    void postApply(Pony player);
+    void postApply(Pony player, AbilitySlot slot);
 }

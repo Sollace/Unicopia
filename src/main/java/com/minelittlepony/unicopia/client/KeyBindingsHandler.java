@@ -61,7 +61,7 @@ class KeyBindingsHandler {
                 }
             } else if (pressed.remove(i)) {
                 System.out.println("Key up " + slot);
-                iplayer.getAbilities().cancelAbility(slot);
+                iplayer.getAbilities().clear(slot);
             }
         }
     }

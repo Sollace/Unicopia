@@ -81,8 +81,8 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     }
 
     @Override
-    public void preApply(Pony player) {
-        player.getMagicalReserves().addExertion(3);
+    public void preApply(Pony player, AbilitySlot slot) {
+        player.getMagicalReserves().addExertion(30);
 
         if (player.getWorld().isClient()) {
             player.spawnParticles(MagicParticleEffect.UNICORN, 1);
@@ -90,7 +90,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     }
 
     @Override
-    public void postApply(Pony player) {
+    public void postApply(Pony player, AbilitySlot slot) {
 
     }
 }

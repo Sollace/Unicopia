@@ -43,12 +43,12 @@ public class ChangelingTrapAbility implements Ability<Hit> {
     }
 
     @Override
-    public void preApply(Pony player) {
+    public void preApply(Pony player, AbilitySlot slot) {
 
     }
 
     @Override
-    public void postApply(Pony player) {
+    public void postApply(Pony player, AbilitySlot slot) {
 
     }
 }
