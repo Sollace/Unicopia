@@ -30,33 +30,34 @@ public class EntityPhysics<T extends Ponylike<?> & Owned<? extends Entity>> impl
 
     @Override
     public double calcGravity(double worldConstant) {
-        return worldConstant * gravity;
+        return worldConstant * getGravityModifier();
     }
 
     @Override
     public BlockPos getHeadPosition() {
 
-        pony.getOwner().onGround = false;
+        Entity entity = pony.getOwner();
 
-        int i = MathHelper.floor(pony.getOwner().getX());
-        int j = MathHelper.floor(pony.getOwner().getY() + pony.getOwner().getHeight() + 0.20000000298023224D);
-        int k = MathHelper.floor(pony.getOwner().getZ());
+        entity.onGround = false;
 
-        BlockPos blockPos = new BlockPos(i, j, k);
+        BlockPos pos = new BlockPos(
+                MathHelper.floor(entity.getX()),
+                MathHelper.floor(entity.getY() + entity.getHeight() + 0.20000000298023224D),
+                MathHelper.floor(entity.getZ())
+        );
 
-        if (pony.getOwner().world.getBlockState(blockPos).isAir()) {
-            BlockPos blockPos2 = blockPos.down();
-            BlockState blockState = pony.getOwner().world.getBlockState(blockPos2);
-            Block block = blockState.getBlock();
+        if (entity.world.getBlockState(pos).isAir()) {
+            BlockPos below = pos.down();
+            Block block = entity.world.getBlockState(below).getBlock();
             if (block.matches(BlockTags.FENCES) || block.matches(BlockTags.WALLS) || block instanceof FenceGateBlock) {
-                pony.getOwner().onGround = true;
-                return blockPos2;
+                entity.onGround = true;
+                return below;
             }
         } else {
             pony.getOwner().onGround = true;
         }
 
-        return blockPos;
+        return pos;
     }
 
     @Override
@@ -74,7 +75,7 @@ public class EntityPhysics<T extends Ponylike<?> & Owned<? extends Entity>> impl
     }
 
     @Override
-    public void setGravityModifier(float constant) {
+    public void setBaseGravityModifier(float constant) {
         gravity = constant;
     }
 

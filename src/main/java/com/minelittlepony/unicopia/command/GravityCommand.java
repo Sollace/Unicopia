@@ -54,7 +54,7 @@ class GravityCommand {
 
         Pony iplayer = Pony.of(player);
 
-        iplayer.getPhysics().setGravityModifier(gravity);
+        iplayer.getPhysics().setBaseGravityModifier(gravity);
         iplayer.setDirty();
 
         if (isSelf) {

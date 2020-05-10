@@ -42,6 +42,15 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         dimensions = new PlayerDimensions(pony, this);
     }
 
+    @Override
+    public float getGravityModifier() {
+        float modifier = super.getGravityModifier();
+
+        modifier *= (1 + pony.getInventory().getCarryingWeight() * 3);
+
+        return modifier;
+    }
+
     private boolean checkCanFly() {
         if (pony.getOwner().abilities.creativeMode) {
             return true;

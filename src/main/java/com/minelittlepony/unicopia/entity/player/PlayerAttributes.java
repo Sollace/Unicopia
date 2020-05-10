@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.entity.player;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.container.HeavyInventory;
 import com.minelittlepony.unicopia.mixin.Walker;
 
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
@@ -25,12 +24,11 @@ class PlayerAttributes {
     private static final EntityAttributeModifier PEGASUS_REACH =
             new EntityAttributeModifier(UUID.fromString("707b50a8-03e8-40f4-8553-ecf67025fd6d"), "Pegasus Reach", 1.5, Operation.ADDITION);
 
-    private double loadStrength = 0;
+    public void applyAttributes(Pony pony) {
+        PlayerEntity entity = pony.getOwner();
+        Race race = pony.getSpecies();
 
-    public void applyAttributes(PlayerEntity entity, Race race) {
-        loadStrength = HeavyInventory.getContentsTotalWorth(entity.inventory, false);
-
-        ((Walker)entity.abilities).setWalkSpeed(0.1F - (float)(loadStrength / 100000));
+        ((Walker)entity.abilities).setWalkSpeed(0.1F - (float)pony.getInventory().getCarryingWeight());
 
         toggleAttribute(entity, EntityAttributes.ATTACK_DAMAGE, EARTH_PONY_STRENGTH, race.canUseEarth());
         toggleAttribute(entity, EntityAttributes.KNOCKBACK_RESISTANCE, EARTH_PONY_STRENGTH, race.canUseEarth());

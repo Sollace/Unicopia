@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
+import com.minelittlepony.unicopia.container.HeavyInventory;
 import com.minelittlepony.unicopia.item.MagicGemItem;
 import com.minelittlepony.unicopia.magic.AddictiveMagicalItem;
 import com.minelittlepony.unicopia.magic.MagicalItem;
@@ -22,6 +23,8 @@ public class PlayerInventory implements Tickable, NbtSerialisable {
     private final Map<AddictiveMagicalItem, Entry> dependencies = Maps.newHashMap();
 
     private final Pony player;
+
+    private double carryingWeight;
 
     PlayerInventory(Pony player) {
         this.player = player;
@@ -67,6 +70,7 @@ public class PlayerInventory implements Tickable, NbtSerialisable {
 
     @Override
     public synchronized void tick() {
+        carryingWeight = HeavyInventory.getContentsTotalWorth(player.getOwner().inventory, false);
 
         Iterator<Map.Entry<AddictiveMagicalItem, Entry>> iterator = dependencies.entrySet().iterator();
 
@@ -106,6 +110,10 @@ public class PlayerInventory implements Tickable, NbtSerialisable {
         return false;
     }
 
+    public double getCarryingWeight() {
+        return carryingWeight / 100000D;
+    }
+
     @Override
     public void toNBT(CompoundTag compound) {
         ListTag items = new ListTag();
@@ -115,6 +123,7 @@ public class PlayerInventory implements Tickable, NbtSerialisable {
         }
 
         compound.put("dependencies", items);
+        compound.putDouble("weight", carryingWeight);
     }
 
     @Override
@@ -130,6 +139,7 @@ public class PlayerInventory implements Tickable, NbtSerialisable {
                 dependencies.put(entry.item, entry);
             }
         });
+        carryingWeight = compound.getDouble("weight");
     }
 
     class Entry implements Tickable, NbtSerialisable {

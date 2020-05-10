@@ -246,7 +246,7 @@ public class Pony implements Caster<PlayerEntity>, Ponylike<PlayerEntity>, Trans
         mana.addExertion(-1);
         mana.addEnergy(-1);
 
-        attributes.applyAttributes(entity, getSpecies());
+        attributes.applyAttributes(this);
 
         if (dirty) {
             sendCapabilities(true);
