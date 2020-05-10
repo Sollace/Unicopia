@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.minelittlepony.unicopia.client.render.WorldRenderDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.DisguiseSpell;
 
@@ -31,13 +32,7 @@ abstract class MixinEntityRenderDispatcher {
 
         Pony pony = Pony.of((PlayerEntity)entity);
 
-        if (pony.getGravity().getGravitationConstant() < 0) {
-            matrices.push();
-            matrices.translate(0, entity.getDimensions(entity.getPose()).height, 0);
-            matrices.scale(1, -1, 1);
-            entity.prevPitch *= -1;
-            entity.pitch *= -1;
-        }
+        WorldRenderDelegate.INSTANCE.beforeEntityRender(pony, matrices, x, y, z);
 
         DisguiseSpell effect = pony.getEffect(DisguiseSpell.class, true);
 
@@ -64,19 +59,13 @@ abstract class MixinEntityRenderDispatcher {
         }
     }
 
-    @Inject(method = RENDER, at = @At("HEAD"))
+    @Inject(method = RENDER, at = @At("RETURN"))
     private <E extends Entity> void afterRender(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
 
         if (!(entity instanceof PlayerEntity)) {
             return;
         }
 
-        Pony pony = Pony.of((PlayerEntity)entity);
-
-        if (pony.getGravity().getGravitationConstant() < 0) {
-            matrices.pop();
-            entity.prevPitch *= -1;
-            entity.pitch *= -1;
-        }
+        WorldRenderDelegate.INSTANCE.afterEntityRender(Pony.of((PlayerEntity)entity), matrices);
     }
 }

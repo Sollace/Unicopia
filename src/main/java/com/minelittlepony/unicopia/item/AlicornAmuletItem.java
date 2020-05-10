@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.ducks.IItemEntity;
-import com.minelittlepony.unicopia.entity.ItemEntityCapabilities;
+import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
@@ -48,7 +48,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion.DestructionType;
 
-public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem, ItemEntityCapabilities.TickableItem {
+public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicalItem, ItemImpl.TickableItem {
 
     private static final UUID[] MODIFIERS = new UUID[] {
             UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"),

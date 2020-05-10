@@ -1,9 +1,9 @@
-package com.minelittlepony.unicopia.entity;
+package com.minelittlepony.unicopia.entity.player;
 
 /**
  * Interface for controlling flight.
  */
-public interface FlightControl {
+public interface Motion {
     /**
      * True is we're currently flying.
      */
@@ -14,4 +14,6 @@ public interface FlightControl {
     float getFlightDuration();
 
     boolean isExperienceCritical();
+
+    PlayerDimensions getDimensions();
 }

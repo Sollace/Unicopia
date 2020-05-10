@@ -4,7 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ducks.IItemEntity;
-import com.minelittlepony.unicopia.entity.ItemEntityCapabilities;
+import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.toxin.Toxicity;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
@@ -17,7 +17,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class AppleItem extends Item implements ItemEntityCapabilities.TickableItem {
+public class AppleItem extends Item implements ItemImpl.TickableItem {
 
     public AppleItem(Settings settings) {
         super(settings);

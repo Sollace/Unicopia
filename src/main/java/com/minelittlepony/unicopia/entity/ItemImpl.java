@@ -11,19 +11,21 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
 
-public class ItemEntityCapabilities implements RaceContainer<ItemEntity>, Owned<ItemEntity> {
+public class ItemImpl implements Ponylike<ItemEntity>, Owned<ItemEntity> {
     private static final TrackedData<Integer> ITEM_RACE = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     private final ItemEntity owner;
     private Race serverRace;
 
-    public ItemEntityCapabilities(ItemEntity owner) {
+    private final Physics physics = new EntityPhysics<>(this);
+
+    public ItemImpl(ItemEntity owner) {
         this.owner = owner;
         owner.getDataTracker().startTracking(ITEM_RACE, Race.HUMAN.ordinal());
     }
 
     @Override
-    public void onUpdate() {
+    public void tick() {
     }
 
     @Override
@@ -48,6 +50,11 @@ public class ItemEntityCapabilities implements RaceContainer<ItemEntity>, Owned<
     }
 
     @Override
+    public Physics getPhysics() {
+        return physics;
+    }
+
+    @Override
     public Race getSpecies() {
         return Race.fromId(getOwner().getDataTracker().get(ITEM_RACE));
     }
@@ -60,21 +67,18 @@ public class ItemEntityCapabilities implements RaceContainer<ItemEntity>, Owned<
     @Override
     public void toNBT(CompoundTag compound) {
         compound.putString("owner_species", getSpecies().name());
+        physics.toNBT(compound);
     }
 
 
     @Override
     public void fromNBT(CompoundTag compound) {
         setSpecies(Race.fromName(compound.getString("owner_species")));
+        physics.fromNBT(compound);
     }
 
     @Override
     public void setOwner(ItemEntity owner) {
-
-    }
-
-    @Override
-    public void onDimensionalTravel(int destinationDimension) {
 
     }
 

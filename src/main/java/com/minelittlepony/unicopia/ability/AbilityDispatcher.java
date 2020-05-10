@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.entity.Updatable;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.network.Channel;
@@ -16,8 +15,9 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Tickable;
 
-public class AbilityDispatcher implements Updatable, NbtSerialisable {
+public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
     private final Pony player;
 
@@ -88,7 +88,7 @@ public class AbilityDispatcher implements Updatable, NbtSerialisable {
     }
 
     @Override
-    public void onUpdate() {
+    public void tick() {
         getActiveAbility().ifPresent(this::activate);
     }
 

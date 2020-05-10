@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
-import com.minelittlepony.unicopia.entity.Updatable;
 import com.minelittlepony.unicopia.item.MagicGemItem;
 import com.minelittlepony.unicopia.magic.AddictiveMagicalItem;
 import com.minelittlepony.unicopia.magic.MagicalItem;
@@ -16,9 +15,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Tickable;
 import net.minecraft.util.registry.Registry;
 
-public class PlayerInventory implements Updatable, NbtSerialisable {
+public class PlayerInventory implements Tickable, NbtSerialisable {
     private final Map<AddictiveMagicalItem, Entry> dependencies = Maps.newHashMap();
 
     private final Pony player;
@@ -66,7 +66,7 @@ public class PlayerInventory implements Updatable, NbtSerialisable {
     }
 
     @Override
-    public synchronized void onUpdate() {
+    public synchronized void tick() {
 
         Iterator<Map.Entry<AddictiveMagicalItem, Entry>> iterator = dependencies.entrySet().iterator();
 
@@ -75,7 +75,7 @@ public class PlayerInventory implements Updatable, NbtSerialisable {
 
             Entry item = entry.getValue();
 
-            item.onUpdate();
+            item.tick();
 
             if (item.needfulness <= 0.001) {
                 iterator.remove();
@@ -132,7 +132,7 @@ public class PlayerInventory implements Updatable, NbtSerialisable {
         });
     }
 
-    class Entry implements Updatable, NbtSerialisable {
+    class Entry implements Tickable, NbtSerialisable {
         int ticksAttached = 0;
 
         float needfulness = 1;
@@ -152,7 +152,7 @@ public class PlayerInventory implements Updatable, NbtSerialisable {
         }
 
         @Override
-        public void onUpdate() {
+        public void tick() {
             if (isWearing(item)) {
                 ticksAttached ++;
                 needfulness *= 0.9F;

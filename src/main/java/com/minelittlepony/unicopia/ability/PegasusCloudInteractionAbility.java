@@ -25,8 +25,8 @@ public class PegasusCloudInteractionAbility implements Ability<Numeric> {
     }
 
     @Override
-    public boolean canUse(Race playerSpecies) {
-        return playerSpecies.canInteractWithClouds();
+    public boolean canUse(Race race) {
+        return race.canInteractWithClouds();
     }
 
     @Override

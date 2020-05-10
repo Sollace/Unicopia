@@ -40,7 +40,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
-public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate {
+public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate, Trap {
 
     private static final TrackedData<Integer> STRUGGLE_COUNT = DataTracker.registerData(CuccoonEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
@@ -206,6 +206,7 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate 
         return true;
     }
 
+    @Override
     public boolean attemptDismount(Entity captive) {
         if (captive.isSneaking() != captiveLastSneakState) {
             setStruggleCount(getStruggleCount() + 1);

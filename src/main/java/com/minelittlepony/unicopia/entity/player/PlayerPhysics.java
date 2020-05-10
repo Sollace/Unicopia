@@ -5,8 +5,7 @@ import java.util.Random;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.FlightPredicate;
-import com.minelittlepony.unicopia.entity.FlightControl;
-import com.minelittlepony.unicopia.entity.Updatable;
+import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
@@ -18,13 +17,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class GravityDelegate implements Updatable, FlightControl, NbtSerialisable, FlightPredicate {
-
-    final Pony player;
+public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Motion, NbtSerialisable {
 
     private static final float MAXIMUM_FLIGHT_EXPERIENCE = 1500;
 
@@ -37,45 +35,35 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
     private double lastTickPosX = 0;
     private double lastTickPosZ = 0;
 
-    private float gravity = 0;
+    private final PlayerDimensions dimensions;
 
-    private final PlayerDimensionsDelegate dimensions;
-
-    public GravityDelegate(Pony player) {
-        this.player = player;
-        this.dimensions = new PlayerDimensionsDelegate(this);
+    public PlayerPhysics(Pony pony) {
+        super(pony);
+        dimensions = new PlayerDimensions(pony, this);
     }
 
-    @Override
-    public boolean checkCanFly(Pony player) {
-        if (player.getOwner().abilities.creativeMode) {
+    private boolean checkCanFly() {
+        if (pony.getOwner().abilities.creativeMode) {
             return true;
         }
 
-        if (player.hasEffect()) {
-            MagicEffect effect = player.getEffect();
+        if (pony.hasEffect()) {
+            MagicEffect effect = pony.getEffect();
             if (!effect.isDead() && effect instanceof FlightPredicate) {
-                return ((FlightPredicate)effect).checkCanFly(player);
+                return ((FlightPredicate)effect).checkCanFly(pony);
             }
         }
 
-        return player.getSpecies().canFly();
+        return pony.getSpecies().canFly();
     }
 
     protected boolean isRainboom() {
-        return Math.sqrt(getHorizontalMotion(player.getOwner())) > 0.4F;
+        return Math.sqrt(getHorizontalMotion(pony.getOwner())) > 0.4F;
     }
 
-    public PlayerDimensionsDelegate getDimensions() {
+    @Override
+    public PlayerDimensions getDimensions() {
         return dimensions;
-    }
-
-    public void setGraviationConstant(float constant) {
-        gravity = constant;
-    }
-
-    public float getGravitationConstant() {
-        return gravity;
     }
 
     @Override
@@ -84,52 +72,32 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
     }
 
     @Override
-    public void onUpdate() {
-        PlayerEntity entity = player.getOwner();
+    public void tick() {
+        PlayerEntity entity = pony.getOwner();
 
         MutableVector velocity = new MutableVector(entity.getVelocity());
 
-        if (isExperienceCritical() && player.isClient()) {
-            Random rnd = player.getWorld().random;
+        if (isExperienceCritical() && pony.isClient()) {
+            Random rnd = pony.getWorld().random;
 
             for (int i = 0; i < 360 + getHorizontalMotion(entity); i += 10) {
-                Vec3d pos = player.getOriginVector().add(
+                Vec3d pos = pony.getOriginVector().add(
                         rnd.nextGaussian() * entity.getWidth(),
                         rnd.nextGaussian() * entity.getHeight()/2,
                         rnd.nextGaussian() * entity.getWidth()
                 );
 
-                player.addParticle(MagicParticleEffect.UNICORN, pos, velocity.toImmutable());
+                pony.addParticle(MagicParticleEffect.UNICORN, pos, velocity.toImmutable());
             }
         }
 
-        entity.abilities.allowFlying = checkCanFly(player);
+        entity.abilities.allowFlying = checkCanFly();
 
         if (!entity.abilities.creativeMode) {
             entity.abilities.flying |= entity.abilities.allowFlying && isFlying && !entity.onGround && !entity.isTouchingWater();
         }
 
         isFlying = entity.abilities.flying && !entity.abilities.creativeMode;
-
-        if (gravity != 0) {
-            if (!entity.abilities.flying) {
-                velocity.y += 0.038;
-                velocity.y -= gravity;
-            }
-
-            if (gravity < 0) {
-                entity.onGround = !entity.world.isAir(new BlockPos(entity.getX(), entity.getY() + entity.getHeight() + 0.5F, entity.getZ()));
-
-                if (entity.onGround) {
-                    entity.abilities.flying = false;
-                    isFlying = false;
-                }
-            }
-        }
-
-        if (dimensions.update()) {
-            player.getOwner().calculateDimensions();
-        }
 
         if (!entity.abilities.creativeMode && !entity.isFallFlying()) {
             if (isFlying && !entity.hasVehicle()) {
@@ -140,7 +108,7 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
 
                 entity.fallDistance = 0;
 
-                if (player.getSpecies() != Race.CHANGELING && entity.world.random.nextInt(100) == 0) {
+                if (pony.getSpecies() != Race.CHANGELING && entity.world.random.nextInt(100) == 0) {
                     float exhaustion = (0.3F * ticksNextLevel) / 70;
                     if (entity.isSprinting()) {
                         exhaustion *= 3.11F;
@@ -163,8 +131,8 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
 
                 if (isExperienceCritical()) {
 
-                    if (player.getMagicalReserves().getEnergy() <= 0.25F) {
-                        player.getMagicalReserves().addEnergy(2);
+                    if (pony.getMagicalReserves().getEnergy() <= 0.25F) {
+                        pony.getMagicalReserves().addEnergy(2);
                     }
 
                     if (isRainbooming || (entity.isSneaking() && isRainboom())) {
@@ -209,6 +177,15 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
             }
         }
 
+        if (pony.getPhysics().isGravityNegative()) {
+            entity.onGround = !entity.world.isAir(new BlockPos(entity.getX(), entity.getY() + entity.getHeight() + 0.5F, entity.getZ()));
+
+            if (entity.onGround) {
+                entity.abilities.flying = false;
+                isFlying = false;
+            }
+        }
+
         lastTickPosX = entity.getX();
         lastTickPosZ = entity.getZ();
 
@@ -216,21 +193,20 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
     }
 
     public SoundEvent getWingSound() {
-        return player.getSpecies() == Race.CHANGELING ? USounds.CHANGELING_BUZZ : USounds.WING_FLAP;
+        return pony.getSpecies() == Race.CHANGELING ? USounds.CHANGELING_BUZZ : USounds.WING_FLAP;
     }
 
     protected void moveFlying(Entity player, MutableVector velocity) {
 
         float forward = 0.000015F * flightExperience * (float)Math.sqrt(getHorizontalMotion(player));
-        int factor = gravity < 0 ? -1 : 1;
         boolean sneak = !player.isSneaking();
 
         // vertical drop due to gravity
         if (sneak) {
-            velocity.y -= (0.005F - getHorizontalMotion(player) / 100) * factor;
+            velocity.y -= (0.005F - getHorizontalMotion(player) / 100) * getGravitySignum();
         } else {
             forward += 0.005F;
-            velocity.y -= 0.0001F * factor;
+            velocity.y -= 0.0001F * getGravitySignum();
         }
 
         velocity.x += - forward * MathHelper.sin(player.yaw * 0.017453292F);
@@ -264,7 +240,6 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
                 forward = 4;
             }
 
-            //player.knockBack(player, forward, 1, 1);
             velocity.x += - forward * MathHelper.sin((player.yaw + glance) * 0.017453292F);
             velocity.z += forward * MathHelper.cos((player.yaw + glance) * 0.017453292F);
         }
@@ -289,8 +264,10 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
         flightExperience = Math.max(0, flightExperience + factor * maximumGain / gainSteps);
     }
 
-    public void updateFlightStat(PlayerEntity entity, boolean flying) {
-        entity.abilities.allowFlying = checkCanFly(Pony.of(entity));
+    public void updateFlightStat(boolean flying) {
+        PlayerEntity entity = pony.getOwner();
+
+        entity.abilities.allowFlying = checkCanFly();
 
         if (entity.abilities.allowFlying) {
             entity.abilities.flying |= flying;
@@ -308,28 +285,22 @@ public class GravityDelegate implements Updatable, FlightControl, NbtSerialisabl
 
     @Override
     public void toNBT(CompoundTag compound) {
+        super.toNBT(compound);
         compound.putInt("flightDuration", ticksNextLevel);
         compound.putFloat("flightExperience", flightExperience);
         compound.putBoolean("isFlying", isFlying);
         compound.putBoolean("isRainbooming", isRainbooming);
-
-        if (gravity != 0) {
-            compound.putFloat("gravity", gravity);
-        }
     }
 
     @Override
     public void fromNBT(CompoundTag compound) {
+        super.fromNBT(compound);
         ticksNextLevel = compound.getInt("flightDuration");
         flightExperience = compound.getFloat("flightExperience");
         isFlying = compound.getBoolean("isFlying");
         isRainbooming = compound.getBoolean("isRainbooming");
 
-        if (compound.contains("gravity")) {
-            gravity = compound.getFloat("gravity");
-        } else {
-            gravity = 0;
-        }
+        pony.getOwner().calculateDimensions();
     }
 
     @Override

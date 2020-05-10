@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.minelittlepony.unicopia.ducks.PonyContainer;
 import com.minelittlepony.unicopia.entity.Ponylike;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.entity.player.PlayerImpl;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.entity.EntityDimensions;
@@ -29,8 +28,8 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
     private MixinPlayerEntity() { super(null, null); }
 
     @Override
-    public Ponylike create() {
-        return new PlayerImpl((PlayerEntity)(Object)this);
+    public Ponylike<?> create() {
+        return new Pony((PlayerEntity)(Object)this);
     }
 
     @ModifyVariable(method = "handleFallDamage(FF)Z",
@@ -72,20 +71,20 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
             at = @At("RETURN"))
     private void onSetGameMode(GameMode mode, CallbackInfo info) {
         get().setSpecies(get().getSpecies());
-        get().sendCapabilities(true);
+        get().setDirty();
     }
 
     @Inject(method = "getActiveEyeHeight(Lnet/minecraft/entity/EntityPose;Lnet/minecraft/entity/EntityDimensions;)F",
             at = @At("RETURN"),
             cancellable = true)
     private void onGetActiveEyeHeight(EntityPose pose, EntityDimensions dimensions, CallbackInfoReturnable<Float> info) {
-        info.setReturnValue(get().getGravity().getDimensions().getActiveEyeHeight(info.getReturnValue()));
+        info.setReturnValue(get().getMotion().getDimensions().getActiveEyeHeight(info.getReturnValue()));
     }
 
     @Inject(method = "getDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;",
             at = @At("RETURN"),
             cancellable = true)
     public void onGetDimensions(EntityPose pose, CallbackInfoReturnable<EntityDimensions> info) {
-        info.setReturnValue(get().getGravity().getDimensions().getDimensions(pose, info.getReturnValue()));
+        info.setReturnValue(get().getMotion().getDimensions().getDimensions(pose, info.getReturnValue()));
     }
 }

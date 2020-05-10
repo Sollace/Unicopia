@@ -42,8 +42,8 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     @Override
-    public boolean canUse(Race playerSpecies) {
-        return playerSpecies == Race.CHANGELING;
+    public boolean canUse(Race race) {
+        return race == Race.CHANGELING;
     }
 
     @Nullable

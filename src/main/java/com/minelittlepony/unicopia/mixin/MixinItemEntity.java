@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.ducks.IItemEntity;
-import com.minelittlepony.unicopia.entity.ItemEntityCapabilities;
+import com.minelittlepony.unicopia.entity.ItemImpl;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -16,17 +16,17 @@ import net.minecraft.nbt.CompoundTag;
 @Mixin(ItemEntity.class)
 abstract class MixinItemEntity extends Entity implements IItemEntity {
 
-    private ItemEntityCapabilities caster;
+    private ItemImpl caster;
 
     private MixinItemEntity() { super(null, null); }
 
     @Override
-    public ItemEntityCapabilities create() {
-        return new ItemEntityCapabilities((ItemEntity)(Object)this);
+    public ItemImpl create() {
+        return new ItemImpl((ItemEntity)(Object)this);
     }
 
     @Override
-    public ItemEntityCapabilities get() {
+    public ItemImpl get() {
         if (caster == null) {
             caster = create();
         }
@@ -42,7 +42,7 @@ abstract class MixinItemEntity extends Entity implements IItemEntity {
 
     @Inject(method = "tick()V", at = @At("RETURN"))
     private void afterTick(CallbackInfo info) {
-        get().onUpdate();
+        get().tick();
     }
 
     @Inject(method = "writeCustomDataToTag(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("HEAD"))

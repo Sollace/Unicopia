@@ -2,32 +2,35 @@ package com.minelittlepony.unicopia.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.ducks.PonyContainer;
 import com.minelittlepony.unicopia.entity.Ponylike;
-import com.minelittlepony.unicopia.entity.LivingEntityCapabilities;
+import com.minelittlepony.unicopia.entity.Creature;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.BlockPos;
 
 @Mixin(LivingEntity.class)
-abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylike> {
+abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylike<?>> {
 
-    private Ponylike caster;
+    private Ponylike<?> caster;
 
     private MixinLivingEntity() { super(null, null); }
 
     @Override
-    public Ponylike create() {
-        return new LivingEntityCapabilities((LivingEntity)(Object)this);
+    public Ponylike<?> create() {
+        return new Creature((LivingEntity)(Object)this);
     }
 
     @Override
-    public Ponylike get() {
+    public Ponylike<?> get() {
         if (caster == null) {
             caster = create();
         }
@@ -55,12 +58,12 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylik
 
     @Inject(method = "tick()V", at = @At("RETURN"))
     private void afterTick(CallbackInfo info) {
-        get().onUpdate();
+        get().tick();
     }
 
     @Inject(method = "<clinit>()V", at = @At("RETURN"), remap = false)
     private static void clinit(CallbackInfo info) {
-        LivingEntityCapabilities.boostrap();
+        Creature.boostrap();
     }
 
     @Inject(method = "writeCustomDataToTag(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("HEAD"))
@@ -72,6 +75,31 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylik
     private void onReadCustomDataFromTag(CompoundTag tag, CallbackInfo info) {
         if (tag.contains("unicopia_caster")) {
             get().fromNBT(tag.getCompound("unicopia_caster"));
+        }
+    }
+
+    @ModifyConstant(method = "travel(Lnet/minecraft/util/math/Vec3d;)V", constant = {
+            @Constant(doubleValue = 0.08D),
+            @Constant(doubleValue = 0.01D)
+    })
+    private double modifyGravity(double initial) {
+        return get().getPhysics().calcGravity(initial);
+    }
+
+    @Override
+    protected BlockPos getLandingPos() {
+        if (get().getPhysics().isGravityNegative()) {
+            return get().getPhysics().getHeadPosition();
+        }
+        return super.getLandingPos();
+    }
+
+    @Override
+    protected void spawnSprintingParticles() {
+        if (get().getPhysics().isGravityNegative()) {
+            get().getPhysics().spawnSprintingParticles();
+        } else {
+            super.spawnSprintingParticles();
         }
     }
 

@@ -23,8 +23,8 @@ public class UnicornCastingAbility implements Ability<Hit> {
     }
 
     @Override
-    public boolean canUse(Race playerSpecies) {
-        return playerSpecies.canCast();
+    public boolean canUse(Race race) {
+        return race.canCast();
     }
 
     @Override

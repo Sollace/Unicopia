@@ -17,7 +17,7 @@ abstract class MixinKeyboardInput extends Input {
     private void onTick(boolean strafe, CallbackInfo info) {
         Pony player = Pony.of(MinecraftClient.getInstance().player);
 
-        if (player.getGravity().getGravitationConstant() < 0) {
+        if (player.getPhysics().isGravityNegative()) {
             boolean tmp = pressingLeft;
 
             pressingLeft = pressingRight;

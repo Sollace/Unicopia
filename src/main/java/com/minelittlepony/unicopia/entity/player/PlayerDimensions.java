@@ -6,7 +6,7 @@ import com.minelittlepony.unicopia.magic.MagicEffect;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 
-public final class PlayerDimensionsDelegate {
+public final class PlayerDimensions {
 
     private float defaultEyeHeight;
     private float defaultBodyHeight;
@@ -14,10 +14,13 @@ public final class PlayerDimensionsDelegate {
     private float lastTargetEyeHeight;
     private float lastTargetBodyHeight;
 
-    private final GravityDelegate gravity;
+    private final PlayerPhysics physics;
 
-    public PlayerDimensionsDelegate(GravityDelegate gravity) {
-        this.gravity = gravity;
+    private final Pony pony;
+
+    public PlayerDimensions(Pony pony, PlayerPhysics gravity) {
+        this.pony = pony;
+        this.physics = gravity;
     }
 
     public float getActiveEyeHeight(float original) {
@@ -46,11 +49,11 @@ public final class PlayerDimensionsDelegate {
     private float calculateTargetEyeHeightWithGravity(float targetBodyHeight) {
         float height = calculateTargetEyeHeight();
 
-        if (gravity.getGravitationConstant() < 0 && gravity.player.getOwner().isSneaking()) {
+        if (physics.isGravityNegative() && pony.getOwner().isSneaking()) {
             height += 0.2F;
         }
 
-        if (gravity.getGravitationConstant() < 0) {
+        if (physics.isGravityNegative()) {
             height = targetBodyHeight - height;
         }
 
@@ -58,17 +61,17 @@ public final class PlayerDimensionsDelegate {
     }
 
     private float calculateTargetEyeHeight() {
-        if (gravity.player.hasEffect()) {
-            MagicEffect effect = gravity.player.getEffect();
+        if (pony.hasEffect()) {
+            MagicEffect effect = pony.getEffect();
             if (!effect.isDead() && effect instanceof HeightPredicate) {
-                float val = ((HeightPredicate)effect).getTargetEyeHeight(gravity.player);
+                float val = ((HeightPredicate)effect).getTargetEyeHeight(pony);
                 if (val > 0) {
                     return val;
                 }
             }
         }
 
-        if (gravity.isFlying && gravity.isRainboom()) {
+        if (physics.isFlying && physics.isRainboom()) {
             return 0.5F;
         }
 
@@ -76,17 +79,17 @@ public final class PlayerDimensionsDelegate {
     }
 
     private float calculateTargetBodyHeight() {
-        if (gravity.player.hasEffect()) {
-            MagicEffect effect = gravity.player.getEffect();
+        if (pony.hasEffect()) {
+            MagicEffect effect = pony.getEffect();
             if (!effect.isDead() && effect instanceof HeightPredicate) {
-                float val = ((HeightPredicate)effect).getTargetBodyHeight(gravity.player);
+                float val = ((HeightPredicate)effect).getTargetBodyHeight(pony);
                 if (val > 0) {
                     return val;
                 }
             }
         }
 
-        if (gravity.isFlying && gravity.isRainboom()) {
+        if (physics.isFlying && physics.isRainboom()) {
             return defaultBodyHeight / 2;
         }
 

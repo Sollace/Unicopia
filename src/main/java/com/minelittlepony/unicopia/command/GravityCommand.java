@@ -39,7 +39,7 @@ class GravityCommand {
 
         Pony iplayer = Pony.of(player);
 
-        float gravity = iplayer.getGravity().getGravitationConstant();
+        float gravity = iplayer.getPhysics().getGravityModifier();
 
         if (source.getPlayer() != player) {
             translationKey += ".other";
@@ -54,8 +54,8 @@ class GravityCommand {
 
         Pony iplayer = Pony.of(player);
 
-        iplayer.getGravity().setGraviationConstant(gravity);
-        iplayer.sendCapabilities(true);
+        iplayer.getPhysics().setGravityModifier(gravity);
+        iplayer.setDirty();
 
         if (isSelf) {
             player.sendMessage(new TranslatableText(translationKey, gravity));

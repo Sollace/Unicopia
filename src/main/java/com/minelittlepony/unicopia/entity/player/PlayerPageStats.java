@@ -13,6 +13,12 @@ import net.minecraft.util.Identifier;
 public class PlayerPageStats implements NbtSerialisable, PageOwner {
     private final Map<Identifier, PageState> pageStates = new HashMap<>();
 
+    private final Pony pony;
+
+    PlayerPageStats(Pony pony) {
+        this.pony = pony;
+    }
+
     @Override
     public Map<Identifier, PageState> getPageStates() {
         return pageStates;
@@ -20,7 +26,7 @@ public class PlayerPageStats implements NbtSerialisable, PageOwner {
 
     @Override
     public void sendCapabilities(boolean full) {
-
+        pony.sendCapabilities(full);
     }
 
     @Override

@@ -28,8 +28,8 @@ public class CarryAbility implements Ability<Hit> {
     }
 
     @Override
-    public boolean canUse(Race playerSpecies) {
-        return playerSpecies.canFly();
+    public boolean canUse(Race race) {
+        return race.canFly();
     }
 
     @Override

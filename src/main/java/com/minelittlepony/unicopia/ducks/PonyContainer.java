@@ -10,9 +10,9 @@ import com.minelittlepony.unicopia.magic.Caster;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
-public interface PonyContainer<T extends Ponylike> {
+public interface PonyContainer<T extends Ponylike<?>> {
 
-    Ponylike create();
+    Ponylike<?> create();
 
     T get();
 
@@ -28,7 +28,7 @@ public interface PonyContainer<T extends Ponylike> {
     }
 
     @SuppressWarnings("unchecked")
-    static <E extends Entity, T extends Ponylike> Optional<PonyContainer<T>> of(Entity entity) {
+    static <E extends Entity, T extends Ponylike<?>> Optional<PonyContainer<T>> of(Entity entity) {
         if (entity instanceof PonyContainer) {
             return Optional.of(((PonyContainer<T>)entity));
         }

@@ -74,7 +74,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
             return disc;
         }).setDisguise(looked);
 
-        iplayer.sendCapabilities(true);
+        iplayer.setDirty();
     }
 
     @Override

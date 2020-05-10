@@ -15,7 +15,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
 
-public class LivingEntityCapabilities implements RaceContainer<LivingEntity>, Caster<LivingEntity> {
+public class Creature implements Ponylike<LivingEntity>, Caster<LivingEntity> {
 
     private static final TrackedData<CompoundTag> EFFECT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
 
@@ -23,9 +23,11 @@ public class LivingEntityCapabilities implements RaceContainer<LivingEntity>, Ca
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
 
+    private final Physics physics = new EntityPhysics<>(this);
+
     private final LivingEntity entity;
 
-    public LivingEntityCapabilities(LivingEntity entity) {
+    public Creature(LivingEntity entity) {
         this.entity = entity;
 
         entity.getDataTracker().startTracking(EFFECT, new CompoundTag());
@@ -34,6 +36,11 @@ public class LivingEntityCapabilities implements RaceContainer<LivingEntity>, Ca
     @Override
     public Race getSpecies() {
         return Race.HUMAN;
+    }
+
+    @Override
+    public Physics getPhysics() {
+        return physics;
     }
 
     @Override
@@ -56,7 +63,7 @@ public class LivingEntityCapabilities implements RaceContainer<LivingEntity>, Ca
     }
 
     @Override
-    public void onUpdate() {
+    public void tick() {
         if (hasEffect()) {
             AttachedMagicEffect effect = getEffect(AttachedMagicEffect.class, true);
 
@@ -70,11 +77,6 @@ public class LivingEntityCapabilities implements RaceContainer<LivingEntity>, Ca
                 }
             }
         }
-    }
-
-    @Override
-    public void onDimensionalTravel(int destinationDimension) {
-
     }
 
     @Override
@@ -111,6 +113,7 @@ public class LivingEntityCapabilities implements RaceContainer<LivingEntity>, Ca
         if (effect != null) {
             compound.put("effect", SpellRegistry.instance().serializeEffectToNBT(effect));
         }
+        physics.toNBT(compound);
     }
 
     @Override
@@ -118,5 +121,6 @@ public class LivingEntityCapabilities implements RaceContainer<LivingEntity>, Ca
         if (compound.contains("effect")) {
             setEffect(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
         }
+        physics.fromNBT(compound);
     }
 }

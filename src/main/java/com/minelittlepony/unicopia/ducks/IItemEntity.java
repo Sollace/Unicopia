@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.ducks;
 
-import com.minelittlepony.unicopia.entity.ItemEntityCapabilities;
+import com.minelittlepony.unicopia.entity.ItemImpl;
 
-public interface IItemEntity extends PonyContainer<ItemEntityCapabilities> {
+public interface IItemEntity extends PonyContainer<ItemImpl> {
 
     int getAge();
 

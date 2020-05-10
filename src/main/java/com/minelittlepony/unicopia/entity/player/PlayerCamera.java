@@ -18,19 +18,19 @@ public class PlayerCamera extends MotionCompositor {
 
         double roll = baseRoll;
 
-        if (player.getFlight().isFlying()) {
+        if (player.getMotion().isFlying()) {
             Vec3d vel = player.getOwner().getVelocity();
 
             roll -= super.calculateRoll(player.getOwner(), vel.x, vel.y, vel.z);
         }
 
-        if (player.getGravity().getGravitationConstant() < 0) {
-            roll = -roll;
-            roll += 180;
+        if (player.getPhysics().isGravityNegative()) {
+           roll = -roll;
+           roll += 180;
         }
 
         if (player.getEntity().age > 10) {
-            roll = player.getInterpolator().interpolate("roll", (float)roll, 250);
+            roll = player.getInterpolator().interpolate("roll", (float)roll, 50);
         }
 
         return (float)roll;
@@ -45,7 +45,7 @@ public class PlayerCamera extends MotionCompositor {
     }
 
     public double calculateFieldOfView(double fov) {
-        fov += player.getMagicalReserves().getExertion() / 5;
+        fov += player.getMagicalReserves().getExertion() / 5F;
         fov += getEnergyAddition();
 
         return fov;

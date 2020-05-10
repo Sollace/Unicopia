@@ -19,7 +19,7 @@ public interface Useable {
      *
      * @param stack        The current itemstack
      * @param affinity  The affinity of the casting artifact
-     * @param player    The player
+     * @param pony    The player
      * @param world        The player's world
      * @param pos        The location clicked
      * @param side        The side of the block clicked

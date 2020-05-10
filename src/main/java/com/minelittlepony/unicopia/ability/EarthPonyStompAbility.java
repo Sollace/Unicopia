@@ -64,8 +64,8 @@ public class EarthPonyStompAbility implements Ability<Multi> {
     }
 
     @Override
-    public boolean canUse(Race playerSpecies) {
-        return playerSpecies.canUseEarth();
+    public boolean canUse(Race race) {
+        return race.canUseEarth();
     }
 
     @Nullable

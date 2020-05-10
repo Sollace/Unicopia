@@ -49,7 +49,7 @@ class SpeciesCommand {
         if (race.isPermitted(player)) {
             Pony pony = Pony.of(player);
             pony.setSpecies(race);
-            pony.sendCapabilities(false);
+            pony.setDirty();
 
             Text formattedName = new TranslatableText(race.name().toLowerCase());
 

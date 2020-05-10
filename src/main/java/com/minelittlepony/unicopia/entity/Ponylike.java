@@ -8,13 +8,14 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.util.Tickable;
 
-public interface Ponylike extends NbtSerialisable, Updatable {
+public interface Ponylike<T extends Entity> extends NbtSerialisable, Tickable {
     Race getSpecies();
 
-    void setSpecies(Race race);
+    Physics getPhysics();
 
-    void onDimensionalTravel(int destinationDimension);
+    void setSpecies(Race race);
 
     /**
      * Returns true if this player is fully invisible.
@@ -54,7 +55,7 @@ public interface Ponylike extends NbtSerialisable, Updatable {
     }
 
     @Nullable
-    static <T extends Ponylike> T of(Entity entity) {
+    static <T extends Ponylike<?>> T of(Entity entity) {
         return PonyContainer.<Entity, T>of(entity)
                 .map(PonyContainer::get)
                 .orElse(null);
