@@ -1,7 +1,12 @@
 package com.minelittlepony.unicopia.client.render.model;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.magic.Affinity;
+import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.util.Color;
 
 import net.minecraft.client.MinecraftClient;
@@ -19,7 +24,8 @@ public class GemEntityModel extends EntityModel<SpellcastEntity> {
 
     private ModelPart body;
 
-    private int tint;
+    @Nullable
+    private MagicEffect effect;
 
     public GemEntityModel() {
         textureWidth = 256;
@@ -31,7 +37,7 @@ public class GemEntityModel extends EntityModel<SpellcastEntity> {
 
     @Override
     public void setAngles(SpellcastEntity entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
-        tint = entity.hasEffect() ? entity.getEffect().getTint() : -1;
+        effect = entity.hasEffect() ? entity.getEffect() : null;
 
         float floatOffset = MathHelper.sin((entity.age + customAngle) / 10 + entity.hoverStart) / 10 + 0.1F;
 
@@ -56,18 +62,23 @@ public class GemEntityModel extends EntityModel<SpellcastEntity> {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-        if (tint != -1) {
-            red = Color.r(tint);
-            green = Color.g(tint);
-            blue = Color.b(tint);
+        if (effect != null) {
+            red = Color.r(effect.getTint());
+            green = Color.g(effect.getTint());
+            blue = Color.b(effect.getTint());
         }
         matrices.push();
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(body.yaw));
         matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(body.pitch));
         matrices.translate(body.pivotX, body.pivotY, body.pivotZ);
 
+        ItemStack stack = new ItemStack(effect != null && effect.getAffinity() == Affinity.BAD ? UItems.CORRUPTED_GEM : UItems.GEM);
+        if (effect != null) {
+            SpellRegistry.instance().enchantStack(stack, effect.getName());
+        }
+
         MinecraftClient.getInstance().getItemRenderer().renderItem(
-                new ItemStack(UItems.GEM),
+                stack,
                 ModelTransformation.Mode.GROUND, light,
                 overlay,
                 matrices,
