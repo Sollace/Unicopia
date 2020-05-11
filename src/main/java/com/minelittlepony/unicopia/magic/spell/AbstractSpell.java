@@ -60,35 +60,4 @@ public abstract class AbstractSpell implements MagicEffect {
         setDirty(false);
         isDead = compound.getBoolean("dead");
     }
-
-    public static abstract class RangedAreaSpell extends AbstractSpell {
-
-        @Override
-        public int getMaxLevelCutOff(Caster<?> source) {
-            return 17;
-        }
-
-        @Override
-        public float getMaxExhaustion(Caster<?> caster) {
-            return 1000;
-        }
-
-        @Override
-        public float getExhaustion(Caster<?> caster) {
-            float max = getMaxLevelCutOff(caster);
-            float current = caster.getCurrentLevel();
-
-            if (current > max) {
-                float maxEc = getMaxExhaustion(caster);
-
-                current -= max;
-                current /= max;
-                current /= maxEc;
-
-                return maxEc - current;
-            }
-
-            return super.getExhaustion(caster);
-        }
-    }
 }

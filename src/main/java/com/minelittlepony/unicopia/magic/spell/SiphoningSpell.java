@@ -17,7 +17,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-public class SiphoningSpell extends AbstractSpell.RangedAreaSpell {
+public class SiphoningSpell extends AbstractRangedAreaSpell {
 
     @Override
     public String getName() {

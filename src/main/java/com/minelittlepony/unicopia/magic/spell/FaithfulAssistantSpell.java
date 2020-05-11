@@ -16,7 +16,10 @@ import net.minecraft.util.math.Box;
  * Spike The Dragon, but in rock form.
  *
  * It follows you around and can pick up/carry other gems.
+ *
+ * @Deprecated Replace with a minion mob
  */
+@Deprecated
 public class FaithfulAssistantSpell extends AbstractSpell {
 
     private static final Box EFFECT_BOUNDS = new Box(-2, -2, -2, 2, 2, 2);

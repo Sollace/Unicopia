@@ -38,14 +38,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class FireSpell extends AbstractSpell.RangedAreaSpell implements Useable, DispenceableMagicEffect {
+/**
+ * Simple fire spell that triggers an effect when used on a block.
+ */
+public class FireSpell extends AbstractRangedAreaSpell implements Useable, DispenceableMagicEffect {
 
-    private static final Shape visual_effect_region = new Sphere(false, 0.5);
-    private static final Shape effect_range = new Sphere(false, 4);
-
-    public FireSpell() {
-
-    }
+    private static final Shape VISUAL_EFFECT_RANGE = new Sphere(false, 0.5);
+    private static final Shape EFFECT_RANGE = new Sphere(false, 4);
 
     @Override
     public String getName() {
@@ -69,11 +68,10 @@ public class FireSpell extends AbstractSpell.RangedAreaSpell implements Useable,
 
     @Override
     public void render(Caster<?> source) {
-        source.spawnParticles(visual_effect_region, source.getCurrentLevel() * 6, pos -> {
+        source.spawnParticles(VISUAL_EFFECT_RANGE, source.getCurrentLevel() * 6, pos -> {
             source.addParticle(ParticleTypes.LARGE_SMOKE, pos, Vec3d.ZERO);
         });
     }
-
 
     @Override
     public CastResult onUse(ItemUsageContext context, Affinity affinity) {
@@ -85,7 +83,7 @@ public class FireSpell extends AbstractSpell.RangedAreaSpell implements Useable,
         if (player == null || player.isSneaking()) {
             result = applyBlocks(context.getWorld(), pos);
         } else {
-            result = PosHelper.getAllInRegionMutable(pos, effect_range).reduce(result,
+            result = PosHelper.getAllInRegionMutable(pos, EFFECT_RANGE).reduce(result,
                     (r, i) -> applyBlocks(context.getWorld(), i),
                     (a, b) -> a || b);
         }
@@ -110,7 +108,7 @@ public class FireSpell extends AbstractSpell.RangedAreaSpell implements Useable,
     public CastResult onDispenced(BlockPos pos, Direction facing, BlockPointer source, Affinity affinity) {
         pos = pos.offset(facing, 4);
 
-        return CastResult.cancelled(PosHelper.getAllInRegionMutable(pos, effect_range).reduce(false,
+        return CastResult.cancelled(PosHelper.getAllInRegionMutable(pos, EFFECT_RANGE).reduce(false,
                 (r, i) -> applyBlocks(source.getWorld(), i),
                 (a, b) -> a || b)
                 || applyEntities(null, source.getWorld(), pos));
@@ -195,7 +193,7 @@ public class FireSpell extends AbstractSpell.RangedAreaSpell implements Useable,
     }
 
     /**
-     * Transmists power to a piece of redstone
+     * Transmits power to a piece of redstone
      */
     private void sendPower(World w, BlockPos pos, int power, int max, int i) {
         BlockState state = w.getBlockState(pos);

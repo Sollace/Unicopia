@@ -32,7 +32,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class IceSpell extends AbstractSpell.RangedAreaSpell implements Useable, DispenceableMagicEffect {
+public class IceSpell extends AbstractRangedAreaSpell implements Useable, DispenceableMagicEffect {
 
     private final int rad = 3;
     private final Shape effect_range = new Sphere(false, rad);

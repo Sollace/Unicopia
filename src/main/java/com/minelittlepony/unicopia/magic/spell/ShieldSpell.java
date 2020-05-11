@@ -20,7 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
-public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements AttachedMagicEffect {
+public class ShieldSpell extends AbstractRangedAreaSpell implements AttachedMagicEffect {
 
     private final ParticleHandle particlEffect = new ParticleHandle();
 
@@ -37,11 +37,6 @@ public class ShieldSpell extends AbstractSpell.RangedAreaSpell implements Attach
     @Override
     public int getTint() {
         return 0x66CDAA;
-    }
-
-    @Override
-    public void renderOnPerson(Caster<?> source) {
-        render(source);
     }
 
     @Override

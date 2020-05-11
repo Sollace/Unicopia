@@ -19,7 +19,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 
-public class NecromancySpell extends AbstractSpell.RangedAreaSpell {
+public class NecromancySpell extends AbstractRangedAreaSpell {
 
     private final List<EntityType<? extends LivingEntity>> spawns = Lists.newArrayList(
             EntityType.ZOMBIE,

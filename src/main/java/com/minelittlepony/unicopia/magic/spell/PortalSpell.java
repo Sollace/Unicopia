@@ -33,7 +33,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class PortalSpell extends AbstractSpell.RangedAreaSpell implements Useable {
+public class PortalSpell extends AbstractRangedAreaSpell implements Useable {
 
     private static final Shape portalZone_X = new Sphere(true, 1, 0, 2, 1);
     private static final Shape portalZone_Y = new Sphere(true, 1, 2, 0, 2);
