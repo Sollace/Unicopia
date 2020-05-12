@@ -94,7 +94,9 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements AttachedMagi
         Vec3d origin = source.getOriginVector();
 
         List<Entity> targets = source.findAllEntitiesInRange(radius)
-            .filter(entity -> !(ownerIsValid && entity.equals(owner)))
+            .filter(entity -> !(ownerIsValid && (
+                    entity.equals(owner)
+                    || (entity instanceof PlayerEntity && owner instanceof PlayerEntity && Pony.equal((PlayerEntity)entity, (PlayerEntity)owner)))))
             .collect(Collectors.toList());
 
         targets.forEach(i -> {

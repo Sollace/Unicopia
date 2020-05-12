@@ -1,9 +1,11 @@
 package com.minelittlepony.unicopia.ability;
 
+import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.ShieldSpell;
+import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 
 /**
@@ -39,16 +41,28 @@ public class UnicornCastingAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
-        // XXX: A way for the player to select which effect they want
-        if (player.getEffect() instanceof ShieldSpell) {
-            player.setEffect(null);
+
+        if (player.hasEffect()) {
+            String current = player.getEffect().getName();
+            player.setEffect(Streams.stream(player.getOwner().getItemsHand())
+                    .map(SpellRegistry::getKeyFromStack)
+                    .filter(i -> i != null && !current.equals(i))
+                    .map(SpellRegistry.instance()::getSpellFromName)
+                    .filter(i -> i != null)
+                    .findFirst()
+                    .orElse(null));
         } else {
-            player.setEffect(new ShieldSpell());
+            player.setEffect(Streams.stream(player.getOwner().getItemsHand())
+                    .map(SpellRegistry.instance()::getSpellFrom)
+                    .filter(i -> i != null)
+                    .findFirst()
+                    .orElseGet(ShieldSpell::new));
         }
     }
 
     @Override
     public void preApply(Pony player, AbilitySlot slot) {
+        player.getMagicalReserves().addEnergy(3);
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 

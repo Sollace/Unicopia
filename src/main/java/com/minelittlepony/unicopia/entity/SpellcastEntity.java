@@ -51,8 +51,6 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
     private static final TrackedData<CompoundTag> EFFECT = DataTracker.registerData(SpellcastEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
     private static final TrackedData<Integer> AFFINITY = DataTracker.registerData(SpellcastEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
-    private LivingEntity owner = null;
-
     public float hoverStart;
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
@@ -151,32 +149,21 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
 
     @Override
     public void setOwner(LivingEntity owner) {
-        this.owner = owner;
         setOwner(owner.getUuid());
     }
 
-    protected void setOwner(UUID ownerId) {
+    protected void setOwner(@Nullable UUID ownerId) {
         dataTracker.set(OWNER, Optional.ofNullable(ownerId));
     }
 
-    protected String getOwnerName() {
-        LivingEntity owner = getOwner();
-
-        if (owner != null) {
-            return owner.getEntityName();
-        }
-
-        return "";
+    protected Optional<UUID> getOwnerId() {
+        return dataTracker.get(OWNER);
     }
 
     @Nullable
     @Override
     public LivingEntity getOwner() {
-        if (owner == null) {
-            owner = dataTracker.get(OWNER).map(world::getPlayerByUuid).orElse(null);
-        }
-
-        return owner;
+        return getOwnerId().map(world::getPlayerByUuid).orElse(null);
     }
 
     protected void displayTick() {
@@ -353,7 +340,9 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
             setAffinity(Affinity.of(compound.getString("affinity")));
         }
 
-        setOwner(compound.getUuid("owner"));
+        if (compound.containsUuid("owner")) {
+            setOwner(compound.getUuid("owner"));
+        }
         setCurrentLevel(compound.getInt("level"));
 
         if (compound.contains("effect")) {
@@ -366,8 +355,8 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
         super.writeCustomDataToTag(compound);
 
         compound.putString("affinity", getAffinity().name());
-        compound.putString("owner", getOwnerName());
         compound.putInt("level", getCurrentLevel());
+        getOwnerId().ifPresent(id -> compound.putUuid("owner", id));
 
         if (hasEffect()) {
             compound.put("effect", SpellRegistry.instance().serializeEffectToNBT(getEffect()));

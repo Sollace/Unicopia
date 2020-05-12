@@ -7,7 +7,6 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -15,6 +14,7 @@ import com.minelittlepony.client.render.MagicGlow;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.particles.ParticleHandle.Attachment;
+import com.minelittlepony.unicopia.particles.ParticleHandle.Link;
 import com.minelittlepony.unicopia.particles.SphereParticleEffect;
 import com.minelittlepony.util.Color;
 
@@ -32,7 +32,7 @@ public class SphereParticle extends Particle implements Attachment {
     protected float lerpIncrement;
     protected float toRadius;
 
-    private Caster<?> caster;
+    private final Link link = new Link();
 
     private static final SphereModel model = new SphereModel();
 
@@ -64,7 +64,7 @@ public class SphereParticle extends Particle implements Attachment {
     @Override
     public void attach(Caster<?> caster) {
         setMaxAge(50000);
-        this.caster = caster;
+        this.link.attach(caster);
     }
 
     @Override
@@ -91,22 +91,14 @@ public class SphereParticle extends Particle implements Attachment {
     public void tick() {
         super.tick();
 
-        if (caster != null) {
-            if (!caster.hasEffect() || caster.getEffect().isDead() || caster.getEntity().removed) {
-                markDead();
-            } else {
-                Entity e = caster.getEntity();
-
-                if (caster.getWorld().getEntityById(e.getEntityId()) == null) {
-                    markDead();
-                }
-
+        if (link.linked()) {
+            link.ifAbsent(this::markDead).map(Caster::getEntity).ifPresent(e -> {
                 setPos(e.getX(), e.getY(), e.getZ());
 
                 prevPosX = e.lastRenderX;
                 prevPosY = e.lastRenderY;
                 prevPosZ = e.lastRenderZ;
-            }
+            });
 
             if (steps-- > 0) {
                 radius += lerpIncrement;

@@ -2,12 +2,13 @@ package com.minelittlepony.unicopia.particles;
 
 import java.util.Optional;
 import java.util.function.Consumer;
-import com.minelittlepony.unicopia.magic.Caster;
 
+import com.minelittlepony.unicopia.magic.Caster;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.math.Vec3d;
 
@@ -34,7 +35,7 @@ public class ParticleHandle {
         Particle p = MinecraftClient.getInstance().particleManager.addParticle(effect, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
 
         if (p instanceof Attachment) {
-            particleEffect = Optional.ofNullable((Attachment)p);
+            particleEffect = Optional.of((Attachment)p);
         }
     }
 
@@ -45,5 +46,35 @@ public class ParticleHandle {
         void attach(Caster<?> caster);
 
         void setAttribute(int key, Object value);
+    }
+
+    public static final class Link {
+
+        private Optional<Caster<?>> caster = Optional.empty();
+        private String effect;
+        private boolean linked;
+
+        public void attach(Caster<?> caster) {
+            this.linked = true;
+            this.caster = Optional.of(caster);
+            effect = caster.getEffect(false).getName();
+        }
+
+        public boolean linked() {
+            return linked;
+        }
+
+        public Optional<Caster<?>> ifAbsent(Runnable action) {
+            caster = caster.filter(c -> {
+                Entity e = c.getEntity();
+
+                return c.hasEffect() && c.getEffect(false).getName().equals(effect) && e != null && c.getWorld().getEntityById(e.getEntityId()) != null;
+            });
+            if (!caster.isPresent()) {
+                action.run();
+            }
+
+            return caster;
+        }
     }
 }
