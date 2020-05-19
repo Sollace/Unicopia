@@ -24,6 +24,10 @@
   "block.unicopia.slime_drop": "Slime Droplet",
   "block.unicopia.slime_layer": "Slime",
 
+  "block.unicopia.chiseled_marble_block": "Chiseled Marble Block",
+  "block.unicopia.smooth_marble_block": "Smooth Marble Block",
+  "block.unicopia.smooth_marble_slab": "Smooth Marble Slab",
+
   "block.unicopia.apple_leaves": "Apple Leaves",
   "block.unicopia.apple_sapling": "Apple Seeds",
 

@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "type=bottom": { "model": "unicopia:block/smooth_marble_slab" },
+        "type=top": { "model": "unicopia:block/smooth_marble_slab_top" },
+        "type=double": { "model": "unicopia:block/smooth_marble_block" }
+    }
+}

@@ -3,6 +3,7 @@
   "values": [
     "unicopia:cloud_slab",
     "unicopia:enchanted_cloud_slab",
-    "unicopia:dense_cloud_slab"
+    "unicopia:dense_cloud_slab",
+    "unicopia:smooth_marble_slab"
   ]
 }

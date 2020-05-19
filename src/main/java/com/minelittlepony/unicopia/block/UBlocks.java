@@ -23,6 +23,7 @@ import net.minecraft.block.FallingBlock;
 import net.minecraft.block.Material;
 import net.minecraft.block.MaterialColor;
 import net.minecraft.block.SaplingBlock;
+import net.minecraft.block.SlabBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
@@ -134,6 +135,19 @@ public interface UBlocks {
                     .sounds(BlockSoundGroup.SLIME)
                     .slipperiness(0.8F)
                     .nonOpaque()
+                    .build()));
+
+    Block SMOOTH_MARBLE_BLOCK = register("smooth_marble_block", new Block(FabricBlockSettings.of(Material.STONE)
+                    .strength(0.7F, 10)
+                    .breakByTool(FabricToolTags.PICKAXES)
+                    .build()));
+    Block CHISELED_MARBLE_BLOCK = register("chiseled_marble_block", new Block(FabricBlockSettings.of(Material.STONE)
+                    .strength(0.8F, 10)
+                    .breakByTool(FabricToolTags.PICKAXES)
+                    .build()));
+    Block SMOOTH_MARBLE_SLAB = register("smooth_marble_slab", new SlabBlock(FabricBlockSettings.of(Material.STONE)
+                    .strength(0.7F, 10)
+                    .breakByTool(FabricToolTags.PICKAXES)
                     .build()));
 
     Block SUGAR_BLOCK = register("sugar_block", new FallingBlock(FabricBlockSettings.of(Material.SAND)

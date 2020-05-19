@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SSS",
+    "SSS"
+  ],
+  "key": {
+    "S": [
+      { "item": "unicopia:gem" }
+    ]
+  },
+  "result": { "item": "unicopia:smooth_marble_slab", "count": 2 }
+}

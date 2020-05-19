@@ -1,0 +1,8 @@
+{
+    "parent": "block/slab_top",
+    "textures": {
+        "bottom": "unicopia:blocks/smooth_marble_block",
+        "top": "unicopia:blocks/smooth_marble_block",
+        "side": "unicopia:blocks/smooth_marble_block"
+    }
+}

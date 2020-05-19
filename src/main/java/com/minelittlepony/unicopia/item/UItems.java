@@ -77,6 +77,10 @@ public interface UItems {
 
     Item SUGAR_BLOCK = register("sugar_block", new BlockItem(UBlocks.SUGAR_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
 
+    Item SMOOTH_MARBLE_BLOCK = register("smooth_marble_block", new BlockItem(UBlocks.SMOOTH_MARBLE_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
+    Item CHISELED_MARBLE_BLOCK = register("chiseled_marble_block", new BlockItem(UBlocks.CHISELED_MARBLE_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
+    Item SMOOTH_MARBLE_SLAB = register("smooth_marble_slab", new BlockItem(UBlocks.SMOOTH_MARBLE_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
+
     Item CLOUD_SLAB = register("cloud_slab", new PredicatedBlockItem(UBlocks.CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS));
     Item ENCHANTED_CLOUD_SLAB = register("enchanted_cloud_slab", new PredicatedBlockItem(UBlocks.ENCHANTED_CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS));
     Item DENSE_CLOUD_SLAB = register("dense_cloud_slab", new PredicatedBlockItem(UBlocks.DENSE_CLOUD_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS), PLAYER_PEGASUS));
