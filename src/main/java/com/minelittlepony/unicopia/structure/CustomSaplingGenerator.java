@@ -4,8 +4,10 @@ import java.util.Random;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
+import com.minelittlepony.unicopia.block.UBlocks;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.sapling.SaplingGenerator;
 import net.minecraft.world.gen.decorator.BeehiveTreeDecorator;
 import net.minecraft.world.gen.feature.BranchedTreeFeatureConfig;
@@ -15,11 +17,12 @@ import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
 import net.minecraft.world.gen.stateprovider.SimpleStateProvider;
 
 public class CustomSaplingGenerator extends SaplingGenerator {
+    public static final CustomSaplingGenerator APPLE_TREE = new CustomSaplingGenerator(5, Blocks.OAK_LOG.getDefaultState(), UBlocks.APPLE_LEAVES.getDefaultState());
 
-    private final BranchedTreeFeatureConfig fancyConfig;
-    private final BranchedTreeFeatureConfig fancyHiveConfig;
-    private final BranchedTreeFeatureConfig hiveConfig;
-    private final BranchedTreeFeatureConfig config;
+    public final BranchedTreeFeatureConfig fancyConfig;
+    public final BranchedTreeFeatureConfig fancyHiveConfig;
+    public final BranchedTreeFeatureConfig hiveConfig;
+    public final BranchedTreeFeatureConfig config;
 
     public CustomSaplingGenerator(int height, BlockState log, BlockState leaves) {
         fancyConfig = new BranchedTreeFeatureConfig.Builder(

@@ -18,7 +18,6 @@ import com.minelittlepony.unicopia.structure.CustomSaplingGenerator;
 import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.tools.FabricToolTags;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.block.Material;
 import net.minecraft.block.MaterialColor;
@@ -164,6 +163,7 @@ public interface UBlocks {
                     .breakByTool(FabricToolTags.SHOVELS)
                     .build()));
     Block APPLE_LEAVES = register("apple_leaves", new FruitLeavesBlock(FabricBlockSettings.of(Material.LEAVES)
+                    .nonOpaque()
                     .strength(0.2F, 0.2F)
                     .ticksRandomly()
                     .sounds(BlockSoundGroup.GRASS)
@@ -173,14 +173,12 @@ public interface UBlocks {
                     .fruit(W -> TreeType.OAK.pickRandomStack())
                     .compost(w -> new ItemStack(UItems.ROTTEN_APPLE)));
 
-    SaplingBlock APPLE_SAPLING = register("apple_sapling", new SaplingBlock(
-                        new CustomSaplingGenerator(5, Blocks.OAK_LOG.getDefaultState(), APPLE_LEAVES.getDefaultState()),
-                        FabricBlockSettings.of(Material.WOOD)
-                            .noCollision()
-                            .ticksRandomly()
-                            .breakInstantly()
-                            .sounds(BlockSoundGroup.GRASS)
-                            .build()) {});
+    SaplingBlock APPLE_SAPLING = register("apple_sapling", new SaplingBlock(CustomSaplingGenerator.APPLE_TREE, FabricBlockSettings.of(Material.WOOD)
+                    .noCollision()
+                    .ticksRandomly()
+                    .breakInstantly()
+                    .sounds(BlockSoundGroup.GRASS)
+                    .build()) {});
 
 
     static <T extends Block> T register(String name, T block) {

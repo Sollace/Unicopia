@@ -46,7 +46,7 @@ public interface URenderers {
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(),
                 UBlocks.ENCHANTED_TORCH, UBlocks.ENCHANTED_WALL_TORCH,
                 UBlocks.BAKERY_DOOR, UBlocks.LIBRARY_DOOR, UBlocks.MISTED_GLASS_DOOR, UBlocks.DIAMOND_DOOR,
-                UBlocks.APPLE_SAPLING,
+                UBlocks.APPLE_SAPLING, UBlocks.ALFALFA_CROPS,
                 UBlocks.TOMATO_PLANT, UBlocks.CLOUDSDALE_TOMATO_PLANT
         );
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(),

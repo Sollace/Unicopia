@@ -1,11 +1,18 @@
 package com.minelittlepony.unicopia.structure;
 
+import com.google.common.collect.ImmutableList;
+
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.decorator.CountExtraChanceDecoratorConfig;
+import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.RandomFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public interface UStructures {
@@ -23,5 +30,19 @@ public interface UStructures {
         return Registry.register(Registry.FEATURE, new Identifier("unicopia", id), feature);
     }
 
-    static void bootstrap() { }
+    static void bootstrap() {
+        Registry.BIOME.forEach(biome -> {
+            Biome.Category category = biome.getCategory();
+
+            if (category == Biome.Category.FOREST) {
+                biome.addFeature(GenerationStep.Feature.VEGETAL_DECORATION,
+                        Feature.RANDOM_SELECTOR.configure(new RandomFeatureConfig(ImmutableList.of(
+                                Feature.NORMAL_TREE.configure(CustomSaplingGenerator.APPLE_TREE.hiveConfig).withChance(0.02F),
+                                Feature.FANCY_TREE.configure(CustomSaplingGenerator.APPLE_TREE.fancyConfig).withChance(0.01F)),
+                                Feature.NORMAL_TREE.configure(CustomSaplingGenerator.APPLE_TREE.config)
+                        ))
+                        .createDecoratedFeature(Decorator.COUNT_EXTRA_HEIGHTMAP.configure(new CountExtraChanceDecoratorConfig(10, 0.1F, 1))));
+            }
+        });
+    }
 }
