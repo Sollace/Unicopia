@@ -43,16 +43,21 @@ public interface URenderers {
         ParticleFactoryRegistry.getInstance().register(UParticles.SPHERE, SphereParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.DISK, DiskParticle::new);
 
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), UBlocks.ENCHANTED_TORCH, UBlocks.ENCHANTED_WALL_TORCH,
-                UBlocks.BAKERY_DOOR, UBlocks.LIBRARY_DOOR, UBlocks.MISTED_GLASS_DOOR, UBlocks.DIAMOND_DOOR);
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(),
+                UBlocks.ENCHANTED_TORCH, UBlocks.ENCHANTED_WALL_TORCH,
+                UBlocks.BAKERY_DOOR, UBlocks.LIBRARY_DOOR, UBlocks.MISTED_GLASS_DOOR, UBlocks.DIAMOND_DOOR,
+                UBlocks.APPLE_SAPLING,
+                UBlocks.TOMATO_PLANT, UBlocks.CLOUDSDALE_TOMATO_PLANT
+        );
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(),
                 UBlocks.CLOUD_ANVIL, UBlocks.CLOUD_FARMLAND,
                 UBlocks.CLOUD_BLOCK, UBlocks.CLOUD_SLAB, UBlocks.CLOUD_STAIRS,
                 UBlocks.ENCHANTED_CLOUD_BLOCK, UBlocks.ENCHANTED_CLOUD_SLAB, UBlocks.ENCHANTED_CLOUD_STAIRS,
 
-                UBlocks.SLIME_DROP, UBlocks.SLIME_LAYER,
-
-                UBlocks.APPLE_SAPLING, UBlocks.TOMATO_PLANT
+                UBlocks.SLIME_DROP, UBlocks.SLIME_LAYER
+        );
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutoutMipped(),
+                UBlocks.APPLE_LEAVES
         );
 
         UScreens.bootstrap();
