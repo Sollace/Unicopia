@@ -25,6 +25,7 @@ import net.minecraft.block.MaterialColor;
 import net.minecraft.block.SaplingBlock;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -94,17 +95,23 @@ public interface UBlocks {
                     .breakInstantly()
                     .sounds(BlockSoundGroup.CROP).build()));
 
-    StickBlock STICK = register("stick", new StickBlock(FabricBlockSettings.of(Material.WOOD)
-                    .noCollision()
+    StickPlantBlock STICK = register("stick", new StickPlantBlock(FabricBlockSettings.of(UMaterials.STICK)
+                    .nonOpaque()
                     .strength(0.2F, 0.2F)
-                    .build()));
-    TomatoPlantBlock TOMATO_PLANT = register("tomato_plant", new TomatoPlantBlock(FabricBlockSettings.of(Material.PLANT)
-                    .noCollision()
+                    .sounds(BlockSoundGroup.WOOD)
+                    .build(), Items.AIR, Items.AIR, Items.AIR));
+    StickPlantBlock TOMATO_PLANT = register("tomato_plant", new StickPlantBlock(FabricBlockSettings.of(UMaterials.STICK)
+                    .nonOpaque()
                     .strength(0.2F, 0.2F)
                     .ticksRandomly()
-                    .lightLevel(1)
                     .sounds(BlockSoundGroup.WOOD)
-                    .build()));
+                    .build(), () -> UItems.TOMATO_SEEDS, () -> UItems.TOMATO, () -> UItems.ROTTEN_TOMATO));
+    StickPlantBlock CLOUDSDALE_TOMATO_PLANT = register("cloudsdale_tomato_plant", new StickPlantBlock(FabricBlockSettings.of(UMaterials.STICK)
+                    .nonOpaque()
+                    .strength(0.2F, 0.2F)
+                    .ticksRandomly()
+                    .sounds(BlockSoundGroup.WOOD)
+                    .build(), () -> UItems.TOMATO_SEEDS, () -> UItems.CLOUDSDALE_TOMATO, () -> UItems.ROTTEN_CLOUDSDALE_TOMATO));
 
     HiveWallBlock HIVE_WALL_BLOCK = register("hive_wall_block", new HiveWallBlock(FabricBlockSettings.of(UMaterials.HIVE)
                     .strength(10, 10)

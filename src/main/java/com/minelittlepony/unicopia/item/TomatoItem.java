@@ -18,5 +18,4 @@ public class TomatoItem extends Item {
         entity.removeStatusEffect(StatusEffects.NAUSEA);
         return stack;
     }
-
 }

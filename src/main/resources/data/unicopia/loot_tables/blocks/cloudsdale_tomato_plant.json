@@ -14,11 +14,11 @@
           "type": "minecraft:alternatives",
           "children": [
             {
-              "type": "minecraft:item", "name": "unicopia:tomato",
+              "type": "minecraft:item", "name": "unicopia:cloudsdale_tomato",
               "conditions": [
                 {
                   "condition": "minecraft:block_state_property",
-                  "block": "unicopia:tomato_plant",
+                  "block": "unicopia:cloudsdale_tomato_plant",
                   "properties": { "age": "7" }
                 }
               ],
@@ -40,11 +40,11 @@
               ]
             },
             {
-              "type": "minecraft:item", "name": "unicopia:rotten_tomato",
+              "type": "minecraft:item", "name": "unicopia:rotten_cloudsdale_tomato",
               "conditions": [
                 {
                   "condition": "minecraft:block_state_property",
-                  "block": "unicopia:tomato_plant",
+                  "block": "unicopia:cloudsdale_tomato_plant",
                   "properties": { "age": "7" }
                 }
               ],
@@ -81,7 +81,7 @@
       "conditions": [
         {
           "condition": "minecraft:block_state_property",
-          "block": "unicopia:tomato_plant",
+          "block": "unicopia:cloudsdale_tomato_plant",
           "properties": { "age": "7" }
         }
       ]

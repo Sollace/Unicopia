@@ -5,8 +5,10 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.block.UBlocks;
 
 import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -24,7 +26,6 @@ public class StickItem extends Item {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-
         World world = context.getWorld();
         BlockPos pos = context.getBlockPos();
         Direction facing = context.getSide();
@@ -34,11 +35,11 @@ public class StickItem extends Item {
 
         if (facing == Direction.UP && world.isAir(pos.up()) && (player == null || world.canPlayerModifyAt(player, pos.offset(facing)))) {
 
-            world.setBlockState(pos.up(), UBlocks.STICK.getDefaultState());
+            BlockState placementState = UBlocks.STICK.getPlacementState(new ItemPlacementContext(context));
 
-            BlockSoundGroup sound = world.getBlockState(pos).getSoundGroup();
-
-            world.playSound(null, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1) / 2, sound.getPitch());
+            if (!world.setBlockState(pos.up(), placementState, 11)) {
+                return ActionResult.FAIL;
+            }
 
             ItemStack itemstack = context.getStack();
 
@@ -46,10 +47,9 @@ public class StickItem extends Item {
                 Criterions.PLACED_BLOCK.trigger((ServerPlayerEntity)player, pos.up(), itemstack);
             }
 
-            if (player == null || !player.abilities.creativeMode) {
-                itemstack.decrement(1);
-            }
-
+            BlockSoundGroup sound = world.getBlockState(pos).getSoundGroup();
+            world.playSound(null, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1) / 2, sound.getPitch());
+            itemstack.decrement(1);
             return ActionResult.SUCCESS;
         }
 

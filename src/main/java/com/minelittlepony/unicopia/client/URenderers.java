@@ -50,25 +50,11 @@ public interface URenderers {
                 UBlocks.CLOUD_BLOCK, UBlocks.CLOUD_SLAB, UBlocks.CLOUD_STAIRS,
                 UBlocks.ENCHANTED_CLOUD_BLOCK, UBlocks.ENCHANTED_CLOUD_SLAB, UBlocks.ENCHANTED_CLOUD_STAIRS,
 
-                UBlocks.SLIME_DROP, UBlocks.SLIME_LAYER
+                UBlocks.SLIME_DROP, UBlocks.SLIME_LAYER,
+
+                UBlocks.APPLE_SAPLING, UBlocks.TOMATO_PLANT
         );
 
         UScreens.bootstrap();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
