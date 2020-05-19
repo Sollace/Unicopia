@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client.gui;
 
+import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -20,8 +21,9 @@ public class UHud extends DrawableHelper {
     private Slot secondarySlot = new Slot(AbilitySlot.SECONDARY, 26, 0);
     private Slot tertiarySlot = new Slot(AbilitySlot.TERTIARY, 36, 24);
 
+    private final MinecraftClient client = MinecraftClient.getInstance();
+
     public void render(InGameHud hud, float tickDelta) {
-        MinecraftClient client = MinecraftClient.getInstance();
 
         int scaledWidth = client.getWindow().getScaledWidth();
         int scaledHeight = client.getWindow().getScaledHeight();
@@ -41,7 +43,11 @@ public class UHud extends DrawableHelper {
 
         blit(x, y, 0, 0, frameWidth, frameHeight, 128, 128); // background
 
-        float progressPercent = abilities.getStat(AbilitySlot.PRIMARY).getFillProgress();
+        AbilityDispatcher.Stat stat = abilities.getStat(AbilitySlot.PRIMARY);
+
+        //renderAbilityIcon(stat, x, y, 0, 0, frameWidth, frameHeight);
+
+        float progressPercent = stat.getFillProgress();
 
         if (progressPercent > 0 && progressPercent < 1) {
             int progressHeight = (int)(frameHeight * progressPercent);
@@ -60,8 +66,18 @@ public class UHud extends DrawableHelper {
         RenderSystem.disableAlphaTest();
     }
 
-    static class Slot {
+    void renderAbilityIcon(AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
+        stat.getAbility().ifPresent(ability -> {
+            Identifier id = Abilities.REGISTRY.getId(ability);
+            client.getTextureManager().bindTexture(new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + ".png"));
 
+            blit(x, y, 0, 0, frameWidth, frameHeight, u, v);
+
+            client.getTextureManager().bindTexture(HUD_TEXTURE);
+        });
+    }
+
+    class Slot {
         private final AbilitySlot slot;
 
         private int x;
@@ -79,7 +95,11 @@ public class UHud extends DrawableHelper {
             x += this.x;
             y += this.y;
 
-            float cooldown = abilities.getStat(slot).getFillProgress();
+            AbilityDispatcher.Stat stat = abilities.getStat(slot);
+            float cooldown = stat.getFillProgress();
+
+            blit(x, y, 80, 105, 25, 25, 128, 128);
+            renderAbilityIcon(stat, x + 1, y + 1, 20, 20, 20, 20);
 
             if (cooldown > 0 && cooldown < 1) {
                 float lerpCooldown = MathHelper.lerp(tickDelta, cooldown, lastCooldown);
@@ -92,10 +112,12 @@ public class UHud extends DrawableHelper {
                 int progressBottom = y + slotPadding + slotSize;
                 int progressTop = progressBottom - (int)(15F * cooldown);
 
-                fill(x + slotPadding, progressTop, x + slotPadding + slotSize, progressBottom, 0xAAFFFFFF);
+                fill(x + slotPadding, progressTop, x + slotPadding + slotSize, progressBottom, 0x88FFFFFF);
+                RenderSystem.enableAlphaTest();
+                RenderSystem.enableBlend();
             }
 
-            blit(x, y, 105, 105, 30, 30, 128, 128);
+            blit(x, y, 105, 105, 25, 25, 128, 128);
         }
 
     }

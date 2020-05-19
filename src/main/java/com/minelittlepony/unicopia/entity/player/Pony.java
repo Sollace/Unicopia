@@ -243,7 +243,7 @@ public class Pony implements Caster<PlayerEntity>, Ponylike<PlayerEntity>, Trans
             effect.updateInHand(this, affinity);
         }
 
-        mana.addExertion(-1);
+        mana.addExertion(-10);
         mana.addEnergy(-1);
 
         attributes.applyAttributes(this);
