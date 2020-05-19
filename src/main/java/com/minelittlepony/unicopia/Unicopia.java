@@ -1,8 +1,12 @@
 package com.minelittlepony.unicopia;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.loot.v1.FabricLootSupplier;
+import net.fabricmc.fabric.api.loot.v1.event.LootTableLoadingCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.loot.LootTable;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.util.Identifier;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,5 +52,17 @@ public class Unicopia implements ModInitializer {
 
         CriterionsRegistry.register(BOHDeathCriterion.INSTANCE);
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(Pages.instance());
+
+        LootTableLoadingCallback.EVENT.register((res, manager, id, supplier, setter) -> {
+            if (!"minecraft".contentEquals(id.getNamespace())) {
+                return;
+            }
+
+            Identifier modId = new Identifier("unicopiamc", id.getPath());
+            LootTable table = manager.getSupplier(modId);
+            if (table != LootTable.EMPTY) {
+                supplier.withPools(((FabricLootSupplier)table).getPools());
+            }
+        });
     }
 }

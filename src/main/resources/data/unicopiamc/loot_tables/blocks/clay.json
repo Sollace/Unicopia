@@ -4,12 +4,6 @@
     {
       "rolls": 1,
       "entries": [
-        { "type": "minecraft:item", "name": "unicopia:hive_wall_block" }
-      ]
-    },
-    {
-      "rolls": 1,
-      "entries": [
         {
           "type": "minecraft:item",
           "conditions": [
@@ -17,7 +11,7 @@
               "condition": "minecraft:table_bonus",
               "enchantment": "minecraft:fortune",
               "chances": [
-                0.06, 0.072222223, 0.075, 0.096666665, 1
+                0.07, 0.072222223, 0.075, 0.086666665, 0.2
               ]
             }
           ],
@@ -26,7 +20,7 @@
               "function": "minecraft:set_count",
               "count": {
                 "min": 1.0,
-                "max": 2.0,
+                "max": 3.0,
                 "type": "minecraft:uniform"
               }
             },
