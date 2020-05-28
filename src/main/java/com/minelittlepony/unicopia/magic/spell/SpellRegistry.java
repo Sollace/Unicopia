@@ -43,7 +43,6 @@ public class SpellRegistry {
         register(PortalSpell::new);
         register(AwkwardSpell::new);
         register(InfernoSpell::new);
-        register(FaithfulAssistantSpell::new);
         register(RevealingSpell::new);
         register(DarknessSpell::new);
         register(FlameSpell::new);
