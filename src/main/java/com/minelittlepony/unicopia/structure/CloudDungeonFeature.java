@@ -30,9 +30,15 @@ import net.minecraft.world.gen.feature.StructureFeature;
 class CloudDungeonFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
     private static final BlockPos POS = new BlockPos(4, 0, 15);
     private static final Identifier[] VARIANTS = new Identifier[] {
-            new Identifier("unicopia", "cloud/temple_small"),
-            new Identifier("unicopia", "cloud/house_small"),
-            new Identifier("unicopia", "cloud/island_small")
+            new Identifier("unicopia", "cloud/center"),
+            new Identifier("unicopia", "cloud/island"),
+            new Identifier("unicopia", "cloud/large_ruin"),
+            new Identifier("unicopia", "cloud/ruin_segment"),
+            new Identifier("unicopia", "cloud/small"),
+            new Identifier("unicopia", "cloud/huge_ruin/one"),
+            new Identifier("unicopia", "cloud/huge_ruin/two"),
+            new Identifier("unicopia", "cloud/huge_ruin/three"),
+            new Identifier("unicopia", "cloud/huge_ruin/four")
     };
 
     public CloudDungeonFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> func, Biome...biomes) {
@@ -120,6 +126,7 @@ class CloudDungeonFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
 
         @Override
         protected void handleMetadata(String var1, BlockPos var2, IWorld var3, Random var4, BlockBox var5) {
+
         }
     }
 }
