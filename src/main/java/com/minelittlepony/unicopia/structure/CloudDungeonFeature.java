@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.structure;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -19,7 +18,6 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.decorator.Decorator;
@@ -37,25 +35,14 @@ class CloudDungeonFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
             new Identifier("unicopia", "cloud/island_small")
     };
 
-    public CloudDungeonFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> func) {
+    public CloudDungeonFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> func, Biome...biomes) {
         super(func);
 
-        Arrays.asList(
-                Biomes.OCEAN,
-                Biomes.WOODED_BADLANDS_PLATEAU,
-                Biomes.DESERT,
-                Biomes.DESERT_HILLS,
-                Biomes.JUNGLE,
-                Biomes.JUNGLE_HILLS,
-                Biomes.SWAMP,
-                Biomes.SWAMP_HILLS,
-                Biomes.ICE_SPIKES,
-                Biomes.TAIGA
-        ).forEach(biome -> {
+        for (Biome biome : biomes) {
             biome.addFeature(GenerationStep.Feature.LOCAL_MODIFICATIONS, configure(FeatureConfig.DEFAULT)
                     .createDecoratedFeature(Decorator.NOPE
                             .configure(NopeDecoratorConfig.DEFAULT)));
-        });
+        }
     }
 
     @Override

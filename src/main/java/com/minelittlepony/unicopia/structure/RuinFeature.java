@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.structure;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -19,7 +18,6 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.decorator.Decorator;
@@ -39,26 +37,14 @@ class RuinFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
             new Identifier("unicopia", "ground/wizard_tower_blue")
     };
 
-    public RuinFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> func) {
+    public RuinFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> func, Biome... biomes) {
         super(func);
 
-        Arrays.asList(
-                Biomes.TAIGA,
-                Biomes.TAIGA_HILLS,
-                Biomes.GIANT_TREE_TAIGA,
-                Biomes.GIANT_TREE_TAIGA_HILLS,
-                Biomes.SNOWY_TAIGA,
-                Biomes.SNOWY_TAIGA_HILLS,
-                Biomes.GIANT_SPRUCE_TAIGA,
-                Biomes.GIANT_TREE_TAIGA_HILLS,
-                Biomes.SNOWY_TAIGA_MOUNTAINS,
-                Biomes.DARK_FOREST,
-                Biomes.DARK_FOREST_HILLS
-        ).forEach(biome -> {
+        for (Biome biome : biomes) {
             biome.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES,
                     configure(FeatureConfig.DEFAULT)
                     .createDecoratedFeature(Decorator.NOPE.configure(DecoratorConfig.DEFAULT)));
-        });
+        }
     }
 
     @Override
