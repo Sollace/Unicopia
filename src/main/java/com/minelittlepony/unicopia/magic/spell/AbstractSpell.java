@@ -1,11 +1,11 @@
 package com.minelittlepony.unicopia.magic.spell;
 
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
 
 import net.minecraft.nbt.CompoundTag;
 
-public abstract class AbstractSpell implements MagicEffect {
+public abstract class AbstractSpell implements Spell {
 
     protected boolean isDead;
     protected boolean isDirty;

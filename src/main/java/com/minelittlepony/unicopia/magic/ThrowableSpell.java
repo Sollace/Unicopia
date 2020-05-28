@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 /**
  * Magic effects that can be thrown.
  */
-public interface TossedMagicEffect extends MagicEffect, Tossable<Caster<?>> {
+public interface ThrowableSpell extends Spell, Tossable<Caster<?>> {
 
     @Override
     default SoundEvent getThrowSound(Caster<?> caster) {

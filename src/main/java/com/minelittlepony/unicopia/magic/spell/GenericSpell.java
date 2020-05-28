@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 
 public class GenericSpell extends AbstractSpell {
@@ -15,7 +15,7 @@ public class GenericSpell extends AbstractSpell {
 
     private final Affinity affinity;
 
-    static Supplier<MagicEffect> factory(String name, int tint, Affinity affinity) {
+    static Supplier<Spell> factory(String name, int tint, Affinity affinity) {
         return () -> new GenericSpell(name, tint, affinity);
     }
 

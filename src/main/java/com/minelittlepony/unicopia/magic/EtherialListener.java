@@ -14,5 +14,5 @@ public interface EtherialListener {
      * @param effect The spell that dispatched the event
      * @param state  The new state
      */
-    void onNearbySpellChange(Caster<?> source, MagicEffect effect, int state);
+    void onNearbySpellChange(Caster<?> source, Spell effect, int state);
 }

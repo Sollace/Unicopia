@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
-import com.minelittlepony.unicopia.magic.TossedMagicEffect;
+import com.minelittlepony.unicopia.magic.ThrowableSpell;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.projectile.AdvancedProjectile;
 
@@ -184,6 +184,6 @@ public class SpearEntity extends ArrowEntity implements AdvancedProjectile {
     }
 
     @Override
-    public void setEffect(TossedMagicEffect effect) {
+    public void setEffect(ThrowableSpell effect) {
     }
 }

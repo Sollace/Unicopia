@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.util.projectile;
 
-import com.minelittlepony.unicopia.magic.TossedMagicEffect;
+import com.minelittlepony.unicopia.magic.ThrowableSpell;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -16,7 +16,7 @@ public interface AdvancedProjectile extends Projectile {
 
     void setOwner(LivingEntity owner);
 
-    void setEffect(TossedMagicEffect effect);
+    void setEffect(ThrowableSpell effect);
 
     void setThrowDamage(float damage);
 

@@ -13,9 +13,9 @@ import com.minelittlepony.unicopia.entity.Owned;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
-import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
+import com.minelittlepony.unicopia.magic.AttachableSpell;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.magic.Suppressable;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.particles.UParticles;
@@ -45,7 +45,7 @@ import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 
-public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect, Suppressable, FlightPredicate, HeightPredicate {
+public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Suppressable, FlightPredicate, HeightPredicate {
 
     @Nonnull
     private String entityId = "";
@@ -79,7 +79,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
     }
 
     @Override
-    public boolean isVulnerable(Caster<?> otherSource, MagicEffect other) {
+    public boolean isVulnerable(Caster<?> otherSource, Spell other) {
         return suppressionCounter <= otherSource.getCurrentLevel();
     }
 
@@ -189,7 +189,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect,
             return;
         }
 
-        CasterUtils.toCaster(entity).ifPresent(c -> c.setEffect(null));
+        CasterUtils.toCaster(entity).ifPresent(c -> c.setSpell(null));
 
         if (source.isClient()) {
             source.getWorld().spawnEntity(entity);

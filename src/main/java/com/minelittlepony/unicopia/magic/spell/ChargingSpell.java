@@ -4,7 +4,7 @@ import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.EtherialListener;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Line;
@@ -33,7 +33,7 @@ public class ChargingSpell extends AbstractLinkedSpell implements EtherialListen
 
     @Override
     protected boolean canTargetEntity(SpellcastEntity e) {
-        return e.hasEffect();
+        return e.hasSpell();
     }
 
     @Override
@@ -86,7 +86,7 @@ public class ChargingSpell extends AbstractLinkedSpell implements EtherialListen
     }
 
     @Override
-    public void onNearbySpellChange(Caster<?> source, MagicEffect effect, int newState) {
+    public void onNearbySpellChange(Caster<?> source, Spell effect, int newState) {
         if (effect instanceof AttractiveSpell && !isDead()) {
             setDead();
             setDirty(true);

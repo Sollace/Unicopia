@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.entity.Owned;
+import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.particles.ParticleSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -25,14 +26,18 @@ import net.minecraft.world.World;
  */
 public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affine, IMagicals, ParticleSource {
 
-    void setEffect(@Nullable MagicEffect effect);
+    EffectSync getPrimarySpellSlot();
+
+    default void setSpell(@Nullable Spell spell) {
+        getPrimarySpellSlot().set(spell);
+    }
 
     /**
      * Gets the active effect for this caster.
      */
     @Nullable
-    default MagicEffect getEffect(boolean update) {
-        return getEffect(null, update);
+    default Spell getSpell(boolean update) {
+        return getSpell(null, update);
     }
 
     /**
@@ -40,19 +45,21 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
      * Returns null if no such effect exists for this caster.
      */
     @Nullable
-    <T> T getEffect(@Nullable Class<T> type, boolean update);
+    default <T> T getSpell(@Nullable Class<T> type, boolean update) {
+        return getPrimarySpellSlot().get(type, update);
+    }
 
     /**
      * Gets the active effect for this caster updating it if needed.
      */
     @Nullable
-    default MagicEffect getEffect() {
-        return getEffect(true);
+    default Spell getSpell() {
+        return getSpell(true);
     }
 
     @SuppressWarnings("unchecked")
-    default <T extends MagicEffect> Optional<T> getEffect(Class<T> type) {
-        MagicEffect effect = getEffect();
+    default <T extends Spell> Optional<T> getSpell(Class<T> type) {
+        Spell effect = getSpell();
 
         if (effect == null || effect.isDead() || !type.isAssignableFrom(effect.getClass())) {
             return Optional.empty();
@@ -64,7 +71,9 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     /**
      * Returns true if this caster has an active effect attached to it.
      */
-    boolean hasEffect();
+    default boolean hasSpell() {
+        return getPrimarySpellSlot().has();
+    }
 
     /**
      * Gets the entity directly responsible for casting.
@@ -136,7 +145,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
         return VecHelper.findAllEntitiesInRange(getEntity(), getWorld(), getOrigin(), radius);
     }
 
-    default void notifyNearbySpells(MagicEffect sender, BlockPos origin, double radius, int newState) {
+    default void notifyNearbySpells(Spell sender, BlockPos origin, double radius, int newState) {
         AwaitTickQueue.enqueueTask(w -> {
             VecHelper.findAllEntitiesInRange(getEntity(), getWorld(), origin, radius).filter(i -> i instanceof EtherialListener).forEach(i -> {
                 ((EtherialListener)i).onNearbySpellChange(this, sender, newState);
@@ -144,7 +153,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
         });
     }
 
-    default void notifyNearbySpells(MagicEffect sender, double radius, int newState) {
+    default void notifyNearbySpells(Spell sender, double radius, int newState) {
         notifyNearbySpells(sender, getOrigin(), radius, newState);
     }
 }

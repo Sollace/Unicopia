@@ -8,7 +8,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 /**
  * Interface for a magic spells
  */
-public interface MagicEffect extends NbtSerialisable, Affine {
+public interface Spell extends NbtSerialisable, Affine {
 
     /**
      * Gets the name used to identify this effect.
@@ -102,7 +102,7 @@ public interface MagicEffect extends NbtSerialisable, Affine {
     /**
      * Returns a new, deep-copied instance of this spell.
      */
-    default MagicEffect copy() {
+    default Spell copy() {
         return SpellRegistry.instance().copyInstance(this);
     }
 }

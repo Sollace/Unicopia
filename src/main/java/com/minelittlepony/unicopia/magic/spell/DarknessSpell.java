@@ -210,7 +210,7 @@ public class DarknessSpell extends AbstractLinkedSpell {
     public boolean isAreaOccupied(Caster<?> source, Vec3d pos) {
         if (source.getWorld().isAir(new BlockPos(pos).down())) {
             return source.findAllSpellsInRange(100).anyMatch(spell -> {
-                ShieldSpell effect = spell.getEffect(ShieldSpell.class, false);
+                ShieldSpell effect = spell.getSpell(ShieldSpell.class, false);
 
                 if (effect != null) {
                     return pos.distanceTo(spell.getOriginVector()) <= effect.getDrawDropOffRange(spell);
@@ -254,6 +254,6 @@ public class DarknessSpell extends AbstractLinkedSpell {
 
     @Override
     protected boolean canTargetEntity(SpellcastEntity e) {
-        return e.hasEffect() && "light".equals(e.getEffect().getName());
+        return e.hasSpell() && "light".equals(e.getSpell().getName());
     }
 }

@@ -34,7 +34,7 @@ abstract class MixinEntityRenderDispatcher {
 
         WorldRenderDelegate.INSTANCE.beforeEntityRender(pony, matrices, x, y, z);
 
-        DisguiseSpell effect = pony.getEffect(DisguiseSpell.class, true);
+        DisguiseSpell effect = pony.getSpell(DisguiseSpell.class, true);
 
         if (effect == null || effect.isDead()) {
             return;

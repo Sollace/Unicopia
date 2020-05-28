@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.util.Color;
 
@@ -25,7 +25,7 @@ public class GemEntityModel extends EntityModel<SpellcastEntity> {
     private ModelPart body;
 
     @Nullable
-    private MagicEffect effect;
+    private Spell effect;
 
     public GemEntityModel() {
         textureWidth = 256;
@@ -37,7 +37,7 @@ public class GemEntityModel extends EntityModel<SpellcastEntity> {
 
     @Override
     public void setAngles(SpellcastEntity entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
-        effect = entity.hasEffect() ? entity.getEffect() : null;
+        effect = entity.hasSpell() ? entity.getSpell() : null;
 
         float floatOffset = MathHelper.sin((entity.age + customAngle) / 10 + entity.hoverStart) / 10 + 0.1F;
 

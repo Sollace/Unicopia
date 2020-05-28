@@ -60,10 +60,10 @@ public class DisguiseCommand {
             throw FAILED_EXCEPTION.create();
         }
 
-        DisguiseSpell effect = iplayer.getEffect(DisguiseSpell.class, true);
+        DisguiseSpell effect = iplayer.getSpell(DisguiseSpell.class, true);
 
         if (effect == null) {
-            iplayer.setEffect(new DisguiseSpell().setDisguise(entity));
+            iplayer.setSpell(new DisguiseSpell().setDisguise(entity));
         } else {
             effect.setDisguise(entity);
         }
@@ -82,7 +82,7 @@ public class DisguiseCommand {
 
     static int reveal(ServerCommandSource source, PlayerEntity player) {
         Pony iplayer = Pony.of(player);
-        iplayer.getEffect(DisguiseSpell.class).ifPresent(disguise -> {
+        iplayer.getSpell(DisguiseSpell.class).ifPresent(disguise -> {
             disguise.onDestroyed(iplayer);
         });
 

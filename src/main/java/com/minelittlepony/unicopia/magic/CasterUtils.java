@@ -50,10 +50,10 @@ public class CasterUtils {
             .map(Optional::get);
     }
 
-    static <T extends MagicEffect> Optional<T> toMagicEffect(Class<T> type, @Nullable Entity entity) {
+    static <T extends Spell> Optional<T> toMagicEffect(Class<T> type, @Nullable Entity entity) {
         return toCaster(entity)
-                .filter(Caster::hasEffect)
-                .map(caster -> caster.getEffect(type, false))
+                .filter(Caster::hasSpell)
+                .map(caster -> caster.getSpell(type, false))
                 .filter(e -> !e.isDead());
     }
 

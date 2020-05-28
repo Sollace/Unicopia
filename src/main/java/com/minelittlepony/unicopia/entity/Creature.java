@@ -3,9 +3,9 @@ package com.minelittlepony.unicopia.entity;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Affine;
-import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
+import com.minelittlepony.unicopia.magic.AttachableSpell;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.EffectSync;
 
@@ -48,24 +48,14 @@ public class Creature implements Ponylike<LivingEntity>, Caster<LivingEntity> {
     }
 
     @Override
-    public void setEffect(MagicEffect effect) {
-        effectDelegate.set(effect);
-    }
-
-    @Override
-    public <T> T getEffect(Class<T> type, boolean update) {
-        return effectDelegate.get(type, update);
-    }
-
-    @Override
-    public boolean hasEffect() {
-        return effectDelegate.has();
+    public EffectSync getPrimarySpellSlot() {
+        return effectDelegate;
     }
 
     @Override
     public void tick() {
-        if (hasEffect()) {
-            AttachedMagicEffect effect = getEffect(AttachedMagicEffect.class, true);
+        if (hasSpell()) {
+            AttachableSpell effect = getSpell(AttachableSpell.class, true);
 
             if (effect != null) {
                 if (entity.getEntityWorld().isClient()) {
@@ -73,7 +63,7 @@ public class Creature implements Ponylike<LivingEntity>, Caster<LivingEntity> {
                 }
 
                 if (!effect.updateOnPerson(this)) {
-                    setEffect(null);
+                    setSpell(null);
                 }
             }
         }
@@ -108,10 +98,10 @@ public class Creature implements Ponylike<LivingEntity>, Caster<LivingEntity> {
 
     @Override
     public void toNBT(CompoundTag compound) {
-        MagicEffect effect = getEffect();
+        Spell effect = getSpell();
 
         if (effect != null) {
-            compound.put("effect", SpellRegistry.instance().serializeEffectToNBT(effect));
+            compound.put("effect", SpellRegistry.toNBT(effect));
         }
         physics.toNBT(compound);
     }
@@ -119,7 +109,7 @@ public class Creature implements Ponylike<LivingEntity>, Caster<LivingEntity> {
     @Override
     public void fromNBT(CompoundTag compound) {
         if (compound.contains("effect")) {
-            setEffect(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
+            setSpell(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
         }
         physics.fromNBT(compound);
     }

@@ -13,7 +13,7 @@ public interface Suppressable {
     /**
      * Returns true if this spell can be suppressed by the given other spell and caster.
      */
-    boolean isVulnerable(Caster<?> otherSource, MagicEffect other);
+    boolean isVulnerable(Caster<?> otherSource, Spell other);
 
     /**
      * Event triggered when this effect is suppressed.

@@ -9,7 +9,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.EtherialListener;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
@@ -103,7 +103,7 @@ public class AttractiveSpell extends ShieldSpell implements EtherialListener {
     }
 
     @Override
-    public void onNearbySpellChange(Caster<?> source, MagicEffect effect, int newState) {
+    public void onNearbySpellChange(Caster<?> source, Spell effect, int newState) {
         if (effect instanceof ChargingSpell && !isDead()) {
             if (newState == ADDED) {
                 if (homingPos == null) {

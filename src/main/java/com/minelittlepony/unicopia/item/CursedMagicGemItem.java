@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
-import com.minelittlepony.unicopia.magic.DispenceableMagicEffect;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.DispenceableSpell;
+import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
 import net.minecraft.item.ItemStack;
@@ -20,7 +20,7 @@ public class CursedMagicGemItem extends MagicGemItem {
     }
 
     @Override
-    public CastResult onDispenseSpell(BlockPointer source, ItemStack stack, DispenceableMagicEffect effect) {
+    public CastResult onDispenseSpell(BlockPointer source, ItemStack stack, DispenceableSpell effect) {
 
         BlockPos pos = source.getBlockPos();
         World world = source.getWorld();
@@ -41,7 +41,7 @@ public class CursedMagicGemItem extends MagicGemItem {
     }
 
     @Override
-    public CastResult onCastSpell(ItemUsageContext context, MagicEffect effect) {
+    public CastResult onCastSpell(ItemUsageContext context, Spell effect) {
         CastResult result = super.onCastSpell(context, effect);
 
         if (result != CastResult.NONE) {

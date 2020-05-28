@@ -9,9 +9,9 @@ import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
-import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
+import com.minelittlepony.unicopia.magic.AttachableSpell;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.TossedMagicEffect;
+import com.minelittlepony.unicopia.magic.ThrowableSpell;
 import com.minelittlepony.unicopia.util.WorldEvent;
 
 import net.minecraft.block.BlockState;
@@ -32,7 +32,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-public class ChangelingTrapSpell extends AbstractSpell implements TossedMagicEffect, AttachedMagicEffect {
+public class ChangelingTrapSpell extends AbstractSpell implements ThrowableSpell, AttachableSpell {
 
     private BlockPos previousTrappedPosition;
 
@@ -179,10 +179,10 @@ public class ChangelingTrapSpell extends AbstractSpell implements TossedMagicEff
 
     protected void entrap(Caster<?> e) {
 
-        ChangelingTrapSpell existing = e.getEffect(ChangelingTrapSpell.class, true);
+        ChangelingTrapSpell existing = e.getSpell(ChangelingTrapSpell.class, true);
 
         if (existing == null) {
-            e.setEffect(copy());
+            e.setSpell(copy());
         } else {
             existing.enforce(e);
         }

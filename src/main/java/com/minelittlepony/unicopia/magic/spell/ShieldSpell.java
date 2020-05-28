@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
+import com.minelittlepony.unicopia.magic.AttachableSpell;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.particles.ParticleHandle;
@@ -20,7 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
-public class ShieldSpell extends AbstractRangedAreaSpell implements AttachedMagicEffect {
+public class ShieldSpell extends AbstractRangedAreaSpell implements AttachableSpell {
 
     private final ParticleHandle particlEffect = new ParticleHandle();
 

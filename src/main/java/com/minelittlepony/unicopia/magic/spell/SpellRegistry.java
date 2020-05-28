@@ -12,9 +12,9 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.DispenceableMagicEffect;
-import com.minelittlepony.unicopia.magic.HeldMagicEffect;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.DispenceableSpell;
+import com.minelittlepony.unicopia.magic.HeldSpell;
+import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.magic.Useable;
 
 import net.minecraft.item.ItemStack;
@@ -54,7 +54,7 @@ public class SpellRegistry {
     }
 
     @Nullable
-    public MagicEffect getSpellFromName(String name) {
+    public Spell getSpellFromName(String name) {
         if (entries.containsKey(name)) {
             return entries.get(name).create();
         }
@@ -63,14 +63,14 @@ public class SpellRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends MagicEffect> T copyInstance(T effect) {
-        return (T)createEffectFromNBT(serializeEffectToNBT(effect));
+    public <T extends Spell> T copyInstance(T effect) {
+        return (T)createEffectFromNBT(toNBT(effect));
     }
 
     @Nullable
-    public MagicEffect createEffectFromNBT(CompoundTag compound) {
+    public Spell createEffectFromNBT(CompoundTag compound) {
         if (compound.contains("effect_id")) {
-            MagicEffect effect = getSpellFromName(compound.getString("effect_id"));
+            Spell effect = getSpellFromName(compound.getString("effect_id"));
 
             if (effect != null) {
                 effect.fromNBT(compound);
@@ -82,7 +82,7 @@ public class SpellRegistry {
         return null;
     }
 
-    public CompoundTag serializeEffectToNBT(MagicEffect effect) {
+    public static CompoundTag toNBT(Spell effect) {
         CompoundTag compound = effect.toNBT();
 
         compound.putString("effect_id", effect.getName());
@@ -95,7 +95,7 @@ public class SpellRegistry {
     }
 
     @Nullable
-    public DispenceableMagicEffect getDispenseActionFrom(ItemStack stack) {
+    public DispenceableSpell getDispenseActionFrom(ItemStack stack) {
         return getEntryFromStack(stack).map(Entry::dispensable).orElse(null);
     }
 
@@ -105,16 +105,16 @@ public class SpellRegistry {
     }
 
     @Nullable
-    public HeldMagicEffect getHeldFrom(ItemStack stack) {
+    public HeldSpell getHeldFrom(ItemStack stack) {
         return getEntryFromStack(stack).map(Entry::holdable).orElse(null);
     }
 
     @Nullable
-    public MagicEffect getSpellFrom(ItemStack stack) {
+    public Spell getSpellFrom(ItemStack stack) {
         return getSpellFromName(getKeyFromStack(stack));
     }
 
-    public <T extends MagicEffect> void register(Supplier<T> factory) {
+    public <T extends Spell> void register(Supplier<T> factory) {
         try {
             new Entry<>(factory);
         } catch (Exception e) {
@@ -174,7 +174,7 @@ public class SpellRegistry {
     }
 
     @Immutable
-    class Entry<T extends MagicEffect> {
+    class Entry<T extends Spell> {
         final Supplier<T> factory;
 
         final int color;
@@ -190,9 +190,9 @@ public class SpellRegistry {
 
             this.factory = factory;
             this.color = inst.getTint();
-            this.canDispense = inst instanceof DispenceableMagicEffect;
+            this.canDispense = inst instanceof DispenceableSpell;
             this.canUse = inst instanceof Useable;
-            this.canHold = inst instanceof HeldMagicEffect;
+            this.canHold = inst instanceof HeldSpell;
             this.affinity = inst.getAffinity();
 
             if (inst.isCraftable()) {
@@ -212,20 +212,20 @@ public class SpellRegistry {
             return (Useable)create();
         }
 
-        HeldMagicEffect holdable() {
+        HeldSpell holdable() {
             if (!canHold) {
                 return null;
             }
 
-            return (HeldMagicEffect)create();
+            return (HeldSpell)create();
         }
 
-        DispenceableMagicEffect dispensable() {
+        DispenceableSpell dispensable() {
             if (!canDispense) {
                 return null;
             }
 
-            return (DispenceableMagicEffect)create();
+            return (DispenceableSpell)create();
         }
 
         T create() {

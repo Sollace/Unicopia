@@ -8,7 +8,7 @@ import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.DispenceableMagicEffect;
+import com.minelittlepony.unicopia.magic.DispenceableSpell;
 import com.minelittlepony.unicopia.magic.Useable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
@@ -41,7 +41,7 @@ import net.minecraft.world.World;
 /**
  * Simple fire spell that triggers an effect when used on a block.
  */
-public class FireSpell extends AbstractRangedAreaSpell implements Useable, DispenceableMagicEffect {
+public class FireSpell extends AbstractRangedAreaSpell implements Useable, DispenceableSpell {
 
     private static final Shape VISUAL_EFFECT_RANGE = new Sphere(false, 0.5);
     private static final Shape EFFECT_RANGE = new Sphere(false, 4);

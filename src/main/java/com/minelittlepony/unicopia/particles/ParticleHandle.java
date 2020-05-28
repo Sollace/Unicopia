@@ -57,7 +57,7 @@ public class ParticleHandle {
         public void attach(Caster<?> caster) {
             this.linked = true;
             this.caster = Optional.of(caster);
-            effect = caster.getEffect(false).getName();
+            effect = caster.getSpell(false).getName();
         }
 
         public boolean linked() {
@@ -68,7 +68,7 @@ public class ParticleHandle {
             caster = caster.filter(c -> {
                 Entity e = c.getEntity();
 
-                return c.hasEffect() && c.getEffect(false).getName().equals(effect) && e != null && c.getWorld().getEntityById(e.getEntityId()) != null;
+                return c.hasSpell() && c.getSpell(false).getName().equals(effect) && e != null && c.getWorld().getEntityById(e.getEntityId()) != null;
             });
             if (!caster.isPresent()) {
                 action.run();

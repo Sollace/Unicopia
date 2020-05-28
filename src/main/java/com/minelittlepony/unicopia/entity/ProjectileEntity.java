@@ -5,8 +5,8 @@ import java.util.UUID;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.EtherialListener;
-import com.minelittlepony.unicopia.magic.MagicEffect;
-import com.minelittlepony.unicopia.magic.TossedMagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
+import com.minelittlepony.unicopia.magic.ThrowableSpell;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.EffectSync;
@@ -114,7 +114,7 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
 
     @Override
     public Affinity getAffinity() {
-        return hasEffect() ? Affinity.NEUTRAL : getEffect().getAffinity();
+        return hasSpell() ? Affinity.NEUTRAL : getSpell().getAffinity();
     }
 
     @Override
@@ -123,27 +123,22 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
     }
 
     @Override
-    public void setEffect(TossedMagicEffect effect) {
-        setEffect((MagicEffect)effect);
+    public void setEffect(ThrowableSpell effect) {
+        setSpell(effect);
     }
 
     @Override
-    public void setEffect(MagicEffect effect) {
-        effectDelegate.set(effect);
+    public EffectSync getPrimarySpellSlot() {
+        return effectDelegate;
+    }
+
+    @Override
+    public void setSpell(Spell effect) {
+        Caster.super.setSpell(effect);
 
         if (effect != null) {
             effect.onPlaced(this);
         }
-    }
-
-    @Override
-    public <T> T getEffect(Class<T> type, boolean update) {
-        return effectDelegate.get(type, update);
-    }
-
-    @Override
-    public boolean hasEffect() {
-        return effectDelegate.has();
     }
 
     @Override
@@ -181,21 +176,21 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
             setNoGravity(false);
         }
 
-        if (hasEffect()) {
+        if (hasSpell()) {
             if (lastBlockPos == null || !lastBlockPos.equals(getBlockPos())) {
-                notifyNearbySpells(getEffect(), lastBlockPos, 6, EtherialListener.REMOVED);
+                notifyNearbySpells(getSpell(), lastBlockPos, 6, EtherialListener.REMOVED);
                 lastBlockPos = getBlockPos();
-                notifyNearbySpells(getEffect(), 6, EtherialListener.ADDED);
+                notifyNearbySpells(getSpell(), 6, EtherialListener.ADDED);
             }
 
-            if (getEffect().isDead()) {
+            if (getSpell().isDead()) {
                 remove();
             } else {
-                getEffect().update(this);
+                getSpell().update(this);
             }
 
             if (world.isClient()) {
-                getEffect().render(this);
+                getSpell().render(this);
             }
         }
 
@@ -248,7 +243,7 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
         super.readCustomDataFromTag(compound);
 
         if (compound.contains("effect")) {
-            setEffect(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
+            setSpell(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
         }
     }
 
@@ -256,8 +251,8 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
     public void writeCustomDataToTag(CompoundTag compound) {
         super.writeCustomDataToTag(compound);
 
-        if (hasEffect()) {
-            compound.put("effect", SpellRegistry.instance().serializeEffectToNBT(getEffect()));
+        if (hasSpell()) {
+            compound.put("effect", SpellRegistry.toNBT(getSpell()));
         }
     }
 
@@ -281,8 +276,8 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
             ((TossableItem)item).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));
         }
 
-        if (hasEffect()) {
-            MagicEffect effect = getEffect();
+        if (hasSpell()) {
+            Spell effect = getSpell();
 
             if (effect instanceof Tossable) {
                 ((Tossable<?>)effect).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));

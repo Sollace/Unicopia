@@ -10,10 +10,10 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ducks.PickedItemSupplier;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.Castable;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.EtherialListener;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
+import com.minelittlepony.unicopia.magic.item.CastableMagicItem;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.EffectSync;
 
@@ -96,8 +96,13 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
     }
 
     @Override
-    public void setEffect(@Nullable MagicEffect effect) {
-        effectDelegate.set(effect);
+    public EffectSync getPrimarySpellSlot() {
+        return effectDelegate;
+    }
+
+    @Override
+    public void setSpell(@Nullable Spell effect) {
+        Caster.super.setSpell(effect);
 
         if (effect != null) {
             effect.onPlaced(this);
@@ -107,17 +112,6 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
     @Override
     public boolean canInteract(Race race) {
         return race.canCast();
-    }
-
-    @Nullable
-    @Override
-    public <T> T getEffect(@Nullable Class<T> type, boolean update) {
-        return effectDelegate.get(type, update);
-    }
-
-    @Override
-    public boolean hasEffect() {
-        return effectDelegate.has();
     }
 
     @Override
@@ -131,7 +125,7 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
 
     @Override
     public ItemStack getPickedStack() {
-        return SpellRegistry.instance().enchantStack(new ItemStack(getItem()), getEffect().getName());
+        return SpellRegistry.instance().enchantStack(new ItemStack(getItem()), getSpell().getName());
     }
 
     protected Item getItem() {
@@ -168,8 +162,8 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
     }
 
     protected void displayTick() {
-        if (hasEffect()) {
-            getEffect().render(this);
+        if (hasSpell()) {
+            getSpell().render(this);
         }
     }
 
@@ -180,17 +174,17 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
             displayTick();
         }
 
-        if (!hasEffect()) {
+        if (!hasSpell()) {
             remove();
         } else {
-            if (getEffect().isDead()) {
+            if (getSpell().isDead()) {
                 remove();
                 onDeath();
             } else {
-                getEffect().update(this);
+                getSpell().update(this);
             }
 
-            if (getEffect().allowAI()) {
+            if (getSpell().allowAI()) {
                 super.tickMovement();
             }
         }
@@ -200,13 +194,13 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
                 playSpawnEffects();
             }
 
-            if (!world.isClient && hasEffect()) {
-                float exhaustionChance = getEffect().getExhaustion(this);
+            if (!world.isClient && hasSpell()) {
+                float exhaustionChance = getSpell().getExhaustion(this);
 
                 if (exhaustionChance == 0 || world.random.nextInt((int)(exhaustionChance / 500)) == 0) {
                     addLevels(-1);
                 } else if (world.random.nextInt((int)(exhaustionChance * 500)) == 0) {
-                    setEffect(null);
+                    setSpell(null);
                 } else if (world.random.nextInt((int)(exhaustionChance * 3500)) == 0) {
                     world.createExplosion(this, getX(), getY(), getZ(), getCurrentLevel()/2, DestructionType.BREAK);
                     remove();
@@ -223,7 +217,7 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
     public EntityDimensions getDimensions(EntityPose pose) {
         EntityDimensions dims = super.getDimensions(pose);
 
-        if (hasEffect() && getEffect().allowAI()) {
+        if (hasSpell() && getSpell().allowAI()) {
             return EntityDimensions.changing(dims.width, 1.5F);
         }
 
@@ -257,8 +251,8 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
             int level = getCurrentLevel();
 
             ItemStack stack = new ItemStack(getItem(), level + 1);
-            if (hasEffect()) {
-                SpellRegistry.instance().enchantStack(stack, getEffect().getName());
+            if (hasSpell()) {
+                SpellRegistry.instance().enchantStack(stack, getSpell().getName());
             }
 
             dropStack(stack, 0);
@@ -267,8 +261,8 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
 
     @Override
     public void remove() {
-        if (hasEffect()) {
-            getEffect().onDestroyed(this);
+        if (hasSpell()) {
+            getSpell().onDestroyed(this);
         }
         super.remove();
     }
@@ -279,8 +273,8 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
             ItemStack currentItem = player.getStackInHand(Hand.MAIN_HAND);
 
             if (currentItem != null
-                    && currentItem.getItem() instanceof Castable
-                    && ((Castable)currentItem.getItem()).canFeed(this, currentItem)
+                    && currentItem.getItem() instanceof CastableMagicItem
+                    && ((CastableMagicItem)currentItem.getItem()).canFeed(this, currentItem)
                     && tryLevelUp(currentItem)) {
 
                 if (!player.abilities.creativeMode) {
@@ -299,8 +293,8 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
     }
 
     public boolean tryLevelUp(ItemStack stack) {
-        if (hasEffect() && SpellRegistry.stackHasEnchantment(stack)) {
-            if (!getEffect().getName().contentEquals(SpellRegistry.getKeyFromStack(stack))) {
+        if (hasSpell() && SpellRegistry.stackHasEnchantment(stack)) {
+            if (!getSpell().getName().contentEquals(SpellRegistry.getKeyFromStack(stack))) {
                 return false;
             }
 
@@ -316,7 +310,7 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
 
     @Override
     public int getMaxLevel() {
-        return hasEffect() ? getEffect().getMaxLevelCutOff(this) : 0;
+        return hasSpell() ? getSpell().getMaxLevelCutOff(this) : 0;
     }
 
     @Override
@@ -347,7 +341,7 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
         setCurrentLevel(compound.getInt("level"));
 
         if (compound.contains("effect")) {
-            setEffect(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
+            setSpell(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
         }
     }
 
@@ -359,15 +353,15 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
         compound.putInt("level", getCurrentLevel());
         getOwnerId().ifPresent(id -> compound.putUuid("owner", id));
 
-        if (hasEffect()) {
-            compound.put("effect", SpellRegistry.instance().serializeEffectToNBT(getEffect()));
+        if (hasSpell()) {
+            compound.put("effect", SpellRegistry.toNBT(getSpell()));
         }
     }
 
     @Override
-    public void onNearbySpellChange(Caster<?> source, MagicEffect effect, int newState) {
-        if (hasEffect()) {
-            EtherialListener listener = getEffect(EtherialListener.class, true);
+    public void onNearbySpellChange(Caster<?> source, Spell effect, int newState) {
+        if (hasSpell()) {
+            EtherialListener listener = getSpell(EtherialListener.class, true);
             if (listener != null) {
                 listener.onNearbySpellChange(source, effect, newState);
             }

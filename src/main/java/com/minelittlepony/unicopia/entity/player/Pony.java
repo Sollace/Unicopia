@@ -12,11 +12,11 @@ import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.Ponylike;
 import com.minelittlepony.unicopia.entity.Trap;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
+import com.minelittlepony.unicopia.magic.AttachableSpell;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.HeldMagicEffect;
-import com.minelittlepony.unicopia.magic.MagicEffect;
-import com.minelittlepony.unicopia.magic.MagicalItem;
+import com.minelittlepony.unicopia.magic.HeldSpell;
+import com.minelittlepony.unicopia.magic.Spell;
+import com.minelittlepony.unicopia.magic.item.MagicItem;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.EffectSync;
@@ -112,7 +112,7 @@ public class Pony implements Caster<PlayerEntity>, Ponylike<PlayerEntity>, Trans
 
     @Override
     public boolean isInvisible() {
-        return invisible && hasEffect();
+        return invisible && hasSpell();
     }
 
     @Override
@@ -121,14 +121,14 @@ public class Pony implements Caster<PlayerEntity>, Ponylike<PlayerEntity>, Trans
     }
 
     @Nullable
-    public HeldMagicEffect getHeldEffect(ItemStack stack) {
+    public HeldSpell getHeldSpell(ItemStack stack) {
 
         if (!getSpecies().canCast()) {
             heldEffectDelegate.set(null);
             return null;
         }
 
-        HeldMagicEffect heldEffect = heldEffectDelegate.get(HeldMagicEffect.class, true);
+        HeldSpell heldEffect = heldEffectDelegate.get(HeldSpell.class, true);
 
         if (heldEffect == null || !heldEffect.getName().equals(SpellRegistry.getKeyFromStack(stack))) {
             heldEffect = SpellRegistry.instance().getHeldFrom(stack);
@@ -219,8 +219,8 @@ public class Pony implements Caster<PlayerEntity>, Ponylike<PlayerEntity>, Trans
     public void tick() {
         gravity.tick();
 
-        if (hasEffect()) {
-            AttachedMagicEffect effect = getEffect(AttachedMagicEffect.class, true);
+        if (hasSpell()) {
+            AttachableSpell effect = getSpell(AttachableSpell.class, true);
 
             if (effect != null) {
                 if (entity.getEntityWorld().isClient()) {
@@ -228,17 +228,17 @@ public class Pony implements Caster<PlayerEntity>, Ponylike<PlayerEntity>, Trans
                 }
 
                 if (!effect.updateOnPerson(this)) {
-                    setEffect(null);
+                    setSpell(null);
                 }
             }
         }
 
         ItemStack stack = entity.getStackInHand(Hand.MAIN_HAND);
 
-        HeldMagicEffect effect = getHeldEffect(stack);
+        HeldSpell effect = getHeldSpell(stack);
 
         if (effect != null) {
-            Affinity affinity = stack.getItem() instanceof MagicalItem ? ((MagicalItem)stack.getItem()).getAffinity(stack) : Affinity.NEUTRAL;
+            Affinity affinity = stack.getItem() instanceof MagicItem ? ((MagicItem)stack.getItem()).getAffinity(stack) : Affinity.NEUTRAL;
 
             effect.updateInHand(this, affinity);
         }
@@ -270,8 +270,8 @@ public class Pony implements Caster<PlayerEntity>, Ponylike<PlayerEntity>, Trans
 
     @Override
     public boolean onProjectileImpact(ProjectileEntity projectile) {
-        if (hasEffect()) {
-            MagicEffect effect = getEffect();
+        if (hasSpell()) {
+            Spell effect = getSpell();
             if (!effect.isDead() && effect.handleProjectileImpact(projectile)) {
                 return true;
             }
@@ -340,10 +340,10 @@ public class Pony implements Caster<PlayerEntity>, Ponylike<PlayerEntity>, Trans
         compound.put("powers", powers.toNBT());
         compound.put("gravity", gravity.toNBT());
 
-        MagicEffect effect = getEffect();
+        Spell effect = getSpell();
 
         if (effect != null) {
-            compound.put("effect", SpellRegistry.instance().serializeEffectToNBT(effect));
+            compound.put("effect", SpellRegistry.toNBT(effect));
         }
 
         pageStates.toNBT(compound);
@@ -364,26 +364,20 @@ public class Pony implements Caster<PlayerEntity>, Ponylike<PlayerEntity>, Trans
     }
 
     public void copyFrom(Pony oldPlayer) {
-        setEffect(oldPlayer.getEffect());
+        setSpell(oldPlayer.getSpell());
         setSpecies(oldPlayer.getSpecies());
         setDirty();
     }
 
     @Override
-    public void setEffect(@Nullable MagicEffect effect) {
-        effectDelegate.set(effect);
+    public EffectSync getPrimarySpellSlot() {
+        return effectDelegate;
+    }
+
+    @Override
+    public void setSpell(@Nullable Spell effect) {
+        Caster.super.setSpell(effect);
         setDirty();
-    }
-
-    @Override
-    public boolean hasEffect() {
-        return effectDelegate.has();
-    }
-
-    @Nullable
-    @Override
-    public <T> T getEffect(@Nullable Class<T> type, boolean update) {
-        return effectDelegate.get(type, update);
     }
 
     @Override

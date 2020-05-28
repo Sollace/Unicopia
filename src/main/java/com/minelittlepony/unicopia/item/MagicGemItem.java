@@ -8,11 +8,11 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
-import com.minelittlepony.unicopia.magic.Castable;
-import com.minelittlepony.unicopia.magic.DispenceableMagicEffect;
+import com.minelittlepony.unicopia.magic.DispenceableSpell;
 import com.minelittlepony.unicopia.magic.Dispensable;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.magic.Useable;
+import com.minelittlepony.unicopia.magic.item.CastableMagicItem;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -35,7 +35,7 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class MagicGemItem extends Item implements Castable {
+public class MagicGemItem extends Item implements CastableMagicItem {
 
     public MagicGemItem(Settings settings) {
         super(settings);
@@ -48,7 +48,7 @@ public class MagicGemItem extends Item implements Castable {
     }
 
     @Override
-    public CastResult onDispenseSpell(BlockPointer source, ItemStack stack, DispenceableMagicEffect effect) {
+    public CastResult onDispenseSpell(BlockPointer source, ItemStack stack, DispenceableSpell effect) {
         Direction facing = source.getBlockState().get(DispenserBlock.FACING);
         BlockPos pos = source.getBlockPos().offset(facing);
 
@@ -56,7 +56,7 @@ public class MagicGemItem extends Item implements Castable {
     }
 
     @Override
-    public CastResult onCastSpell(ItemUsageContext context, MagicEffect effect) {
+    public CastResult onCastSpell(ItemUsageContext context, Spell effect) {
         if (effect instanceof Useable) {
             return ((Useable)effect).onUse(context, getAffinity(context.getStack()));
         }
@@ -81,7 +81,7 @@ public class MagicGemItem extends Item implements Castable {
             return ActionResult.FAIL;
         }
 
-        MagicEffect effect = SpellRegistry.instance().getSpellFrom(stack);
+        Spell effect = SpellRegistry.instance().getSpellFrom(stack);
 
         if (effect == null) {
             return ActionResult.FAIL;
@@ -186,7 +186,7 @@ public class MagicGemItem extends Item implements Castable {
 
     @Override
     public boolean canFeed(SpellcastEntity entity, ItemStack stack) {
-        MagicEffect effect = entity.getEffect();
+        Spell effect = entity.getSpell();
 
         return effect != null
                 && entity.getAffinity() == getAffinity()

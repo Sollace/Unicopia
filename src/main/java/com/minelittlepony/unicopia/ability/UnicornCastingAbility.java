@@ -42,9 +42,9 @@ public class UnicornCastingAbility implements Ability<Hit> {
     @Override
     public void apply(Pony player, Hit data) {
 
-        if (player.hasEffect()) {
-            String current = player.getEffect().getName();
-            player.setEffect(Streams.stream(player.getOwner().getItemsHand())
+        if (player.hasSpell()) {
+            String current = player.getSpell().getName();
+            player.setSpell(Streams.stream(player.getOwner().getItemsHand())
                     .map(SpellRegistry::getKeyFromStack)
                     .filter(i -> i != null && !current.equals(i))
                     .map(SpellRegistry.instance()::getSpellFromName)
@@ -52,7 +52,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
                     .findFirst()
                     .orElse(null));
         } else {
-            player.setEffect(Streams.stream(player.getOwner().getItemsHand())
+            player.setSpell(Streams.stream(player.getOwner().getItemsHand())
                     .map(SpellRegistry.instance()::getSpellFrom)
                     .filter(i -> i != null)
                     .findFirst()

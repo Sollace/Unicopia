@@ -9,7 +9,7 @@ import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.CasterUtils;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.TossedMagicEffect;
+import com.minelittlepony.unicopia.magic.ThrowableSpell;
 import com.minelittlepony.unicopia.magic.Useable;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 import com.mojang.brigadier.StringReader;
@@ -30,7 +30,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
-public class AwkwardSpell extends AbstractSpell implements TossedMagicEffect, Useable {
+public class AwkwardSpell extends AbstractSpell implements ThrowableSpell, Useable {
 
     @Override
     public String getName() {

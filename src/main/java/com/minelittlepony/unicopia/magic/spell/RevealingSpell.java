@@ -32,7 +32,7 @@ public class RevealingSpell extends AbstractSpell {
     @Override
     public boolean update(Caster<?> source) {
         source.findAllSpellsInRange(15).forEach(e -> {
-            Suppressable spell = e.getEffect(Suppressable.class, false);
+            Suppressable spell = e.getSpell(Suppressable.class, false);
 
             if (spell != null && spell.isVulnerable(source, this)) {
                 spell.onSuppressed(source);

@@ -7,7 +7,7 @@ import com.minelittlepony.unicopia.blockstate.StateMaps;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.DispenceableMagicEffect;
+import com.minelittlepony.unicopia.magic.DispenceableSpell;
 import com.minelittlepony.unicopia.magic.Useable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
@@ -32,7 +32,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class IceSpell extends AbstractRangedAreaSpell implements Useable, DispenceableMagicEffect {
+public class IceSpell extends AbstractRangedAreaSpell implements Useable, DispenceableSpell {
 
     private final int rad = 3;
     private final Shape effect_range = new Sphere(false, rad);

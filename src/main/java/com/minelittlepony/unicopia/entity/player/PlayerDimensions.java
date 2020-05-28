@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.entity.player;
 
 import com.minelittlepony.unicopia.ability.HeightPredicate;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
 
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -61,8 +61,8 @@ public final class PlayerDimensions {
     }
 
     private float calculateTargetEyeHeight() {
-        if (pony.hasEffect()) {
-            MagicEffect effect = pony.getEffect();
+        if (pony.hasSpell()) {
+            Spell effect = pony.getSpell();
             if (!effect.isDead() && effect instanceof HeightPredicate) {
                 float val = ((HeightPredicate)effect).getTargetEyeHeight(pony);
                 if (val > 0) {
@@ -79,8 +79,8 @@ public final class PlayerDimensions {
     }
 
     private float calculateTargetBodyHeight() {
-        if (pony.hasEffect()) {
-            MagicEffect effect = pony.getEffect();
+        if (pony.hasSpell()) {
+            Spell effect = pony.getSpell();
             if (!effect.isDead() && effect instanceof HeightPredicate) {
                 float val = ((HeightPredicate)effect).getTargetBodyHeight(pony);
                 if (val > 0) {

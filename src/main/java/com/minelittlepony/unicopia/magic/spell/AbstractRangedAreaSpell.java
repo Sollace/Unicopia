@@ -1,9 +1,9 @@
 package com.minelittlepony.unicopia.magic.spell;
 
-import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
+import com.minelittlepony.unicopia.magic.AttachableSpell;
 import com.minelittlepony.unicopia.magic.Caster;
 
-public abstract class AbstractRangedAreaSpell extends AbstractSpell implements AttachedMagicEffect {
+public abstract class AbstractRangedAreaSpell extends AbstractSpell implements AttachableSpell {
 
     @Override
     public int getMaxLevelCutOff(Caster<?> source) {

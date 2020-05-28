@@ -12,7 +12,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.magic.Useable;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
@@ -84,7 +84,7 @@ public class PortalSpell extends AbstractRangedAreaSpell implements Useable {
         destinationId = null;
         destinationPos = null;
 
-        getDestinationPortal().ifPresent(MagicEffect::setDead);
+        getDestinationPortal().ifPresent(Spell::setDead);
     }
 
     private PortalSpell bridge;
@@ -112,18 +112,18 @@ public class PortalSpell extends AbstractRangedAreaSpell implements Useable {
 
         Pony prop = Pony.of(context.getPlayer());
 
-        PortalSpell other = prop.getEffect(PortalSpell.class, true);
+        PortalSpell other = prop.getSpell(PortalSpell.class, true);
         if (other != null) {
             other.getActualInstance().setDestinationPortal(this);
 
             if (!context.getWorld().isClient) {
-                prop.setEffect(null);
+                prop.setSpell(null);
             }
         } else {
             if (!context.getWorld().isClient) {
                 bridge = (PortalSpell)copy();
 
-                prop.setEffect(bridge);
+                prop.setSpell(bridge);
             }
         }
 
@@ -234,7 +234,7 @@ public class PortalSpell extends AbstractRangedAreaSpell implements Useable {
             }
 
             if (i instanceof SpellcastEntity) {
-                MagicEffect effect = ((SpellcastEntity) i).getEffect();
+                Spell effect = ((SpellcastEntity) i).getSpell();
 
                 if (effect instanceof PortalSpell) {
                     return (PortalSpell)effect;
@@ -272,7 +272,7 @@ public class PortalSpell extends AbstractRangedAreaSpell implements Useable {
         }
 
         if (i instanceof SpellcastEntity) {
-            MagicEffect effect = ((SpellcastEntity) i).getEffect();
+            Spell effect = ((SpellcastEntity) i).getSpell();
 
             if (effect instanceof PortalSpell) {
                 sibling = (PortalSpell)effect;

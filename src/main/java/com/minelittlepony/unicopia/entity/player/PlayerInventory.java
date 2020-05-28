@@ -6,8 +6,8 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 import com.minelittlepony.unicopia.container.HeavyInventory;
 import com.minelittlepony.unicopia.item.MagicGemItem;
-import com.minelittlepony.unicopia.magic.AddictiveMagicalItem;
-import com.minelittlepony.unicopia.magic.MagicalItem;
+import com.minelittlepony.unicopia.magic.item.AddictiveMagicitem;
+import com.minelittlepony.unicopia.magic.item.MagicItem;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.item.Item;
@@ -20,7 +20,7 @@ import net.minecraft.util.Tickable;
 import net.minecraft.util.registry.Registry;
 
 public class PlayerInventory implements Tickable, NbtSerialisable {
-    private final Map<AddictiveMagicalItem, Entry> dependencies = Maps.newHashMap();
+    private final Map<AddictiveMagicitem, Entry> dependencies = Maps.newHashMap();
 
     private final Pony player;
 
@@ -36,7 +36,7 @@ public class PlayerInventory implements Tickable, NbtSerialisable {
      *
      * Bad things might happen when it's removed.
      */
-    public synchronized void enforceDependency(AddictiveMagicalItem item) {
+    public synchronized void enforceDependency(AddictiveMagicitem item) {
         if (dependencies.containsKey(item)) {
             dependencies.get(item).reinforce();
         } else {
@@ -47,7 +47,7 @@ public class PlayerInventory implements Tickable, NbtSerialisable {
     /**
      * Returns how long the player has been wearing the given item.
      */
-    public synchronized int getTicksAttached(AddictiveMagicalItem item) {
+    public synchronized int getTicksAttached(AddictiveMagicitem item) {
         if (dependencies.containsKey(item)) {
             return dependencies.get(item).ticksAttached;
         }
@@ -60,7 +60,7 @@ public class PlayerInventory implements Tickable, NbtSerialisable {
      *
      * Zero means not dependent at all / not wearing.
      */
-    public synchronized float getNeedfulness(AddictiveMagicalItem item) {
+    public synchronized float getNeedfulness(AddictiveMagicitem item) {
         if (dependencies.containsKey(item)) {
             return dependencies.get(item).needfulness;
         }
@@ -72,10 +72,10 @@ public class PlayerInventory implements Tickable, NbtSerialisable {
     public synchronized void tick() {
         carryingWeight = HeavyInventory.getContentsTotalWorth(player.getOwner().inventory, false);
 
-        Iterator<Map.Entry<AddictiveMagicalItem, Entry>> iterator = dependencies.entrySet().iterator();
+        Iterator<Map.Entry<AddictiveMagicitem, Entry>> iterator = dependencies.entrySet().iterator();
 
         while (iterator.hasNext()) {
-            Map.Entry<AddictiveMagicalItem, Entry> entry = iterator.next();
+            Map.Entry<AddictiveMagicitem, Entry> entry = iterator.next();
 
             Entry item = entry.getValue();
 
@@ -90,7 +90,7 @@ public class PlayerInventory implements Tickable, NbtSerialisable {
     /**
      * Checks if the player is wearing the specified magical artifact.
      */
-    public boolean isWearing(MagicalItem item) {
+    public boolean isWearing(MagicItem item) {
         for (ItemStack i : player.getOwner().getArmorItems()) {
             if (!i.isEmpty() && i.getItem() == item) {
                 return true;
@@ -147,13 +147,13 @@ public class PlayerInventory implements Tickable, NbtSerialisable {
 
         float needfulness = 1;
 
-        AddictiveMagicalItem item;
+        AddictiveMagicitem item;
 
         Entry() {
 
         }
 
-        Entry(AddictiveMagicalItem key) {
+        Entry(AddictiveMagicitem key) {
             this.item = key;
         }
 
@@ -186,7 +186,7 @@ public class PlayerInventory implements Tickable, NbtSerialisable {
 
             Item item = Registry.ITEM.get(new Identifier(compound.getString("item")));
 
-            this.item = item instanceof AddictiveMagicalItem ? (AddictiveMagicalItem)item : null;
+            this.item = item instanceof AddictiveMagicitem ? (AddictiveMagicitem)item : null;
         }
     }
 }

@@ -10,7 +10,7 @@ import com.minelittlepony.unicopia.container.BagOfHoldingInventory;
 import com.minelittlepony.unicopia.container.UContainers;
 import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.magic.Affinity;
-import com.minelittlepony.unicopia.magic.MagicalItem;
+import com.minelittlepony.unicopia.magic.item.MagicItem;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.fabricmc.fabric.api.container.ContainerProviderRegistry;
@@ -37,7 +37,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BagOfHoldingItem extends Item implements MagicalItem {
+public class BagOfHoldingItem extends Item implements MagicItem {
 
     public BagOfHoldingItem(Settings settings) {
         super(settings);

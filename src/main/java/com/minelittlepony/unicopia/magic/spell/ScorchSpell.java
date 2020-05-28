@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.blockstate.StateMaps;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.TossedMagicEffect;
+import com.minelittlepony.unicopia.magic.ThrowableSpell;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.projectile.AdvancedProjectile;
@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.explosion.Explosion.DestructionType;
 
-public class ScorchSpell extends FireSpell implements TossedMagicEffect {
+public class ScorchSpell extends FireSpell implements ThrowableSpell {
 
     @Override
     public String getName() {
@@ -68,7 +68,7 @@ public class ScorchSpell extends FireSpell implements TossedMagicEffect {
     @Override
     @Nullable
     public AdvancedProjectile toss(Caster<?> caster) {
-        AdvancedProjectile projectile = TossedMagicEffect.super.toss(caster);
+        AdvancedProjectile projectile = ThrowableSpell.super.toss(caster);
 
         if (projectile != null) {
             projectile.setGravity(false);

@@ -11,7 +11,7 @@ import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
 import com.minelittlepony.unicopia.magic.Affine;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.TossedMagicEffect;
+import com.minelittlepony.unicopia.magic.ThrowableSpell;
 import com.minelittlepony.unicopia.util.projectile.TossableItem;
 
 import net.minecraft.block.BlockState;
@@ -34,9 +34,9 @@ import net.minecraft.world.World;
 public class EnchantedStaffItem extends StaffItem implements Affine, TossableItem {
 
     @Nonnull
-    private final TossedMagicEffect effect;
+    private final ThrowableSpell effect;
 
-    public EnchantedStaffItem(Settings settings, @Nonnull TossedMagicEffect effect) {
+    public EnchantedStaffItem(Settings settings, @Nonnull ThrowableSpell effect) {
         super(settings.maxDamage(500));
 
         this.effect = effect;

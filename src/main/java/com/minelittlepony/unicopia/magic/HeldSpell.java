@@ -5,7 +5,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 /**
  * Represents a passive spell that does something when held in the player's hand.
  */
-public interface HeldMagicEffect extends MagicEffect {
+public interface HeldSpell extends Spell {
     /**
      * Called every tick when held in a player's inventory.
      *

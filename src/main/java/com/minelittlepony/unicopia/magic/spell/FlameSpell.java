@@ -3,13 +3,13 @@ package com.minelittlepony.unicopia.magic.spell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.HeldMagicEffect;
+import com.minelittlepony.unicopia.magic.HeldSpell;
 
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
 
-public class FlameSpell extends AbstractSpell implements HeldMagicEffect {
+public class FlameSpell extends AbstractSpell implements HeldSpell {
 
     @Override
     public String getName() {

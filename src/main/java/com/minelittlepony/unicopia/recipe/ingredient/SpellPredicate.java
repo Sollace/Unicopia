@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.recipe.Utils;
 
@@ -17,7 +17,7 @@ import net.minecraft.util.PacketByteBuf;
  * Appends that spell to the output when crafting.
  */
 class SpellPredicate implements Predicate {
-    private final MagicEffect spell;
+    private final Spell spell;
 
     SpellPredicate(String spell) {
         this.spell = Utils.require(SpellRegistry.instance().getSpellFromName(spell), "Unknown spell tag '" + spell + "'");

@@ -6,7 +6,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.FlightPredicate;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.MutableVector;
@@ -56,8 +56,8 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             return true;
         }
 
-        if (pony.hasEffect()) {
-            MagicEffect effect = pony.getEffect();
+        if (pony.hasSpell()) {
+            Spell effect = pony.getSpell();
             if (!effect.isDead() && effect instanceof FlightPredicate) {
                 return ((FlightPredicate)effect).checkCanFly(pony);
             }

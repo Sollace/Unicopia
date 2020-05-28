@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.network;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 
 import net.minecraft.entity.data.TrackedData;
@@ -19,7 +19,7 @@ import net.minecraft.nbt.CompoundTag;
 public class EffectSync {
 
     @Nullable
-    private MagicEffect effect;
+    private Spell effect;
 
     private final Caster<?> owned;
 
@@ -93,7 +93,7 @@ public class EffectSync {
         return null;
     }
 
-    public void set(@Nullable MagicEffect effect) {
+    public void set(@Nullable Spell effect) {
         if (this.effect != null && this.effect != effect) {
             this.effect.setDead();
         }
@@ -102,7 +102,7 @@ public class EffectSync {
         if (effect == null) {
             owned.getEntity().getDataTracker().set(param, new CompoundTag());
         } else {
-            owned.getEntity().getDataTracker().set(param, SpellRegistry.instance().serializeEffectToNBT(effect));
+            owned.getEntity().getDataTracker().set(param, SpellRegistry.toNBT(effect));
         }
     }
 }

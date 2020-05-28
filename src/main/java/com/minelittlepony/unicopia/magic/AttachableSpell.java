@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.magic;
 /**
  * A magic effect that does something when attached to an entity.
  */
-public interface AttachedMagicEffect extends MagicEffect {
+public interface AttachableSpell extends Spell {
     /**
      * Called every tick when attached to a player.
      *

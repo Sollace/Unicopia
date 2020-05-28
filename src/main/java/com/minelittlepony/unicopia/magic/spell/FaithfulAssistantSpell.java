@@ -6,7 +6,7 @@ import com.minelittlepony.unicopia.entity.FollowCasterGoal;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.MagicEffect;
+import com.minelittlepony.unicopia.magic.Spell;
 
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.nbt.CompoundTag;
@@ -25,7 +25,7 @@ public class FaithfulAssistantSpell extends AbstractSpell {
     private static final Box EFFECT_BOUNDS = new Box(-2, -2, -2, 2, 2, 2);
 
     @Nullable
-    private MagicEffect piggyBackSpell;
+    private Spell piggyBackSpell;
 
     @Override
     public String getName() {
@@ -87,11 +87,11 @@ public class FaithfulAssistantSpell extends AbstractSpell {
 
             source.getWorld().getEntities(source.getEntity(), bb, e -> e instanceof SpellcastEntity).stream()
                 .map(i -> (SpellcastEntity)i)
-                .filter(i -> i.hasEffect() && !(i.getEffect() instanceof FaithfulAssistantSpell))
+                .filter(i -> i.hasSpell() && !(i.getSpell() instanceof FaithfulAssistantSpell))
                 .findFirst().ifPresent(i -> {
-                    piggyBackSpell = i.getEffect().copy();
+                    piggyBackSpell = i.getSpell().copy();
                     piggyBackSpell.onPlaced(source);
-                    i.setEffect(null);
+                    i.setSpell(null);
                     setDirty(true);
                 });
         }
@@ -115,7 +115,7 @@ public class FaithfulAssistantSpell extends AbstractSpell {
         super.toNBT(compound);
 
         if (piggyBackSpell != null) {
-            compound.put("effect", SpellRegistry.instance().serializeEffectToNBT(piggyBackSpell));
+            compound.put("effect", SpellRegistry.toNBT(piggyBackSpell));
         }
     }
 

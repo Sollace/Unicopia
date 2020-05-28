@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.magic.spell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.HeldMagicEffect;
+import com.minelittlepony.unicopia.magic.HeldSpell;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.light.ChunkBlockLightProvider;
 import net.minecraft.world.chunk.light.ChunkLightingView;
 
-public class GlowingSpell extends GenericSpell implements HeldMagicEffect {
+public class GlowingSpell extends GenericSpell implements HeldSpell {
 
     private BlockPos lastPos;
     private Caster<?> source;
