@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.magic.spell;
 
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.SuppressableEffect;
+import com.minelittlepony.unicopia.magic.Suppressable;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -32,7 +32,7 @@ public class RevealingSpell extends AbstractSpell {
     @Override
     public boolean update(Caster<?> source) {
         source.findAllSpellsInRange(15).forEach(e -> {
-            SuppressableEffect spell = e.getEffect(SuppressableEffect.class, false);
+            Suppressable spell = e.getEffect(Suppressable.class, false);
 
             if (spell != null && spell.isVulnerable(source, this)) {
                 spell.onSuppressed(source);

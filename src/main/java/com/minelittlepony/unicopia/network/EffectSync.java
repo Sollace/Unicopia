@@ -55,7 +55,7 @@ public class EffectSync {
     }
 
     @SuppressWarnings("unchecked")
-    public <E extends MagicEffect> E get(Class<E> type, boolean update) {
+    public <E> E get(Class<E> type, boolean update) {
         if (!update) {
             if (effect == null || type == null || type.isAssignableFrom(effect.getClass())) {
                 return (E)effect;

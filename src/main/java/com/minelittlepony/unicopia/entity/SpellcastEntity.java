@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Castable;
 import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.EtherialListener;
 import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.EffectSync;
@@ -44,7 +45,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion.DestructionType;
 
-public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caster<LivingEntity>, InAnimate, PickedItemSupplier {
+public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caster<LivingEntity>, EtherialListener, InAnimate, PickedItemSupplier {
 
     private static final TrackedData<Integer> LEVEL = DataTracker.registerData(SpellcastEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Optional<UUID>> OWNER = DataTracker.registerData(SpellcastEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
@@ -110,7 +111,7 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
 
     @Nullable
     @Override
-    public <T extends MagicEffect> T getEffect(@Nullable Class<T> type, boolean update) {
+    public <T> T getEffect(@Nullable Class<T> type, boolean update) {
         return effectDelegate.get(type, update);
     }
 
@@ -267,7 +268,7 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
     @Override
     public void remove() {
         if (hasEffect()) {
-            getEffect().setDead();
+            getEffect().onDestroyed(this);
         }
         super.remove();
     }
@@ -360,6 +361,16 @@ public class SpellcastEntity extends MobEntityWithAi implements IMagicals, Caste
 
         if (hasEffect()) {
             compound.put("effect", SpellRegistry.instance().serializeEffectToNBT(getEffect()));
+        }
+    }
+
+    @Override
+    public void onNearbySpellChange(Caster<?> source, MagicEffect effect, int newState) {
+        if (hasEffect()) {
+            EtherialListener listener = getEffect(EtherialListener.class, true);
+            if (listener != null) {
+                listener.onNearbySpellChange(source, effect, newState);
+            }
         }
     }
 }

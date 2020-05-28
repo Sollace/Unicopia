@@ -382,7 +382,7 @@ public class Pony implements Caster<PlayerEntity>, Ponylike<PlayerEntity>, Trans
 
     @Nullable
     @Override
-    public <T extends MagicEffect> T getEffect(@Nullable Class<T> type, boolean update) {
+    public <T> T getEffect(@Nullable Class<T> type, boolean update) {
         return effectDelegate.get(type, update);
     }
 

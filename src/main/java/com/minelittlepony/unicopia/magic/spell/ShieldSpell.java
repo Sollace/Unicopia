@@ -66,7 +66,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements AttachedMagi
                 cost *= costMultiplier / 5F;
 
                 if (!source.subtractEnergyCost(cost)) {
-                    setDead();
+                    onDestroyed(source);
                 }
             }
         }
@@ -84,21 +84,25 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements AttachedMagi
         return true;
     }
 
-    protected int applyEntities(Caster<?> source) {
-        double radius = getDrawDropOffRange(source);
+    protected List<Entity> getTargets(Caster<?> source, double radius) {
 
         Entity owner = source.getOwner();
 
         boolean ownerIsValid = source.getAffinity() != Affinity.BAD && EquinePredicates.PLAYER_UNICORN.test(owner);
 
-        Vec3d origin = source.getOriginVector();
-
-        List<Entity> targets = source.findAllEntitiesInRange(radius)
+        return source.findAllEntitiesInRange(radius)
             .filter(entity -> !(ownerIsValid && (
                     entity.equals(owner)
                     || (entity instanceof PlayerEntity && owner instanceof PlayerEntity && Pony.equal((PlayerEntity)entity, (PlayerEntity)owner)))))
             .collect(Collectors.toList());
+    }
 
+    protected int applyEntities(Caster<?> source) {
+        double radius = getDrawDropOffRange(source);
+
+        Vec3d origin = source.getOriginVector();
+
+        List<Entity> targets = getTargets(source, radius);
         targets.forEach(i -> {
             try {
                 double dist = i.getPos().distanceTo(origin);

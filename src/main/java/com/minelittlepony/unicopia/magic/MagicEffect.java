@@ -65,6 +65,13 @@ public interface MagicEffect extends NbtSerialisable, Affine {
 
     }
 
+    /**
+     * Called when a gem is destroyed.
+     */
+    default void onDestroyed(Caster<?> caster) {
+        setDead();
+    }
+
     default boolean handleProjectileImpact(ProjectileEntity projectile) {
         return false;
     }

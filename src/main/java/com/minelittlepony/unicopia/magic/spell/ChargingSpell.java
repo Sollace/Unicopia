@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.magic.spell;
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.EtherialListener;
+import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Line;
@@ -10,7 +12,7 @@ import com.minelittlepony.unicopia.util.shape.Line;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
-public class ChargingSpell extends AbstractAttachableSpell {
+public class ChargingSpell extends AbstractLinkedSpell implements EtherialListener {
 
     private static final Box searchArea = new Box(-15, -15, -15, 15, 15, 15);
 
@@ -70,5 +72,25 @@ public class ChargingSpell extends AbstractAttachableSpell {
         }
 
         return !isDead();
+    }
+
+    @Override
+    public void onPlaced(Caster<?> caster) {
+        caster.notifyNearbySpells(this, 12, ADDED);
+    }
+
+    @Override
+    public void onDestroyed(Caster<?> caster) {
+        super.onDestroyed(caster);
+        caster.notifyNearbySpells(this, 12, REMOVED);
+    }
+
+    @Override
+    public void onNearbySpellChange(Caster<?> source, MagicEffect effect, int newState) {
+        if (effect instanceof AttractiveSpell && !isDead()) {
+            setDead();
+            setDirty(true);
+            source.notifyNearbySpells(this, 12, newState);
+        }
     }
 }

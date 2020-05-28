@@ -1,18 +1,33 @@
 package com.minelittlepony.unicopia.magic.spell;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.EtherialListener;
+import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class AttractiveSpell extends ShieldSpell {
+public class AttractiveSpell extends ShieldSpell implements EtherialListener {
+
+    @Nullable
+    private BlockPos homingPos;
 
     @Override
     public String getName() {
@@ -45,8 +60,20 @@ public class AttractiveSpell extends ShieldSpell {
     }
 
     @Override
+    protected List<Entity> getTargets(Caster<?> source, double radius) {
+
+        if (homingPos != null) {
+            return VecHelper.findAllEntitiesInRange(source.getEntity(), source.getWorld(), source.getOrigin(), radius)
+                .filter(i -> i instanceof ItemEntity)
+                .collect(Collectors.toList());
+        }
+
+        return super.getTargets(source, radius);
+    }
+
+    @Override
     protected void applyRadialEffect(Caster<?> source, Entity target, double distance, double radius) {
-        Vec3d pos = source.getOriginVector();
+        Vec3d pos = homingPos == null ? source.getOriginVector() : new Vec3d(homingPos);
 
         double force = 2.5F / distance;
 
@@ -74,4 +101,37 @@ public class AttractiveSpell extends ShieldSpell {
 
         target.setVelocity(x, y, z);
     }
+
+    @Override
+    public void onNearbySpellChange(Caster<?> source, MagicEffect effect, int newState) {
+        if (effect instanceof ChargingSpell && !isDead()) {
+            if (newState == ADDED) {
+                if (homingPos == null) {
+                    homingPos = source.getOrigin();
+                }
+                setDirty(true);
+            } else if (homingPos.equals(source.getOrigin())) {
+                setDead();
+                setDirty(true);
+                source.notifyNearbySpells(this, 5, REMOVED);
+            }
+        }
+    }
+
+    @Override
+    public void toNBT(CompoundTag compound) {
+        super.toNBT(compound);
+        if (homingPos != null) {
+            compound.put("homingPos", NbtSerialisable.writeBlockPos(homingPos));
+        }
+    }
+
+    @Override
+    public void fromNBT(CompoundTag compound) {
+        super.fromNBT(compound);
+        if (compound.contains("homingPos")) {
+            homingPos = NbtSerialisable.readBlockPos(compound.getCompound("homingPos"));
+        }
+    }
+
 }

@@ -7,14 +7,13 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Caster;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 
-public abstract class AbstractAttachableSpell extends AbstractSpell {
+public abstract class AbstractLinkedSpell extends AbstractSpell {
 
     protected boolean searching = true;
 

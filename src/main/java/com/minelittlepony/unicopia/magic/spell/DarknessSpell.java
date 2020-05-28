@@ -29,7 +29,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
-public class DarknessSpell extends AbstractAttachableSpell {
+public class DarknessSpell extends AbstractLinkedSpell {
 
     private static final Box searchArea = new Box(-5, -5, -5, 5, 5, 5);
 

@@ -84,7 +84,7 @@ public class SiphoningSpell extends AbstractRangedAreaSpell {
 
                 if (maxHealthGain <= 0) {
                     if (source.getWorld().random.nextInt(30) == 0) {
-                        setDead();
+                        onDestroyed(source);
                     } else {
                         e.damage(damage, e.getHealth() / 4);
                     }

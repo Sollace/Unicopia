@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.entity.Owned;
 import com.minelittlepony.unicopia.particles.ParticleSource;
@@ -39,7 +40,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
      * Returns null if no such effect exists for this caster.
      */
     @Nullable
-    <T extends MagicEffect> T getEffect(@Nullable Class<T> type, boolean update);
+    <T> T getEffect(@Nullable Class<T> type, boolean update);
 
     /**
      * Gets the active effect for this caster updating it if needed.
@@ -133,5 +134,17 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
 
     default Stream<Entity> findAllEntitiesInRange(double radius) {
         return VecHelper.findAllEntitiesInRange(getEntity(), getWorld(), getOrigin(), radius);
+    }
+
+    default void notifyNearbySpells(MagicEffect sender, BlockPos origin, double radius, int newState) {
+        AwaitTickQueue.enqueueTask(w -> {
+            VecHelper.findAllEntitiesInRange(getEntity(), getWorld(), origin, radius).filter(i -> i instanceof EtherialListener).forEach(i -> {
+                ((EtherialListener)i).onNearbySpellChange(this, sender, newState);
+            });
+        });
+    }
+
+    default void notifyNearbySpells(MagicEffect sender, double radius, int newState) {
+        notifyNearbySpells(sender, getOrigin(), radius, newState);
     }
 }

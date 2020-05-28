@@ -132,7 +132,7 @@ public class ChangelingTrapSpell extends AbstractSpell implements TossedMagicEff
 
         if (caster.isLocal()) {
             if (struggleCounter <= 0) {
-                setDead();
+                onDestroyed(caster);
                 setDirty(true);
 
                 WorldEvent.DESTROY_BLOCK.play(caster.getWorld(), origin, Blocks.SLIME_BLOCK.getDefaultState());
@@ -166,7 +166,7 @@ public class ChangelingTrapSpell extends AbstractSpell implements TossedMagicEff
         struggleCounter = 10;
 
         if (caster.isLocal() && caster.getWorld().random.nextInt(3) == 0) {
-            setDead();
+            onDestroyed(caster);
 
             CuccoonEntity cuccoon = UEntities.CUCCOON.create(caster.getWorld());
             cuccoon.copyPositionAndRotation(caster.getEntity());

@@ -83,7 +83,7 @@ public class DisguiseCommand {
     static int reveal(ServerCommandSource source, PlayerEntity player) {
         Pony iplayer = Pony.of(player);
         iplayer.getEffect(DisguiseSpell.class).ifPresent(disguise -> {
-            disguise.setDead();
+            disguise.onDestroyed(iplayer);
         });
 
         if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {

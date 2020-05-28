@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.EtherialListener;
 import com.minelittlepony.unicopia.magic.MagicEffect;
 import com.minelittlepony.unicopia.magic.TossedMagicEffect;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
@@ -34,6 +35,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -51,6 +53,8 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
 
     private UUID ownerUuid;
+
+    private BlockPos lastBlockPos;
 
     public ProjectileEntity(EntityType<ProjectileEntity> type, World world) {
         super(type, world);
@@ -133,7 +137,7 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
     }
 
     @Override
-    public <T extends MagicEffect> T getEffect(Class<T> type, boolean update) {
+    public <T> T getEffect(Class<T> type, boolean update) {
         return effectDelegate.get(type, update);
     }
 
@@ -178,6 +182,12 @@ public class ProjectileEntity extends ThrownItemEntity implements IMagicals, Adv
         }
 
         if (hasEffect()) {
+            if (lastBlockPos == null || !lastBlockPos.equals(getBlockPos())) {
+                notifyNearbySpells(getEffect(), lastBlockPos, 6, EtherialListener.REMOVED);
+                lastBlockPos = getBlockPos();
+                notifyNearbySpells(getEffect(), 6, EtherialListener.ADDED);
+            }
+
             if (getEffect().isDead()) {
                 remove();
             } else {

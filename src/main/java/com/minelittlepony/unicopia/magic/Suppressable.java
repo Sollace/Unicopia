@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.magic;
 /**
  * Magic effects that can be suppressed by other nearby effects.
  */
-public interface SuppressableEffect extends MagicEffect {
+public interface Suppressable {
 
     /**
      * Returns true if this spell is currently still suppressed.

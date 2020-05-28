@@ -16,7 +16,7 @@ import com.minelittlepony.unicopia.magic.CasterUtils;
 import com.minelittlepony.unicopia.magic.AttachedMagicEffect;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.MagicEffect;
-import com.minelittlepony.unicopia.magic.SuppressableEffect;
+import com.minelittlepony.unicopia.magic.Suppressable;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.particles.UParticles;
 import com.minelittlepony.unicopia.util.projectile.ProjectileUtil;
@@ -45,7 +45,7 @@ import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 
-public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect, SuppressableEffect, FlightPredicate, HeightPredicate {
+public class DisguiseSpell extends AbstractSpell implements AttachedMagicEffect, Suppressable, FlightPredicate, HeightPredicate {
 
     @Nonnull
     private String entityId = "";

@@ -53,7 +53,7 @@ public class Creature implements Ponylike<LivingEntity>, Caster<LivingEntity> {
     }
 
     @Override
-    public <T extends MagicEffect> T getEffect(Class<T> type, boolean update) {
+    public <T> T getEffect(Class<T> type, boolean update) {
         return effectDelegate.get(type, update);
     }
 
