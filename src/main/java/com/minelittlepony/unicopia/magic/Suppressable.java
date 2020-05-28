@@ -8,7 +8,7 @@ public interface Suppressable {
     /**
      * Returns true if this spell is currently still suppressed.
      */
-    boolean getSuppressed();
+    boolean isSuppressed();
 
     /**
      * Returns true if this spell can be suppressed by the given other spell and caster.

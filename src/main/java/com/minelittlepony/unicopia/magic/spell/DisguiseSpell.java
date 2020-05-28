@@ -90,7 +90,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
     }
 
     @Override
-    public boolean getSuppressed() {
+    public boolean isSuppressed() {
         return suppressionCounter > 0;
     }
 
@@ -330,7 +330,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
     public boolean update(Caster<?> source, boolean tick) {
         LivingEntity owner = source.getOwner();
 
-        if (getSuppressed()) {
+        if (isSuppressed()) {
             suppressionCounter--;
 
             owner.setInvisible(false);
@@ -446,7 +446,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
 
     @Override
     public void render(Caster<?> source) {
-        if (getSuppressed()) {
+        if (isSuppressed()) {
             source.spawnParticles(MagicParticleEffect.UNICORN, 5);
             source.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
         } else if (source.getWorld().random.nextInt(30) == 0) {
@@ -516,7 +516,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
 
     @Override
     public float getTargetEyeHeight(Pony player) {
-        if (entity != null && !getSuppressed()) {
+        if (entity != null && !isSuppressed()) {
             if (entity instanceof FallingBlockEntity) {
                 return 0.5F;
             }
@@ -527,7 +527,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
 
     @Override
     public float getTargetBodyHeight(Pony player) {
-        if (entity != null && !getSuppressed()) {
+        if (entity != null && !isSuppressed()) {
             if (entity instanceof FallingBlockEntity) {
                 return 0.9F;
             }

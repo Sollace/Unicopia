@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia;
 import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.util.collection.Weighted;
+import com.minelittlepony.unicopia.util.Weighted;
 
 import java.util.Arrays;
 import java.util.HashSet;
