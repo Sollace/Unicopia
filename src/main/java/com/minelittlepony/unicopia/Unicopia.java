@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.world.WorldTickCallback;
 import net.fabricmc.fabric.api.loot.v1.FabricLootSupplier;
 import net.fabricmc.fabric.api.loot.v1.event.LootTableLoadingCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -52,6 +53,7 @@ public class Unicopia implements ModInitializer {
 
         CriterionsRegistry.register(BOHDeathCriterion.INSTANCE);
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(Pages.instance());
+        WorldTickCallback.EVENT.register(AwaitTickQueue::tick);
 
         LootTableLoadingCallback.EVENT.register((res, manager, id, supplier, setter) -> {
             if (!"minecraft".contentEquals(id.getNamespace())) {
