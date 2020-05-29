@@ -147,9 +147,9 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
 
     default void notifyNearbySpells(Spell sender, BlockPos origin, double radius, int newState) {
         AwaitTickQueue.enqueueTask(w -> {
-            VecHelper.findAllEntitiesInRange(getEntity(), getWorld(), origin, radius).filter(i -> i instanceof EtherialListener).forEach(i -> {
-                ((EtherialListener)i).onNearbySpellChange(this, sender, newState);
-            });
+            VecHelper.findAllEntitiesInRange(getEntity(), getWorld(), origin, radius)
+                .filter(i -> i instanceof EtherialListener)
+                .forEach(i -> ((EtherialListener)i).onNearbySpellChange(this, sender, newState));
         });
     }
 

@@ -123,7 +123,7 @@ public class TreeTraverser {
         BlockState state = w.getBlockState(pos);
         boolean yay = false;
 
-        if (isLeaves(state, log) && state.get(LeavesBlock.PERSISTENT)) {
+        if (isLeaves(state, log) && !state.get(LeavesBlock.PERSISTENT)) {
             leaves.add(pos);
             yay = true;
         } else if (variantAndBlockEquals(state, log)) {
@@ -140,7 +140,7 @@ public class TreeTraverser {
 
     public static boolean isWoodOrLeaf(World w, BlockState log, BlockPos pos) {
         BlockState state = w.getBlockState(pos);
-        return variantAndBlockEquals(state, log) || (isLeaves(state, log) && state.get(LeavesBlock.PERSISTENT));
+        return variantAndBlockEquals(state, log) || (isLeaves(state, log) && !state.get(LeavesBlock.PERSISTENT));
     }
 
     private static boolean isLeaves(BlockState state, BlockState log) {
