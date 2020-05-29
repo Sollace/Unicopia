@@ -25,6 +25,10 @@ public class UHud extends DrawableHelper {
 
     public void render(InGameHud hud, float tickDelta) {
 
+        if (client.player == null || client.player.isSpectator()) {
+            return;
+        }
+
         int scaledWidth = client.getWindow().getScaledWidth();
         int scaledHeight = client.getWindow().getScaledHeight();
 

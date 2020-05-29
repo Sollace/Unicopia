@@ -52,7 +52,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     }
 
     private boolean checkCanFly() {
-        if (pony.getOwner().abilities.creativeMode) {
+        if (pony.getOwner().abilities.creativeMode || pony.getOwner().isSpectator()) {
             return true;
         }
 
@@ -100,15 +100,17 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             }
         }
 
+        boolean creative = entity.abilities.creativeMode || pony.getOwner().isSpectator();
+
         entity.abilities.allowFlying = checkCanFly();
 
-        if (!entity.abilities.creativeMode) {
+        if (!creative) {
             entity.abilities.flying |= entity.abilities.allowFlying && isFlying && !entity.onGround && !entity.isTouchingWater();
         }
 
-        isFlying = entity.abilities.flying && !entity.abilities.creativeMode;
+        isFlying = entity.abilities.flying && !creative;
 
-        if (!entity.abilities.creativeMode && !entity.isFallFlying()) {
+        if (!creative && !entity.isFallFlying()) {
             if (isFlying && !entity.hasVehicle()) {
 
                 if (!isRainbooming && getHorizontalMotion(entity) > 0.2 && flightExperience < MAXIMUM_FLIGHT_EXPERIENCE) {
