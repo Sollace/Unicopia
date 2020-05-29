@@ -6,7 +6,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
-import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.TreeTraverser;
 import com.minelittlepony.unicopia.TreeType;
@@ -102,7 +101,6 @@ public class EarthPonyStompAbility implements Ability<Multi> {
 
     @Override
     public void apply(Pony iplayer, Multi data) {
-
         PlayerEntity player = iplayer.getOwner();
 
         if (data.hitType == 0) {
@@ -163,7 +161,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
             if (harmed || player.world.random.nextInt(5) == 0) {
 
                 if (!harmed || player.world.random.nextInt(30) == 0) {
-                    AwaitTickQueue.enqueueTask(w -> TreeTraverser.removeTree(w, data.pos()));
+                    TreeTraverser.removeTree(player.world, data.pos());
                 }
 
                 iplayer.subtractEnergyCost(3);
@@ -230,11 +228,9 @@ public class EarthPonyStompAbility implements Ability<Multi> {
 
             dropApplesPart(capturedDrops, new ArrayList<BlockPos>(), w, log, pos, 0);
 
-            AwaitTickQueue.enqueueTask(wo -> {
-                capturedDrops.forEach(item -> {
-                    item.setToDefaultPickupDelay();
-                    wo.spawnEntity(item);
-                });
+            capturedDrops.forEach(item -> {
+                item.setToDefaultPickupDelay();
+                w.spawnEntity(item);
             });
 
             return capturedDrops.size() / 3;

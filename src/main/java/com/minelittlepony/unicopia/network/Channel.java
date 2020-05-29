@@ -25,7 +25,7 @@ public interface Channel {
     static void bootstrap() { }
 
     static <T extends Packet> SPacketType<T> clientToServer(Identifier id, Function<PacketByteBuf, T> factory) {
-        ServerSidePacketRegistry.INSTANCE.register(id, (context, buffer) -> factory.apply(buffer).handle(context));
+        ServerSidePacketRegistry.INSTANCE.register(id, (context, buffer) -> factory.apply(buffer).handleOnMain(context));
         return () -> id;
     }
 
@@ -33,8 +33,9 @@ public interface Channel {
         Identifier id = new Identifier(redirect.getId().getNamespace(), "broadcast_" + redirect.getId().getPath());
         ServerSidePacketRegistry.INSTANCE.register(id, (context, buffer) -> {
             PlayerEntity sender = context.getPlayer();
+
             T p = factory.apply(buffer);
-            p.handle(context);
+            p.handleOnMain(context);
             sender.world.getPlayers().forEach(player -> {
                 if (player != null) {
                     redirect.send(player, p);
@@ -45,7 +46,7 @@ public interface Channel {
     }
 
     static <T extends Packet> CPacketType<T> serverToClient(Identifier id, Function<PacketByteBuf, T> factory) {
-        ClientSidePacketRegistry.INSTANCE.register(id, (context, buffer) -> factory.apply(buffer).handle(context));
+        ClientSidePacketRegistry.INSTANCE.register(id, (context, buffer) -> factory.apply(buffer).handleOnMain(context));
         return () -> id;
     }
 
@@ -77,6 +78,10 @@ public interface Channel {
         void handle(PacketContext context);
 
         void toBuffer(PacketByteBuf buffer);
+
+        default void handleOnMain(PacketContext context) {
+            context.getTaskQueue().execute(() -> handle(context));
+        }
 
         default PacketByteBuf toBuffer() {
             PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
