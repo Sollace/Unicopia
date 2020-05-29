@@ -24,6 +24,7 @@ import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
 import com.minelittlepony.unicopia.network.Transmittable;
 import com.minelittlepony.unicopia.toxin.Toxicity;
 import com.minelittlepony.unicopia.toxin.Toxin;
+import com.minelittlepony.unicopia.util.Copieable;
 import com.minelittlepony.util.BasicEasingInterpolator;
 import com.minelittlepony.util.IInterpolator;
 import com.mojang.authlib.GameProfile;
@@ -47,7 +48,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-public class Pony implements Caster<PlayerEntity>, Ponylike<PlayerEntity>, Transmittable {
+public class Pony implements Caster<PlayerEntity>, Ponylike<PlayerEntity>, Transmittable, Copieable<Pony> {
 
     private static final TrackedData<Integer> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
     static final TrackedData<Float> ENERGY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -363,9 +364,11 @@ public class Pony implements Caster<PlayerEntity>, Ponylike<PlayerEntity>, Trans
         pageStates.fromNBT(compound);
     }
 
+    @Override
     public void copyFrom(Pony oldPlayer) {
         setSpell(oldPlayer.getSpell());
         setSpecies(oldPlayer.getSpecies());
+        pageStates.copyFrom(oldPlayer.pageStates);
         setDirty();
     }
 

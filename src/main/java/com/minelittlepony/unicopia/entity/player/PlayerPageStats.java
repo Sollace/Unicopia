@@ -5,12 +5,13 @@ import java.util.Map;
 
 import com.minelittlepony.unicopia.enchanting.PageOwner;
 import com.minelittlepony.unicopia.enchanting.PageState;
+import com.minelittlepony.unicopia.util.Copieable;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 
-public class PlayerPageStats implements NbtSerialisable, PageOwner {
+public class PlayerPageStats implements NbtSerialisable, Copieable<PlayerPageStats>, PageOwner {
     private final Map<Identifier, PageState> pageStates = new HashMap<>();
 
     private final Pony pony;
@@ -27,6 +28,12 @@ public class PlayerPageStats implements NbtSerialisable, PageOwner {
     @Override
     public void sendCapabilities(boolean full) {
         pony.sendCapabilities(full);
+    }
+
+    @Override
+    public void copyFrom(PlayerPageStats other) {
+        pageStates.clear();
+        pageStates.putAll(other.pageStates);
     }
 
     @Override
@@ -63,5 +70,4 @@ public class PlayerPageStats implements NbtSerialisable, PageOwner {
             });
         }
     }
-
 }

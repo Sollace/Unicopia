@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity;
 
+import com.minelittlepony.unicopia.util.Copieable;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -13,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class EntityPhysics<T extends Ponylike<?> & Owned<? extends Entity>> implements Physics {
+public class EntityPhysics<T extends Ponylike<?> & Owned<? extends Entity>> implements Physics, Copieable<EntityPhysics<T>> {
 
     private float gravity = 1;
 
@@ -82,6 +84,11 @@ public class EntityPhysics<T extends Ponylike<?> & Owned<? extends Entity>> impl
     @Override
     public float getGravityModifier() {
         return gravity;
+    }
+
+    @Override
+    public void copyFrom(EntityPhysics<T> other) {
+        gravity = other.gravity;
     }
 
     @Override
