@@ -234,7 +234,7 @@ public class AlicornAmuletItem extends ArmorItem implements AddictiveMagicitem, 
 
             player.world.createExplosion(player, pos.x, pos.y, pos.z, 10, DestructionType.NONE);
 
-            AwaitTickQueue.scheduleTask(w -> {
+            AwaitTickQueue.scheduleTask(player.world, w -> {
                 w.createExplosion(player, pos.x, pos.y, pos.z, 6, DestructionType.BREAK);
             }, 50);
         }

@@ -93,7 +93,7 @@ public class SpellBookContainer extends Container {
                     worldObj.createExplosion(null, player.getX(), player.getY(), player.getZ(), 0, DestructionType.NONE);
                     worldObj.addParticle(ParticleTypes.EXPLOSION, player.getX(), player.getY(), player.getZ(), 1, 0, 0);
 
-                    AwaitTickQueue.enqueueTask(w -> player.container.close(player));
+                    AwaitTickQueue.scheduleTask(player.world, w -> player.container.close(player), 0);
 
                     return;
                 }
