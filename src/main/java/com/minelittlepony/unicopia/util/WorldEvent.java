@@ -83,6 +83,6 @@ public enum WorldEvent {
     }
 
     private void play(World world, BlockPos pos, int data) {
-        world.playGlobalEvent(getId(), pos, data);
+        world.playLevelEvent(getId(), pos, data);
     }
 }
