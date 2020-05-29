@@ -30,6 +30,10 @@ public class AwaitTickQueue {
     }
 
     static void tick(World world) {
+        if (world.isClient) {
+            return;
+        }
+
         synchronized (LOCKER) {
             DELAYED_TASKS = DELAYED_TASKS.stream().filter(DelayedTask::tick).collect(Collectors.toList());
 
