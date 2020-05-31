@@ -26,7 +26,7 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
                 .calculateFieldOfView(info.getReturnValue()));
     }
 
-    @Inject(method = "renderWorld(FLLnet/minecraft/client/util/math/MatrixStack;)V",
+    @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V",
             at = @At("HEAD"))
     public void onRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
         WorldRenderDelegate.INSTANCE.applyWorldTransform(matrices, tickDelta);

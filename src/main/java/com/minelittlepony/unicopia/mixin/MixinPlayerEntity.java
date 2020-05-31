@@ -40,7 +40,7 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
         return get().onImpact(distance);
     }
 
-    @Inject(method = "eatFood(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/world/World;net/minecraft/item/ItemStack;",
+    @Inject(method = "eatFood(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/item/ItemStack;",
             at = @At("HEAD"))
     public void onEatFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> info) {
         if (stack.isFood()) {
