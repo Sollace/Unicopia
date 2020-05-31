@@ -49,8 +49,6 @@ public class UHud extends DrawableHelper {
 
         AbilityDispatcher.Stat stat = abilities.getStat(AbilitySlot.PRIMARY);
 
-        //renderAbilityIcon(stat, x, y, 0, 0, frameWidth, frameHeight);
-
         float progressPercent = stat.getFillProgress();
 
         if (progressPercent > 0 && progressPercent < 1) {
@@ -61,6 +59,7 @@ public class UHud extends DrawableHelper {
                 frameWidth, progressHeight, 128, 128); // progress
         }
 
+        renderAbilityIcon(stat, x + 9, y + 15, 32, 32, 32, 32);
         blit(x, y, 0, 54, frameWidth, frameHeight, 128, 128); // frame
 
         secondarySlot.render(abilities, x, y, tickDelta);
@@ -103,7 +102,6 @@ public class UHud extends DrawableHelper {
             float cooldown = stat.getFillProgress();
 
             blit(x, y, 80, 105, 25, 25, 128, 128);
-            renderAbilityIcon(stat, x + 1, y + 1, 20, 20, 20, 20);
 
             if (cooldown > 0 && cooldown < 1) {
                 float lerpCooldown = MathHelper.lerp(tickDelta, cooldown, lastCooldown);
@@ -116,11 +114,12 @@ public class UHud extends DrawableHelper {
                 int progressBottom = y + slotPadding + slotSize;
                 int progressTop = progressBottom - (int)(15F * cooldown);
 
-                fill(x + slotPadding, progressTop, x + slotPadding + slotSize, progressBottom, 0x88FFFFFF);
+                fill(x + slotPadding, progressTop, x + slotPadding + slotSize, progressBottom, 0xFFFFFFFF);
                 RenderSystem.enableAlphaTest();
                 RenderSystem.enableBlend();
             }
 
+            renderAbilityIcon(stat, x + 2, y + 2, 20, 20, 20, 20);
             blit(x, y, 105, 105, 25, 25, 128, 128);
         }
 
