@@ -1,8 +1,7 @@
 package com.minelittlepony.unicopia.client.render.model;
 
+import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.entity.ButterflyEntity;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -20,6 +19,7 @@ public class ButterflyEntityModel extends EntityModel<ButterflyEntity> {
     private ModelPart rightWingOuter;
 
     public ButterflyEntityModel() {
+        super(RenderLayers::entityNoLighting);
         textureWidth = 64;
         textureHeight = 64;
 
@@ -58,9 +58,7 @@ public class ButterflyEntityModel extends EntityModel<ButterflyEntity> {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-        RenderSystem.disableLighting();
         body.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
-        RenderSystem.enableLighting();
     }
 
     @Override

@@ -29,7 +29,7 @@ public interface UEntities {
 
     EntityType<CuccoonEntity> CUCCOON = register("cuccoon", FabricEntityTypeBuilder.create(EntityCategory.MISC, CuccoonEntity::new).size(EntityDimensions.changing(1.5F, 1.6F)));
 
-    EntityType<ButterflyEntity> BUTTERFLY = register("butterfly", FabricEntityTypeBuilder.create(EntityCategory.AMBIENT, ButterflyEntity::new));
+    EntityType<ButterflyEntity> BUTTERFLY = register("butterfly", FabricEntityTypeBuilder.create(EntityCategory.AMBIENT, ButterflyEntity::new).size(EntityDimensions.fixed(1, 1)));
 
     EntityType<ProjectileEntity> THROWN_ITEM = register("thrown_item", FabricEntityTypeBuilder.<ProjectileEntity>create(EntityCategory.MISC, ProjectileEntity::new).trackable(100, 2));
     EntityType<SpearEntity> THROWN_SPEAR = register("thrown_spear", FabricEntityTypeBuilder.<SpearEntity>create(EntityCategory.MISC, SpearEntity::new).trackable(100, 2));

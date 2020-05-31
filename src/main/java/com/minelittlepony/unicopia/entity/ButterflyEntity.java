@@ -74,7 +74,7 @@ public class ButterflyEntity extends AmbientEntity {
 
     @Override
     public boolean collides() {
-        return false;
+        return true;
      }
 
     @Override
@@ -82,7 +82,7 @@ public class ButterflyEntity extends AmbientEntity {
         super.tick();
 
         Vec3d vel = getVelocity();
-        setVelocity(vel.x, getY() * 0.6, vel.z);
+        setVelocity(vel.x, vel.y * 0.6 + 0.02F, vel.z);
     }
 
     public boolean isResting() {
@@ -199,7 +199,7 @@ public class ButterflyEntity extends AmbientEntity {
     }
 
     @Override
-    public float getEyeHeight(EntityPose pos) {
+    public float getEyeHeight(EntityPose pose) {
         return getHeight() / 2;
     }
 

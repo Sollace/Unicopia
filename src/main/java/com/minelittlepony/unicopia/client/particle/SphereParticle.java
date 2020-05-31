@@ -10,7 +10,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-import com.minelittlepony.client.render.MagicGlow;
+import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.particles.ParticleHandle.Attachment;
@@ -126,9 +126,9 @@ public class SphereParticle extends Particle implements Attachment {
 
         float lerpedRad = MathHelper.lerp(tickDelta, prevRadius, radius);
 
-        model.render(matrices, lerpedRad + 0.1F, immediate.getBuffer(MagicGlow.getRenderLayer()), 1, 1, red, green, blue, alpha);
-
-        model.render(matrices, lerpedRad - 0.1F, immediate.getBuffer(MagicGlow.getRenderLayer()), 1, 1, red * 0.9F, green * 0.9F, blue * 0.9F, Math.min(1, alpha + 0.2F));
+        VertexConsumer buffer = immediate.getBuffer(RenderLayers.magic());
+        model.render(matrices, lerpedRad + 0.1F, buffer, 1, 1, red, green, blue, alpha);
+        model.render(matrices, lerpedRad - 0.1F, buffer, 1, 1, red * 0.9F, green * 0.9F, blue * 0.9F, Math.min(1, alpha + 0.2F));
 
         immediate.draw();
 

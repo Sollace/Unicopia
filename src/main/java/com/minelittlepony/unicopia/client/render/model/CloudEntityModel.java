@@ -1,16 +1,19 @@
 package com.minelittlepony.unicopia.client.render.model;
 
-import com.google.common.collect.ImmutableList;
+import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.entity.CloudEntity;
 
 import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.entity.model.CompositeEntityModel;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.util.math.MatrixStack;
 
-public class CloudEntityModel extends CompositeEntityModel<CloudEntity> {
+public class CloudEntityModel extends EntityModel<CloudEntity> {
 
     private final ModelPart body;
 
     public CloudEntityModel() {
+        super(RenderLayers::cloud);
         body = new ModelPart(this, 0, 0);
         body.setTextureSize(250, 90);
 
@@ -27,8 +30,8 @@ public class CloudEntityModel extends CompositeEntityModel<CloudEntity> {
     }
 
     @Override
-    public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(body);
+    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+        body.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 
     @Override
