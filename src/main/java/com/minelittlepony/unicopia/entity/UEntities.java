@@ -18,21 +18,34 @@ import net.minecraft.world.biome.PlainsBiome;
 import net.minecraft.world.biome.RiverBiome;
 
 public interface UEntities {
-    EntityType<SpellbookEntity> SPELLBOOK = register("spellbook", FabricEntityTypeBuilder.create(EntityCategory.MISC, SpellbookEntity::new).size(EntityDimensions.changing(0.6f, 0.6f)));
-    EntityType<SpellcastEntity> MAGIC_SPELL = register("magic_spell", FabricEntityTypeBuilder.create(EntityCategory.MISC, SpellcastEntity::new).size(EntityDimensions.changing(0.6F, 0.25F)));
-    EntityType<CloudEntity> CLOUD = register("cloud", FabricEntityTypeBuilder.create(EntityCategory.CREATURE, CloudEntity::new));
-    EntityType<WildCloudEntity> WILD_CLOUD = register("wild_cloud", FabricEntityTypeBuilder.create(EntityCategory.CREATURE, WildCloudEntity::new));
-    EntityType<RacingCloudEntity> RACING_CLOUD = register("racing_cloud", FabricEntityTypeBuilder.create(EntityCategory.CREATURE, RacingCloudEntity::new));
-    EntityType<ConstructionCloudEntity> CONSTRUCTION_CLOUD = register("construction_cloud", FabricEntityTypeBuilder.create(EntityCategory.CREATURE, ConstructionCloudEntity::new));
+    EntityType<SpellbookEntity> SPELLBOOK = register("spellbook", FabricEntityTypeBuilder.create(EntityCategory.MISC, SpellbookEntity::new)
+            .size(EntityDimensions.changing(0.6F, 0.6F)));
+    EntityType<SpellcastEntity> MAGIC_SPELL = register("magic_spell", FabricEntityTypeBuilder.create(EntityCategory.MISC, SpellcastEntity::new)
+            .size(EntityDimensions.changing(0.6F, 0.25F)));
+    EntityType<CloudEntity> CLOUD = register("cloud", FabricEntityTypeBuilder.create(EntityCategory.CREATURE, CloudEntity::new)
+            .size(CloudEntity.BASE_DIMENSIONS));
+    EntityType<WildCloudEntity> WILD_CLOUD = register("wild_cloud", FabricEntityTypeBuilder.create(EntityCategory.CREATURE, WildCloudEntity::new)
+            .size(CloudEntity.BASE_DIMENSIONS));
+    EntityType<RacingCloudEntity> RACING_CLOUD = register("racing_cloud", FabricEntityTypeBuilder.create(EntityCategory.CREATURE, RacingCloudEntity::new)
+            .size(CloudEntity.BASE_DIMENSIONS));
+    EntityType<ConstructionCloudEntity> CONSTRUCTION_CLOUD = register("construction_cloud", FabricEntityTypeBuilder.create(EntityCategory.CREATURE, ConstructionCloudEntity::new)
+            .size(CloudEntity.BASE_DIMENSIONS));
 
-    EntityType<RainbowEntity> RAINBOW = register("rainbow", FabricEntityTypeBuilder.create(EntityCategory.AMBIENT, RainbowEntity::new));
+    EntityType<RainbowEntity> RAINBOW = register("rainbow", FabricEntityTypeBuilder.create(EntityCategory.AMBIENT, RainbowEntity::new)
+            .size(EntityDimensions.fixed(1, 1)));
 
-    EntityType<CuccoonEntity> CUCCOON = register("cuccoon", FabricEntityTypeBuilder.create(EntityCategory.MISC, CuccoonEntity::new).size(EntityDimensions.changing(1.5F, 1.6F)));
+    EntityType<CuccoonEntity> CUCCOON = register("cuccoon", FabricEntityTypeBuilder.create(EntityCategory.MISC, CuccoonEntity::new)
+            .size(EntityDimensions.changing(1.5F, 1.6F)));
 
-    EntityType<ButterflyEntity> BUTTERFLY = register("butterfly", FabricEntityTypeBuilder.create(EntityCategory.AMBIENT, ButterflyEntity::new).size(EntityDimensions.fixed(1, 1)));
+    EntityType<ButterflyEntity> BUTTERFLY = register("butterfly", FabricEntityTypeBuilder.create(EntityCategory.AMBIENT, ButterflyEntity::new)
+            .size(EntityDimensions.fixed(1, 1)));
 
-    EntityType<ProjectileEntity> THROWN_ITEM = register("thrown_item", FabricEntityTypeBuilder.<ProjectileEntity>create(EntityCategory.MISC, ProjectileEntity::new).trackable(100, 2));
-    EntityType<SpearEntity> THROWN_SPEAR = register("thrown_spear", FabricEntityTypeBuilder.<SpearEntity>create(EntityCategory.MISC, SpearEntity::new).trackable(100, 2));
+    EntityType<ProjectileEntity> THROWN_ITEM = register("thrown_item", FabricEntityTypeBuilder.<ProjectileEntity>create(EntityCategory.MISC, ProjectileEntity::new)
+            .trackable(100, 2)
+            .size(EntityDimensions.fixed(0.25F, 0.25F)));
+    EntityType<SpearEntity> THROWN_SPEAR = register("thrown_spear", FabricEntityTypeBuilder.<SpearEntity>create(EntityCategory.MISC, SpearEntity::new)
+            .trackable(100, 2)
+            .size(EntityDimensions.fixed(0.6F, 0.6F)));
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         return Registry.register(Registry.ENTITY_TYPE, new Identifier("unicopia", name), builder.build());

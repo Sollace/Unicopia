@@ -68,6 +68,8 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
 
     private static final TrackedData<Boolean> STATIONARY = DataTracker.registerData(CloudEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
+    public static final EntityDimensions BASE_DIMENSIONS = EntityDimensions.changing(0.6f, 0.6f);
+
     protected double targetAltitude;
 
     protected int directionX;
@@ -75,6 +77,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
 
     public CloudEntity(EntityType<? extends CloudEntity> type, World world) {
         super(type, world);
+        inanimate = true;
         ignoreCameraFrustum = true;
         targetAltitude = getRandomFlyingHeight();
     }
@@ -355,7 +358,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
 
                 Vec3d vel = getVelocity();
 
-                setVelocity(vel.x, vel.y - 0.002 + (Math.signum(distance) * 0.699999988079071D - vel.y) * 0.10000000149011612D, vel.z);
+                setVelocity(vel.x, vel.y + (Math.signum(distance) * 0.699999988079071D - vel.y) * 0.10000000149011612D, vel.z);
             }
         }
     }
@@ -364,10 +367,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
         float a = getMaximumFlyingHeight();
         float b = getMinimumFlyingHeight();
 
-        float min = Math.min(a, b);
-        float max = Math.max(a, b);
-
-        return min + world.random.nextFloat() * (max - min);
+        return MathHelper.lerp(world.random.nextFloat(), Math.min(a, b), Math.max(a, b));
     }
 
     protected float getMinimumFlyingHeight() {
@@ -461,13 +461,13 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
         }
 
         super.onDeath(s);
-        clearItemFloatingState();
+        //clearItemFloatingState();
     }
 
     @Override
     public void remove() {
         super.remove();
-        clearItemFloatingState();
+        //clearItemFloatingState();
     }
 
     //@FUF(reason = "There is no TickEvent.EntityTickEvent. Waiting on mixins...")
@@ -533,7 +533,8 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
 
         if (!isConnectedThroughVehicle(entity) && floatStrength > 0) {
 
-            double boundModifier = entity.fallDistance > 80 ? 80 : MathHelper.floor(entity.fallDistance * 10) / 10;
+            double bounceModifier = entity.fallDistance > 80 ? 80 : MathHelper.floor(entity.fallDistance * 10) / 10;
+
 
             entity.onGround = true;
 
@@ -542,7 +543,15 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
             double motionY = motion.y;
             double motionZ = motion.z;
 
-            motionY += (((floatStrength > 2 ? 1 : floatStrength/2) * 0.699999998079071D) - motionY + boundModifier * 0.7) * 0.10000000149011612D;
+            if (motionY <= 0) {
+                motionY += (((floatStrength > 2 ? 1 : floatStrength/2) * 0.699999998079071D) - motionY + bounceModifier * 0.7) * 0.10000000149011612D;
+
+                motionY = Math.min(0.1F, motionY);
+                if (motionY < 0.002F) {
+                    motionY = 0.001;
+                }
+            }
+
             if (!getStationary()) {
                 motionX += ((motionX - motionX) / getCloudSize()) - 0.002F;
             }
@@ -551,12 +560,9 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
                 spawnThunderbolt(getBlockPos());
             }
 
-            // @FUF(reason = "There is no TickEvents.EntityTickEvent. Waiting on mixins...")
             if (getStationary() && entity instanceof ItemEntity) {
                 motionX /= 8;
                 motionZ /= 8;
-                motionY /= 16;
-                entity.setNoGravity(true);
             }
             entity.setVelocity(motionX, motionY, motionZ);
 
@@ -685,13 +691,17 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
     }
 
     @Override
-    public EntityDimensions getDimensions(EntityPose pose) {
-        return super.getDimensions(pose).scaled(getCloudSize());
+    public float getScaleFactor() {
+        return getCloudSize();
     }
 
+    @Override
+    public EntityDimensions getDimensions(EntityPose pose) {
+        return EntityDimensions.changing(3, 0.5F).scaled(getScaleFactor()); // super.getDimensions(pose);
+     }
+
     public void setCloudSize(int val) {
-        val = Math.max(1, val);
-        dataTracker.set(SCALE, val);
+        dataTracker.set(SCALE, Math.max(1, val));
         calculateDimensions();
     }
 }

@@ -26,14 +26,14 @@ public class CloudEntityRenderer extends MobEntityRenderer<CloudEntity, CloudEnt
     }
 
     @Override
-    public void render(CloudEntity entity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+    public void render(CloudEntity entity, float f, float g, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int i) {
 
         if (entity.removed) {
             return;
         }
 
-        matrixStack.push();
-        matrixStack.translate(0, -entity.getHeight()/entity.getCloudSize() + 0.3F, 0);
+        matrices.push();
+        matrices.translate(0, -entity.getHeight() + 0.3F, 0);
 
         //GlStateManager.disableLighting();
         //GlStateManager.enableBlend();
@@ -44,13 +44,13 @@ public class CloudEntityRenderer extends MobEntityRenderer<CloudEntity, CloudEnt
 
         //GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-        super.render(entity, f, g, matrixStack, vertexConsumerProvider, i);
+        super.render(entity, f, g, matrices, vertexConsumerProvider, i);
 
         //GlStateManager.disableBlend();
         //GlStateManager.enableLighting();
         //GlStateManager.color4f(1, 1, 1, 1);
 
-        matrixStack.pop();
+        matrices.pop();
     }
 
     @Override

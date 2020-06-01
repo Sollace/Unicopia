@@ -13,7 +13,7 @@ public final class RenderLayers extends RenderLayer {
         super(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, startAction, endAction);
     }
 
-    private static final RenderLayer MAGIC = RenderLayer.of("mlp_magic_glow", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 256, RenderLayer.MultiPhaseParameters.builder()
+    private static final RenderLayer MAGIC = of("mlp_magic_glow", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, 7, 256, RenderLayer.MultiPhaseParameters.builder()
             .texture(NO_TEXTURE)
             .writeMaskState(COLOR_MASK)
             .transparency(LIGHTNING_TRANSPARENCY)
@@ -22,26 +22,26 @@ public final class RenderLayers extends RenderLayer {
             .build(false));
 
     public static RenderLayer entityNoLighting(Identifier tex) {
-        return RenderLayer.of("entity_cutout_no_cull_no_lighting", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, true, false, RenderLayer.MultiPhaseParameters.builder()
+        return of("entity_cutout_no_cull_no_lighting", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, true, false, RenderLayer.MultiPhaseParameters.builder()
                 .texture(new RenderPhase.Texture(tex, false, false))
-                .transparency(RenderLayer.NO_TRANSPARENCY)
-                .diffuseLighting(RenderLayer.ENABLE_DIFFUSE_LIGHTING)
-                .alpha(RenderLayer.ONE_TENTH_ALPHA)
-                .cull(RenderLayer.DISABLE_CULLING)
-                .lightmap(RenderLayer.DISABLE_LIGHTMAP)
-                .overlay(RenderLayer.ENABLE_OVERLAY_COLOR)
+                .transparency(NO_TRANSPARENCY)
+                .diffuseLighting(ENABLE_DIFFUSE_LIGHTING)
+                .alpha(ONE_TENTH_ALPHA)
+                .cull(DISABLE_CULLING)
+                .lightmap(DISABLE_LIGHTMAP)
+                .overlay(ENABLE_OVERLAY_COLOR)
                 .build(true));
     }
 
     public static RenderLayer cloud(Identifier tex) {
-        return RenderLayer.of("cloud", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, true, false, RenderLayer.MultiPhaseParameters.builder()
+        return of("cloud", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, 7, 256, true, false, RenderLayer.MultiPhaseParameters.builder()
                 .texture(new RenderPhase.Texture(tex, false, false))
-                .transparency(RenderLayer.TRANSLUCENT_TRANSPARENCY)
-                .diffuseLighting(RenderLayer.ENABLE_DIFFUSE_LIGHTING)
-                .alpha(RenderLayer.ONE_TENTH_ALPHA)
-                .cull(RenderLayer.DISABLE_CULLING)
-                .lightmap(RenderLayer.DISABLE_LIGHTMAP)
-                .overlay(RenderLayer.ENABLE_OVERLAY_COLOR)
+                .transparency(TRANSLUCENT_TRANSPARENCY)
+                .diffuseLighting(ENABLE_DIFFUSE_LIGHTING)
+                .alpha(ONE_TENTH_ALPHA)
+                .lightmap(DISABLE_LIGHTMAP)
+                .overlay(DISABLE_OVERLAY_COLOR)
+                .cull(DISABLE_CULLING)
                 .build(true));
     }
 

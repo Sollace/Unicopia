@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.entity;
 
-import com.google.common.collect.Lists;
 import com.minelittlepony.unicopia.EquinePredicates;
 
 import net.minecraft.client.MinecraftClient;
@@ -11,13 +10,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SpawnEggItem;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BlockView;
+import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public class ConstructionCloudEntity extends CloudEntity {
@@ -70,14 +71,23 @@ public class ConstructionCloudEntity extends CloudEntity {
 
         float ticks = mc.getTickDelta();
 
-        Vec3d eye = player.getCameraPosVec(ticks);
-        Vec3d look = player.getOppositeRotationVector(ticks);
-        Vec3d ray = eye.add(look.x * distance, look.y * distance, look.z * distance);
+        Vec3d start = player.getCameraPosVec(ticks);
+        Vec3d rotation = player.getRotationVec(ticks);
+        Vec3d end = start.add(rotation.x * distance, rotation.y * distance, rotation.z * distance);
 
-        float s = 0.5F;
-        Box bounds = getBoundingBox().shrink(0, s, 0).shrink(0, -s, 0);
+        Box box = getBoundingBox().expand(3);
 
-        BlockHitResult hit = Box.rayTrace(Lists.newArrayList(bounds), eye, ray, BlockPos.ORIGIN);
+        RayTraceContext ctx = new RayTraceContext(start, end, RayTraceContext.ShapeType.OUTLINE, RayTraceContext.FluidHandling.NONE, player);
+
+        BlockHitResult hit = BlockView.rayTrace(ctx, (c, pos) -> {
+            if (box.contains(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5)) {
+                return new BlockHitResult(new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), Direction.UP, pos, true);
+            }
+
+            return null;
+        }, c -> {
+            return null;
+        });
 
         if (hit != null) {
             Direction direction = hit.getSide();
