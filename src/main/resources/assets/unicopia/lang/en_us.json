@@ -19,6 +19,8 @@
 
   "block.unicopia.hive_wall_block": "Hive Wall Block",
   "block.unicopia.chitin_shell_block": "Chitin Shell Block",
+  "block.unicopia.chitin_shell_stairs": "Chitin Shell Stairs",
+  "block.unicopia.chitin_shell_slab": "Chitin Shell Slab",
   "block.unicopia.chiseled_chitin_shell_block": "Chiseled Chitin Shell Block",
   "block.unicopia.chitin_shell": "Chitin Shell",
   "block.unicopia.slime_drop": "Slime Droplet",

@@ -1,0 +1,8 @@
+{   "parent": "unicopia:block/cloud_inner_stairs",
+    "textures": {
+	    "bottom": "unicopia:blocks/chitin_block_covered",
+	    "top": "unicopia:blocks/chitin_block_top",
+	    "side": "unicopia:blocks/chitin_block_uncovered",
+	    "step": "unicopia:blocks/chitin_shell_slab_side_uncovered"
+	}
+}

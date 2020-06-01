@@ -64,8 +64,12 @@ public interface UItems {
     Item MUSIC_DISC_FUNK = register("music_disc_funk", USounds.RECORD_FUNK);
 
     Item HIVE_WALL_BLOCK = register("hive_wall_block", new BlockItem(UBlocks.HIVE_WALL_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
+
     Item CHITIN_SHELL = register("chitin_shell", new Item(new Settings().group(ItemGroup.MATERIALS)));
     Item CHITIN_SHELL_BLOCK = register("chitin_shell_block", new BlockItem(UBlocks.CHITIN_SHELL_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
+    Item CHITIN_SHELL_SLAB = register("chitin_shell_slab", new BlockItem(UBlocks.CHITIN_SHELL_SLAB, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
+    Item CHITIN_SHELL_STAIRS = register("chitin_shell_stairs", new BlockItem(UBlocks.CHITIN_SHELL_STAIRS, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
+
     Item CHISELED_CHITIN_SHELL_BLOCK = register("chiseled_chitin_shell_block", new BlockItem(UBlocks.CHISELED_CHITIN_SHELL_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
     Item SLIME_DROP = register("slime_drop", new BlockItem(UBlocks.SLIME_DROP, new Settings().group(ItemGroup.MATERIALS)));
     Item SLIME_LAYER = register("slime_layer", new BlockItem(UBlocks.SLIME_LAYER, new Settings().group(ItemGroup.DECORATIONS)));

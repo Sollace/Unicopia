@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "type=bottom": { "model": "unicopia:block/chitin_shell_slab" },
+        "type=top": { "model": "unicopia:block/chitin_shell_slab_top" },
+        "type=double": { "model": "unicopia:block/chitin_shell_block" }
+    }
+}

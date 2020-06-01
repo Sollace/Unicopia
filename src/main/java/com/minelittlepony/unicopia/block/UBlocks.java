@@ -120,10 +120,19 @@ public interface UBlocks {
                     .sounds(BlockSoundGroup.SAND)
                     .breakByTool(FabricToolTags.SHOVELS, 1)
                     .build()));
-    ChitinBlock CHITIN_SHELL_BLOCK = register("chitin_shell_block", new ChitinBlock(FabricBlockSettings.of(UMaterials.CHITIN)
+    Block CHITIN_SHELL_BLOCK = register("chitin_shell_block", new ChitinBlock(FabricBlockSettings.of(UMaterials.CHITIN)
                     .strength(50, 2000)
                     .breakByTool(FabricToolTags.PICKAXES, 2)
                     .build()));
+    Block CHITIN_SHELL_STAIRS = register("chitin_shell_stairs", new SmartStairsBlock(CHITIN_SHELL_BLOCK.getDefaultState(), FabricBlockSettings.of(UMaterials.CHITIN)
+            .strength(50, 2000)
+            .breakByTool(FabricToolTags.PICKAXES, 2)
+            .build()));
+    Block CHITIN_SHELL_SLAB = register("chitin_shell_slab", new SmartSlabBlock(CHITIN_SHELL_BLOCK.getDefaultState(), FabricBlockSettings.of(UMaterials.CHITIN)
+            .strength(50, 2000)
+            .breakByTool(FabricToolTags.PICKAXES, 2)
+            .build()));
+
     Block CHISELED_CHITIN_SHELL_BLOCK = register("chiseled_chitin_shell_block", new ChiselledChitinBlock(FabricBlockSettings.of(UMaterials.CHITIN)
                     .strength(50, 2000)
                     .breakByTool(FabricToolTags.PICKAXES, 2)

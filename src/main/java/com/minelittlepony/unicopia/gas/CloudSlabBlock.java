@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.gas;
 
-import com.minelittlepony.unicopia.block.AbstractSlabBlock;
+import com.minelittlepony.unicopia.block.SmartSlabBlock;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,7 +12,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
-public class CloudSlabBlock extends AbstractSlabBlock implements Gas {
+public class CloudSlabBlock extends SmartSlabBlock implements Gas {
 
     public CloudSlabBlock(BlockState inherited, Settings settings) {
         super(inherited, settings);

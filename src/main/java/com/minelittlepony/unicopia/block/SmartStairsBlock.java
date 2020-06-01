@@ -9,11 +9,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public abstract class AbstractStairsBlock extends StairsBlock {
+public class SmartStairsBlock extends StairsBlock {
 
     protected final BlockState baseBlockState;
 
-    public AbstractStairsBlock(BlockState inherited, Settings settings) {
+    public SmartStairsBlock(BlockState inherited, Settings settings) {
         super(inherited, settings);
         baseBlockState = inherited;
     }

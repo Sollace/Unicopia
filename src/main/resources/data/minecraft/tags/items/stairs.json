@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "unicopia:cloud_stairs"
+  	"unicopia:chitin_shell_stairs",
+    "unicopia:cloud_stairs",
+    "unicopia:enchanted_cloud_stairs",
+    "unicopia:dense_cloud_stairs"
   ]
 }

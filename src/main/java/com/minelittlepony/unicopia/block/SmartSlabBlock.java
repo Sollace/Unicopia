@@ -13,11 +13,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public abstract class AbstractSlabBlock extends SlabBlock {
+public class SmartSlabBlock extends SlabBlock {
 
     protected final BlockState modelState;
 
-    public AbstractSlabBlock(BlockState inherited, Block.Settings settings) {
+    public SmartSlabBlock(BlockState inherited, Block.Settings settings) {
         super(settings);
         modelState = inherited;
     }
