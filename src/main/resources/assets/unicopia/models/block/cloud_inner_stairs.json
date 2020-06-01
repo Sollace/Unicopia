@@ -42,8 +42,8 @@
 			"from": [8, 16, 8],
 			"to": [0, 8, 0],
 			"faces": {
-				"north": {"uv": [0, 0, 8, 8], "texture": "#side"},
-				"west": {"uv": [8, 0, 16, 8], "texture": "#side"}
+				"north": {"uv": [8, 0, 16, 8], "rotation": 180, "texture": "#side"},
+				"west": {"uv": [0, 0, 8, 8], "rotation": 180, "texture": "#side"}
 			}
 		}
 	]
