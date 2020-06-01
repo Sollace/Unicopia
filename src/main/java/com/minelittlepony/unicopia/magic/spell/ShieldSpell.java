@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.AttachableSpell;
@@ -41,7 +42,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements AttachableSp
 
     @Override
     public void render(Caster<?> source) {
-        float radius = 4 + (source.getCurrentLevel() * 2);
+        float radius = (float)getDrawDropOffRange(source);
 
         source.spawnParticles(new Sphere(true, radius), (int)(radius * 6), pos -> {
             source.addParticle(new MagicParticleEffect(getTint()), pos, Vec3d.ZERO);
@@ -75,7 +76,8 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements AttachableSp
     }
 
     public double getDrawDropOffRange(Caster<?> source) {
-        return 4 + (source.getCurrentLevel() * 2);
+        float multiplier = (source.getOwner() instanceof SpellcastEntity || source.getOwner().isSneaking() ? 1 : 2);
+        return (4 + (source.getCurrentLevel() * 2)) / multiplier;
     }
 
     @Override
