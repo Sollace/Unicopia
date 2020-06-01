@@ -106,7 +106,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
         iplayer.getWorld().playSound(null, iplayer.getOrigin(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
 
         PlayerEntity player = iplayer.getOwner();
-        double distance = player.squaredDistanceTo(data.x, data.y, data.z) / 10;
+        double distance = Math.sqrt(player.squaredDistanceTo(data.x, data.y, data.z)) / 10;
 
         if (player.hasVehicle()) {
             Entity mount = player.getVehicle();
