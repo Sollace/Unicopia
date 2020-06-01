@@ -1,0 +1,6 @@
+{   "parent": "unicopia:block/enchanted_cloud_inner_stairs_top",
+    "textures": {
+	    "side": "unicopia:blocks/enchanted_cloud_block_bottom",
+	    "step": "unicopia:blocks/enchanted_cloud_block_bottom"
+	}
+}
