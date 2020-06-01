@@ -130,10 +130,9 @@ public class BagOfHoldingItem extends Item implements MagicItem {
                 if (stack.hasCustomName()) {
                     o.writeText(stack.getName());
                 } else {
-                    o.writeText(new TranslatableText("unicopi.gui.title.itemofholding"));
+                    o.writeText(new TranslatableText("item.unicopia.bag_of_holding"));
                 }
             });
-            // player.openContainer(new ContainerProvider(stack));
         }
         player.playSound(SoundEvents.BLOCK_ENDER_CHEST_OPEN, 0.5F, 1);
 
