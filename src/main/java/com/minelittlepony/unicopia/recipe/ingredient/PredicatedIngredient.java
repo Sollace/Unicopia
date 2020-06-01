@@ -36,9 +36,7 @@ public class PredicatedIngredient {
                     .filter(s -> matches(s, 1))
                     .collect(Collectors.toList());
         });
-        this.preview = new Lazy<>(() -> {
-            return net.minecraft.recipe.Ingredient.ofStacks(getMatchingStacks().toArray(ItemStack[]::new));
-        });
+        this.preview = new Lazy<>(() -> Ingredient.ofStacks(getMatchingStacks().toArray(ItemStack[]::new)));
     }
 
     public Stream<ItemStack> getMatchingStacks() {
@@ -82,17 +80,17 @@ public class PredicatedIngredient {
         if (primary != Predicate.EMPTY && secondary != Predicate.EMPTY) {
             throw new JsonParseException("Invalid ingredient. Cannot have both an item and a tag requirement.");
         }
-        if (primary == secondary) {
-            throw new JsonParseException("Invalid ingredient. Must have either an item or tag requirement.");
-        }
 
-        DefaultedList<Predicate> predicates = DefaultedList.of();
-        predicates.add(primary);
-        predicates.add(secondary);
-        PredicateSerializer.JSON_READERS.stream()
-            .map(reader -> reader.read(obj))
+        DefaultedList<Predicate> predicates = Stream.concat(
+                Stream.of(primary, secondary),
+                PredicateSerializer.JSON_READERS.stream().map(reader -> reader.read(obj))
+            )
             .filter(i -> i != Predicate.EMPTY)
-            .forEach(predicates::add);
+            .collect(Collectors.toCollection(DefaultedList::of));
+
+        if (predicates.isEmpty()) {
+            return EMPTY;
+        }
 
         return new PredicatedIngredient(predicates);
     }

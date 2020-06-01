@@ -8,5 +8,6 @@ public interface UScreens {
 
     static void bootstrap() {
         ScreenProviderRegistry.INSTANCE.registerFactory(UContainers.BAG_OF_HOLDING, BagOfHoldingScreen::new);
+        ScreenProviderRegistry.INSTANCE.registerFactory(UContainers.SPELL_BOOK, SpellBookScreen::new);
     }
 }

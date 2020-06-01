@@ -32,12 +32,14 @@ public interface PageOwner extends Transmittable {
     }
 
     default boolean hasPageStateRelative(Page page, PageState state, Function<Page, Page> iter) {
-        while ((page = iter.apply(page)) != null) {
+        for (Page prev = null;
+                (page = iter.apply(page)) != null && page != prev;
+                prev = page
+        ) {
             if (getPageState(page) == state) {
                 return true;
             }
         }
-
         return false;
     }
 }

@@ -83,6 +83,9 @@ class PageInstance implements Page {
     @Override
     public Page next() {
         int i = Math.min(Pages.instance().getTotalPages() - 1, index + 1);
+        if (i == index) {
+            return this;
+        }
         return Pages.instance().getByIndex(i);
     }
 
@@ -91,7 +94,6 @@ class PageInstance implements Page {
         if (index <= 0) {
             return this;
         }
-
         return Pages.instance().getByIndex(index - 1);
     }
 

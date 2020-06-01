@@ -2,9 +2,9 @@
 	"type": "unicopia:enchanting_spell",
 	"input": { "item": "unicopia:corrupted_gem" },
 	"ingredients": [
-        { "item": "unicopia:gem", "spell": "inferno" },
-        { "item": "unicopia:gem", "spell": "darkness" },
-        { "item": "unicopia:gem", "spell": "necromancy" }
+        { "spell": "inferno" },
+        { "spell": "darkness" },
+        { "spell": "necromancy" }
     ],
 	"result": { "item": "unicopia:alicorn_amulet" }
 }

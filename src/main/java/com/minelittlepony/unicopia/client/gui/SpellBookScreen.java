@@ -17,27 +17,22 @@ import net.minecraft.client.gui.screen.ingame.ContainerScreen;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.container.Slot;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.PacketByteBuf;
 
 public class SpellBookScreen extends ContainerScreen<SpellBookContainer> implements IPageUnlockListener {
 
     private static Page currentPage;
 
-    public static final Identifier spellBookGuiTextures = new Identifier("unicopia", "textures/gui/container/book.png");
+    public static final Identifier TEXTURE = new Identifier("unicopia", "textures/gui/container/book.png");
 
     private Pony player;
 
     private PageButton nextPage;
     private PageButton prevPage;
 
-    public SpellBookScreen(PlayerEntity player) {
-        super(
-                new SpellBookContainer(0, null, player, null),
-                player.inventory,
-                new LiteralText("item.spellbook.name")
-        );
-        player.container = container;
+    public SpellBookScreen(int sync, Identifier id, PlayerEntity player, PacketByteBuf buf) {
+        super(new SpellBookContainer(sync, id, player, buf), player.inventory, buf.readText());
 
         containerWidth = 405;
         containerHeight = 219;
@@ -108,7 +103,7 @@ public class SpellBookScreen extends ContainerScreen<SpellBookContainer> impleme
             GlStateManager.enableBlend();
             GL11.glDisable(GL11.GL_ALPHA_TEST);
 
-            minecraft.getTextureManager().bindTexture(spellBookGuiTextures);
+            minecraft.getTextureManager().bindTexture(TEXTURE);
             blit(slot.xPosition - 1, slot.yPosition - 1, 74, 223, 18, 18, 512, 256);
 
             GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -143,13 +138,13 @@ public class SpellBookScreen extends ContainerScreen<SpellBookContainer> impleme
         int left = (width - containerWidth) / 2;
         int top = (height - containerHeight) / 2;
 
-        minecraft.getTextureManager().bindTexture(spellBookGuiTextures);
+        minecraft.getTextureManager().bindTexture(TEXTURE);
         blit(left, top, 0, 0, containerWidth, containerHeight, 512, 256);
 
         GlStateManager.enableBlend();
         GL11.glDisable(GL11.GL_ALPHA_TEST);
 
-        minecraft.getTextureManager().bindTexture(spellBookGuiTextures);
+        minecraft.getTextureManager().bindTexture(TEXTURE);
         blit(left + 147, top + 49, 407, 2, 100, 101, 512, 256);
 
         if (player.getPages().getPageState(currentPage) != PageState.LOCKED) {
@@ -205,7 +200,7 @@ public class SpellBookScreen extends ContainerScreen<SpellBookContainer> impleme
                 }
 
                 GlStateManager.color4f(1, 1, 1, 1);
-                minecraft.getTextureManager().bindTexture(spellBookGuiTextures);
+                minecraft.getTextureManager().bindTexture(TEXTURE);
 
                 int u = 0;
                 int v = 220;

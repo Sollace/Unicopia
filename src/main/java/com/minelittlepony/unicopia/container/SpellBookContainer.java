@@ -38,7 +38,7 @@ public class SpellBookContainer extends Container {
     private final PlayerEntity player;
 
     public SpellBookContainer(int sync, Identifier id, PlayerEntity player, PacketByteBuf buf) {
-        super(null, 0);
+        super(null, sync);
         worldObj = player.world;
         this.player = player;
 

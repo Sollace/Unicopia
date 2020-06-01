@@ -103,6 +103,9 @@ public class Pages extends JsonDataLoader implements IdentifiableResourceReloadL
 
     @Nullable
     public Page getByIndex(int index) {
+        if (index < 0 || index >= pagesByIndex.size()) {
+            return null;
+        }
         return pagesByIndex.get(index);
     }
 

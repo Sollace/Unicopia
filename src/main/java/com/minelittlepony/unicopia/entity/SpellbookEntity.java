@@ -1,11 +1,11 @@
 package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.container.UContainers;
 import com.minelittlepony.unicopia.ducks.PickedItemSupplier;
 import com.minelittlepony.unicopia.item.UItems;
 
-import net.minecraft.container.Container;
-import net.minecraft.container.NameableContainerFactory;
+import net.fabricmc.fabric.api.container.ContainerProviderRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -13,11 +13,11 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -27,7 +27,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
-public class SpellbookEntity extends MobEntity implements NameableContainerFactory, IMagicals, PickedItemSupplier {
+public class SpellbookEntity extends MobEntity implements IMagicals, PickedItemSupplier {
 
     private static final TrackedData<Boolean> OPENED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> ALTERED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -175,17 +175,16 @@ public class SpellbookEntity extends MobEntity implements NameableContainerFacto
         }
 
         if (EquinePredicates.PLAYER_UNICORN.test(player)) {
+            if (player instanceof ServerPlayerEntity) {
+                ContainerProviderRegistry.INSTANCE.openContainer(UContainers.SPELL_BOOK, player, o -> {
+                    o.writeText(getName());
+                });
+            }
             player.playSound(SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, 2, 1);
-            player.openContainer(this);
             return ActionResult.SUCCESS;
         }
 
         return ActionResult.PASS;
-    }
-
-    @Override
-    public Container createMenu(int id, PlayerInventory inventory, PlayerEntity player) {
-        return null;
     }
 
     @Override
