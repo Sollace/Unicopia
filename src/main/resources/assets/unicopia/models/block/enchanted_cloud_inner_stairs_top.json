@@ -1,4 +1,4 @@
-{   "parent": "unicopia:block/enthanted_cloud_inner_stairs",
+{   "parent": "unicopia:block/enchanted_cloud_inner_stairs",
     "textures": {
 	    "bottom": "unicopia:blocks/enchanted_cloud_block_top",
 	    "top": "unicopia:blocks/enchanted_cloud_block_bottom"

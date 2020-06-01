@@ -1,7 +1,11 @@
 {
     "variants": {
         "type=bottom": { "model": "unicopia:block/chitin_shell_slab" },
-        "type=top": { "model": "unicopia:block/chitin_shell_slab_top" },
-        "type=double": { "model": "unicopia:block/chitin_shell_block" }
+        "type=top,covering=uncovered": { "model": "unicopia:block/chitin_shell_slab_top" },
+        "type=top,covering=covered": { "model": "unicopia:block/chitin_shell_slab_top_covered" },
+        "type=top,covering=snow_covered": { "model": "unicopia:block/chitin_shell_slab_top_snow" },
+        "type=double,covering=uncovered": { "model": "unicopia:block/chitin_shell_block" },
+        "type=double,covering=covered": { "model": "unicopia:block/chitin_shell_block_covered" },
+        "type=double,covering=snow_covered": { "model": "unicopia:block/chitin_shell_block_snow" }
     }
 }
