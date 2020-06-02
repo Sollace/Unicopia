@@ -72,12 +72,16 @@ public interface UBlocks {
                     .noCollision()
                     .breakInstantly()
                     .ticksRandomly()
-                    .lightLevel(1).sounds(BlockSoundGroup.GLASS).build()));
+                    .lightLevel(11)
+                    .sounds(BlockSoundGroup.GLASS)
+                    .build()));
     GemTorchBlock ENCHANTED_WALL_TORCH = register("enchanted_wall_torch", new WallGemTorchBlock(FabricBlockSettings.of(Material.PART)
                     .noCollision()
                     .breakInstantly()
                     .ticksRandomly()
-                    .lightLevel(1).sounds(BlockSoundGroup.GLASS).build()));
+                    .lightLevel(11)
+                    .sounds(BlockSoundGroup.GLASS)
+                    .build()));
 
     CloudAnvilBlock CLOUD_ANVIL = register("cloud_anvil", new CloudAnvilBlock(GasState.NORMAL.configure()
                     .strength(0.025F, 1)
