@@ -1,6 +1,7 @@
 {
-    "parent": "block/cube_all",
+    "parent": "block/cube_column",
     "textures": {
-        "all": "unicopia:blocks/hive_stable"
+        "end": "unicopia:blocks/hive_stable",
+        "side": "unicopia:blocks/hive_end"
     }
 }
