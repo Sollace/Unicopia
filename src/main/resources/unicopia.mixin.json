@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.7",
   "package": "com.minelittlepony.unicopia.mixin",
-  "refmap": "unicopia.client.mixin.refmap.json",
+  "refmap": "unicopia.mixin.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "CriterionsRegistry",
