@@ -51,6 +51,11 @@ public class HiveWallBlock extends FallingBlock {
     }
 
     @Override
+    public boolean hasEmissiveLighting(BlockState state) {
+        return true;
+    }
+
+    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(STATE).add(AXIS);
     }

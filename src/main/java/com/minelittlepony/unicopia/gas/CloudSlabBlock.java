@@ -24,6 +24,11 @@ public class CloudSlabBlock extends SmartSlabBlock implements Gas {
     }
 
     @Override
+    public float getAmbientOcclusionLightLevel(BlockState state, BlockView view, BlockPos pos) {
+       return getGasState(state).isTranslucent() ? 1 : 0.9F;
+    }
+
+    @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context) {
         if (getGasState(state).canPlace((CloudInteractionContext)context)) {
             return super.getOutlineShape(state, view, pos, context);

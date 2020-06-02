@@ -32,8 +32,13 @@ public class CloudBlock extends Block implements Gas {
     }
 
     @Override
-    public GasState getGasState(BlockState blockState) {
+    public GasState getGasState(BlockState state) {
         return variant;
+    }
+
+    @Override
+    public float getAmbientOcclusionLightLevel(BlockState state, BlockView view, BlockPos pos) {
+       return getGasState(state).isTranslucent() ? 0.9F : 0.5F;
     }
 
     @Override
