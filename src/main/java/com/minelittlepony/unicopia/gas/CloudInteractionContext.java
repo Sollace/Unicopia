@@ -19,7 +19,7 @@ public interface CloudInteractionContext {
         return false;
     }
 
-    default boolean isPegasis() {
+    default boolean isPegasus() {
         return false;
     }
 
@@ -42,8 +42,8 @@ public interface CloudInteractionContext {
         }
 
         @Override
-        default boolean isPegasis() {
-            return getCloudInteractionContext().isPegasis();
+        default boolean isPegasus() {
+            return getCloudInteractionContext().isPegasus();
         }
 
         @Override
@@ -66,13 +66,13 @@ public interface CloudInteractionContext {
         private static final CloudInteractionContext EMPTY = type -> true;
 
         private final boolean isPlayer;
-        private final boolean isPegasis;
+        private final boolean isPegasus;
 
         private ItemStack main = ItemStack.EMPTY;
 
         private Impl(Entity entity) {
             this.isPlayer = EquinePredicates.IS_PLAYER.test(entity);
-            this.isPegasis = EquinePredicates.ENTITY_INTERACT_WITH_CLOUD_BLOCKS.test(entity);
+            this.isPegasus = EquinePredicates.ENTITY_INTERACT_WITH_CLOUD_BLOCKS.test(entity);
 
             if (entity instanceof LivingEntity) {
                 main = ((LivingEntity)entity).getMainHandStack();
@@ -88,13 +88,13 @@ public interface CloudInteractionContext {
         }
 
         @Override
-        public boolean isPegasis() {
-            return isPegasis;
+        public boolean isPegasus() {
+            return isPegasus;
         }
 
         @Override
         public boolean canTouch(GasState type) {
-            return type.isTouchable(isPlayer(), isPegasis());
+            return type.isTouchable(isPlayer(), isPegasus());
         }
 
         @Override
