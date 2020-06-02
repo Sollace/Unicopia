@@ -318,7 +318,10 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
 
     @Override
     public void onPlayerCollision(PlayerEntity player) {
-        if (player.getY() >= getY()) {
+
+        Pony pony = Pony.of(player);
+
+        if (pony.getPhysics().isGravityNegative() ? player.getY() <= getY() : player.getY() >= getY()) {
             if (applyGravityCompensation(player)) {
                 double difX = player.getX() - player.prevX;
                 double difZ = player.getZ() - player.prevZ;
@@ -327,7 +330,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
                 player.horizontalSpeed = (float)(player.horizontalSpeed + MathHelper.sqrt(difX * difX + difZ * difZ) * 0.6);
                 player.distanceTraveled = (float)(player.distanceTraveled + MathHelper.sqrt(difX * difX + difY * difY + difZ * difZ) * 0.6);
 
-                if (Pony.of(player).stepOnCloud()) {
+                if (pony.stepOnCloud()) {
                     BlockSoundGroup soundtype = BlockSoundGroup.WOOL;
                     player.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
                 }
@@ -339,6 +342,7 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
 
     @Override
     protected void mobTick() {
+
         if (!getStationary()) {
             if (!hasVehicle()) {
                 double distance = targetAltitude - getY();
@@ -535,7 +539,6 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
 
             double bounceModifier = entity.fallDistance > 80 ? 80 : MathHelper.floor(entity.fallDistance * 10) / 10;
 
-
             entity.onGround = true;
 
             Vec3d motion = entity.getVelocity();
@@ -543,12 +546,22 @@ public class CloudEntity extends FlyingEntity implements ICloudEntity, InAnimate
             double motionY = motion.y;
             double motionZ = motion.z;
 
-            if (motionY <= 0) {
-                motionY += (((floatStrength > 2 ? 1 : floatStrength/2) * 0.699999998079071D) - motionY + bounceModifier * 0.7) * 0.10000000149011612D;
+            Ponylike<?> p = Ponylike.of(entity);
+            boolean negativeGravity = p != null && p.getPhysics().isGravityNegative();
+            float gravityConstant = negativeGravity ? -1 : 1;
 
-                motionY = Math.min(0.1F, motionY);
-                if (motionY < 0.002F) {
-                    motionY = 0.001;
+            if (negativeGravity ? motionY >= 0 : motionY <= 0) {
+                motionY += gravityConstant * (((floatStrength > 2 ? 1 : floatStrength/2) * 0.699999998079071D) - motionY + bounceModifier * 0.7) * 0.10000000149011612D;
+
+                if (negativeGravity) {
+                    if (motionY > 0) {
+                        motionY = 0;
+                    }
+                } else {
+                    motionY = Math.min(0.1F, motionY);
+                    if (motionY < 0.002F) {
+                        motionY = 0.001;
+                    }
                 }
             }
 
