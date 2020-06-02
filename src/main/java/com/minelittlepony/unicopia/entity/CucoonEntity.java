@@ -40,13 +40,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
-public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate, Trap {
+public class CucoonEntity extends LivingEntity implements IMagicals, InAnimate, Trap {
 
-    private static final TrackedData<Integer> STRUGGLE_COUNT = DataTracker.registerData(CuccoonEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> STRUGGLE_COUNT = DataTracker.registerData(CucoonEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     private boolean captiveLastSneakState;
 
-    public CuccoonEntity(EntityType<CuccoonEntity> type, World world) {
+    public CucoonEntity(EntityType<CucoonEntity> type, World world) {
         super(type, world);
     }
 
@@ -96,7 +96,7 @@ public class CuccoonEntity extends LivingEntity implements IMagicals, InAnimate,
                 && !hasPassengers()
                 && entity instanceof LivingEntity
                 && !entity.hasVehicle()
-                && !(entity instanceof CuccoonEntity)
+                && !(entity instanceof CucoonEntity)
                 && !EquinePredicates.PLAYER_CHANGELING.test(entity);
     }
 

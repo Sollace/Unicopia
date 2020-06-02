@@ -138,7 +138,7 @@ public interface UBlocks {
                     .breakByTool(FabricToolTags.PICKAXES, 2)
                     .build()));
 
-    SlimeDropBlock SLIME_DROP = register("slime_drop", new SlimeDropBlock(FabricBlockSettings.of(UMaterials.HIVE, MaterialColor.GRASS)
+    SlimeDripBlock SLIME_DRIP = register("slime_drip", new SlimeDripBlock(FabricBlockSettings.of(UMaterials.HIVE, MaterialColor.GRASS)
                     .ticksRandomly()
                     .breakInstantly()
                     .lightLevel(9)

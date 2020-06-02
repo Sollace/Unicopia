@@ -9,7 +9,7 @@ import com.minelittlepony.unicopia.client.particle.RaindropsParticle;
 import com.minelittlepony.unicopia.client.particle.SphereParticle;
 import com.minelittlepony.unicopia.client.render.ButterflyEntityRenderer;
 import com.minelittlepony.unicopia.client.render.CloudEntityRenderer;
-import com.minelittlepony.unicopia.client.render.CuccoonEntityRenderer;
+import com.minelittlepony.unicopia.client.render.CucoonEntityRenderer;
 import com.minelittlepony.unicopia.client.render.RainbowEntityRenderer;
 import com.minelittlepony.unicopia.client.render.SpearEntityRenderer;
 import com.minelittlepony.unicopia.client.render.SpellbookEntityRender;
@@ -34,7 +34,7 @@ public interface URenderers {
         EntityRendererRegistry.INSTANCE.register(UEntities.SPELLBOOK, SpellbookEntityRender::new);
         EntityRendererRegistry.INSTANCE.register(UEntities.RAINBOW, RainbowEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(UEntities.BUTTERFLY, ButterflyEntityRenderer::new);
-        EntityRendererRegistry.INSTANCE.register(UEntities.CUCCOON, CuccoonEntityRenderer::new);
+        EntityRendererRegistry.INSTANCE.register(UEntities.CUCOON, CucoonEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(UEntities.THROWN_SPEAR, SpearEntityRenderer::new);
 
         ParticleFactoryRegistry.getInstance().register(UParticles.UNICORN_MAGIC, MagicParticle.Factory::new);
@@ -54,7 +54,7 @@ public interface URenderers {
                 UBlocks.CLOUD_BLOCK, UBlocks.CLOUD_SLAB, UBlocks.CLOUD_STAIRS,
                 UBlocks.ENCHANTED_CLOUD_BLOCK, UBlocks.ENCHANTED_CLOUD_SLAB, UBlocks.ENCHANTED_CLOUD_STAIRS,
 
-                UBlocks.SLIME_DROP, UBlocks.SLIME_LAYER
+                UBlocks.SLIME_DRIP, UBlocks.SLIME_LAYER
         );
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutoutMipped(),
                 UBlocks.APPLE_LEAVES

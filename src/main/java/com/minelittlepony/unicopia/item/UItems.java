@@ -71,7 +71,7 @@ public interface UItems {
     Item CHITIN_SHELL_STAIRS = register("chitin_shell_stairs", new BlockItem(UBlocks.CHITIN_SHELL_STAIRS, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
 
     Item CHISELED_CHITIN_SHELL_BLOCK = register("chiseled_chitin_shell_block", new BlockItem(UBlocks.CHISELED_CHITIN_SHELL_BLOCK, new Settings().group(ItemGroup.BUILDING_BLOCKS)));
-    Item SLIME_DROP = register("slime_drop", new BlockItem(UBlocks.SLIME_DROP, new Settings().group(ItemGroup.MATERIALS)));
+    Item CUCOON = register("cucoon", new AliasedBlockItem(UBlocks.SLIME_DRIP, new Settings().group(ItemGroup.MATERIALS)));
     Item SLIME_LAYER = register("slime_layer", new BlockItem(UBlocks.SLIME_LAYER, new Settings().group(ItemGroup.DECORATIONS)));
 
     Item MISTED_GLASS_DOOR = register("misted_glass_door", new TallBlockItem(UBlocks.MISTED_GLASS_DOOR, new Settings().group(ItemGroup.REDSTONE)));

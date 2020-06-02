@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.block.UBlocks;
-import com.minelittlepony.unicopia.entity.CuccoonEntity;
+import com.minelittlepony.unicopia.entity.CucoonEntity;
 import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.magic.Affinity;
@@ -168,10 +168,10 @@ public class ChangelingTrapSpell extends AbstractSpell implements ThrowableSpell
         if (caster.isLocal() && caster.getWorld().random.nextInt(3) == 0) {
             onDestroyed(caster);
 
-            CuccoonEntity cuccoon = UEntities.CUCCOON.create(caster.getWorld());
-            cuccoon.copyPositionAndRotation(caster.getEntity());
+            CucoonEntity cucoon = UEntities.CUCOON.create(caster.getWorld());
+            cucoon.copyPositionAndRotation(caster.getEntity());
 
-            caster.getWorld().spawnEntity(cuccoon);
+            caster.getWorld().spawnEntity(cucoon);
         }
 
         setDirty(true);

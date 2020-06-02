@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "unicopia:item/slime_drop"
+        "layer0": "unicopia:item/cucoon"
     }
 }

@@ -34,7 +34,7 @@ public interface UEntities {
     EntityType<RainbowEntity> RAINBOW = register("rainbow", FabricEntityTypeBuilder.create(EntityCategory.AMBIENT, RainbowEntity::new)
             .size(EntityDimensions.fixed(1, 1)));
 
-    EntityType<CuccoonEntity> CUCCOON = register("cuccoon", FabricEntityTypeBuilder.create(EntityCategory.MISC, CuccoonEntity::new)
+    EntityType<CucoonEntity> CUCOON = register("cucoon", FabricEntityTypeBuilder.create(EntityCategory.MISC, CucoonEntity::new)
             .size(EntityDimensions.changing(1.5F, 1.6F)));
 
     EntityType<ButterflyEntity> BUTTERFLY = register("butterfly", FabricEntityTypeBuilder.create(EntityCategory.AMBIENT, ButterflyEntity::new)

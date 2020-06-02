@@ -7,6 +7,8 @@
     "minecraft:coal_block",
     "minecraft:coal",
     "unicopia:chitin_shell",
-    "unicopia:slime_drop"
+    "unicopia:chitin_shell_block",
+    "unicopia:chitin_shell_stairs",
+    "unicopia:chitin_shell_slab"
   ]
 }

@@ -34,7 +34,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class SlimeDropBlock extends Block implements Climbable {
+public class SlimeDripBlock extends Block implements Climbable {
 
     public static final IntProperty AGE = IntProperty.of("age", 0, 7);
     public static final EnumProperty<Shape> SHAPE = EnumProperty.of("shape", Shape.class);
@@ -52,7 +52,7 @@ public class SlimeDropBlock extends Block implements Climbable {
             Block.createCuboidShape(2, 0, 2, 14, 12, 14),
     };
 
-    public SlimeDropBlock(Settings settings) {
+    public SlimeDripBlock(Settings settings) {
         super(settings);
         setDefaultState(stateManager.getDefaultState()
                 .with(AGE, 0)
@@ -80,14 +80,14 @@ public class SlimeDropBlock extends Block implements Climbable {
 
             Shape shape = state.get(SHAPE);
 
-            if (shape == Shape.STRING && spaceBelow) {
+            if (shape == Shape.TAIL && spaceBelow) {
                 world.setBlockState(pos, state.with(SHAPE, Shape.BULB).with(AGE, age / 2));
             } else if (shape == Shape.BULB && !spaceBelow) {
-                world.setBlockState(pos, state.with(SHAPE, Shape.STRING).with(AGE, age / 2));
+                world.setBlockState(pos, state.with(SHAPE, Shape.TAIL).with(AGE, age / 2));
             } else if (age >= 7) {
                 if (rand.nextInt(12) == 0 && spaceBelow) {
                     world.setBlockState(below, state.with(AGE, age / 2));
-                    world.setBlockState(pos, getDefaultState().with(AGE, age / 2).with(SHAPE, Shape.STRING));
+                    world.setBlockState(pos, getDefaultState().with(AGE, age / 2).with(SHAPE, Shape.TAIL));
                     world.playSound(null, pos, USounds.SLIME_ADVANCE, SoundCategory.BLOCKS, 1, 1);
                 }
             } else {
@@ -108,7 +108,7 @@ public class SlimeDropBlock extends Block implements Climbable {
     }
 
     protected int getMaximumAge(World world, BlockPos pos, BlockState state, boolean spaceBelow) {
-        if (state.get(SHAPE) == Shape.STRING) {
+        if (state.get(SHAPE) == Shape.TAIL) {
             BlockState higher = world.getBlockState(pos.up());
 
             if (higher.getBlock() != this) {
@@ -116,7 +116,7 @@ public class SlimeDropBlock extends Block implements Climbable {
             }
 
             return Math.min(higher.get(AGE),
-                    ((SlimeDropBlock)higher.getBlock()).getMaximumAge(world, pos.up(), higher, false) - 1
+                    ((SlimeDripBlock)higher.getBlock()).getMaximumAge(world, pos.up(), higher, false) - 1
                 );
         }
 
@@ -228,7 +228,7 @@ public class SlimeDropBlock extends Block implements Climbable {
 
     enum Shape implements StringIdentifiable {
         BULB,
-        STRING;
+        TAIL;
 
         static final Shape[] VALUES = values();
 

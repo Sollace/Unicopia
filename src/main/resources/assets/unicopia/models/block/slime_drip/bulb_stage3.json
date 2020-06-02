@@ -1,8 +1,8 @@
 {
     "textures": {
-		"bulb": "unicopia:blocks/cuccoon_bulb",
-        "tail": "unicopia:blocks/cuccoon_tail",
-        "particle": "unicopia:blocks/cuccoon_bulb"
+		"bulb": "unicopia:blocks/slime_bulb",
+        "tail": "unicopia:blocks/slime_tail",
+        "particle": "unicopia:blocks/slime_bulb"
     },
     "elements": [
 	     {   "from": [ 4, 8, 4 ],

@@ -23,7 +23,7 @@
   "block.unicopia.chitin_shell_slab": "Chitin Shell Slab",
   "block.unicopia.chiseled_chitin_shell_block": "Chiseled Chitin Shell Block",
   "block.unicopia.chitin_shell": "Chitin Shell",
-  "block.unicopia.slime_drop": "Slime Droplet",
+  "block.unicopia.slime_drop": "Slimey Plant",
   "block.unicopia.slime_layer": "Slime",
 
   "block.unicopia.chiseled_marble_block": "Chiseled Marble Block",
@@ -53,6 +53,7 @@
   "item.unicopia.dew_drop": "Dew Drop",
   "item.unicopia.chitin_shell": "Chitinous Shell",
 
+  "item.unicopia.cucoon": "Cucoon",
   "item.unicopia.moss": "Moss",
   "item.unicopia.meadow_brook_staff": "Meadow Brook's Staff",
   "item.unicopia.meadow_brook_staff.tagline": "It's a big stick",
@@ -180,7 +181,7 @@
   "entity.unicopia.spellbook": "Spellbook",
   "entity.unicopia.butterfly": "Butterfly",
   "entity.unicopia.spear": "Spear",
-  "entity.unicopia.cuccoon": "Cuccoon",
+  "entity.unicopia.cucoon": "Cucoon",
 
   "toxicity.safe.name": "Safe",
   "toxicity.mild.name": "Mildly Toxic",

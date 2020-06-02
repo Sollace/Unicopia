@@ -1,7 +1,7 @@
 {
     "textures": {
-        "tail": "unicopia:blocks/cuccoon_tail",
-        "particle": "unicopia:blocks/cuccoon_tail"
+        "tail": "unicopia:blocks/slime_tail",
+        "particle": "unicopia:blocks/slime_tail"
     },
     "elements": [
 	     {   "from": [ 7, 0, 7 ],

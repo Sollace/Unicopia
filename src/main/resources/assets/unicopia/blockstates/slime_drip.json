@@ -1,0 +1,20 @@
+{
+    "variants": {
+        "age=0,shape=bulb": { "model": "unicopia:block/slime_drip/bulb_stage0" },
+        "age=1,shape=bulb": { "model": "unicopia:block/slime_drip/bulb_stage0" },
+        "age=2,shape=bulb": { "model": "unicopia:block/slime_drip/bulb_stage1" },
+        "age=3,shape=bulb": { "model": "unicopia:block/slime_drip/bulb_stage1" },
+        "age=4,shape=bulb": { "model": "unicopia:block/slime_drip/bulb_stage2" },
+        "age=5,shape=bulb": { "model": "unicopia:block/slime_drip/bulb_stage2" },
+        "age=6,shape=bulb": { "model": "unicopia:block/slime_drip/bulb_stage3" },
+        "age=7,shape=bulb": { "model": "unicopia:block/slime_drip/bulb_stage3" },
+        "age=0,shape=tail": { "model": "unicopia:block/slime_drip/tail_stage0" },
+        "age=1,shape=tail": { "model": "unicopia:block/slime_drip/tail_stage0" },
+        "age=2,shape=tail": { "model": "unicopia:block/slime_drip/tail_stage1" },
+        "age=3,shape=tail": { "model": "unicopia:block/slime_drip/tail_stage1" },
+        "age=4,shape=tail": { "model": "unicopia:block/slime_drip/tail_stage2" },
+        "age=5,shape=tail": { "model": "unicopia:block/slime_drip/tail_stage2" },
+        "age=6,shape=tail": { "model": "unicopia:block/slime_drip/tail_stage3" },
+        "age=7,shape=tail": { "model": "unicopia:block/slime_drip/tail_stage3" }
+    }
+}
