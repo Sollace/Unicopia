@@ -147,22 +147,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                     }
 
                     if (isRainbooming || (entity.isSneaking() && isRainboom())) {
-                        float forward = 0.5F * flightExperience / MAXIMUM_FLIGHT_EXPERIENCE;
-
-                        velocity.x += - forward * MathHelper.sin(entity.yaw * 0.017453292F);
-                        velocity.z +=   forward * MathHelper.cos(entity.yaw * 0.017453292F);
-                        velocity.y +=   forward * MathHelper.sin(entity.pitch * 0.017453292F);
-
-                        if (!isRainbooming || entity.world.random.nextInt(5) == 0) {
-                            entity.playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
-                        }
-
-                        if (flightExperience > 0) {
-                            flightExperience -= 13;
-                            isRainbooming = true;
-                        } else {
-                            isRainbooming = false;
-                        }
+                        performRainboom(entity, velocity);
                     }
                 }
 
@@ -205,6 +190,25 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
     public SoundEvent getWingSound() {
         return pony.getSpecies() == Race.CHANGELING ? USounds.CHANGELING_BUZZ : USounds.WING_FLAP;
+    }
+
+    protected void performRainboom(Entity entity, MutableVector velocity) {
+        float forward = 0.5F * flightExperience / MAXIMUM_FLIGHT_EXPERIENCE;
+
+        velocity.x += - forward * MathHelper.sin(entity.yaw * 0.017453292F);
+        velocity.z +=   forward * MathHelper.cos(entity.yaw * 0.017453292F);
+        velocity.y +=   forward * MathHelper.sin(entity.pitch * 0.017453292F);
+
+        if (!isRainbooming || entity.world.random.nextInt(5) == 0) {
+            entity.playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
+        }
+
+        if (flightExperience > 0) {
+            flightExperience -= 13;
+            isRainbooming = true;
+        } else {
+            isRainbooming = false;
+        }
     }
 
     protected void moveFlying(Entity player, MutableVector velocity) {
@@ -260,8 +264,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         double motionX = e.getX() - lastTickPosX;
         double motionZ = e.getZ() - lastTickPosZ;
 
-        return (motionX * motionX)
-               + (motionZ * motionZ);
+        return (motionX * motionX) + (motionZ * motionZ);
     }
 
     protected SoundEvent getFallSound(int distance) {
