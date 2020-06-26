@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.magic.spell;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.block.UMaterials;
-import com.minelittlepony.unicopia.blockstate.StateMaps;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.Caster;
@@ -12,8 +10,10 @@ import com.minelittlepony.unicopia.magic.Useable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
+import com.minelittlepony.unicopia.util.blockstate.StateMaps;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
+import com.minelittlepony.unicopia.world.block.UMaterials;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -122,7 +122,7 @@ public class IceSpell extends AbstractRangedAreaSpell implements Useable, Dispen
             world.setBlockState(pos, converted, 3);
         } else if (state.getMaterial() != UMaterials.CLOUD && world.isTopSolid(pos, owner)
                 || (id == Blocks.SNOW)
-                || state.matches(BlockTags.LEAVES)) {
+                || state.isIn(BlockTags.LEAVES)) {
             incrementIce(world, pos.up());
         } else if (state.getMaterial() == Material.ICE && world.random.nextInt(10) == 0) {
             if (isSurroundedByIce(world, pos)) {

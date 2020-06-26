@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.ducks.PonyContainer;
-import com.minelittlepony.unicopia.entity.Ponylike;
-import com.minelittlepony.unicopia.entity.Creature;
+import com.minelittlepony.unicopia.equine.Creature;
+import com.minelittlepony.unicopia.equine.Ponylike;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -102,15 +102,4 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylik
             super.spawnSprintingParticles();
         }
     }
-
-    // ---------- temporary
-    @SuppressWarnings("deprecation")
-    @Inject(method = "isClimbing()Z", at = @At("HEAD"), cancellable = true)
-    public void onIsClimbing(CallbackInfoReturnable<Boolean> info) {
-        LivingEntity self = (LivingEntity)(Object)this;
-
-        if (!self.isSpectator() && self.getBlockState().getBlock() instanceof com.minelittlepony.unicopia.ducks.Climbable) {
-            info.setReturnValue(true);
-        }
-     }
 }

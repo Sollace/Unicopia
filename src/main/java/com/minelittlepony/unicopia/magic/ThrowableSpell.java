@@ -2,12 +2,12 @@ package com.minelittlepony.unicopia.magic;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.entity.ProjectileEntity;
-import com.minelittlepony.unicopia.entity.UEntities;
-import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
-import com.minelittlepony.unicopia.util.projectile.AdvancedProjectile;
+import com.minelittlepony.unicopia.util.projectile.Projectile;
 import com.minelittlepony.unicopia.util.projectile.Tossable;
+import com.minelittlepony.unicopia.world.entity.MagicProjectileEntity;
+import com.minelittlepony.unicopia.world.entity.UEntities;
+import com.minelittlepony.unicopia.world.item.UItems;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
@@ -42,7 +42,7 @@ public interface ThrowableSpell extends Spell, Tossable<Caster<?>> {
      * Returns the resulting projectile entity for customization (or null if on the client).
      */
     @Nullable
-    default AdvancedProjectile toss(Caster<?> caster) {
+    default Projectile toss(Caster<?> caster) {
         World world = caster.getWorld();
 
         Entity entity = caster.getOwner();
@@ -50,7 +50,7 @@ public interface ThrowableSpell extends Spell, Tossable<Caster<?>> {
         world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), getThrowSound(caster), SoundCategory.NEUTRAL, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
         if (caster.isLocal()) {
-            AdvancedProjectile projectile = new ProjectileEntity(UEntities.THROWN_ITEM, world, caster.getOwner());
+            Projectile projectile = new MagicProjectileEntity(UEntities.THROWN_ITEM, world, caster.getOwner());
 
             projectile.setItem(getCastAppearance(caster));
             projectile.setThrowDamage(getThrowDamage(caster));

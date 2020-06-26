@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.command;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.equine.player.Pony;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
@@ -10,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -57,12 +58,12 @@ class SpeciesCommand {
                 source.sendFeedback(new TranslatableText("commands.race.success.other", player.getName(), formattedName), true);
             } else {
                 if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                    player.sendMessage(new TranslatableText("commands.race.success.self"));
+                    player.sendMessage(new TranslatableText("commands.race.success.self"), false);
                 }
                 source.sendFeedback(new TranslatableText("commands.race.success.otherself", player.getName(), formattedName), true);
             }
         } else if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-            player.sendMessage(new TranslatableText("commands.race.permission"));
+            player.sendMessage(new TranslatableText("commands.race.permission"), false);
         }
 
         return 0;
@@ -74,22 +75,17 @@ class SpeciesCommand {
         String name = "commands.race.tell.";
         name += isSelf ? "self" : "other";
 
-        Text race = new TranslatableText(spec.getTranslationKey());
-        Text message = new TranslatableText(name);
-
-        race.getStyle().setColor(Formatting.GOLD);
-
-        message.append(race);
-
-        player.sendMessage(message);
+        player.sendMessage(new TranslatableText(name)
+                .append(new TranslatableText(spec.getTranslationKey())
+                        .styled(s -> s.withColor(Formatting.GOLD))), false);
 
         return 0;
     }
 
     static int list(PlayerEntity player) {
-        player.sendMessage(new TranslatableText("commands.race.list"));
+        player.sendMessage(new TranslatableText("commands.race.list"), false);
 
-        Text message = new LiteralText("");
+        MutableText message = new LiteralText("");
 
         boolean first = true;
         for (Race i : Race.values()) {
@@ -99,9 +95,7 @@ class SpeciesCommand {
             }
         }
 
-        message.getStyle().setColor(Formatting.GOLD);
-
-        player.sendMessage(message);
+        player.sendMessage(message.styled(s -> s.withColor(Formatting.GOLD)), false);
 
         return 0;
     }
@@ -109,17 +103,9 @@ class SpeciesCommand {
     static int describe(PlayerEntity player, Race species) {
         String name = species.name().toLowerCase();
 
-        Text line1 = new TranslatableText(String.format("commands.race.describe.%s.1", name));
-        line1.getStyle().setColor(Formatting.YELLOW);
-
-        player.sendMessage(line1);
-
-        player.sendMessage(new TranslatableText(String.format("commands.race.describe.%s.2", name)));
-
-        Text line3 = new TranslatableText(String.format("commands.race.describe.%s.3", name));
-        line3.getStyle().setColor(Formatting.RED);
-
-        player.sendMessage(line3);
+        player.sendMessage(new TranslatableText(String.format("commands.race.describe.%s.1", name)).styled(s -> s.withColor(Formatting.YELLOW)), false);
+        player.sendMessage(new TranslatableText(String.format("commands.race.describe.%s.2", name)), false);
+        player.sendMessage(new TranslatableText(String.format("commands.race.describe.%s.3", name)).styled(s -> s.withColor(Formatting.RED)), false);
 
         return 0;
     }

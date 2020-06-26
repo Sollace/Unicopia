@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.gas.Gas;
+import com.minelittlepony.unicopia.world.block.gas.Gas;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

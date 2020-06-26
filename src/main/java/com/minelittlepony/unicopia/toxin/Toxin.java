@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.toxin;
 
-import com.minelittlepony.unicopia.item.UEffects;
-
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;

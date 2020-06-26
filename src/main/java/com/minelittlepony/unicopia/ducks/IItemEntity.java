@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.ducks;
 
-import com.minelittlepony.unicopia.entity.ItemImpl;
+import com.minelittlepony.unicopia.equine.ItemImpl;
 
 public interface IItemEntity extends PonyContainer<ItemImpl> {
 

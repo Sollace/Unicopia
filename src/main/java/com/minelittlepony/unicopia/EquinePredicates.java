@@ -2,9 +2,9 @@ package com.minelittlepony.unicopia;
 
 import java.util.function.Predicate;
 
-import com.minelittlepony.unicopia.entity.CloudEntity;
-import com.minelittlepony.unicopia.entity.Ponylike;
-import com.minelittlepony.unicopia.gas.Gas;
+import com.minelittlepony.unicopia.equine.Ponylike;
+import com.minelittlepony.unicopia.world.block.gas.Gas;
+import com.minelittlepony.unicopia.world.entity.CloudEntity;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;

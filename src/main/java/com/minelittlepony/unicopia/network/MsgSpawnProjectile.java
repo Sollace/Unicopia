@@ -3,10 +3,10 @@ package com.minelittlepony.unicopia.network;
 import java.io.IOException;
 
 import net.fabricmc.fabric.api.network.PacketContext;
-import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.world.World;
 
 public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Channel.Packet {

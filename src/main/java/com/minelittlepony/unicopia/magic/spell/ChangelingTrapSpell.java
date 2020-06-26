@@ -3,16 +3,16 @@ package com.minelittlepony.unicopia.magic.spell;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.block.UBlocks;
-import com.minelittlepony.unicopia.entity.CucoonEntity;
-import com.minelittlepony.unicopia.entity.IMagicals;
-import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
+import com.minelittlepony.unicopia.magic.Magical;
 import com.minelittlepony.unicopia.magic.AttachableSpell;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.ThrowableSpell;
 import com.minelittlepony.unicopia.util.WorldEvent;
+import com.minelittlepony.unicopia.world.block.UBlocks;
+import com.minelittlepony.unicopia.world.entity.CucoonEntity;
+import com.minelittlepony.unicopia.world.entity.UEntities;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -88,7 +88,7 @@ public class ChangelingTrapSpell extends AbstractSpell implements ThrowableSpell
             if (checkStruggleCondition(caster)) {
                 previousTrappedPosition = origin;
                 struggleCounter--;
-                WorldEvent.DESTROY_BLOCK.play(caster.getWorld(), origin, Blocks.SLIME_BLOCK.getDefaultState());
+                WorldEvent.play(WorldEvent.DESTROY_BLOCK, caster.getWorld(), origin, Blocks.SLIME_BLOCK.getDefaultState());
 
                 setDirty(true);
             }
@@ -105,7 +105,7 @@ public class ChangelingTrapSpell extends AbstractSpell implements ThrowableSpell
 
         double yMotion = entity.getVelocity().y;
 
-        if (!entity.onGround && yMotion > 0) {
+        if (!entity.isOnGround() && yMotion > 0) {
             yMotion = 0;
         }
         entity.setVelocity(0, yMotion, 0);
@@ -120,7 +120,7 @@ public class ChangelingTrapSpell extends AbstractSpell implements ThrowableSpell
 
         entity.hurtTime = 2;
         entity.horizontalCollision = true;
-        entity.collided = true;
+        entity.verticalCollision = true;
 
         if (entity instanceof PlayerEntity) {
             ((PlayerEntity)entity).abilities.flying = false;
@@ -135,7 +135,7 @@ public class ChangelingTrapSpell extends AbstractSpell implements ThrowableSpell
                 onDestroyed(caster);
                 setDirty(true);
 
-                WorldEvent.DESTROY_BLOCK.play(caster.getWorld(), origin, Blocks.SLIME_BLOCK.getDefaultState());
+                WorldEvent.play(WorldEvent.DESTROY_BLOCK, caster.getWorld(), origin, Blocks.SLIME_BLOCK.getDefaultState());
             }
         }
 
@@ -191,7 +191,7 @@ public class ChangelingTrapSpell extends AbstractSpell implements ThrowableSpell
     }
 
     protected boolean canAffect(Entity e) {
-        return !(e instanceof IMagicals)
+        return !(e instanceof Magical)
             && e instanceof LivingEntity
             && !e.hasVehicle();
     }

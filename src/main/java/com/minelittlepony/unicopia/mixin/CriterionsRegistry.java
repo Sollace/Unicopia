@@ -4,9 +4,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 import net.minecraft.advancement.criterion.Criterion;
-import net.minecraft.advancement.criterion.Criterions;
+import net.minecraft.advancement.criterion.Criteria;
 
-@Mixin(Criterions.class)
+@Mixin(Criteria.class)
 public interface CriterionsRegistry {
     @Invoker("register")
     static <T extends Criterion<?>> T register(T object) {

@@ -9,14 +9,14 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
-import net.minecraft.world.World;
+import net.minecraft.client.world.ClientWorld;
 
 public class MagicParticle extends SpriteBillboardParticle {
     private double startX;
     private double startY;
     private double startZ;
 
-    MagicParticle(World w, double x, double y, double z, double vX, double vY, double vZ, float r, float g, float b) {
+    MagicParticle(ClientWorld w, double x, double y, double z, double vX, double vY, double vZ, float r, float g, float b) {
         super(w, x, y, z);
         velocityX = vX;
         velocityY = vY;
@@ -32,7 +32,7 @@ public class MagicParticle extends SpriteBillboardParticle {
         colorBlue = b;
     }
 
-    MagicParticle(World w, double x, double y, double z, double vX, double vY, double vZ) {
+    MagicParticle(ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
         this(w, x, y, z, vX, vY, vZ, 1, 1, 1);
 
         colorAlpha = 0.7F;
@@ -106,7 +106,7 @@ public class MagicParticle extends SpriteBillboardParticle {
         }
 
         @Override
-        public Particle createParticle(MagicParticleEffect effect, World world, double x, double y, double z, double dx, double dy, double dz) {
+        public Particle createParticle(MagicParticleEffect effect, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
             MagicParticle particle = effect.hasTint() ?
                     new MagicParticle(world, x, y, z, dx, dy, dz, effect.getRed(), effect.getGreen(), effect.getBlue())
                      : new MagicParticle(world, x, y, z, dx, dy, dz);

@@ -1,12 +1,12 @@
 package com.minelittlepony.unicopia.magic.spell;
 
-import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.EtherialListener;
 import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.shape.Shape;
+import com.minelittlepony.unicopia.world.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.util.shape.Line;
 
 import net.minecraft.util.math.Box;

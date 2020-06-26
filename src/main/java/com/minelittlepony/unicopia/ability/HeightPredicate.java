@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.ability;
 
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.equine.player.Pony;
 
 /**
  * Predicate for abilities to control what the player's physical height is.

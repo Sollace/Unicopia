@@ -1,11 +1,12 @@
 package com.minelittlepony.unicopia.network;
 
-import com.minelittlepony.unicopia.entity.RainbowEntity;
-import com.minelittlepony.unicopia.entity.UEntities;
+import com.minelittlepony.unicopia.world.entity.RainbowEntity;
+import com.minelittlepony.unicopia.world.entity.UEntities;
+
 import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 
 public class MsgSpawnRainbow implements Channel.Packet {
 

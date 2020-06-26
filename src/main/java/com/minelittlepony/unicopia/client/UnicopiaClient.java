@@ -6,14 +6,15 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.block.UBlocks;
-import com.minelittlepony.unicopia.container.SpellbookResultSlot;
 import com.minelittlepony.unicopia.ducks.Colourful;
-import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.mixin.client.DefaultTexturesRegistry;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
+import com.minelittlepony.unicopia.world.block.UBlocks;
+import com.minelittlepony.unicopia.world.container.SpellbookResultSlot;
+import com.minelittlepony.unicopia.world.item.UItems;
+
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.event.client.ClientTickCallback;

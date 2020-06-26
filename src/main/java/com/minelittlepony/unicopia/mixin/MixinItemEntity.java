@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.ducks.IItemEntity;
-import com.minelittlepony.unicopia.entity.ItemImpl;
+import com.minelittlepony.unicopia.equine.ItemImpl;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;

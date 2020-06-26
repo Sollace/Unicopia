@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.magic.spell;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import com.minelittlepony.unicopia.entity.SpellcastEntity;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
 import com.minelittlepony.unicopia.particles.SphereParticleEffect;
@@ -12,6 +11,7 @@ import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
+import com.minelittlepony.unicopia.world.entity.SpellcastEntity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Fertilizable;
@@ -129,14 +129,14 @@ public class DarknessSpell extends AbstractLinkedSpell {
     }
 
     private void applyLight(Caster<?> source, LivingEntity entity) {
-        if (entity.getHealth() < entity.getMaximumHealth()) {
+        if (entity.getHealth() < entity.getMaxHealth()) {
             entity.heal(1);
         }
     }
 
     private void applyDark(Caster<?> source, LivingEntity entity) {
 
-        if (isAreaOccupied(source, entity.getPosVector())) {
+        if (isAreaOccupied(source, entity.getPos())) {
             return;
         }
 
@@ -144,8 +144,8 @@ public class DarknessSpell extends AbstractLinkedSpell {
             entity.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 3));
 
             Vec3d origin = source.getOriginVector();
-            Vec3d to = entity.getPosVector();
-            double distance = origin.distanceTo(entity.getPosVector());
+            Vec3d to = entity.getPos();
+            double distance = origin.distanceTo(to);
 
             if (entity.world.random.nextInt(30) == 0) {
                 double appliedForce = distance / 10 + entity.world.random.nextInt(3);
@@ -193,7 +193,7 @@ public class DarknessSpell extends AbstractLinkedSpell {
         });
 
         source.findAllEntitiesInRange(radius * 1.5F).filter(this::isLightholder).forEach(e -> {
-            Vec3d pos = shape.computePoint(source.getWorld().random).add(e.getPosVector().add(0, e.getEyeHeight(e.getPose()), 0));
+            Vec3d pos = shape.computePoint(source.getWorld().random).add(e.getPos().add(0, e.getEyeHeight(e.getPose()), 0));
 
             spawnSphere(source, pos, 0xFFFFFF, 1);
         });

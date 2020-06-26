@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ducks.PonyContainer;
-import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
 
 import net.minecraft.entity.Entity;
@@ -75,7 +74,7 @@ public class CasterUtils {
             return Optional.of((Caster<?>)entity);
         }
 
-        if (entity instanceof LivingEntity && !(entity instanceof IMagicals)) {
+        if (entity instanceof LivingEntity && !(entity instanceof Magical)) {
             return PonyContainer.of(entity).map(PonyContainer::getCaster);
         }
 

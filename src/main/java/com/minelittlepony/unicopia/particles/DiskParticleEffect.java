@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 
 public class DiskParticleEffect extends SphereParticleEffect {
     public static final ParticleEffect.Factory<DiskParticleEffect> FACTORY = new ParticleEffect.Factory<DiskParticleEffect>() {

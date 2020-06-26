@@ -55,7 +55,7 @@ public class ParticleEmitter {
         Vec3d origin = entity.getPos();
 
         for (Direction side : Direction.values()) {
-            Vec3d plane = new Vec3d(side.getVector());
+            Vec3d plane = Vec3d.of(side.getVector());
 
             spawnDiggingFX(entity.getEntityWorld(),
                     clampPlane(side.getAxis(),

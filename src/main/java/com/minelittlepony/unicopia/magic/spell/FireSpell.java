@@ -3,16 +3,16 @@ package com.minelittlepony.unicopia.magic.spell;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.blockstate.StateMaps;
-import com.minelittlepony.unicopia.entity.IMagicals;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.DispenceableSpell;
+import com.minelittlepony.unicopia.magic.Magical;
 import com.minelittlepony.unicopia.magic.Useable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
+import com.minelittlepony.unicopia.util.blockstate.StateMaps;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -120,7 +120,7 @@ public class FireSpell extends AbstractRangedAreaSpell implements Useable, Dispe
 
         if (id != Blocks.AIR) {
             if (id == Blocks.ICE || id == Blocks.PACKED_ICE) {
-                world.setBlockState(pos, (world.dimension.doesWaterVaporize() ? Blocks.AIR : Blocks.WATER).getDefaultState());
+                world.setBlockState(pos, (world.getDimension().isUltrawarm() ? Blocks.AIR : Blocks.WATER).getDefaultState());
                 playEffect(world, pos);
 
                 return true;
@@ -139,14 +139,14 @@ public class FireSpell extends AbstractRangedAreaSpell implements Useable, Dispe
                 sendPower(world, pos, power, 3, 0);
 
                 return true;
-            } else if (state.matches(BlockTags.SAND) && world.random.nextInt(10) == 0) {
+            } else if (state.isIn(BlockTags.SAND) && world.random.nextInt(10) == 0) {
                 if (isSurroundedBySand(world, pos)) {
                     world.setBlockState(pos, Blocks.GLASS.getDefaultState());
 
                     playEffect(world, pos);
                     return true;
                 }
-            } else if (state.matches(BlockTags.LEAVES)) {
+            } else if (state.isIn(BlockTags.LEAVES)) {
                 if (world.getBlockState(pos.up()).getMaterial() == Material.AIR) {
                     world.setBlockState(pos.up(), Blocks.FIRE.getDefaultState());
 
@@ -178,7 +178,7 @@ public class FireSpell extends AbstractRangedAreaSpell implements Useable, Dispe
     protected boolean applyEntitySingle(Entity owner, World world, Entity e) {
         if ((!e.equals(owner) ||
                 (owner instanceof PlayerEntity && !EquinePredicates.PLAYER_UNICORN.test(owner))) && !(e instanceof ItemEntity)
-        && !(e instanceof IMagicals)) {
+        && !(e instanceof Magical)) {
             e.setOnFireFor(60);
             e.damage(getDamageCause(e, (LivingEntity)owner), 0.1f);
             playEffect(world, e.getBlockPos());

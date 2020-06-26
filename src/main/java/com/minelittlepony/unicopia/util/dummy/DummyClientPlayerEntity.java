@@ -3,19 +3,18 @@ package com.minelittlepony.unicopia.util.dummy;
 import javax.annotation.Nonnull;
 
 import com.minelittlepony.unicopia.InteractionManager;
-import com.minelittlepony.unicopia.entity.Owned;
+import com.minelittlepony.unicopia.Owned;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.network.packet.PlayerListS2CPacket;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 
 public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implements Owned<PlayerEntity> {
@@ -72,13 +71,6 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
     @Override
     public void setOwner(PlayerEntity owner) {
         this.owner = owner;
-    }
-
-    @Override
-    public Text getDisplayName() {
-        Text name = super.getDisplayName();
-        name.getStyle().setItalic(true);
-        return name;
     }
 
     private final class Packet extends PlayerListS2CPacket {

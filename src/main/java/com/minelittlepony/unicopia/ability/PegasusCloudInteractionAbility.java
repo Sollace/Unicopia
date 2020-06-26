@@ -5,7 +5,7 @@ import java.util.Optional;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Numeric;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.equine.player.Pony;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.particles.UParticles;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -51,15 +51,15 @@ public class PegasusCloudInteractionAbility implements Ability<Numeric> {
         });
     }
 
-    protected Optional<ICloudEntity> findTarget(Pony player) {
-        if (player.getOwner().hasVehicle() && player.getOwner().getVehicle() instanceof ICloudEntity) {
-            return Optional.ofNullable((ICloudEntity)player.getOwner().getVehicle());
+    protected Optional<Interactable> findTarget(Pony player) {
+        if (player.getOwner().hasVehicle() && player.getOwner().getVehicle() instanceof Interactable) {
+            return Optional.ofNullable((Interactable)player.getOwner().getVehicle());
         }
 
         Entity e = VecHelper.getLookedAtEntity(player.getOwner(), 18);
 
-        if (e instanceof ICloudEntity) {
-            return Optional.of((ICloudEntity)e);
+        if (e instanceof Interactable) {
+            return Optional.of((Interactable)e);
         }
 
         return Optional.empty();
@@ -75,7 +75,7 @@ public class PegasusCloudInteractionAbility implements Ability<Numeric> {
         player.spawnParticles(UParticles.RAIN_DROPS, 5);
     }
 
-    public interface ICloudEntity {
+    public interface Interactable {
         void handlePegasusInteration(int interationType);
     }
 }

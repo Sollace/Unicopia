@@ -8,14 +8,11 @@ import java.util.Set;
 import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.ability.AbilitySlot;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.equine.player.Pony;
 
-import net.fabricmc.fabric.api.client.keybinding.FabricKeyBinding;
-import net.fabricmc.fabric.api.client.keybinding.KeyBindingRegistry;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
 
 class KeyBindingsHandler {
     private final String KEY_CATEGORY = "unicopia.category.name";
@@ -25,20 +22,13 @@ class KeyBindingsHandler {
     private final Set<KeyBinding> pressed = new HashSet<>();
 
     public KeyBindingsHandler() {
-        KeyBindingRegistry.INSTANCE.addCategory(KEY_CATEGORY);
-
         addKeybind(GLFW.GLFW_KEY_O, AbilitySlot.PRIMARY);
         addKeybind(GLFW.GLFW_KEY_P, AbilitySlot.SECONDARY);
         addKeybind(GLFW.GLFW_KEY_L, AbilitySlot.TERTIARY);
     }
 
     public void addKeybind(int code, AbilitySlot slot) {
-        KeyBindingRegistry.INSTANCE.addCategory(KEY_CATEGORY);
-
-        FabricKeyBinding b = FabricKeyBinding.Builder.create(new Identifier("unicopia", slot.name().toLowerCase()), InputUtil.Type.KEYSYM, code, KEY_CATEGORY).build();
-        KeyBindingRegistry.INSTANCE.register(b);
-
-        keys.put(b, slot);
+        keys.put(KeyBindingHelper.registerKeyBinding(new KeyBinding("key.unicopia" + slot.name().toLowerCase(), code, KEY_CATEGORY)), slot);
     }
 
     public void tick(MinecraftClient client) {

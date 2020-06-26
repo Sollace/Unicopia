@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.minelittlepony.unicopia.item.UEffects;
-
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -54,9 +52,9 @@ public enum Toxicity implements Toxin {
     }
 
     public Text getTooltip() {
-        Text text = new TranslatableText(getTranslationKey());
-        text.getStyle().setColor(toxicWhenCooked() ? Formatting.RED : toxicWhenRaw() ? Formatting.DARK_PURPLE : Formatting.GRAY);
-        return text;
+        return new TranslatableText(getTranslationKey())
+                .styled(s -> s
+                        .withColor(toxicWhenCooked() ? Formatting.RED : toxicWhenRaw() ? Formatting.DARK_PURPLE : Formatting.GRAY));
     }
 
     public ItemStack ontoStack(ItemStack stack) {

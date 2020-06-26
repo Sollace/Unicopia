@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.toxin;
 
-import com.minelittlepony.unicopia.item.UFoodComponents;
-
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;

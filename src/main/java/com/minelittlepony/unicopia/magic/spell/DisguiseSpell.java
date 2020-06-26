@@ -6,11 +6,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
+import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.FlightPredicate;
 import com.minelittlepony.unicopia.ability.HeightPredicate;
-import com.minelittlepony.unicopia.entity.Owned;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.equine.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CasterUtils;
 import com.minelittlepony.unicopia.magic.AttachableSpell;
@@ -206,7 +206,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
         // Set first because position calculations rely on it
         to.age = from.age;
         to.removed = from.removed;
-        to.onGround = from.onGround;
+        to.setOnGround(from.isOnGround());
 
         if (isAttachedEntity(entity)) {
 
@@ -246,9 +246,9 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
         if (to instanceof PlayerEntity) {
             PlayerEntity l = (PlayerEntity)to;
 
-            l.field_7500 = l.getX();
-            l.field_7521 = l.getY();
-            l.field_7499 = l.getZ();
+            l.capeX = l.getX();
+            l.capeY = l.getY();
+            l.capeZ = l.getZ();
         }
 
         to.setVelocity(from.getVelocity());
@@ -277,11 +277,12 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
             l.handSwingProgress = from.handSwingProgress;
             l.lastHandSwingProgress = from.lastHandSwingProgress;
             l.handSwingTicks = from.handSwingTicks;
-            l.isHandSwinging = from.isHandSwinging;
+            l.handSwinging = from.handSwinging;
 
             l.hurtTime = from.hurtTime;
             l.deathTime = from.deathTime;
-            l.field_20347 = from.field_20347;
+            l.stuckStingerTimer = from.stuckStingerTimer;
+            l.stuckArrowTimer = from.stuckArrowTimer;
             l.setHealth(from.getHealth());
 
             for (EquipmentSlot i : EquipmentSlot.values()) {
@@ -549,7 +550,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
     }
 
     static abstract class PlayerAccess extends PlayerEntity {
-        public PlayerAccess() { super(null, null); }
+        public PlayerAccess() { super(null, null, null); }
         static TrackedData<Byte> getModelBitFlag() {
             return PLAYER_MODEL_PARTS;
         }

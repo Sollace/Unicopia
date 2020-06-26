@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.equine.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
@@ -46,7 +46,7 @@ public class SiphoningSpell extends AbstractRangedAreaSpell {
         if (source.getAffinity() == Affinity.BAD) {
             if (owner != null) {
                 float healthGain = 0;
-                float maxHealthGain = owner.getMaximumHealth() - owner.getHealth();
+                float maxHealthGain = owner.getMaxHealth() - owner.getHealth();
 
                 if (maxHealthGain > 0) {
                     float attackAmount = Math.max(maxHealthGain / target.size(), 0.5F);
@@ -80,7 +80,7 @@ public class SiphoningSpell extends AbstractRangedAreaSpell {
 
         } else {
             target.forEach(e -> {
-                float maxHealthGain = e.getMaximumHealth() - e.getHealth();
+                float maxHealthGain = e.getMaxHealth() - e.getHealth();
 
                 if (maxHealthGain <= 0) {
                     if (source.getWorld().random.nextInt(30) == 0) {

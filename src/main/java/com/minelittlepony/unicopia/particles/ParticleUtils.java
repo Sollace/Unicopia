@@ -13,7 +13,7 @@ public final class ParticleUtils {
 
     public static void spawnParticles(ParticleEffect particleId, Entity entity, int count) {
         double halfDist = Math.abs(entity.getStandingEyeHeight() / 1.5);
-        double middle = entity.getBoundingBox().y1 + halfDist;
+        double middle = entity.getBoundingBox().minY + halfDist;
 
         Shape shape = new Sphere(false, Math.abs((float)halfDist + entity.getWidth()));
 

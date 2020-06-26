@@ -49,7 +49,7 @@ public interface PosHelper {
     }
 
     static Stream<BlockPos> adjacentNeighbours(BlockPos origin) {
-        BlockPos.Mutable pos = new BlockPos.Mutable(origin);
+        BlockPos.Mutable pos = new BlockPos.Mutable(origin.getX(), origin.getY(), origin.getZ());
         List<Direction> directions = Lists.newArrayList(Direction.values());
         Iterator<Direction> iter = directions.iterator();
         return StreamSupport.stream(new AbstractSpliterator<BlockPos>(directions.size(), Spliterator.SIZED) {
@@ -71,6 +71,6 @@ public interface PosHelper {
         return BlockPos.stream(
             origin.add(new BlockPos(shape.getLowerBound())),
             origin.add(new BlockPos(shape.getUpperBound()))
-        ).filter(pos -> shape.isPointInside(new Vec3d(pos.subtract(origin))));
+        ).filter(pos -> shape.isPointInside(Vec3d.of(pos.subtract(origin))));
     }
 }

@@ -46,7 +46,8 @@ public class TreeTraverser {
         if (level < 3 && !done.contains(pos)) {
             done.add(pos);
 
-            BlockPos.Mutable result = new BlockPos.Mutable(ascendTree(w, log, pos, true));
+            BlockPos.Mutable result = new BlockPos.Mutable();
+            result.set(ascendTree(w, log, pos, true));
 
             PosHelper.all(pos, p -> {
                 if (variantAndBlockEquals(w.getBlockState(pos.east()), log)) {
@@ -84,7 +85,7 @@ public class TreeTraverser {
     }
 
     public static Optional<BlockPos> descendTree(World w, BlockState log, BlockPos pos) {
-        return descendTreePart(new HashSet<BlockPos>(), w, log, new BlockPos.Mutable(pos));
+        return descendTreePart(new HashSet<BlockPos>(), w, log, new BlockPos.Mutable(pos.getX(), pos.getY(), pos.getZ()));
     }
 
     private static Optional<BlockPos> descendTreePart(Set<BlockPos> done, World w, BlockState log, BlockPos.Mutable pos) {
@@ -94,12 +95,11 @@ public class TreeTraverser {
 
         done.add(pos.toImmutable());
         while (variantAndBlockEquals(w.getBlockState(pos.down()), log)) {
-            pos.setOffset(Direction.DOWN);
-            done.add(pos.toImmutable());
+            done.add(pos.move(Direction.DOWN).toImmutable());
         }
 
         PosHelper.all(pos.toImmutable(), p -> {
-            descendTreePart(done, w, log, new BlockPos.Mutable(p)).filter(a -> a.getY() < pos.getY()).ifPresent(pos::set);
+            descendTreePart(done, w, log, new BlockPos.Mutable(p.getX(), p.getY(), p.getZ())).filter(a -> a.getY() < pos.getY()).ifPresent(pos::set);
         }, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
 
         done.add(pos.toImmutable());

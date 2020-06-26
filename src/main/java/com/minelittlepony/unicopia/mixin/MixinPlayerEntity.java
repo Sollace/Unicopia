@@ -8,14 +8,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.ducks.PonyContainer;
-import com.minelittlepony.unicopia.entity.Ponylike;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.equine.Ponylike;
+import com.minelittlepony.unicopia.equine.player.Pony;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Unit;
@@ -38,6 +39,11 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
             argsOnly = true)
     private float onHandleFallDamage(float distance) {
         return get().onImpact(distance);
+    }
+
+    @Inject(method = "createPlayerAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
+    private static void onCreateAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {
+        Pony.registerAttributes(info.getReturnValue());
     }
 
     @Inject(method = "eatFood(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/item/ItemStack;",

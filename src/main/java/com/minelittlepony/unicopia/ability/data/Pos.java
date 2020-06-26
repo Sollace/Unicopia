@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.ability.data;
 
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 
 public class Pos extends Hit {

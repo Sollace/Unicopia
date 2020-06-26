@@ -18,6 +18,8 @@
     "MixinPlayerEntity",
     "MixinProjectileEntity",
     "MixinServerPlayerEntity",
+    "MixinStructureFeature",
+    "MixinStructuresConfig",
     "Walker"
   ],
   "client": [

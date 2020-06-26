@@ -7,16 +7,15 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
-import com.minelittlepony.unicopia.client.render.RenderLayers;
-import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.particles.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.particles.ParticleHandle.Link;
+import com.minelittlepony.unicopia.world.client.render.RenderLayers;
 import com.minelittlepony.unicopia.particles.SphereParticleEffect;
-import com.minelittlepony.util.Color;
+import com.minelittlepony.common.util.Color;
 
 public class SphereParticle extends Particle implements Attachment {
 
@@ -36,7 +35,7 @@ public class SphereParticle extends Particle implements Attachment {
 
     private static final SphereModel model = new SphereModel();
 
-    public SphereParticle(SphereParticleEffect effect, World w, double x, double y, double z, double vX, double vY, double vZ) {
+    public SphereParticle(SphereParticleEffect effect, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
         this(effect, w, x, y, z);
 
         this.velocityX = vX;
@@ -44,7 +43,7 @@ public class SphereParticle extends Particle implements Attachment {
         this.velocityZ = vZ;
     }
 
-    public SphereParticle(SphereParticleEffect effect, World w, double x, double y, double z) {
+    public SphereParticle(SphereParticleEffect effect, ClientWorld w, double x, double y, double z) {
         super(w, x, y, z);
 
         this.radius = effect.getRadius();

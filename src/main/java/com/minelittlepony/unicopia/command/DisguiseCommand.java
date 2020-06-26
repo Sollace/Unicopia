@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.command;
 
 import java.util.function.Function;
 
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.equine.player.Pony;
 import com.minelittlepony.unicopia.magic.spell.DisguiseSpell;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -72,7 +72,7 @@ public class DisguiseCommand {
             source.sendFeedback(new TranslatableText("commands.disguise.success.other", player.getName(), entity.getName()), true);
         } else {
             if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendMessage(new TranslatableText("commands.disguise.success.self", entity.getName()));
+                player.sendMessage(new TranslatableText("commands.disguise.success.self", entity.getName()), false);
             }
             source.sendFeedback(new TranslatableText("commands.disguise.success.otherself", player.getName(), entity.getName()), true);
         }
@@ -87,7 +87,7 @@ public class DisguiseCommand {
         });
 
         if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-            player.sendMessage(new TranslatableText("commands.disguise.removed"));
+            player.sendMessage(new TranslatableText("commands.disguise.removed"), false);
         }
 
         return 0;

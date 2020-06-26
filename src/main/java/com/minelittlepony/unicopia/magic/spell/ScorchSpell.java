@@ -2,13 +2,13 @@ package com.minelittlepony.unicopia.magic.spell;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.blockstate.StateMaps;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.magic.ThrowableSpell;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.PosHelper;
-import com.minelittlepony.unicopia.util.projectile.AdvancedProjectile;
+import com.minelittlepony.unicopia.util.blockstate.StateMaps;
+import com.minelittlepony.unicopia.util.projectile.Projectile;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.BlockState;
@@ -67,8 +67,8 @@ public class ScorchSpell extends FireSpell implements ThrowableSpell {
 
     @Override
     @Nullable
-    public AdvancedProjectile toss(Caster<?> caster) {
-        AdvancedProjectile projectile = ThrowableSpell.super.toss(caster);
+    public Projectile toss(Caster<?> caster) {
+        Projectile projectile = ThrowableSpell.super.toss(caster);
 
         if (projectile != null) {
             projectile.setGravity(false);

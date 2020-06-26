@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import com.minelittlepony.unicopia.client.render.model.DiskModel;
 import com.minelittlepony.unicopia.particles.SphereParticleEffect;
 
 import net.minecraft.client.MinecraftClient;
@@ -9,7 +8,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.world.World;
+import net.minecraft.client.world.ClientWorld;
 
 public class DiskParticle extends SphereParticle {
 
@@ -19,7 +18,7 @@ public class DiskParticle extends SphereParticle {
     protected float rotY;
     protected float rotZ;
 
-    public DiskParticle(SphereParticleEffect effect, World w, double x, double y, double z, double rX, double rY, double rZ) {
+    public DiskParticle(SphereParticleEffect effect, ClientWorld w, double x, double y, double z, double rX, double rY, double rZ) {
         super(effect, w, x, y, z, 0, 0, 0);
 
         rotX = (float)rX;

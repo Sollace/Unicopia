@@ -6,18 +6,18 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.entity.IMagicals;
-import com.minelittlepony.unicopia.entity.SpellcastEntity;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.equine.player.Pony;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.Caster;
+import com.minelittlepony.unicopia.magic.Magical;
 import com.minelittlepony.unicopia.magic.Spell;
 import com.minelittlepony.unicopia.magic.Useable;
 import com.minelittlepony.unicopia.particles.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
+import com.minelittlepony.unicopia.world.entity.SpellcastEntity;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -185,7 +185,7 @@ public class PortalSpell extends AbstractRangedAreaSpell implements Useable {
     }
 
     protected boolean canTeleport(Entity i) {
-        return !(i instanceof IMagicals) && i.netherPortalCooldown == 0;
+        return !(i instanceof Magical) && i.netherPortalCooldown == 0;
     }
 
     protected void teleportEntity(Caster<?> source, PortalSpell dest, Entity i) {

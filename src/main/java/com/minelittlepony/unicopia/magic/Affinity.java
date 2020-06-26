@@ -29,9 +29,7 @@ public enum Affinity {
     }
 
     public Text getName() {
-        Text text = new TranslatableText("affinity." + getTranslationKey());
-        text.getStyle().setColor(getColourCode());
-        return text;
+        return new TranslatableText("affinity." + getTranslationKey()).styled(s -> s.withColor(getColourCode()));
     }
 
     public int getCorruption() {

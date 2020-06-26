@@ -11,7 +11,7 @@ import com.minelittlepony.unicopia.TreeTraverser;
 import com.minelittlepony.unicopia.TreeType;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Multi;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.equine.player.Pony;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -23,14 +23,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
-import net.minecraft.block.LogBlock;
-import net.minecraft.entity.EntityContext;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -76,7 +76,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
             BlockPos pos = ((BlockHitResult)mop).getBlockPos();
             BlockState state = player.getWorld().getBlockState(pos);
 
-            if (state.getBlock() instanceof LogBlock) {
+            if (state.getBlock().isIn(BlockTags.LOGS)) {
                 pos = TreeTraverser.descendTree(player.getWorld(), state, pos).get();
                 if (TreeTraverser.measureTree(player.getWorld(), state, pos) > 0) {
                     return new Multi(pos, 1);
@@ -84,7 +84,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
             }
         }
 
-        if (!player.getOwner().onGround && !player.getOwner().abilities.flying) {
+        if (!player.getOwner().isOnGround() && !player.getOwner().abilities.flying) {
             player.getOwner().addVelocity(0, -6, 0);
             return new Multi(Vec3i.ZERO, 0);
         }
@@ -121,7 +121,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
 
                     DamageSource damage = MagicalDamageSource.causePlayerDamage("smash", player);
 
-                    double amount = (4 * player.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()) / (float)dist;
+                    double amount = (4 * player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue()) / (float)dist;
 
                     if (i instanceof PlayerEntity) {
                         Race race = Pony.of((PlayerEntity)i).getSpecies();
@@ -151,7 +151,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
             iplayer.subtractEnergyCost(rad);
         } else if (data.hitType == 1) {
 
-            boolean harmed = player.getHealth() < player.getMaximumHealth();
+            boolean harmed = player.getHealth() < player.getMaxHealth();
 
             if (harmed && player.world.random.nextInt(30) == 0) {
                 iplayer.subtractEnergyCost(3);
@@ -179,14 +179,13 @@ public class EarthPonyStompAbility implements Ability<Multi> {
         BlockState state = w.getBlockState(pos);
 
         if (!state.isAir() && w.getBlockState(pos.up()).isAir()) {
-            WorldEvent.DESTROY_BLOCK.play(w, pos, state);
+            WorldEvent.play(WorldEvent.DESTROY_BLOCK, w, pos, state);
         }
     }
 
     @Override
     public void preApply(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().addExertion(40);
-        player.getOwner().attemptSprintingParticles();
     }
 
     @Override
@@ -247,7 +246,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
                 BlockState state = w.getBlockState(pos);
 
                 if (state.getBlock() instanceof LeavesBlock && w.getBlockState(pos.down()).isAir()) {
-                    WorldEvent.DESTROY_BLOCK.play(w, pos, state);
+                    WorldEvent.play(WorldEvent.DESTROY_BLOCK, w, pos, state);
                     drops.add(new ItemEntity(w,
                             pos.getX() + w.random.nextFloat(),
                             pos.getY() - 0.5,
@@ -264,10 +263,10 @@ public class EarthPonyStompAbility implements Ability<Multi> {
     }
 
     private static BlockPos getSolidBlockBelow(BlockPos pos, World w) {
-        while (World.isValid(pos)) {
+        while (!World.isHeightInvalid(pos)) {
             pos = pos.down();
 
-            if (Block.isFaceFullSquare(w.getBlockState(pos).getCollisionShape(w, pos, EntityContext.absent()), Direction.UP)) {
+            if (Block.isFaceFullSquare(w.getBlockState(pos).getCollisionShape(w, pos, ShapeContext.absent()), Direction.UP)) {
                 return pos;
             }
         }

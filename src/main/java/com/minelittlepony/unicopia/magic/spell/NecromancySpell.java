@@ -24,7 +24,7 @@ public class NecromancySpell extends AbstractRangedAreaSpell {
     private final List<EntityType<? extends LivingEntity>> spawns = Lists.newArrayList(
             EntityType.ZOMBIE,
             EntityType.HUSK,
-            EntityType.ZOMBIE_PIGMAN
+            EntityType.ZOMBIFIED_PIGLIN
     );
 
     @Override
@@ -91,7 +91,7 @@ public class NecromancySpell extends AbstractRangedAreaSpell {
 
         zombie.setVelocity(0, 0.3, 0);
 
-        WorldEvent.DOOR_BROKEN.play(source.getWorld(), zombie.getBlockPos());
+        source.getWorld().syncWorldEvent(WorldEvent.ZOMBIE_BREAK_WOODEN_DOOR, zombie.getBlockPos(), 0);
 
         source.getWorld().spawnEntity(zombie);
     }

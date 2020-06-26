@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.entity.Ponylike;
+import com.minelittlepony.unicopia.equine.Ponylike;
 import com.minelittlepony.unicopia.magic.Caster;
 
 import net.minecraft.entity.Entity;

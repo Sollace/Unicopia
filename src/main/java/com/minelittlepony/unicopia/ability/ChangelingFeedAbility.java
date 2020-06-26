@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.equine.player.Pony;
 import com.minelittlepony.unicopia.particles.ParticleUtils;
 import com.minelittlepony.unicopia.particles.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
@@ -59,7 +59,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     private boolean canFeed(Pony player) {
-        return player.getOwner().getHealth() < player.getOwner().getMaximumHealth() || player.getOwner().canConsume(false);
+        return player.getOwner().getHealth() < player.getOwner().getMaxHealth() || player.getOwner().canConsume(false);
     }
 
     private boolean canDrain(Entity e) {
@@ -92,7 +92,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     public void apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.getOwner();
 
-        float maximumHealthGain = player.getMaximumHealth() - player.getHealth();
+        float maximumHealthGain = player.getMaxHealth() - player.getHealth();
         int maximumFoodGain = player.canConsume(false) ? (20 - player.getHungerManager().getFoodLevel()) : 0;
 
         if (maximumHealthGain > 0 || maximumFoodGain > 0) {

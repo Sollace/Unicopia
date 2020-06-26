@@ -7,7 +7,7 @@ import net.minecraft.item.ItemUsageContext;
 
 public final class HoeUtil extends HoeItem {
     private HoeUtil() {
-        super(null, 0, null);
+        super(null, 0, 0, null);
     }
 
     public static void registerTillingAction(Block block, BlockState tilledState) {

@@ -8,12 +8,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.minelittlepony.unicopia.ducks.PonyContainer;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.hit.EntityHitResult;
 
 @Mixin(ProjectileEntity.class)
-abstract class MixinProjectileEntity extends Entity implements Projectile {
+abstract class MixinProjectileEntity extends Entity {
     private MixinProjectileEntity() { super(null, null); }
 
     @Inject(method = "onEntityHit(Lnet/minecraft/util/hit/EntityHitResult;)V",

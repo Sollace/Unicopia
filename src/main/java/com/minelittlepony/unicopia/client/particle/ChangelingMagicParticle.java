@@ -5,14 +5,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.SpriteProvider;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.world.World;
 
 public class ChangelingMagicParticle extends MagicParticle {
 
     private final SpriteProvider provider;
 
-    public ChangelingMagicParticle(SpriteProvider provider, World world, double x, double y, double z, double dx, double dy, double dz) {
+    public ChangelingMagicParticle(SpriteProvider provider, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
         super(world, x, y, z, dx, dy, dz, 1, 1, 1);
         this.provider = provider;
 
@@ -39,7 +39,7 @@ public class ChangelingMagicParticle extends MagicParticle {
         }
 
         @Override
-        public Particle createParticle(DefaultParticleType effect, World world, double x, double y, double z, double dx, double dy, double dz) {
+        public Particle createParticle(DefaultParticleType effect, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
             MagicParticle particle = new MagicParticle(world, x, y, z, dx, dy, dz);
             particle.setSprite(provider);
             return particle;

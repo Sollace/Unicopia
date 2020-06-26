@@ -5,13 +5,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.minelittlepony.unicopia.util.Registries;
+
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.MutableRegistry;
-import net.minecraft.util.registry.SimpleRegistry;
+import net.minecraft.util.registry.Registry;
 
 public interface Abilities {
     Map<AbilitySlot, Set<Ability<?>>> BY_SLOT = new EnumMap<>(AbilitySlot.class);
-    MutableRegistry<Ability<?>> REGISTRY = new SimpleRegistry<>();
+    Registry<Ability<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "abilities"));
 
     // unicorn / alicorn
     Ability<?> TELEPORT = register(new UnicornTeleportAbility(), "teleport", AbilitySlot.SECONDARY);
@@ -35,6 +36,6 @@ public interface Abilities {
     static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {
         Identifier id = new Identifier("unicopia", name);
         BY_SLOT.computeIfAbsent(slot, s -> new HashSet<>()).add(power);
-        return REGISTRY.add(id, power);
+        return Registry.register(REGISTRY, id, power);
     }
 }

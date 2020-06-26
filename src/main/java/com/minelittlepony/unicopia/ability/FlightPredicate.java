@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.ability;
 
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.equine.player.Pony;
 
 /**
  * Predicate for abilities to control whether a player can fly.

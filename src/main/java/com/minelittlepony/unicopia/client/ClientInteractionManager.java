@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.equine.player.Pony;
 import com.minelittlepony.unicopia.util.dummy.DummyClientPlayerEntity;
 import com.mojang.authlib.GameProfile;
 

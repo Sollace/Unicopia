@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia;
 
 import java.util.stream.Collectors;
 
-import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.Weighted;
+import com.minelittlepony.unicopia.world.item.UItems;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -19,35 +19,42 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public final class TreeType {
-    // XXX: move to datapack
+    // TODO: move to datapack
     private static final Set<TreeType> REGISTRY = new HashSet<>();
+
+    private static final Supplier<ItemStack> ROTTEN = () -> new ItemStack(UItems.ROTTEN_APPLE);
+    private static final Supplier<ItemStack> SWEET = () -> new ItemStack(UItems.SWEET_APPLE);
+    private static final Supplier<ItemStack> GREEN = () -> new ItemStack(UItems.GREEN_APPLE);
+    private static final Supplier<ItemStack> ZAP = () -> new ItemStack(UItems.ZAP_APPLE);
+    private static final Supplier<ItemStack> SOUR = () -> new ItemStack(UItems.SOUR_APPLE);
+    private static final Supplier<ItemStack> RED = () -> new ItemStack(Items.APPLE);
 
     public static final TreeType NONE = new TreeType("none", new Weighted<Supplier<ItemStack>>());
     public static final TreeType OAK = new TreeType("oak", new Weighted<Supplier<ItemStack>>()
-            .put(1, () -> new ItemStack(UItems.ROTTEN_APPLE))
-            .put(2, () -> new ItemStack(UItems.GREEN_APPLE))
-            .put(3, () -> new ItemStack(Items.APPLE)), Blocks.OAK_LOG, Blocks.OAK_LEAVES);
+            .put(1, ROTTEN)
+            .put(2, GREEN)
+            .put(3, RED), Blocks.OAK_LOG, Blocks.OAK_LEAVES);
     public static final TreeType BIRCH = new TreeType("birch", new Weighted<Supplier<ItemStack>>()
-            .put(1, () -> new ItemStack(UItems.ROTTEN_APPLE))
-            .put(2, () -> new ItemStack(UItems.SWEET_APPLE))
-            .put(5, () -> new ItemStack(UItems.GREEN_APPLE)), Blocks.BIRCH_LOG, Blocks.BIRCH_LEAVES);
+            .put(1, ROTTEN)
+            .put(2, SWEET)
+            .put(5, GREEN), Blocks.BIRCH_LOG, Blocks.BIRCH_LEAVES);
     public static final TreeType SPRUCE = new TreeType("spruce", new Weighted<Supplier<ItemStack>>()
-            .put(1, () -> new ItemStack(UItems.SOUR_APPLE))
-            .put(2, () -> new ItemStack(UItems.GREEN_APPLE))
-            .put(3, () -> new ItemStack(UItems.SWEET_APPLE))
-            .put(4, () -> new ItemStack(UItems.ROTTEN_APPLE)), Blocks.SPRUCE_LOG, Blocks.SPRUCE_LEAVES);
+            .put(1, SOUR)
+            .put(2, GREEN)
+            .put(3, SWEET)
+            .put(4, ROTTEN), Blocks.SPRUCE_LOG, Blocks.SPRUCE_LEAVES);
     public static final TreeType ACACIA = new TreeType("acacia", new Weighted<Supplier<ItemStack>>()
-            .put(1, () -> new ItemStack(UItems.ROTTEN_APPLE))
-            .put(2, () -> new ItemStack(UItems.SWEET_APPLE))
-            .put(5, () -> new ItemStack(UItems.GREEN_APPLE)), Blocks.ACACIA_LOG, Blocks.ACACIA_LEAVES);
+            .put(1, ROTTEN)
+            .put(2, SWEET)
+            .put(5, GREEN), Blocks.ACACIA_LOG, Blocks.ACACIA_LEAVES);
     public static final TreeType JUNGLE = new TreeType("jungle", new Weighted<Supplier<ItemStack>>()
-            .put(5, () -> new ItemStack(UItems.GREEN_APPLE))
-            .put(2, () -> new ItemStack(UItems.SWEET_APPLE))
-            .put(1, () -> new ItemStack(UItems.SOUR_APPLE)), Blocks.JUNGLE_LOG, Blocks.JUNGLE_LEAVES);
+            .put(5, GREEN)
+            .put(2, SWEET)
+            .put(1, ZAP), Blocks.JUNGLE_LOG, Blocks.JUNGLE_LEAVES);
     public static final TreeType DARK_OAK = new TreeType("dark_oak", new Weighted<Supplier<ItemStack>>()
-            .put(1, () -> new ItemStack(UItems.ROTTEN_APPLE))
-            .put(2, () -> new ItemStack(UItems.SWEET_APPLE))
-            .put(5, () -> new ItemStack(UItems.ZAP_APPLE)), Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_LEAVES);
+            .put(1, ROTTEN)
+            .put(2, SWEET)
+            .put(5, ZAP), Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_LEAVES);
 
     private final String name;
     private final Set<Identifier> blocks;

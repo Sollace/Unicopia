@@ -5,11 +5,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.minelittlepony.unicopia.gas.CloudInteractionContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityContextImpl;
+import com.minelittlepony.unicopia.world.block.gas.CloudInteractionContext;
 
-@Mixin(EntityContextImpl.class)
+import net.minecraft.block.EntityShapeContext;
+import net.minecraft.entity.Entity;
+
+@Mixin(EntityShapeContext.class)
 abstract class MixinEntityContextImpl implements CloudInteractionContext.Holder {
     private CloudInteractionContext cloudContext;
 

@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.util.dummy;
 
 import com.minelittlepony.unicopia.InteractionManager;
-import com.minelittlepony.unicopia.entity.Owned;
+import com.minelittlepony.unicopia.Owned;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,7 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 
 public class DummyServerPlayerEntity extends ServerPlayerEntity implements Owned<PlayerEntity> {
 
@@ -37,12 +36,5 @@ public class DummyServerPlayerEntity extends ServerPlayerEntity implements Owned
     @Override
     public boolean shouldRenderName() {
         return !InteractionManager.instance().isClientPlayer(getOwner());
-    }
-
-    @Override
-    public Text getDisplayName() {
-        Text name = super.getDisplayName();
-        name.getStyle().setItalic(true);
-        return name;
     }
 }

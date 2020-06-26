@@ -2,13 +2,13 @@ package com.minelittlepony.unicopia.particles;
 
 import java.util.Locale;
 
-import com.minelittlepony.util.Color;
+import com.minelittlepony.common.util.Color;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
 public class SphereParticleEffect implements ParticleEffect {

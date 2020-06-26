@@ -1,10 +1,10 @@
 package com.minelittlepony.unicopia.magic.spell;
 
-import com.minelittlepony.unicopia.blockstate.StateMaps;
 import com.minelittlepony.unicopia.magic.Affinity;
 import com.minelittlepony.unicopia.magic.CastResult;
 import com.minelittlepony.unicopia.magic.Caster;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
+import com.minelittlepony.unicopia.util.blockstate.StateMaps;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 

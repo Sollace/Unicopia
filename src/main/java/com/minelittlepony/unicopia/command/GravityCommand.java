@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.command;
 
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.equine.player.Pony;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -44,7 +44,7 @@ class GravityCommand {
         if (source.getPlayer() != player) {
             translationKey += ".other";
         }
-        player.sendMessage(new TranslatableText(translationKey, player.getName(), gravity));
+        player.sendMessage(new TranslatableText(translationKey, player.getName(), gravity), false);
 
         return 0;
     }
@@ -58,7 +58,7 @@ class GravityCommand {
         iplayer.setDirty();
 
         if (isSelf) {
-            player.sendMessage(new TranslatableText(translationKey, gravity));
+            player.sendMessage(new TranslatableText(translationKey, gravity), false);
         }
 
         source.sendFeedback(new TranslatableText(translationKey + ".other", player.getName(), gravity), true);
