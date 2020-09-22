@@ -1,0 +1,103 @@
+package com.minelittlepony.unicopia.client.gui;
+
+import com.minelittlepony.unicopia.ability.AbilityDispatcher;
+import com.minelittlepony.unicopia.ability.AbilitySlot;
+import com.minelittlepony.unicopia.client.KeyBindingsHandler;
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
+
+class Slot {
+    private final UHud uHud;
+
+    private final AbilitySlot slot;
+
+    private int x;
+    private int y;
+
+    private float lastCooldown;
+
+    private final int slotPadding;
+    private final int labelOffset;
+
+    private final int size;
+    private final int iconSize;
+
+    private int textureU;
+    private int textureV;
+
+    private int backgroundU = 105;
+    private int backgroundV = 105;
+
+    public Slot(UHud uHud, AbilitySlot slot, int x, int y, int padding, int size, int labelOffset, int iconSize) {
+        this.uHud = uHud;
+        this.slot = slot;
+        this.x = x;
+        this.y = y;
+        this.slotPadding = padding;
+        this.labelOffset = labelOffset;
+        this.size = size;
+        this.iconSize = iconSize;
+    }
+
+    Slot background(int u, int v) {
+        textureU = u;
+        textureV = v;
+        return this;
+    }
+    Slot foreground(int u, int v) {
+        backgroundU = u;
+        backgroundV = v;
+        return this;
+    }
+
+    void renderBackground(MatrixStack matrices, AbilityDispatcher abilities, float tickDelta) {
+        matrices.push();
+        matrices.translate(x, y, 0);
+
+        AbilityDispatcher.Stat stat = abilities.getStat(slot);
+        float cooldown = 0.99999F;// stat.getFillProgress();
+
+        // background
+        UHud.drawTexture(matrices, 0, 0, textureU, textureV, size, size, 128, 128);
+
+        if (cooldown > 0 && cooldown < 1) {
+            float lerpCooldown = MathHelper.lerp(tickDelta, cooldown, lastCooldown);
+
+            lastCooldown = lerpCooldown;
+
+            int progressBottom = size - slotPadding;
+            int progressMax = size - slotPadding * 2;
+            int progressTop = progressBottom - (int)(progressMax * cooldown);
+
+            // progress
+            UHud.fill(matrices, slotPadding, progressTop, size - slotPadding, progressBottom, 0xCFFFFFFF);
+            RenderSystem.enableAlphaTest();
+            RenderSystem.enableBlend();
+        }
+
+        // contents
+        int middle = (int)(size / 2F - iconSize / 2F);
+
+        uHud.renderAbilityIcon(matrices, stat, middle, middle, iconSize, iconSize, iconSize, iconSize);
+
+        // foreground
+        UHud.drawTexture(matrices, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
+
+        matrices.pop();
+    }
+
+    void renderForeground(MatrixStack matrices, AbilityDispatcher abilities, float tickDelta) {
+        Text label = KeyBindingsHandler.INSTANCE.getBinding(slot).getBoundKeyLocalizedText();
+
+        matrices.push();
+        matrices.translate(x + labelOffset, y + labelOffset, 0);
+        matrices.scale(0.5F, 0.5F, 0.5F);
+
+        UHud.drawTextWithShadow(matrices, uHud.font, label, 0, 0, 0xFFFFFF);
+
+        matrices.pop();
+    }
+}

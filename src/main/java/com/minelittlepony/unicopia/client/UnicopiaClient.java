@@ -10,8 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 
 public class UnicopiaClient implements ClientModInitializer {
 
-    private final KeyBindingsHandler keyboard = new KeyBindingsHandler();
-
     private Race lastPreferredRace = InteractionManager.instance().getPreferredRace();
 
     @Override
@@ -34,7 +32,7 @@ public class UnicopiaClient implements ClientModInitializer {
                 }
             }
 
-            keyboard.tick(client);
+            KeyBindingsHandler.INSTANCE.tick(client);
         });
     }
 }

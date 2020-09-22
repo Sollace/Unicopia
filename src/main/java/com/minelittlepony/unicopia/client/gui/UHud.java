@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.client.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
@@ -7,11 +10,12 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Util;
 
 public class UHud extends DrawableHelper {
 
@@ -19,10 +23,15 @@ public class UHud extends DrawableHelper {
 
     public static final Identifier HUD_TEXTURE = new Identifier("unicopia", "textures/gui/hud.png");
 
-    private Slot secondarySlot = new Slot(AbilitySlot.SECONDARY, 26, 0);
-    private Slot tertiarySlot = new Slot(AbilitySlot.TERTIARY, 36, 24);
+    public TextRenderer font;
 
     private final MinecraftClient client = MinecraftClient.getInstance();
+
+    private final List<Slot> slots = Util.make(new ArrayList<>(), slots -> {
+        slots.add(new Slot(this, AbilitySlot.PRIMARY, 0, 0, 8, 49, 38, 24).foreground(0, 59));
+        slots.add(new Slot(this, AbilitySlot.SECONDARY, 26, -5, 3, 22, 17, 18).background(80, 105));
+        slots.add(new Slot(this, AbilitySlot.TERTIARY, 36, 19, 3, 22, 17, 18).background(80, 105));
+    });
 
     public void render(InGameHud hud, MatrixStack matrices, float tickDelta) {
 
@@ -30,44 +39,28 @@ public class UHud extends DrawableHelper {
             return;
         }
 
+        font = client.textRenderer;
+
         int scaledWidth = client.getWindow().getScaledWidth();
         int scaledHeight = client.getWindow().getScaledHeight();
 
-        int x = 104 + (scaledWidth - 50) / 2;
-        int y = 20 + scaledHeight - 70;
+        matrices.push();
+        matrices.translate(104 + (scaledWidth - 50) / 2, 20 + scaledHeight - /*70*/ 80, 0);
 
         RenderSystem.enableAlphaTest();
         RenderSystem.enableBlend();
 
         client.getTextureManager().bindTexture(HUD_TEXTURE);
 
-        int frameHeight = 54;
-        int frameWidth = 54;
-
         AbilityDispatcher abilities = Pony.of(client.player).getAbilities();
 
-        drawTexture(matrices, x, y, 0, 0, frameWidth, frameHeight, 128, 128); // background
-
-        AbilityDispatcher.Stat stat = abilities.getStat(AbilitySlot.PRIMARY);
-
-        float progressPercent = stat.getFillProgress();
-
-        if (progressPercent > 0 && progressPercent < 1) {
-            int progressHeight = (int)(frameHeight * progressPercent);
-
-            drawTexture(matrices, x, y + (frameHeight - progressHeight),
-                61, frameHeight - progressHeight,
-                frameWidth, progressHeight, 128, 128); // progress
-        }
-
-        renderAbilityIcon(matrices, stat, x + 9, y + 15, 32, 32, 32, 32);
-        drawTexture(matrices, x, y, 0, 54, frameWidth, frameHeight, 128, 128); // frame
-
-        secondarySlot.render(matrices, abilities, x, y, tickDelta);
-        tertiarySlot.render(matrices, abilities, x, y, tickDelta);
+        slots.forEach(slot -> slot.renderBackground(matrices, abilities, tickDelta));
+        slots.forEach(slot -> slot.renderForeground(matrices, abilities, tickDelta));
 
         RenderSystem.disableBlend();
         RenderSystem.disableAlphaTest();
+
+        matrices.pop();
     }
 
     void renderAbilityIcon(MatrixStack matrices, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
@@ -79,50 +72,5 @@ public class UHud extends DrawableHelper {
 
             client.getTextureManager().bindTexture(HUD_TEXTURE);
         });
-    }
-
-    class Slot {
-        private final AbilitySlot slot;
-
-        private int x;
-        private int y;
-
-        private float lastCooldown;
-
-        public Slot(AbilitySlot slot, int x, int y) {
-            this.slot = slot;
-            this.x = x;
-            this.y = y;
-        }
-
-        void render(MatrixStack matrices, AbilityDispatcher abilities, int x, int y, float tickDelta) {
-            x += this.x;
-            y += this.y;
-
-            AbilityDispatcher.Stat stat = abilities.getStat(slot);
-            float cooldown = stat.getFillProgress();
-
-            drawTexture(matrices, x, y, 80, 105, 25, 25, 128, 128);
-
-            if (cooldown > 0 && cooldown < 1) {
-                float lerpCooldown = MathHelper.lerp(tickDelta, cooldown, lastCooldown);
-
-                lastCooldown = lerpCooldown;
-
-                int slotPadding = 4;
-                int slotSize = 15;
-
-                int progressBottom = y + slotPadding + slotSize;
-                int progressTop = progressBottom - (int)(15F * cooldown);
-
-                fill(matrices, x + slotPadding, progressTop, x + slotPadding + slotSize, progressBottom, 0xFFFFFFFF);
-                RenderSystem.enableAlphaTest();
-                RenderSystem.enableBlend();
-            }
-
-            renderAbilityIcon(matrices, stat, x + 2, y + 2, 20, 20, 20, 20);
-            drawTexture(matrices, x, y, 105, 105, 25, 25, 128, 128);
-        }
-
     }
 }

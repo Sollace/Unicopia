@@ -14,10 +14,13 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.KeyBinding;
 
-class KeyBindingsHandler {
+public class KeyBindingsHandler {
     private final String KEY_CATEGORY = "unicopia.category.name";
 
+    public static final KeyBindingsHandler INSTANCE = new KeyBindingsHandler();
+
     private final Map<KeyBinding, AbilitySlot> keys = new HashMap<>();
+    private final Map<AbilitySlot, KeyBinding> reverse = new HashMap<>();
 
     private final Set<KeyBinding> pressed = new HashSet<>();
 
@@ -27,8 +30,14 @@ class KeyBindingsHandler {
         addKeybind(GLFW.GLFW_KEY_L, AbilitySlot.TERTIARY);
     }
 
+    public KeyBinding getBinding(AbilitySlot slot) {
+        return reverse.get(slot);
+    }
+
     public void addKeybind(int code, AbilitySlot slot) {
-        keys.put(KeyBindingHelper.registerKeyBinding(new KeyBinding("key.unicopia" + slot.name().toLowerCase(), code, KEY_CATEGORY)), slot);
+        KeyBinding binding = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.unicopia" + slot.name().toLowerCase(), code, KEY_CATEGORY));
+        reverse.put(slot, binding);
+        keys.put(binding, slot);
     }
 
     public void tick(MinecraftClient client) {
