@@ -10,10 +10,11 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.registry.Registry;
 
 class PlayerAttributes {
 
-    static final EntityAttribute EXTENDED_REACH_DISTANCE = new ClampedEntityAttribute("player.reachDistance", 0, 0, 10);
+    static final EntityAttribute EXTENDED_REACH_DISTANCE = register("unicopia.pegasus.reach", new ClampedEntityAttribute("player.reachDistance", 0, 0, 10));
 
     private static final EntityAttributeModifier EARTH_PONY_STRENGTH =
             new EntityAttributeModifier(UUID.fromString("777a5505-521e-480b-b9d5-6ea54f259564"), "Earth Pony Strength", 0.6, Operation.MULTIPLY_TOTAL);
@@ -45,4 +46,8 @@ class PlayerAttributes {
             instance.tryRemoveModifier(modifier.getId());
         }
     }
+
+    private static EntityAttribute register(String id, EntityAttribute attribute) {
+        return Registry.register(Registry.ATTRIBUTE, id, attribute);
+     }
 }
