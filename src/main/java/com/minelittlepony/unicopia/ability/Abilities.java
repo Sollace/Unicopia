@@ -15,8 +15,8 @@ public interface Abilities {
     Registry<Ability<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "abilities"));
 
     // unicorn / alicorn
-    Ability<?> TELEPORT = register(new UnicornTeleportAbility(), "teleport", AbilitySlot.SECONDARY);
     Ability<?> CAST = register(new UnicornCastingAbility(), "cast", AbilitySlot.PRIMARY);
+    Ability<?> TELEPORT = register(new UnicornTeleportAbility(), "teleport", AbilitySlot.SECONDARY);
 
     // earth / alicorn
     Ability<?> STOMP = register(new EarthPonyStompAbility(), "stomp", AbilitySlot.PRIMARY);
