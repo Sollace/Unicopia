@@ -1,5 +1,0 @@
-{   "parent": "unicopia:block/cloud_inner_stairs",
-    "textures": {
-	    "bottom": "unicopia:blocks/dense_cloud_block"
-	}
-}

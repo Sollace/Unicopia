@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.util.dummy.DummyPlayerEntity;
-import com.minelittlepony.unicopia.util.dummy.DummyServerPlayerEntity;
+import com.minelittlepony.unicopia.entity.player.dummy.DummyPlayerEntity;
+import com.minelittlepony.unicopia.entity.player.dummy.DummyServerPlayerEntity;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;

@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import com.minelittlepony.unicopia.particles.SphereParticleEffect;
+import com.minelittlepony.unicopia.particle.SphereParticleEffect;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;

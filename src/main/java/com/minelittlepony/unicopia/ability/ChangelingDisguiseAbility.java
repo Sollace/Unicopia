@@ -3,12 +3,10 @@ package com.minelittlepony.unicopia.ability;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.InAnimate;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.equine.player.Pony;
-import com.minelittlepony.unicopia.magic.spell.DisguiseSpell;
-import com.minelittlepony.unicopia.particles.UParticles;
+import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.block.BlockState;
@@ -59,8 +57,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
                         .orElse(looked);
             }
 
-            if (looked instanceof LightningEntity
-            || (looked instanceof InAnimate && !((InAnimate)looked).canInteract(Race.CHANGELING))) {
+            if (looked instanceof LightningEntity) {
                 looked = null;
             }
         }

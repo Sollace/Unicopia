@@ -11,7 +11,7 @@ import com.minelittlepony.unicopia.TreeTraverser;
 import com.minelittlepony.unicopia.TreeType;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Multi;
-import com.minelittlepony.unicopia.equine.player.Pony;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -109,7 +109,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
 
             player.addVelocity(0, -(ppos.getSquaredDistance(pos)), 0);
 
-            iplayer.getWorld().getEntities(player, areaOfEffect.offset(iplayer.getOriginVector())).forEach(i -> {
+            iplayer.getWorld().getOtherEntities(player, areaOfEffect.offset(iplayer.getOriginVector())).forEach(i -> {
                 double dist = Math.sqrt(pos.getSquaredDistance(i.getBlockPos()));
 
                 if (dist <= rad + 3) {
@@ -119,7 +119,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
                             -(player.getY() - i.getY() - 2) / force + (dist < 1 ? dist : 0),
                             -(player.getZ() - i.getZ()) / force);
 
-                    DamageSource damage = MagicalDamageSource.causePlayerDamage("smash", player);
+                    DamageSource damage = MagicalDamageSource.create("smash", player);
 
                     double amount = (4 * player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue()) / (float)dist;
 

@@ -1,6 +1,0 @@
-{
-    "parent": "unicopia:block/cloud_cube",
-    "textures": {
-        "all": "unicopia:entity/cloud_spawner"
-    }
-}

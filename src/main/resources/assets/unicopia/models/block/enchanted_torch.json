@@ -1,6 +1,0 @@
-{
-    "parent": "unicopia:block/torch_tall",
-    "textures": {
-		"torch": "unicopia:blocks/enchanted_torch"
-    }
-}

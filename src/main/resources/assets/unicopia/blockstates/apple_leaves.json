@@ -1,6 +1,0 @@
-{
-    "variants": {
-        "heavy=false": { "model": "unicopia:block/apple_leaves" },
-        "heavy=true": { "model": "unicopia:block/apple_leaves_heavy" }
-    }
-}

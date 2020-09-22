@@ -8,7 +8,7 @@ import java.util.Set;
 import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.ability.AbilitySlot;
-import com.minelittlepony.unicopia.equine.player.Pony;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;

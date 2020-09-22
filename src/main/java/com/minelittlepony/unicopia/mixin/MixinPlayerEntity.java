@@ -7,9 +7,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.ducks.PonyContainer;
-import com.minelittlepony.unicopia.equine.Ponylike;
-import com.minelittlepony.unicopia.equine.player.Pony;
+import com.minelittlepony.unicopia.entity.PonyContainer;
+import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.entity.EntityDimensions;
@@ -29,7 +29,7 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
     private MixinPlayerEntity() { super(null, null); }
 
     @Override
-    public Ponylike<?> create() {
+    public Equine<?> create() {
         return new Pony((PlayerEntity)(Object)this);
     }
 

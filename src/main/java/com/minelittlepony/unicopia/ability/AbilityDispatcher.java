@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.equine.player.Pony;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.util.NbtSerialisable;

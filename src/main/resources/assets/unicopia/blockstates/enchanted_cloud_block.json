@@ -1,7 +1,0 @@
-{
-    "variants": {
-        "covering=uncovered": { "model": "unicopia:block/enchanted_cloud_block" },
-        "covering=covered": { "model": "unicopia:block/enchanted_cloud_block_covered" },
-        "covering=snow_covered": { "model": "unicopia:block/enchanted_cloud_block" }
-    }
-}

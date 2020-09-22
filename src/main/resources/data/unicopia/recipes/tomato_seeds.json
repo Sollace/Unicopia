@@ -1,7 +1,0 @@
-{
-	"type": "minecraft:crafting_shapeless",
-	"ingredients": [
-        { "tag": "unicopia:fresh_tomatoes" }
-    ],
-	"result": { "item": "unicopia:tomato_seeds", "count": 3 }
-}

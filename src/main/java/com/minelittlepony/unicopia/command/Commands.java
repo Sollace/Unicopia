@@ -12,6 +12,7 @@ public class Commands {
             GravityCommand.register(dispatcher);
             DisguiseCommand.register(dispatcher);
         });
+        @SuppressWarnings("deprecation")
         Object game = FabricLoader.getInstance().getGameInstance();
         if (game instanceof MinecraftServer) {
             ((MinecraftServer)game).setFlightEnabled(true);

@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.equine.player.Pony;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.ability.Abilities;
 
 import net.fabricmc.fabric.api.network.PacketContext;

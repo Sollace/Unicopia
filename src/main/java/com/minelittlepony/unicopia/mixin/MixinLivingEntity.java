@@ -8,9 +8,9 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.ducks.PonyContainer;
-import com.minelittlepony.unicopia.equine.Creature;
-import com.minelittlepony.unicopia.equine.Ponylike;
+import com.minelittlepony.unicopia.entity.Creature;
+import com.minelittlepony.unicopia.entity.PonyContainer;
+import com.minelittlepony.unicopia.entity.Equine;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -18,19 +18,19 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 
 @Mixin(LivingEntity.class)
-abstract class MixinLivingEntity extends Entity implements PonyContainer<Ponylike<?>> {
+abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<?>> {
 
-    private Ponylike<?> caster;
+    private Equine<?> caster;
 
     private MixinLivingEntity() { super(null, null); }
 
     @Override
-    public Ponylike<?> create() {
+    public Equine<?> create() {
         return new Creature((LivingEntity)(Object)this);
     }
 
     @Override
-    public Ponylike<?> get() {
+    public Equine<?> get() {
         if (caster == null) {
             caster = create();
         }

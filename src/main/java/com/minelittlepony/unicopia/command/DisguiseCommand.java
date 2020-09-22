@@ -2,15 +2,15 @@ package com.minelittlepony.unicopia.command;
 
 import java.util.function.Function;
 
-import com.minelittlepony.unicopia.equine.player.Pony;
-import com.minelittlepony.unicopia.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
-import net.minecraft.command.arguments.EntitySummonArgumentType;
-import net.minecraft.command.arguments.NbtCompoundTagArgumentType;
+import net.minecraft.command.argument.EntitySummonArgumentType;
+import net.minecraft.command.argument.NbtCompoundTagArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

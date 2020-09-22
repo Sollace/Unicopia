@@ -25,13 +25,9 @@ public interface Abilities {
     // pegasus / bat / alicorn / changeling
     Ability<?> CARRY = register(new CarryAbility(), "carry", AbilitySlot.PASSIVE);
 
-    // pegasus / alicorn
-    Ability<?> CLOUD = register(new PegasusCloudInteractionAbility(), "cloud", AbilitySlot.TERTIARY);
-
     // changeling
     Ability<?> DISGUISE = register(new ChangelingDisguiseAbility(), "disguise", AbilitySlot.PRIMARY);
     Ability<?> FEED = register(new ChangelingFeedAbility(), "feed", AbilitySlot.SECONDARY);
-    //Ability<?> TRAP = register(new ChangelingTrapAbility(), "trap", AbilitySlot.TERTIARY);
 
     static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {
         Identifier id = new Identifier("unicopia", name);

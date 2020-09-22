@@ -7,9 +7,9 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.equine.player.Pony;
-import com.minelittlepony.unicopia.particles.ParticleUtils;
-import com.minelittlepony.unicopia.particles.UParticles;
+import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -117,7 +117,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     public float drainFrom(PlayerEntity changeling, LivingEntity living) {
-        DamageSource d = MagicalDamageSource.causePlayerDamage("feed", changeling);
+        DamageSource d = MagicalDamageSource.create("feed", changeling);
 
         float damage = living.getHealth()/2;
 

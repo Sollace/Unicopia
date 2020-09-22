@@ -1,8 +1,0 @@
-{   "parent": "unicopia:block/cloud_stairs",
-    "textures": {
-	    "bottom": "unicopia:blocks/enchanted_cloud_block_bottom",
-	    "top": "unicopia:blocks/enchanted_cloud_block_top",
-	    "side": "unicopia:blocks/enchanted_cloud_block",
-	    "step": "unicopia:blocks/enchanted_cloud_slab_side"
-	}
-}

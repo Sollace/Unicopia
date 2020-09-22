@@ -1,5 +1,0 @@
-{   "parent": "unicopia:block/chitin_shell_outer_stairs",
-    "textures": {
-	    "side": "unicopia:blocks/chitin_block_covered"
-	}
-}

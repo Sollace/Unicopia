@@ -59,7 +59,7 @@ public interface VecHelper {
     }
 
     static Stream<Entity> findAllEntitiesInRange(@Nullable Entity origin, World w, BlockPos pos, double radius) {
-        return w.getEntities(origin, new Box(pos).expand(radius), e -> {
+        return w.getOtherEntities(origin, new Box(pos).expand(radius), e -> {
             double dist = Math.sqrt(e.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()));
             double dist2 = Math.sqrt(e.squaredDistanceTo(pos.getX(), pos.getY() - e.getStandingEyeHeight(), pos.getZ()));
 
@@ -73,7 +73,7 @@ public interface VecHelper {
     static List<Entity> getWithinRange(PlayerEntity player, double reach, @Nullable Predicate<? super Entity> predicate) {
         Vec3d look = player.getCameraPosVec(1).multiply(reach);
 
-        return player.world.getEntities(player, player
+        return player.world.getOtherEntities(player, player
                 .getBoundingBox()
                 .expand(look.x, look.y, look.z)
                 .expand(1, 1, 1), predicate);
@@ -120,7 +120,7 @@ public interface VecHelper {
 
         Vec3d hit = null;
         Entity pointedEntity = null;
-        List<Entity> entitiesWithinRange = e.world.getEntities(e, e.getBoundingBox()
+        List<Entity> entitiesWithinRange = e.world.getOtherEntities(e, e.getBoundingBox()
                 .expand(look.x * distance, look.y * distance, look.z * distance)
                 .expand(1, 1, 1), predicate);
 

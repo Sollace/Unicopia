@@ -4,7 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import com.minelittlepony.unicopia.world.item.ZapAppleItem;
+import com.minelittlepony.unicopia.item.ZapAppleItem;
 
 import net.minecraft.client.render.item.ItemModels;
 import net.minecraft.item.ItemStack;

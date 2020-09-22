@@ -8,6 +8,7 @@ import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
 public class AwaitTickQueue {
@@ -22,13 +23,11 @@ public class AwaitTickQueue {
         }
     }
 
-    static void tick(World world) {
-        if (!world.isClient) {
-            synchronized (LOCKER) {
-                final Queue<Entry> tasks = new ArrayDeque<>();
-                PENDING_TASKS = PENDING_TASKS.stream().filter(e -> e.tick(world, tasks)).collect(Collectors.toList());
-                tasks.forEach(e -> e.run(world));
-            }
+    static void tick(ServerWorld world) {
+        synchronized (LOCKER) {
+            final Queue<Entry> tasks = new ArrayDeque<>();
+            PENDING_TASKS = PENDING_TASKS.stream().filter(e -> e.tick(world, tasks)).collect(Collectors.toList());
+            tasks.forEach(e -> e.run(world));
         }
     }
 

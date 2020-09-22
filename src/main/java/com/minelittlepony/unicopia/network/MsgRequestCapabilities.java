@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.equine.player.Pony;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.network.PacketByteBuf;

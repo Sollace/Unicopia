@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import com.minelittlepony.unicopia.particles.MagicParticleEffect;
+import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

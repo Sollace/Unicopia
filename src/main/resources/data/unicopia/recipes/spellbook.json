@@ -1,8 +1,0 @@
-{
-	"type": "minecraft:crafting_shapeless",
-	"ingredients": [
-        { "item": "minecraft:book" },
-        { "item": "unicopia:gem" }
-    ],
-	"result": { "item": "unicopia:spellbook" }
-}

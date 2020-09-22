@@ -1,7 +1,0 @@
-{
-    "parent": "block/cube_column",
-    "textures": {
-        "end": "unicopia:blocks/smooth_marble_block",
-        "side": "unicopia:blocks/chiseled_marble_block_side"
-    }
-}

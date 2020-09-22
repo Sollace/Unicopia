@@ -1,9 +1,0 @@
-{
-  "type": "smelting",
-  "ingredient": {
-    "item": "unicopia:cucoon"
-  },
-  "result": "unicopia:chitin_shell",
-  "experience": 0.3,
-  "cookingtime": 130
-}

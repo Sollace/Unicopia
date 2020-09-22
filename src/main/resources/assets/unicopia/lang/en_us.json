@@ -1,76 +1,6 @@
 {
-  "block.unicopia.cloud_block": "Block of Cloud",
-  "block.unicopia.dense_cloud_block": "Dense Cloud",
-  "block.unicopia.enchanted_cloud_block": "Enchanted Cloud",
-
-  "block.unicopia.dense_cloud_pillar": "Dense Cloud Pillar",
-
-  "block.unicopia.cloud_slab": "Cloud Slab",
-  "block.unicopia.dense_cloud_slab": "Dense Cloud Slab",
-  "block.unicopia.enchanted_cloud_slab": "Enchanted Cloud Slab",
-
-  "block.unicopia.cloud_stairs": "Cloud Stairs",
-  "block.unicopia.dense_cloud_stairs": "Dense Cloud Stairs",
-  "block.unicopia.enchanted_cloud_stairs": "Enchanted Cloud Stairs",
-  
-  "block.unicopia.cloud_fence": "Cloud Fence",
-  "block.unicopia.cloud_farmland": "Tilled Clouds",
-  "block.unicopia.cloud_anvil": "Cloud Anvil",
-
-  "block.unicopia.hive_wall_block": "Hive Wall Block",
-  "block.unicopia.chitin_shell_block": "Chitin Shell Block",
-  "block.unicopia.chitin_shell_stairs": "Chitin Shell Stairs",
-  "block.unicopia.chitin_shell_slab": "Chitin Shell Slab",
-  "block.unicopia.chiseled_chitin_shell_block": "Chiseled Chitin Shell Block",
-  "block.unicopia.chitin_shell": "Chitin Shell",
-  "block.unicopia.slime_drop": "Slimey Plant",
-  "block.unicopia.slime_layer": "Slime",
-
-  "block.unicopia.chiseled_marble_block": "Chiseled Marble Block",
-  "block.unicopia.smooth_marble_block": "Smooth Marble Block",
-  "block.unicopia.smooth_marble_slab": "Smooth Marble Slab",
-
-  "block.unicopia.apple_leaves": "Apple Leaves",
-  "block.unicopia.apple_sapling": "Apple Seeds",
-
-  "block.unicopia.sugar_block": "Block of Sugar",
-
-  "block.unicopia.enchanted_torch": "Enchanted Torch",
-
-  "block.unicopia.misted_glass_door": "Misted Glass Door",
-  "block.unicopia.library_door": "Dutch Library Door",
-  "block.unicopia.bakery_door": "Dutch Bakery Door",
-  "block.unicopia.diamond_door": "Diamond Door",
-
-  "item.unicopia.cloud_spawn_egg": "Cloud Spawn Egg",
-  "item.unicopia.butterfly_spawn_egg": "Butterfly Spawn Egg",
-
-  "item.unicopia.cloud_matter": "Lump of Cloud",
-  "item.unicopia.racing_cloud_spawner": "Racing Cloud",
-  "item.unicopia.construction_cloud_spawner": "Construction Cloud",
-  "item.unicopia.wild_cloud_spawner": "Wild Cloud",
-
-  "item.unicopia.dew_drop": "Dew Drop",
-  "item.unicopia.chitin_shell": "Chitinous Shell",
-
-  "item.unicopia.cucoon": "Cucoon",
-  "item.unicopia.moss": "Moss",
-  "item.unicopia.meadow_brook_staff": "Meadow Brook's Staff",
-  "item.unicopia.meadow_brook_staff.tagline": "It's a big stick",
-  "item.unicopia.remembrance_staff": "Staff of Remembrance",
-  "item.unicopia.spear": "Spear",
-  "item.unicopia.alicorn_amulet": "The Alicorn Amulet",
-  "item.unicopia.alicorn_amulet.tagline": "Time Worn: %s",
 
   "block.unicopia.bed.youAreAMonster": "You may not rest here, you are the monster",
-
-  "item.unicopia.gem": "Gem",
-  "item.unicopia.gem.enchanted": "Gem of %s",
-  "item.unicopia.corrupted_gem": "Fractured Gem",
-  "item.unicopia.corrupted_gem.enchanted": "Fractured Gem of %s",
-
-  "item.unicopia.spellbook": "Spellbook",
-  "item.unicopia.bag_of_holding": "Bag of Holding",
 
   "item.unicopia.green_apple": "Granny Smith Apple",
   "item.unicopia.sweet_apple": "Sweet Apple Acres Apple",
@@ -78,31 +8,6 @@
   "item.unicopia.rotten_apple": "Rotten Apple",
   "item.unicopia.cooked_zap_apple": "Cooked Zap Apple",
   "item.unicopia.zap_apple": "Zap Apple",
-
-  "item.unicopia.apple_seeds": "Apple Seeds",
-
-  "item.unicopia.tomato": "Tomato",
-  "item.unicopia.rotten_tomato": "Rotten Tomato",
-  "item.unicopia.tomato_seeds": "Tomato Seeds",
-
-  "item.unicopia.cloudsdale_tomato": "Cloudsdale Tomato",
-  "item.unicopia.rotten_cloudsdale_tomato": "Rotten Cloudsdale Tomato",
-
-  "item.unicopia.alfalfa_leaves": "Alfalfa",
-  "item.unicopia.alfalfa_seeds": "Grain",
-
-  "item.unicopia.cereal": "Breakfast Cereal",
-  "item.unicopia.boop_o_roops": "Boop 'o Roops",
-  "item.unicopia.daffodil_daisy_sandwich": "Daffodil Daisy Sandwich",
-  "item.unicopia.hay_burger": "Hay Burger",
-  "item.unicopia.hay_fries": "Hay Fries",
-  "item.unicopia.salad": "Salad",
-  "item.unicopia.wheat_worms": "Wheat Worms",
-  "item.unicopia.apple_cider": "Apple Cider",
-  "item.unicopia.mug": "Mug",
-
-  "item.unicopia.juice": "Juice",
-  "item.unicopia.burned_juice": "Burned Juice",
 
   "item.unicopia.music_disc_pet": "Music Disc",
   "item.unicopia.music_disc_pet.desc": "Danial Ingram - pet",
@@ -304,19 +209,6 @@
   "death.attack.acid": "%1$s drowned in acid",
   "death.attack.food_poisoning": "%1$s died of food poisoning",
   "death.attack.food_poisoning.attacker": "%2$s poisoned %1$s to death",
-
-  "advancements.adventure.bag_of_holding.title": "Read the Manual",
-  "advancements.adventure.bag_of_holding.description": "Successfully die using the Bag of Holding",
-  "advancements.adventure.bag_of_holding_2.title": "Oops! I did it again",
-  "advancements.adventure.bag_of_holding_2.description": "Die by the Bag of Holding a second time",
-  "advancements.adventure.bag_of_holding_3.title": "Oh come on!",
-  "advancements.adventure.bag_of_holding_3.description": "-_-",
-  "advancements.adventure.first_staff.title": "Baby Steps",
-  "advancements.adventure.first_staff.description": "Craft your first staff",
-  "advancements.adventure.just_a_stick.title": "Old 'n Busted",
-  "advancements.adventure.just_a_stick.description": "It's a stick. What did you expect?",
-  "advancements.adventure.unicopia_beginning.title": "Just the beginning...",
-  "advancements.adventure.unicopia_beginning.description": "Found your first gem, but what can it do?",
 
   "effect.food_poisoning": "Food Poisoning",
 

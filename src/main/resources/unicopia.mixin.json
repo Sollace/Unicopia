@@ -5,32 +5,22 @@
   "refmap": "unicopia.mixin.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "CriterionsRegistry",
     "MixinBlockItem",
-    "MixinEntityContextImpl",
-    "MixinFallingBlock",
-    "MixinFarmlandBlock",
-    "MixinHoeItem",
     "MixinItem",
-    "MixinItems",
     "MixinItemEntity",
+    "MixinItems",
     "MixinLivingEntity",
     "MixinPlayerEntity",
     "MixinProjectileEntity",
-    "MixinServerPlayerEntity",
-    "MixinStructureFeature",
-    "MixinStructuresConfig",
-    "Walker"
+    "MixinServerPlayerEntity"
   ],
   "client": [
-    "client.DefaultTexturesRegistry",
     "client.MixinCamera",
     "client.MixinEntityRenderDispatcher",
-    "client.MixinInGameHud",
     "client.MixinGameRenderer",
+    "client.MixinInGameHud",
     "client.MixinItemModels",
     "client.MixinKeyboardInput",
-    "client.MixinMinecraftClient",
     "client.MixinMouse"
   ],
   "injectors": {

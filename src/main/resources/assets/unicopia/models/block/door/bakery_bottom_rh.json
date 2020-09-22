@@ -1,7 +1,0 @@
-{
-    "parent": "unicopia:block/door/bottom_rh",
-    "textures": {
-        "bottom": "unicopia:blocks/bakery_door_lower",
-        "top": "unicopia:blocks/bakery_door_upper"
-    }
-}

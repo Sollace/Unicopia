@@ -2,9 +2,9 @@ package com.minelittlepony.unicopia.network;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.magic.Spell;
-import com.minelittlepony.unicopia.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.CompoundTag;

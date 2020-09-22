@@ -1,6 +1,0 @@
-{
-    "variants": {
-		"lit=true": { "model": "unicopia:block/enchanted_torch_lit" },
-		"lit=false": { "model": "unicopia:block/enchanted_torch" }
-    }
-}

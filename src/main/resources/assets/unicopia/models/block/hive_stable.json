@@ -1,7 +1,0 @@
-{
-    "parent": "block/cube_column",
-    "textures": {
-        "end": "unicopia:blocks/hive_stable",
-        "side": "unicopia:blocks/hive_end"
-    }
-}

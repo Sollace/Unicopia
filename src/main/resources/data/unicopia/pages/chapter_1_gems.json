@@ -1,9 +1,0 @@
-{
-	"parent": "unicopia:preface",
-	"texture": "unicopia:chapter_1_gems",
-	"state": "unread",
-	"conditions": {
-		"type": "unicopia:compound_condition",
-		"conditions": []
-	}
-}

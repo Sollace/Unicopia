@@ -1,7 +1,0 @@
-{
-    "variants": {
-        "covering=uncovered": { "model": "unicopia:block/chitin_shell_block" },
-        "covering=covered": { "model": "unicopia:block/chitin_shell_block_covered" },
-        "covering=snow_covered": { "model": "unicopia:block/chitin_shell_block_snow" }
-    }
-}

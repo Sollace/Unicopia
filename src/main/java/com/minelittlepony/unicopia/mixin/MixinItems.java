@@ -4,7 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import com.minelittlepony.unicopia.world.item.VanillaOverrides;
+import com.minelittlepony.unicopia.item.VanillaOverrides;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;

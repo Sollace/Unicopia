@@ -10,11 +10,11 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
 
-import com.minelittlepony.unicopia.magic.Caster;
-import com.minelittlepony.unicopia.particles.ParticleHandle.Attachment;
-import com.minelittlepony.unicopia.particles.ParticleHandle.Link;
-import com.minelittlepony.unicopia.world.client.render.RenderLayers;
-import com.minelittlepony.unicopia.particles.SphereParticleEffect;
+import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.client.render.RenderLayers;
+import com.minelittlepony.unicopia.particle.SphereParticleEffect;
+import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
+import com.minelittlepony.unicopia.particle.ParticleHandle.Link;
 import com.minelittlepony.common.util.Color;
 
 public class SphereParticle extends Particle implements Attachment {

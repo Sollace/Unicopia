@@ -1,6 +1,0 @@
-{
-	"parent": "unicopia:block/tomato_plant/stage1",
-    "textures": {
-        "crop": "unicopia:blocks/tomato_plant/stage_3"
-    }
-}

@@ -9,9 +9,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
-import net.minecraft.entity.damage.ProjectileDamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -19,9 +16,6 @@ import net.minecraft.text.TranslatableText;
 public class MagicalDamageSource extends EntityDamageSource {
 
     public static final DamageSource FOOD_POISONING = mundane("food_poisoning");
-    public static final DamageSource ACID = mundane("acid");
-    public static final DamageSource ALICORN_AMULET = new MagicalDamageSource("alicorn_amulet", true, true);
-    public static final DamageSource DARKNESS = create("darkness");
     public static final DamageSource ZAP_APPLE = create("zap");
 
     public static DamageSource mundane(String type) {
@@ -32,16 +26,8 @@ public class MagicalDamageSource extends EntityDamageSource {
         return new MagicalDamageSource(type, false, false);
     }
 
-    public static DamageSource causePlayerDamage(String type, PlayerEntity player) {
-        return causeMobDamage(type, player);
-    }
-
-    public static DamageSource causeMobDamage(String type, LivingEntity source) {
+    public static DamageSource create(String type, LivingEntity source) {
         return new MagicalDamageSource(type, source, false, false);
-    }
-
-    public static DamageSource causeIndirect(String type, ArrowEntity source, @Nullable Entity instigator) {
-        return new ProjectileDamageSource(type, source, instigator).setProjectile();
     }
 
     protected MagicalDamageSource(String type, boolean direct, boolean unblockable) {
