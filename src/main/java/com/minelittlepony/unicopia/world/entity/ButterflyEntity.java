@@ -25,11 +25,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.biome.Biome.SpawnEntry;
 
 public class ButterflyEntity extends AmbientEntity {
-
-    public static final SpawnEntry SPAWN_ENTRY = new SpawnEntry(UEntities.BUTTERFLY, 15, 9, 15);
 
     private static final TrackedData<Boolean> RESTING = DataTracker.registerData(ButterflyEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 

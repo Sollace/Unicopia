@@ -18,11 +18,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.biome.Biome.SpawnEntry;
 
 public class RainbowEntity extends MobEntity implements InAnimate {
-
-    public static final SpawnEntry SPAWN_ENTRY = new SpawnEntry(UEntities.RAINBOW, 1, 1, 1);
 
     private int ticksAlive;
 

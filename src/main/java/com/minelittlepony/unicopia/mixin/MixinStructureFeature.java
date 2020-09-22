@@ -7,8 +7,8 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 @Mixin(StructureFeature.class)
 public interface MixinStructureFeature {
-    @Invoker
+    @Invoker("register")
     static <F extends StructureFeature<?>> F register(String name, F structureFeature, GenerationStep.Feature step) {
-        return null;
+        throw new NullPointerException("mixin y u fail");
     }
 }

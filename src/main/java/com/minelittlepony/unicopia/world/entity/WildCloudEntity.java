@@ -16,13 +16,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.biome.Biome.SpawnEntry;
 import net.minecraft.world.chunk.WorldChunk;
 
 public class WildCloudEntity extends CloudEntity {
-
-    public static final SpawnEntry SPAWN_ENTRY_LAND = new SpawnEntry(UEntities.WILD_CLOUD, 1, 1, 15);
-    public static final SpawnEntry SPAWN_ENTRY_OCEAN = new SpawnEntry(UEntities.WILD_CLOUD, 1, 1, 7);
 
     public WildCloudEntity(EntityType<WildCloudEntity> type, World world) {
         super(type, world);

@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.fabricmc.fabric.impl.biome.InternalBiomeData;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
@@ -12,13 +13,9 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.biome.EndBiome;
-import net.minecraft.world.biome.ForestBiome;
-import net.minecraft.world.biome.MountainsBiome;
-import net.minecraft.world.biome.NetherWastesBiome;
 import net.minecraft.world.biome.OceanBiome;
-import net.minecraft.world.biome.PlainsBiome;
-import net.minecraft.world.biome.RiverBiome;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biome.SpawnEntry;
 
 public interface UEntities {
     EntityType<SpellbookEntity> SPELLBOOK = register("spellbook", FabricEntityTypeBuilder.create(SpawnGroup.MISC, SpellbookEntity::new)
@@ -71,17 +68,26 @@ public interface UEntities {
     }
 
     static void bootstrap() {
+        final SpawnEntry CLOUD_SPAWN_ENTRY_LAND = new SpawnEntry(WILD_CLOUD, 1, 1, 15);
+        final SpawnEntry CLOUD_SPAWN_ENTRY_OCEAN = new SpawnEntry(WILD_CLOUD, 1, 1, 7);
+        final SpawnEntry BUTTERFLY_SPAWN_ENTRY = new SpawnEntry(BUTTERFLY, 15, 9, 15);
+        final SpawnEntry RAINBOW_SPAWN_ENTRY = new SpawnEntry(RAINBOW, 1, 1, 1);
+
         Registry.BIOME.forEach(biome -> {
-            if (!(biome instanceof NetherWastesBiome || biome instanceof EndBiome)) {
-                addifAbsent(biome.getEntitySpawnList(SpawnGroup.AMBIENT), biome instanceof OceanBiome ? WildCloudEntity.SPAWN_ENTRY_OCEAN : WildCloudEntity.SPAWN_ENTRY_LAND);
-                addifAbsent(biome.getEntitySpawnList(SpawnGroup.CREATURE), RainbowEntity.SPAWN_ENTRY);
+            Biome.Category category = biome.getCategory();
+
+            boolean isNether = category == Biome.Category.NETHER || InternalBiomeData.getNetherBiomes().contains(biome);
+
+            if (!isNether && category != Biome.Category.THEEND) {
+                addifAbsent(biome.getEntitySpawnList(SpawnGroup.AMBIENT), biome instanceof OceanBiome ? CLOUD_SPAWN_ENTRY_OCEAN : CLOUD_SPAWN_ENTRY_LAND);
+                addifAbsent(biome.getEntitySpawnList(SpawnGroup.CREATURE), RAINBOW_SPAWN_ENTRY);
             }
 
-            if (biome instanceof PlainsBiome
-                || biome instanceof RiverBiome
-                || biome instanceof MountainsBiome
-                || biome instanceof ForestBiome) {
-                addifAbsent(biome.getEntitySpawnList(SpawnGroup.AMBIENT), ButterflyEntity.SPAWN_ENTRY);
+            if (category == Biome.Category.PLAINS
+                || category == Biome.Category.RIVER
+                || category == Biome.Category.FOREST
+                || category == Biome.Category.EXTREME_HILLS) {
+                addifAbsent(biome.getEntitySpawnList(SpawnGroup.AMBIENT), BUTTERFLY_SPAWN_ENTRY);
             }
         });
     }
@@ -91,4 +97,6 @@ public interface UEntities {
             entries.add(entry);
         }
     }
+
+
 }
