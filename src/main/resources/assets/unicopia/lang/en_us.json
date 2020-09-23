@@ -1,6 +1,6 @@
 {
 
-  "block.unicopia.bed.youAreAMonster": "You may not rest here, you are the monster",
+  "block.unicopia.bed.not_safe": "You may not rest here, there are enemies nearby",
 
   "item.unicopia.green_apple": "Granny Smith Apple",
   "item.unicopia.sweet_apple": "Sweet Apple Acres Apple",
@@ -78,15 +78,6 @@
 
   "curse.siphon": "Siphoning",
   "curse.siphon.tagline": "Energy III",
-
-  "entity.unicopia.racing_cloud": "Bucking Bronco",
-  "entity.unicopia.construction_cloud": "Construction Cloud",
-  "entity.unicopia.cloud": "Cloud",
-  "entity.unicopia.spell": "Magic",
-  "entity.unicopia.spellbook": "Spellbook",
-  "entity.unicopia.butterfly": "Butterfly",
-  "entity.unicopia.spear": "Spear",
-  "entity.unicopia.cucoon": "Cucoon",
 
   "toxicity.safe.name": "Safe",
   "toxicity.mild.name": "Mildly Toxic",
@@ -189,8 +180,6 @@
 
   "unicopia.power.feed": "Primary Changeling ability",
   "unicopia.power.disguise": "Secondary Changeling ability",
-
-  "unicopia.gui.title.bagofholding": "Bag of Holding",
 
   "death.attack.alicorn_amulet": "%1$s was driven insane",
   "death.attack.darkness": "%1$s went missing",

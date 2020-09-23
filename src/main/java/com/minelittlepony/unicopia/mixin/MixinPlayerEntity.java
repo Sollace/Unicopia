@@ -59,9 +59,11 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
             cancellable = true)
     private void onTrySleep(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> info) {
         if (!world.isClient) {
-            Either<PlayerEntity.SleepFailureReason, Unit> result = get().trySleep(pos);
+            get().trySleep(pos).ifPresent(reason -> {
+                ((PlayerEntity)(Object)this).sendMessage(reason, true);
 
-            result.ifLeft(reason -> info.setReturnValue(result));
+                info.setReturnValue(Either.right(Unit.INSTANCE));
+            });
         }
     }
 

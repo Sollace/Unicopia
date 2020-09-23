@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import java.util.Optional;
+
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
@@ -24,8 +26,6 @@ import com.minelittlepony.unicopia.util.Copieable;
 import com.minelittlepony.common.util.animation.LinearInterpolator;
 import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
-import com.mojang.datafixers.util.Either;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
@@ -33,13 +33,13 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerEntity.SleepFailureReason;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Unit;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -269,8 +269,13 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         return false;
     }
 
-    public Either<SleepFailureReason, Unit> trySleep(BlockPos pos) {
-        return Either.right(Unit.INSTANCE);
+    public Optional<Text> trySleep(BlockPos pos) {
+
+        if (findAllSpellsInRange(10).filter(p -> p instanceof Pony).map(Pony.class::cast).map(Pony::getSpecies).anyMatch(r -> r.isEnemy(getSpecies()))) {
+            return Optional.of(new TranslatableText("block.unicopia.bed.not_safe"));
+        }
+
+        return Optional.empty();
     }
 
     public void onEat(ItemStack stack) {
