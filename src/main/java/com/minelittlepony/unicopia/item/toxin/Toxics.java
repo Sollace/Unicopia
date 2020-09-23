@@ -31,7 +31,7 @@ public interface Toxics {
     static void bootstrap() {}
 
     static Toxic register(Item target, FoodComponent food, UseAction action, Toxicity toxicity, Toxin toxin) {
-        Toxic toxic = new Toxic(target, action, toxin, toxicity);
+        Toxic toxic = new Toxic(action, toxin, toxicity);
         ToxicHolder holder = (ToxicHolder)target;
         holder.setFood(food);
         holder.setToxic(toxic);

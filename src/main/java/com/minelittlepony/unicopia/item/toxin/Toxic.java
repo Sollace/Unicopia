@@ -8,7 +8,6 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -19,18 +18,15 @@ import net.minecraft.world.World;
 
 public class Toxic {
 
-    private final Item item;
-
     private final UseAction action;
     private final Function<ItemStack, Toxicity> toxicity;
     private final Toxin toxin;
 
-    Toxic(Item item, UseAction action, Toxin toxin, Toxicity toxicity) {
-        this(item, action, toxin, stack -> toxicity);
+    Toxic(UseAction action, Toxin toxin, Toxicity toxicity) {
+        this(action, toxin, stack -> toxicity);
     }
 
-    Toxic(Item item, UseAction action, Toxin toxin, Function<ItemStack, Toxicity> toxicity) {
-        this.item = item;
+    Toxic(UseAction action, Toxin toxin, Function<ItemStack, Toxicity> toxicity) {
         this.action = action;
         this.toxin = toxin;
         this.toxicity = toxicity;
@@ -52,7 +48,11 @@ public class Toxic {
             toxin.afflict((PlayerEntity)entity, t, stack);
         }
 
-        return new ItemStack(item.getRecipeRemainder());
+        if (!(entity instanceof PlayerEntity) || !((PlayerEntity)entity).abilities.creativeMode) {
+            stack.decrement(1);
+        }
+
+        return stack;
     }
 
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand, Supplier<TypedActionResult<ItemStack>> sup) {
