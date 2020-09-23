@@ -24,13 +24,14 @@ public final class MineLPConnector {
             case GRYPHON:
             case HIPPOGRIFF:
             case PEGASUS:
-            case BATPONY:
                 return Race.PEGASUS;
+            case BATPONY:
+                return Race.BAT;
             case SEAPONY:
             case UNICORN:
                 return Race.UNICORN;
             default:
-                return Race.EARTH;
+                return Race.HUMAN;
         }
     }
 }

@@ -7,9 +7,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
+import com.minelittlepony.common.client.gui.sprite.TextureSprite;
+import com.minelittlepony.common.client.gui.style.Style;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 
 public enum Race implements Affine {
     /**
@@ -101,6 +104,16 @@ public enum Race implements Affine {
         return this;
     }
 
+    public Style getStyle() {
+        return new Style()
+                .setIcon(new TextureSprite()
+                        .setPosition(2, 2)
+                        .setSize(16, 16)
+                        .setTexture(new Identifier("unicopia", "textures/gui/icons.png"))
+                        .setTextureOffset((16 * ordinal()) % 256, (ordinal() / 256) * 16)
+                )
+                .setTooltip(getTranslationKey(), 0, 10);
+    }
 
     public boolean equals(String s) {
         return name().equalsIgnoreCase(s)

@@ -18,16 +18,19 @@ public class InteractionManager {
         return INSTANCE;
     }
 
+    /**
+     * Returns true on the client if the passed in player entity is the client's player.
+     * Always returns false on the server.
+     */
     public boolean isClientPlayer(@Nullable PlayerEntity player) {
         return false;
     }
 
+    /**
+     * The player's camera mode. Always 0 on the server.
+     */
     public int getViewMode() {
         return 0;
-    }
-
-    public Race getPreferredRace() {
-        return Unicopia.getConfig().getPrefferedRace();
     }
 
     /**

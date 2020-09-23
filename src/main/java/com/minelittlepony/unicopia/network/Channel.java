@@ -12,14 +12,15 @@ import net.minecraft.network.PacketByteBuf;
 
 public interface Channel {
 
-    SPacketType<MsgPlayerAbility<?>> PLAYER_ABILITY = clientToServer(new Identifier("unicopia", "player_ability"), MsgPlayerAbility::new);
+    SPacketType<MsgPlayerAbility<?>> CLIENT_PLAYER_ABILITY = clientToServer(new Identifier("unicopia", "player_ability"), MsgPlayerAbility::new);
 
-    SPacketType<MsgRequestCapabilities> REQUEST_CAPABILITIES = clientToServer(new Identifier("unicopia", "request_capabilities"), MsgRequestCapabilities::new);
-    CPacketType<MsgPlayerCapabilities> PLAYER_CAPABILITIES = serverToClient(new Identifier("unicopia", "player_capabilities"), MsgPlayerCapabilities::new);
+    SPacketType<MsgRequestCapabilities> CLIENT_REQUEST_CAPABILITIES = clientToServer(new Identifier("unicopia", "request_capabilities"), MsgRequestCapabilities::new);
 
-    SPacketType<MsgPlayerCapabilities> BROADCAST_CAPABILITIES = broadcast(PLAYER_CAPABILITIES, MsgPlayerCapabilities::new);
+    CPacketType<MsgPlayerCapabilities> SERVER_PLAYER_CAPABILITIES = serverToClient(new Identifier("unicopia", "player_capabilities"), MsgPlayerCapabilities::new);
 
-    CPacketType<MsgSpawnProjectile> SPAWN_PROJECTILE = serverToClient(new Identifier("unicopia", "projectile_entity"), MsgSpawnProjectile::new);
+    SPacketType<MsgPlayerCapabilities> BROADCAST_CAPABILITIES = broadcast(SERVER_PLAYER_CAPABILITIES, MsgPlayerCapabilities::new);
+
+    CPacketType<MsgSpawnProjectile> SERVER_SPAWN_PROJECTILE = serverToClient(new Identifier("unicopia", "projectile_entity"), MsgSpawnProjectile::new);
 
     static void bootstrap() { }
 

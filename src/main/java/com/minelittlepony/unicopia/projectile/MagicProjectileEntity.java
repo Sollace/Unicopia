@@ -293,6 +293,6 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
 
     @Override
     public Packet<?> createSpawnPacket() {
-        return Channel.SPAWN_PROJECTILE.toPacket(new MsgSpawnProjectile(this));
+        return Channel.SERVER_SPAWN_PROJECTILE.toPacket(new MsgSpawnProjectile(this));
     }
 }

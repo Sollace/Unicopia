@@ -5,8 +5,10 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.magic.AttachableSpell;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -21,11 +23,13 @@ import com.minelittlepony.unicopia.item.toxin.Toxin;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
+import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.network.Transmittable;
 import com.minelittlepony.unicopia.util.Copieable;
 import com.minelittlepony.common.util.animation.LinearInterpolator;
 import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
@@ -38,6 +42,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
@@ -65,7 +70,12 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     private final PlayerEntity entity;
 
-    private boolean dirty = false;
+    private boolean dirty;
+    private boolean speciesSet;
+    private boolean speciesPersisted;
+
+    @Nullable
+    private Race clientPreferredRace;
 
     private boolean invisible = false;
 
@@ -73,7 +83,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         this.entity = player;
         this.mana = new ManaContainer(this);
 
-        player.getDataTracker().startTracking(RACE, Race.EARTH.ordinal());
+        player.getDataTracker().startTracking(RACE, Race.HUMAN.ordinal());
         player.getDataTracker().startTracking(EFFECT, new CompoundTag());
         player.getDataTracker().startTracking(HELD_EFFECT, new CompoundTag());
     }
@@ -94,6 +104,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     @Override
     public void setSpecies(Race race) {
         race = race.validate(entity);
+        speciesSet = true;
 
         entity.getDataTracker().set(RACE, race.ordinal());
 
@@ -108,6 +119,10 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     @Override
     public boolean isInvisible() {
         return invisible && hasSpell();
+    }
+
+    public boolean isSpeciesPersisted() {
+        return speciesPersisted;
     }
 
     @Override
@@ -129,7 +144,6 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         dirty = false;
 
         if (entity instanceof ServerPlayerEntity) {
-            System.out.println("Sending capabilities for player");
             Channel.BROADCAST_CAPABILITIES.send(new MsgPlayerCapabilities(full, this));
         }
     }
@@ -161,7 +175,25 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     @Override
     public boolean beforeUpdate() {
-        if (entity.world.isClient()) {
+
+        if (!speciesSet && getWorld() instanceof ServerWorld) {
+            setSpecies(WorldTribeManager.forWorld((ServerWorld)getWorld()).getDefaultRace());
+            setDirty();
+        }
+
+        if (isClientPlayer() && !speciesSet) {
+            Race race = UnicopiaClient.getPreferredRace();
+
+            if (race != clientPreferredRace) {
+                clientPreferredRace = race;
+
+                if (race != getSpecies()) {
+                    Channel.CLIENT_REQUEST_CAPABILITIES.send(new MsgRequestCapabilities(race));
+                }
+            }
+        }
+
+        if (isClient()) {
             if (entity.hasVehicle() && entity.isSneaking()) {
 
                 Entity ridee = entity.getVehicle();
@@ -300,6 +332,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     @Override
     public void fromNBT(CompoundTag compound) {
+        speciesPersisted = true;
         setSpecies(Race.fromName(compound.getString("playerSpecies")));
 
         powers.fromNBT(compound.getCompound("powers"));
@@ -312,6 +345,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     @Override
     public void copyFrom(Pony oldPlayer) {
+        speciesPersisted = oldPlayer.speciesPersisted;
         setSpell(oldPlayer.getSpell());
         setSpecies(oldPlayer.getSpecies());
         setDirty();
