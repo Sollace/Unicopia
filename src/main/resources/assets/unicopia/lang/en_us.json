@@ -2,6 +2,9 @@
 
   "block.unicopia.bed.not_safe": "You may not rest here, there are enemies nearby",
 
+  "itemGroup.unicopia.items": "Unicopia - Misc.",
+  "itemGroup.unicopia.horsefeed": "Unicopia - Horse Feed",
+
   "item.unicopia.green_apple": "Granny Smith Apple",
   "item.unicopia.sweet_apple": "Sweet Apple Acres Apple",
   "item.unicopia.sour_apple": "Sour Apple",
