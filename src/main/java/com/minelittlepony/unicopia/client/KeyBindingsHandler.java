@@ -55,11 +55,9 @@ public class KeyBindingsHandler {
 
             if (i.isPressed()) {
                 if (pressed.add(i)) {
-                    System.out.println("Key down " + slot);
                     iplayer.getAbilities().activate(slot);
                 }
             } else if (pressed.remove(i)) {
-                System.out.println("Key up " + slot);
                 iplayer.getAbilities().clear(slot);
             }
         }
