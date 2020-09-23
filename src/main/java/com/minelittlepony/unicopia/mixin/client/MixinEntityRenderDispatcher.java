@@ -45,7 +45,9 @@ abstract class MixinEntityRenderDispatcher {
         Entity e = effect.getDisguise();
 
         if (e != null) {
+            WorldRenderDelegate.INSTANCE.afterEntityRender(Pony.of((PlayerEntity)entity), matrices);
             info.cancel();
+
             if (DisguiseSpell.isAttachedEntity(e) && (x != 0 || y != 0 || z != 0)) {
                 Vec3d cam = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
 
