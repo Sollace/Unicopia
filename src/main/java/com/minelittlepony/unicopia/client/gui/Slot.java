@@ -58,7 +58,7 @@ class Slot {
         matrices.translate(x, y, 0);
 
         AbilityDispatcher.Stat stat = abilities.getStat(slot);
-        float cooldown = 0.99999F;// stat.getFillProgress();
+        float cooldown = stat.getFillProgress();
 
         // background
         UHud.drawTexture(matrices, 0, 0, textureU, textureV, size, size, 128, 128);

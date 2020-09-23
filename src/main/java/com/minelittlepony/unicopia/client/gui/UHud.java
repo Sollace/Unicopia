@@ -28,7 +28,7 @@ public class UHud extends DrawableHelper {
     private final MinecraftClient client = MinecraftClient.getInstance();
 
     private final List<Slot> slots = Util.make(new ArrayList<>(), slots -> {
-        slots.add(new Slot(this, AbilitySlot.PRIMARY, 0, 0, 8, 49, 38, 24).foreground(0, 59));
+        slots.add(new Slot(this, AbilitySlot.PRIMARY, 0, 0, 8, 49, 38, 24).background(0, 5).foreground(0, 59));
         slots.add(new Slot(this, AbilitySlot.SECONDARY, 26, -5, 3, 22, 17, 18).background(80, 105));
         slots.add(new Slot(this, AbilitySlot.TERTIARY, 36, 19, 3, 22, 17, 18).background(80, 105));
     });
@@ -45,7 +45,7 @@ public class UHud extends DrawableHelper {
         int scaledHeight = client.getWindow().getScaledHeight();
 
         matrices.push();
-        matrices.translate(104 + (scaledWidth - 50) / 2, 20 + scaledHeight - /*70*/ 80, 0);
+        matrices.translate(104 + (scaledWidth - 50) / 2, 20 + scaledHeight - 70, 0);
 
         RenderSystem.enableAlphaTest();
         RenderSystem.enableBlend();
