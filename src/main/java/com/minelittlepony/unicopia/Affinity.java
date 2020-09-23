@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.ability.magic;
+package com.minelittlepony.unicopia;
 
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -38,6 +38,10 @@ public enum Affinity {
 
     public boolean isNeutral() {
         return this == NEUTRAL;
+    }
+
+    public boolean alignsWith(Affinity other) {
+        return isNeutral() || other.isNeutral() || this == other;
     }
 
     public Affinity[] getImplicators() {

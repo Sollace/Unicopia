@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.entity;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Affine;
-import com.minelittlepony.unicopia.ability.magic.Affinity;
 import com.minelittlepony.unicopia.ability.magic.AttachableSpell;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;

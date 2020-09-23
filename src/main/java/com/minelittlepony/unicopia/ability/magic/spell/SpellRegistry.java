@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import com.minelittlepony.unicopia.ability.magic.Affinity;
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;

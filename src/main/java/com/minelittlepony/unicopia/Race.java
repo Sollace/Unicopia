@@ -7,10 +7,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
+import com.minelittlepony.unicopia.ability.magic.Affine;
 
 import net.minecraft.entity.player.PlayerEntity;
 
-public enum Race {
+public enum Race implements Affine {
     /**
      * The default, unset race.
      * This is used if there are no other races.
@@ -33,6 +34,11 @@ public enum Race {
         this.magic = magic;
         this.flight = flight;
         this.earth = earth;
+    }
+
+    @Override
+    public Affinity getAffinity() {
+        return this == CHANGELING ? Affinity.BAD : Affinity.NEUTRAL;
     }
 
     public boolean hasIronGut() {
@@ -70,7 +76,6 @@ public enum Race {
     public String getTranslationKey() {
         return String.format("unicopia.race.%s", name().toLowerCase());
     }
-
 
     public boolean isPermitted(PlayerEntity sender) {
         if (isOp() && (sender == null || !sender.abilities.creativeMode)) {

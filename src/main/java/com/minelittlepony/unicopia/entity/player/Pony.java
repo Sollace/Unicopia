@@ -2,10 +2,10 @@ package com.minelittlepony.unicopia.entity.player;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
-import com.minelittlepony.unicopia.ability.magic.Affinity;
 import com.minelittlepony.unicopia.ability.magic.AttachableSpell;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;

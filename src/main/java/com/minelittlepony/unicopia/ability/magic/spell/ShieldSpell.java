@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.ability.magic.Affinity;
 import com.minelittlepony.unicopia.ability.magic.AttachableSpell;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.player.Pony;

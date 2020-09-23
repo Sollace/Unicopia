@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.function.Supplier;
 
-import com.minelittlepony.unicopia.ability.magic.Affinity;
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;

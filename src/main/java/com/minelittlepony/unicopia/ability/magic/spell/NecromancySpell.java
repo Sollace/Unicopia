@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.minelittlepony.unicopia.ability.magic.Affinity;
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.WorldEvent;

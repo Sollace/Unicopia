@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability.magic;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
