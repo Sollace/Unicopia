@@ -184,6 +184,7 @@
   "unicopia.power.feed": "Primary Changeling ability",
   "unicopia.power.disguise": "Secondary Changeling ability",
 
+  "death.attack.magical_exhaustion": "%1$s exhausted themselves",
   "death.attack.alicorn_amulet": "%1$s was driven insane",
   "death.attack.darkness": "%1$s went missing",
   "death.attack.feed": "%1$s was drained of all life",

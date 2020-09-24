@@ -15,6 +15,7 @@ import net.minecraft.text.TranslatableText;
 
 public class MagicalDamageSource extends EntityDamageSource {
 
+    public static final DamageSource EXHAUSTION = new MagicalDamageSource("magical_exhaustion", true, true);
     public static final DamageSource FOOD_POISONING = mundane("food_poisoning");
     public static final DamageSource ZAP_APPLE = create("zap");
 

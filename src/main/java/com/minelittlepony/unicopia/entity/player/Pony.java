@@ -26,13 +26,13 @@ import com.minelittlepony.unicopia.network.MsgOtherPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.network.Transmittable;
 import com.minelittlepony.unicopia.util.Copieable;
+import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.common.util.animation.LinearInterpolator;
 import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -290,7 +290,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
             if (food < 0) {
                 entity.getHungerManager().add(-entity.getHungerManager().getFoodLevel(), 0);
-                entity.damage(DamageSource.MAGIC, -food/2);
+                entity.damage(MagicalDamageSource.EXHAUSTION, -food/2);
             } else {
                 entity.getHungerManager().add((int)-foodSubtract, 0);
             }
