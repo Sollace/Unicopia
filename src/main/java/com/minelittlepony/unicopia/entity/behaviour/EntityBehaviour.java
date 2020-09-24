@@ -176,6 +176,7 @@ public class EntityBehaviour<T extends Entity> {
     }
 
     static {
+        register(VillagerBehaviour::new, EntityType.VILLAGER, EntityType.WANDERING_TRADER);
         register(SheepBehaviour::new, EntityType.SHEEP);
         register(EndermanBehaviour::new, EntityType.ENDERMAN);
         register(SpellcastingIllagerBehaviour::new, EntityType.ILLUSIONER, EntityType.EVOKER);
