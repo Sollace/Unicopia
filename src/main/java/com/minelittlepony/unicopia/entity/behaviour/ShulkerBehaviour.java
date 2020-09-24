@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinShulkerEntity;
 
@@ -15,7 +16,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class ShulkerBehaviour extends EntityBehaviour<ShulkerEntity> {
     @Override
-    public void update(Caster<?> source, ShulkerEntity shulker) {
+    public void update(Caster<?> source, ShulkerEntity shulker, Spell spell) {
         shulker.yaw = 0;
         shulker.prevBodyYaw = 0;
         shulker.bodyYaw = 0;

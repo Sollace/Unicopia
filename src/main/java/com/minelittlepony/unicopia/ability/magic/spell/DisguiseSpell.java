@@ -268,7 +268,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
             entity.tick();
         }
 
-        behaviour.update(source, entity);
+        behaviour.update(source, entity, this);
 
         if (source instanceof Pony) {
             Pony player = (Pony)source;

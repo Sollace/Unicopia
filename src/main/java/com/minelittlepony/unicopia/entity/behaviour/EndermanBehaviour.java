@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.Spell;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.mob.EndermanEntity;
@@ -10,7 +11,7 @@ import net.minecraft.util.Hand;
 
 public class EndermanBehaviour extends EntityBehaviour<EndermanEntity> {
     @Override
-    public void update(Caster<?> source, EndermanEntity entity) {
+    public void update(Caster<?> source, EndermanEntity entity, Spell spell) {
         if (source.getOwner().isSneaking() || source.getOwner().isSprinting()) {
             entity.setTarget(entity);
         } else {

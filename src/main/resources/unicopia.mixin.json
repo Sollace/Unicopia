@@ -13,6 +13,7 @@
     "MixinPlayerEntity",
     "MixinProjectileEntity",
     "MixinServerPlayerEntity",
+    "MixinSheepEntity",
     "MixinShulkerEntity",
     "MixinTargetPredicate"
   ],

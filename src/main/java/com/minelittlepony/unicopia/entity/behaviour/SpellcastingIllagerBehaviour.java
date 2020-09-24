@@ -1,13 +1,14 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 
 public class SpellcastingIllagerBehaviour extends EntityBehaviour<SpellcastingIllagerEntity> {
     @Override
-    public void update(Caster<?> source, SpellcastingIllagerEntity entity) {
+    public void update(Caster<?> source, SpellcastingIllagerEntity entity, Spell s) {
 
         if (source instanceof Pony) {
             Pony player = (Pony)source;

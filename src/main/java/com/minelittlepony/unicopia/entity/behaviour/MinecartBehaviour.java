@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.Spell;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.MovingMinecartSoundInstance;
@@ -18,7 +19,7 @@ public class MinecartBehaviour extends EntityBehaviour<AbstractMinecartEntity> {
     }
 
     @Override
-    public void update(Caster<?> source, AbstractMinecartEntity entity) {
+    public void update(Caster<?> source, AbstractMinecartEntity entity, Spell spell) {
         entity.yaw -= 90;
         entity.prevYaw -= 90;
 

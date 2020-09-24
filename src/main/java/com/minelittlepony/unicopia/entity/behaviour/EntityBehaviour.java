@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.util.Registries;
 
@@ -24,7 +25,7 @@ public class EntityBehaviour<T extends Entity> {
     private static final EntityBehaviour<Entity> DEFAULT = new EntityBehaviour<>();
     private static final Registry<EntityBehaviour<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "entity_behaviour"));
 
-    public void update(Caster<?> source, T entity) {
+    public void update(Caster<?> source, T entity, Spell spell) {
 
     }
 
@@ -175,6 +176,7 @@ public class EntityBehaviour<T extends Entity> {
     }
 
     static {
+        register(SheepBehaviour::new, EntityType.SHEEP);
         register(EndermanBehaviour::new, EntityType.ENDERMAN);
         register(SpellcastingIllagerBehaviour::new, EntityType.ILLUSIONER, EntityType.EVOKER);
         register(ShulkerBehaviour::new, EntityType.SHULKER);

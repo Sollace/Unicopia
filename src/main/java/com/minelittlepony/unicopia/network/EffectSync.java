@@ -27,6 +27,9 @@ public class EffectSync {
 
     private final TrackedData<CompoundTag> param;
 
+    @Nullable
+    private CompoundTag lastValue;
+
     public EffectSync(Caster<?> owned, TrackedData<CompoundTag> param) {
         this.owned = owned;
         this.param = param;
@@ -68,14 +71,18 @@ public class EffectSync {
 
     @SuppressWarnings("unchecked")
     public <E extends Spell> E get(Class<E> type, boolean update) {
-        if (!update) {
-            if (effect == null || type == null || type.isAssignableFrom(effect.getClass())) {
-                return (E)effect;
-            }
-
-            return null;
+        if (update) {
+            sync();
         }
 
+        if (effect == null || type == null || type.isAssignableFrom(effect.getClass())) {
+            return (E)effect;
+        }
+
+        return null;
+    }
+
+    private void sync() {
         CompoundTag comp = owned.getEntity().getDataTracker().get(param);
 
         if (comp == null || !comp.contains("effect_id")) {
@@ -83,6 +90,7 @@ public class EffectSync {
                 effect.setDead();
                 effect = null;
             }
+            return;
         } else {
             String id = comp.getString("effect_id");
 
@@ -92,17 +100,14 @@ public class EffectSync {
                 }
                 effect = SpellRegistry.instance().createEffectFromNBT(comp);
             } else if (owned.getEntity().world.isClient()) {
-                effect.fromNBT(comp);
+                if (lastValue != comp || !(comp == null || comp.equals(lastValue))) {
+                    lastValue = comp;
+                    effect.fromNBT(comp);
+                }
             } else if (effect.isDirty()) {
                 set(effect);
             }
         }
-
-        if (effect == null || type == null || type.isAssignableFrom(effect.getClass())) {
-            return (E)effect;
-        }
-
-        return null;
     }
 
     public void set(@Nullable Spell effect) {
