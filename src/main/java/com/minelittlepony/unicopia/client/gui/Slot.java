@@ -79,9 +79,9 @@ class Slot {
         }
 
         // contents
-        int middle = (slotPadding + size - iconSize)/2;
+        //int middle = (slotPadding + size - iconSize)/2;
 
-        uHud.renderAbilityIcon(matrices, stat, middle, middle, iconSize, iconSize, iconSize, iconSize);
+        uHud.renderAbilityIcon(matrices, stat, slotPadding / 2, slotPadding / 2, iconSize, iconSize, iconSize, iconSize);
 
         // foreground
         UHud.drawTexture(matrices, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
