@@ -7,7 +7,11 @@ import com.minelittlepony.unicopia.mixin.MixinShulkerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class ShulkerBehaviour extends EntityBehaviour<ShulkerEntity> {
     @Override
@@ -41,6 +45,20 @@ public class ShulkerBehaviour extends EntityBehaviour<ShulkerEntity> {
                     shulker.ambientSoundChance = -shulker.getMinAmbientSoundDelay();
                     shulker.playSound(SoundEvents.ENTITY_SHULKER_AMBIENT, 1, 1);
                  }
+            }
+        }
+
+        Direction attachmentFace = shulker.getAttachedFace();
+        BlockPos pos = shulker.getBlockPos().offset(attachmentFace);
+
+        boolean noGravity = !shulker.isOnGround() && !shulker.world.isAir(pos)
+                && (attachmentFace == Direction.UP || attachmentFace.getAxis() != Axis.Y);
+
+        source.getEntity().setNoGravity(noGravity);
+        if (noGravity && source.getEntity().isSneaking()) {
+            Vec3d vel = source.getEntity().getVelocity();
+            if (vel.y > 0) {
+                source.getEntity().setVelocity(vel.multiply(1, 0.8, 1));
             }
         }
     }
