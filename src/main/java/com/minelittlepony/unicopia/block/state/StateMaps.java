@@ -43,6 +43,15 @@ public class StateMaps {
         a.replaceBlock(Blocks.INFESTED_MOSSY_STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
     }), "moss");
 
+    public static final BlockStateConverter SILVERFISH_AFFECTED = register(Util.make(new BlockStateMap(), a -> {
+        a.replaceBlock(Blocks.CHISELED_STONE_BRICKS, Blocks.INFESTED_CHISELED_STONE_BRICKS);
+        a.replaceBlock(Blocks.COBBLESTONE, Blocks.INFESTED_COBBLESTONE);
+        a.replaceBlock(Blocks.CRACKED_STONE_BRICKS, Blocks.INFESTED_CRACKED_STONE_BRICKS);
+        a.replaceBlock(Blocks.MOSSY_STONE_BRICKS, Blocks.INFESTED_MOSSY_STONE_BRICKS);
+        a.replaceBlock(Blocks.STONE, Blocks.INFESTED_STONE);
+        a.replaceBlock(Blocks.STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
+    }), "infestation");
+
     public static final BlockStateConverter FIRE_AFFECTED = register(Util.make(new BlockStateMap(), a -> {
         a.removeBlock(s -> s.getBlock() == Blocks.SNOW || s.getBlock() == Blocks.SNOW_BLOCK);
         a.removeBlock(s -> s.getBlock() instanceof PlantBlock);

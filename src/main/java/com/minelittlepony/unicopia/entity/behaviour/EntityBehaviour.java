@@ -139,6 +139,9 @@ public class EntityBehaviour<T extends Entity> {
         }
 
         to.setSneaking(from.isSneaking());
+        if (to instanceof PlayerEntity) {
+            to.setPose(from.getPose());
+        }
     }
 
     protected void copyInventory(LivingEntity from, LivingEntity l) {
@@ -172,8 +175,11 @@ public class EntityBehaviour<T extends Entity> {
     }
 
     static {
+        register(EndermanBehaviour::new, EntityType.ENDERMAN);
+        register(SpellcastingIllagerBehaviour::new, EntityType.ILLUSIONER, EntityType.EVOKER);
         register(ShulkerBehaviour::new, EntityType.SHULKER);
         register(CreeperBehaviour::new, EntityType.CREEPER);
+        register(SilverfishBehaviour::new, EntityType.SILVERFISH);
         register(ChickenBehaviour::new, EntityType.CHICKEN);
         register(MinecartBehaviour::new, EntityType.CHEST_MINECART, EntityType.COMMAND_BLOCK_MINECART, EntityType.FURNACE_MINECART, EntityType.HOPPER_MINECART, EntityType.MINECART, EntityType.SPAWNER_MINECART, EntityType.TNT_MINECART);
     }
