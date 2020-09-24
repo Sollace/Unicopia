@@ -39,6 +39,7 @@ public abstract class EntityBehaviour<T extends Entity> {
     static {
         register(ShulkerBehaviour::new, EntityType.SHULKER);
         register(CreeperBehaviour::new, EntityType.CREEPER);
+        register(ChickenBehaviour::new, EntityType.CHICKEN);
         register(MinecartBehaviour::new, EntityType.CHEST_MINECART, EntityType.COMMAND_BLOCK_MINECART, EntityType.FURNACE_MINECART, EntityType.HOPPER_MINECART, EntityType.MINECART, EntityType.SPAWNER_MINECART, EntityType.TNT_MINECART);
     }
 }
