@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.UUID;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -16,6 +15,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.CasterUtils;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.Suppressable;
+import com.minelittlepony.unicopia.entity.behaviour.EntityBehaviour;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -41,7 +41,6 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
-import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 
@@ -158,6 +157,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
         onEntityLoaded(source);
     }
 
+    @SuppressWarnings("unchecked")
     protected void checkAndCreateDisguiseEntity(Caster<?> source) {
         if (entity == null && entityNbt != null) {
             CompoundTag nbt = entityNbt;
@@ -173,11 +173,20 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
                     nbt.getString("playerName")
                 )), source)).start();
             } else {
-                entity = EntityType.loadEntityWithPassengers(nbt, source.getWorld(), e -> {
-                    e.extinguish();
+                if (source.isClient()) {
+                    entity = EntityType.fromTag(nbt).map(type -> type.create(source.getWorld())).orElse(null);
+                    EntityBehaviour.forEntity(entity).ifPresent(behaviour -> {
+                        ((EntityBehaviour<Entity>)behaviour).onCreate(entity);
+                    });
+                } else {
+                    entity = EntityType.loadEntityWithPassengers(nbt, source.getWorld(), e -> {
+                        EntityBehaviour.forEntity(e).ifPresent(behaviour -> {
+                           ((EntityBehaviour<Entity>)behaviour).onCreate(e);
+                        });
 
-                    return e;
-                });
+                        return e;
+                    });
+                }
             }
 
             onEntityLoaded(source);
@@ -185,6 +194,8 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
     }
 
     protected void onEntityLoaded(Caster<?> source) {
+        source.getEntity().calculateDimensions();
+
         if (entity == null) {
             return;
         }
@@ -363,9 +374,6 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
         }
 
         entity.noClip = true;
-        //entity.updateBlocked = true;
-
-        //entity.getEntityData().setBoolean("disguise", true);
 
         if (entity instanceof MobEntity) {
             ((MobEntity)entity).setAiDisabled(true);
@@ -380,39 +388,9 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
             entity.tick();
         }
 
-        if (entity instanceof ShulkerEntity) {
-            ShulkerEntity shulker = ((ShulkerEntity)entity);
-
-            shulker.yaw = 0;
-            shulker.prevHeadYaw = 0;
-            shulker.headYaw = 0;
-            shulker.prevBodyYaw = 0;
-            shulker.bodyYaw = 0;
-
-            shulker.setAttachedBlock(null);
-
-            if (source.isClient() && source instanceof Pony) {
-                //Pony player = (Pony)source;
-
-
-                float peekAmount = 30;
-
-                //if (!owner.isSneaking()) {
-                    //Math.sqrt(Entity.squaredHorizontalLength(owner.getVelocity()));
-
-                    //peekAmount = (float)MathHelper.clamp(speed * 30, 0, 1);
-                //}
-
-                //peekAmount = player.getInterpolator().interpolate("peek", peekAmount, 5);
-
-                shulker.setPeekAmount((int)peekAmount);
-            }
-        }
-
-        if (entity instanceof MinecartEntity) {
-            entity.yaw += 90;
-            entity.pitch = 0;
-        }
+        EntityBehaviour.forEntity(entity).ifPresent(b -> {
+            ((EntityBehaviour<Entity>)b).update(source, entity);
+        });
 
         if (source instanceof Pony) {
             Pony player = (Pony)source;
@@ -487,8 +465,14 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
 
             entityNbt = compound.getCompound("entity");
 
+            compound.getString("entityData");
+
             if (entity != null) {
-                entity.fromTag(entityNbt);
+                try {
+                    entity.fromTag(entityNbt);
+                } catch (Exception ignored) {
+                    // Mojang pls
+                }
             }
         }
     }

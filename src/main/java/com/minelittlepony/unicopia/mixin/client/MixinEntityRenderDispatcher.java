@@ -57,7 +57,7 @@ abstract class MixinEntityRenderDispatcher {
 
             }
 
-            ((EntityRenderDispatcher)(Object)this).render(e, x, y, z, yaw, tickDelta, matrices, vertexConsumers, light);
+            ((EntityRenderDispatcher)(Object)this).render(e, x, y, z, e.yaw, tickDelta, matrices, vertexConsumers, light);
         }
     }
 

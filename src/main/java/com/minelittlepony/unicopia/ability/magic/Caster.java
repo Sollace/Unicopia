@@ -43,27 +43,22 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
      * Returns null if no such effect exists for this caster.
      */
     @Nullable
-    default <T> T getSpell(@Nullable Class<T> type, boolean update) {
+    default <T extends Spell> T getSpell(@Nullable Class<T> type, boolean update) {
         return getPrimarySpellSlot().get(type, update);
     }
 
     /**
      * Gets the active effect for this caster updating it if needed.
      */
-    @Nullable
-    default Spell getSpell() {
-        return getSpell(true);
+    default <T extends Spell> Optional<T> getSpellOrEmpty(Class<T> type, boolean update) {
+        return getPrimarySpellSlot().getOrEmpty(type, update);
     }
 
-    @SuppressWarnings("unchecked")
-    default <T extends Spell> Optional<T> getSpell(Class<T> type) {
-        Spell effect = getSpell();
-
-        if (effect == null || effect.isDead() || !type.isAssignableFrom(effect.getClass())) {
-            return Optional.empty();
-        }
-
-        return Optional.of((T)effect);
+    /**
+     * Gets the active effect for this caster updating it if needed.
+     */
+    default <T extends Spell> Optional<T> getSpellOrEmpty(Class<T> type) {
+        return getSpellOrEmpty(type, true);
     }
 
     /**

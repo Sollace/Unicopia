@@ -73,6 +73,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     private boolean dirty;
     private boolean speciesSet;
     private boolean speciesPersisted;
+    private boolean prevSneaking;
 
     @Nullable
     private Race clientPreferredRace;
@@ -99,6 +100,10 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         }
 
         return Race.fromId(getOwner().getDataTracker().get(RACE));
+    }
+
+    public boolean sneakingChanged() {
+        return entity.isSneaking() != prevSneaking;
     }
 
     @Override
@@ -245,6 +250,8 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         if (dirty) {
             sendCapabilities(true);
         }
+
+        prevSneaking = entity.isSneaking();
     }
 
     public float onImpact(float distance) {
@@ -265,7 +272,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     @Override
     public boolean onProjectileImpact(ProjectileEntity projectile) {
         if (hasSpell()) {
-            Spell effect = getSpell();
+            Spell effect = getSpell(true);
             if (!effect.isDead() && effect.handleProjectileImpact(projectile)) {
                 return true;
             }
@@ -323,7 +330,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         compound.put("powers", powers.toNBT());
         compound.put("gravity", gravity.toNBT());
 
-        Spell effect = getSpell();
+        Spell effect = getSpell(true);
 
         if (effect != null) {
             compound.put("effect", SpellRegistry.toNBT(effect));
@@ -346,7 +353,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     @Override
     public void copyFrom(Pony oldPlayer) {
         speciesPersisted = oldPlayer.speciesPersisted;
-        setSpell(oldPlayer.getSpell());
+        setSpell(oldPlayer.getSpell(true));
         setSpecies(oldPlayer.getSpecies());
         setDirty();
     }

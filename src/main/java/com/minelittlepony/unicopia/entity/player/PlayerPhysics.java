@@ -48,7 +48,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         }
 
         if (pony.hasSpell()) {
-            Spell effect = pony.getSpell();
+            Spell effect = pony.getSpell(true);
             if (!effect.isDead() && effect instanceof FlightPredicate) {
                 return ((FlightPredicate)effect).checkCanFly(pony);
             }

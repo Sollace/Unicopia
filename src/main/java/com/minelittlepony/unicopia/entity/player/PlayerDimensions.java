@@ -62,7 +62,7 @@ public final class PlayerDimensions {
 
     private float calculateTargetEyeHeight() {
         if (pony.hasSpell()) {
-            Spell effect = pony.getSpell();
+            Spell effect = pony.getSpell(true);
             if (!effect.isDead() && effect instanceof HeightPredicate) {
                 float val = ((HeightPredicate)effect).getTargetEyeHeight(pony);
                 if (val > 0) {
@@ -80,7 +80,7 @@ public final class PlayerDimensions {
 
     private float calculateTargetBodyHeight() {
         if (pony.hasSpell()) {
-            Spell effect = pony.getSpell();
+            Spell effect = pony.getSpell(true);
             if (!effect.isDead() && effect instanceof HeightPredicate) {
                 float val = ((HeightPredicate)effect).getTargetBodyHeight(pony);
                 if (val > 0) {

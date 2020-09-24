@@ -98,7 +98,7 @@ public class Creature implements Equine<LivingEntity>, Caster<LivingEntity> {
 
     @Override
     public void toNBT(CompoundTag compound) {
-        Spell effect = getSpell();
+        Spell effect = getSpell(true);
 
         if (effect != null) {
             compound.put("effect", SpellRegistry.toNBT(effect));

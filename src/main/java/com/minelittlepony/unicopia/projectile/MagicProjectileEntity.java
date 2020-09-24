@@ -111,7 +111,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
 
     @Override
     public Affinity getAffinity() {
-        return hasSpell() ? Affinity.NEUTRAL : getSpell().getAffinity();
+        return hasSpell() ? Affinity.NEUTRAL : getSpell(true).getAffinity();
     }
 
     @Override
@@ -178,14 +178,16 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
                 lastBlockPos = getBlockPos();
             }
 
-            if (getSpell().isDead()) {
+            Spell spell = getSpell(true);
+
+            if (spell.isDead()) {
                 remove();
             } else {
-                getSpell().update(this);
-            }
+                spell.update(this);
 
-            if (world.isClient()) {
-                getSpell().render(this);
+                if (world.isClient()) {
+                    spell.render(this);
+                }
             }
         }
 
@@ -247,7 +249,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
         super.writeCustomDataToTag(compound);
 
         if (hasSpell()) {
-            compound.put("effect", SpellRegistry.toNBT(getSpell()));
+            compound.put("effect", SpellRegistry.toNBT(getSpell(true)));
         }
     }
 
@@ -266,7 +268,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
 
     protected void onHitBlock(BlockHitResult hit) {
         if (hasSpell()) {
-            Spell effect = getSpell();
+            Spell effect = getSpell(true);
 
             if (effect instanceof ThrowableSpell) {
                 ((ThrowableSpell)effect).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));

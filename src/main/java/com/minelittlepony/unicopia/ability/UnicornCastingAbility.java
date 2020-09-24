@@ -43,7 +43,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
     public void apply(Pony player, Hit data) {
 
         if (player.hasSpell()) {
-            String current = player.getSpell().getName();
+            String current = player.getSpell(true).getName();
             player.setSpell(Streams.stream(player.getOwner().getItemsHand())
                     .map(SpellRegistry::getKeyFromStack)
                     .filter(i -> i != null && !current.equals(i))

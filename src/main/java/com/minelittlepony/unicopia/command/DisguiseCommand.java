@@ -82,7 +82,7 @@ public class DisguiseCommand {
 
     static int reveal(ServerCommandSource source, PlayerEntity player) {
         Pony iplayer = Pony.of(player);
-        iplayer.getSpell(DisguiseSpell.class).ifPresent(disguise -> {
+        iplayer.getSpellOrEmpty(DisguiseSpell.class).ifPresent(disguise -> {
             disguise.onDestroyed(iplayer);
         });
 

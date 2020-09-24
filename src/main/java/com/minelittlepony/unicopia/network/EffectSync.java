@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.network;
 
+import java.util.Optional;
+
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -54,8 +56,18 @@ public class EffectSync {
         return effect != null;
     }
 
+    public <T extends Spell> Optional<T> getOrEmpty(Class<T> type, boolean update) {
+        T effect = get(type, update);
+
+        if (effect == null || effect.isDead()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(effect);
+    }
+
     @SuppressWarnings("unchecked")
-    public <E> E get(Class<E> type, boolean update) {
+    public <E extends Spell> E get(Class<E> type, boolean update) {
         if (!update) {
             if (effect == null || type == null || type.isAssignableFrom(effect.getClass())) {
                 return (E)effect;

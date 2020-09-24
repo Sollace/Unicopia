@@ -12,7 +12,9 @@
     "MixinLivingEntity",
     "MixinPlayerEntity",
     "MixinProjectileEntity",
-    "MixinServerPlayerEntity"
+    "MixinServerPlayerEntity",
+    "MixinShulkerEntity",
+    "MixinTargetPredicate"
   ],
   "client": [
     "client.MixinCamera",
