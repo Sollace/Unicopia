@@ -22,7 +22,7 @@ import com.minelittlepony.unicopia.item.toxin.Toxicity;
 import com.minelittlepony.unicopia.item.toxin.Toxin;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.EffectSync;
-import com.minelittlepony.unicopia.network.MsgPlayerCapabilities;
+import com.minelittlepony.unicopia.network.MsgOtherPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.network.Transmittable;
 import com.minelittlepony.unicopia.util.Copieable;
@@ -149,7 +149,9 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         dirty = false;
 
         if (entity instanceof ServerPlayerEntity) {
-            Channel.BROADCAST_CAPABILITIES.send(new MsgPlayerCapabilities(full, this));
+            MsgOtherPlayerCapabilities packet = new MsgOtherPlayerCapabilities(full, this);
+            Channel.SERVER_PLAYER_CAPABILITIES.send(entity, packet);
+            Channel.SERVER_OTHER_PLAYER_CAPABILITIES.send(entity, packet);
         }
     }
 
