@@ -33,7 +33,6 @@ public class WorldRenderDelegate {
             matrices.pop();
 
             flipAngles(pony.getOwner());
-
         }
     }
 

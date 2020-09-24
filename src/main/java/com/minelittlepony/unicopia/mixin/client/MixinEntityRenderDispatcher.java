@@ -45,7 +45,6 @@ abstract class MixinEntityRenderDispatcher {
         Entity e = effect.getDisguise();
 
         if (e != null) {
-            WorldRenderDelegate.INSTANCE.afterEntityRender(Pony.of((PlayerEntity)entity), matrices);
             info.cancel();
 
             if (DisguiseSpell.isAttachedEntity(e) && (x != 0 || y != 0 || z != 0)) {
@@ -58,6 +57,7 @@ abstract class MixinEntityRenderDispatcher {
             }
 
             ((EntityRenderDispatcher)(Object)this).render(e, x, y, z, e.yaw, tickDelta, matrices, vertexConsumers, light);
+            WorldRenderDelegate.INSTANCE.afterEntityRender(Pony.of((PlayerEntity)entity), matrices);
         }
     }
 
