@@ -70,6 +70,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
             iplayer.setSpell(disc);
             return disc;
         }).setDisguise(looked);
+        player.calculateDimensions();
 
         iplayer.setDirty();
     }

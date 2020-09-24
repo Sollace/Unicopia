@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.FlightPredicate;
 import com.minelittlepony.unicopia.ability.HeightPredicate;
 import com.minelittlepony.unicopia.ability.magic.AttachableSpell;
@@ -25,7 +24,6 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
@@ -37,11 +35,9 @@ import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.VexEntity;
-import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 
 public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Suppressable, FlightPredicate, HeightPredicate {
@@ -157,7 +153,6 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
         onEntityLoaded(source);
     }
 
-    @SuppressWarnings("unchecked")
     protected void checkAndCreateDisguiseEntity(Caster<?> source) {
         if (entity == null && entityNbt != null) {
             CompoundTag nbt = entityNbt;
@@ -175,14 +170,12 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
             } else {
                 if (source.isClient()) {
                     entity = EntityType.fromTag(nbt).map(type -> type.create(source.getWorld())).orElse(null);
-                    EntityBehaviour.forEntity(entity).ifPresent(behaviour -> {
-                        ((EntityBehaviour<Entity>)behaviour).onCreate(entity);
-                    });
+                    if (entity != null) {
+                        EntityBehaviour.forEntity(entity).onCreate(entity);
+                    }
                 } else {
                     entity = EntityType.loadEntityWithPassengers(nbt, source.getWorld(), e -> {
-                        EntityBehaviour.forEntity(e).ifPresent(behaviour -> {
-                           ((EntityBehaviour<Entity>)behaviour).onCreate(e);
-                        });
+                       EntityBehaviour.forEntity(e).onCreate(e);
 
                         return e;
                     });
@@ -210,122 +203,6 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
     @Override
     public boolean handleProjectileImpact(ProjectileEntity projectile) {
         return getDisguise() == projectile;
-    }
-
-    protected void copyBaseAttributes(LivingEntity from, Entity to) {
-
-        // Set first because position calculations rely on it
-        to.age = from.age;
-        to.removed = from.removed;
-        to.setOnGround(from.isOnGround());
-
-        if (isAttachedEntity(entity)) {
-
-            double x = Math.floor(from.getX()) + 0.5;
-            double y = Math.floor(from.getY());
-            double z = Math.floor(from.getZ()) + 0.5;
-
-            to.prevX = x;
-            to.prevY = y;
-            to.prevZ = z;
-
-            to.lastRenderX = x;
-            to.lastRenderY = y;
-            to.lastRenderZ = z;
-
-            to.updatePosition(x, y, z);
-
-            if (entity instanceof FallingBlockEntity) {
-                ((FallingBlockEntity)entity).setFallingBlockPos(from.getBlockPos());
-            }
-        } else {
-            to.copyPositionAndRotation(from);
-
-            to.prevX = from.prevX;
-            to.prevY = from.prevY;
-            to.prevZ = from.prevZ;
-
-            to.chunkX = from.chunkX;
-            to.chunkY = from.chunkY;
-            to.chunkZ = from.chunkZ;
-
-            to.lastRenderX = from.lastRenderX;
-            to.lastRenderY = from.lastRenderY;
-            to.lastRenderZ = from.lastRenderZ;
-        }
-
-        if (to instanceof PlayerEntity) {
-            PlayerEntity l = (PlayerEntity)to;
-
-            l.capeX = l.getX();
-            l.capeY = l.getY();
-            l.capeZ = l.getZ();
-        }
-
-        to.setVelocity(from.getVelocity());
-
-        to.pitch = from.pitch;
-        to.prevPitch = from.prevPitch;
-        to.yaw = from.yaw;
-        to.prevYaw = from.prevYaw;
-        to.horizontalSpeed = from.horizontalSpeed;
-        to.prevHorizontalSpeed = from.prevHorizontalSpeed;
-
-        to.distanceTraveled = from.distanceTraveled;
-
-        if (to instanceof LivingEntity) {
-            LivingEntity l = (LivingEntity)to;
-
-            l.headYaw = from.headYaw;
-            l.prevHeadYaw = from.prevHeadYaw;
-            l.bodyYaw = from.bodyYaw;
-            l.prevBodyYaw = from.prevBodyYaw;
-
-            l.limbDistance = from.limbDistance;
-            l.limbAngle = from.limbAngle;
-            l.lastLimbDistance = from.lastLimbDistance;
-
-            l.handSwingProgress = from.handSwingProgress;
-            l.lastHandSwingProgress = from.lastHandSwingProgress;
-            l.handSwingTicks = from.handSwingTicks;
-            l.handSwinging = from.handSwinging;
-
-            l.hurtTime = from.hurtTime;
-            l.deathTime = from.deathTime;
-            l.stuckStingerTimer = from.stuckStingerTimer;
-            l.stuckArrowTimer = from.stuckArrowTimer;
-            l.setHealth(from.getHealth());
-
-            for (EquipmentSlot i : EquipmentSlot.values()) {
-                ItemStack neu = from.getEquippedStack(i);
-                ItemStack old = l.getEquippedStack(i);
-                if (old != neu) {
-                    l.equipStack(i, neu);
-                }
-            }
-        }
-
-        /*if (to instanceof RangedAttackMob) {
-            ItemStack activeItem = from.getActiveItem();
-
-            ((RangedAttackMob)to).setSwingingArms(!activeItem.isEmpty() && activeItem.getUseAction() == UseAction.BOW);
-        }*/
-
-        if (to instanceof TameableEntity) {
-            ((TameableEntity)to).setSitting(from.isSneaking());
-        }
-
-        if (from.age < 100 || from instanceof PlayerEntity && ((PlayerEntity)from).isCreative()) {
-            to.extinguish();
-        }
-
-        if (to.isOnFire()) {
-            from.setOnFireFor(1);
-        } else {
-            from.extinguish();
-        }
-
-        to.setSneaking(from.isSneaking());
     }
 
     @Override
@@ -370,6 +247,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
                 ((Pony) source).setInvisible(false);
             }
 
+            owner.calculateDimensions();
             return false;
         }
 
@@ -382,15 +260,15 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
         entity.setInvisible(false);
         entity.setNoGravity(true);
 
-        copyBaseAttributes(owner, entity);
+        EntityBehaviour<Entity> behaviour = EntityBehaviour.forEntity(entity);
+
+        behaviour.copyBaseAttributes(owner, entity);
 
         if (tick && !skipsUpdate(entity)) {
             entity.tick();
         }
 
-        EntityBehaviour.forEntity(entity).ifPresent(b -> {
-            ((EntityBehaviour<Entity>)b).update(source, entity);
-        });
+        behaviour.update(source, entity);
 
         if (source instanceof Pony) {
             Pony player = (Pony)source;
@@ -410,11 +288,9 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
                 entity.setInvisible(true);
                 entity.setPos(entity.getX(), Integer.MIN_VALUE, entity.getY());
             }
-
-            return player.getSpecies() == Race.CHANGELING;
         }
 
-        return !source.getOwner().removed;
+        return !source.getOwner().isDead();
     }
 
     @Override
