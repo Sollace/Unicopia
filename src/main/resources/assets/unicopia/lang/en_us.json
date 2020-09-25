@@ -172,17 +172,10 @@
 
   "unicopia.category.name": "Pony Abilities",
 
-  "unicopia.power.grow": "Primary Earth Pony ability",
-  "unicopia.power.earth": "Secondary Earth Pony ability",
-
-  "unicopia.power.teleport": "Primary Unicorn ability",
-  "unicopia.power.magic": "Secondary Unicorn ability",
-
-  "unicopia.power.cloud": "Primary Pegasus ability",
-  "unicopia.power.carry": "Pick up & Drop riders",
-
-  "unicopia.power.feed": "Primary Changeling ability",
-  "unicopia.power.disguise": "Secondary Changeling ability",
+  "key.unicopia.primary": "Primary Ability",
+  "key.unicopia.secondary": "Secondary Ability",
+  "key.unicopia.tertiary": "Tertiary Ability",
+  "key.unicopia.passive": "Passive Ability",
 
   "death.attack.magical_exhaustion": "%1$s exhausted themselves",
   "death.attack.alicorn_amulet": "%1$s was driven insane",

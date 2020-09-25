@@ -19,15 +19,17 @@ public class KeyBindingsHandler {
 
     public static final KeyBindingsHandler INSTANCE = new KeyBindingsHandler();
 
+    static void bootstrap() {}
+
     private final Map<KeyBinding, AbilitySlot> keys = new HashMap<>();
     private final Map<AbilitySlot, KeyBinding> reverse = new HashMap<>();
 
     private final Set<KeyBinding> pressed = new HashSet<>();
 
     public KeyBindingsHandler() {
-        addKeybind(GLFW.GLFW_KEY_O, AbilitySlot.PRIMARY);
-        addKeybind(GLFW.GLFW_KEY_P, AbilitySlot.SECONDARY);
-        addKeybind(GLFW.GLFW_KEY_L, AbilitySlot.TERTIARY);
+        addKeybind(GLFW.GLFW_KEY_R, AbilitySlot.PRIMARY);
+        addKeybind(GLFW.GLFW_KEY_F, AbilitySlot.SECONDARY);
+        addKeybind(GLFW.GLFW_KEY_C, AbilitySlot.TERTIARY);
     }
 
     public KeyBinding getBinding(AbilitySlot slot) {
@@ -35,7 +37,7 @@ public class KeyBindingsHandler {
     }
 
     public void addKeybind(int code, AbilitySlot slot) {
-        KeyBinding binding = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.unicopia" + slot.name().toLowerCase(), code, KEY_CATEGORY));
+        KeyBinding binding = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.unicopia." + slot.name().toLowerCase(), code, KEY_CATEGORY));
         reverse.put(slot, binding);
         keys.put(binding, slot);
     }

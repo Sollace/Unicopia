@@ -33,6 +33,7 @@ public class UnicopiaClient implements ClientModInitializer {
     public void onInitializeClient() {
         InteractionManager.INSTANCE = new ClientInteractionManager();
 
+        KeyBindingsHandler.bootstrap();
         URenderers.bootstrap();
 
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
