@@ -71,7 +71,7 @@ public final class PlayerDimensions {
             }
         }
 
-        if (physics.isFlying && physics.isRainboom()) {
+        if (physics.isFlyingSurvival && physics.isRainboom()) {
             return 0.5F;
         }
 
@@ -89,7 +89,7 @@ public final class PlayerDimensions {
             }
         }
 
-        if (physics.isFlying && physics.isRainboom()) {
+        if (physics.isFlyingSurvival && physics.isRainboom()) {
             return defaultBodyHeight / 2;
         }
 

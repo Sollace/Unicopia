@@ -29,7 +29,8 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     public int ticksNextLevel = 0;
     public float flightExperience = 0;
 
-    public boolean isFlying = false;
+    public boolean isFlyingEither = false;
+    public boolean isFlyingSurvival = false;
     public boolean isRainbooming = false;
 
     private double lastTickPosX = 0;
@@ -106,13 +107,18 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         entity.abilities.allowFlying = checkCanFly();
 
         if (!creative) {
-            entity.abilities.flying |= entity.abilities.allowFlying && isFlying && !entity.isOnGround() && !entity.isTouchingWater();
+            entity.abilities.flying |= entity.abilities.allowFlying && isFlyingEither;
+
+            if ((entity.isOnGround() && entity.isSneaking()) || entity.isTouchingWater()) {
+                entity.abilities.flying = false;
+            }
         }
 
-        isFlying = entity.abilities.flying && !creative;
+        isFlyingSurvival = entity.abilities.flying && !creative;
+        isFlyingEither = isFlyingSurvival || (creative && entity.abilities.flying);
 
         if (!creative && !entity.isFallFlying()) {
-            if (isFlying && !entity.hasVehicle()) {
+            if (isFlyingSurvival && !entity.hasVehicle()) {
 
                 if (!isRainbooming && getHorizontalMotion(entity) > 0.2 && flightExperience < MAXIMUM_FLIGHT_EXPERIENCE) {
                     flightExperience++;
@@ -179,7 +185,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
             if (entity.isOnGround()) {
                 entity.abilities.flying = false;
-                isFlying = false;
+                isFlyingSurvival = false;
             }
         }
 
@@ -287,14 +293,14 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         if (entity.abilities.allowFlying) {
             entity.abilities.flying |= flying;
 
-            isFlying = entity.abilities.flying;
+            isFlyingSurvival = entity.abilities.flying;
 
-            if (isFlying) {
+            if (isFlyingSurvival) {
                 ticksNextLevel = 0;
             }
         } else {
             entity.abilities.flying = false;
-            isFlying = false;
+            isFlyingSurvival = false;
         }
     }
 
@@ -303,7 +309,8 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         super.toNBT(compound);
         compound.putInt("flightDuration", ticksNextLevel);
         compound.putFloat("flightExperience", flightExperience);
-        compound.putBoolean("isFlying", isFlying);
+        compound.putBoolean("isFlying", isFlyingSurvival);
+        compound.putBoolean("isFlyingEither", isFlyingEither);
         compound.putBoolean("isRainbooming", isRainbooming);
     }
 
@@ -312,7 +319,8 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         super.fromNBT(compound);
         ticksNextLevel = compound.getInt("flightDuration");
         flightExperience = compound.getFloat("flightExperience");
-        isFlying = compound.getBoolean("isFlying");
+        isFlyingSurvival = compound.getBoolean("isFlying");
+        isFlyingEither = compound.getBoolean("isFlyingEither");
         isRainbooming = compound.getBoolean("isRainbooming");
 
         pony.getOwner().calculateDimensions();
@@ -320,7 +328,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
     @Override
     public boolean isFlying() {
-        return isFlying;
+        return isFlyingSurvival;
     }
 
     @Override

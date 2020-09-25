@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.mixin;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -19,6 +18,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameMode;
@@ -33,12 +33,17 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
         return new Pony((PlayerEntity)(Object)this);
     }
 
-    @ModifyVariable(method = "handleFallDamage(FF)Z",
-            at = @At("HEAD"),
-            ordinal = 0,
-            argsOnly = true)
-    private float onHandleFallDamage(float distance) {
-        return get().onImpact(distance);
+    @Inject(method = "handleFallDamage(FF)Z", at = @At("HEAD"), cancellable = true)
+    private void onHandleFallDamage(float distance, float damageMultiplier, CallbackInfoReturnable<Boolean> info) {
+        get().onImpact(fallDistance, damageMultiplier).ifPresent(newDistance -> {
+            PlayerEntity self = (PlayerEntity)(Object)this;
+
+            if (newDistance >= 2) {
+                self.increaseStat(Stats.FALL_ONE_CM, Math.round(newDistance * 100));
+            }
+
+            info.setReturnValue(super.handleFallDamage(newDistance, damageMultiplier));
+        });
     }
 
     @Inject(method = "createPlayerAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))

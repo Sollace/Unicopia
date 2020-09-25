@@ -69,8 +69,6 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     private final Interpolator interpolator = new LinearInterpolator();
 
-    private float nextStepDistance = 1;
-
     private final PlayerEntity entity;
 
     private boolean dirty;
@@ -244,7 +242,8 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         EntityAttributeInstance attr = entity.getAttributes().getCustomInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
 
         if (attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
-            gravity.isFlying = false;
+            gravity.isFlyingSurvival = false;
+            gravity.isFlyingEither = false;
             entity.abilities.flying = false;
 
             if (Entity.squaredHorizontalLength(entity.getVelocity()) > 0.01 || entity.isSneaking() || !canHangAt()) {
@@ -280,11 +279,12 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         prevSneaking = entity.isSneaking();
     }
 
-    public float onImpact(float distance) {
-        if (getSpecies().canFly()) {
-            distance = Math.max(0, distance - 5);
+    public Optional<Float> onImpact(float distance, float damageMultiplier) {
+        if (getSpecies().canFly() && !entity.isCreative() && !entity.isSpectator()) {
+            return Optional.of(Math.max(0, distance - 5));
         }
-        return distance;
+
+        return Optional.empty();
     }
 
     @Override
@@ -321,17 +321,6 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         }
 
         return entity.getHealth() > 0;
-    }
-
-    public boolean stepOnCloud() {
-        if (entity.fallDistance > 1 || entity.distanceTraveled > nextStepDistance) {
-            nextStepDistance = entity.distanceTraveled + 2;
-            entity.fallDistance = 0;
-
-            return true;
-        }
-
-        return false;
     }
 
     public Optional<Text> trySleep(BlockPos pos) {
