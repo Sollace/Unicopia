@@ -248,6 +248,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
             if (Entity.squaredHorizontalLength(entity.getVelocity()) > 0.01 || entity.isSneaking() || !canHangAt()) {
                 attr.removeModifier(PlayerAttributes.BAT_HANGING);
+                entity.calculateDimensions();
             }
         }
 

@@ -29,6 +29,10 @@ public class UnicopiaClient implements ClientModInitializer {
         return Unicopia.getConfig().getPrefferedRace();
     }
 
+    public static float getWorldBrightness(float initial) {
+        return Math.min(1, initial + 0.6F);
+    }
+
     @Override
     public void onInitializeClient() {
         InteractionManager.INSTANCE = new ClientInteractionManager();

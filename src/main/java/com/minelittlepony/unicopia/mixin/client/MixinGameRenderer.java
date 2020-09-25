@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.client.render.WorldRenderDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -40,7 +41,7 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
             cancellable = true)
     private static void onGetNightVisionStrengthHead(LivingEntity entity, float tickDelta, CallbackInfoReturnable<Float> info) {
         if (!entity.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
-            info.setReturnValue(0.6F);
+            info.setReturnValue(UnicopiaClient.getWorldBrightness(0));
         }
     }
     @Inject(method = "getNightVisionStrength(FJLnet/minecraft/entity/LivingEntity;F)F",
@@ -48,7 +49,7 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
             cancellable = true)
     private static void onGetNightVisionStrengthReturn(LivingEntity entity, float tickDelta, CallbackInfoReturnable<Float> info) {
         if (entity.hasStatusEffect(StatusEffects.NIGHT_VISION) && EquinePredicates.PLAYER_BAT.test(entity)) {
-            info.setReturnValue(Math.min(1, info.getReturnValueF() + 0.6F));
+            info.setReturnValue(UnicopiaClient.getWorldBrightness(info.getReturnValueF()));
         }
     }
 }

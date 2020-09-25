@@ -14,24 +14,34 @@ public class WorldRenderDelegate {
     public static final WorldRenderDelegate INSTANCE = new WorldRenderDelegate();
 
     public void beforeEntityRender(Pony pony, MatrixStack matrices, double x, double y, double z) {
-        if (pony.getPhysics().isGravityNegative()) {
-            matrices.push();
 
-            Entity entity = pony.getOwner();
+        matrices.push();
 
+        Entity entity = pony.getOwner();
+
+        boolean negative = pony.getPhysics().isGravityNegative();
+
+        float roll = negative ? 180 : 0;
+
+        roll = pony.getInterpolator().interpolate("g_roll", roll, 15);
+
+        if (negative) {
             matrices.translate(x, y, z);
             matrices.translate(0, entity.getHeight(), 0);
-            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180));
+            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(roll));
             matrices.translate(-x, -y, -z);
 
             flipAngles(entity);
+        } else {
+            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(roll));
         }
     }
 
     public void afterEntityRender(Pony pony, MatrixStack matrices) {
-        if (pony.getPhysics().isGravityNegative()) {
-            matrices.pop();
 
+        matrices.pop();
+
+        if (pony.getPhysics().isGravityNegative()) {
             flipAngles(pony.getOwner());
         }
     }
