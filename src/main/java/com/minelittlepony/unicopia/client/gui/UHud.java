@@ -28,9 +28,9 @@ public class UHud extends DrawableHelper {
     private final MinecraftClient client = MinecraftClient.getInstance();
 
     private final List<Slot> slots = Util.make(new ArrayList<>(), slots -> {
-        slots.add(new Slot(this, AbilitySlot.PRIMARY, 0, 0, 8, 49, 38, 42).background(0, 5).foreground(0, 59));
-        slots.add(new Slot(this, AbilitySlot.SECONDARY, 26, -5, 3, 22, 17, 19).background(80, 105));
-        slots.add(new Slot(this, AbilitySlot.TERTIARY, 36, 19, 3, 22, 17, 19).background(80, 105));
+        slots.add(new Slot(this, AbilitySlot.PRIMARY, AbilitySlot.PASSIVE, 0, 0, 8, 49, 38, 42).background(0, 5).foreground(0, 59));
+        slots.add(new Slot(this, AbilitySlot.SECONDARY, AbilitySlot.SECONDARY, 26, -5, 3, 22, 17, 19).background(80, 105));
+        slots.add(new Slot(this, AbilitySlot.TERTIARY, AbilitySlot.TERTIARY, 36, 19, 3, 22, 17, 19).background(80, 105));
     });
 
     public void render(InGameHud hud, MatrixStack matrices, float tickDelta) {
@@ -54,7 +54,9 @@ public class UHud extends DrawableHelper {
 
         AbilityDispatcher abilities = Pony.of(client.player).getAbilities();
 
-        slots.forEach(slot -> slot.renderBackground(matrices, abilities, tickDelta));
+        boolean swap = client.options.keySneak.isPressed();
+
+        slots.forEach(slot -> slot.renderBackground(matrices, abilities, swap, tickDelta));
         slots.forEach(slot -> slot.renderForeground(matrices, abilities, tickDelta));
 
         RenderSystem.disableBlend();

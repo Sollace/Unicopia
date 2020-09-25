@@ -12,7 +12,8 @@ import net.minecraft.util.math.MathHelper;
 class Slot {
     private final UHud uHud;
 
-    private final AbilitySlot slot;
+    private final AbilitySlot aSlot;
+    private final AbilitySlot bSlot;
 
     private int x;
     private int y;
@@ -31,9 +32,10 @@ class Slot {
     private int backgroundU = 105;
     private int backgroundV = 105;
 
-    public Slot(UHud uHud, AbilitySlot slot, int x, int y, int padding, int size, int labelOffset, int iconSize) {
+    public Slot(UHud uHud, AbilitySlot normalSlot, AbilitySlot backupSlot, int x, int y, int padding, int size, int labelOffset, int iconSize) {
         this.uHud = uHud;
-        this.slot = slot;
+        this.aSlot = normalSlot;
+        this.bSlot = backupSlot;
         this.x = x;
         this.y = y;
         this.slotPadding = padding;
@@ -53,11 +55,11 @@ class Slot {
         return this;
     }
 
-    void renderBackground(MatrixStack matrices, AbilityDispatcher abilities, float tickDelta) {
+    void renderBackground(MatrixStack matrices, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
         matrices.push();
         matrices.translate(x, y, 0);
 
-        AbilityDispatcher.Stat stat = abilities.getStat(slot);
+        AbilityDispatcher.Stat stat = abilities.getStat(bSwap ? bSlot : aSlot);
         float cooldown = stat.getFillProgress();
 
         // background
@@ -90,7 +92,7 @@ class Slot {
     }
 
     void renderForeground(MatrixStack matrices, AbilityDispatcher abilities, float tickDelta) {
-        Text label = KeyBindingsHandler.INSTANCE.getBinding(slot).getBoundKeyLocalizedText();
+        Text label = KeyBindingsHandler.INSTANCE.getBinding(aSlot).getBoundKeyLocalizedText();
 
         matrices.push();
         matrices.translate(x + labelOffset, y + labelOffset, 0);
