@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.MutableVector;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
@@ -85,6 +86,14 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     @Override
     public void tick() {
         PlayerEntity entity = pony.getOwner();
+
+        if (isGravityNegative() && !entity.isSneaking() && entity.isInSneakingPose()) {
+            float currentHeight = entity.getDimensions(entity.getPose()).height;
+            float sneakingHeight = entity.getDimensions(EntityPose.STANDING).height;
+
+            entity.setPos(entity.getX(), entity.getY() + currentHeight - sneakingHeight, entity.getZ());
+            entity.setPose(EntityPose.STANDING);
+        }
 
         MutableVector velocity = new MutableVector(entity.getVelocity());
 
