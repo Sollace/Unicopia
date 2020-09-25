@@ -31,8 +31,10 @@ import com.minelittlepony.common.util.animation.LinearInterpolator;
 import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -46,6 +48,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
 public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmittable, Copieable<Pony> {
@@ -91,6 +94,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
         builder.add(PlayerAttributes.EXTENDED_REACH_DISTANCE);
+        builder.add(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
     }
 
     @Override
@@ -226,8 +230,28 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         return false;
     }
 
+    public boolean canHangAt() {
+        BlockPos above = getOrigin();
+        above = new BlockPos(above.getX(), getOwner().getEyeY() + 1, above.getZ());
+        BlockState state = getWorld().getBlockState(above);
+
+        return state.hasSolidTopSurface(getWorld(), above, getEntity(), Direction.DOWN);
+    }
+
     @Override
     public void tick() {
+
+        EntityAttributeInstance attr = entity.getAttributes().getCustomInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+
+        if (attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
+            gravity.isFlying = false;
+            entity.abilities.flying = false;
+
+            if (Entity.squaredHorizontalLength(entity.getVelocity()) > 0.01 || entity.isSneaking() || !canHangAt()) {
+                attr.removeModifier(PlayerAttributes.BAT_HANGING);
+            }
+        }
+
         gravity.tick();
 
         if (hasSpell()) {

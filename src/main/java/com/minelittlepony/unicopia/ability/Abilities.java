@@ -29,6 +29,10 @@ public interface Abilities {
     Ability<?> DISGUISE = register(new ChangelingDisguiseAbility(), "disguise", AbilitySlot.SECONDARY);
     Ability<?> FEED = register(new ChangelingFeedAbility(), "feed", AbilitySlot.TERTIARY);
 
+    // bat
+    Ability<?> HANG = register(new BatPonyHangAbility(), "hang", AbilitySlot.SECONDARY);
+    Ability<?> EEEE = register(new BatEeeeAbility(), "eee", AbilitySlot.TERTIARY);
+
     static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {
         Identifier id = new Identifier("unicopia", name);
         BY_SLOT.computeIfAbsent(slot, s -> new HashSet<>()).add(power);

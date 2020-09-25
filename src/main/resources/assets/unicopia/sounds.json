@@ -9,6 +9,16 @@
        "unicopia:wing/wing3"
      ]
   },
+  "batpony_eeee": {
+  	"category": "player",
+  	"subtitle": "unicopia.subtitle.batpony_eeee",
+  	"sounds": [
+  		"unicopia:batpony/reep",
+  		"unicopia:batpony/eeep",
+  		"unicopia:batpony/screep0",
+  		"unicopia:batpony/screep1"
+  	]
+  },
   "changeling_buzz": {
     "category": "player",
     "subtitle": "unicopia.subtitle.changeling_buzz",

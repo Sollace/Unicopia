@@ -9,6 +9,7 @@ public interface USounds {
     SoundEvent WING_FLAP = register("wing_flap");
     SoundEvent WIND_RUSH = register("wind_rush");
 
+    SoundEvent BATPONY_EEEE = register("batpony_eeee");
     SoundEvent CHANGELING_BUZZ = register("changeling_buzz");
 
     SoundEvent RECORD_CRUSADE = register("record.crusade");

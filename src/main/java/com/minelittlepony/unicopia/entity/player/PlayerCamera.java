@@ -30,7 +30,7 @@ public class PlayerCamera extends MotionCompositor {
         }
 
         if (player.getEntity().age > 10) {
-            roll = player.getInterpolator().interpolate("roll", (float)roll, 50);
+            roll = player.getInterpolator().interpolate("roll", (float)roll, 15);
         }
 
         return (float)roll;

@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.client.render.WorldRenderDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -13,6 +14,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.resource.SynchronousResourceReloadListener;
 
 @Mixin(GameRenderer.class)
@@ -28,7 +31,24 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
 
     @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V",
             at = @At("HEAD"))
-    public void onRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
+    private void onRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
         WorldRenderDelegate.INSTANCE.applyWorldTransform(matrices, tickDelta);
+    }
+
+    @Inject(method = "getNightVisionStrength(FJLnet/minecraft/entity/LivingEntity;F)F",
+            at = @At("HEAD"),
+            cancellable = true)
+    private static void onGetNightVisionStrengthHead(LivingEntity entity, float tickDelta, CallbackInfoReturnable<Float> info) {
+        if (!entity.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
+            info.setReturnValue(0.6F);
+        }
+    }
+    @Inject(method = "getNightVisionStrength(FJLnet/minecraft/entity/LivingEntity;F)F",
+            at = @At("RETURN"),
+            cancellable = true)
+    private static void onGetNightVisionStrengthReturn(LivingEntity entity, float tickDelta, CallbackInfoReturnable<Float> info) {
+        if (entity.hasStatusEffect(StatusEffects.NIGHT_VISION) && EquinePredicates.PLAYER_BAT.test(entity)) {
+            info.setReturnValue(Math.min(1, info.getReturnValueF() + 0.6F));
+        }
     }
 }

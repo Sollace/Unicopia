@@ -42,6 +42,16 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         dimensions = new PlayerDimensions(pony, this);
     }
 
+    @Override
+    public float getGravityModifier() {
+        if (pony.getOwner().getAttributes() == null) {
+            // may be null due to order of execution in the contructor.
+            // Will have the default (1) here in any case, so it's safe to ignore the attribute a this point.
+            return super.getGravityModifier();
+        }
+        return super.getGravityModifier() * (float)pony.getOwner().getAttributeValue(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+    }
+
     private boolean checkCanFly() {
         if (pony.getOwner().abilities.creativeMode || pony.getOwner().isSpectator()) {
             return true;

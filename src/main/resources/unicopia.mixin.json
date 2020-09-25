@@ -24,6 +24,7 @@
     "client.MixinInGameHud",
     "client.MixinItemModels",
     "client.MixinKeyboardInput",
+    "client.MixinLightmapTextureManager",
     "client.MixinMouse"
   ],
   "injectors": {
