@@ -36,7 +36,7 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
         WorldRenderDelegate.INSTANCE.applyWorldTransform(matrices, tickDelta);
     }
 
-    @Inject(method = "getNightVisionStrength(FJLnet/minecraft/entity/LivingEntity;F)F",
+    @Inject(method = "getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F",
             at = @At("HEAD"),
             cancellable = true)
     private static void onGetNightVisionStrengthHead(LivingEntity entity, float tickDelta, CallbackInfoReturnable<Float> info) {
@@ -44,7 +44,7 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
             info.setReturnValue(UnicopiaClient.getWorldBrightness(0));
         }
     }
-    @Inject(method = "getNightVisionStrength(FJLnet/minecraft/entity/LivingEntity;F)F",
+    @Inject(method = "getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F",
             at = @At("RETURN"),
             cancellable = true)
     private static void onGetNightVisionStrengthReturn(LivingEntity entity, float tickDelta, CallbackInfoReturnable<Float> info) {
