@@ -145,6 +145,7 @@
 
   "commands.disguise.usage": "/disguise <player> <entity> [nbt]",
   "commands.disguise.notfound": "The entity id '%s' does not exist.",
+  "commands.disguise.removed": "Removed disguise.",
   "commands.disguise.success.other": "%1$s is now disguised as %2$s",
   "commands.disguise.success.self": "Updated disguise to %s",
   "commands.disguise.success.otherself": "%1$s changed their disguise to %2$s",
