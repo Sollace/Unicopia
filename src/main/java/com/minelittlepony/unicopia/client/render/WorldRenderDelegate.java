@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Model;
@@ -21,6 +22,8 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -99,7 +102,14 @@ public class WorldRenderDelegate {
             blockEntity.setPos(e.getBlockPos());
             matrices.push();
 
+            BlockState state = blockEntity.getCachedState();
+            Direction direction = state.contains(Properties.HORIZONTAL_FACING) ? state.get(Properties.HORIZONTAL_FACING) : Direction.UP;
+
             matrices.translate(x, y, z);
+
+            matrices.multiply(direction.getRotationQuaternion());
+            matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(90));
+
             matrices.translate(-0.5, 0, -0.5);
 
             BlockEntityRenderDispatcher.INSTANCE.get(blockEntity).render(blockEntity, 1, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);

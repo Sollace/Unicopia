@@ -50,9 +50,6 @@ public class Disguise implements NbtSerialisable {
     private CompoundTag entityNbt;
 
     @Nullable
-    private CompoundTag blockEntityNbt;
-
-    @Nullable
     public Entity getAppearance() {
         return entity;
     }
@@ -113,7 +110,6 @@ public class Disguise implements NbtSerialisable {
         if (entity == null && entityNbt != null) {
             CompoundTag nbt = entityNbt;
             entityNbt = null;
-            blockEntityNbt = null;
             attachments.clear();
 
             if ("player".equals(entityId)) {
@@ -227,12 +223,6 @@ public class Disguise implements NbtSerialisable {
         } else if (entity != null) {
             compound.put("entity", encodeEntityToNBT(entity));
         }
-
-        if (blockEntityNbt != null) {
-            compound.put("blockEntity", blockEntityNbt);
-        } else if (blockEntity != null) {
-            compound.put("blockEntity", blockEntity.toInitialChunkDataTag());
-        }
     }
 
     @Override
@@ -241,12 +231,7 @@ public class Disguise implements NbtSerialisable {
 
         if (!newId.contentEquals(entityId)) {
             entityNbt = null;
-            blockEntityNbt = null;
             remove();
-        }
-
-        if (compound.contains("blockEntity")) {
-            blockEntityNbt = compound.getCompound("blockEntityNbt");
         }
 
         if (compound.contains("entity")) {
