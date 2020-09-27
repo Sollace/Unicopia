@@ -129,6 +129,11 @@ public class Disguise implements NbtSerialisable {
                 if (source.isClient()) {
                     entity = EntityType.fromTag(nbt).map(type -> type.create(source.getWorld())).orElse(null);
                     if (entity != null) {
+                        try {
+                            entity.fromTag(nbt);
+                        } catch (Exception ignored) {
+                            // Mojang pls
+                        }
                         entity = EntityBehaviour.forEntity(entity).onCreate(entity, this);
                     }
                 } else {
