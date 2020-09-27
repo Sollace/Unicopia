@@ -3,12 +3,15 @@ package com.minelittlepony.unicopia.client.render;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
-import com.minelittlepony.unicopia.entity.behaviour.VirtualEntity;
+import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -49,9 +52,24 @@ public class WorldRenderDelegate {
             matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(roll));
         }
 
-        return pony.getSpellOrEmpty(DisguiseSpell.class, true)
-                .map(effect -> renderDisguise(dispatcher, pony, effect, x, y, z, tickDelta, matrices, vertexConsumers, light))
-                .orElse(false);
+        return pony.getSpellOrEmpty(DisguiseSpell.class, true).map(effect -> {
+            effect.update(pony, false);
+
+            Disguise ve = effect.getDisguise();
+            Entity e = ve.getAppearance();
+
+            if (e != null) {
+                renderDisguise(dispatcher, ve, e, x, y, z, tickDelta, matrices, vertexConsumers, light);
+                ve.getAttachments().forEach(ee -> {
+                    Vec3d difference = ee.getPos().subtract(e.getPos());
+                    renderDisguise(dispatcher, ve, ee, x + difference.x, y + difference.y, z + difference.z, tickDelta, matrices, vertexConsumers, light);
+                });
+
+                afterEntityRender(pony, matrices);
+                return true;
+            }
+            return false;
+        }).orElse(false);
     }
 
     public void afterEntityRender(Pony pony, MatrixStack matrices) {
@@ -63,40 +81,44 @@ public class WorldRenderDelegate {
         }
     }
 
-    public boolean renderDisguise(EntityRenderDispatcher dispatcher, Pony pony, DisguiseSpell effect,
+    public void renderDisguise(EntityRenderDispatcher dispatcher, Disguise ve, Entity e,
             double x, double y, double z,
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        effect.update(pony, false);
 
-        VirtualEntity ve = effect.getDisguise();
-        Entity e = ve.getAppearance();
+        if (ve.isAxisAligned() && (x != 0 || y != 0 || z != 0)) {
+            Vec3d cam = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
 
-        if (e != null) {
-            if (ve.isAxisAligned() && (x != 0 || y != 0 || z != 0)) {
-                Vec3d cam = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
-
-                x = MathHelper.lerp(tickDelta, e.lastRenderX, e.getX()) - cam.x;
-                y = MathHelper.lerp(tickDelta, e.lastRenderY, e.getY()) - cam.y;
-                z = MathHelper.lerp(tickDelta, e.lastRenderZ, e.getZ()) - cam.z;
-            }
-
-            BipedEntityModel<?> model = getBipedModel(dispatcher, e);
-
-            if (model != null) {
-                model.sneaking = e.isSneaking();
-            }
-
-            dispatcher.render(e, x, y, z, e.yaw, tickDelta, matrices, vertexConsumers, light);
-
-            if (model != null) {
-                model.sneaking = false;
-            }
-
-            afterEntityRender(pony, matrices);
-            return true;
+            x = MathHelper.lerp(tickDelta, e.lastRenderX, e.getX()) - cam.x;
+            y = MathHelper.lerp(tickDelta, e.lastRenderY, e.getY()) - cam.y;
+            z = MathHelper.lerp(tickDelta, e.lastRenderZ, e.getZ()) - cam.z;
         }
 
-        return false;
+        BlockEntity blockEntity = ve.getBlockEntity();
+
+        if (blockEntity != null) {
+            blockEntity.setPos(e.getBlockPos());
+            matrices.push();
+
+            matrices.translate(x, y, z);
+            matrices.translate(-0.5, 0, -0.5);
+
+            BlockEntityRenderDispatcher.INSTANCE.get(blockEntity).render(blockEntity, 1, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
+
+            matrices.pop();
+            return;
+        }
+
+        BipedEntityModel<?> model = getBipedModel(dispatcher, e);
+
+        if (model != null) {
+            model.sneaking = e.isSneaking();
+        }
+
+        dispatcher.render(e, x, y, z, e.yaw, tickDelta, matrices, vertexConsumers, light);
+
+        if (model != null) {
+            model.sneaking = false;
+        }
     }
 
     @Nullable

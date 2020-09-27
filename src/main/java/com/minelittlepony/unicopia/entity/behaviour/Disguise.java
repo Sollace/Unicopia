@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
@@ -14,6 +16,7 @@ import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -30,7 +33,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.CompoundTag;
 
-public class VirtualEntity implements NbtSerialisable {
+public class Disguise implements NbtSerialisable {
 
     @Nonnull
     private String entityId = "";
@@ -39,11 +42,36 @@ public class VirtualEntity implements NbtSerialisable {
     private Entity entity;
 
     @Nullable
+    private BlockEntity blockEntity;
+
+    private List<Entity> attachments = new ArrayList<>();
+
+    @Nullable
     private CompoundTag entityNbt;
+
+    @Nullable
+    private CompoundTag blockEntityNbt;
 
     @Nullable
     public Entity getAppearance() {
         return entity;
+    }
+
+    @Nullable
+    public BlockEntity getBlockEntity() {
+        return blockEntity;
+    }
+
+    public List<Entity> getAttachments() {
+        return attachments;
+    }
+
+    public void addBlockEntity(BlockEntity blockEntity) {
+        this.blockEntity = blockEntity;
+    }
+
+    public void attachExtraEntity(Entity entity) {
+        attachments.add(entity);
     }
 
     public void setAppearance(@Nullable Entity entity) {
@@ -58,9 +86,14 @@ public class VirtualEntity implements NbtSerialisable {
     }
 
     public void remove() {
+        attachments.clear();
         if (entity != null) {
             entity.remove();
             entity = null;
+        }
+        if (blockEntity != null) {
+            blockEntity.markRemoved();
+            blockEntity = null;
         }
     }
 
@@ -80,6 +113,8 @@ public class VirtualEntity implements NbtSerialisable {
         if (entity == null && entityNbt != null) {
             CompoundTag nbt = entityNbt;
             entityNbt = null;
+            blockEntityNbt = null;
+            attachments.clear();
 
             if ("player".equals(entityId)) {
                 createPlayer(nbt, new GameProfile(
@@ -94,13 +129,11 @@ public class VirtualEntity implements NbtSerialisable {
                 if (source.isClient()) {
                     entity = EntityType.fromTag(nbt).map(type -> type.create(source.getWorld())).orElse(null);
                     if (entity != null) {
-                        EntityBehaviour.forEntity(entity).onCreate(entity);
+                        entity = EntityBehaviour.forEntity(entity).onCreate(entity, this);
                     }
                 } else {
                     entity = EntityType.loadEntityWithPassengers(nbt, source.getWorld(), e -> {
-                       EntityBehaviour.forEntity(e).onCreate(e);
-
-                        return e;
+                        return EntityBehaviour.forEntity(e).onCreate(e, this);
                     });
                 }
             }
@@ -189,6 +222,12 @@ public class VirtualEntity implements NbtSerialisable {
         } else if (entity != null) {
             compound.put("entity", encodeEntityToNBT(entity));
         }
+
+        if (blockEntityNbt != null) {
+            compound.put("blockEntity", blockEntityNbt);
+        } else if (blockEntity != null) {
+            compound.put("blockEntity", blockEntity.toInitialChunkDataTag());
+        }
     }
 
     @Override
@@ -197,7 +236,12 @@ public class VirtualEntity implements NbtSerialisable {
 
         if (!newId.contentEquals(entityId)) {
             entityNbt = null;
+            blockEntityNbt = null;
             remove();
+        }
+
+        if (compound.contains("blockEntity")) {
+            blockEntityNbt = compound.getCompound("blockEntityNbt");
         }
 
         if (compound.contains("entity")) {
@@ -213,6 +257,9 @@ public class VirtualEntity implements NbtSerialisable {
                 } catch (Exception ignored) {
                     // Mojang pls
                 }
+
+                attachments.clear();
+                entity = EntityBehaviour.forEntity(entity).onCreate(entity, this);
             }
         }
     }

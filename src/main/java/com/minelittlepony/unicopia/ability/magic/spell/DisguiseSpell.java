@@ -12,7 +12,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.Suppressable;
 import com.minelittlepony.unicopia.entity.behaviour.EntityBehaviour;
-import com.minelittlepony.unicopia.entity.behaviour.VirtualEntity;
+import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -26,7 +26,7 @@ import net.minecraft.nbt.CompoundTag;
 
 public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Suppressable, FlightPredicate, HeightPredicate {
 
-    private final VirtualEntity disguise = new VirtualEntity();
+    private final Disguise disguise = new Disguise();
 
     private int suppressionCounter;
 
@@ -66,7 +66,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
         return suppressionCounter > 0;
     }
 
-    public VirtualEntity getDisguise() {
+    public Disguise getDisguise() {
         return disguise;
     }
 

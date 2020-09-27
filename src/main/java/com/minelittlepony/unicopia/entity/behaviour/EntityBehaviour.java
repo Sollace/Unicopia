@@ -17,6 +17,7 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
 public class EntityBehaviour<T extends Entity> {
@@ -28,20 +29,25 @@ public class EntityBehaviour<T extends Entity> {
 
     }
 
-    public void onCreate(T entity) {
+    public T onCreate(T entity, Disguise context) {
         entity.extinguish();
+        return entity;
     }
 
     public void copyBaseAttributes(LivingEntity from, Entity to) {
+        copyBaseAttributes(from, to, Vec3d.ZERO);
+    }
+
+    public void copyBaseAttributes(LivingEntity from, Entity to, Vec3d positionOffset) {
         // Set first because position calculations rely on it
         to.age = from.age;
         to.removed = from.removed;
         to.setOnGround(from.isOnGround());
 
-        if (VirtualEntity.isAxisAligned(to)) {
-            double x = Math.floor(from.getX()) + 0.5;
-            double y = Math.floor(from.getY());
-            double z = Math.floor(from.getZ()) + 0.5;
+        if (Disguise.isAxisAligned(to)) {
+            double x = positionOffset.x + Math.floor(from.getX()) + 0.5;
+            double y = positionOffset.y + Math.floor(from.getY());
+            double z = positionOffset.z + Math.floor(from.getZ()) + 0.5;
 
             to.prevX = x;
             to.prevY = y;
@@ -59,25 +65,25 @@ public class EntityBehaviour<T extends Entity> {
         } else {
             to.copyPositionAndRotation(from);
 
-            to.prevX = from.prevX;
-            to.prevY = from.prevY;
-            to.prevZ = from.prevZ;
+            to.prevX = positionOffset.x + from.prevX;
+            to.prevY = positionOffset.y + from.prevY;
+            to.prevZ = positionOffset.z + from.prevZ;
 
             to.chunkX = from.chunkX;
             to.chunkY = from.chunkY;
             to.chunkZ = from.chunkZ;
 
-            to.lastRenderX = from.lastRenderX;
-            to.lastRenderY = from.lastRenderY;
-            to.lastRenderZ = from.lastRenderZ;
+            to.lastRenderX = positionOffset.x + from.lastRenderX;
+            to.lastRenderY = positionOffset.y + from.lastRenderY;
+            to.lastRenderZ = positionOffset.z + from.lastRenderZ;
         }
 
         if (to instanceof PlayerEntity) {
             PlayerEntity l = (PlayerEntity)to;
 
-            l.capeX = l.getX();
-            l.capeY = l.getY();
-            l.capeZ = l.getZ();
+            l.capeX = positionOffset.x + l.getX();
+            l.capeY = positionOffset.y + l.getY();
+            l.capeZ = positionOffset.z + l.getZ();
         }
 
         to.setVelocity(from.getVelocity());
@@ -174,6 +180,7 @@ public class EntityBehaviour<T extends Entity> {
     }
 
     static {
+        register(FallingBlockBehaviour::new, EntityType.FALLING_BLOCK);
         register(VillagerBehaviour::new, EntityType.VILLAGER, EntityType.WANDERING_TRADER);
         register(SheepBehaviour::new, EntityType.SHEEP);
         register(BeeBehaviour::new, EntityType.BEE);

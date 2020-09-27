@@ -9,13 +9,14 @@ import net.minecraft.entity.passive.BeeEntity;
 
 public class BeeBehaviour extends EntityBehaviour<BeeEntity> {
     @Override
-    public void onCreate(BeeEntity entity) {
-        super.onCreate(entity);
+    public BeeEntity onCreate(BeeEntity entity, Disguise context) {
+        super.onCreate(entity, context);
         if (entity.world.isClient) {
             MinecraftClient.getInstance().getSoundManager().playNextTick(
                     entity.hasAngerTime() ? new AggressiveBeeSoundInstance(entity) : new PassiveBeeSoundInstance(entity)
             );
         }
+        return entity;
     }
 
     @Override
