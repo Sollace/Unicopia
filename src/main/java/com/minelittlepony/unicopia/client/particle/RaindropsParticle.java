@@ -1,15 +1,12 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.RainSplashParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
 
 public class RaindropsParticle extends RainSplashParticle {
 
-    public RaindropsParticle(ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
+    public RaindropsParticle(SpriteProvider provider, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
         super(world, x, y, z);
         velocityY = -0.1;
         maxAge += 19;
@@ -23,21 +20,6 @@ public class RaindropsParticle extends RainSplashParticle {
             velocityX *= 0.30000001192092896D;
             velocityY = Math.random() * 0.20000000298023224D + 0.10000000149011612D;
             velocityZ *= 0.30000001192092896D;
-        }
-    }
-
-    public static class Factory implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider provider;
-
-        public Factory(SpriteProvider provider) {
-            this.provider = provider;
-        }
-
-        @Override
-        public Particle createParticle(DefaultParticleType defaultParticleType_1, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
-            RaindropsParticle particle = new RaindropsParticle(world, x, y, z, dx, dy, dz);
-            particle.setSprite(provider);
-            return particle;
         }
     }
 }

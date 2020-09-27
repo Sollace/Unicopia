@@ -1,14 +1,8 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import com.minelittlepony.unicopia.particle.MagicParticleEffect;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.particle.v1.FabricSpriteProvider;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
+import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 
 public class MagicParticle extends SpriteBillboardParticle {
@@ -16,8 +10,10 @@ public class MagicParticle extends SpriteBillboardParticle {
     private double startY;
     private double startZ;
 
-    MagicParticle(ClientWorld w, double x, double y, double z, double vX, double vY, double vZ, float r, float g, float b) {
+    MagicParticle(SpriteProvider provider, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ, float r, float g, float b) {
         super(w, x, y, z);
+        setSprite(provider);
+
         velocityX = vX;
         velocityY = vY;
         velocityZ = vZ;
@@ -32,8 +28,8 @@ public class MagicParticle extends SpriteBillboardParticle {
         colorBlue = b;
     }
 
-    MagicParticle(ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
-        this(w, x, y, z, vX, vY, vZ, 1, 1, 1);
+    public MagicParticle(SpriteProvider provider, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
+        this(provider, w, x, y, z, vX, vY, vZ, 1, 1, 1);
 
         colorAlpha = 0.7F;
         colorGreen *= 0.3F;
@@ -67,16 +63,14 @@ public class MagicParticle extends SpriteBillboardParticle {
     }
 
     @Override
-    public int getColorMultiplier(float p_70070_1_) {
-        int i = super.getColorMultiplier(p_70070_1_);
-        float f1 = (float)age / (float)maxAge;
-        f1 *= f1;
-        f1 *= f1;
-        int j = i & 255;
-        int k = i >> 16 & 255;
-        k += f1 * 15 * 16;
-        if (k > 240) k = 240;
-        return j | k << 16;
+    public int getColorMultiplier(float tint) {
+        int light = super.getColorMultiplier(tint);
+        float timer = (float)age / (float)maxAge;
+
+        int v = light >> 16 & 255;
+        v = (int)Math.min(v + Math.pow(timer, 4) * 240, 240);
+
+        return (light & 255) | v << 16;
     }
 
     @Override
@@ -85,33 +79,16 @@ public class MagicParticle extends SpriteBillboardParticle {
         prevPosY = y;
         prevPosZ = z;
 
-        if (this.age++ >= this.maxAge) {
-            this.markDead();
+        if (age++ >= maxAge) {
+            markDead();
         } else {
-            float var1 = (float)age / (float)maxAge;
-            var1 = 1 + var1 - var1 * var1 * 2;
+            float timer = (float)age / (float)maxAge;
+            timer = 1 + timer - timer * timer * 2;
 
-            x = startX + velocityX * var1;
+            x = startX + velocityX * timer;
             y = startY + velocityY;
-            z = startZ + velocityZ * var1;
+            z = startZ + velocityZ * timer;
         }
     }
 
-    @Environment(EnvType.CLIENT)
-    public static class Factory implements ParticleFactory<MagicParticleEffect> {
-        private final FabricSpriteProvider provider;
-
-        public Factory(FabricSpriteProvider provider) {
-            this.provider = provider;
-        }
-
-        @Override
-        public Particle createParticle(MagicParticleEffect effect, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
-            MagicParticle particle = effect.hasTint() ?
-                    new MagicParticle(world, x, y, z, dx, dy, dz, effect.getRed(), effect.getGreen(), effect.getBlue())
-                     : new MagicParticle(world, x, y, z, dx, dy, dz);
-            particle.setSprite(provider);
-            return particle;
-        }
-    }
 }
