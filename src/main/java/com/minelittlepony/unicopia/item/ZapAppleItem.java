@@ -1,11 +1,12 @@
 package com.minelittlepony.unicopia.item;
 
 
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.item.toxin.Toxicity;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.VecHelper;
-
+import com.minelittlepony.unicopia.util.RayTraceHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -18,6 +19,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.collection.DefaultedList;
@@ -25,8 +27,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
@@ -38,16 +38,12 @@ public class ZapAppleItem extends AppleItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        HitResult mop = VecHelper.getObjectMouseOver(player, 5, 0);
+        ItemStack stack = player.getStackInHand(hand);
 
-        if (mop != null && mop.getType() == HitResult.Type.ENTITY) {
-            ItemStack stack = player.getStackInHand(hand);
+        Optional<Entity> entity = RayTraceHelper.doTrace(player, 5, 1, EntityPredicates.EXCEPT_SPECTATOR.and(e -> canFeedTo(stack, e))).getEntity();
 
-            EntityHitResult ehr = ((EntityHitResult)mop);
-
-            if (canFeedTo(stack, ehr.getEntity())) {
-                return onFedTo(stack, player, ehr.getEntity());
-            }
+        if (entity.isPresent()) {
+            return onFedTo(stack, player, entity.get());
         }
 
         return super.use(world, player, hand);

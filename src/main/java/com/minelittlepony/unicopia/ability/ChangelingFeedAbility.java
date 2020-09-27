@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
+import com.minelittlepony.unicopia.util.RayTraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.Entity;
@@ -78,12 +79,11 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     protected List<LivingEntity> getTargets(Pony player) {
-        List<Entity> list = VecHelper.getWithinRange(player.getOwner(), 3, this::canDrain);
+        List<Entity> list = VecHelper.getWithinReach(player.getOwner(), 3, this::canDrain);
 
-        Entity looked = VecHelper.getLookedAtEntity(player.getOwner(), 17);
-        if (looked != null && !list.contains(looked) && canDrain(looked)) {
-            list.add(looked);
-        }
+        RayTraceHelper.<LivingEntity>findEntity(player.getOwner(), 17, 1,
+                looked -> looked instanceof LivingEntity && !list.contains(looked) && canDrain(looked))
+            .ifPresent(list::add);
 
         return list.stream().map(i -> (LivingEntity)i).collect(Collectors.toList());
     }

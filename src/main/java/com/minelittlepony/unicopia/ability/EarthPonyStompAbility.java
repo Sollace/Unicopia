@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Nullable;
 
@@ -14,7 +15,7 @@ import com.minelittlepony.unicopia.ability.data.Multi;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
-import com.minelittlepony.unicopia.util.VecHelper;
+import com.minelittlepony.unicopia.util.RayTraceHelper;
 import com.minelittlepony.unicopia.util.WorldEvent;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -31,8 +32,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -70,10 +69,10 @@ public class EarthPonyStompAbility implements Ability<Multi> {
     @Nullable
     @Override
     public Multi tryActivate(Pony player) {
-        HitResult mop = VecHelper.getObjectMouseOver(player.getOwner(), 6, 1);
+        Optional<BlockPos> p = RayTraceHelper.doTrace(player.getOwner(), 6, 1).getBlockPos();
 
-        if (mop instanceof BlockHitResult && mop.getType() == HitResult.Type.BLOCK) {
-            BlockPos pos = ((BlockHitResult)mop).getBlockPos();
+        if (p.isPresent()) {
+            BlockPos pos = p.get();
             BlockState state = player.getWorld().getBlockState(pos);
 
             if (state.getBlock().isIn(BlockTags.LOGS)) {

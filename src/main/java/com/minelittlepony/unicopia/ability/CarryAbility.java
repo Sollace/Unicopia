@@ -3,9 +3,7 @@ package com.minelittlepony.unicopia.ability;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.util.VecHelper;
-
-import net.minecraft.entity.Entity;
+import com.minelittlepony.unicopia.util.RayTraceHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
@@ -38,15 +36,9 @@ public class CarryAbility implements Ability<Hit> {
     }
 
     protected LivingEntity findRider(PlayerEntity player, World w) {
-        Entity hit = VecHelper.getLookedAtEntity(player, 10);
-
-        if (hit instanceof LivingEntity && !player.isConnectedThroughVehicle(hit)) {
-            if (!(hit instanceof IPickupImmuned)) {
-                return (LivingEntity)hit;
-            }
-        }
-
-        return null;
+        return RayTraceHelper.<LivingEntity>findEntity(player, 10, 1, hit -> {
+            return hit instanceof LivingEntity && !player.isConnectedThroughVehicle(hit) && !(hit instanceof IPickupImmuned);
+        }).orElse(null);
     }
 
     @Override

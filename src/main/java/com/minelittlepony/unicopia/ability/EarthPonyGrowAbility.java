@@ -5,14 +5,11 @@ import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
-import com.minelittlepony.unicopia.util.VecHelper;
-
+import com.minelittlepony.unicopia.util.RayTraceHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -39,13 +36,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
 
     @Override
     public Pos tryActivate(Pony player) {
-        HitResult ray = VecHelper.getObjectMouseOver(player.getOwner(), 3, 1);
-
-        if (ray instanceof BlockHitResult && ray.getType() == HitResult.Type.BLOCK) {
-            return new Pos(((BlockHitResult)ray).getBlockPos());
-        }
-
-        return null;
+        return RayTraceHelper.doTrace(player.getOwner(), 3, 1).getBlockPos().map(Pos::new).orElse(null);
     }
 
     @Override
