@@ -172,6 +172,11 @@ public class EntityBehaviour<T extends Entity> {
         return false;
     }
 
+    protected boolean isSneakingOnGround(Caster<?> source) {
+        Entity e = source.getEntity();
+        return e.isSneaking() && (e.isOnGround() || !(e instanceof PlayerEntity && ((PlayerEntity)e).abilities.flying));
+    }
+
     public static <T extends Entity> void register(Supplier<EntityBehaviour<T>> behaviour, EntityType<?>... types) {
         for (EntityType<?> type : types) {
             Registry.register(REGISTRY, EntityType.getId(type), behaviour.get());
@@ -192,6 +197,7 @@ public class EntityBehaviour<T extends Entity> {
         register(SheepBehaviour::new, EntityType.SHEEP);
         register(BeeBehaviour::new, EntityType.BEE);
         register(EndermanBehaviour::new, EntityType.ENDERMAN);
+        register(LlamaBehaviour::new, EntityType.LLAMA, EntityType.TRADER_LLAMA);
         register(SpellcastingIllagerBehaviour::new, EntityType.ILLUSIONER, EntityType.EVOKER);
         register(ShulkerBehaviour::new, EntityType.SHULKER);
         register(CreeperBehaviour::new, EntityType.CREEPER);
