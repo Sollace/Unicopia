@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import java.util.UUID;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
@@ -11,45 +9,24 @@ import com.minelittlepony.unicopia.ability.FlightPredicate;
 import com.minelittlepony.unicopia.ability.HeightPredicate;
 import com.minelittlepony.unicopia.ability.magic.AttachableSpell;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.CasterUtils;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.Suppressable;
 import com.minelittlepony.unicopia.entity.behaviour.EntityBehaviour;
+import com.minelittlepony.unicopia.entity.behaviour.VirtualEntity;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.projectile.ProjectileUtil;
-import com.mojang.authlib.GameProfile;
-
-import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.decoration.AbstractDecorationEntity;
-import net.minecraft.entity.mob.AmbientEntity;
-import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.CompoundTag;
 
 public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Suppressable, FlightPredicate, HeightPredicate {
 
-    @Nonnull
-    private String entityId = "";
-
-    @Nullable
-    private Entity entity;
-
-    @Nullable
-    private CompoundTag entityNbt;
+    private final VirtualEntity disguise = new VirtualEntity();
 
     private int suppressionCounter;
 
@@ -89,120 +66,23 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
         return suppressionCounter > 0;
     }
 
-    public Entity getDisguise() {
-        return entity;
+    public VirtualEntity getDisguise() {
+        return disguise;
     }
 
     public DisguiseSpell setDisguise(@Nullable Entity entity) {
-        if (entity == this.entity) {
+        if (entity == disguise.getAppearance()) {
             entity = null;
         }
-        this.entityNbt = null;
-        this.entityId = "";
 
-        removeDisguise();
-
-        if (entity != null) {
-            entityNbt = encodeEntityToNBT(entity);
-            entityId = entityNbt.getString("id");
-        }
-
+        disguise.setAppearance(entity);
         setDirty(true);
-
         return this;
-    }
-
-    protected void removeDisguise() {
-        if (entity != null) {
-            entity.remove();
-            entity = null;
-        }
-    }
-
-    protected CompoundTag encodeEntityToNBT(Entity entity) {
-        CompoundTag entityNbt = new CompoundTag();
-
-        if (entity instanceof PlayerEntity) {
-            GameProfile profile = ((PlayerEntity)entity).getGameProfile();
-
-            entityNbt.putString("id", "player");
-            entityNbt.putUuid("playerId", profile.getId());
-            entityNbt.putString("playerName", profile.getName());
-
-            CompoundTag tag = new CompoundTag();
-
-            entity.saveToTag(tag);
-
-            entityNbt.put("playerNbt", tag);
-        } else {
-            entity.saveToTag(entityNbt);
-        }
-
-        return entityNbt;
-    }
-
-    protected synchronized void createPlayer(CompoundTag nbt, GameProfile profile, Caster<?> source) {
-        removeDisguise();
-
-        entity = InteractionManager.instance().createPlayer(source.getEntity(), profile);
-        entity.setCustomName(source.getOwner().getName());
-        ((PlayerEntity)entity).fromTag(nbt.getCompound("playerNbt"));
-        entity.setUuid(UUID.randomUUID());
-        entity.extinguish();
-
-        onEntityLoaded(source);
-    }
-
-    protected void checkAndCreateDisguiseEntity(Caster<?> source) {
-        if (entity == null && entityNbt != null) {
-            CompoundTag nbt = entityNbt;
-            entityNbt = null;
-
-            if ("player".equals(entityId)) {
-                createPlayer(nbt, new GameProfile(
-                        nbt.getUuid("playerId"),
-                        nbt.getString("playerName")
-                    ), source);
-                new Thread(() -> createPlayer(nbt, SkullBlockEntity.loadProperties(new GameProfile(
-                    null,
-                    nbt.getString("playerName")
-                )), source)).start();
-            } else {
-                if (source.isClient()) {
-                    entity = EntityType.fromTag(nbt).map(type -> type.create(source.getWorld())).orElse(null);
-                    if (entity != null) {
-                        EntityBehaviour.forEntity(entity).onCreate(entity);
-                    }
-                } else {
-                    entity = EntityType.loadEntityWithPassengers(nbt, source.getWorld(), e -> {
-                       EntityBehaviour.forEntity(e).onCreate(e);
-
-                        return e;
-                    });
-                }
-            }
-
-            onEntityLoaded(source);
-        }
-    }
-
-    protected void onEntityLoaded(Caster<?> source) {
-        source.getEntity().calculateDimensions();
-
-        if (entity == null) {
-            return;
-        }
-
-        CasterUtils.toCaster(entity).ifPresent(c -> c.setSpell(null));
-
-        if (source.isClient()) {
-            source.getWorld().spawnEntity(entity);
-        }
     }
 
     @Override
     public boolean handleProjectileImpact(ProjectileEntity projectile) {
-        return getDisguise() == projectile;
+        return disguise.getAppearance() == projectile;
     }
 
     @Override
@@ -218,6 +98,8 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
     @SuppressWarnings("unchecked")
     public boolean update(Caster<?> source, boolean tick) {
         LivingEntity owner = source.getOwner();
+
+        Entity entity = disguise.getAppearance();
 
         if (isSuppressed()) {
             suppressionCounter--;
@@ -235,7 +117,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
             return true;
         }
 
-        checkAndCreateDisguiseEntity(source);
+        entity = disguise.getOrCreate(source);
 
         if (owner == null) {
             return true;
@@ -264,7 +146,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
 
         behaviour.copyBaseAttributes(owner, entity);
 
-        if (tick && !skipsUpdate(entity)) {
+        if (tick && !disguise.skipsUpdate()) {
             entity.tick();
         }
 
@@ -296,7 +178,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
     @Override
     public void setDead() {
         super.setDead();
-        removeDisguise();
+        disguise.remove();
     }
 
     @Override
@@ -314,13 +196,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
         super.toNBT(compound);
 
         compound.putInt("suppressionCounter", suppressionCounter);
-        compound.putString("entityId", entityId);
-
-        if (entityNbt != null) {
-            compound.put("entity", entityNbt);
-        } else if (entity != null) {
-            compound.put("entity", encodeEntityToNBT(entity));
-        }
+        disguise.toNBT(compound);
     }
 
     @Override
@@ -328,85 +204,22 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
         super.fromNBT(compound);
 
         suppressionCounter = compound.getInt("suppressionCounter");
-
-        String newId = compound.getString("entityId");
-
-        if (!newId.contentEquals(entityId)) {
-            entityNbt = null;
-            removeDisguise();
-        }
-
-        if (compound.contains("entity")) {
-            entityId = newId;
-
-            entityNbt = compound.getCompound("entity");
-
-            compound.getString("entityData");
-
-            if (entity != null) {
-                try {
-                    entity.fromTag(entityNbt);
-                } catch (Exception ignored) {
-                    // Mojang pls
-                }
-            }
-        }
+        disguise.fromNBT(compound);
     }
 
     @Override
     public boolean checkCanFly(Pony player) {
-        if (entity == null || !player.getSpecies().canFly()) {
-            return false;
-        }
-
-        if (entity instanceof Owned) {
-            @SuppressWarnings("unchecked")
-            Pony iplayer = Pony.of(((Owned<PlayerEntity>)entity).getOwner());
-
-            return iplayer != null && iplayer.getSpecies().canFly();
-        }
-
-        return entity instanceof FlyingEntity
-                || entity instanceof AmbientEntity
-                || entity instanceof EnderDragonEntity
-                || entity instanceof VexEntity
-                || entity instanceof ShulkerBulletEntity
-                || entity instanceof Flutterer
-                || ProjectileUtil.isProjectile(entity);
+        return disguise.canFly() && player.getSpecies().canFly();
     }
 
     @Override
     public float getTargetEyeHeight(Pony player) {
-        if (entity != null && !isSuppressed()) {
-            if (entity instanceof FallingBlockEntity) {
-                return 0.5F;
-            }
-            return entity.getStandingEyeHeight();
-        }
-        return -1;
+        return isSuppressed() ? -1 : disguise.getStandingEyeHeight();
     }
 
     @Override
     public float getTargetBodyHeight(Pony player) {
-        if (entity != null && !isSuppressed()) {
-            if (entity instanceof FallingBlockEntity) {
-                return 0.9F;
-            }
-            return entity.getHeight() - 0.1F;
-        }
-        return -1;
-    }
-
-    public static boolean skipsUpdate(Entity entity) {
-        return entity instanceof FallingBlockEntity
-            || entity instanceof AbstractDecorationEntity
-            || entity instanceof PlayerEntity;
-    }
-
-    public static boolean isAttachedEntity(Entity entity) {
-        return entity instanceof ShulkerEntity
-            || entity instanceof AbstractDecorationEntity
-            || entity instanceof FallingBlockEntity;
+        return isSuppressed() ? -1 : disguise.getHeight();
     }
 
     static abstract class PlayerAccess extends PlayerEntity {

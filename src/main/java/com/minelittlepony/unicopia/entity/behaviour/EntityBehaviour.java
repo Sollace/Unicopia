@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.entity.Entity;
@@ -39,8 +38,7 @@ public class EntityBehaviour<T extends Entity> {
         to.removed = from.removed;
         to.setOnGround(from.isOnGround());
 
-        if (DisguiseSpell.isAttachedEntity(to)) {
-
+        if (VirtualEntity.isAxisAligned(to)) {
             double x = Math.floor(from.getX()) + 0.5;
             double y = Math.floor(from.getY());
             double z = Math.floor(from.getZ()) + 0.5;

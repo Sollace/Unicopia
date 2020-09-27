@@ -21,7 +21,7 @@ abstract class MixinTargetPredicate {
         Equine<?> eq = Equine.of(targetEntity);
         if (eq instanceof Pony) {
             ((Pony)eq).getSpellOrEmpty(DisguiseSpell.class).ifPresent(spell -> {
-                if (spell.getDisguise() == baseEntity) {
+                if (spell.getDisguise().getAppearance() == baseEntity) {
                     info.setReturnValue(false);
                 }
             });

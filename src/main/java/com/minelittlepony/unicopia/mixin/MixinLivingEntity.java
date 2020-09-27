@@ -14,12 +14,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.PonyContainer;
+import com.minelittlepony.unicopia.entity.behaviour.VirtualEntity;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.Equine;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.math.BlockPos;
 
@@ -49,11 +49,13 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
     @Inject(method = "isClimbing()Z", at = @At("HEAD"), cancellable = true)
     public void onIsClimbing(CallbackInfoReturnable<Boolean> info) {
         if (get() instanceof Pony && horizontalCollision) {
-            DisguiseSpell disguise = ((Pony)get()).getSpell(DisguiseSpell.class, false);
-            if (disguise != null && disguise.getDisguise() instanceof SpiderEntity) {
+            ((Pony)get()).getSpellOrEmpty(DisguiseSpell.class, false)
+            .map(DisguiseSpell::getDisguise)
+            .filter(VirtualEntity::canClimbWalls)
+            .ifPresent(v -> {
                 climbingPos = Optional.of(getBlockPos());
                 info.setReturnValue(true);
-            }
+            });
         }
     }
 
