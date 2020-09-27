@@ -17,6 +17,7 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
@@ -48,6 +49,12 @@ public class EntityBehaviour<T extends Entity> {
             double x = positionOffset.x + Math.floor(from.getX()) + 0.5;
             double y = positionOffset.y + Math.floor(from.getY());
             double z = positionOffset.z + Math.floor(from.getZ()) + 0.5;
+
+            BlockPos pos = new BlockPos(x, y, z);
+
+            if (!from.world.isAir(pos) && !from.world.isWater(pos)) {
+                y++;
+            }
 
             to.prevX = x;
             to.prevY = y;
