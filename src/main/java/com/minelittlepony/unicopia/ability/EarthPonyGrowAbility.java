@@ -55,7 +55,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
         }
 
         if (count > 0) {
-            player.subtractEnergyCost(count * 5);
+            player.subtractEnergyCost(count / 5D);
         }
     }
 
