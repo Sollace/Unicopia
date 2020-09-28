@@ -11,9 +11,9 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 public class MinecartBehaviour extends EntityBehaviour<AbstractMinecartEntity> {
 
     @Override
-    public AbstractMinecartEntity onCreate(AbstractMinecartEntity entity, Disguise context) {
-        super.onCreate(entity, context);
-        if (entity.world.isClient) {
+    public AbstractMinecartEntity onCreate(AbstractMinecartEntity entity, Disguise context, boolean replaceOld) {
+        super.onCreate(entity, context, replaceOld);
+        if (replaceOld && entity.world.isClient) {
             MinecraftClient.getInstance().getSoundManager().play(new MovingMinecartSoundInstance(entity));
         }
         return entity;

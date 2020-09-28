@@ -30,7 +30,7 @@ public class EntityBehaviour<T extends Entity> {
 
     }
 
-    public T onCreate(T entity, Disguise context) {
+    public T onCreate(T entity, Disguise context, boolean wasNew) {
         entity.extinguish();
         return entity;
     }

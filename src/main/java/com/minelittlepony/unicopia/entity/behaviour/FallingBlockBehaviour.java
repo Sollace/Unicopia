@@ -30,8 +30,8 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
     private static final Vec3d UP = Vec3d.of(Direction.UP.getVector());
 
     @Override
-    public FallingBlockEntity onCreate(FallingBlockEntity entity, Disguise context) {
-        super.onCreate(entity, context);
+    public FallingBlockEntity onCreate(FallingBlockEntity entity, Disguise context, boolean replaceOld) {
+        super.onCreate(entity, context, replaceOld);
 
         BlockState state = entity.getBlockState();
         Block block = state.getBlock();

@@ -130,11 +130,11 @@ public class Disguise implements NbtSerialisable {
                         } catch (Exception ignored) {
                             // Mojang pls
                         }
-                        entity = EntityBehaviour.forEntity(entity).onCreate(entity, this);
+                        entity = EntityBehaviour.forEntity(entity).onCreate(entity, this, true);
                     }
                 } else {
                     entity = EntityType.loadEntityWithPassengers(nbt, source.getWorld(), e -> {
-                        return EntityBehaviour.forEntity(e).onCreate(e, this);
+                        return EntityBehaviour.forEntity(e).onCreate(e, this, true);
                     });
                 }
             }
@@ -249,7 +249,7 @@ public class Disguise implements NbtSerialisable {
                 }
 
                 attachments.clear();
-                entity = EntityBehaviour.forEntity(entity).onCreate(entity, this);
+                entity = EntityBehaviour.forEntity(entity).onCreate(entity, this, false);
             }
         }
     }
