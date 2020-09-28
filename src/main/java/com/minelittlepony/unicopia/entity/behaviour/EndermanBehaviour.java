@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.entity.behaviour;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
@@ -22,8 +21,7 @@ public class EndermanBehaviour extends EntityBehaviour<EndermanEntity> {
         if (stack.getItem() instanceof BlockItem) {
             entity.setCarriedBlock(((BlockItem)stack.getItem()).getBlock().getDefaultState());
         } else {
-            entity.setCarriedBlock(Blocks.AIR.getDefaultState());
+            entity.setCarriedBlock(null);
         }
-
     }
 }
