@@ -281,7 +281,13 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     }
 
     public Optional<Float> onImpact(float distance, float damageMultiplier) {
-        if (getSpecies().canFly() && !entity.isCreative() && !entity.isSpectator()) {
+
+        float g = gravity.getGravityModifier();
+
+        if (g != 1 || getSpecies().canFly() && !entity.isCreative() && !entity.isSpectator()) {
+
+            distance *= g;
+
             return Optional.of(Math.max(0, distance - 5));
         }
 
