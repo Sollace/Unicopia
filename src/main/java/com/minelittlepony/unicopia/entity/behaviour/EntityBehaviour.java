@@ -131,12 +131,6 @@ public class EntityBehaviour<T extends Entity> {
             copyInventory(from, l);
         }
 
-        /*if (to instanceof RangedAttackMob) {
-            ItemStack activeItem = from.getActiveItem();
-
-            ((RangedAttackMob)to).setSwingingArms(!activeItem.isEmpty() && activeItem.getUseAction() == UseAction.BOW);
-        }*/
-
         if (to instanceof TameableEntity) {
             ((TameableEntity)to).setSitting(from.isSneaking());
         }
