@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -138,6 +139,10 @@ public class EntityBehaviour<T extends Entity> {
 
         if (to instanceof TameableEntity) {
             ((TameableEntity)to).setSitting(from.isSneaking());
+        }
+
+        if (to instanceof AbstractSkeletonEntity) {
+            ((AbstractSkeletonEntity)to).setAttacking(from.getItemUseTimeLeft() > 0);
         }
 
         if (from.age < 100 || from instanceof PlayerEntity && ((PlayerEntity)from).isCreative()) {
