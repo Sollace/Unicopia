@@ -5,6 +5,7 @@ import java.util.List;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 
 import net.minecraft.block.Block;
@@ -13,11 +14,14 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.Tickable;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
@@ -67,9 +71,25 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
             }
         }
 
-        List<Entity> attachments = ((DisguiseSpell)spell).getDisguise().getAttachments();
+        Disguise disguise = ((DisguiseSpell)spell).getDisguise();
+        List<Entity> attachments = disguise.getAttachments();
         if (attachments.size() > 0) {
             copyBaseAttributes(source.getOwner(), attachments.get(0), UP);
+        }
+
+        BlockEntity be = disguise.getBlockEntity();
+
+        if (source instanceof Pony && be instanceof Tickable && (be instanceof ChestBlockEntity || be instanceof EnderChestBlockEntity)) {
+            Pony player = (Pony)source;
+            Tickable ceb = (Tickable)disguise.getBlockEntity();
+
+            if (player.sneakingChanged()) {
+                be.onSyncedBlockEvent(1, isSneakingOnGround(source) ? 1 : 0);
+            }
+
+            be.setLocation(entity.world, entity.getBlockPos());
+            ceb.tick();
+            be.setLocation(null, entity.getBlockPos());
         }
     }
 }
