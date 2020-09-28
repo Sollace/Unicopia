@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.Strings;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.common.client.gui.style.Style;
@@ -80,7 +82,7 @@ public enum Race implements Affine {
         return String.format("unicopia.race.%s", name().toLowerCase());
     }
 
-    public boolean isPermitted(PlayerEntity sender) {
+    public boolean isPermitted(@Nullable PlayerEntity sender) {
         if (isOp() && (sender == null || !sender.abilities.creativeMode)) {
             return false;
         }

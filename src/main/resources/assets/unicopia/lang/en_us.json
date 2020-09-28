@@ -21,6 +21,41 @@
   "item.unicopia.music_disc_funk": "Music Disc",
   "item.unicopia.music_disc_funk.desc": "funk, just funk",
 
+  "unicopia.effect.tribe.stage.initial": "It appears to have no effect.",
+  "unicopia.effect.tribe.stage.crawling": "You feel the skin crawling on your back.",
+  "unicopia.effect.tribe.stage.determination": "As your bones realign you are filled determination.",
+  "unicopia.effect.tribe.stage.resurection": "Knowing you will return to this world as a %s",
+
+  "effect.unicopia.change_race_earth": "Earth Pony Metamorphosis",
+  "item.minecraft.potion.effect.unicopia.tribe_swap_earth": "Potion of Earth Pony Metamorphosis",
+  "item.minecraft.splash_potion.effect.unicopia.tribe_swap_earth": "Splash Potion of Earth Pony Metamorphosis",
+  "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_earth": "Lingering Potion of Earth Pony Metamorphosis",
+  "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_earth": "Arrow of Earth Pony Metamorphosis",
+
+  "effect.unicopia.change_race_unicorn": "Unicorn Metamorphosis",
+  "item.minecraft.potion.effect.unicopia.tribe_swap_unicorn": "Potion of Unicorn Metamorphosis",
+  "item.minecraft.splash_potion.effect.unicopia.tribe_swap_unicorn": "Splash Potion of Unicorn Metamorphosis",
+  "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_unicorn": "Lingering Potion of Unicorn Metamorphosis",
+  "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_unicorn": "Arrow of Unicorn Metamorphosis",
+
+  "effect.unicopia.change_race_pegasus": "Pegasus Metamorphosis",
+  "item.minecraft.potion.effect.unicopia.tribe_swap_pegasus": "Potion of Pegasus Metamorphosis",
+  "item.minecraft.splash_potion.effect.unicopia.tribe_swap_pegasus": "Splash Potion of Pegasus Metamorphosis",
+  "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_pegasus": "Lingering Potion of Pegasus Metamorphosis",
+  "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_pegasus": "Arrow of Pegasus Metamorphosis",
+
+  "effect.unicopia.change_race_changeling": "Changeling Metamorphosis",
+  "item.minecraft.potion.effect.unicopia.tribe_swap_changeling": "Potion of Changeling Metamorphosis",
+  "item.minecraft.splash_potion.effect.unicopia.tribe_swap_changeling": "Splash Potion of Changeling Metamorphosis",
+  "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_changeling": "Lingering Potion of Changeling Metamorphosis",
+  "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_changeling": "Arrow of Changeling Metamorphosis",
+  
+  "effect.unicopia.change_race_bat": "Bat Pony Metamorphosis",
+  "item.minecraft.potion.effect.unicopia.tribe_swap_bat": "Potion of Bat Pony Metamorphosis",
+  "item.minecraft.splash_potion.effect.unicopia.tribe_swap_bat": "Splash Potion of Bat Pony Metamorphosis",
+  "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_bat": "Lingering Potion of Bat Pony Metamorphosis",
+  "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_bat": "Arrow of Bat Pony Metamorphosis",
+
   "affinity.good": "Pure",
   "affinity.neutral": "Neutral",
   "affinity.curse": "Corrupt",
@@ -178,6 +213,7 @@
   "key.unicopia.tertiary": "Tertiary Ability",
   "key.unicopia.passive": "Passive Ability",
 
+  "death.attack.tribe_swap": "%1$s was reborn into a different tribe",
   "death.attack.magical_exhaustion": "%1$s exhausted themselves",
   "death.attack.alicorn_amulet": "%1$s was driven insane",
   "death.attack.darkness": "%1$s went missing",
