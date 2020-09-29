@@ -218,6 +218,7 @@ public class EntityBehaviour<T extends Entity> {
     static {
         register(FallingBlockBehaviour::new, EntityType.FALLING_BLOCK);
         register(RavagerBehaviour::new, EntityType.RAVAGER);
+        register(RabbitBehaviour::new, EntityType.RABBIT);
         register(VillagerBehaviour::new, EntityType.VILLAGER, EntityType.WANDERING_TRADER);
         register(SheepBehaviour::new, EntityType.SHEEP);
         register(BeeBehaviour::new, EntityType.BEE);

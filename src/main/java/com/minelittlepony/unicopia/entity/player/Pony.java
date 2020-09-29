@@ -75,6 +75,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     private boolean speciesSet;
     private boolean speciesPersisted;
     private boolean prevSneaking;
+    private boolean prevLanded;
 
     @Nullable
     private Race clientPreferredRace;
@@ -106,6 +107,10 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     public boolean sneakingChanged() {
         return entity.isSneaking() != prevSneaking;
+    }
+
+    public boolean landedChanged() {
+        return entity.isOnGround() != prevLanded;
     }
 
     @Override
@@ -278,6 +283,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         }
 
         prevSneaking = entity.isSneaking();
+        prevLanded = entity.isOnGround();
     }
 
     public Optional<Float> onImpact(float distance, float damageMultiplier) {
