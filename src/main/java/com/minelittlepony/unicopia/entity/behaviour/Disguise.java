@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.entity.behaviour;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
@@ -19,6 +20,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.Flutterer;
@@ -45,6 +47,8 @@ public class Disguise implements NbtSerialisable {
     private BlockEntity blockEntity;
 
     private List<Entity> attachments = new ArrayList<>();
+
+    private Optional<EntityDimensions> dimensions = Optional.empty();
 
     @Nullable
     private CompoundTag entityNbt;
@@ -198,6 +202,10 @@ public class Disguise implements NbtSerialisable {
             return entity.getHeight() - 0.1F;
         }
         return -1;
+    }
+
+    public Optional<EntityDimensions> getDimensions() {
+        return dimensions = EntityBehaviour.forEntity(entity).getDimensions(entity, dimensions);
     }
 
     public boolean skipsUpdate() {

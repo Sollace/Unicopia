@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
@@ -18,6 +19,7 @@ import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
@@ -28,6 +30,14 @@ import net.minecraft.util.math.Vec3d;
 public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
 
     private static final Vec3d UP = Vec3d.of(Direction.UP.getVector());
+
+    private static final Optional<EntityDimensions> FULL_BLOCK = Optional.of(EntityDimensions.changing(1, 0.9F));
+
+
+    @Override
+    public Optional<EntityDimensions> getDimensions(FallingBlockEntity entity, Optional<EntityDimensions> current) {
+        return FULL_BLOCK;
+    }
 
     @Override
     public FallingBlockEntity onCreate(FallingBlockEntity entity, Disguise context, boolean replaceOld) {

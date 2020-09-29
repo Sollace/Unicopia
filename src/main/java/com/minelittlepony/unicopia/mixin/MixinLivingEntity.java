@@ -17,14 +17,21 @@ import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.entity.ItemWielder;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 
 @Mixin(LivingEntity.class)
-abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<?>> {
+abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<?>>, ItemWielder {
+    @Shadow
+    protected ItemStack activeItemStack;
+    @Shadow
+    protected int itemUseTimeLeft;
 
     @Shadow
     private Optional<BlockPos> climbingPos;
@@ -32,6 +39,9 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
     private Equine<?> caster;
 
     private MixinLivingEntity() { super(null, null); }
+
+    @Shadow
+    protected abstract void setLivingFlag(int mask, boolean value);
 
     @Override
     public Equine<?> create() {
@@ -106,6 +116,17 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
     })
     private double modifyGravity(double initial) {
         return get().getPhysics().calcGravity(initial);
+    }
+
+    @Override
+    public void updateItemUsage(Hand hand, ItemStack stack, int time) {
+        activeItemStack = stack;
+        itemUseTimeLeft = time;
+
+        if (!world.isClient) {
+            setLivingFlag(1, !stack.isEmpty());
+            setLivingFlag(2, hand == Hand.OFF_HAND);
+        }
     }
 
     @Override

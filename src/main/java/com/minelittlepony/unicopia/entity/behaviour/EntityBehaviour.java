@@ -1,14 +1,17 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.entity.ItemWielder;
 import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.FallingBlockEntity;
@@ -34,6 +37,21 @@ public class EntityBehaviour<T extends Entity> {
     public T onCreate(T entity, Disguise context, boolean wasNew) {
         entity.extinguish();
         return entity;
+    }
+
+    public Optional<EntityDimensions> getDimensions(T entity, Optional<EntityDimensions> current) {
+        if (entity == null) {
+            return Optional.empty();
+        }
+
+        float h = entity.getHeight() - 0.1F;
+        float w = entity.getWidth();
+
+        if (current.isPresent() && h == current.get().height && w == current.get().width) {
+            return current;
+        }
+
+        return Optional.of(EntityDimensions.changing(entity.getHeight() - 0.1F, entity.getWidth()));
     }
 
     public void copyBaseAttributes(LivingEntity from, Entity to) {
@@ -102,6 +120,9 @@ public class EntityBehaviour<T extends Entity> {
         to.prevYaw = from.prevYaw;
         to.horizontalSpeed = from.horizontalSpeed;
         to.prevHorizontalSpeed = from.prevHorizontalSpeed;
+        to.horizontalCollision = from.horizontalCollision;
+        to.verticalCollision = from.verticalCollision;
+        to.setOnGround(from.isOnGround());
 
         to.distanceTraveled = from.distanceTraveled;
 
@@ -137,6 +158,10 @@ public class EntityBehaviour<T extends Entity> {
 
         if (to instanceof AbstractSkeletonEntity) {
             ((AbstractSkeletonEntity)to).setAttacking(from.getItemUseTimeLeft() > 0);
+        }
+
+        if (to instanceof ItemWielder) {
+            ((ItemWielder)to).updateItemUsage(from.getActiveHand(), from.getActiveItem(), from.getItemUseTimeLeft());
         }
 
         if (from.age < 100 || from instanceof PlayerEntity && ((PlayerEntity)from).isCreative()) {

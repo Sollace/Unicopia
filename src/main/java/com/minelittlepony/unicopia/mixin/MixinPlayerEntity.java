@@ -91,13 +91,13 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
             at = @At("RETURN"),
             cancellable = true)
     private void onGetActiveEyeHeight(EntityPose pose, EntityDimensions dimensions, CallbackInfoReturnable<Float> info) {
-        info.setReturnValue(get().getMotion().getDimensions().getActiveEyeHeight(info.getReturnValue()));
+        info.setReturnValue(get().getMotion().getDimensions().calculateActiveEyeHeight(dimensions, info.getReturnValue()));
     }
 
     @Inject(method = "getDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;",
             at = @At("RETURN"),
             cancellable = true)
     public void onGetDimensions(EntityPose pose, CallbackInfoReturnable<EntityDimensions> info) {
-        info.setReturnValue(get().getMotion().getDimensions().getDimensions(pose, info.getReturnValue()));
+        info.setReturnValue(get().getMotion().getDimensions().calculateDimensions(info.getReturnValue()));
     }
 }

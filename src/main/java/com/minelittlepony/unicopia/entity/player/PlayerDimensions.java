@@ -1,18 +1,22 @@
 package com.minelittlepony.unicopia.entity.player;
 
-import com.minelittlepony.unicopia.ability.HeightPredicate;
+import java.util.Optional;
+
+import javax.annotation.Nullable;
+
+import com.minelittlepony.unicopia.ability.DimensionsPredicate;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 
 import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 
 public final class PlayerDimensions {
 
     private float defaultEyeHeight;
-    private float defaultBodyHeight;
 
-    private float lastTargetEyeHeight;
-    private float lastTargetBodyHeight;
+    @Nullable
+    private EntityDimensions defaultDimensions;
+    @Nullable
+    private EntityDimensions flyingDimensions;
 
     private final PlayerPhysics physics;
 
@@ -23,52 +27,42 @@ public final class PlayerDimensions {
         this.physics = gravity;
     }
 
-    public float getActiveEyeHeight(float original) {
+    public float calculateActiveEyeHeight(EntityDimensions dimensions, float original) {
         defaultEyeHeight = original;
-        return calculateTargetEyeHeightWithGravity(calculateTargetBodyHeight());
-    }
 
-    public EntityDimensions getDimensions(EntityPose pos, EntityDimensions dimensions) {
-        defaultBodyHeight = dimensions.height;
-        return EntityDimensions.changing(dimensions.width, calculateTargetBodyHeight());
-    }
-
-    boolean update() {
-        float targetBodyHeight = calculateTargetBodyHeight();
-        float targetEyeHeight = calculateTargetEyeHeightWithGravity(targetBodyHeight);
-
-        if (targetEyeHeight != lastTargetEyeHeight || targetBodyHeight != lastTargetBodyHeight) {
-            lastTargetBodyHeight = targetBodyHeight;
-            lastTargetEyeHeight = targetEyeHeight;
-            return true;
-        }
-
-        return false;
-    }
-
-    private float calculateTargetEyeHeightWithGravity(float targetBodyHeight) {
         float height = calculateTargetEyeHeight();
 
-        if (physics.isGravityNegative() && pony.getOwner().isSneaking()) {
-            height += 0.2F;
-        }
-
         if (physics.isGravityNegative()) {
-            height = targetBodyHeight - height;
+            if (pony.getOwner().isSneaking()) {
+                height += 0.2F;
+            }
+
+            height = dimensions.height - height;
         }
 
         return height;
     }
 
-    private float calculateTargetEyeHeight() {
-        if (pony.hasSpell()) {
-            Spell effect = pony.getSpell(true);
-            if (!effect.isDead() && effect instanceof HeightPredicate) {
-                float val = ((HeightPredicate)effect).getTargetEyeHeight(pony);
-                if (val > 0) {
-                    return val;
-                }
+    public EntityDimensions calculateDimensions(EntityDimensions dimensions) {
+        if (defaultDimensions == null || dimensions.height != defaultDimensions.height || dimensions.width != defaultDimensions.width) {
+            defaultDimensions = dimensions;
+            flyingDimensions = EntityDimensions.changing(dimensions.width, dimensions.height / 2);
+        }
+
+        return getPredicate().flatMap(e -> e.getTargetDimensions(pony)).orElseGet(() -> {
+            if (physics.isFlyingSurvival && physics.isRainboom()) {
+                return flyingDimensions;
             }
+
+            return defaultDimensions;
+        });
+    }
+
+    private float calculateTargetEyeHeight() {
+        float height = getPredicate().map(e -> e.getTargetEyeHeight(pony)).orElse(-1F);
+
+        if (height > 0) {
+            return height;
         }
 
         if (physics.isFlyingSurvival && physics.isRainboom()) {
@@ -78,22 +72,13 @@ public final class PlayerDimensions {
         return defaultEyeHeight;
     }
 
-    private float calculateTargetBodyHeight() {
+    Optional<DimensionsPredicate> getPredicate() {
         if (pony.hasSpell()) {
             Spell effect = pony.getSpell(true);
-            if (!effect.isDead() && effect instanceof HeightPredicate) {
-                float val = ((HeightPredicate)effect).getTargetBodyHeight(pony);
-                if (val > 0) {
-                    return val;
-                }
+            if (!effect.isDead() && effect instanceof DimensionsPredicate) {
+                return Optional.of(((DimensionsPredicate)effect));
             }
         }
-
-        if (physics.isFlyingSurvival && physics.isRainboom()) {
-            return defaultBodyHeight / 2;
-        }
-
-        return defaultBodyHeight;
+        return Optional.empty();
     }
-
 }

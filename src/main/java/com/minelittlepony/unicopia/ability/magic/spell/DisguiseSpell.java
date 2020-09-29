@@ -1,12 +1,14 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
+import java.util.Optional;
+
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.FlightPredicate;
-import com.minelittlepony.unicopia.ability.HeightPredicate;
+import com.minelittlepony.unicopia.ability.DimensionsPredicate;
 import com.minelittlepony.unicopia.ability.magic.AttachableSpell;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
@@ -17,6 +19,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.mob.MobEntity;
@@ -24,7 +27,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.CompoundTag;
 
-public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Suppressable, FlightPredicate, HeightPredicate {
+public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Suppressable, FlightPredicate, DimensionsPredicate {
 
     private final Disguise disguise = new Disguise();
 
@@ -53,6 +56,12 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
     @Override
     public boolean isVulnerable(Caster<?> otherSource, Spell other) {
         return suppressionCounter <= otherSource.getCurrentLevel();
+    }
+
+    @Override
+    public void onDestroyed(Caster<?> caster) {
+        super.onDestroyed(caster);
+        caster.getEntity().calculateDimensions();
     }
 
     @Override
@@ -218,8 +227,8 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
     }
 
     @Override
-    public float getTargetBodyHeight(Pony player) {
-        return isSuppressed() ? -1 : disguise.getHeight();
+    public Optional<EntityDimensions> getTargetDimensions(Pony player) {
+        return isSuppressed() ? Optional.empty() : disguise.getDimensions();
     }
 
     static abstract class PlayerAccess extends PlayerEntity {
