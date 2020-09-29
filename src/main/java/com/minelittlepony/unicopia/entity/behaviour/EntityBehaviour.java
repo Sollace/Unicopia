@@ -17,9 +17,14 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
+import net.minecraft.entity.passive.LlamaEntity;
+import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.LlamaSpitEntity;
+import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -217,13 +222,14 @@ public class EntityBehaviour<T extends Entity> {
 
     static {
         register(FallingBlockBehaviour::new, EntityType.FALLING_BLOCK);
-        register(RavagerBehaviour::new, EntityType.RAVAGER);
+        register(MobBehaviour::new, EntityType.RAVAGER, EntityType.IRON_GOLEM);
         register(RabbitBehaviour::new, EntityType.RABBIT);
         register(VillagerBehaviour::new, EntityType.VILLAGER, EntityType.WANDERING_TRADER);
         register(SheepBehaviour::new, EntityType.SHEEP);
         register(BeeBehaviour::new, EntityType.BEE);
         register(EndermanBehaviour::new, EntityType.ENDERMAN);
-        register(LlamaBehaviour::new, EntityType.LLAMA, EntityType.TRADER_LLAMA);
+        EntityBehaviour.<LlamaEntity>register(() -> new RangedAttackBehaviour<>(SoundEvents.ENTITY_LLAMA_SPIT, LlamaSpitEntity::new), EntityType.LLAMA, EntityType.TRADER_LLAMA);
+        EntityBehaviour.<SnowGolemEntity>register(() -> new RangedAttackBehaviour<>(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, SnowballEntity::new), EntityType.SNOW_GOLEM);
         register(SpellcastingIllagerBehaviour::new, EntityType.ILLUSIONER, EntityType.EVOKER);
         register(ShulkerBehaviour::new, EntityType.SHULKER);
         register(CreeperBehaviour::new, EntityType.CREEPER);
