@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
@@ -68,7 +67,7 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
     }
 
     @Override
-    public void update(Caster<?> source, FallingBlockEntity entity, Spell spell) {
+    public void update(Caster<?> source, FallingBlockEntity entity, DisguiseSpell spell) {
 
         BlockState state = entity.getBlockState();
         if (state.contains(Properties.WATERLOGGED)) {
@@ -76,12 +75,12 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
 
             if (state.get(Properties.WATERLOGGED) != logged) {
                 entity = new FallingBlockEntity(entity.world, entity.getX(), entity.getY(), entity.getZ(), state.with(Properties.WATERLOGGED, logged));
-                ((DisguiseSpell)spell).getDisguise().setAppearance(entity);
+                spell.getDisguise().setAppearance(entity);
                 return;
             }
         }
 
-        Disguise disguise = ((DisguiseSpell)spell).getDisguise();
+        Disguise disguise = spell.getDisguise();
         List<Entity> attachments = disguise.getAttachments();
         if (attachments.size() > 0) {
             copyBaseAttributes(source.getOwner(), attachments.get(0), UP);

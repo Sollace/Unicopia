@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.Entity;
@@ -21,7 +21,7 @@ public class ChickenBehaviour extends EntityBehaviour<ChickenEntity> {
     }
 
     @Override
-    public void update(Caster<?> source, ChickenEntity entity, Spell spell) {
+    public void update(Caster<?> source, ChickenEntity entity, DisguiseSpell spell) {
         entity.eggLayTime = Integer.MAX_VALUE;
 
         if (source instanceof Pony) {

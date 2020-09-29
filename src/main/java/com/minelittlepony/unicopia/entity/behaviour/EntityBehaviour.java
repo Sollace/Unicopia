@@ -6,8 +6,9 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.ItemWielder;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.entity.Entity;
@@ -35,7 +36,13 @@ public class EntityBehaviour<T extends Entity> {
     private static final EntityBehaviour<Entity> DEFAULT = new EntityBehaviour<>();
     private static final Registry<EntityBehaviour<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "entity_behaviour"));
 
-    public void update(Caster<?> source, T entity, Spell spell) {
+    public void update(Caster<?> source, T entity, DisguiseSpell spell) {
+        if (source instanceof Pony) {
+            update((Pony)source, entity, spell);
+        }
+    }
+
+    protected void update(Pony pony, T entity, DisguiseSpell spell) {
 
     }
 
@@ -224,7 +231,7 @@ public class EntityBehaviour<T extends Entity> {
         register(FallingBlockBehaviour::new, EntityType.FALLING_BLOCK);
         register(MobBehaviour::new, EntityType.RAVAGER, EntityType.IRON_GOLEM);
         register(RabbitBehaviour::new, EntityType.RABBIT);
-        register(VillagerBehaviour::new, EntityType.VILLAGER, EntityType.WANDERING_TRADER);
+        register(TraderBehaviour::new, EntityType.VILLAGER, EntityType.WANDERING_TRADER);
         register(SheepBehaviour::new, EntityType.SHEEP);
         register(BeeBehaviour::new, EntityType.BEE);
         register(EndermanBehaviour::new, EntityType.ENDERMAN);

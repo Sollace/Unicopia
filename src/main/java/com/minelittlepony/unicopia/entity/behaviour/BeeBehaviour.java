@@ -1,7 +1,8 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.AggressiveBeeSoundInstance;
 import net.minecraft.client.sound.PassiveBeeSoundInstance;
@@ -20,7 +21,7 @@ public class BeeBehaviour extends EntityBehaviour<BeeEntity> {
     }
 
     @Override
-    public void update(Caster<?> source, BeeEntity entity, Spell spell) {
+    public void update(Caster<?> source, BeeEntity entity, DisguiseSpell spell) {
 
         if (source.getOwner().isSneaking()) {
             entity.setAngerTime(10);
