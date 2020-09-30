@@ -24,18 +24,27 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
 
 public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
 
     private static final Vec3d UP = Vec3d.of(Direction.UP.getVector());
 
-    private static final Optional<EntityDimensions> FULL_BLOCK = Optional.of(EntityDimensions.changing(1, 0.9F));
-
+   // private static final Optional<EntityDimensions> FULL_BLOCK = Optional.of(EntityDimensions.changing(0.6F, 0.9F));
 
     @Override
     public Optional<EntityDimensions> getDimensions(FallingBlockEntity entity, Optional<EntityDimensions> current) {
-        return FULL_BLOCK;
+
+        VoxelShape shape = entity.getBlockState().getCollisionShape(entity.world, entity.getBlockPos());
+        float height = (float)shape.getMax(Axis.Y);
+
+        if (!current.isPresent() || current.get().height != height) {
+            return Optional.of(EntityDimensions.changing(0.6F, height));
+        }
+
+        return current;
     }
 
     @Override

@@ -89,7 +89,7 @@ public class Disguise implements NbtSerialisable {
     public void remove() {
         attachments.clear();
         if (entity != null) {
-            entity.remove();
+            EntityBehaviour.forEntity(entity).onDestroy(entity);
             entity = null;
         }
         if (blockEntity != null) {

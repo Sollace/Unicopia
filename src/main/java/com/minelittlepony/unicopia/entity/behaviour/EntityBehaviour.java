@@ -51,6 +51,12 @@ public class EntityBehaviour<T extends Entity> {
         return entity;
     }
 
+    public void onDestroy(T entity) {
+        entity.setInvulnerable(false);
+        entity.setNoGravity(false);
+        entity.remove();
+    }
+
     public Optional<EntityDimensions> getDimensions(T entity, Optional<EntityDimensions> current) {
         if (entity == null) {
             return Optional.empty();
@@ -231,7 +237,7 @@ public class EntityBehaviour<T extends Entity> {
     static {
         register(FallingBlockBehaviour::new, EntityType.FALLING_BLOCK);
         register(MobBehaviour::new, EntityType.RAVAGER, EntityType.IRON_GOLEM);
-        register(RabbitBehaviour::new, EntityType.RABBIT);
+        register(HoppingBehaviour::new, EntityType.RABBIT, EntityType.SLIME, EntityType.MAGMA_CUBE);
         register(TraderBehaviour::new, EntityType.VILLAGER, EntityType.WANDERING_TRADER);
         register(SheepBehaviour::new, EntityType.SHEEP);
         register(BeeBehaviour::new, EntityType.BEE);

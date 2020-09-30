@@ -12,8 +12,13 @@ public class MobBehaviour extends EntityBehaviour<MobEntity> {
     private MobEntity dummy;
 
     @Override
-    public void update(Pony player, MobEntity entity, DisguiseSpell spell) {
+    public void onDestroy(MobEntity entity) {
+        entity.setAiDisabled(false);
+        super.onDestroy(entity);
+    }
 
+    @Override
+    public void update(Pony player, MobEntity entity, DisguiseSpell spell) {
         if (player.sneakingChanged() && isSneakingOnGround(player)) {
 
             LivingEntity target = RayTraceHelper.<LivingEntity>findEntity(player.getEntity(), 6, 1,
