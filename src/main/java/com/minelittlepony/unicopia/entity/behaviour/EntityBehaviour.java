@@ -159,7 +159,8 @@ public class EntityBehaviour<T extends Entity> {
             l.deathTime = from.deathTime;
             l.stuckStingerTimer = from.stuckStingerTimer;
             l.stuckArrowTimer = from.stuckArrowTimer;
-            l.setHealth(from.getHealth());
+
+            l.setHealth((from.getHealth() / from.getMaxHealth()) * l.getMaxHealth());
 
             copyInventory(from, l);
         }
