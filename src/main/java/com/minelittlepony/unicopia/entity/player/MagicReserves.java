@@ -42,7 +42,7 @@ public interface MagicReserves {
         /**
          * Adds a percentage increment to this bar's current value
          */
-        default void add(int step) {
+        default void add(float step) {
             set(get() + (step / getMax()));
         }
 

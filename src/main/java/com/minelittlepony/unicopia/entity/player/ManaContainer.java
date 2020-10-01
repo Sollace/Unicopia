@@ -9,12 +9,14 @@ public class ManaContainer implements MagicReserves {
     private final Bar energy;
     private final Bar exertion;
     private final Bar mana;
+    private final Bar xp;
 
     public ManaContainer(Pony pony) {
         this.pony = pony;
         this.energy = new BarInst(Pony.ENERGY, 100F);
         this.exertion = new BarInst(Pony.EXERTION, 10F);
-        this.mana = new BarInst(Pony.MANA, 100F);
+        this.xp = new BarInst(Pony.XP, 1);
+        this.mana = new XpCollectingBar(Pony.MANA, 100F);
     }
 
     @Override
@@ -30,6 +32,35 @@ public class ManaContainer implements MagicReserves {
     @Override
     public Bar getMana() {
         return mana;
+    }
+
+    public Bar getXp() {
+        return xp;
+    }
+
+    class XpCollectingBar extends BarInst {
+
+        XpCollectingBar(TrackedData<Float> marker, float max) {
+            super(marker, max);
+        }
+
+        @Override
+        public void set(float value) {
+            float diff = value - get();
+            if (diff < 0) {
+                if (pony.canLevelUp()) {
+                    xp.add(-diff / (100 * (1 + pony.getCurrentLevel())));
+                    if (xp.getPercentFill() >= 1) {
+                        pony.addLevels(1);
+                        xp.set(0);
+                    }
+                }
+
+                value = get() + diff / (1 + pony.getCurrentLevel());
+            }
+
+            super.set(value);
+        }
     }
 
     class BarInst implements Bar {
