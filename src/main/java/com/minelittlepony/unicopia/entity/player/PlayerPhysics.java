@@ -109,11 +109,11 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             if (ticksInAir > 100) {
                 Bar mana = pony.getMagicalReserves().getMana();
 
-                mana.add((int)(-getHorizontalMotion(entity) * 100));
+                mana.add((int)(-getHorizontalMotion(entity) * 50));
 
                 if (mana.getPercentFill() < 0.2) {
                     pony.getMagicalReserves().getExertion().add(2);
-                    pony.getMagicalReserves().getEnergy().add(2);
+                    pony.getMagicalReserves().getEnergy().add(2 + (int)(getHorizontalMotion(entity) * 5));
 
                     if (mana.getPercentFill() < 0.1 && ticksInAir % 10 == 0) {
                         float exhaustion = (0.3F * ticksInAir) / 70;

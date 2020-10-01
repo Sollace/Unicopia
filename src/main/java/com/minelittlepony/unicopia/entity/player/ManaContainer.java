@@ -12,9 +12,9 @@ public class ManaContainer implements MagicReserves {
 
     public ManaContainer(Pony pony) {
         this.pony = pony;
-        this.energy = new BarInst(Pony.ENERGY);
-        this.exertion = new BarInst(Pony.EXERTION);
-        this.mana = new BarInst(Pony.MANA);
+        this.energy = new BarInst(Pony.ENERGY, 100F);
+        this.exertion = new BarInst(Pony.EXERTION, 10F);
+        this.mana = new BarInst(Pony.MANA, 100F);
     }
 
     @Override
@@ -35,10 +35,11 @@ public class ManaContainer implements MagicReserves {
     class BarInst implements Bar {
 
         private final TrackedData<Float> marker;
-        private float prev;
+        private final float max;
 
-        BarInst(TrackedData<Float> marker) {
+        BarInst(TrackedData<Float> marker, float max) {
             this.marker = marker;
+            this.max = max;
             pony.getOwner().getDataTracker().startTracking(marker, 0F);
         }
 
@@ -48,15 +49,13 @@ public class ManaContainer implements MagicReserves {
         }
 
         @Override
-        public float getPrev() {
-            float value = prev;
-            prev = get();
-            return value;
+        public void set(float value) {
+            pony.getOwner().getDataTracker().set(marker, MathHelper.clamp(value, 0, getMax()));
         }
 
         @Override
-        public void set(float value) {
-            pony.getOwner().getDataTracker().set(marker, MathHelper.clamp(value, 0, getMax()));
+        public float getMax() {
+            return max;
         }
     }
 }

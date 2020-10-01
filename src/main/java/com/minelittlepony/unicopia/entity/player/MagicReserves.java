@@ -28,12 +28,6 @@ public interface MagicReserves {
         float get();
 
         /**
-         * Gets the previous value from the last tick.
-         * Only updated when calling getPrev again.
-         */
-        float getPrev();
-
-        /**
          * Sets the absolute value
          */
         void set(float value);
@@ -62,8 +56,6 @@ public interface MagicReserves {
         /**
          * Get the maximum value this bar is allowed to contain
          */
-        default float getMax() {
-            return 100F;
-        }
+        float getMax();
     }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
+import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -89,36 +90,46 @@ public class UHud extends DrawableHelper {
     }
 
     void renderManaRings(MatrixStack matrices) {
-
         matrices.push();
         matrices.translate(24.5, 25.5, 0);
 
-        Bar mana = Pony.of(client.player).getMagicalReserves().getMana();
-        Bar exer = Pony.of(client.player).getMagicalReserves().getEnergy();
+        MagicReserves mana = Pony.of(client.player).getMagicalReserves();
 
-        renderRing(matrices, 17, 13, MathHelper.lerp(client.getTickDelta(), mana.getPrev(), mana.get()) / mana.getMax(), 0xFF88FF99);
-        renderRing(matrices, 17, 13, MathHelper.lerp(client.getTickDelta(), exer.getPrev(), exer.get()) / exer.getMax(), 0xFF002299);
+        double arcBegin = 0;
+
+        arcBegin = renderRing(matrices, 17, 13, 0, mana.getMana(), 0xFF88FF99);
+        arcBegin = renderRing(matrices, 17, 13, arcBegin, mana.getEnergy(), 0xFF002299);
 
         matrices.pop();
     }
 
-    static void renderRing(MatrixStack matrices, double outerRadius, double innerRadius, double maxAngle, int color) {
+    private double renderRing(MatrixStack matrices, double outerRadius, double innerRadius, double offsetAngle, Bar bar, int color) {
+        double fill = bar.getPercentFill() * Math.PI * 2;
 
-        float f = (color >> 24 & 255) / 255.0F;
-        float g = (color >> 16 & 255) / 255.0F;
-        float h = (color >> 8 & 255) / 255.0F;
-        float k = (color & 255) / 255.0F;
+        renderArc(matrices, innerRadius, outerRadius, offsetAngle, fill, color, false);
+        return offsetAngle + fill;
+    }
+
+    /**
+     * Renders a colored arc.
+     *
+     * @param mirrorHorizontally Whether or not the arc must be mirrored across the horizontal plane. Will produce a bar that grows from the middle filling both sides.
+     */
+    static void renderArc(MatrixStack matrices, double innerRadius, double outerRadius, double startAngle, double arcAngle, int color, boolean mirrorHorizontally) {
+        float f = (color >> 24 & 255) / 255F;
+        float g = (color >> 16 & 255) / 255F;
+        float h = (color >> 8 & 255) / 255F;
+        float k = (color & 255) / 255F;
 
         final double num_rings = 300;
-        double twoPi = Math.PI * 2;
+        final double twoPi = Math.PI * 2;
         final double increment = twoPi / num_rings;
 
-        maxAngle *= twoPi;
-        maxAngle = MathHelper.clamp(maxAngle, 0, twoPi - increment);
-
-        if (maxAngle < increment) {
+        if (arcAngle < increment) {
             return;
         }
+
+        final double maxAngle = MathHelper.clamp(startAngle + arcAngle, 0, twoPi - increment);
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.enableBlend();
@@ -129,7 +140,11 @@ public class UHud extends DrawableHelper {
 
         Matrix4f model = matrices.peek().getModel();
 
-        for (double angle = 0; angle >= -maxAngle; angle -= increment) {
+        if (!mirrorHorizontally) {
+            startAngle = -startAngle;
+        }
+
+        for (double angle = startAngle; angle >= -maxAngle; angle -= increment) {
             // center
             bufferBuilder.vertex(model,
                     (float)(innerRadius * Math.sin(angle)),
