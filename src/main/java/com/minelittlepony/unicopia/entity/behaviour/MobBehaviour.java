@@ -7,33 +7,37 @@ import com.minelittlepony.unicopia.util.RayTraceHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 
-public class MobBehaviour extends EntityBehaviour<MobEntity> {
+public class MobBehaviour<T extends MobEntity> extends EntityBehaviour<T> {
 
-    private MobEntity dummy;
+    private T dummy;
 
     @Override
-    public void onDestroy(MobEntity entity) {
+    public void onDestroy(T entity) {
         entity.setAiDisabled(false);
         super.onDestroy(entity);
     }
 
     @Override
-    public void update(Pony player, MobEntity entity, DisguiseSpell spell) {
+    public void update(Pony player, T entity, DisguiseSpell spell) {
         if (player.sneakingChanged() && isSneakingOnGround(player)) {
-
-            LivingEntity target = RayTraceHelper.<LivingEntity>findEntity(player.getEntity(), 6, 1,
-                    e -> e instanceof LivingEntity && e != entity && e != player.getOwner())
-                    .orElseGet(() -> getDummy(entity));
-
+            LivingEntity target = findTarget(player, entity);
             entity.tryAttack(target);
             target.setAttacker(player.getOwner());
         }
     }
 
-    private MobEntity getDummy(MobEntity entity) {
+    protected LivingEntity findTarget(Pony player, T entity) {
+        return RayTraceHelper.<LivingEntity>findEntity(player.getEntity(), 6, 1,
+                e -> e instanceof LivingEntity && e != entity && e != player.getOwner())
+                .orElseGet(() -> getDummy(entity));
+    }
+
+    @SuppressWarnings("unchecked")
+    protected T getDummy(T entity) {
         if (dummy == null) {
-            dummy = (MobEntity)entity.getType().create(entity.world);
+            dummy = (T)entity.getType().create(entity.world);
         }
+
         return dummy;
     }
 }
