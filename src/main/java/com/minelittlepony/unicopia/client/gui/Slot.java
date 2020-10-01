@@ -10,13 +10,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 class Slot {
-    private final UHud uHud;
+    protected final UHud uHud;
 
     private final AbilitySlot aSlot;
     private final AbilitySlot bSlot;
 
-    private int x;
-    private int y;
+    protected int x;
+    protected int y;
 
     private float lastCooldown;
 
@@ -59,8 +59,7 @@ class Slot {
         matrices.push();
         matrices.translate(x, y, 0);
 
-        AbilityDispatcher.Stat stat = abilities.getStat(bSwap ? bSlot : aSlot);
-        float cooldown = stat.getFillProgress();
+        float cooldown = abilities.getStat(bSwap ? bSlot : aSlot).getFillProgress();
 
         // background
         UHud.drawTexture(matrices, 0, 0, textureU, textureV, size, size, 128, 128);
@@ -80,17 +79,15 @@ class Slot {
             RenderSystem.enableBlend();
         }
 
-        // contents
-        uHud.renderAbilityIcon(matrices, stat, slotPadding / 2, slotPadding / 2, iconSize, iconSize, iconSize, iconSize);
-
+        renderContents(matrices, abilities, bSwap, tickDelta);
         matrices.pop();
     }
 
-    void renderForeground(MatrixStack matrices, AbilityDispatcher abilities, float tickDelta) {
-        matrices.push();
-        matrices.translate(x, y, 0);
+    protected void renderContents(MatrixStack matrices, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
+        // contents
+        uHud.renderAbilityIcon(matrices, abilities.getStat(bSwap ? bSlot : aSlot), slotPadding / 2, slotPadding / 2, iconSize, iconSize, iconSize, iconSize);
+
         UHud.drawTexture(matrices, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
-        matrices.pop();
     }
 
     void renderLabel(MatrixStack matrices, AbilityDispatcher abilities, float tickDelta) {
