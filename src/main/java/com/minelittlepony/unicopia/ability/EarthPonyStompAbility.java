@@ -184,7 +184,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
 
     @Override
     public void preApply(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().addExertion(40);
+        player.getMagicalReserves().getExertion().add(40);
     }
 
     @Override

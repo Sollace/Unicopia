@@ -62,7 +62,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
 
     @Override
     public void preApply(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().addEnergy(3);
+        player.getMagicalReserves().getEnergy().add(3);
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 

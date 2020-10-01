@@ -54,8 +54,11 @@ import net.minecraft.util.math.Vec3d;
 public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmittable, Copieable<Pony> {
 
     private static final TrackedData<Integer> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
     static final TrackedData<Float> ENERGY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> EXERTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    static final TrackedData<Float> MANA = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
+
     private static final TrackedData<CompoundTag> EFFECT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
     private static final TrackedData<CompoundTag> HELD_EFFECT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
 
@@ -273,8 +276,12 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
             }
         }
 
-        mana.addExertion(-10);
-        mana.addEnergy(-1);
+        mana.getExertion().add(-10);
+        mana.getEnergy().add(-1);
+
+        if (!getSpecies().canFly() || !gravity.isFlying()) {
+            mana.getMana().add(60);
+        }
 
         attributes.applyAttributes(this);
 
@@ -323,13 +330,24 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     @Override
     public boolean subtractEnergyCost(double foodSubtract) {
         if (!entity.abilities.creativeMode) {
-            int food = (int)(entity.getHungerManager().getFoodLevel() - foodSubtract);
 
-            if (food < 0) {
-                entity.getHungerManager().add(-entity.getHungerManager().getFoodLevel(), 0);
-                entity.damage(MagicalDamageSource.EXHAUSTION, -food/2);
+            float currentMana = mana.getMana().get();
+            float foodManaRatio = 10;
+
+            if (currentMana >= foodSubtract * foodManaRatio) {
+                mana.getMana().set(currentMana - (float)foodSubtract * foodManaRatio);
             } else {
-                entity.getHungerManager().add((int)-foodSubtract, 0);
+                mana.getMana().set(0);
+                foodSubtract -= currentMana / foodManaRatio;
+
+                int food = (int)(entity.getHungerManager().getFoodLevel() - foodSubtract);
+
+                if (food < 0) {
+                    entity.getHungerManager().add(-entity.getHungerManager().getFoodLevel(), 0);
+                    entity.damage(MagicalDamageSource.EXHAUSTION, -food/2);
+                } else {
+                    entity.getHungerManager().add((int)-foodSubtract, 0);
+                }
             }
         }
 

@@ -79,7 +79,7 @@ public class SphereModel {
         drawVertex(model, vertexWriter, radius, zenith, azimuth + azimuthIncrement, light, overlay, r, g, b, a);
     }
 
-    protected void drawVertex(Matrix4f model, VertexConsumer vertexWriter,
+    public static void drawVertex(Matrix4f model, VertexConsumer vertexWriter,
             double radius, double zenith, double azimuth,
             int light, int overlay, float r, float g, float b, float a) {
         Vector4f position = convertToCartesianCoord(radius, zenith, azimuth);
@@ -87,7 +87,7 @@ public class SphereModel {
         vertexWriter.vertex(position.getX(), position.getY(), position.getZ(), r, g, b, a, 0, 0, overlay, light, 0, 0, 0);
     }
 
-    protected Vector4f convertToCartesianCoord(double r, double theta, double phi) {
+    public static Vector4f convertToCartesianCoord(double r, double theta, double phi) {
 
         double x = r * Math.sin(theta) * Math.cos(phi);
         double y = r * Math.sin(theta) * Math.sin(phi);

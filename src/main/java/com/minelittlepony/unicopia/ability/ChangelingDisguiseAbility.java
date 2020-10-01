@@ -25,12 +25,19 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
     @Nullable
     @Override
     public Hit tryActivate(Pony player) {
-        return Hit.INSTANCE;
+        if (player.getMagicalReserves().getMana().getPercentFill() >= 0.9F) {
+            return Hit.INSTANCE;
+        }
+        return null;
     }
 
     @Override
     public void apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.getOwner();
+
+        if (iplayer.getMagicalReserves().getMana().getPercentFill() < 0.9F) {
+            return;
+        }
 
         RayTraceHelper.Trace trace = RayTraceHelper.doTrace(player, 10, 1, EntityPredicates.EXCEPT_SPECTATOR.and(e -> !(e instanceof LightningEntity)));
 
@@ -56,19 +63,21 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
             return disc;
         }).setDisguise(looked);
 
+        iplayer.getMagicalReserves().getMana().multiply(0.1F);
+
         player.calculateDimensions();
         iplayer.setDirty();
     }
 
     @Override
     public void preApply(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().addEnergy(20);
+        player.getMagicalReserves().getEnergy().add(20);
         player.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
     }
 
     @Override
     public void postApply(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().setEnergy(0);
+        player.getMagicalReserves().getEnergy().set(0);
         player.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
     }
 }

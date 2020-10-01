@@ -9,11 +9,5 @@ public interface Motion {
      */
     boolean isFlying();
 
-    float getFlightExperience();
-
-    float getFlightDuration();
-
-    boolean isExperienceCritical();
-
     PlayerDimensions getDimensions();
 }

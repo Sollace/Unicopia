@@ -45,7 +45,8 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
     @Override
     public Pos tryActivate(Pony player) {
-        HitResult ray = RayTraceHelper.doTrace(player.getOwner(), 100, 1, EntityPredicates.EXCEPT_SPECTATOR).getResult();
+        int maxDistance = player.getOwner().isCreative() ? 1000 : 100;
+        HitResult ray = RayTraceHelper.doTrace(player.getOwner(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR).getResult();
 
         World w = player.getWorld();
 
@@ -152,7 +153,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
     @Override
     public void preApply(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().addExertion(30);
+        player.getMagicalReserves().getExertion().add(30);
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 

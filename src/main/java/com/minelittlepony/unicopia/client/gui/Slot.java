@@ -81,17 +81,19 @@ class Slot {
         }
 
         // contents
-        //int middle = (slotPadding + size - iconSize)/2;
-
         uHud.renderAbilityIcon(matrices, stat, slotPadding / 2, slotPadding / 2, iconSize, iconSize, iconSize, iconSize);
-
-        // foreground
-        UHud.drawTexture(matrices, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
 
         matrices.pop();
     }
 
     void renderForeground(MatrixStack matrices, AbilityDispatcher abilities, float tickDelta) {
+        matrices.push();
+        matrices.translate(x, y, 0);
+        UHud.drawTexture(matrices, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
+        matrices.pop();
+    }
+
+    void renderLabel(MatrixStack matrices, AbilityDispatcher abilities, float tickDelta) {
         Text label = KeyBindingsHandler.INSTANCE.getBinding(aSlot).getBoundKeyLocalizedText();
 
         matrices.push();

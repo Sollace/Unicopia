@@ -91,8 +91,8 @@ public class RaceChangeStatusEffect extends StatusEffect {
         if (entity instanceof PlayerEntity) {
             Pony pony  = (Pony)eq;
             MagicReserves magic = pony.getMagicalReserves();
-            magic.addExertion(50);
-            magic.addEnergy(3);
+            magic.getExertion().add(50);
+            magic.getEnergy().add(3);
 
             if (state.shouldShowParticles()) {
                 pony.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, 5);

@@ -1,13 +1,11 @@
 package com.minelittlepony.unicopia.entity.player;
 
-import java.util.Random;
-
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.FlightPredicate;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
-import com.minelittlepony.unicopia.particle.MagicParticleEffect;
+import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.MutableVector;
 
@@ -21,18 +19,13 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 
 public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Motion, NbtSerialisable {
 
-    private static final float MAXIMUM_FLIGHT_EXPERIENCE = 1500;
-
-    public int ticksNextLevel = 0;
-    public float flightExperience = 0;
+    private int ticksInAir;
 
     public boolean isFlyingEither = false;
     public boolean isFlyingSurvival = false;
-    public boolean isRainbooming = false;
 
     private double lastTickPosX = 0;
     private double lastTickPosZ = 0;
@@ -79,11 +72,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     }
 
     @Override
-    public boolean isExperienceCritical() {
-        return isRainbooming || flightExperience > MAXIMUM_FLIGHT_EXPERIENCE * 0.8;
-    }
-
-    @Override
     public void tick() {
         PlayerEntity entity = pony.getOwner();
 
@@ -97,20 +85,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
         MutableVector velocity = new MutableVector(entity.getVelocity());
 
-        if (isExperienceCritical() && pony.isClient()) {
-            Random rnd = pony.getWorld().random;
-
-            for (int i = 0; i < 360 + getHorizontalMotion(entity); i += 10) {
-                Vec3d pos = pony.getOriginVector().add(
-                        rnd.nextGaussian() * entity.getWidth(),
-                        rnd.nextGaussian() * entity.getHeight()/2,
-                        rnd.nextGaussian() * entity.getWidth()
-                );
-
-                pony.addParticle(MagicParticleEffect.UNICORN, pos, velocity.toImmutable());
-            }
-        }
-
         boolean creative = entity.abilities.creativeMode || pony.getOwner().isSpectator();
 
         entity.abilities.allowFlying = checkCanFly();
@@ -121,72 +95,44 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             if ((entity.isOnGround() && entity.isSneaking()) || entity.isTouchingWater()) {
                 entity.abilities.flying = false;
             }
+
+
         }
 
         isFlyingSurvival = entity.abilities.flying && !creative;
         isFlyingEither = isFlyingSurvival || (creative && entity.abilities.flying);
 
-        if (!creative && !entity.isFallFlying()) {
-            if (isFlyingSurvival && !entity.hasVehicle()) {
+        if (!creative && !entity.isFallFlying() && isFlyingSurvival && !entity.hasVehicle()) {
 
-                if (!isRainbooming && getHorizontalMotion(entity) > 0.2 && flightExperience < MAXIMUM_FLIGHT_EXPERIENCE) {
-                    flightExperience++;
-                }
+            entity.fallDistance = 0;
 
-                entity.fallDistance = 0;
+            if (ticksInAir > 100) {
+                Bar mana = pony.getMagicalReserves().getMana();
 
-                if (pony.getSpecies() != Race.CHANGELING && entity.world.random.nextInt(100) == 0) {
-                    float exhaustion = (0.3F * ticksNextLevel) / 70;
-                    if (entity.isSprinting()) {
-                        exhaustion *= 3.11F;
+                mana.add((int)(-getHorizontalMotion(entity) * 100));
+
+                if (mana.getPercentFill() < 0.2) {
+                    pony.getMagicalReserves().getExertion().add(2);
+                    pony.getMagicalReserves().getEnergy().add(2);
+
+                    if (mana.getPercentFill() < 0.1 && ticksInAir % 10 == 0) {
+                        float exhaustion = (0.3F * ticksInAir) / 70;
+                        if (entity.isSprinting()) {
+                            exhaustion *= 3.11F;
+                        }
+
+                        entity.addExhaustion(exhaustion);
                     }
-
-                    exhaustion *= (1 - flightExperience / MAXIMUM_FLIGHT_EXPERIENCE);
-
-                    entity.addExhaustion(exhaustion);
-                }
-
-                if (ticksNextLevel++ >= MAXIMUM_FLIGHT_EXPERIENCE) {
-                    ticksNextLevel = 0;
-
-                    entity.addExperience(1);
-                    addFlightExperience(1);
-                    entity.playSound(SoundEvents.ENTITY_GUARDIAN_FLOP, 1, 1);
-                }
-
-                moveFlying(entity, velocity);
-
-                if (isExperienceCritical()) {
-
-                    if (pony.getMagicalReserves().getEnergy() <= 0.25F) {
-                        pony.getMagicalReserves().addEnergy(2);
-                    }
-
-                    if (isRainbooming || (entity.isSneaking() && isRainboom())) {
-                        performRainboom(entity, velocity);
-                    }
-                }
-
-                if (ticksNextLevel > 0 && ticksNextLevel % 30 == 0) {
-                    entity.playSound(getWingSound(), 0.5F, 1);
-                }
-            } else {
-                if (ticksNextLevel != 0) {
-                    entity.playSound(getWingSound(), 0.4F, 1);
-                }
-
-                ticksNextLevel = 0;
-
-                if (isExperienceCritical()) {
-                    addFlightExperience(-0.39991342F);
-                } else {
-                    addFlightExperience(-0.019991342F);
-                }
-
-                if (flightExperience < 0.02) {
-                    isRainbooming = false;
                 }
             }
+
+            moveFlying(entity, velocity);
+
+            if (ticksInAir++ > 0 && ticksInAir % 30 == 0) {
+                entity.playSound(getWingSound(), 0.5F, 1);
+            }
+        } else {
+            ticksInAir = 0;
         }
 
         if (pony.getPhysics().isGravityNegative()) {
@@ -208,28 +154,9 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         return pony.getSpecies() == Race.CHANGELING ? USounds.CHANGELING_BUZZ : USounds.WING_FLAP;
     }
 
-    protected void performRainboom(Entity entity, MutableVector velocity) {
-        float forward = 0.5F * flightExperience / MAXIMUM_FLIGHT_EXPERIENCE;
-
-        velocity.x += - forward * MathHelper.sin(entity.yaw * 0.017453292F);
-        velocity.z +=   forward * MathHelper.cos(entity.yaw * 0.017453292F);
-        velocity.y +=   forward * MathHelper.sin(entity.pitch * 0.017453292F);
-
-        if (!isRainbooming || entity.world.random.nextInt(5) == 0) {
-            entity.playSound(SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, 1, 1);
-        }
-
-        if (flightExperience > 0) {
-            flightExperience -= 13;
-            isRainbooming = true;
-        } else {
-            isRainbooming = false;
-        }
-    }
-
     protected void moveFlying(Entity player, MutableVector velocity) {
 
-        float forward = 0.000015F * flightExperience * (float)Math.sqrt(getHorizontalMotion(player));
+        float forward = 0.000015F * (float)Math.sqrt(getHorizontalMotion(player));
         boolean sneak = !player.isSneaking();
 
         // vertical drop due to gravity
@@ -287,13 +214,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         return distance > 4 ? SoundEvents.ENTITY_PLAYER_BIG_FALL : SoundEvents.ENTITY_PLAYER_SMALL_FALL;
     }
 
-    private void addFlightExperience(float factor) {
-        float maximumGain = MAXIMUM_FLIGHT_EXPERIENCE - flightExperience;
-        float gainSteps = 20;
-
-        flightExperience = Math.max(0, flightExperience + factor * maximumGain / gainSteps);
-    }
-
     public void updateFlightStat(boolean flying) {
         PlayerEntity entity = pony.getOwner();
 
@@ -303,10 +223,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             entity.abilities.flying |= flying;
 
             isFlyingSurvival = entity.abilities.flying;
-
-            if (isFlyingSurvival) {
-                ticksNextLevel = 0;
-            }
         } else {
             entity.abilities.flying = false;
             isFlyingSurvival = false;
@@ -316,21 +232,17 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     @Override
     public void toNBT(CompoundTag compound) {
         super.toNBT(compound);
-        compound.putInt("flightDuration", ticksNextLevel);
-        compound.putFloat("flightExperience", flightExperience);
         compound.putBoolean("isFlying", isFlyingSurvival);
         compound.putBoolean("isFlyingEither", isFlyingEither);
-        compound.putBoolean("isRainbooming", isRainbooming);
+        compound.putInt("ticksInAir", ticksInAir);
     }
 
     @Override
     public void fromNBT(CompoundTag compound) {
         super.fromNBT(compound);
-        ticksNextLevel = compound.getInt("flightDuration");
-        flightExperience = compound.getFloat("flightExperience");
         isFlyingSurvival = compound.getBoolean("isFlying");
         isFlyingEither = compound.getBoolean("isFlyingEither");
-        isRainbooming = compound.getBoolean("isRainbooming");
+        ticksInAir = compound.getInt("ticksInAir");
 
         pony.getOwner().calculateDimensions();
     }
@@ -338,15 +250,5 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     @Override
     public boolean isFlying() {
         return isFlyingSurvival;
-    }
-
-    @Override
-    public float getFlightExperience() {
-        return flightExperience / MAXIMUM_FLIGHT_EXPERIENCE;
-    }
-
-    @Override
-    public float getFlightDuration() {
-        return ticksNextLevel / MAXIMUM_FLIGHT_EXPERIENCE;
     }
 }

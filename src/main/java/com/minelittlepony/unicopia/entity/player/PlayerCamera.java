@@ -45,14 +45,14 @@ public class PlayerCamera extends MotionCompositor {
     }
 
     public double calculateFieldOfView(double fov) {
-        fov += player.getMagicalReserves().getExertion() / 5F;
+        fov += player.getMagicalReserves().getExertion().get() / 5F;
         fov += getEnergyAddition();
 
         return fov;
     }
 
     protected float getEnergyAddition() {
-        int maxE = (int)Math.floor(player.getMagicalReserves().getEnergy() * 100);
+        int maxE = (int)Math.floor(player.getMagicalReserves().getEnergy().get() * 100);
 
         if (maxE <= 0) {
             return 0;
