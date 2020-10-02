@@ -28,8 +28,8 @@ public class KeyBindingsHandler {
 
     public KeyBindingsHandler() {
         addKeybind(GLFW.GLFW_KEY_R, AbilitySlot.PRIMARY);
-        addKeybind(GLFW.GLFW_KEY_F, AbilitySlot.SECONDARY);
-        addKeybind(GLFW.GLFW_KEY_C, AbilitySlot.TERTIARY);
+        addKeybind(GLFW.GLFW_KEY_G, AbilitySlot.SECONDARY);
+        addKeybind(GLFW.GLFW_KEY_V, AbilitySlot.TERTIARY);
     }
 
     public KeyBinding getBinding(AbilitySlot slot) {
