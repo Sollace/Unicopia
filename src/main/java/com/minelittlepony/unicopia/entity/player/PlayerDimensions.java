@@ -49,13 +49,9 @@ public final class PlayerDimensions {
             flyingDimensions = EntityDimensions.changing(dimensions.width, dimensions.height / 2);
         }
 
-        return getPredicate().flatMap(e -> e.getTargetDimensions(pony)).orElseGet(() -> {
-            if (physics.isFlyingSurvival && physics.isRainboom()) {
-                return flyingDimensions;
-            }
-
-            return defaultDimensions;
-        });
+        return getPredicate()
+                .flatMap(e -> e.getTargetDimensions(pony))
+                .orElseGet(() -> physics.isFlyingSurvival ? flyingDimensions : defaultDimensions);
     }
 
     private float calculateTargetEyeHeight() {
@@ -63,10 +59,6 @@ public final class PlayerDimensions {
 
         if (height > 0) {
             return height;
-        }
-
-        if (physics.isFlyingSurvival && physics.isRainboom()) {
-            return 0.5F;
         }
 
         return defaultEyeHeight;
