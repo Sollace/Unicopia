@@ -9,12 +9,16 @@ import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.MutableVector;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -80,6 +84,11 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             entity.abilities.flying |= (canFly || entity.abilities.allowFlying) && isFlyingEither;
 
             if ((entity.isOnGround() && entity.isSneaking()) || entity.isTouchingWater() || entity.horizontalCollision  || entity.verticalCollision) {
+
+                if (entity.abilities.flying && entity.horizontalCollision) {
+                    handleWallCollission(entity, velocity);
+                }
+
                 entity.abilities.flying = false;
             }
         }
@@ -158,6 +167,27 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
     private SoundEvent getWingSound() {
         return pony.getSpecies() == Race.CHANGELING ? USounds.CHANGELING_BUZZ : USounds.WING_FLAP;
+    }
+
+    protected void handleWallCollission(PlayerEntity player, MutableVector velocity) {
+
+        if (!player.world.isClient) {
+            BlockPos pos = new BlockPos(player.getCameraPosVec(1).add(player.getRotationVec(1).normalize().multiply(2)));
+
+            BlockState state = player.world.getBlockState(pos);
+
+            if (!player.world.isAir(pos) && Block.isFaceFullSquare(state.getCollisionShape(player.world, pos), player.getHorizontalFacing().getOpposite())) {
+                double motion = Math.sqrt(getHorizontalMotion(player));
+
+                float distance = (float)(motion * 20 - 3);
+
+                if (distance > 0) {
+                    player.playSound(distance > 4 ? SoundEvents.ENTITY_PLAYER_BIG_FALL : SoundEvents.ENTITY_PLAYER_SMALL_FALL, 1, 1);
+
+                    player.damage(DamageSource.FLY_INTO_WALL, distance);
+                }
+            }
+        }
     }
 
     protected void moveFlying(PlayerEntity player, MutableVector velocity) {
