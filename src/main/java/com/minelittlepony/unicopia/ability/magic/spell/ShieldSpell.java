@@ -61,7 +61,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements AttachableSp
         int costMultiplier = applyEntities(source);
         if (costMultiplier > 0) {
             if (source.getOwner().age % 20 == 0) {
-                double cost = 4 + (source.getCurrentLevel() * 2);
+                double cost = 4 + (source.getLevel().get() * 2);
 
                 cost *= costMultiplier / 5F;
 
@@ -76,7 +76,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements AttachableSp
 
     public double getDrawDropOffRange(Caster<?> source) {
         float multiplier = (source.getOwner().isSneaking() ? 1 : 2);
-        return (4 + (source.getCurrentLevel() * 2)) / multiplier;
+        return (4 + (source.getLevel().get() * 2)) / multiplier;
     }
 
     @Override

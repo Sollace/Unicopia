@@ -106,7 +106,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
             entity.fallDistance = 0;
 
-            int level = pony.getCurrentLevel() + 1;
+            int level = pony.getLevel().get() + 1;
 
             if (ticksInAir > (level * 100)) {
                 Bar mana = pony.getMagicalReserves().getMana();
@@ -158,7 +158,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
     protected void moveFlying(Entity player, MutableVector velocity) {
 
-        float forward = 0.000015F * (1 + (pony.getCurrentLevel() / 10F)) * (float)Math.sqrt(getHorizontalMotion(player));
+        float forward = 0.000015F * (1 + (pony.getLevel().get() / 10F)) * (float)Math.sqrt(getHorizontalMotion(player));
         boolean sneak = !player.isSneaking();
 
         // vertical drop due to gravity

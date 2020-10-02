@@ -44,7 +44,7 @@ public class AttractiveSpell extends ShieldSpell {
 
     @Override
     public void render(Caster<?> source) {
-        int range = 4 + (source.getCurrentLevel() * 2);
+        int range = 4 + (source.getLevel().get() * 2);
         Vec3d pos = source.getOriginVector();
 
         source.spawnParticles(new Sphere(false, range), range * 9, p -> {
@@ -54,7 +54,7 @@ public class AttractiveSpell extends ShieldSpell {
 
     @Override
     public double getDrawDropOffRange(Caster<?> caster) {
-        return 10 + (caster.getCurrentLevel() * 2);
+        return 10 + (caster.getLevel().get() * 2);
     }
 
     @Override

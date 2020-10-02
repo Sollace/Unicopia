@@ -18,7 +18,7 @@ public abstract class AbstractRangedAreaSpell extends AbstractSpell implements A
     @Override
     public float getExhaustion(Caster<?> caster) {
         float max = getMaxLevelCutOff(caster);
-        float current = caster.getCurrentLevel();
+        float current = caster.getLevel().get();
 
         if (current > max) {
             float maxEc = getMaxExhaustion(caster);

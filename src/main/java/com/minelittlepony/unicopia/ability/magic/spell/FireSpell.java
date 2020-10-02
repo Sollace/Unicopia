@@ -62,7 +62,7 @@ public class FireSpell extends AbstractRangedAreaSpell {
 
     @Override
     public void render(Caster<?> source) {
-        source.spawnParticles(VISUAL_EFFECT_RANGE, source.getCurrentLevel() * 6, pos -> {
+        source.spawnParticles(VISUAL_EFFECT_RANGE, source.getLevel().get() * 6, pos -> {
             source.addParticle(ParticleTypes.LARGE_SMOKE, pos, Vec3d.ZERO);
         });
     }

@@ -4,26 +4,41 @@ package com.minelittlepony.unicopia.ability.magic;
  * Object with levelling capabilities.
  */
 public interface Levelled {
+    static LevelStore fixed(int level) {
+        return new LevelStore() {
+            @Override
+            public int get() {
+                return level;
+            }
 
-    /**
-     * Maximum level this spell can reach or -1 for unlimited.
-     * <br>
-     * If a gem goes past this level it is more likely to explode.
-     */
-    default int getMaxLevel() {
-        return 0;
+            @Override
+            public void set(int level) {
+            }
+
+            @Override
+            public int getMax() {
+                return get();
+            }
+
+        };
     }
 
-    default boolean canLevelUp() {
-        int max = getMaxLevel();
-        return max < 0 || getCurrentLevel() < max;
-    }
+    LevelStore getLevel();
 
-    int getCurrentLevel();
+    interface LevelStore {
+        int getMax();
 
-    void setCurrentLevel(int level);
+        int get();
 
-    default void addLevels(int levels) {
-        setCurrentLevel(getCurrentLevel() + levels);
+        void set(int level);
+
+        default boolean canLevelUp() {
+            int max = getMax();
+            return max < 0 || get() < max;
+        }
+
+        default void add(int levels) {
+            set(get() + levels);
+        }
     }
 }

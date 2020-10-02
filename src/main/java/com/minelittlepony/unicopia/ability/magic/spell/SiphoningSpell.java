@@ -35,7 +35,7 @@ public class SiphoningSpell extends AbstractRangedAreaSpell {
     @Override
     public boolean update(Caster<?> source) {
 
-        int radius = 4 + source.getCurrentLevel();
+        int radius = 4 + source.getLevel().get();
 
         LivingEntity owner = source.getOwner();
 
@@ -92,7 +92,7 @@ public class SiphoningSpell extends AbstractRangedAreaSpell {
                         e.damage(damage, e.getHealth() / 4);
                     }
                 } else {
-                    e.heal((float)Math.min(0.5F * (1 + source.getCurrentLevel()), maxHealthGain * 0.6));
+                    e.heal((float)Math.min(0.5F * (1 + source.getLevel().get()), maxHealthGain * 0.6));
                 }
             });
         }
@@ -110,7 +110,7 @@ public class SiphoningSpell extends AbstractRangedAreaSpell {
 
     @Override
     public void render(Caster<?> source) {
-        int radius = 4 + source.getCurrentLevel();
+        int radius = 4 + source.getLevel().get();
 
         Vec3d origin = source.getOriginVector();
         int direction = source.getAffinity() == Affinity.GOOD ? 1 : -1;

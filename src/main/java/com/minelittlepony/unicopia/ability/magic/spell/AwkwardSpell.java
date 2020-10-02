@@ -44,7 +44,7 @@ public class AwkwardSpell extends AbstractSpell implements ThrowableSpell {
 
     @Override
     public void render(Caster<?> source) {
-        source.spawnParticles(new Sphere(false, (1 + source.getCurrentLevel()) * 8), 10, pos -> {
+        source.spawnParticles(new Sphere(false, (1 + source.getLevel().get()) * 8), 10, pos -> {
 
             List<Identifier> names = new ArrayList<>(Registry.PARTICLE_TYPE.getIds());
 

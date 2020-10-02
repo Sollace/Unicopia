@@ -52,7 +52,7 @@ public class NecromancySpell extends AbstractRangedAreaSpell {
 
         float additional = source.getWorld().getLocalDifficulty(source.getOrigin()).getLocalDifficulty();
 
-        int radius = source.getCurrentLevel() + 1;
+        int radius = source.getLevel().get() + 1;
 
         Shape affectRegion = new Sphere(false, radius * 4);
 
@@ -98,7 +98,7 @@ public class NecromancySpell extends AbstractRangedAreaSpell {
 
     @Override
     public void render(Caster<?> source) {
-        Shape affectRegion = new Sphere(false, (1 + source.getCurrentLevel()) * 4);
+        Shape affectRegion = new Sphere(false, (1 + source.getLevel().get()) * 4);
 
         source.spawnParticles(affectRegion, 5, pos -> {
             if (!source.getWorld().isAir(new BlockPos(pos).down())) {

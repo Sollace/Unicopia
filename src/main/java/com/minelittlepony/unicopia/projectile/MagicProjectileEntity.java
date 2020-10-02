@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.Magical;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.ThrowableSpell;
@@ -46,6 +47,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
     private static final TrackedData<Float> DAMAGE = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<CompoundTag> EFFECT = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+    private static final LevelStore LEVELS = Levelled.fixed(1);
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
 
@@ -101,12 +103,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
     }
 
     @Override
-    public int getCurrentLevel() {
-        return 1;
-    }
-
-    @Override
-    public void setCurrentLevel(int level) {
+    public LevelStore getLevel() {
+        return LEVELS;
     }
 
     @Override

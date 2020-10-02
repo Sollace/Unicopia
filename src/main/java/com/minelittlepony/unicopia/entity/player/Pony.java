@@ -45,13 +45,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmittable, Copieable<Pony> {
@@ -63,8 +60,6 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     static final TrackedData<Float> MANA = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> XP = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
-    static final TrackedData<Integer> LEVEL = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
-
     private static final TrackedData<CompoundTag> EFFECT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
     private static final TrackedData<CompoundTag> HELD_EFFECT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
 
@@ -73,6 +68,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     private final PlayerAttributes attributes = new PlayerAttributes();
     private final PlayerCamera camera = new PlayerCamera(this);
     private final MagicReserves mana;
+    private final PlayerLevelStore levels;
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
 
@@ -94,11 +90,11 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     public Pony(PlayerEntity player) {
         this.entity = player;
         this.mana = new ManaContainer(this);
+        this.levels = new PlayerLevelStore(this);
 
         player.getDataTracker().startTracking(RACE, Race.HUMAN.ordinal());
         player.getDataTracker().startTracking(EFFECT, new CompoundTag());
         player.getDataTracker().startTracking(HELD_EFFECT, new CompoundTag());
-        player.getDataTracker().startTracking(LEVEL, 0);
     }
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
@@ -136,6 +132,11 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     public MagicReserves getMagicalReserves() {
         return mana;
+    }
+
+    @Override
+    public LevelStore getLevel() {
+        return levels;
     }
 
     @Override
@@ -300,20 +301,6 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         prevLanded = entity.isOnGround();
     }
 
-    @Override
-    public void addLevels(int levels) {
-        if (levels > 0) {
-            mana.getMana().set(mana.getEnergy().getMax());
-            entity.world.playSound(null, getOrigin(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 1, 2);
-        }
-        Caster.super.addLevels(levels);
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return 3;
-    }
-
     public Optional<Float> onImpact(float distance, float damageMultiplier) {
 
         float g = gravity.getGravityModifier();
@@ -443,16 +430,6 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     @Override
     public PlayerEntity getOwner() {
         return entity;
-    }
-
-    @Override
-    public int getCurrentLevel() {
-        return entity.getDataTracker().get(LEVEL);
-    }
-
-    @Override
-    public void setCurrentLevel(int level) {
-        entity.getDataTracker().set(LEVEL, MathHelper.clamp(level, 0, getMaxLevel()));
     }
 
     public boolean isClientPlayer() {

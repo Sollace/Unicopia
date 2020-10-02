@@ -55,7 +55,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
 
     @Override
     public boolean isVulnerable(Caster<?> otherSource, Spell other) {
-        return suppressionCounter <= otherSource.getCurrentLevel();
+        return suppressionCounter <= otherSource.getLevel().get();
     }
 
     @Override

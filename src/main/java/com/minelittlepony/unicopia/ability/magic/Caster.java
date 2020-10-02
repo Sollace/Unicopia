@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic;
 
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -16,11 +15,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
- * Interface for any magically capable entities that can cast and persist spells.
+ * Interface for any magically capable entities that can cast or persist spells.
  */
 public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affine, Magical, ParticleSource {
 
@@ -77,13 +75,6 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     }
 
     /**
-     * Gets the unique id associated with this caste.
-     */
-    default UUID getUniqueId() {
-        return getEntity().getUuid();
-    }
-
-    /**
      * gets the minecraft world
      */
     @Override
@@ -110,14 +101,6 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
      */
     default BlockPos getOrigin() {
         return getEntity().getBlockPos();
-    }
-
-    /**
-     * Gets the center position where this caster is located.
-     */
-    @Override
-    default Vec3d getOriginVector() {
-        return getEntity().getPos();
     }
 
     default boolean subtractEnergyCost(double amount) {

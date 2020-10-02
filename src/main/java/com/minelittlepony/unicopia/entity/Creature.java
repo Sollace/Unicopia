@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.AttachableSpell;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.EffectSync;
@@ -18,6 +19,8 @@ import net.minecraft.nbt.CompoundTag;
 public class Creature implements Equine<LivingEntity>, Caster<LivingEntity> {
 
     private static final TrackedData<CompoundTag> EFFECT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+
+    private static final LevelStore LEVELS = Levelled.fixed(0);
 
     public static void boostrap() {}
 
@@ -80,12 +83,8 @@ public class Creature implements Equine<LivingEntity>, Caster<LivingEntity> {
     }
 
     @Override
-    public int getCurrentLevel() {
-        return 0;
-    }
-
-    @Override
-    public void setCurrentLevel(int level) {
+    public LevelStore getLevel() {
+        return LEVELS;
     }
 
     @Override

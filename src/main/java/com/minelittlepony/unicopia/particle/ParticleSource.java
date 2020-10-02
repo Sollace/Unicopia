@@ -16,12 +16,14 @@ public interface ParticleSource extends ParticleSpawner {
      */
     World getWorld();
 
+    Entity getEntity();
+
     /**
      * Gets the center position where this caster is located.
      */
-    Vec3d getOriginVector();
-
-    Entity getEntity();
+    default Vec3d getOriginVector() {
+        return getEntity().getPos();
+    }
 
     default void spawnParticles(ParticleEffect particleId, int count) {
         ParticleUtils.spawnParticles(particleId, getEntity(), count);

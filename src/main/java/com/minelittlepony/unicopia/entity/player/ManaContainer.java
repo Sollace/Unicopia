@@ -48,15 +48,15 @@ public class ManaContainer implements MagicReserves {
         public void set(float value) {
             float diff = value - get();
             if (diff < 0) {
-                if (pony.canLevelUp()) {
-                    xp.add(-diff / (100 * (1 + pony.getCurrentLevel())));
+                if (pony.getLevel().canLevelUp()) {
+                    xp.add(-diff / (100 * (1 + pony.getLevel().get())));
                     if (xp.getPercentFill() >= 1) {
-                        pony.addLevels(1);
+                        pony.getLevel().add(1);
                         xp.set(0);
                     }
                 }
 
-                value = get() + diff / (1 + pony.getCurrentLevel());
+                value = get() + diff / (1 + pony.getLevel().get());
             }
 
             super.set(value);

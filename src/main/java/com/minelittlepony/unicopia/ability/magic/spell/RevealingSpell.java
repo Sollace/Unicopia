@@ -28,7 +28,7 @@ public class RevealingSpell extends AbstractSpell {
 
     @Override
     public void onPlaced(Caster<?> source) {
-        source.setCurrentLevel(1);
+        source.getLevel().set(1);
     }
 
     @Override
