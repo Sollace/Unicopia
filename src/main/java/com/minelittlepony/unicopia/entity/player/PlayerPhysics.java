@@ -106,56 +106,58 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             }
         }
 
-        if (isFlying()) {
-            int level = pony.getLevel().get() + 1;
+        if (canFly) {
+            if (isFlying()) {
+                int level = pony.getLevel().get() + 1;
 
-            if (ticksInAir++ > (level * 100)) {
-                Bar mana = pony.getMagicalReserves().getMana();
+                if (ticksInAir++ > (level * 100)) {
+                    Bar mana = pony.getMagicalReserves().getMana();
 
-                mana.add((int)(-getHorizontalMotion(entity) * 50 / level));
+                    mana.add((int)(-getHorizontalMotion(entity) * 50 / level));
 
-                if (mana.getPercentFill() < 0.2) {
-                    pony.getMagicalReserves().getExertion().add(2);
-                    pony.getMagicalReserves().getEnergy().add(2 + (int)(getHorizontalMotion(entity) * 5));
+                    if (mana.getPercentFill() < 0.2) {
+                        pony.getMagicalReserves().getExertion().add(2);
+                        pony.getMagicalReserves().getEnergy().add(2 + (int)(getHorizontalMotion(entity) * 5));
 
-                    if (mana.getPercentFill() < 0.1 && ticksInAir % 10 == 0) {
-                        float exhaustion = (0.3F * ticksInAir) / 70;
-                        if (entity.isSprinting()) {
-                            exhaustion *= 3.11F;
+                        if (mana.getPercentFill() < 0.1 && ticksInAir % 10 == 0) {
+                            float exhaustion = (0.3F * ticksInAir) / 70;
+                            if (entity.isSprinting()) {
+                                exhaustion *= 3.11F;
+                            }
+
+                            entity.addExhaustion(exhaustion);
                         }
-
-                        entity.addExhaustion(exhaustion);
                     }
                 }
-            }
 
-            entity.fallDistance = 0;
+                entity.fallDistance = 0;
 
-            moveFlying(entity, velocity);
-            if (entity.world.hasRain(entity.getBlockPos())) {
-                applyTurbulance(entity, velocity);
-            }
+                moveFlying(entity, velocity);
+                if (entity.world.hasRain(entity.getBlockPos())) {
+                    applyTurbulance(entity, velocity);
+                }
 
-            if (entity.world.isClient && ticksInAir % 20 == 0 && entity.getVelocity().length() < 0.29) {
-                entity.playSound(getWingSound(), 0.5F, 1);
-                thrustScale = 1;
-            }
-            velocity.y -= 0.02;
-        } else {
-            ticksInAir = 0;
+                if (entity.world.isClient && ticksInAir % 20 == 0 && entity.getVelocity().length() < 0.29) {
+                    entity.playSound(getWingSound(), 0.5F, 1);
+                    thrustScale = 1;
+                }
+                velocity.y -= 0.02;
+            } else {
+                ticksInAir = 0;
 
-            if (!creative) {
+                if (!creative) {
 
-                double horMotion = getHorizontalMotion(entity);
-                double motion = entity.getPos().subtract(lastPos).lengthSquared();
+                    double horMotion = getHorizontalMotion(entity);
+                    double motion = entity.getPos().subtract(lastPos).lengthSquared();
 
-                if (velocity.y > 0 && (horMotion > 0.2 || (motion > 0.2 && velocity.y < -0.2))) {
-                    entity.abilities.flying = true;
-                    isFlyingEither = true;
-                    isFlyingSurvival = true;
+                    if (velocity.y > 0 && (horMotion > 0.2 || (motion > 0.2 && velocity.y < -0.2))) {
+                        entity.abilities.flying = true;
+                        isFlyingEither = true;
+                        isFlyingSurvival = true;
 
-                    velocity.y += horMotion + 0.3;
-                    applyThrust(entity, velocity);
+                        velocity.y += horMotion + 0.3;
+                        applyThrust(entity, velocity);
+                    }
                 }
             }
         }
