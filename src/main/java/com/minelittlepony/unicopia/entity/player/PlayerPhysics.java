@@ -157,6 +157,8 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                     thrustScale = 1;
                 }
                 velocity.y -= 0.02;
+                velocity.x *= 0.9896;
+                velocity.z *= 0.9896;
             } else {
                 ticksInAir = 0;
 
@@ -165,13 +167,22 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                     double horMotion = getHorizontalMotion(entity);
                     double motion = entity.getPos().subtract(lastPos).lengthSquared();
 
-                    if (velocity.y > 0 && (horMotion > 0.2 || (motion > 0.2 && velocity.y < -0.2))) {
+                    System.out.println(motion + " " + horMotion + " " + velocity.y);
+
+                    boolean takeOffCondition = velocity.y > 0
+                            && (horMotion > 0.2 || (motion > 0.2 && velocity.y < -0.02));
+                    boolean fallingTakeOffCondition = !entity.isOnGround() && velocity.y < -1.6;
+
+                    if (takeOffCondition || fallingTakeOffCondition) {
                         entity.abilities.flying = true;
                         isFlyingEither = true;
                         isFlyingSurvival = true;
 
                         velocity.y += horMotion + 0.3;
                         applyThrust(entity, velocity);
+
+                        velocity.x *= 0.2;
+                        velocity.z *= 0.2;
                     }
                 }
             }
@@ -271,9 +282,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             player.world.playSound(null, player.getBlockPos(), USounds.WIND_RUSH, SoundCategory.AMBIENT, 3, 1);
         }
 
-        if (forward > 4) {
-            forward = 4;
-        }
+        forward = Math.min(forward, 7);
 
         velocity.x += - forward * MathHelper.sin((player.yaw + glance) * 0.017453292F);
         velocity.z += forward * MathHelper.cos((player.yaw + glance) * 0.017453292F);
