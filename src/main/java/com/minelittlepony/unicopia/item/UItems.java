@@ -57,6 +57,7 @@ public interface UItems {
 
     static void bootstrap() {
         Toxics.bootstrap();
+        URecipes.bootstrap();
 
         FabricItemGroupBuilder.create(new Identifier("unicopia", "items")).appendItems(list -> {
             list.addAll(VanillaOverrides.REGISTRY.stream().map(Item::getStackForRender).collect(Collectors.toList()));
