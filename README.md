@@ -1,4 +1,7 @@
-# Unicopia Redux
+# Unicopia
+
+![Downloads](https://img.shields.io/github/downloads/Sollace/Unicopia/total.svg?color=yellowgreen)
+![](https://img.shields.io/badge/api-fabric-orange.svg)
 
 Adds abilities and magic for each of the races included in Mine Little Pony.
 
