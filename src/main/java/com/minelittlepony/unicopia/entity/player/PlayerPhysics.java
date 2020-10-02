@@ -13,6 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -83,7 +84,10 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         if (!creative) {
             entity.abilities.flying |= (canFly || entity.abilities.allowFlying) && isFlyingEither;
 
-            if ((entity.isOnGround() && entity.isSneaking()) || entity.isTouchingWater() || entity.horizontalCollision  || entity.verticalCollision) {
+            if ((entity.isOnGround() && entity.isSneaking())
+                    || entity.isTouchingWater()
+                    || entity.horizontalCollision
+                    || (entity.verticalCollision && (pony.getSpecies() != Race.BAT || velocity.y < 0))) {
 
                 if (entity.abilities.flying && entity.horizontalCollision) {
                     handleWallCollission(entity, velocity);
@@ -108,6 +112,17 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
         if (canFly) {
             if (isFlying()) {
+
+                if (pony.getSpecies() == Race.BAT && entity.verticalCollision && pony.canHangAt(pony.getOrigin().up(2))) {
+                    EntityAttributeInstance attr = entity.getAttributeInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+
+                    if (!attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
+                        attr.addPersistentModifier(PlayerAttributes.BAT_HANGING);
+                        entity.setVelocity(Vec3d.ZERO);
+                        return;
+                    }
+                }
+
                 int level = pony.getLevel().get() + 1;
 
                 if (ticksInAir++ > (level * 100)) {

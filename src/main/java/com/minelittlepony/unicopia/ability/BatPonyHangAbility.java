@@ -39,7 +39,7 @@ public class BatPonyHangAbility implements Ability<Multi> {
             return new Multi(BlockPos.ZERO, 0);
         }
 
-        BlockPos poss = RayTraceHelper.doTrace(player.getOwner(), 5, 1, EntityPredicates.EXCEPT_SPECTATOR).getBlockPos().orElse(null);
+        BlockPos poss = RayTraceHelper.doTrace(player.getOwner(), 3, 1, EntityPredicates.EXCEPT_SPECTATOR).getBlockPos().orElse(null);
         if (poss != null) {
             boolean air = player.getWorld().isAir(poss.down()) && player.getWorld().isAir(poss.down(2));
 
@@ -72,7 +72,10 @@ public class BatPonyHangAbility implements Ability<Multi> {
         if (data.hitType == 1 && player.canHangAt(data.pos())) {
             player.getOwner().teleport(data.x + 0.5, data.y - 2, data.z + 0.5);
             player.getOwner().setVelocity(Vec3d.ZERO);
-            attr.addPersistentModifier(PlayerAttributes.BAT_HANGING);
+
+            if (!attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
+                attr.addPersistentModifier(PlayerAttributes.BAT_HANGING);
+            }
         }
     }
 

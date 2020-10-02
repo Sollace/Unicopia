@@ -34,6 +34,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -80,6 +81,8 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     private boolean speciesPersisted;
     private boolean prevSneaking;
     private boolean prevLanded;
+
+    private int ticksHanging;
 
     @Nullable
     private Race clientPreferredRace;
@@ -255,21 +258,25 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     private BlockPos getHangingPos() {
         BlockPos pos = getOrigin();
-        return new BlockPos(pos.getX(), getOwner().getEyeY() + 1, pos.getZ());
+        return new BlockPos(pos.getX(), pos.getY() + entity.getEyeHeight(entity.getPose()) + 2, pos.getZ());
     }
 
     @Override
     public void tick() {
 
         if (isHanging()) {
-            gravity.isFlyingSurvival = false;
-            gravity.isFlyingEither = false;
-            entity.abilities.flying = false;
+            if (ticksHanging++ > 40) {
+                if (Entity.squaredHorizontalLength(entity.getVelocity()) > 0.01
+                        || entity.isSneaking()
+                        || !canHangAt(getHangingPos())) {
 
-            if (Entity.squaredHorizontalLength(entity.getVelocity()) > 0.01 || entity.isSneaking() || !canHangAt(getHangingPos())) {
-                entity.getAttributes().getCustomInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER).removeModifier(PlayerAttributes.BAT_HANGING);
-                entity.calculateDimensions();
+
+                    entity.getAttributes().getCustomInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER).removeModifier(PlayerAttributes.BAT_HANGING);
+                    entity.calculateDimensions();
+                }
             }
+        } else {
+            ticksHanging = 0;
         }
 
         gravity.tick();
@@ -303,6 +310,11 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
         prevSneaking = entity.isSneaking();
         prevLanded = entity.isOnGround();
+
+
+        if (gravity.isGravityNegative() && entity.getY() > entity.world.getHeight() + 64) {
+           entity.damage(DamageSource.OUT_OF_WORLD, 4.0F);
+        }
     }
 
     public Optional<Float> onImpact(float distance, float damageMultiplier) {
