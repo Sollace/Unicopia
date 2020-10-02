@@ -5,7 +5,6 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
-import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.FlightPredicate;
 import com.minelittlepony.unicopia.ability.DimensionsPredicate;
@@ -133,8 +132,8 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
         }
 
         if (entity == null) {
+            owner.setInvisible(false);
             if (source instanceof Pony) {
-                owner.setInvisible(false);
                 ((Pony) source).setInvisible(false);
             }
 
@@ -164,8 +163,8 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
         if (source instanceof Pony) {
             Pony player = (Pony)source;
 
-            player.setInvisible(true);
             source.getOwner().setInvisible(true);
+            player.setInvisible(true);
 
             if (entity instanceof Owned) {
                 ((Owned<LivingEntity>)entity).setOwner(player.getOwner());
@@ -173,11 +172,6 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
 
             if (entity instanceof PlayerEntity) {
                 entity.getDataTracker().set(PlayerAccess.getModelBitFlag(), owner.getDataTracker().get(PlayerAccess.getModelBitFlag()));
-            }
-
-            if (player.isClientPlayer() && InteractionManager.instance().getViewMode() == 0) {
-                entity.setInvisible(true);
-                entity.setPos(entity.getX(), Integer.MIN_VALUE, entity.getY());
             }
         }
 

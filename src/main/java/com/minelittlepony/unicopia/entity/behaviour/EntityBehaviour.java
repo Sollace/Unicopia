@@ -239,6 +239,7 @@ public class EntityBehaviour<T extends Entity> {
         register(MobBehaviour::new, EntityType.RAVAGER, EntityType.IRON_GOLEM);
         register(HoppingBehaviour::new, EntityType.RABBIT, EntityType.SLIME, EntityType.MAGMA_CUBE);
         register(TraderBehaviour::new, EntityType.VILLAGER, EntityType.WANDERING_TRADER);
+        register(SteedBehaviour::new, EntityType.HORSE, EntityType.DONKEY, EntityType.SKELETON_HORSE, EntityType.ZOMBIE_HORSE);
         register(SheepBehaviour::new, EntityType.SHEEP);
         register(BeeBehaviour::new, EntityType.BEE);
         register(GhastBehaviour::new, EntityType.GHAST);
