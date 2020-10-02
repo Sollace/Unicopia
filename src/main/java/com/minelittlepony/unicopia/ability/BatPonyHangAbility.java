@@ -1,17 +1,21 @@
 package com.minelittlepony.unicopia.ability;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.ability.data.Numeric;
+import com.minelittlepony.unicopia.ability.data.Multi;
 import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.RayTraceHelper;
 
 import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * A magic casting ability for unicorns.
  * (only shields for now)
  */
-public class BatPonyHangAbility implements Ability<Numeric> {
+public class BatPonyHangAbility implements Ability<Multi> {
 
     @Override
     public int getWarmupTime(Pony player) {
@@ -29,34 +33,45 @@ public class BatPonyHangAbility implements Ability<Numeric> {
     }
 
     @Override
-    public Numeric tryActivate(Pony player) {
+    public Multi tryActivate(Pony player) {
 
-        EntityAttributeInstance attr = player.getOwner().getAttributeInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
-
-        if (attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
-            return new Numeric(0);
-        } else if (player.canHangAt()) {
-            return new Numeric(1);
+        if (player.isHanging()) {
+            return new Multi(BlockPos.ZERO, 0);
         }
 
-        return null;
+        BlockPos poss = RayTraceHelper.doTrace(player.getOwner(), 5, 1, EntityPredicates.EXCEPT_SPECTATOR).getBlockPos().orElse(null);
+        if (poss != null) {
+            boolean air = player.getWorld().isAir(poss.down()) && player.getWorld().isAir(poss.down(2));
+
+            if (air && player.canHangAt(poss)) {
+                return new Multi(poss, 1);
+            }
+        }
+
+        return RayTraceHelper.doTrace(player.getOwner(), 5, 1, EntityPredicates.EXCEPT_SPECTATOR).getBlockPos()
+                .map(BlockPos::down)
+                .filter(pos -> player.getWorld().isAir(pos) && player.getWorld().isAir(pos.down()) && player.canHangAt(pos))
+                .map(pos -> new Multi(pos, 1))
+                .orElse(null);
     }
 
     @Override
-    public Numeric.Serializer<Numeric> getSerializer() {
-        return Numeric.SERIALIZER;
+    public Multi.Serializer<Multi> getSerializer() {
+        return Multi.SERIALIZER;
     }
 
     @Override
-    public void apply(Pony player, Numeric data) {
+    public void apply(Pony player, Multi data) {
         EntityAttributeInstance attr = player.getOwner().getAttributeInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
 
-        if (data.type == 0 && attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
+        if (data.hitType == 0 && attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
             attr.removeModifier(PlayerAttributes.BAT_HANGING);
             return;
         }
 
-        if (data.type == 1 && player.canHangAt()) {
+        if (data.hitType == 1 && player.canHangAt(data.pos())) {
+            player.getOwner().teleport(data.x + 0.5, data.y - 2, data.z + 0.5);
+            player.getOwner().setVelocity(Vec3d.ZERO);
             attr.addPersistentModifier(PlayerAttributes.BAT_HANGING);
         }
     }
