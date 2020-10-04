@@ -204,6 +204,10 @@ public class Disguise implements NbtSerialisable {
         return -1;
     }
 
+    public Optional<Double> getDistance(Pony player) {
+        return EntityBehaviour.forEntity(entity).getCameraDistance(entity, player);
+    }
+
     public Optional<EntityDimensions> getDimensions() {
         return dimensions = EntityBehaviour.forEntity(entity).getDimensions(entity, dimensions);
     }

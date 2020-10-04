@@ -57,6 +57,17 @@ public class EntityBehaviour<T extends Entity> {
         entity.remove();
     }
 
+    public Optional<Double> getCameraDistance(Entity entity, Pony player) {
+        if (entity == null) {
+            return Optional.empty();
+        }
+
+        double normalHeight = PlayerEntity.STANDING_DIMENSIONS.height;
+        double entityHeight = entity.getDimensions(entity.getPose()).height;
+
+        return Optional.of(entityHeight / normalHeight);
+    }
+
     public Optional<EntityDimensions> getDimensions(T entity, Optional<EntityDimensions> current) {
         if (entity == null) {
             return Optional.empty();

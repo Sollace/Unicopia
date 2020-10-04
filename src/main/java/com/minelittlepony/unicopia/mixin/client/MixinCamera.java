@@ -2,13 +2,12 @@ package com.minelittlepony.unicopia.mixin.client;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.entity.player.Pony;
-
-import net.minecraft.client.MinecraftClient;
+import com.minelittlepony.unicopia.client.UnicopiaClient;
 import net.minecraft.client.render.Camera;
-import net.minecraft.entity.player.PlayerEntity;
 
 @Mixin(Camera.class)
 abstract class MixinCamera {
@@ -17,13 +16,7 @@ abstract class MixinCamera {
             ordinal = 0,
             argsOnly = true)
     private float modifyYaw(float yaw) {
-        PlayerEntity player = MinecraftClient.getInstance().player;
-
-        if (player != null && MinecraftClient.getInstance().cameraEntity == player) {
-            return Pony.of(player).getCamera().calculateYaw(yaw);
-        }
-
-        return yaw;
+        return UnicopiaClient.getCamera().map(c -> c.calculateYaw(yaw)).orElse(yaw);
     }
 
     @ModifyVariable(method = "setRotation(FF)V",
@@ -31,12 +24,13 @@ abstract class MixinCamera {
             ordinal = 1,
             argsOnly = true)
     private float modifyPitch(float pitch) {
-        PlayerEntity player = MinecraftClient.getInstance().player;
+        return UnicopiaClient.getCamera().map(c -> c.calculatePitch(pitch)).orElse(pitch);
+    }
 
-        if (player != null && MinecraftClient.getInstance().cameraEntity == player) {
-            return Pony.of(player).getCamera().calculatePitch(pitch);
-        }
-
-        return pitch;
+    @Inject(method = "clipToSpace(D)D",
+            at = @At("RETURN"),
+            cancellable = true)
+    private void redirectCameraDistance(double initial, CallbackInfoReturnable<Double> info) {
+        UnicopiaClient.getCamera().flatMap(c -> c.calculateDistance(info.getReturnValueD())).ifPresent(info::setReturnValue);
     }
 }

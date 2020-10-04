@@ -1,14 +1,14 @@
 package com.minelittlepony.unicopia.entity.player;
 
-import com.minelittlepony.common.util.animation.MotionCompositor;
+import java.util.Optional;
 
+import com.minelittlepony.common.util.animation.MotionCompositor;
+import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import net.minecraft.util.math.Vec3d;
 
 public class PlayerCamera extends MotionCompositor {
 
     private final Pony player;
-
-    private double baseRoll = 0;
 
     public PlayerCamera(Pony player) {
         this.player = player;
@@ -16,12 +16,12 @@ public class PlayerCamera extends MotionCompositor {
 
     public float calculateRoll() {
 
-        double roll = baseRoll;
+        double roll = 0;
 
         if (player.getMotion().isFlying()) {
             Vec3d vel = player.getOwner().getVelocity();
 
-            roll -= super.calculateRoll(player.getOwner(), vel.x, vel.y, vel.z);
+            roll -= calculateRoll(player.getOwner(), vel.x, vel.y, vel.z);
         }
 
         if (player.getPhysics().isGravityNegative()) {
@@ -42,6 +42,13 @@ public class PlayerCamera extends MotionCompositor {
 
     public float calculateYaw(float yaw) {
         return yaw + getEnergyAddition();
+    }
+
+    public Optional<Double> calculateDistance(double distance) {
+        return player.getSpellOrEmpty(DisguiseSpell.class, false)
+            .map(DisguiseSpell::getDisguise)
+            .flatMap(d -> d.getDistance(player))
+            .map(d -> distance * d);
     }
 
     public double calculateFieldOfView(double fov) {
@@ -65,13 +72,5 @@ public class PlayerCamera extends MotionCompositor {
         }
 
         return energyAddition;
-    }
-
-    public double getBaseRoll() {
-        return baseRoll;
-    }
-
-    public void setBaseRoll(double roll) {
-        baseRoll = roll;
     }
 }
