@@ -79,7 +79,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     protected List<LivingEntity> getTargets(Pony player) {
-        List<Entity> list = VecHelper.getWithinReach(player.getOwner(), 3, this::canDrain);
+        List<Entity> list = VecHelper.findInReach(player.getOwner(), 3, this::canDrain);
 
         RayTraceHelper.<LivingEntity>findEntity(player.getOwner(), 17, 1,
                 looked -> looked instanceof LivingEntity && !list.contains(looked) && canDrain(looked))

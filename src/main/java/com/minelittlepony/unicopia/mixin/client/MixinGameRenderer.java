@@ -8,13 +8,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
-import com.minelittlepony.unicopia.client.render.WorldRenderDelegate;
-import com.minelittlepony.unicopia.entity.player.Pony;
-
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.resource.SynchronousResourceReloadListener;
@@ -25,15 +22,13 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
             at = @At("RETURN"),
             cancellable = true)
     private void onGetFov(Camera camera, float f, boolean z, CallbackInfoReturnable<Double> info) {
-        info.setReturnValue(Pony.of(MinecraftClient.getInstance().player)
-                .getCamera()
-                .calculateFieldOfView(info.getReturnValue()));
+        UnicopiaClient.getCamera().ifPresent(c -> info.setReturnValue(c.calculateFieldOfView(info.getReturnValue())));
     }
 
     @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V",
             at = @At("HEAD"))
     private void onRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
-        WorldRenderDelegate.INSTANCE.applyWorldTransform(matrices, tickDelta);
+        UnicopiaClient.getCamera().ifPresent(c -> matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(c.calculateRoll())));
     }
 
     @Inject(method = "getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F",

@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.entity.player;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.Race;
+
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;

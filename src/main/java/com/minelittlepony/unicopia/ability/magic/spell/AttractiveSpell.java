@@ -1,8 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
@@ -61,9 +59,7 @@ public class AttractiveSpell extends ShieldSpell {
     protected List<Entity> getTargets(Caster<?> source, double radius) {
 
         if (homingPos != null) {
-            return VecHelper.findAllEntitiesInRange(source.getEntity(), source.getWorld(), source.getOrigin(), radius)
-                .filter(i -> i instanceof ItemEntity)
-                .collect(Collectors.toList());
+            return VecHelper.findInRange(source.getEntity(), source.getWorld(), source.getOrigin(), radius, i -> i instanceof ItemEntity);
         }
 
         return super.getTargets(source, radius);

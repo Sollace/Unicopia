@@ -1,20 +1,36 @@
 package com.minelittlepony.unicopia.client;
 
+import java.util.Optional;
+
 import com.minelittlepony.common.client.gui.element.Cycler;
 import com.minelittlepony.common.event.ScreenInitCallback;
 import com.minelittlepony.common.event.ScreenInitCallback.ButtonList;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.entity.player.PlayerCamera;
+import com.minelittlepony.unicopia.entity.player.Pony;
+
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 
 public class UnicopiaClient implements ClientModInitializer {
+
+    public static Optional<PlayerCamera> getCamera() {
+        PlayerEntity player = MinecraftClient.getInstance().player;
+
+        if (player != null && MinecraftClient.getInstance().cameraEntity == player) {
+            return Optional.of(Pony.of(player).getCamera());
+        }
+
+        return Optional.empty();
+    }
 
     public static Race getPreferredRace() {
         if (!Unicopia.getConfig().ignoresMineLittlePony()

@@ -65,7 +65,7 @@ public interface ThrowableSpell extends Spell {
 
         world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), getThrowSound(caster), SoundCategory.NEUTRAL, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
-        if (caster.isLocal()) {
+        if (!caster.isClient()) {
             Projectile projectile = new MagicProjectileEntity(UEntities.THROWN_ITEM, world, caster.getOwner());
 
             projectile.setItem(getCastAppearance(caster));

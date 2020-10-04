@@ -57,9 +57,7 @@ public class IceSpell extends AbstractRangedAreaSpell {
     }
 
     protected boolean applyEntities(LivingEntity owner, World world, BlockPos pos) {
-        return VecHelper.findAllEntitiesInRange(owner, world, pos, 3).filter(i ->
-            applyEntitySingle(owner, i)
-        ).count() > 0;
+        return !VecHelper.findInRange(owner, world, pos, 3, i -> applyEntitySingle(owner, i)).isEmpty();
     }
 
     protected boolean applyEntitySingle(LivingEntity owner, Entity e) {

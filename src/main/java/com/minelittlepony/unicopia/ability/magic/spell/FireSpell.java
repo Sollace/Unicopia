@@ -122,10 +122,7 @@ public class FireSpell extends AbstractRangedAreaSpell {
     }
 
     protected boolean applyEntities(Entity owner, World world, BlockPos pos) {
-        return VecHelper
-                .findAllEntitiesInRange(owner, world, pos, 3)
-                .filter(i -> applyEntitySingle(owner, world, i))
-                .count() > 0;
+        return !VecHelper.findInRange(owner, world, pos, 3, i -> applyEntitySingle(owner, world, i)).isEmpty();
     }
 
     protected boolean applyEntitySingle(Entity owner, World world, Entity e) {

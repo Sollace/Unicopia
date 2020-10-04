@@ -21,7 +21,7 @@ abstract class MixinMouse {
     @Inject(method = "updateMouse()V", at = @At("HEAD"))
     private void onUpdateMouse(CallbackInfo info) {
         Pony player = Pony.of(MinecraftClient.getInstance().player);
-        if (player != null&& player.getPhysics().isGravityNegative()) {
+        if (player != null && player.getPhysics().isGravityNegative()) {
             cursorDeltaX = -cursorDeltaX;
             cursorDeltaY = -cursorDeltaY;
         }

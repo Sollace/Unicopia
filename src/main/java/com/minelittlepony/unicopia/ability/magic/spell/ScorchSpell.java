@@ -79,7 +79,7 @@ public class ScorchSpell extends FireSpell implements ThrowableSpell {
 
     @Override
     public void onImpact(Caster<?> caster, BlockPos pos, BlockState state) {
-        if (caster.isLocal()) {
+        if (!caster.isClient()) {
             caster.getWorld().createExplosion(caster.getOwner(), pos.getX(), pos.getY(), pos.getZ(), 2, DestructionType.DESTROY);
         }
     }

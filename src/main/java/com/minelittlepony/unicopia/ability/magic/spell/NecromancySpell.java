@@ -62,9 +62,7 @@ public class NecromancySpell extends AbstractRangedAreaSpell {
 
         Vec3d origin = source.getOriginVector();
 
-        if (VecHelper.findAllEntitiesInRange(source.getEntity(), source.getWorld(), source.getOrigin(), radius * 4)
-                .filter(e -> e instanceof ZombieEntity)
-                .count() >= 10 * (1 + additional)) {
+        if (VecHelper.findInRange(source.getEntity(), source.getWorld(), source.getOrigin(), radius * 4, e -> e instanceof ZombieEntity).size() >= 10 * (1 + additional)) {
             return true;
         }
 

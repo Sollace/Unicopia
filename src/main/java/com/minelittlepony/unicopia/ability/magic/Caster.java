@@ -14,7 +14,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 /**
@@ -90,13 +89,6 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     }
 
     /**
-     * Returns true if we're executing on the server.
-     */
-    default boolean isLocal() {
-        return !isClient();
-    }
-
-    /**
      * Gets the center position where this caster is located.
      */
     default BlockPos getOrigin() {
@@ -112,11 +104,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
         return CasterUtils.findInRange(this, radius);
     }
 
-    default Stream<Caster<?>> findAllSpellsInRange(Box bb) {
-        return CasterUtils.findInRange(this, bb);
-    }
-
     default Stream<Entity> findAllEntitiesInRange(double radius) {
-        return VecHelper.findAllEntitiesInRange(getEntity(), getWorld(), getOrigin(), radius);
+        return VecHelper.findInRange(getEntity(), getWorld(), getOrigin(), radius, null).stream();
     }
 }

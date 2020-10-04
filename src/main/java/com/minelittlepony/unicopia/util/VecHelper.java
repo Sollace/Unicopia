@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.util;
 
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
-
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.Entity;
@@ -14,19 +12,23 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public interface VecHelper {
-    static Stream<Entity> findAllEntitiesInRange(@Nullable Entity origin, World w, BlockPos pos, double radius) {
-        return w.getOtherEntities(origin, new Box(pos).expand(radius), e -> {
-            double dist = Math.sqrt(e.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()));
-            double dist2 = Math.sqrt(e.squaredDistanceTo(pos.getX(), pos.getY() - e.getStandingEyeHeight(), pos.getZ()));
 
-            return dist <= radius || dist2 <= radius;
-        }).stream();
+    static Predicate<Entity> inRange(BlockPos center, double range) {
+        double rad = Math.pow(range, 2);
+        return e -> {
+            return e.squaredDistanceTo(center.getX(), center.getY(), center.getZ()) <= rad
+                    || e.squaredDistanceTo(center.getX(), center.getY() - e.getStandingEyeHeight(), center.getZ()) <= rad;
+        };
+    }
+
+    static List<Entity> findInRange(@Nullable Entity origin, World w, BlockPos pos, double radius, @Nullable Predicate<Entity> predicate) {
+        return w.getOtherEntities(origin, new Box(pos).expand(radius), predicate == null ? inRange(pos, radius) : inRange(pos, radius).and(predicate));
     }
 
     /**
      * Gets all entities within a given range from the player.
      */
-    static List<Entity> getWithinReach(PlayerEntity player, double reach, @Nullable Predicate<? super Entity> predicate) {
+    static List<Entity> findInReach(PlayerEntity player, double reach, @Nullable Predicate<? super Entity> predicate) {
         Vec3d look = player.getCameraPosVec(1).multiply(reach);
 
         return player.world.getOtherEntities(player, player
