@@ -194,7 +194,7 @@ public class EntityBehaviour<T extends Entity> {
             ((ItemWielder)to).updateItemUsage(from.getActiveHand(), from.getActiveItem(), from.getItemUseTimeLeft());
         }
 
-        if (from.age < 100 || from instanceof PlayerEntity && ((PlayerEntity)from).isCreative()) {
+        if (from.age < 100 || from instanceof PlayerEntity && (((PlayerEntity)from).isCreative() || ((PlayerEntity)from).isSpectator())) {
             to.extinguish();
         }
 

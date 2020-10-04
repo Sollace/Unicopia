@@ -21,7 +21,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -55,6 +54,8 @@ public class WorldRenderDelegate {
             matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(roll));
         }
 
+        int fireTicks = pony.getOwner().doesRenderOnFire() ? 1 : 0;
+
         return pony.getSpellOrEmpty(DisguiseSpell.class, true).map(effect -> {
             effect.update(pony, false);
 
@@ -62,10 +63,10 @@ public class WorldRenderDelegate {
             Entity e = ve.getAppearance();
 
             if (e != null) {
-                renderDisguise(dispatcher, ve, e, x, y, z, tickDelta, matrices, vertexConsumers, light);
+                renderDisguise(dispatcher, ve, e, x, y, z, fireTicks, tickDelta, matrices, vertexConsumers, light);
                 ve.getAttachments().forEach(ee -> {
                     Vec3d difference = ee.getPos().subtract(e.getPos());
-                    renderDisguise(dispatcher, ve, ee, x + difference.x, y + difference.y, z + difference.z, tickDelta, matrices, vertexConsumers, light);
+                    renderDisguise(dispatcher, ve, ee, x + difference.x, y + difference.y, z + difference.z, fireTicks, tickDelta, matrices, vertexConsumers, light);
                 });
 
                 afterEntityRender(pony, matrices);
@@ -86,7 +87,7 @@ public class WorldRenderDelegate {
 
     public void renderDisguise(EntityRenderDispatcher dispatcher, Disguise ve, Entity e,
             double x, double y, double z,
-            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+            int fireTicks, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 
         if (ve.isAxisAligned() && (x != 0 || y != 0 || z != 0)) {
             Vec3d cam = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
@@ -124,7 +125,9 @@ public class WorldRenderDelegate {
             model.sneaking = e.isSneaking();
         }
 
+        e.setFireTicks(fireTicks);
         dispatcher.render(e, x, y, z, e.yaw, tickDelta, matrices, vertexConsumers, light);
+        e.setFireTicks(0);
 
         if (model != null) {
             model.sneaking = false;
@@ -159,15 +162,5 @@ public class WorldRenderDelegate {
         }
         entity.prevPitch *= -1;
         entity.pitch *= -1;
-    }
-
-    public void applyWorldTransform(MatrixStack matrices, float tickDelta) {
-        PlayerEntity player = MinecraftClient.getInstance().player;
-
-        if (player != null && MinecraftClient.getInstance().cameraEntity == player) {
-            float roll = Pony.of(player).getCamera().calculateRoll();
-
-            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(roll));
-        }
     }
 }
