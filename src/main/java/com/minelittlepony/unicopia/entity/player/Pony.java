@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.ShieldSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.PonyContainer;
@@ -326,7 +327,16 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
         float g = gravity.getGravityModifier();
 
-        if (g != 1 || getSpecies().canFly() && !entity.isCreative() && !entity.isSpectator()) {
+        boolean extraProtection = getSpell(ShieldSpell.class, false) != null;
+
+        if (g != 1 || extraProtection || getSpecies().canFly() && !entity.isCreative() && !entity.isSpectator()) {
+
+            if (extraProtection) {
+                distance /= (getLevel().get() + 1);
+                if (entity.isSneaking()) {
+                    distance /= 2;
+                }
+            }
 
             distance *= g;
 
