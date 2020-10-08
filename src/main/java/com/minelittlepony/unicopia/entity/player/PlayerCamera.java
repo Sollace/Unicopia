@@ -19,9 +19,9 @@ public class PlayerCamera extends MotionCompositor {
         double roll = 0;
 
         if (player.getMotion().isFlying()) {
-            Vec3d vel = player.getOwner().getVelocity();
+            Vec3d vel = player.getMaster().getVelocity();
 
-            roll -= calculateRoll(player.getOwner(), vel.x, vel.y, vel.z);
+            roll -= calculateRoll(player.getMaster(), vel.x, vel.y, vel.z);
         }
 
         if (player.getPhysics().isGravityNegative()) {

@@ -10,10 +10,10 @@ public interface Owned<E> {
     /**
      * Updates the owner of this object.
      */
-    void setOwner(E owner);
+    void setMaster(E owner);
 
     /**
      * Gets the owner that holds this object.
      */
-    E getOwner();
+    E getMaster();
 }

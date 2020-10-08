@@ -9,7 +9,7 @@ import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.FlightPredicate;
 import com.minelittlepony.unicopia.ability.DimensionsPredicate;
-import com.minelittlepony.unicopia.ability.magic.AttachableSpell;
+import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.Suppressable;
@@ -27,7 +27,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.CompoundTag;
 
-public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Suppressable, FlightPredicate, DimensionsPredicate {
+public class DisguiseSpell extends AbstractSpell implements Attached, Suppressable, FlightPredicate, DimensionsPredicate {
 
     private final Disguise disguise = new Disguise();
 
@@ -101,7 +101,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
 
     @SuppressWarnings("unchecked")
     public boolean update(Caster<?> source, boolean tick) {
-        LivingEntity owner = source.getOwner();
+        LivingEntity owner = source.getMaster();
 
         Entity entity = disguise.getAppearance();
 
@@ -159,11 +159,11 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
         if (source instanceof Pony) {
             Pony player = (Pony)source;
 
-            source.getOwner().setInvisible(true);
+            source.getMaster().setInvisible(true);
             player.setInvisible(true);
 
             if (entity instanceof Owned) {
-                ((Owned<LivingEntity>)entity).setOwner(player.getOwner());
+                ((Owned<LivingEntity>)entity).setMaster(player.getMaster());
             }
 
             if (entity instanceof PlayerEntity) {
@@ -171,7 +171,7 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
             }
         }
 
-        return !source.getOwner().isDead();
+        return !source.getMaster().isDead();
     }
 
     @Override

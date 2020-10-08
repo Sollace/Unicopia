@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -20,7 +21,7 @@ import net.minecraft.util.math.Vec3d;
 /**
  * A spell that pulls health from other entities and delivers it to the caster.
  */
-public class SiphoningSpell extends AbstractRangedAreaSpell {
+public class SiphoningSpell extends AbstractRangedAreaSpell implements Thrown {
 
     @Override
     public String getName() {
@@ -37,7 +38,7 @@ public class SiphoningSpell extends AbstractRangedAreaSpell {
 
         int radius = 4 + source.getLevel().get();
 
-        LivingEntity owner = source.getOwner();
+        LivingEntity owner = source.getMaster();
 
         List<LivingEntity> target = source.findAllEntitiesInRange(radius)
                 .filter(e -> e instanceof LivingEntity)
@@ -130,5 +131,4 @@ public class SiphoningSpell extends AbstractRangedAreaSpell {
     public Affinity getAffinity() {
         return Affinity.NEUTRAL;
     }
-
 }

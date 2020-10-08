@@ -10,7 +10,7 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
-import com.minelittlepony.unicopia.ability.magic.AttachableSpell;
+import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
@@ -107,11 +107,11 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     @Override
     public Race getSpecies() {
-        if (getOwner() == null) {
+        if (getMaster() == null) {
             return Race.HUMAN;
         }
 
-        return Race.fromId(getOwner().getDataTracker().get(RACE));
+        return Race.fromId(getMaster().getDataTracker().get(RACE));
     }
 
     public boolean sneakingChanged() {
@@ -283,7 +283,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         gravity.tick();
 
         if (hasSpell()) {
-            AttachableSpell effect = getSpell(AttachableSpell.class, true);
+            Attached effect = getSpell(Attached.class, true);
 
             if (effect != null) {
                 if (entity.getEntityWorld().isClient()) {
@@ -392,7 +392,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     public void onEat(ItemStack stack) {
         if (getSpecies() == Race.CHANGELING) {
-            Toxin.POISON.afflict(getOwner(), FoodType.RAW_MEAT, Toxicity.SAFE, stack);
+            Toxin.POISON.afflict(getMaster(), FoodType.RAW_MEAT, Toxicity.SAFE, stack);
         }
     }
 
@@ -443,16 +443,16 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     }
 
     @Override
-    public void setOwner(PlayerEntity owner) {
+    public void setMaster(PlayerEntity owner) {
     }
 
     @Override
-    public PlayerEntity getOwner() {
+    public PlayerEntity getMaster() {
         return entity;
     }
 
     public boolean isClientPlayer() {
-        return InteractionManager.instance().isClientPlayer(getOwner());
+        return InteractionManager.instance().isClientPlayer(getMaster());
     }
 
     @SuppressWarnings("unchecked")

@@ -24,17 +24,17 @@ public class DummyServerPlayerEntity extends ServerPlayerEntity implements Owned
     }
 
     @Override
-    public PlayerEntity getOwner() {
+    public PlayerEntity getMaster() {
         return owner;
     }
 
     @Override
-    public void setOwner(PlayerEntity owner) {
+    public void setMaster(PlayerEntity owner) {
         this.owner = owner;
     }
 
     @Override
     public boolean shouldRenderName() {
-        return !InteractionManager.instance().isClientPlayer(getOwner());
+        return !InteractionManager.instance().isClientPlayer(getMaster());
     }
 }

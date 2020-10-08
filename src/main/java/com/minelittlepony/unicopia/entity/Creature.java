@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.entity;
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Affine;
-import com.minelittlepony.unicopia.ability.magic.AttachableSpell;
+import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.Spell;
@@ -58,7 +58,7 @@ public class Creature implements Equine<LivingEntity>, Caster<LivingEntity> {
     @Override
     public void tick() {
         if (hasSpell()) {
-            AttachableSpell effect = getSpell(AttachableSpell.class, true);
+            Attached effect = getSpell(Attached.class, true);
 
             if (effect != null) {
                 if (entity.getEntityWorld().isClient()) {
@@ -73,12 +73,12 @@ public class Creature implements Equine<LivingEntity>, Caster<LivingEntity> {
     }
 
     @Override
-    public void setOwner(LivingEntity owner) {
+    public void setMaster(LivingEntity owner) {
 
     }
 
     @Override
-    public LivingEntity getOwner() {
+    public LivingEntity getMaster() {
         return entity;
     }
 
@@ -89,8 +89,8 @@ public class Creature implements Equine<LivingEntity>, Caster<LivingEntity> {
 
     @Override
     public Affinity getAffinity() {
-        if (getOwner() instanceof Affine) {
-            return ((Affine)getOwner()).getAffinity();
+        if (getMaster() instanceof Affine) {
+            return ((Affine)getMaster()).getAffinity();
         }
         return Affinity.NEUTRAL;
     }

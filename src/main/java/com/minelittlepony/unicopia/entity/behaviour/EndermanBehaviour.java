@@ -11,13 +11,13 @@ import net.minecraft.util.Hand;
 public class EndermanBehaviour extends EntityBehaviour<EndermanEntity> {
     @Override
     public void update(Caster<?> source, EndermanEntity entity, DisguiseSpell spell) {
-        if (source.getOwner().isSneaking() || source.getOwner().isSprinting()) {
+        if (source.getMaster().isSneaking() || source.getMaster().isSprinting()) {
             entity.setTarget(entity);
         } else {
             entity.setTarget(null);
         }
 
-        ItemStack stack = source.getOwner().getStackInHand(Hand.MAIN_HAND);
+        ItemStack stack = source.getMaster().getStackInHand(Hand.MAIN_HAND);
         if (stack.getItem() instanceof BlockItem) {
             entity.setCarriedBlock(((BlockItem)stack.getItem()).getBlock().getDefaultState());
         } else {

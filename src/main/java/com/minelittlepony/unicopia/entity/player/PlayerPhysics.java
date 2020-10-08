@@ -46,12 +46,12 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
     @Override
     public float getGravityModifier() {
-        if (pony.getOwner().getAttributes() == null) {
+        if (pony.getMaster().getAttributes() == null) {
             // may be null due to order of execution in the contructor.
             // Will have the default (1) here in any case, so it's safe to ignore the attribute a this point.
             return super.getGravityModifier();
         }
-        return super.getGravityModifier() * (float)pony.getOwner().getAttributeValue(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+        return super.getGravityModifier() * (float)pony.getMaster().getAttributeValue(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
     }
 
     @Override
@@ -61,12 +61,12 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
     @Override
     public boolean isFlying() {
-        return isFlyingSurvival && !pony.getOwner().isFallFlying() && !pony.getOwner().hasVehicle();
+        return isFlyingSurvival && !pony.getMaster().isFallFlying() && !pony.getMaster().hasVehicle();
     }
 
     @Override
     public void tick() {
-        PlayerEntity entity = pony.getOwner();
+        PlayerEntity entity = pony.getMaster();
 
         if (isGravityNegative() && !entity.isSneaking() && entity.isInSneakingPose()) {
             float currentHeight = entity.getDimensions(entity.getPose()).height;
@@ -78,7 +78,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
         final MutableVector velocity = new MutableVector(entity.getVelocity());
 
-        boolean creative = entity.abilities.creativeMode || pony.getOwner().isSpectator();
+        boolean creative = entity.abilities.creativeMode || pony.getMaster().isSpectator();
 
         FlightType type = getFlightType();
 
@@ -296,7 +296,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     }
 
     private FlightType getFlightType() {
-        if (pony.getOwner().isCreative() || pony.getOwner().isSpectator()) {
+        if (pony.getMaster().isCreative() || pony.getMaster().isSpectator()) {
             return FlightType.CREATIVE;
         }
 
@@ -311,7 +311,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     }
 
     public void updateFlightStat(boolean flying) {
-        PlayerEntity entity = pony.getOwner();
+        PlayerEntity entity = pony.getMaster();
 
         FlightType type = getFlightType();
 
@@ -341,6 +341,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         isFlyingEither = compound.getBoolean("isFlyingEither");
         ticksInAir = compound.getInt("ticksInAir");
 
-        pony.getOwner().calculateDimensions();
+        pony.getMaster().calculateDimensions();
     }
 }

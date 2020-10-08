@@ -35,7 +35,7 @@ public class WorldRenderDelegate {
 
         matrices.push();
 
-        Entity owner = pony.getOwner();
+        Entity owner = pony.getMaster();
 
         boolean negative = pony.getPhysics().isGravityNegative();
 
@@ -54,7 +54,7 @@ public class WorldRenderDelegate {
             matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(roll));
         }
 
-        int fireTicks = pony.getOwner().doesRenderOnFire() ? 1 : 0;
+        int fireTicks = pony.getMaster().doesRenderOnFire() ? 1 : 0;
 
         return pony.getSpellOrEmpty(DisguiseSpell.class, true).map(effect -> {
             effect.update(pony, false);
@@ -81,7 +81,7 @@ public class WorldRenderDelegate {
         matrices.pop();
 
         if (pony.getPhysics().isGravityNegative()) {
-            flipAngles(pony.getOwner());
+            flipAngles(pony.getMaster());
         }
     }
 

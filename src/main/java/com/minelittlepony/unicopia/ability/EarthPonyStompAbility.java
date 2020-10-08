@@ -69,7 +69,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
     @Nullable
     @Override
     public Multi tryActivate(Pony player) {
-        Optional<BlockPos> p = RayTraceHelper.doTrace(player.getOwner(), 6, 1).getBlockPos();
+        Optional<BlockPos> p = RayTraceHelper.doTrace(player.getMaster(), 6, 1).getBlockPos();
 
         if (p.isPresent()) {
             BlockPos pos = p.get();
@@ -83,8 +83,8 @@ public class EarthPonyStompAbility implements Ability<Multi> {
             }
         }
 
-        if (!player.getOwner().isOnGround() && !player.getOwner().abilities.flying) {
-            player.getOwner().addVelocity(0, -6, 0);
+        if (!player.getMaster().isOnGround() && !player.getMaster().abilities.flying) {
+            player.getMaster().addVelocity(0, -6, 0);
             return new Multi(Vec3i.ZERO, 0);
         }
 
@@ -100,7 +100,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
 
     @Override
     public void apply(Pony iplayer, Multi data) {
-        PlayerEntity player = iplayer.getOwner();
+        PlayerEntity player = iplayer.getMaster();
 
         if (data.hitType == 0) {
             BlockPos ppos = player.getBlockPos();
@@ -191,8 +191,8 @@ public class EarthPonyStompAbility implements Ability<Multi> {
     public void postApply(Pony player, AbilitySlot slot) {
         int timeDiff = getCooldownTime(player) - player.getAbilities().getStat(slot).getRemainingCooldown();
 
-        if (player.getOwner().getEntityWorld().getTime() % 1 == 0 || timeDiff == 0) {
-            spawnParticleRing(player.getOwner(), timeDiff, 1);
+        if (player.getMaster().getEntityWorld().getTime() % 1 == 0 || timeDiff == 0) {
+            spawnParticleRing(player.getMaster(), timeDiff, 1);
         }
     }
 

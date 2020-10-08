@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Suppressable;
+import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -14,7 +15,7 @@ import net.minecraft.util.math.Vec3d;
 /**
  * A spell for revealing changelings.
  */
-public class RevealingSpell extends AbstractSpell {
+public class RevealingSpell extends AbstractSpell implements Thrown {
 
     @Override
     public String getName() {

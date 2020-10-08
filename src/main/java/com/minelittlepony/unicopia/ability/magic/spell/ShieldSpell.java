@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.ability.magic.AttachableSpell;
+import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
@@ -20,7 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
-public class ShieldSpell extends AbstractRangedAreaSpell implements AttachableSpell {
+public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
 
     private final ParticleHandle particlEffect = new ParticleHandle();
 
@@ -60,7 +60,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements AttachableSp
     public boolean updateOnPerson(Caster<?> source) {
         int costMultiplier = applyEntities(source);
         if (costMultiplier > 0) {
-            if (source.getOwner().age % 20 == 0) {
+            if (source.getMaster().age % 20 == 0) {
                 double cost = 4 + (source.getLevel().get() * 2);
 
                 cost *= costMultiplier / 5F;
@@ -75,7 +75,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements AttachableSp
     }
 
     public double getDrawDropOffRange(Caster<?> source) {
-        float multiplier = (source.getOwner().isSneaking() ? 1 : 2);
+        float multiplier = (source.getMaster().isSneaking() ? 1 : 2);
         return (4 + (source.getLevel().get() * 2)) / multiplier;
     }
 
@@ -87,14 +87,26 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements AttachableSp
 
     protected List<Entity> getTargets(Caster<?> source, double radius) {
 
-        Entity owner = source.getOwner();
+        Entity owner = source.getMaster();
 
         boolean ownerIsValid = source.getAffinity() != Affinity.BAD && EquinePredicates.PLAYER_UNICORN.test(owner);
 
         return source.findAllEntitiesInRange(radius)
-            .filter(entity -> !(ownerIsValid && (
-                    entity.equals(owner)
-                    || (entity instanceof PlayerEntity && owner instanceof PlayerEntity && Pony.equal((PlayerEntity)entity, (PlayerEntity)owner)))))
+            .filter(entity -> {
+                if (!ownerIsValid) {
+                    return true;
+                }
+
+                boolean ownerEquals = (
+                        entity.equals(owner)
+                    || (entity instanceof PlayerEntity && owner instanceof PlayerEntity && Pony.equal((PlayerEntity)entity, (PlayerEntity)owner)));
+
+                if (!owner.isSneaking()) {
+                    return ownerEquals;
+                }
+
+                return !ownerEquals;
+            })
             .collect(Collectors.toList());
     }
 
@@ -121,7 +133,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements AttachableSp
         Vec3d pos = source.getOriginVector();
 
         if (ProjectileUtil.isProjectile(target)) {
-            if (!ProjectileUtil.isProjectileThrownBy(target, source.getOwner())) {
+            if (!ProjectileUtil.isProjectileThrownBy(target, source.getMaster())) {
                 if (distance < 1) {
                     target.playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 0.1F, 1);
                     target.remove();
@@ -164,7 +176,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements AttachableSp
         if (player.getSpecies().canUseEarth()) {
             force /= 2;
 
-            if (player.getOwner().isSneaking()) {
+            if (player.getMaster().isSneaking()) {
                 force /= 6;
             }
         } else if (player.getSpecies().canFly()) {

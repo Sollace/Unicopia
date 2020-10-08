@@ -33,7 +33,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
 
     @Override
     public void apply(Pony iplayer, Hit data) {
-        PlayerEntity player = iplayer.getOwner();
+        PlayerEntity player = iplayer.getMaster();
 
         if (iplayer.getMagicalReserves().getMana().getPercentFill() < 0.9F) {
             return;

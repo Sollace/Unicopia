@@ -17,6 +17,7 @@ public interface Abilities {
     // unicorn / alicorn
     Ability<?> CAST = register(new UnicornCastingAbility(), "cast", AbilitySlot.PRIMARY);
     Ability<?> TELEPORT = register(new UnicornTeleportAbility(), "teleport", AbilitySlot.SECONDARY);
+    Ability<?> SHOOT = register(new UnicornProjectileAbility(), "shoot", AbilitySlot.TERTIARY);
 
     // earth / alicorn
     Ability<?> GROW = register(new EarthPonyGrowAbility(), "grow", AbilitySlot.SECONDARY);

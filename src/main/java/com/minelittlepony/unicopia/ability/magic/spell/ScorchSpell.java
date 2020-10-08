@@ -4,10 +4,9 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.ThrowableSpell;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
-import com.minelittlepony.unicopia.projectile.Projectile;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -15,9 +14,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.explosion.Explosion.DestructionType;
 
-public class ScorchSpell extends FireSpell implements ThrowableSpell {
+public class ScorchSpell extends FireSpell {
 
     @Override
     public String getName() {
@@ -62,20 +60,13 @@ public class ScorchSpell extends FireSpell implements ThrowableSpell {
 
     @Override
     @Nullable
-    public Projectile toss(Caster<?> caster) {
-        Projectile projectile = ThrowableSpell.super.toss(caster);
+    public MagicProjectileEntity toss(Caster<?> caster) {
+        MagicProjectileEntity projectile = super.toss(caster);
 
         if (projectile != null) {
-            projectile.setGravity(false);
+            projectile.setNoGravity(true);
         }
 
         return projectile;
-    }
-
-    @Override
-    public void onImpact(Caster<?> caster, BlockPos pos, BlockState state) {
-        if (!caster.isClient()) {
-            caster.getWorld().createExplosion(caster.getOwner(), pos.getX(), pos.getY(), pos.getZ(), 2, DestructionType.DESTROY);
-        }
     }
 }

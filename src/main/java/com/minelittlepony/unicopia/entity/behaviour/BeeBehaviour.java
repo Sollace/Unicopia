@@ -23,7 +23,7 @@ public class BeeBehaviour extends EntityBehaviour<BeeEntity> {
     @Override
     public void update(Caster<?> source, BeeEntity entity, DisguiseSpell spell) {
 
-        if (source.getOwner().isSneaking()) {
+        if (source.getMaster().isSneaking()) {
             entity.setAngerTime(10);
         } else {
             entity.setAngerTime(0);

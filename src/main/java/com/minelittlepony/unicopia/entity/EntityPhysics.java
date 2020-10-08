@@ -39,7 +39,7 @@ public class EntityPhysics<T extends Equine<?> & Owned<? extends Entity>> implem
     @Override
     public BlockPos getHeadPosition() {
 
-        Entity entity = pony.getOwner();
+        Entity entity = pony.getMaster();
 
         entity.setOnGround(false);
 
@@ -57,7 +57,7 @@ public class EntityPhysics<T extends Equine<?> & Owned<? extends Entity>> implem
                 return below;
             }
         } else {
-            pony.getOwner().setOnGround(true);
+            pony.getMaster().setOnGround(true);
         }
 
         return pos;
@@ -65,7 +65,7 @@ public class EntityPhysics<T extends Equine<?> & Owned<? extends Entity>> implem
 
     @Override
     public void spawnSprintingParticles() {
-        Entity entity = pony.getOwner();
+        Entity entity = pony.getMaster();
         BlockState state = entity.world.getBlockState(getHeadPosition());
         if (state.getRenderType() != BlockRenderType.INVISIBLE) {
             Vec3d vel = entity.getVelocity();

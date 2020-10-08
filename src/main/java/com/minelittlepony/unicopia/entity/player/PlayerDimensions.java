@@ -33,7 +33,7 @@ public final class PlayerDimensions {
         float height = calculateTargetEyeHeight();
 
         if (physics.isGravityNegative()) {
-            if (pony.getOwner().isSneaking()) {
+            if (pony.getMaster().isSneaking()) {
                 height += 0.2F;
             }
 

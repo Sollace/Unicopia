@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
@@ -22,7 +23,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class IceSpell extends AbstractRangedAreaSpell {
+public class IceSpell extends AbstractRangedAreaSpell implements Thrown {
 
     private final int rad = 3;
     private final Shape effect_range = new Sphere(false, rad);
@@ -44,12 +45,12 @@ public class IceSpell extends AbstractRangedAreaSpell {
 
     @Override
     public boolean update(Caster<?> source) {
-        LivingEntity owner = source.getOwner();
+        LivingEntity owner = source.getMaster();
 
         PosHelper.getAllInRegionMutable(source.getOrigin(), effect_range)
             .forEach(i -> applyBlockSingle(owner, source.getWorld(), i));
 
-        return applyEntities(source.getOwner(), source.getWorld(), source.getOrigin());
+        return applyEntities(source.getMaster(), source.getWorld(), source.getOrigin());
     }
 
     @Override

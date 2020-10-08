@@ -56,12 +56,12 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
 
     @Override
     public Race getSpecies() {
-        return Race.fromId(getOwner().getDataTracker().get(ITEM_RACE));
+        return Race.fromId(getMaster().getDataTracker().get(ITEM_RACE));
     }
 
     @Override
     public void setSpecies(Race race) {
-        getOwner().getDataTracker().set(ITEM_RACE, race.ordinal());
+        getMaster().getDataTracker().set(ITEM_RACE, race.ordinal());
     }
 
     @Override
@@ -78,12 +78,12 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
     }
 
     @Override
-    public void setOwner(ItemEntity owner) {
+    public void setMaster(ItemEntity owner) {
 
     }
 
     @Override
-    public ItemEntity getOwner() {
+    public ItemEntity getMaster() {
         return owner;
     }
 

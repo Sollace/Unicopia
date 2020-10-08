@@ -32,7 +32,7 @@ public class RangedAttackBehaviour<T extends Entity & RangedAttackMob> extends E
             Vec3d rot = player.getEntity().getRotationVec(1);
 
             spit.setVelocity(rot.getX(), rot.getY(), rot.getZ(), 1.5F, 3);
-            spit.setOwner(player.getOwner());
+            spit.setOwner(player.getMaster());
 
             if (!entity.isSilent()) {
                 entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(),

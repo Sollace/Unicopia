@@ -14,7 +14,7 @@ public class SteedBehaviour<T extends LivingEntity & JumpingMount> extends Entit
 
         HorseBaseEntity horse = ((HorseBaseEntity)entity);
 
-        boolean angry = !player.getEntity().isOnGround() && player.getOwner().isSprinting();
+        boolean angry = !player.getEntity().isOnGround() && player.getMaster().isSprinting();
         boolean sneaking = isSneakingOnGround(player);
 
         angry |= sneaking;

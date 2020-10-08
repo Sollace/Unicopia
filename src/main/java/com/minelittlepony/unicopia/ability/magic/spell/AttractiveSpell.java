@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
@@ -20,7 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class AttractiveSpell extends ShieldSpell {
+public class AttractiveSpell extends ShieldSpell implements Thrown {
 
     @Nullable
     private BlockPos homingPos;

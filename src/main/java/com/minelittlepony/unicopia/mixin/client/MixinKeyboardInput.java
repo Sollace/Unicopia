@@ -25,7 +25,7 @@ abstract class MixinKeyboardInput extends Input {
 
             movementSideways = -movementSideways;
 
-            if (player.getOwner().abilities.flying) {
+            if (player.getMaster().abilities.flying) {
                 tmp = jumping;
                 jumping = sneaking;
                 sneaking = tmp;

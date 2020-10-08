@@ -103,7 +103,7 @@ public class Disguise implements NbtSerialisable {
         remove();
 
         entity = InteractionManager.instance().createPlayer(source.getEntity(), profile);
-        entity.setCustomName(source.getOwner().getName());
+        entity.setCustomName(source.getMaster().getName());
         ((PlayerEntity)entity).fromTag(nbt.getCompound("playerNbt"));
         entity.setUuid(UUID.randomUUID());
         entity.extinguish();
@@ -171,7 +171,7 @@ public class Disguise implements NbtSerialisable {
 
         if (entity instanceof Owned) {
             @SuppressWarnings("unchecked")
-            Pony iplayer = Pony.of(((Owned<PlayerEntity>)entity).getOwner());
+            Pony iplayer = Pony.of(((Owned<PlayerEntity>)entity).getMaster());
 
             return iplayer == null ? FlightType.NONE : iplayer.getSpecies().getFlightType();
         }

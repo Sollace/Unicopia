@@ -29,7 +29,7 @@ public class PlayerAttributes {
             new EntityAttributeModifier(UUID.fromString("a54f2595-521e-480b-b9d5-6e750577a564"), "Bat Pony Hanging", -2, Operation.MULTIPLY_TOTAL);
 
     public void applyAttributes(Pony pony) {
-        PlayerEntity entity = pony.getOwner();
+        PlayerEntity entity = pony.getMaster();
         Race race = pony.getSpecies();
 
         toggleAttribute(entity, EntityAttributes.GENERIC_ATTACK_DAMAGE, EARTH_PONY_STRENGTH, race.canUseEarth());

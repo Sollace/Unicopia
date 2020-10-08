@@ -5,22 +5,20 @@ import java.util.List;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.ThrowableSpell;
+import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
-public class AwkwardSpell extends AbstractSpell implements ThrowableSpell {
+public class AwkwardSpell extends AbstractSpell implements Thrown {
 
     @Override
     public String getName() {
@@ -70,10 +68,4 @@ public class AwkwardSpell extends AbstractSpell implements ThrowableSpell {
             && type != ParticleTypes.EXPLOSION_EMITTER
             && type != ParticleTypes.AMBIENT_ENTITY_EFFECT;
     }
-
-    @Override
-    public void onImpact(Caster<?> caster, BlockPos pos, BlockState state) {
-        // noop
-    }
-
 }

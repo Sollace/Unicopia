@@ -31,13 +31,13 @@ public class ChickenBehaviour extends EntityBehaviour<ChickenEntity> {
             if (player.sneakingChanged()) {
                 ItemStack egg = entity.getEquippedStack(EquipmentSlot.OFFHAND);
 
-                if (player.getOwner().isSneaking()) {
+                if (player.getMaster().isSneaking()) {
                     if (egg.isEmpty()) {
                         egg = new ItemStack(Items.EGG);
 
-                        int slot = player.getOwner().inventory.method_7371(egg);
+                        int slot = player.getMaster().inventory.method_7371(egg);
                         if (slot > -1) {
-                            player.getOwner().inventory.removeStack(slot, 1);
+                            player.getMaster().inventory.removeStack(slot, 1);
                             entity.playSound(SoundEvents.ENTITY_CHICKEN_EGG,
                                     1,
                                     (entity.world.random.nextFloat() - entity.world.random.nextFloat()) * 0.2F + 4

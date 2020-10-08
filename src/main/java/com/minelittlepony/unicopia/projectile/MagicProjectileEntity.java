@@ -1,13 +1,11 @@
 package com.minelittlepony.unicopia.projectile;
 
-import java.util.UUID;
-
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.Magical;
 import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.ThrowableSpell;
+import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.EffectSync;
@@ -20,6 +18,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -29,7 +28,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -42,7 +40,7 @@ import net.minecraft.world.World;
  *
  * Can also carry a spell if needed.
  */
-public class MagicProjectileEntity extends ThrownItemEntity implements Magical, Projectile, Caster<LivingEntity> {
+public class MagicProjectileEntity extends ThrownItemEntity implements Magical, Caster<LivingEntity> {
 
     private static final TrackedData<Float> DAMAGE = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -51,23 +49,18 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
 
-    private UUID ownerUuid;
-
     private BlockPos lastBlockPos;
 
     public MagicProjectileEntity(EntityType<MagicProjectileEntity> type, World world) {
         super(type, world);
     }
 
-    public MagicProjectileEntity(EntityType<MagicProjectileEntity> type, World world, LivingEntity thrower) {
-        this(type, world, thrower.getX(), thrower.getY() + thrower.getStandingEyeHeight(), thrower.getZ());
-        setOwner(thrower);
-    }
-
-    public MagicProjectileEntity(EntityType<MagicProjectileEntity> type, World world, double x, double y, double z) {
+    public MagicProjectileEntity(EntityType<MagicProjectileEntity> type, World world, LivingEntity thrower, Vec3d velocity) {
         super(type, world);
-
-        setPos(x, y, z);
+        refreshPositionAndAngles(thrower.getX(), thrower.getY(), thrower.getZ(), thrower.yaw, thrower.pitch);
+        refreshPosition();
+        setVelocity(velocity);
+        setOwner(thrower);
     }
 
     @Override
@@ -80,7 +73,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
 
     @Override
     protected Item getDefaultItem() {
-        return Items.AIR;
+        Spell spell = this.getSpell(false);
+        return spell == null ? Items.AIR : spell.getAffinity() == Affinity.BAD ? Items.MAGMA_CREAM : Items.SNOWBALL;
      }
 
     @Override
@@ -89,17 +83,13 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
     }
 
     @Override
-    public void setOwner(LivingEntity owner) {
-        ownerUuid = owner == null ? null : owner.getUuid();
+    public void setMaster(LivingEntity owner) {
+        setOwner(owner);
     }
 
     @Override
-    public LivingEntity getOwner() {
-        if (ownerUuid == null || !(world instanceof ServerWorld)) {
-            return null;
-        }
-
-        return (LivingEntity) ((ServerWorld)world).getEntity(ownerUuid);
+    public LivingEntity getMaster() {
+        return (LivingEntity)getOwner();
     }
 
     @Override
@@ -110,16 +100,6 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
     @Override
     public Affinity getAffinity() {
         return hasSpell() ? Affinity.NEUTRAL : getSpell(true).getAffinity();
-    }
-
-    @Override
-    public void setGravity(boolean gravity) {
-        setNoGravity(gravity);
-    }
-
-    @Override
-    public void setEffect(ThrowableSpell effect) {
-        setSpell(effect);
     }
 
     @Override
@@ -136,28 +116,26 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
         }
     }
 
-    @Override
     public void setThrowDamage(float damage) {
         getDataTracker().set(DAMAGE, Math.max(0, damage));
     }
 
-    @Override
     public float getThrowDamage() {
         return getDataTracker().get(DAMAGE);
     }
 
-    @Override
     public void setHydrophobic() {
         getDataTracker().set(HYDROPHOBIC, true);
     }
 
-    @Override
     public boolean getHydrophobic() {
         return getDataTracker().get(HYDROPHOBIC);
     }
 
     @Override
     public void tick() {
+
+        System.out.println(this.getPos() + " " + this.getVelocity());
 
         if (!world.isClient()) {
             if (Math.abs(getVelocity().x) < 0.01 && Math.abs(getVelocity().x) < 0.01 && Math.abs(getVelocity().y) < 0.01) {
@@ -206,11 +184,6 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
         }
     }
 
-    @Override
-    public void launch(Entity entityThrower, float pitch, float yaw, float wobble, float velocity, float inaccuracy) {
-        setProperties(entityThrower, pitch, yaw, wobble, velocity, inaccuracy);
-    }
-
     private ParticleEffect getParticleParameters() {
        ItemStack stack = getItem();
 
@@ -255,39 +228,36 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
     protected void onCollision(HitResult result) {
         if (!removed) {
             remove();
+            super.onCollision(result);
 
-            if (result.getType() == HitResult.Type.BLOCK) {
-                onHitBlock((BlockHitResult)result);
-            } else if (result.getType() == HitResult.Type.ENTITY) {
-                onHitEntity((EntityHitResult)result);
+            if (!world.isClient()) {
+                world.sendEntityStatus(this, (byte)3);
+                remove();
             }
         }
     }
 
-    protected void onHitBlock(BlockHitResult hit) {
+    @Override
+    protected void onBlockHit(BlockHitResult hit) {
         if (hasSpell()) {
             Spell effect = getSpell(true);
 
-            if (effect instanceof ThrowableSpell) {
-                ((ThrowableSpell)effect).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));
+            if (effect instanceof Thrown) {
+                ((Thrown)effect).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));
             }
         }
     }
 
-    protected void onHitEntity(EntityHitResult hit) {
+    @Override
+    protected void onEntityHit(EntityHitResult hit) {
         Entity entity = hit.getEntity();
 
-        if (entity instanceof Projectile) {
+        if (entity instanceof ProjectileEntity) {
             return;
         }
 
         if (entity != null) {
             entity.damage(DamageSource.thrownProjectile(this, getOwner()), getThrowDamage());
-        }
-
-        if (!world.isClient()) {
-            world.sendEntityStatus(this, (byte)3);
-            remove();
         }
     }
 

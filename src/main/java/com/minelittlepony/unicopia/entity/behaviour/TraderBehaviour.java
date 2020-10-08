@@ -9,7 +9,7 @@ import net.minecraft.sound.SoundEvents;
 public class TraderBehaviour extends EntityBehaviour<AbstractTraderEntity> {
     @Override
     public void update(Pony pony, AbstractTraderEntity entity, DisguiseSpell spell) {
-        if (pony.sneakingChanged() && pony.getOwner().isSneaking()) {
+        if (pony.sneakingChanged() && pony.getMaster().isSneaking()) {
             entity.setHeadRollingTimeLeft(40);
 
             if (!entity.world.isClient()) {

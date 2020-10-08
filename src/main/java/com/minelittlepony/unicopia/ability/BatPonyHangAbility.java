@@ -39,7 +39,7 @@ public class BatPonyHangAbility implements Ability<Multi> {
             return new Multi(BlockPos.ZERO, 0);
         }
 
-        BlockPos poss = RayTraceHelper.doTrace(player.getOwner(), 3, 1, EntityPredicates.EXCEPT_SPECTATOR).getBlockPos().orElse(null);
+        BlockPos poss = RayTraceHelper.doTrace(player.getMaster(), 3, 1, EntityPredicates.EXCEPT_SPECTATOR).getBlockPos().orElse(null);
         if (poss != null) {
             boolean air = player.getWorld().isAir(poss.down()) && player.getWorld().isAir(poss.down(2));
 
@@ -48,7 +48,7 @@ public class BatPonyHangAbility implements Ability<Multi> {
             }
         }
 
-        return RayTraceHelper.doTrace(player.getOwner(), 5, 1, EntityPredicates.EXCEPT_SPECTATOR).getBlockPos()
+        return RayTraceHelper.doTrace(player.getMaster(), 5, 1, EntityPredicates.EXCEPT_SPECTATOR).getBlockPos()
                 .map(BlockPos::down)
                 .filter(pos -> player.getWorld().isAir(pos) && player.getWorld().isAir(pos.down()) && player.canHangAt(pos))
                 .map(pos -> new Multi(pos, 1))
@@ -62,7 +62,7 @@ public class BatPonyHangAbility implements Ability<Multi> {
 
     @Override
     public void apply(Pony player, Multi data) {
-        EntityAttributeInstance attr = player.getOwner().getAttributeInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+        EntityAttributeInstance attr = player.getMaster().getAttributeInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
 
         if (data.hitType == 0 && attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
             attr.removeModifier(PlayerAttributes.BAT_HANGING);
@@ -70,8 +70,8 @@ public class BatPonyHangAbility implements Ability<Multi> {
         }
 
         if (data.hitType == 1 && player.canHangAt(data.pos())) {
-            player.getOwner().teleport(data.x + 0.5, data.y - 2, data.z + 0.5);
-            player.getOwner().setVelocity(Vec3d.ZERO);
+            player.getMaster().teleport(data.x + 0.5, data.y - 2, data.z + 0.5);
+            player.getMaster().setVelocity(Vec3d.ZERO);
 
             if (!attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
                 attr.addPersistentModifier(PlayerAttributes.BAT_HANGING);

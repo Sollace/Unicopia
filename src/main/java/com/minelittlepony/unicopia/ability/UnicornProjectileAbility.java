@@ -1,9 +1,12 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.Optional;
+
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.ability.magic.spell.ShieldSpell;
+import com.minelittlepony.unicopia.ability.magic.Thrown;
+import com.minelittlepony.unicopia.ability.magic.spell.AttractiveSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
@@ -12,11 +15,11 @@ import com.minelittlepony.unicopia.particle.MagicParticleEffect;
  * A magic casting ability for unicorns.
  * (only shields for now)
  */
-public class UnicornCastingAbility implements Ability<Hit> {
+public class UnicornProjectileAbility implements Ability<Hit> {
 
     @Override
     public int getWarmupTime(Pony player) {
-        return 20;
+        return 4;
     }
 
     @Override
@@ -41,23 +44,15 @@ public class UnicornCastingAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
+        getThrown(player).orElseGet(AttractiveSpell::new).toss(player);
+    }
 
-        if (player.hasSpell()) {
-            String current = player.getSpell(true).getName();
-            player.setSpell(Streams.stream(player.getMaster().getItemsHand())
-                    .map(SpellRegistry::getKeyFromStack)
-                    .filter(i -> i != null && !current.equals(i))
-                    .map(SpellRegistry.instance()::getSpellFromName)
-                    .filter(i -> i != null)
-                    .findFirst()
-                    .orElse(null));
-        } else {
-            player.setSpell(Streams.stream(player.getMaster().getItemsHand())
-                    .map(SpellRegistry.instance()::getSpellFrom)
-                    .filter(i -> i != null)
-                    .findFirst()
-                    .orElseGet(ShieldSpell::new));
-        }
+    private Optional<Thrown> getThrown(Pony player) {
+        return Streams.stream(player.getMaster().getItemsHand())
+                .map(SpellRegistry.instance()::getSpellFrom)
+                .filter(i -> i != null && i instanceof Thrown)
+                .map(Thrown.class::cast)
+                .findFirst();
     }
 
     @Override

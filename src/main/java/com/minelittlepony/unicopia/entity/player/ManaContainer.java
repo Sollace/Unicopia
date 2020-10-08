@@ -71,17 +71,17 @@ public class ManaContainer implements MagicReserves {
         BarInst(TrackedData<Float> marker, float max) {
             this.marker = marker;
             this.max = max;
-            pony.getOwner().getDataTracker().startTracking(marker, 0F);
+            pony.getMaster().getDataTracker().startTracking(marker, 0F);
         }
 
         @Override
         public float get() {
-            return pony.getOwner().getDataTracker().get(marker);
+            return pony.getMaster().getDataTracker().get(marker);
         }
 
         @Override
         public void set(float value) {
-            pony.getOwner().getDataTracker().set(marker, MathHelper.clamp(value, 0, getMax()));
+            pony.getMaster().getDataTracker().set(marker, MathHelper.clamp(value, 0, getMax()));
         }
 
         @Override

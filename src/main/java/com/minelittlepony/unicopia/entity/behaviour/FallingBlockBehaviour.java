@@ -92,7 +92,7 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
         Disguise disguise = spell.getDisguise();
         List<Entity> attachments = disguise.getAttachments();
         if (attachments.size() > 0) {
-            copyBaseAttributes(source.getOwner(), attachments.get(0), UP);
+            copyBaseAttributes(source.getMaster(), attachments.get(0), UP);
         }
 
         BlockEntity be = disguise.getBlockEntity();

@@ -70,7 +70,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
      */
     @Override
     default Entity getEntity() {
-        return getOwner();
+        return getMaster();
     }
 
     /**
@@ -96,8 +96,8 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     }
 
     default boolean subtractEnergyCost(double amount) {
-        getOwner().damage(DamageSource.MAGIC, (int)amount/2);
-        return getOwner().getHealth() > 0;
+        getMaster().damage(DamageSource.MAGIC, (int)amount/2);
+        return getMaster().getHealth() > 0;
     }
 
     default Stream<Caster<?>> findAllSpellsInRange(double radius) {

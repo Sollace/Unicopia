@@ -60,7 +60,7 @@ public class InfernoSpell extends FireSpell {
                     BlockPos pos = new BlockPos(shape.computePoint(w.random).add(origin));
 
                     if (!applyBlocks(w, pos)) {
-                        applyEntities(source.getOwner(), w, pos);
+                        applyEntities(source.getMaster(), w, pos);
                     }
                 }
             }

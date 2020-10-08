@@ -45,8 +45,8 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
     @Override
     public Pos tryActivate(Pony player) {
-        int maxDistance = player.getOwner().isCreative() ? 1000 : 100;
-        HitResult ray = RayTraceHelper.doTrace(player.getOwner(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR).getResult();
+        int maxDistance = player.getMaster().isCreative() ? 1000 : 100;
+        HitResult ray = RayTraceHelper.doTrace(player.getMaster(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR).getResult();
 
         World w = player.getWorld();
 
@@ -64,10 +64,10 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
         boolean airAbove = enterable(w, pos.up()) && enterable(w, pos.up(2));
 
-        if (exception(w, pos, player.getOwner())) {
+        if (exception(w, pos, player.getMaster())) {
             Direction sideHit = ((BlockHitResult)ray).getSide();
 
-            if (player.getOwner().isSneaking()) {
+            if (player.getMaster().isSneaking()) {
                 sideHit = sideHit.getOpposite();
             }
 
@@ -89,8 +89,8 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             }
         }
 
-        if ((!enterable(w, pos) && exception(w, pos, player.getOwner()))
-         || (!enterable(w, pos.up()) && exception(w, pos.up(), player.getOwner()))) {
+        if ((!enterable(w, pos) && exception(w, pos, player.getMaster()))
+         || (!enterable(w, pos.up()) && exception(w, pos.up(), player.getMaster()))) {
             return null;
         }
 
@@ -106,7 +106,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
     public void apply(Pony iplayer, Pos data) {
         iplayer.getWorld().playSound(null, iplayer.getOrigin(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
 
-        PlayerEntity player = iplayer.getOwner();
+        PlayerEntity player = iplayer.getMaster();
         double distance = Math.sqrt(player.squaredDistanceTo(data.x, data.y, data.z)) / 10;
 
         if (player.hasVehicle()) {

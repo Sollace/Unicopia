@@ -22,13 +22,13 @@ public class MobBehaviour<T extends MobEntity> extends EntityBehaviour<T> {
         if (player.sneakingChanged() && isSneakingOnGround(player)) {
             LivingEntity target = findTarget(player, entity);
             entity.tryAttack(target);
-            target.setAttacker(player.getOwner());
+            target.setAttacker(player.getMaster());
         }
     }
 
     protected LivingEntity findTarget(Pony player, T entity) {
         return RayTraceHelper.<LivingEntity>findEntity(player.getEntity(), 6, 1,
-                e -> e instanceof LivingEntity && e != entity && e != player.getOwner())
+                e -> e instanceof LivingEntity && e != entity && e != player.getMaster())
                 .orElseGet(() -> getDummy(entity));
     }
 

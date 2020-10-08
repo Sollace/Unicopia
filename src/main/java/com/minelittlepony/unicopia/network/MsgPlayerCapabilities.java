@@ -35,7 +35,7 @@ public class MsgPlayerCapabilities implements Channel.Packet {
     }
 
     public MsgPlayerCapabilities(boolean full, Pony player) {
-        playerId = player.getOwner().getUuid();
+        playerId = player.getMaster().getUuid();
         newRace = player.getSpecies();
         compoundTag = full ? player.toNBT() : new CompoundTag();
     }

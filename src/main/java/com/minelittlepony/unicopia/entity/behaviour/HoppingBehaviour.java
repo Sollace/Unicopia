@@ -13,7 +13,7 @@ public class HoppingBehaviour extends EntityBehaviour<LivingEntity> {
 
         if (player.getEntity().isOnGround()) {
             if (Entity.squaredHorizontalLength(player.getEntity().getVelocity()) > 0.01) {
-                player.getOwner().jump();
+                player.getMaster().jump();
                 if (entity instanceof RabbitEntity) {
                     ((RabbitEntity)entity).startJump();
                 }

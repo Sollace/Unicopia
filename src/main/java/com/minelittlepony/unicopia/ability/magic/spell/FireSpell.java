@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Magical;
+import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
@@ -28,11 +29,12 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion.DestructionType;
 
 /**
  * Simple fire spell that triggers an effect when used on a block.
  */
-public class FireSpell extends AbstractRangedAreaSpell {
+public class FireSpell extends AbstractRangedAreaSpell implements Thrown {
 
     private static final Shape VISUAL_EFFECT_RANGE = new Sphere(false, 0.5);
     private static final Shape EFFECT_RANGE = new Sphere(false, 4);
@@ -50,6 +52,13 @@ public class FireSpell extends AbstractRangedAreaSpell {
     @Override
     public int getTint() {
         return 0xFF5D00;
+    }
+
+    @Override
+    public void onImpact(Caster<?> caster, BlockPos pos, BlockState state) {
+        if (!caster.isClient()) {
+            caster.getWorld().createExplosion(caster.getMaster(), pos.getX(), pos.getY(), pos.getZ(), 2, DestructionType.DESTROY);
+        }
     }
 
     @Override

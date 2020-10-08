@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 public class SilverfishBehaviour extends EntityBehaviour<SilverfishEntity> {
     @Override
     public void update(Pony player, SilverfishEntity entity, DisguiseSpell spell) {
-        if (!player.isClient() && player.sneakingChanged() && player.getOwner().isSneaking()) {
+        if (!player.isClient() && player.sneakingChanged() && player.getMaster().isSneaking()) {
             BlockPos pos = entity.getBlockPos().down();
             BlockState state = entity.world.getBlockState(pos);
 
