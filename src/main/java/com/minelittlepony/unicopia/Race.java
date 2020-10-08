@@ -12,6 +12,7 @@ import com.google.common.base.Strings;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.common.client.gui.style.Style;
 import com.minelittlepony.unicopia.ability.magic.Affine;
+import com.minelittlepony.unicopia.item.toxin.FoodType;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
@@ -44,6 +45,19 @@ public enum Race implements Affine {
     @Override
     public Affinity getAffinity() {
         return this == CHANGELING ? Affinity.BAD : Affinity.NEUTRAL;
+    }
+
+    public boolean canConsume(FoodType type) {
+        if (!isUsable()) {
+            return type != FoodType.VEGAN;
+        }
+        if (type.isMeat()) {
+            return this == BAT ||  this == CHANGELING || this == HUMAN;
+        }
+        if (type.isFish()) {
+            return this == PEGASUS || this == ALICORN;
+        }
+        return hasIronGut();
     }
 
     public boolean hasIronGut() {

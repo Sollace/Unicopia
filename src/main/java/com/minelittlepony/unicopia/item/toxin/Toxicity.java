@@ -5,16 +5,11 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
-public enum Toxicity implements Toxin {
+public enum Toxicity {
     SAFE(0, 0),
     MILD(1, 160),
     FAIR(1, 30),
@@ -29,6 +24,14 @@ public enum Toxicity implements Toxin {
     Toxicity(int level, int duration) {
         this.level = level;
         this.duration = duration;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public int getDuration() {
+        return duration;
     }
 
     public boolean isMild() {
@@ -55,34 +58,6 @@ public enum Toxicity implements Toxin {
         return new TranslatableText(getTranslationKey())
                 .styled(s -> s
                         .withColor(toxicWhenCooked() ? Formatting.RED : toxicWhenRaw() ? Formatting.DARK_PURPLE : Formatting.GRAY));
-    }
-
-    public ItemStack ontoStack(ItemStack stack) {
-        stack.getOrCreateTag().putString("toxicity", name());
-        return stack;
-    }
-
-    @Override
-    public void afflict(PlayerEntity player, Toxicity toxicity, ItemStack stack) {
-        if (toxicWhenRaw()) {
-            player.addStatusEffect(new StatusEffectInstance(isMild() ? StatusEffects.NAUSEA : StatusEffects.POISON, duration, level));
-        }
-
-        if (isLethal()) {
-            player.addStatusEffect(new StatusEffectInstance(UEffects.FOOD_POISONING, 300, 7, false, false));
-        } else if (toxicWhenCooked()) {
-            WEAK_NAUSEA.afflict(player, toxicity, stack);
-        }
-    }
-
-    public static Toxicity fromStack(ItemStack stack) {
-        if (stack.hasTag()) {
-            Tag tag = stack.getTag().get("toxicity");
-            if (tag != null) {
-                return REGISTRY.getOrDefault(tag.asString(), SAFE);
-            }
-        }
-        return SAFE;
     }
 
     public static Toxicity byName(String name) {

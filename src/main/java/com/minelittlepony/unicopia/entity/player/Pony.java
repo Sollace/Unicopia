@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.Trap;
+import com.minelittlepony.unicopia.item.toxin.FoodType;
 import com.minelittlepony.unicopia.item.toxin.Toxicity;
 import com.minelittlepony.unicopia.item.toxin.Toxin;
 import com.minelittlepony.unicopia.network.Channel;
@@ -393,7 +394,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     public void onEat(ItemStack stack) {
         if (getSpecies() == Race.CHANGELING) {
-            Toxin.POISON.afflict(getOwner(), Toxicity.SAFE, stack);
+            Toxin.POISON.afflict(getOwner(), FoodType.RAW_MEAT, Toxicity.SAFE, stack);
         }
     }
 

@@ -10,16 +10,16 @@ import net.minecraft.world.Difficulty;
 
 @FunctionalInterface
 public interface Toxin {
-    Predicate ONE_EVERY_30_TICKS = (player, toxicity, stack) -> player.world.random.nextInt(30) == 0;
+    Predicate ONE_EVERY_30_TICKS = (player, type, toxicity, stack) -> player.world.random.nextInt(30) == 0;
 
-    Toxin FOOD = (player, toxicity, stack) -> toxicity.afflict(player, toxicity, stack);
+    Toxin INNERT = (player, type, toxicity, stack) -> {};
     Toxin DAMAGE = ONE_EVERY_30_TICKS.then(of(StatusEffects.INSTANT_DAMAGE, 1, 1));
     Toxin RADIOACTIVITY = ONE_EVERY_30_TICKS.then(of(StatusEffects.GLOWING, 10, 1));
     Toxin NAUSEA = of(StatusEffects.NAUSEA, 30, 1);
     Toxin WEAK_NAUSEA = of(StatusEffects.NAUSEA, 3, 1);
     Toxin STRENGTH = of(StatusEffects.STRENGTH, 30, 1);
     Toxin BLINDNESS = of(StatusEffects.BLINDNESS, 30, 1);
-    Toxin POISON = (player, toxicity, stack) -> {
+    Toxin POISON = (player, type, toxicity, stack) -> {
         FoodComponent food = stack.getItem().getFoodComponent();
 
         player.getHungerManager().add(-food.getHunger()/2, -food.getSaturationModifier()/2);
@@ -31,19 +31,30 @@ public interface Toxin {
 
         afflict(player, StatusEffects.WEAKNESS, 2000, 20);
     };
+    Toxin FOOD = (player, type, toxicity, stack) -> {
+        if (toxicity.toxicWhenRaw() && type.isRaw()) {
+            player.addStatusEffect(new StatusEffectInstance(toxicity.isMild() ? StatusEffects.NAUSEA : StatusEffects.POISON, toxicity.getDuration(), toxicity.getLevel()));
+        }
 
-    void afflict(PlayerEntity player, Toxicity toxicity, ItemStack stack);
+        if (toxicity.isLethal()) {
+            player.addStatusEffect(new StatusEffectInstance(UEffects.FOOD_POISONING, 300, 7, false, false));
+        } else if (toxicity.toxicWhenCooked()) {
+            WEAK_NAUSEA.afflict(player, type, toxicity, stack);
+        }
+    };
+
+    void afflict(PlayerEntity player, FoodType type, Toxicity toxicity, ItemStack stack);
 
     default Toxin and(Toxin other) {
         Toxin self = this;
-        return (player, toxicity, stack) -> {
-            self.afflict(player, toxicity, stack);
-            other.afflict(player, toxicity, stack);
+        return (player, type, toxicity, stack) -> {
+            self.afflict(player, type, toxicity, stack);
+            other.afflict(player, type, toxicity, stack);
         };
     }
 
     static Toxin of(StatusEffect effect, int duration, int amplifier) {
-        return (player, toxicity, stack) -> afflict(player, effect, duration, amplifier);
+        return (player, type, toxicity, stack) -> afflict(player, effect, duration, amplifier);
     }
 
     static void afflict(PlayerEntity player, StatusEffect effect, int duration, int amplifier) {
@@ -51,11 +62,11 @@ public interface Toxin {
     }
 
     interface Predicate {
-        boolean test(PlayerEntity player, Toxicity toxicity, ItemStack stack);
+        boolean test(PlayerEntity player, FoodType type, Toxicity toxicity, ItemStack stack);
         default Toxin then(Toxin toxin) {
-            return (player, toxicity, stack) -> {
-                if (test(player, toxicity, stack)) {
-                    toxin.afflict(player, toxicity, stack);
+            return (player, type, toxicity, stack) -> {
+                if (test(player, type, toxicity, stack)) {
+                    toxin.afflict(player, type, toxicity, stack);
                 }
             };
         }
