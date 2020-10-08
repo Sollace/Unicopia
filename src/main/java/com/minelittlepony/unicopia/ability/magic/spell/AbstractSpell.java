@@ -11,11 +11,6 @@ public abstract class AbstractSpell implements Spell {
     protected boolean isDirty;
 
     @Override
-    public boolean isCraftable() {
-        return true;
-    }
-
-    @Override
     public void setDead() {
         isDead = true;
     }

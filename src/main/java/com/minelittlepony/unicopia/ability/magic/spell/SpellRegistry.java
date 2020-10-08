@@ -157,10 +157,8 @@ public class SpellRegistry {
             this.color = inst.getTint();
             this.affinity = inst.getAffinity();
 
-            if (inst.isCraftable()) {
-                for (Affinity affinity : affinity.getImplicators()) {
-                    keysByAffinity.computeIfAbsent(affinity, a -> new HashSet<>()).add(inst.getName());
-                }
+            for (Affinity affinity : affinity.getImplicators()) {
+                keysByAffinity.computeIfAbsent(affinity, a -> new HashSet<>()).add(inst.getName());
             }
 
             entries.put(inst.getName(), this);

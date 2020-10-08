@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.FlightPredicate;
@@ -79,10 +80,12 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
         boolean creative = entity.abilities.creativeMode || pony.getOwner().isSpectator();
 
-        boolean canFly = checkCanFly();
+        FlightType type = getFlightType();
+
+        entity.abilities.allowFlying = type.canFlyCreative();
 
         if (!creative) {
-            entity.abilities.flying |= (canFly || entity.abilities.allowFlying) && isFlyingEither;
+            entity.abilities.flying |= (type.canFly() || entity.abilities.allowFlying) && isFlyingEither;
 
             if ((entity.isOnGround() && entity.isSneaking())
                     || entity.isTouchingWater()
@@ -110,7 +113,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             }
         }
 
-        if (canFly) {
+        if (type.canFly()) {
             if (isFlying()) {
 
                 if (pony.getSpecies() == Race.BAT && entity.verticalCollision && pony.canHangAt(pony.getOrigin().up(2))) {
@@ -146,23 +149,27 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                 }
 
                 entity.fallDistance = 0;
-
+                if (type == FlightType.AVIAN) {
+                    applyThrust(entity, velocity);
+                }
                 moveFlying(entity, velocity);
                 if (entity.world.hasRain(entity.getBlockPos())) {
                     applyTurbulance(entity, velocity);
                 }
 
-                if (entity.world.isClient && ticksInAir % 20 == 0 && entity.getVelocity().length() < 0.29) {
-                    entity.playSound(getWingSound(), 0.5F, 1);
-                    thrustScale = 1;
+                if (type == FlightType.AVIAN) {
+                    if (entity.world.isClient && ticksInAir % 20 == 0 && entity.getVelocity().length() < 0.29) {
+                        entity.playSound(getWingSound(), 0.5F, 1);
+                        thrustScale = 1;
+                    }
+                    velocity.y -= 0.02;
+                    velocity.x *= 0.9896;
+                    velocity.z *= 0.9896;
                 }
-                velocity.y -= 0.02;
-                velocity.x *= 0.9896;
-                velocity.z *= 0.9896;
             } else {
                 ticksInAir = 0;
 
-                if (!creative) {
+                if (!creative && type == FlightType.AVIAN) {
 
                     double horMotion = getHorizontalMotion(entity);
                     double motion = entity.getPos().subtract(lastPos).lengthSquared();
@@ -219,8 +226,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     }
 
     protected void moveFlying(PlayerEntity player, MutableVector velocity) {
-        applyThrust(player, velocity);
-
         double motion = getHorizontalMotion(player);
 
         float forward = 0.000015F * (1 + (pony.getLevel().get() / 10F)) * (float)Math.sqrt(motion);
@@ -292,29 +297,30 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         return Entity.squaredHorizontalLength(e.getPos().subtract(lastPos));
     }
 
-    private boolean checkCanFly() {
-        if (pony.getOwner().abilities.creativeMode || pony.getOwner().isSpectator()) {
-            return true;
+    private FlightType getFlightType() {
+        if (pony.getOwner().isCreative() || pony.getOwner().isSpectator()) {
+            return FlightType.CREATIVE;
         }
 
         if (pony.hasSpell()) {
             Spell effect = pony.getSpell(true);
             if (!effect.isDead() && effect instanceof FlightPredicate) {
-                return ((FlightPredicate)effect).checkCanFly(pony);
+                return ((FlightPredicate)effect).getFlightType(pony);
             }
         }
 
-        return pony.getSpecies().canFly();
+        return pony.getSpecies().getFlightType();
     }
 
     public void updateFlightStat(boolean flying) {
         PlayerEntity entity = pony.getOwner();
 
-        boolean canFly = checkCanFly();
+        FlightType type = getFlightType();
 
-        if (canFly || entity.abilities.allowFlying) {
+        entity.abilities.allowFlying = type.canFlyCreative();
+
+        if (type.canFly() || entity.abilities.allowFlying) {
             entity.abilities.flying |= flying;
-
             isFlyingSurvival = entity.abilities.flying;
         } else {
             entity.abilities.flying = false;

@@ -8,6 +8,7 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -163,25 +164,29 @@ public class Disguise implements NbtSerialisable {
         }
     }
 
-    public boolean canFly() {
+    public FlightType getFlightType() {
         if (entity == null) {
-            return false;
+            return FlightType.NONE;
         }
 
         if (entity instanceof Owned) {
             @SuppressWarnings("unchecked")
             Pony iplayer = Pony.of(((Owned<PlayerEntity>)entity).getOwner());
 
-            return iplayer != null && iplayer.getSpecies().canFly();
+            return iplayer == null ? FlightType.NONE : iplayer.getSpecies().getFlightType();
         }
 
-        return entity instanceof FlyingEntity
+        if (entity instanceof FlyingEntity
                 || entity instanceof AmbientEntity
                 || entity instanceof EnderDragonEntity
                 || entity instanceof VexEntity
                 || entity instanceof ShulkerBulletEntity
                 || entity instanceof Flutterer
-                || ProjectileUtil.isProjectile(entity);
+                || ProjectileUtil.isProjectile(entity)) {
+            return FlightType.INSECTOID;
+        }
+
+        return FlightType.NONE;
     }
 
     public float getStandingEyeHeight() {

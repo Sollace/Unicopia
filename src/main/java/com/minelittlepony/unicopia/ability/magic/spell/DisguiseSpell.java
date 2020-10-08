@@ -5,6 +5,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.FlightPredicate;
 import com.minelittlepony.unicopia.ability.DimensionsPredicate;
@@ -35,11 +36,6 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
     @Override
     public String getName() {
         return "disguise";
-    }
-
-    @Override
-    public boolean isCraftable() {
-        return false;
     }
 
     @Override
@@ -211,8 +207,11 @@ public class DisguiseSpell extends AbstractSpell implements AttachableSpell, Sup
     }
 
     @Override
-    public boolean checkCanFly(Pony player) {
-        return disguise.canFly() && player.getSpecies().canFly();
+    public FlightType getFlightType(Pony player) {
+        if (isSuppressed() || !disguise.isPresent()) {
+            return player.getSpecies().getFlightType();
+        }
+        return disguise.getFlightType();
     }
 
     @Override

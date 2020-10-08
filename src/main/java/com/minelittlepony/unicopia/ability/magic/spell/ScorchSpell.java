@@ -25,11 +25,6 @@ public class ScorchSpell extends FireSpell implements ThrowableSpell {
     }
 
     @Override
-    public boolean isCraftable() {
-        return false;
-    }
-
-    @Override
     public int getTint() {
         return 0;
     }

@@ -41,11 +41,6 @@ public interface Spell extends NbtSerialisable, Affine {
     void setDirty(boolean dirty);
 
     /**
-     * Returns true if this effect can be crafted into a gem.
-     */
-    boolean isCraftable();
-
-    /**
      * Gets the highest level this spell can be safely operated at.
      * Gems may go higher, however chance of explosion/exhaustion increases with every level.
      */

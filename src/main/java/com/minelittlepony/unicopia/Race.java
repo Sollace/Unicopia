@@ -21,21 +21,21 @@ public enum Race implements Affine {
      * The default, unset race.
      * This is used if there are no other races.
      */
-    HUMAN(false, false, false),
-    EARTH(false, false, true),
-    UNICORN(true, false, false),
-    PEGASUS(false, true, false),
-    BAT(false, true, false),
-    ALICORN(true, true, true),
-    CHANGELING(false, true, false);
+    HUMAN(false, FlightType.NONE, false),
+    EARTH(false, FlightType.NONE, true),
+    UNICORN(true, FlightType.NONE, false),
+    PEGASUS(false, FlightType.AVIAN, false),
+    BAT(false, FlightType.AVIAN, false),
+    ALICORN(true, FlightType.AVIAN, true),
+    CHANGELING(false, FlightType.INSECTOID, false);
 
     private final boolean magic;
-    private final boolean flight;
+    private final FlightType flight;
     private final boolean earth;
 
     private final static Map<Integer, Race> REGISTRY = Arrays.stream(values()).collect(Collectors.toMap(Enum::ordinal, Function.identity()));
 
-    Race(boolean magic, boolean flight, boolean earth) {
+    Race(boolean magic, FlightType flight, boolean earth) {
         this.magic = magic;
         this.flight = flight;
         this.earth = earth;
@@ -62,8 +62,12 @@ public enum Race implements Affine {
         return this == ALICORN;
     }
 
-    public boolean canFly() {
+    public FlightType getFlightType() {
         return flight;
+    }
+
+    public boolean canFly() {
+        return !getFlightType().isGrounded();
     }
 
     public boolean canCast() {

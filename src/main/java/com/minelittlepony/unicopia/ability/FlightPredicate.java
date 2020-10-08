@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability;
 
+import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 /**
@@ -8,5 +9,5 @@ import com.minelittlepony.unicopia.entity.player.Pony;
  * This overrides what the race specifies.
  */
 public interface FlightPredicate {
-    boolean checkCanFly(Pony player);
+    FlightType getFlightType(Pony player);
 }
