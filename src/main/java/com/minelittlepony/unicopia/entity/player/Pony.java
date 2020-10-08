@@ -296,7 +296,11 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         }
 
         mana.getExertion().add(-10);
-        mana.getEnergy().add(-1);
+        if (mana.getEnergy().get() > 5) {
+            mana.getEnergy().multiply(0.8F);
+        } else {
+            mana.getEnergy().add(-1);
+        }
 
         if (!getSpecies().canFly() || !gravity.isFlying()) {
             mana.getMana().add(60);

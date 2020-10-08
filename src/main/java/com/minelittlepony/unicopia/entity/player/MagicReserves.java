@@ -50,7 +50,8 @@ public interface MagicReserves {
          * Multiplies the current value.
          */
         default void multiply(float scalar) {
-            set(get() * scalar);
+            float newVal = get() * scalar;
+            set(newVal > -0.0001F && newVal < 0.0001F ? 0 : newVal);
         }
 
         /**
