@@ -174,8 +174,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                     double horMotion = getHorizontalMotion(entity);
                     double motion = entity.getPos().subtract(lastPos).lengthSquared();
 
-                    System.out.println(motion + " " + horMotion + " " + velocity.y);
-
                     boolean takeOffCondition = velocity.y > 0
                             && (horMotion > 0.2 || (motion > 0.2 && velocity.y < -0.02));
                     boolean fallingTakeOffCondition = !entity.isOnGround() && velocity.y < -1.6;
