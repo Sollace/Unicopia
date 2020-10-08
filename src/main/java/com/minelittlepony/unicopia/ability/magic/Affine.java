@@ -12,7 +12,6 @@ public interface Affine {
      */
     Affinity getAffinity();
 
-
     default boolean isEnemy(Affine other) {
         return !getAffinity().alignsWith(other.getAffinity());
     }

@@ -158,7 +158,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     @Override
     public Affinity getAffinity() {
-        return Affinity.NEUTRAL;
+        return getSpecies().getAffinity();
     }
 
     public void setDirty() {
@@ -384,12 +384,10 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     }
 
     public Optional<Text> trySleep(BlockPos pos) {
-
-        if (findAllSpellsInRange(10).filter(p -> p instanceof Pony).map(Pony.class::cast).map(Pony::getSpecies).anyMatch(r -> r.isEnemy(getSpecies()))) {
-            return Optional.of(new TranslatableText("block.unicopia.bed.not_safe"));
-        }
-
-        return Optional.empty();
+        return findAllSpellsInRange(10)
+                .filter(p -> p instanceof Pony && ((Pony)p).isEnemy(this))
+                .findFirst()
+                .map(p -> new TranslatableText("block.unicopia.bed.not_safe"));
     }
 
     public void onEat(ItemStack stack) {

@@ -5,7 +5,7 @@ package com.minelittlepony.unicopia.entity.player;
  */
 public interface Motion {
     /**
-     * True is we're currently flying.
+     * True if we're currently flying.
      */
     boolean isFlying();
 
