@@ -48,10 +48,6 @@ public class Toxic {
             toxin.afflict((PlayerEntity)entity, t, stack);
         }
 
-        if (!(entity instanceof PlayerEntity) || !((PlayerEntity)entity).abilities.creativeMode) {
-            stack.decrement(1);
-        }
-
         return stack;
     }
 
