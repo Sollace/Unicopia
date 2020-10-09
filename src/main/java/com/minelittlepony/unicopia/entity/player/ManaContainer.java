@@ -13,10 +13,10 @@ public class ManaContainer implements MagicReserves {
 
     public ManaContainer(Pony pony) {
         this.pony = pony;
-        this.energy = new BarInst(Pony.ENERGY, 100F);
-        this.exertion = new BarInst(Pony.EXERTION, 10F);
-        this.xp = new BarInst(Pony.XP, 1);
-        this.mana = new XpCollectingBar(Pony.MANA, 100F);
+        this.energy = new BarInst(Pony.ENERGY, 100F, 0);
+        this.exertion = new BarInst(Pony.EXERTION, 10F, 0);
+        this.xp = new BarInst(Pony.XP, 1, 0);
+        this.mana = new XpCollectingBar(Pony.MANA, 100F, 100F);
     }
 
     @Override
@@ -40,8 +40,8 @@ public class ManaContainer implements MagicReserves {
 
     class XpCollectingBar extends BarInst {
 
-        XpCollectingBar(TrackedData<Float> marker, float max) {
-            super(marker, max);
+        XpCollectingBar(TrackedData<Float> marker, float max, float initial) {
+            super(marker, max, initial);
         }
 
         @Override
@@ -49,7 +49,10 @@ public class ManaContainer implements MagicReserves {
             float diff = value - get();
             if (diff < 0) {
                 if (pony.getLevel().canLevelUp()) {
-                    xp.add(-diff / (100 * (1 + pony.getLevel().get())));
+
+                    diff /= Math.pow(1000, 1 + pony.getLevel().get());
+
+                    xp.add(-diff);
                     if (xp.getPercentFill() >= 1) {
                         pony.getLevel().add(1);
                         xp.set(0);
@@ -68,10 +71,10 @@ public class ManaContainer implements MagicReserves {
         private final TrackedData<Float> marker;
         private final float max;
 
-        BarInst(TrackedData<Float> marker, float max) {
+        BarInst(TrackedData<Float> marker, float max, float initial) {
             this.marker = marker;
             this.max = max;
-            pony.getMaster().getDataTracker().startTracking(marker, 0F);
+            pony.getMaster().getDataTracker().startTracking(marker, initial);
         }
 
         @Override
