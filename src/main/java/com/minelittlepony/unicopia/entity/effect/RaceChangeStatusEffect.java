@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.entity.effect;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.Equine;
-import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
@@ -100,12 +100,15 @@ public class RaceChangeStatusEffect extends StatusEffect {
         }
 
         if (stage == Stage.DEATH) {
-            PonyContainer.of(entity).map(PonyContainer::get).ifPresent(e -> {
-                e.setSpecies(species);
-                if (e instanceof Pony) {
-                    ((Pony)e).setDirty();
-                }
-            });
+
+            eq.setSpecies(species);
+            if (eq instanceof Caster) {
+                ((Caster<?>)eq).setSpell(null);
+            }
+
+            if (eq instanceof Pony) {
+                ((Pony)eq).setDirty();
+            }
             entity.damage(MagicalDamageSource.TRIBE_SWAP, Float.MAX_VALUE);
         }
     }
