@@ -34,6 +34,7 @@ public class ManaContainer implements MagicReserves {
         return mana;
     }
 
+    @Override
     public Bar getXp() {
         return xp;
     }
@@ -49,10 +50,7 @@ public class ManaContainer implements MagicReserves {
             float diff = value - get();
             if (diff < 0) {
                 if (pony.getLevel().canLevelUp()) {
-
-                    diff /= Math.pow(1000, 1 + pony.getLevel().get());
-
-                    xp.add(-diff);
+                    xp.add(-diff / (float)Math.pow(1000, 1 + pony.getLevel().get()));
                     if (xp.getPercentFill() >= 1) {
                         pony.getLevel().add(1);
                         xp.set(0);

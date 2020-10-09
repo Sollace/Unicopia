@@ -35,6 +35,8 @@ class ManaRingSlot extends Slot {
         arcBegin = renderRing(matrices, 17, 13, 0, mana.getMana(), 0xFF88FF99);
 
         if (!uHud.client.player.isCreative()) {
+            renderRing(matrices, 13, 11, 0, mana.getXp(), 0x88880099);
+
             double cost = abilities.getStats().stream()
                     .mapToDouble(s -> s.getCost(KeyBindingsHandler.INSTANCE.page))
                     .reduce(Double::sum)
@@ -44,7 +46,7 @@ class ManaRingSlot extends Slot {
                 float percent = mana.getMana().getPercentFill();
                 float max = mana.getMana().getMax();
 
-                cost = Math.min(max, cost) / max;
+                cost = Math.min(max, cost * 10) / max;
 
                 cost = Math.min(percent, cost);
 

@@ -20,6 +20,12 @@ public interface MagicReserves {
      */
     Bar getMana();
 
+    /**
+     * The progress to the next experience level.
+     * This is increased slowly by performing actions that consume mana.
+     */
+    Bar getXp();
+
     public interface Bar {
 
         /**
