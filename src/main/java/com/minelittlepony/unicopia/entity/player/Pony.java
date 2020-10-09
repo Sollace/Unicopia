@@ -436,7 +436,9 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     @Override
     public void copyFrom(Pony oldPlayer) {
         speciesPersisted = oldPlayer.speciesPersisted;
-        setSpell(oldPlayer.getSpell(true));
+        if (!oldPlayer.getEntity().removed) {
+            setSpell(oldPlayer.getSpell(true));
+        }
         setSpecies(oldPlayer.getSpecies());
         setDirty();
     }
