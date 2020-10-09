@@ -10,6 +10,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public interface Ability<T extends Hit> {
+
+    /**
+     * The amount of energy this ability is expected to cost if the player were to cast it.
+     */
+    double getCostEstimate(Pony player);
+
     /**
      * Returns the number of ticks the player must hold the ability key to trigger this ability.
      */

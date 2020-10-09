@@ -55,6 +55,16 @@ public class UnicornTeleportAbility implements Ability<Pos> {
     }
 
     @Override
+    public double getCostEstimate(Pony player) {
+        Pos pos = tryActivate(player);
+
+        if (pos == null) {
+            return 0;
+        }
+        return pos.distanceTo(player) / 10;
+    }
+
+    @Override
     public Pos tryActivate(Pony player) {
         int maxDistance = player.getMaster().isCreative() ? 1000 : 100;
         HitResult ray = RayTraceHelper.doTrace(player.getMaster(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR).getResult();
@@ -118,7 +128,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
         iplayer.getWorld().playSound(null, iplayer.getOrigin(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
 
         PlayerEntity player = iplayer.getMaster();
-        double distance = Math.sqrt(player.squaredDistanceTo(data.x, data.y, data.z)) / 10;
+        double distance = data.distanceTo(iplayer) / 10;
 
         if (player.hasVehicle()) {
             Entity mount = player.getVehicle();

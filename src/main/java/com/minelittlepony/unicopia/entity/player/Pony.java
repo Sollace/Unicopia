@@ -305,7 +305,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         }
 
         if (!getSpecies().canFly() || !gravity.isFlying()) {
-            mana.getMana().add(60);
+            mana.getMana().add(15);
         }
 
         attributes.applyAttributes(this);
@@ -368,7 +368,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     @Override
     public boolean subtractEnergyCost(double foodSubtract) {
-        if (!entity.abilities.creativeMode) {
+        if (!entity.isCreative()) {
 
             float currentMana = mana.getMana().get();
             float foodManaRatio = 10;

@@ -41,6 +41,21 @@ public class UnicornCastingAbility implements Ability<Hit> {
     }
 
     @Override
+    public double getCostEstimate(Pony player) {
+        if (player.hasSpell()) {
+            String current = player.getSpell(true).getName();
+            String replaced = Streams.stream(player.getMaster().getItemsHand())
+                    .map(SpellRegistry::getKeyFromStack)
+                    .filter(i -> i != null && !current.equals(i))
+                    .findFirst()
+                    .orElse(null);
+            return replaced == null ? 2 : 4;
+        }
+
+        return 4;
+    }
+
+    @Override
     public void apply(Pony player, Hit data) {
 
         if (player.hasSpell()) {

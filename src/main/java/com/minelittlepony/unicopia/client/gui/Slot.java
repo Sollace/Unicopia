@@ -67,7 +67,7 @@ class Slot {
         uHud.renderAbilityIcon(matrices, abilities.getStat(bSwap ? bSlot : aSlot), slotPadding / 2, slotPadding / 2, iconSize, iconSize, iconSize, iconSize);
 
 
-        if (cooldown > 0 && cooldown < 1) {
+        if (cooldown > 0 && cooldown <= 1) {
             float lerpCooldown = MathHelper.lerp(tickDelta, cooldown, lastCooldown);
 
             lastCooldown = lerpCooldown;

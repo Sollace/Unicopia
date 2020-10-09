@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.gui;
 
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
+import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
@@ -32,6 +33,27 @@ class ManaRingSlot extends Slot {
         double arcBegin = 0;
 
         arcBegin = renderRing(matrices, 17, 13, 0, mana.getMana(), 0xFF88FF99);
+
+        if (!uHud.client.player.isCreative()) {
+            double cost = abilities.getStats().stream()
+                    .mapToDouble(s -> s.getCost(KeyBindingsHandler.INSTANCE.page))
+                    .reduce(Double::sum)
+                    .getAsDouble();
+
+            if (cost > 0) {
+                float percent = mana.getMana().getPercentFill();
+                float max = mana.getMana().getMax();
+
+                cost = Math.min(max, cost) / max;
+
+                cost = Math.min(percent, cost);
+
+                double angle = cost * Math.PI * 2;
+
+                renderArc(matrices, 13, 17, arcBegin - angle, angle, 0xFFFF0099, false);
+            }
+        }
+
         arcBegin = renderRing(matrices, 17, 13, arcBegin, mana.getEnergy(), 0xFF002299);
 
         matrices.pop();
@@ -42,7 +64,7 @@ class ManaRingSlot extends Slot {
     private double renderRing(MatrixStack matrices, double outerRadius, double innerRadius, double offsetAngle, Bar bar, int color) {
         double fill = bar.getPercentFill() * Math.PI * 2;
 
-        renderArc(matrices, innerRadius, outerRadius, offsetAngle, fill, color, false);
+        renderArc(matrices, innerRadius, outerRadius, offsetAngle, fill, color, true);
         return offsetAngle + fill;
     }
 

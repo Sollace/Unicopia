@@ -26,6 +26,11 @@ public class CarryAbility implements Ability<Hit> {
     }
 
     @Override
+    public double getCostEstimate(Pony player) {
+        return 0;
+    }
+
+    @Override
     public boolean canUse(Race race) {
         return race.canFly();
     }

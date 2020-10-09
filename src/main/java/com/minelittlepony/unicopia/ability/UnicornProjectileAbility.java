@@ -54,8 +54,13 @@ public class UnicornProjectileAbility implements Ability<Hit> {
     }
 
     @Override
+    public double getCostEstimate(Pony player) {
+        return 7;
+    }
+
+    @Override
     public void apply(Pony player, Hit data) {
-        player.subtractEnergyCost(7);
+        player.subtractEnergyCost(getCostEstimate(player));
         getThrown(player).orElseGet(AttractiveSpell::new).toss(player);
     }
 

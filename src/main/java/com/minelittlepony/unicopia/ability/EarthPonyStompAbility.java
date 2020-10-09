@@ -66,6 +66,11 @@ public class EarthPonyStompAbility implements Ability<Multi> {
         return race.canUseEarth();
     }
 
+    @Override
+    public double getCostEstimate(Pony player) {
+        return rad;
+    }
+
     @Nullable
     @Override
     public Multi tryActivate(Pony player) {
@@ -90,7 +95,6 @@ public class EarthPonyStompAbility implements Ability<Multi> {
 
         return null;
     }
-
 
     @Override
     public Hit.Serializer<Multi> getSerializer() {

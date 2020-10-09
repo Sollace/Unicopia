@@ -89,6 +89,11 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     @Override
+    public double getCostEstimate(Pony player) {
+        return 0;
+    }
+
+    @Override
     public void apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.getMaster();
 

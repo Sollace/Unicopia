@@ -1,10 +1,10 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
@@ -45,6 +45,10 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         if (stat.canSwitchStates()) {
             stat.getAbility(page).ifPresent(stat::setActiveAbility);
         }
+    }
+
+    public Collection<Stat> getStats() {
+        return stats.values();
     }
 
     public Stat getStat(AbilitySlot slot) {
@@ -139,6 +143,13 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
         public float getWarmup() {
             return maxWarmup <= 0 ? 0 : ((float)warmup / (float)maxWarmup);
+        }
+
+        public double getCost(long page) {
+            if (warmup <= 0) {
+                return 0;
+            }
+            return getAbility(page).map(ability -> ability.getCostEstimate(player)).orElse(0D);
         }
 
         public void setWarmup(int value) {

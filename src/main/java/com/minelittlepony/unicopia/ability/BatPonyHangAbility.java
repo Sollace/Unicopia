@@ -28,6 +28,11 @@ public class BatPonyHangAbility implements Ability<Multi> {
     }
 
     @Override
+    public double getCostEstimate(Pony player) {
+        return 0;
+    }
+
+    @Override
     public boolean canUse(Race race) {
         return race == Race.BAT;
     }

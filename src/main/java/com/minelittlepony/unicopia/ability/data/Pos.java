@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability.data;
 
+import com.minelittlepony.unicopia.ability.magic.Caster;
+
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 
@@ -38,5 +40,9 @@ public class Pos extends Hit {
 
     public BlockPos pos() {
         return new BlockPos(x, y, z);
+    }
+
+    public double distanceTo(Caster<?> caster) {
+        return Math.sqrt(caster.getEntity().squaredDistanceTo(x, y, z));
     }
 }

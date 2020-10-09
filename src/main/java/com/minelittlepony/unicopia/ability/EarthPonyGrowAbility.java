@@ -45,6 +45,11 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     }
 
     @Override
+    public double getCostEstimate(Pony player) {
+        return 10;
+    }
+
+    @Override
     public void apply(Pony player, Pos data) {
         int count = 0;
 
