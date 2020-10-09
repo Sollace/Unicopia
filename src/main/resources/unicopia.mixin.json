@@ -11,6 +11,7 @@
     "MixinItemEntity",
     "MixinItems",
     "MixinLivingEntity",
+    "MixinMilkBucketItem",
     "MixinPlayerEntity",
     "MixinProjectileEntity",
     "MixinServerPlayerEntity",
