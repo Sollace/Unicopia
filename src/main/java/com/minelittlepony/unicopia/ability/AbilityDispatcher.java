@@ -178,7 +178,10 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
         public Optional<Ability<?>> getAbility() {
             Race race = player.getSpecies();
-            return Abilities.BY_SLOT.computeIfAbsent(slot, c -> Collections.emptySet()).stream().filter(a -> a.canUse(race)).findFirst();
+            return Abilities.BY_SLOT.computeIfAbsent(slot, c -> Collections.emptySet())
+                    .stream()
+                    .filter(a -> a.canUse(race))
+                    .findFirst();
         }
 
         protected synchronized void setActiveAbility(Ability<?> power) {

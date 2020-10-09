@@ -18,6 +18,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -28,6 +29,16 @@ import net.minecraft.world.World;
  * Unicorn teleport ability
  */
 public class UnicornTeleportAbility implements Ability<Pos> {
+
+    /**
+     * The icon representing this ability on the UI and HUD.
+     */
+    @Override
+    public Identifier getIcon(Pony player) {
+        Identifier id = Abilities.REGISTRY.getId(this);
+        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (player.getEntity().isSneaking() ? "_far" : "_near") + ".png");
+    }
+
     @Override
     public int getWarmupTime(Pony player) {
         return 20;
@@ -39,8 +50,8 @@ public class UnicornTeleportAbility implements Ability<Pos> {
     }
 
     @Override
-    public boolean canUse(Race playerSpecies) {
-        return playerSpecies.canCast();
+    public boolean canUse(Race race) {
+        return race.canCast();
     }
 
     @Override

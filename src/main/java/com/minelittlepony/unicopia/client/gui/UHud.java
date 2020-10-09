@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -67,11 +66,8 @@ public class UHud extends DrawableHelper {
 
     void renderAbilityIcon(MatrixStack matrices, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
         stat.getAbility().ifPresent(ability -> {
-            Identifier id = Abilities.REGISTRY.getId(ability);
-            client.getTextureManager().bindTexture(new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + ".png"));
-
+            client.getTextureManager().bindTexture(ability.getIcon(Pony.of(client.player)));
             drawTexture(matrices, x, y, 0, 0, frameWidth, frameHeight, u, v);
-
             client.getTextureManager().bindTexture(HUD_TEXTURE);
         });
     }

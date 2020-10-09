@@ -11,11 +11,22 @@ import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 
+import net.minecraft.util.Identifier;
+
 /**
  * A magic casting ability for unicorns.
  * (only shields for now)
  */
 public class UnicornProjectileAbility implements Ability<Hit> {
+
+    /**
+     * The icon representing this ability on the UI and HUD.
+     */
+    @Override
+    public Identifier getIcon(Pony player) {
+        Identifier id = Abilities.REGISTRY.getId(this);
+        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (player.getEntity().isSneaking() ? "_focused" : "_unfocused") + ".png");
+    }
 
     @Override
     public int getWarmupTime(Pony player) {

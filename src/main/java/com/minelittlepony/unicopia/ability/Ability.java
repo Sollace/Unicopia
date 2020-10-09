@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public interface Ability<T extends Hit> {
@@ -46,6 +47,15 @@ public interface Ability<T extends Hit> {
     T tryActivate(Pony player);
 
     Hit.Serializer<T> getSerializer();
+
+    /**
+     * The icon representing this ability on the UI and HUD.
+     * @return
+     */
+    default Identifier getIcon(Pony player) {
+        Identifier id = Abilities.REGISTRY.getId(this);
+        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + ".png");
+    }
 
     /**
      * Called to actually apply the ability.
