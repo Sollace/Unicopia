@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability;
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.ShieldSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -44,14 +45,17 @@ public class UnicornCastingAbility implements Ability<Hit> {
 
         if (player.hasSpell()) {
             String current = player.getSpell(true).getName();
-            player.setSpell(Streams.stream(player.getMaster().getItemsHand())
+            Spell spell = Streams.stream(player.getMaster().getItemsHand())
                     .map(SpellRegistry::getKeyFromStack)
                     .filter(i -> i != null && !current.equals(i))
                     .map(SpellRegistry.instance()::getSpellFromName)
                     .filter(i -> i != null)
                     .findFirst()
-                    .orElse(null));
+                    .orElse(null);
+            player.subtractEnergyCost(spell == null ? 2 : 4);
+            player.setSpell(spell);
         } else {
+            player.subtractEnergyCost(4);
             player.setSpell(Streams.stream(player.getMaster().getItemsHand())
                     .map(SpellRegistry.instance()::getSpellFrom)
                     .filter(i -> i != null)

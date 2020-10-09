@@ -55,6 +55,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
+        player.subtractEnergyCost(7);
         getThrown(player).orElseGet(AttractiveSpell::new).toss(player);
     }
 
