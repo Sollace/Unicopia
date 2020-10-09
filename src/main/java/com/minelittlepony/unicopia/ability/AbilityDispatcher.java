@@ -5,6 +5,8 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -22,6 +24,10 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
     private final Map<AbilitySlot, Stat> stats = new EnumMap<>(AbilitySlot.class);
 
+    @Nullable
+    private Race prevRace;
+    private long maxPage;
+
     public AbilityDispatcher(Pony player) {
         this.player = player;
     }
@@ -34,15 +40,23 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         }
     }
 
-    public void activate(AbilitySlot slot) {
+    public void activate(AbilitySlot slot, long page) {
         Stat stat = getStat(slot);
         if (stat.canSwitchStates()) {
-            stat.getAbility().ifPresent(stat::setActiveAbility);
+            stat.getAbility(page).ifPresent(stat::setActiveAbility);
         }
     }
 
     public Stat getStat(AbilitySlot slot) {
         return stats.computeIfAbsent(slot, Stat::new);
+    }
+
+    public long getMaxPage() {
+        if (prevRace != player.getSpecies()) {
+            prevRace = player.getSpecies();
+            maxPage = Math.max(0, stats.values().stream().mapToLong(Stat::getMaxPage).reduce(0, Math::max) - 1);
+        }
+        return maxPage;
     }
 
     @Override
@@ -176,12 +190,21 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
             }
         }
 
-        public Optional<Ability<?>> getAbility() {
+        public Optional<Ability<?>> getAbility(long page) {
             Race race = player.getSpecies();
             return Abilities.BY_SLOT.computeIfAbsent(slot, c -> Collections.emptySet())
                     .stream()
                     .filter(a -> a.canUse(race))
+                    .skip(page)
                     .findFirst();
+        }
+
+        public long getMaxPage() {
+            Race race = player.getSpecies();
+            return Abilities.BY_SLOT.computeIfAbsent(slot, c -> Collections.emptySet())
+                    .stream()
+                    .filter(a -> a.canUse(race))
+                    .count();
         }
 
         protected synchronized void setActiveAbility(Ability<?> power) {

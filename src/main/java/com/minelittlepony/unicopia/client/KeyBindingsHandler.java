@@ -7,15 +7,21 @@ import java.util.Set;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
+import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.math.MathHelper;
 
 public class KeyBindingsHandler {
-    private final String KEY_CATEGORY = "unicopia.category.name";
+    private static final String KEY_CATEGORY = "unicopia.category.name";
 
     public static final KeyBindingsHandler INSTANCE = new KeyBindingsHandler();
 
@@ -23,6 +29,11 @@ public class KeyBindingsHandler {
 
     private final Map<KeyBinding, AbilitySlot> keys = new HashMap<>();
     private final Map<AbilitySlot, KeyBinding> reverse = new HashMap<>();
+
+    private final KeyBinding pageDown = register(GLFW.GLFW_KEY_PAGE_DOWN, "hud_page_dn");
+    private final KeyBinding pageUp = register(GLFW.GLFW_KEY_PAGE_UP, "hud_page_up");
+
+    public long page = 0;
 
     private final Set<KeyBinding> pressed = new HashSet<>();
 
@@ -37,9 +48,13 @@ public class KeyBindingsHandler {
     }
 
     public void addKeybind(int code, AbilitySlot slot) {
-        KeyBinding binding = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.unicopia." + slot.name().toLowerCase(), code, KEY_CATEGORY));
+        KeyBinding binding = register(code, slot.name().toLowerCase());
         reverse.put(slot, binding);
         keys.put(binding, slot);
+    }
+
+    static KeyBinding register(int code, String name) {
+        return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.unicopia." + name, code, KEY_CATEGORY));
     }
 
     public void tick(MinecraftClient client) {
@@ -48,20 +63,54 @@ public class KeyBindingsHandler {
             return;
         }
         Pony iplayer = Pony.of(client.player);
+        AbilityDispatcher abilities = iplayer.getAbilities();
+        long maxPage = abilities.getMaxPage();
 
-        for (KeyBinding i : keys.keySet()) {
-            AbilitySlot slot = keys.get(i);
-            if (slot == AbilitySlot.PRIMARY && client.options.keySneak.isPressed()) {
-                slot = AbilitySlot.PASSIVE;
-            }
+        page = MathHelper.clamp(page, 0, maxPage);
 
-            if (i.isPressed()) {
-                if (pressed.add(i)) {
-                    iplayer.getAbilities().activate(slot);
+        if (page > 0 && checkPressed(pageDown) == PressedState.PRESSED) {
+            changePage(client, maxPage, -1);
+        } else if (page < maxPage && checkPressed(pageUp) == PressedState.PRESSED) {
+            changePage(client, maxPage, 1);
+        } else {
+            for (KeyBinding i : keys.keySet()) {
+                AbilitySlot slot = keys.get(i);
+                if (slot == AbilitySlot.PRIMARY && client.options.keySneak.isPressed()) {
+                    slot = AbilitySlot.PASSIVE;
                 }
-            } else if (pressed.remove(i)) {
-                iplayer.getAbilities().clear(slot);
+
+                PressedState state = checkPressed(i);
+                if (state != PressedState.UNCHANGED) {
+                    if (state == PressedState.PRESSED) {
+                        abilities.activate(slot, page);
+                    } else {
+                        abilities.clear(slot);
+                    }
+                }
             }
         }
+    }
+
+    private void changePage(MinecraftClient client, long max, int sigma) {
+        page += sigma;
+        client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.75F + (0.25F * sigma)));
+        UHud.instance.setMessage(new LiteralText(page + " of " + max));
+    }
+
+    private PressedState checkPressed(KeyBinding binding) {
+        if (binding.isPressed()) {
+            return pressed.add(binding) ? PressedState.PRESSED : PressedState.UNCHANGED;
+        } else if (pressed.remove(binding)) {
+            return PressedState.UNPRESSED;
+        }
+
+
+        return PressedState.UNCHANGED;
+    }
+
+    enum PressedState {
+        UNCHANGED,
+        PRESSED,
+        UNPRESSED
     }
 }

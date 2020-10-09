@@ -31,7 +31,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
 
     @Override
     public boolean canUse(Race race) {
-        return race == Race.EARTH;
+        return race.canUseEarth();
     }
 
     @Override

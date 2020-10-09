@@ -8,6 +8,7 @@ import com.minelittlepony.common.event.ScreenInitCallback.ButtonList;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.entity.player.PlayerCamera;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -62,6 +63,7 @@ public class UnicopiaClient implements ClientModInitializer {
 
     private void onTick(MinecraftClient client) {
         KeyBindingsHandler.INSTANCE.tick(client);
+        UHud.instance.tick();
     }
 
     private void onScreenInit(Screen screen, ButtonList buttons) {
