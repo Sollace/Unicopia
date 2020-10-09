@@ -40,6 +40,12 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
     }
 
     @Override
+    public void setDead() {
+        super.setDead();
+        particlEffect.destroy();
+    }
+
+    @Override
     public void render(Caster<?> source) {
         float radius = (float)getDrawDropOffRange(source);
 

@@ -67,6 +67,11 @@ public class SphereParticle extends Particle implements Attachment {
     }
 
     @Override
+    public void detach() {
+        markDead();
+    }
+
+    @Override
     public void setAttribute(int key, Object value) {
         if (key == 0) {
             toRadius = (float)value;

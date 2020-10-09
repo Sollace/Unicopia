@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.Equine;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -31,6 +32,10 @@ public class ParticleHandle {
         return particleEffect;
     }
 
+    public void destroy() {
+        particleEffect.ifPresent(Attachment::detach);
+    }
+
     @Environment(EnvType.CLIENT)
     private void addParticle(ParticleEffect effect, Vec3d pos, Vec3d vel) {
         Particle p = MinecraftClient.getInstance().particleManager.addParticle(effect, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
@@ -46,6 +51,8 @@ public class ParticleHandle {
 
         void attach(Caster<?> caster);
 
+        void detach();
+
         void setAttribute(int key, Object value);
     }
 
@@ -58,7 +65,7 @@ public class ParticleHandle {
         public void attach(Caster<?> caster) {
             this.linked = true;
             this.caster = Optional.of(caster);
-            effect = caster.getSpell(false).getName();
+            this.effect = caster.getSpell(false).getName();
         }
 
         public boolean linked() {
@@ -69,7 +76,12 @@ public class ParticleHandle {
             caster = caster.filter(c -> {
                 Entity e = c.getEntity();
 
-                return c.hasSpell() && c.getSpell(false).getName().equals(effect) && e != null && c.getWorld().getEntityById(e.getEntityId()) != null;
+
+                return Equine.of(e) == c
+                        && c.hasSpell()
+                        && c.getSpell(false).getName().equals(effect)
+                        && e != null
+                        && c.getWorld().getEntityById(e.getEntityId()) != null;
             });
             if (!caster.isPresent()) {
                 action.run();
