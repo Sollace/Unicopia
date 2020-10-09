@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia;
 
+import com.minelittlepony.unicopia.entity.player.Pony;
+
 public enum FlightType {
     NONE,
     CREATIVE,
@@ -20,5 +22,14 @@ public enum FlightType {
 
     public boolean canFlySurvival() {
         return canFly() && !canFlyCreative();
+    }
+
+    /**
+     * Predicate for abilities to control whether a player can fly.
+     *
+     * This overrides what the race specifies.
+     */
+    public interface Provider {
+        FlightType getFlightType(Pony player);
     }
 }

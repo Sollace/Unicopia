@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.entity.player;
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.ability.FlightPredicate;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
@@ -302,8 +301,8 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
         if (pony.hasSpell()) {
             Spell effect = pony.getSpell(true);
-            if (!effect.isDead() && effect instanceof FlightPredicate) {
-                return ((FlightPredicate)effect).getFlightType(pony);
+            if (!effect.isDead() && effect instanceof FlightType.Provider) {
+                return ((FlightType.Provider)effect).getFlightType(pony);
             }
         }
 
@@ -343,4 +342,5 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
         pony.getMaster().calculateDimensions();
     }
+
 }

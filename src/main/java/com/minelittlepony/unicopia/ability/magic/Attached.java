@@ -5,7 +5,7 @@ package com.minelittlepony.unicopia.ability.magic;
  */
 public interface Attached extends Spell {
     /**
-     * Called every tick when attached to a player.
+     * Called every tick when attached to a living entity.
      *
      * @param source    The entity we are currently attached to.
      * @return true to keep alive
@@ -13,7 +13,8 @@ public interface Attached extends Spell {
     boolean updateOnPerson(Caster<?> caster);
 
     /**
-     * Called every tick when attached to a player. Used to apply particle effects.
+     * Called every tick when attached to a living entity.
+     * Used to apply particle effects.
      * Is only called on the client side.
      *
      * @param source    The entity we are currently attached to.

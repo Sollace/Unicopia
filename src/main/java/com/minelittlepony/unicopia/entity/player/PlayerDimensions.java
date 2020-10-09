@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.ability.DimensionsPredicate;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 
 import net.minecraft.entity.EntityDimensions;
@@ -64,13 +63,19 @@ public final class PlayerDimensions {
         return defaultEyeHeight;
     }
 
-    Optional<DimensionsPredicate> getPredicate() {
+    Optional<Provider> getPredicate() {
         if (pony.hasSpell()) {
             Spell effect = pony.getSpell(true);
-            if (!effect.isDead() && effect instanceof DimensionsPredicate) {
-                return Optional.of(((DimensionsPredicate)effect));
+            if (!effect.isDead() && effect instanceof Provider) {
+                return Optional.of(((Provider)effect));
             }
         }
         return Optional.empty();
+    }
+
+    public interface Provider {
+        float getTargetEyeHeight(Pony player);
+
+        Optional<EntityDimensions> getTargetDimensions(Pony player);
     }
 }
