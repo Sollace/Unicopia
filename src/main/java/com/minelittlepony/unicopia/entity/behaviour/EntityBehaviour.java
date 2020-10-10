@@ -17,6 +17,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
@@ -77,14 +78,16 @@ public class EntityBehaviour<T extends Entity> {
             return Optional.empty();
         }
 
-        float h = Math.max(0.001F, entity.getHeight() - 0.1F);
-        float w = Math.max(0.001F, entity.getWidth());
+        EntityDimensions dims = entity.getDimensions(entity.getPose());
+
+        float h = Math.max(0.001F, dims.height);
+        float w = Math.max(0.001F, dims.width);
 
         if (current.isPresent() && h == current.get().height && w == current.get().width) {
             return current;
         }
 
-        return Optional.of(EntityDimensions.changing(h, w));
+        return Optional.of(EntityDimensions.changing(w, h));
     }
 
     public void copyBaseAttributes(LivingEntity from, Entity to) {
@@ -96,6 +99,18 @@ public class EntityBehaviour<T extends Entity> {
         to.age = from.age;
         to.removed = from.removed;
         to.setOnGround(from.isOnGround());
+
+        if (!from.world.isClient) {
+            // player collision is not known on the server
+            boolean clip = to.noClip;
+            to.noClip = false;
+            Vec3d vel = from.getRotationVec(1);
+            to.move(MovementType.SELF, vel);
+            to.noClip = clip;
+        } else {
+            to.verticalCollision = from.verticalCollision;
+            to.horizontalCollision = from.horizontalCollision;
+        }
 
         if (Disguise.isAxisAligned(to)) {
             double x = positionOffset.x + Math.floor(from.getX()) + 0.5;
@@ -153,8 +168,6 @@ public class EntityBehaviour<T extends Entity> {
         to.prevYaw = from.prevYaw;
         to.horizontalSpeed = from.horizontalSpeed;
         to.prevHorizontalSpeed = from.prevHorizontalSpeed;
-        to.horizontalCollision = from.horizontalCollision;
-        to.verticalCollision = from.verticalCollision;
         to.setOnGround(from.isOnGround());
 
         to.distanceTraveled = from.distanceTraveled;
