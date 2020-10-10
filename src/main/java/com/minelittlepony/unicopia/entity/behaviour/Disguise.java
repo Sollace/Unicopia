@@ -318,7 +318,7 @@ public class Disguise implements NbtSerialisable {
         getAttachments().forEach(e -> getCollissionShapes(e, context, output));
     }
 
-    private static void getCollissionShapes(Entity entity, ShapeContext context, Consumer<VoxelShape> output) {
+    private static void getCollissionShapes(@Nullable Entity entity, ShapeContext context, Consumer<VoxelShape> output) {
         if (entity == null) {
             return;
         }
