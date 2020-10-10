@@ -5,9 +5,12 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
+import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
+import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -15,6 +18,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -52,9 +56,10 @@ public class UHud extends DrawableHelper {
         int scaledHeight = client.getWindow().getScaledHeight();
 
         matrices.push();
-        matrices.translate(104 + (scaledWidth - 50) / 2, 20 + scaledHeight - 70, 0);
+        matrices.translate(104 + (scaledWidth - 50) / 2, scaledHeight - 50, 0);
 
-        AbilityDispatcher abilities = Pony.of(client.player).getAbilities();
+        Pony pony = Pony.of(client.player);
+        AbilityDispatcher abilities = pony.getAbilities();
 
         if (message != null && messageTime > 0) {
             renderMessage(matrices, tickDelta);
@@ -74,6 +79,26 @@ public class UHud extends DrawableHelper {
         RenderSystem.disableAlphaTest();
 
         matrices.pop();
+
+        if (pony.getSpecies() == Race.CHANGELING && !client.player.isSneaking()) {
+            pony.getSpellOrEmpty(DisguiseSpell.class, false).map(DisguiseSpell::getDisguise)
+                .map(Disguise::getAppearance)
+                .ifPresent(appearance -> {
+
+                    float baseHeight = 14;
+                    float entityHeight = appearance.getDimensions(appearance.getPose()).height;
+                    int scale = (int)(baseHeight / entityHeight);
+
+                    int x = scaledWidth / 2 + 67;
+                    int y = scaledHeight - 25;
+
+                    RenderSystem.pushMatrix();
+                    RenderSystem.translatef(x, y, 0);
+                    RenderSystem.rotatef(45, -0.2F, 1, 0);
+                    InventoryScreen.drawEntity(0, 0, scale, 0, -20, client.player);
+                    RenderSystem.popMatrix();
+                });
+        }
     }
 
     private void renderMessage(MatrixStack matrices, float tickDelta) {
