@@ -13,6 +13,7 @@ import net.minecraft.client.model.Model;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -100,23 +101,26 @@ public class WorldRenderDelegate {
         BlockEntity blockEntity = ve.getBlockEntity();
 
         if (blockEntity != null) {
-            blockEntity.setPos(e.getBlockPos());
-            matrices.push();
+            BlockEntityRenderer<BlockEntity> r = BlockEntityRenderDispatcher.INSTANCE.get(blockEntity);
+            if (r != null) {
+                blockEntity.setPos(e.getBlockPos());
+                matrices.push();
 
-            BlockState state = blockEntity.getCachedState();
-            Direction direction = state.contains(Properties.HORIZONTAL_FACING) ? state.get(Properties.HORIZONTAL_FACING) : Direction.UP;
+                BlockState state = blockEntity.getCachedState();
+                Direction direction = state.contains(Properties.HORIZONTAL_FACING) ? state.get(Properties.HORIZONTAL_FACING) : Direction.UP;
 
-            matrices.translate(x, y, z);
+                matrices.translate(x, y, z);
 
-            matrices.multiply(direction.getRotationQuaternion());
-            matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(90));
+                matrices.multiply(direction.getRotationQuaternion());
+                matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(90));
 
-            matrices.translate(-0.5, 0, -0.5);
+                matrices.translate(-0.5, 0, -0.5);
 
-            BlockEntityRenderDispatcher.INSTANCE.get(blockEntity).render(blockEntity, 1, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
+                r.render(blockEntity, 1, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
 
-            matrices.pop();
-            return;
+                matrices.pop();
+                return;
+            }
         }
 
         BipedEntityModel<?> model = getBipedModel(dispatcher, e);
