@@ -25,7 +25,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
     @Nullable
     @Override
     public Hit tryActivate(Pony player) {
-        if (player.getMagicalReserves().getMana().getPercentFill() >= 0.9F) {
+        if (player.getMaster().isCreative() || player.getMagicalReserves().getMana().getPercentFill() >= 0.9F) {
             return Hit.INSTANCE;
         }
         return null;
@@ -35,7 +35,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
     public void apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.getMaster();
 
-        if (iplayer.getMagicalReserves().getMana().getPercentFill() < 0.9F) {
+        if (!player.isCreative() && iplayer.getMagicalReserves().getMana().getPercentFill() < 0.9F) {
             return;
         }
 
@@ -63,7 +63,9 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
             return disc;
         }).setDisguise(looked);
 
-        iplayer.getMagicalReserves().getMana().multiply(0.1F);
+        if (!player.isCreative()) {
+            iplayer.getMagicalReserves().getMana().multiply(0.1F);
+        }
 
         player.calculateDimensions();
         iplayer.setDirty();
