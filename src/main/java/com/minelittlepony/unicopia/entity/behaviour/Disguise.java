@@ -319,6 +319,10 @@ public class Disguise implements NbtSerialisable {
     }
 
     private static void getCollissionShapes(Entity entity, ShapeContext context, Consumer<VoxelShape> output) {
+        if (entity == null) {
+            return;
+        }
+
         if (entity.method_30948()) {
             output.accept(VoxelShapes.cuboid(entity.getBoundingBox()));
         } else if (entity instanceof FallingBlockEntity) {
