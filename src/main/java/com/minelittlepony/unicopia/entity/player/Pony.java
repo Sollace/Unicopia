@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.ShieldSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.entity.Physics;
@@ -339,9 +340,20 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
             }
 
             distance *= g;
+            distance = Math.max(0, distance - 5);
 
-            return Optional.of(Math.max(0, distance - 5));
+            float d = distance;
+            getSpellOrEmpty(DisguiseSpell.class, false).ifPresent(spell -> {
+                spell.getDisguise().onImpact(this, d, damageMultiplier);
+            });
+
+            return Optional.of(distance);
         }
+
+        float d = distance;
+        getSpellOrEmpty(DisguiseSpell.class, false).ifPresent(spell -> {
+            spell.getDisguise().onImpact(this, d, damageMultiplier);
+        });
 
         return Optional.empty();
     }

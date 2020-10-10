@@ -46,6 +46,10 @@ public class EntityBehaviour<T extends Entity> {
 
     }
 
+    public void onImpact(Caster<?> source, T entity, float distance, float damageMultiplier) {
+
+    }
+
     public T onCreate(T entity, Disguise context, boolean wasNew) {
         entity.extinguish();
         return entity;

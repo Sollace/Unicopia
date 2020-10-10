@@ -7,12 +7,13 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
+import com.minelittlepony.unicopia.mixin.MixinFallingBlock;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
+import net.minecraft.block.FallingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
@@ -38,22 +39,41 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
     }
 
     @Override
+    public void onImpact(Caster<?> source, FallingBlockEntity entity, float distance, float damageMultiplier) {
+        if (source.getEntity().fallDistance > 3) {
+            entity.fallDistance = source.getEntity().fallDistance;
+            entity.handleFallDamage(distance, damageMultiplier);
+
+            BlockState state = entity.getBlockState();
+            if (state.getBlock() instanceof FallingBlock) {
+                ((FallingBlock)state.getBlock()).onLanding(entity.world, entity.getBlockPos(), state, state, entity);
+            }
+        }
+    }
+
+    private FallingBlockEntity configure(FallingBlockEntity entity, Block block) {
+        if (block instanceof MixinFallingBlock) {
+            ((MixinFallingBlock)block).invokeConfigureFallingBlockEntity(entity);
+        }
+        entity.dropItem = false;
+
+        return entity;
+    }
+
+    @Override
     public FallingBlockEntity onCreate(FallingBlockEntity entity, Disguise context, boolean replaceOld) {
         super.onCreate(entity, context, replaceOld);
 
         BlockState state = entity.getBlockState();
         Block block = state.getBlock();
-        if (block == Blocks.SAND) {
-            block = Blocks.BLACKSTONE;
-        }
 
         if (state.isIn(BlockTags.DOORS) && block instanceof DoorBlock) {
             BlockState lowerState = state.with(DoorBlock.HALF, DoubleBlockHalf.LOWER);
             BlockState upperState = state.with(DoorBlock.HALF, DoubleBlockHalf.UPPER);
 
-            context.attachExtraEntity(new FallingBlockEntity(entity.world, entity.getX(), entity.getY(), entity.getZ(), upperState));
+            context.attachExtraEntity(configure(new FallingBlockEntity(entity.world, entity.getX(), entity.getY(), entity.getZ(), upperState), block));
 
-            return new FallingBlockEntity(entity.world, entity.getX(), entity.getY() + 1, entity.getZ(), lowerState);
+            return configure(new FallingBlockEntity(entity.world, entity.getX(), entity.getY() + 1, entity.getZ(), lowerState), block);
         }
 
         if (block instanceof BlockEntityProvider) {
@@ -62,7 +82,7 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
             context.addBlockEntity(b);
         }
 
-        return entity;
+        return configure(entity, block);
     }
 
     @Override
