@@ -73,14 +73,14 @@ public class EntityBehaviour<T extends Entity> {
             return Optional.empty();
         }
 
-        float h = entity.getHeight() - 0.1F;
-        float w = entity.getWidth();
+        float h = Math.max(0.001F, entity.getHeight() - 0.1F);
+        float w = Math.max(0.001F, entity.getWidth());
 
         if (current.isPresent() && h == current.get().height && w == current.get().width) {
             return current;
         }
 
-        return Optional.of(EntityDimensions.changing(entity.getHeight() - 0.1F, entity.getWidth()));
+        return Optional.of(EntityDimensions.changing(h, w));
     }
 
     public void copyBaseAttributes(LivingEntity from, Entity to) {

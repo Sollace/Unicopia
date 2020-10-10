@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 
 import net.minecraft.entity.EntityDimensions;
@@ -48,9 +49,16 @@ public final class PlayerDimensions {
             flyingDimensions = EntityDimensions.changing(dimensions.width, dimensions.height / 2);
         }
 
-        return getPredicate()
+        dimensions = getPredicate()
                 .flatMap(e -> e.getTargetDimensions(pony))
                 .orElseGet(() -> physics.isFlyingSurvival ? flyingDimensions : defaultDimensions);
+
+        if (dimensions.height < 0 || dimensions.width < 0) {
+            Unicopia.LOGGER.warn("Dim out was negative! Restoring original");
+            return defaultDimensions;
+        }
+
+        return dimensions;
     }
 
     private float calculateTargetEyeHeight() {
