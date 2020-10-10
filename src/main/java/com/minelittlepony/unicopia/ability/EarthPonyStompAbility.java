@@ -81,8 +81,8 @@ public class EarthPonyStompAbility implements Ability<Multi> {
             BlockState state = player.getWorld().getBlockState(pos);
 
             if (state.getBlock().isIn(BlockTags.LOGS)) {
-                pos = TreeTraverser.descendTree(player.getWorld(), state, pos).get();
-                if (TreeTraverser.measureTree(player.getWorld(), state, pos) > 0) {
+                pos = TreeTraverser.Descender.descendTree(player.getWorld(), state, pos).get();
+                if (TreeTraverser.Measurer.measureTree(player.getWorld(), state, pos) > 0) {
                     return new Multi(pos, 1);
                 }
             }
@@ -164,7 +164,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
             if (harmed || player.world.random.nextInt(5) == 0) {
 
                 if (!harmed || player.world.random.nextInt(30) == 0) {
-                    TreeTraverser.removeTree(player.world, data.pos());
+                    TreeTraverser.Remover.removeTree(player.world, data.pos());
                 }
 
                 iplayer.subtractEnergyCost(3);
@@ -223,7 +223,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
 
     private int dropApples(World w, BlockPos pos) {
         BlockState log = w.getBlockState(pos);
-        int size = TreeTraverser.measureTree(w, log, pos);
+        int size = TreeTraverser.Measurer.measureTree(w, log, pos);
         if (size > 0) {
 
             List<ItemEntity> capturedDrops = Lists.newArrayList();
@@ -244,7 +244,7 @@ public class EarthPonyStompAbility implements Ability<Multi> {
     private static void dropApplesPart(List<ItemEntity> drops, List<BlockPos> done, World w, BlockState log, BlockPos pos, int level) {
         if (!done.contains(pos)) {
             done.add(pos);
-            pos = TreeTraverser.ascendTree(w, log, pos, false);
+            pos = TreeTraverser.Ascender.ascendTree(w, log, pos, false);
             if (level < 10 && TreeTraverser.isWoodOrLeaf(w, log, pos)) {
                 BlockState state = w.getBlockState(pos);
 

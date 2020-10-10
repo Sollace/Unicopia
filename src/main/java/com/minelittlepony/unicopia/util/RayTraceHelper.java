@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.util;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -15,82 +14,83 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RayTraceContext;
 
 public class RayTraceHelper {
-    public static <T extends Entity> Optional<T> findEntity(Entity e, double distance) {
-        return doTrace(e, distance, 1).getEntity();
-    }
-
-    public static <T extends Entity> Optional<T> findEntity(Entity e, double distance, float partialTick, Predicate<Entity> predicate) {
-        return doTrace(e, distance, partialTick, EntityPredicates.EXCEPT_SPECTATOR.and(predicate)).getEntity();
-    }
-
-    public static Trace doTrace(Entity e, double distance, float partialTick) {
-        return doTrace(e, distance, partialTick, EntityPredicates.EXCEPT_SPECTATOR);
+    public static <T extends Entity> Optional<T> findEntity(Entity e, double distance, float tickDelta, Predicate<Entity> predicate) {
+        return doTrace(e, distance, tickDelta, EntityPredicates.EXCEPT_SPECTATOR.and(predicate)).getEntity();
     }
 
     /**
-     * Performs a ray trace from the given entity and returns a result for the first Entity that passing the given predicate or block that the ray intercepts.
-     * <p>
+     * Performs a ray trace from the given entity and returns
+     * a result for the first Entity or block that the ray intercepts.
      *
      *
-     * @param e                Entity to start from
-     * @param distance        Maximum distance
-     * @param partialTick    Client partial ticks
-     * @param predicate        Predicate test to filter entities
+     * @param e            Entity to start from
+     * @param distance     Maximum distance
+     * @param tickDelta    Client partial ticks
      *
-     * @return A OptionalHit describing what was found.
+     * @return A Trace describing what was found.
      */
-    public static Trace doTrace(Entity e, double distance, float partialTick, Predicate<Entity> predicate) {
-        HitResult tracedBlock = traceBlocks(e, distance, partialTick, false);
+    public static Trace doTrace(Entity e, double distance, float tickDelta) {
+        return doTrace(e, distance, tickDelta, EntityPredicates.EXCEPT_SPECTATOR);
+    }
 
-        double totalTraceDistance = distance;
+    /**
+     * Performs a ray trace from the given entity and returns
+     * a result for the first Entity that passes the given predicate
+     * or block that the ray intercepts.
+     *
+     *
+     * @param e            Entity to start from
+     * @param distance     Maximum distance
+     * @param tickDelta    Client partial ticks
+     * @param predicate    Predicate test to filter entities
+     *
+     * @return A Trace describing what was found.
+     */
+    public static Trace doTrace(Entity e, double distance, float tickDelta, Predicate<Entity> predicate) {
+        HitResult tracedBlock = e.rayTrace(distance, tickDelta, false);
 
-        Vec3d pos = e.getCameraPosVec(partialTick);
+        final Vec3d start = e.getCameraPosVec(tickDelta);
 
-        if (tracedBlock != null) {
-            totalTraceDistance = tracedBlock.getPos().distanceTo(pos);
-        }
+        final double totalTraceDistance = tracedBlock == null ? distance : tracedBlock.getPos().distanceTo(start);
 
-        Vec3d look = e.getRotationVec(partialTick);
-        Vec3d ray = pos.add(look.multiply(distance));
+        final Vec3d ray = e.getRotationVec(tickDelta).multiply(distance);
+        final Vec3d end = start.add(ray);
 
         Vec3d hit = null;
         Entity pointedEntity = null;
-        List<Entity> entitiesWithinRange = e.world.getOtherEntities(e, e.getBoundingBox()
-                .expand(look.x * distance, look.y * distance, look.z * distance)
-                .expand(1, 1, 1), predicate);
 
         double traceDistance = totalTraceDistance;
 
-        for (Entity entity : entitiesWithinRange) {
-            if (entity.collides()) {
-                Box entityAABB = entity.getBoundingBox().expand(entity.getTargetingMargin());
+        for (Entity entity : e.world.getOtherEntities(e,
+                e.getBoundingBox().expand(ray.x + 1, ray.y + 1, ray.z + 1),
+                predicate.and(Entity::collides)
+        )) {
+            Box entityAABB = entity.getBoundingBox().expand(entity.getTargetingMargin());
 
-                Optional<Vec3d> intercept = entityAABB.rayTrace(pos, ray);
+            Optional<Vec3d> intercept = entityAABB.rayTrace(start, end);
 
-                if (entityAABB.contains(pos)) {
-                    if (traceDistance <= 0) {
-                        pointedEntity = entity;
-                        hit = intercept.orElse(null);
-                        traceDistance = 0;
-                    }
-                } else if (intercept.isPresent()) {
-                    Vec3d inter = intercept.get();
-                    double distanceToHit = pos.distanceTo(inter);
+            if (entityAABB.contains(start)) {
+                if (traceDistance <= 0) {
+                    pointedEntity = entity;
+                    hit = intercept.orElse(null);
+                    traceDistance = 0;
+                }
+            } else if (intercept.isPresent()) {
+                Vec3d inter = intercept.get();
+                double distanceToHit = start.distanceTo(inter);
 
-                    if (distanceToHit < traceDistance || traceDistance == 0) {
-                        if (entity.getRootVehicle() == e.getRootVehicle()) {
-                            if (traceDistance == 0) {
-                                pointedEntity = entity;
-                                hit = inter;
-                            }
-                        } else {
+                if (distanceToHit < traceDistance || traceDistance == 0) {
+                    if (entity.getRootVehicle() == e.getRootVehicle()) {
+                        if (traceDistance == 0) {
                             pointedEntity = entity;
                             hit = inter;
-                            traceDistance = distanceToHit;
                         }
+                    } else {
+                        pointedEntity = entity;
+                        hit = inter;
+                        traceDistance = distanceToHit;
                     }
                 }
             }
@@ -101,20 +101,6 @@ public class RayTraceHelper {
         }
 
         return new Trace(tracedBlock);
-    }
-
-    /**
-     * Server-available version of Entity.rayTrace
-     */
-    public static HitResult traceBlocks(Entity e, double maxDistance, float tickDelta, boolean includeFluids) {
-        Vec3d start = e.getCameraPosVec(tickDelta);
-        Vec3d end = e.getRotationVec(tickDelta).multiply(maxDistance).add(start);
-
-        return e.world.rayTrace(new RayTraceContext(start, end,
-                RayTraceContext.ShapeType.OUTLINE,
-                includeFluids ? RayTraceContext.FluidHandling.ANY : RayTraceContext.FluidHandling.NONE,
-                e)
-        );
     }
 
     public static class Trace {

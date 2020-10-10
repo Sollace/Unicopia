@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.util;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators.AbstractSpliterator;
 import java.util.function.Consumer;
@@ -39,7 +38,7 @@ public interface PosHelper {
         }
     }
 
-    static boolean some(BlockPos origin, Predicate<BlockPos> consumer, Direction... directions) {
+    static boolean any(BlockPos origin, Predicate<BlockPos> consumer, Direction... directions) {
         for (Direction facing : directions) {
             if (consumer.test(origin.offset(facing))) {
                 return true;
@@ -49,17 +48,15 @@ public interface PosHelper {
     }
 
     static Stream<BlockPos> adjacentNeighbours(BlockPos origin) {
-        BlockPos.Mutable pos = new BlockPos.Mutable(origin.getX(), origin.getY(), origin.getZ());
-        List<Direction> directions = Lists.newArrayList(Direction.values());
-        Iterator<Direction> iter = directions.iterator();
-        return StreamSupport.stream(new AbstractSpliterator<BlockPos>(directions.size(), Spliterator.SIZED) {
+        return StreamSupport.stream(new AbstractSpliterator<BlockPos>(Direction.values().length, Spliterator.SIZED) {
+            private final BlockPos.Mutable pos = new BlockPos.Mutable();
+            private final Iterator<Direction> iter = Lists.newArrayList(Direction.values()).iterator();
+
             @Override
             public boolean tryAdvance(Consumer<? super BlockPos> consumer) {
                 if (iter.hasNext()) {
                     Direction next = iter.next();
-
-                    pos.set(origin.getX() + next.getOffsetX(), origin.getY() + next.getOffsetY(), origin.getZ() + next.getOffsetZ());
-                    consumer.accept(pos);
+                    consumer.accept(pos.set(origin.getX() + next.getOffsetX(), origin.getY() + next.getOffsetY(), origin.getZ() + next.getOffsetZ()));
                     return true;
                 }
                 return false;
