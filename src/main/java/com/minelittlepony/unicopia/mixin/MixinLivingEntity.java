@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.minelittlepony.unicopia.ability.magic.CasterUtils;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.PonyContainer;
@@ -67,6 +68,18 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
                 info.setReturnValue(true);
             });
         }
+    }
+
+    @Inject(method = "isPushable()Z", at = @At("HEAD"), cancellable = true)
+    private void onIsPushable(CallbackInfoReturnable<Boolean> info) {
+        CasterUtils.toCaster(this)
+            .flatMap(c -> c.getSpellOrEmpty(DisguiseSpell.class, false))
+            .map(DisguiseSpell::getDisguise)
+            .map(Disguise::getAppearance)
+            .filter(Entity::isPushable)
+            .ifPresent(v -> {
+                info.setReturnValue(false);
+            });
     }
 
     @Inject(method = "canSee(Lnet/minecraft/entity/Entity;)Z", at = @At("HEAD"), cancellable = true)

@@ -17,7 +17,8 @@
     "MixinServerPlayerEntity",
     "MixinSheepEntity",
     "MixinShulkerEntity",
-    "MixinTargetPredicate"
+    "MixinTargetPredicate",
+    "MixinWorld"
   ],
   "client": [
     "client.MixinCamera",
