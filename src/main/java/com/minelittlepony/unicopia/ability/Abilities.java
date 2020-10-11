@@ -20,6 +20,7 @@ public interface Abilities {
     Ability<?> SHOOT = register(new UnicornProjectileAbility(), "shoot", AbilitySlot.TERTIARY);
 
     // earth / alicorn
+    Ability<?> KICK = register(new EarthPonyKickAbility(), "kick", AbilitySlot.PRIMARY);
     Ability<?> GROW = register(new EarthPonyGrowAbility(), "grow", AbilitySlot.SECONDARY);
     Ability<?> STOMP = register(new EarthPonyStompAbility(), "stomp", AbilitySlot.TERTIARY);
 
