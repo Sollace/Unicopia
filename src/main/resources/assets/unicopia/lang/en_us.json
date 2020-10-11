@@ -135,6 +135,8 @@
   "ability.unicopia.carry": "Pickup/Drop Passenger",
   "ability.unicopia.hang": "Cling to Ceiling",
   "ability.unicopia.eee": "Deafening Screech",
+  "ability.unicopia.feed": "Collect Love",
+  "ability.unicopia.disguise": "Shapeshift",
 
   "gui.unicopia": "Unicopia...",
   "gui.unicopia.page_num": "%d of %d",
