@@ -131,7 +131,7 @@ public class UHud extends DrawableHelper {
 
     void renderAbilityIcon(MatrixStack matrices, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
         stat.getAbility(KeyBindingsHandler.INSTANCE.page).ifPresent(ability -> {
-            client.getTextureManager().bindTexture(ability.getIcon(Pony.of(client.player)));
+            client.getTextureManager().bindTexture(ability.getIcon(Pony.of(client.player), client.options.keySneak.isPressed()));
             drawTexture(matrices, x, y, 0, 0, frameWidth, frameHeight, u, v);
             client.getTextureManager().bindTexture(HUD_TEXTURE);
         });

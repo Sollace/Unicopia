@@ -23,9 +23,9 @@ public class UnicornProjectileAbility implements Ability<Hit> {
      * The icon representing this ability on the UI and HUD.
      */
     @Override
-    public Identifier getIcon(Pony player) {
+    public Identifier getIcon(Pony player, boolean swap) {
         Identifier id = Abilities.REGISTRY.getId(this);
-        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (player.getEntity().isSneaking() ? "_focused" : "_unfocused") + ".png");
+        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (swap ? "_focused" : "_unfocused") + ".png");
     }
 
     @Override

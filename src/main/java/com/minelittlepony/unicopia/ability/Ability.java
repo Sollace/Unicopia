@@ -58,7 +58,7 @@ public interface Ability<T extends Hit> {
      * The icon representing this ability on the UI and HUD.
      * @return
      */
-    default Identifier getIcon(Pony player) {
+    default Identifier getIcon(Pony player, boolean swap) {
         Identifier id = Abilities.REGISTRY.getId(this);
         return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + ".png");
     }

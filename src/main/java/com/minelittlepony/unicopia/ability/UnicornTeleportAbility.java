@@ -34,9 +34,9 @@ public class UnicornTeleportAbility implements Ability<Pos> {
      * The icon representing this ability on the UI and HUD.
      */
     @Override
-    public Identifier getIcon(Pony player) {
+    public Identifier getIcon(Pony player, boolean swap) {
         Identifier id = Abilities.REGISTRY.getId(this);
-        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (player.getEntity().isSneaking() ? "_far" : "_near") + ".png");
+        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (swap ? "_far" : "_near") + ".png");
     }
 
     @Override
