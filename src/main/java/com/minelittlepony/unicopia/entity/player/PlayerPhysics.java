@@ -253,7 +253,9 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         velocity.y += (direction.y * 2.45 + Math.abs(direction.y) * 10) * getGravitySignum();
 
         if (player.isSneaking()) {
-            velocity.y += (0.4 - 0.25) * getGravitySignum();
+            if (!isGravityNegative()) {
+                velocity.y += 0.4 - 0.25;
+            }
             if (pony.sneakingChanged()) {
                 velocity.y += 0.75 * getGravitySignum();
             }
