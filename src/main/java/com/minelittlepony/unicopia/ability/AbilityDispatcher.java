@@ -3,8 +3,11 @@ package com.minelittlepony.unicopia.ability;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
@@ -204,11 +207,16 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
         public Optional<Ability<?>> getAbility(long page) {
             Race race = player.getSpecies();
-            return Abilities.BY_SLOT.computeIfAbsent(slot, c -> Collections.emptySet())
+            List<Ability<?>> found = Abilities.BY_SLOT.computeIfAbsent(slot, c -> Collections.emptySet())
                     .stream()
                     .filter(a -> a.canUse(race))
-                    .skip(page)
-                    .findFirst();
+                    .collect(Collectors.toList());
+            if (found.isEmpty()) {
+                return Optional.empty();
+            }
+            page = Math.min(found.size() - 1, page);
+
+            return Optional.ofNullable(found.get((int)page));
         }
 
         public long getMaxPage() {
