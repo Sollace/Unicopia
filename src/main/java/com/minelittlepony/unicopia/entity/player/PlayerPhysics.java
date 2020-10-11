@@ -161,7 +161,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                         entity.playSound(getWingSound(), 0.5F, 1);
                         thrustScale = 1;
                     }
-                    velocity.y -= 0.02;
+                    velocity.y -= 0.02 * getGravitySignum();
                     velocity.x *= 0.9896;
                     velocity.z *= 0.9896;
                 }
@@ -174,15 +174,17 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                     double motion = entity.getPos().subtract(lastPos).lengthSquared();
 
                     boolean takeOffCondition = velocity.y > 0
-                            && (horMotion > 0.2 || (motion > 0.2 && velocity.y < -0.02));
-                    boolean fallingTakeOffCondition = !entity.isOnGround() && velocity.y < -1.6;
+                            && (horMotion > 0.2 || (motion > 0.2 && velocity.y < -0.02 * getGravitySignum()));
+                    boolean fallingTakeOffCondition = !entity.isOnGround() && velocity.y < -1.6 * getGravitySignum();
 
                     if (takeOffCondition || fallingTakeOffCondition) {
                         entity.abilities.flying = true;
                         isFlyingEither = true;
                         isFlyingSurvival = true;
 
-                        velocity.y += horMotion + 0.3;
+                        if (!isGravityNegative()) {
+                            velocity.y += horMotion + 0.3;
+                        }
                         applyThrust(entity, velocity);
 
                         velocity.x *= 0.2;
@@ -230,9 +232,8 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         // vertical drop due to gravity
         forward += 0.005F;
 
-        velocity.y -= (getGravityModifier() * 0.01F) / Math.max(motion * 100, 1);
-
         velocity.x += - forward * MathHelper.sin(player.yaw * 0.017453292F);
+        velocity.y -= (0.01F / Math.max(motion * 100, 1)) * getGravityModifier();
         velocity.z += forward * MathHelper.cos(player.yaw * 0.017453292F);
     }
 
@@ -249,17 +250,16 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
         velocity.x += direction.x;
         velocity.z += direction.z;
-        velocity.y += direction.y * 2.45 + Math.abs(direction.y) * 10;
+        velocity.y += (direction.y * 2.45 + Math.abs(direction.y) * 10) * getGravitySignum();
 
         if (player.isSneaking()) {
-            velocity.y += 0.4 - 0.25;
+            velocity.y += (0.4 - 0.25) * getGravitySignum();
             if (pony.sneakingChanged()) {
-                velocity.y += 0.75;
+                velocity.y += 0.75 * getGravitySignum();
             }
         } else {
-            velocity.y -= 0.1;
+            velocity.y -= 0.1 * getGravitySignum();
         }
-
     }
 
     protected void applyTurbulance(Entity player, MutableVector velocity) {
@@ -277,7 +277,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         }
 
         if (player.world.isThundering() && player.world.random.nextInt(60) == 0) {
-            velocity.y += forward * 3;
+            velocity.y += forward * 3 * getGravitySignum();
         }
 
         if (forward >= 1) {

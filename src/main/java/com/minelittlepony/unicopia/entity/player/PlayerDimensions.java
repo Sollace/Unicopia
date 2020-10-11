@@ -46,7 +46,7 @@ public final class PlayerDimensions {
     public EntityDimensions calculateDimensions(EntityDimensions dimensions) {
         if (defaultDimensions == null || dimensions.height != defaultDimensions.height || dimensions.width != defaultDimensions.width) {
             defaultDimensions = dimensions;
-            flyingDimensions = EntityDimensions.changing(dimensions.width, dimensions.height / 2);
+            flyingDimensions = dimensions;//EntityDimensions.changing(dimensions.width, dimensions.height / 2);
         }
 
         dimensions = getPredicate()
