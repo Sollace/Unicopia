@@ -26,6 +26,8 @@
   "unicopia.effect.tribe.stage.determination": "As your bones realign you are filled determination.",
   "unicopia.effect.tribe.stage.resurection": "Knowing you will return to this world as a %s",
 
+  "effect.food_poisoning": "Food Poisoning",
+
   "effect.unicopia.change_race_earth": "Earth Pony Metamorphosis",
   "item.minecraft.potion.effect.unicopia.tribe_swap_earth": "Potion of Earth Pony Metamorphosis",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_earth": "Splash Potion of Earth Pony Metamorphosis",
@@ -123,7 +125,25 @@
   "toxicity.severe.name": "Toxic",
   "toxicity.lethal.name": "Lethal",
 
+  "ability.unicopia.shoot": "Magic Missle",
+  "ability.unicopia.cast": "Counterspell",
+  "ability.unicopia.teleport": "Teleport",
+  "ability.unicopia.grow": "Earthly Nourishment",
+  "ability.unicopia.stomp": "Ground Pound",
+  "ability.unicopia.pummel": "Crushing Blow",
+  "ability.unicopia.carry": "Pickup/Drop Passenger",
+  "ability.unicopia.hang": "Cling to Ceiling",
+  "ability.unicopia.eee": "Deafening Screech",
+
   "gui.unicopia": "Unicopia...",
+  "gui.unicopia.page_num": "%d of %d",
+
+  "unicopia.category.name": "Pony Abilities",
+
+  "key.unicopia.primary": "Primary Ability",
+  "key.unicopia.secondary": "Secondary Ability",
+  "key.unicopia.tertiary": "Tertiary Ability",
+  "key.unicopia.passive": "Passive Ability",
 
   "commands.race.success.self": "Your race has been updated",
   "commands.race.success.otherself": "%1$s changed race to %2$s",
@@ -206,13 +226,6 @@
   "unicopia.race.bat": "Bat Pony",
   "unicopia.race.bat.alt": "Bat Ponies",
 
-  "unicopia.category.name": "Pony Abilities",
-
-  "key.unicopia.primary": "Primary Ability",
-  "key.unicopia.secondary": "Secondary Ability",
-  "key.unicopia.tertiary": "Tertiary Ability",
-  "key.unicopia.passive": "Passive Ability",
-
   "death.attack.tribe_swap": "%1$s was reborn into a different tribe",
   "death.attack.magical_exhaustion": "%1$s exhausted themselves",
   "death.attack.alicorn_amulet": "%1$s was driven insane",
@@ -229,8 +242,6 @@
   "death.attack.paradox": "%1$s imploded",
   "death.attack.food_poisoning": "%1$s died of food poisoning",
   "death.attack.food_poisoning.attacker": "%2$s poisoned %1$s to death",
-
-  "effect.food_poisoning": "Food Poisoning",
 
   "unicopia.subtitle.flap_wings": "Wing Flaps",
   "unicopia.subtitle.wind_rush": "Wind Gust",

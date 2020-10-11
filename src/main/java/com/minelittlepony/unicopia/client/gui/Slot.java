@@ -21,37 +21,44 @@ class Slot {
     private float lastCooldown;
 
     private final int slotPadding;
-    private final int labelOffset;
+    private final int labelX;
+    private final int labelY;
 
     private final int size;
     private final int iconSize;
 
-    private int textureU;
-    private int textureV;
+    private int backgroundU;
+    private int backgroundV;
 
-    private int backgroundU = 105;
-    private int backgroundV = 105;
+    private int foregroundU = 105;
+    private int foregroundV = 105;
 
-    public Slot(UHud uHud, AbilitySlot normalSlot, AbilitySlot backupSlot, int x, int y, int padding, int size, int labelOffset, int iconSize) {
+    public Slot(UHud uHud, AbilitySlot normalSlot, AbilitySlot backupSlot, int x, int y) {
+        this(uHud, normalSlot, backupSlot, x, y, 3, 22, 17, 17, 19);
+        background(80, 105);
+    }
+
+    public Slot(UHud uHud, AbilitySlot normalSlot, AbilitySlot backupSlot, int x, int y, int padding, int size, int labelX, int labelY, int iconSize) {
         this.uHud = uHud;
         this.aSlot = normalSlot;
         this.bSlot = backupSlot;
         this.x = x;
         this.y = y;
         this.slotPadding = padding;
-        this.labelOffset = labelOffset;
+        this.labelX = labelX;
+        this.labelY = labelY;
         this.size = size;
         this.iconSize = iconSize;
     }
 
     Slot background(int u, int v) {
-        textureU = u;
-        textureV = v;
+        backgroundU = u;
+        backgroundV = v;
         return this;
     }
     Slot foreground(int u, int v) {
-        backgroundU = u;
-        backgroundV = v;
+        foregroundU = u;
+        foregroundV = v;
         return this;
     }
 
@@ -62,10 +69,9 @@ class Slot {
         float cooldown = abilities.getStat(bSwap ? bSlot : aSlot).getFillProgress();
 
         // background
-        UHud.drawTexture(matrices, 0, 0, textureU, textureV, size, size, 128, 128);
+        UHud.drawTexture(matrices, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
 
         uHud.renderAbilityIcon(matrices, abilities.getStat(bSwap ? bSlot : aSlot), slotPadding / 2, slotPadding / 2, iconSize, iconSize, iconSize, iconSize);
-
 
         if (cooldown > 0 && cooldown <= 1) {
             float lerpCooldown = MathHelper.lerp(tickDelta, cooldown, lastCooldown);
@@ -88,15 +94,14 @@ class Slot {
 
     protected void renderContents(MatrixStack matrices, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
         // contents
-
-        UHud.drawTexture(matrices, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
+        UHud.drawTexture(matrices, 0, 0, foregroundU, foregroundV, size, size, 128, 128);
     }
 
     void renderLabel(MatrixStack matrices, AbilityDispatcher abilities, float tickDelta) {
         Text label = KeyBindingsHandler.INSTANCE.getBinding(aSlot).getBoundKeyLocalizedText();
 
         matrices.push();
-        matrices.translate(x + labelOffset, y + labelOffset, 0);
+        matrices.translate(x + labelX, y + labelY, 0);
         matrices.scale(0.5F, 0.5F, 0.5F);
 
         UHud.drawTextWithShadow(matrices, uHud.font, label, 0, 0, 0xFFFFFF);

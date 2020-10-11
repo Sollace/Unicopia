@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.client.gui.UHud;
@@ -17,7 +18,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 public class KeyBindingsHandler {
@@ -82,7 +83,7 @@ public class KeyBindingsHandler {
                 PressedState state = checkPressed(i);
                 if (state != PressedState.UNCHANGED) {
                     if (state == PressedState.PRESSED) {
-                        abilities.activate(slot, page);
+                        abilities.activate(slot, page).map(Ability::getName).ifPresent(UHud.INSTANCE::setMessage);
                     } else {
                         abilities.clear(slot);
                     }
@@ -94,7 +95,7 @@ public class KeyBindingsHandler {
     private void changePage(MinecraftClient client, long max, int sigma) {
         page += sigma;
         client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.75F + (0.25F * sigma)));
-        UHud.instance.setMessage(new LiteralText(page + " of " + max));
+        UHud.INSTANCE.setMessage(new TranslatableText("gui.unicopia.page_num", page, max));
     }
 
     private PressedState checkPressed(KeyBinding binding) {
@@ -103,7 +104,6 @@ public class KeyBindingsHandler {
         } else if (pressed.remove(binding)) {
             return PressedState.UNPRESSED;
         }
-
 
         return PressedState.UNCHANGED;
     }

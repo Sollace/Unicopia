@@ -26,7 +26,7 @@ import net.minecraft.util.Util;
 
 public class UHud extends DrawableHelper {
 
-    public static final UHud instance = new UHud();
+    public static final UHud INSTANCE = new UHud();
 
     public static final Identifier HUD_TEXTURE = new Identifier("unicopia", "textures/gui/hud.png");
 
@@ -35,9 +35,9 @@ public class UHud extends DrawableHelper {
     final MinecraftClient client = MinecraftClient.getInstance();
 
     private final List<Slot> slots = Util.make(new ArrayList<>(), slots -> {
-        slots.add(new ManaRingSlot(this, AbilitySlot.PRIMARY, AbilitySlot.PASSIVE, 0, 0, 8, 49, 38, 42).background(0, 5).foreground(0, 59));
-        slots.add(new Slot(this, AbilitySlot.SECONDARY, AbilitySlot.SECONDARY, 26, -5, 3, 22, 17, 19).background(80, 105));
-        slots.add(new Slot(this, AbilitySlot.TERTIARY, AbilitySlot.TERTIARY, 36, 19, 3, 22, 17, 19).background(80, 105));
+        slots.add(new ManaRingSlot(this, AbilitySlot.PRIMARY, AbilitySlot.PASSIVE, 0, 0));
+        slots.add(new Slot(this, AbilitySlot.SECONDARY, AbilitySlot.SECONDARY, 26, -5));
+        slots.add(new Slot(this, AbilitySlot.TERTIARY, AbilitySlot.TERTIARY, 36, 19));
     });
 
     @Nullable

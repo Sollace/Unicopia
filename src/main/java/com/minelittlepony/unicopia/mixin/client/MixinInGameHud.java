@@ -14,6 +14,6 @@ import net.minecraft.client.util.math.MatrixStack;
 public class MixinInGameHud {
     @Inject(method = "render(Lnet/minecraft/client/util/math/MatrixStack;F)V", at = @At("HEAD"))
     private void onRender(MatrixStack stack, float tickDelta, CallbackInfo info) {
-        UHud.instance.render((InGameHud)(Object)this, stack, tickDelta);
+        UHud.INSTANCE.render((InGameHud)(Object)this, stack, tickDelta);
     }
 }

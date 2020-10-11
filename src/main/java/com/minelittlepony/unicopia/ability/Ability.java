@@ -6,6 +6,8 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -61,6 +63,14 @@ public interface Ability<T extends Hit> {
     default Identifier getIcon(Pony player, boolean swap) {
         Identifier id = Abilities.REGISTRY.getId(this);
         return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + ".png");
+    }
+
+    /**
+     * The display name for this ability.
+     */
+    default Text getName() {
+        Identifier id = Abilities.REGISTRY.getId(this);
+        return new TranslatableText("ability." + id.getNamespace() + "." + id.getPath().replace('/', '.'));
     }
 
     /**

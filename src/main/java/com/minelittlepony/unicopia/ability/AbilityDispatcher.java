@@ -40,11 +40,12 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         }
     }
 
-    public void activate(AbilitySlot slot, long page) {
+    public Optional<Ability<?>> activate(AbilitySlot slot, long page) {
         Stat stat = getStat(slot);
         if (stat.canSwitchStates()) {
-            stat.getAbility(page).ifPresent(stat::setActiveAbility);
+            return stat.getAbility(page).flatMap(stat::setActiveAbility);
         }
+        return Optional.empty();
     }
 
     public Collection<Stat> getStats() {
@@ -218,13 +219,15 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
                     .count();
         }
 
-        protected synchronized void setActiveAbility(Ability<?> power) {
+        protected synchronized Optional<Ability<?>> setActiveAbility(@Nullable Ability<?> power) {
             if (activeAbility.orElse(null) != power) {
                 triggered = false;
                 activeAbility = Optional.ofNullable(power);
                 setWarmup(activeAbility.map(p -> p.getWarmupTime(player)).orElse(0));
                 setCooldown(0);
+                return activeAbility;
             }
+            return Optional.empty();
         }
 
         protected synchronized Optional<Ability<?>> getActiveAbility() {

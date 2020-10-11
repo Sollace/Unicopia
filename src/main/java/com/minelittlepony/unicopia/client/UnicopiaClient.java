@@ -63,7 +63,7 @@ public class UnicopiaClient implements ClientModInitializer {
 
     private void onTick(MinecraftClient client) {
         KeyBindingsHandler.INSTANCE.tick(client);
-        UHud.instance.tick();
+        UHud.INSTANCE.tick();
     }
 
     private void onScreenInit(Screen screen, ButtonList buttons) {
