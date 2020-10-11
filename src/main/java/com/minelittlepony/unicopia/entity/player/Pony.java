@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -31,6 +32,7 @@ import com.minelittlepony.unicopia.network.Transmittable;
 import com.minelittlepony.unicopia.util.Copieable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.common.util.animation.LinearInterpolator;
+import com.google.common.collect.Lists;
 import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
 
@@ -50,9 +52,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 
 public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmittable, Copieable<Pony> {
 
@@ -68,10 +70,12 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     private final AbilityDispatcher powers = new AbilityDispatcher(this);
     private final PlayerPhysics gravity = new PlayerPhysics(this);
-    private final PlayerAttributes attributes = new PlayerAttributes();
+    private final PlayerAttributes attributes = new PlayerAttributes(this);
     private final PlayerCamera camera = new PlayerCamera(this);
-    private final MagicReserves mana;
+    private final ManaContainer mana;
     private final PlayerLevelStore levels;
+
+    private final List<Tickable> tickers;
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
 
@@ -96,6 +100,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         this.entity = player;
         this.mana = new ManaContainer(this);
         this.levels = new PlayerLevelStore(this);
+        this.tickers = Lists.newArrayList(gravity, mana, attributes);
 
         player.getDataTracker().startTracking(RACE, Race.HUMAN.ordinal());
         player.getDataTracker().startTracking(EFFECT, new CompoundTag());
@@ -282,8 +287,6 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
             ticksHanging = 0;
         }
 
-        gravity.tick();
-
         if (hasSpell()) {
             Attached effect = getSpell(Attached.class, true);
 
@@ -298,18 +301,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
             }
         }
 
-        mana.getExertion().add(-10);
-        if (mana.getEnergy().get() > 5) {
-            mana.getEnergy().multiply(0.8F);
-        } else {
-            mana.getEnergy().add(-1);
-        }
-
-        if (!getSpecies().canFly() || !gravity.isFlying()) {
-            mana.getMana().add(15);
-        }
-
-        attributes.applyAttributes(this);
+        tickers.forEach(Tickable::tick);
 
         if (dirty) {
             sendCapabilities(true);
@@ -339,30 +331,26 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
                 }
             }
 
-            distance *= g;
-            distance = Math.max(0, distance - 5);
+            distance = Math.max(0, (distance * g) - 5);
 
-            float d = distance;
-            getSpellOrEmpty(DisguiseSpell.class, false).ifPresent(spell -> {
-                spell.getDisguise().onImpact(this, d, damageMultiplier);
-            });
-
+            handleFall(distance, damageMultiplier);
             return Optional.of(distance);
         }
 
-        float d = distance;
-        getSpellOrEmpty(DisguiseSpell.class, false).ifPresent(spell -> {
-            spell.getDisguise().onImpact(this, d, damageMultiplier);
-        });
-
+        handleFall(distance, damageMultiplier);
         return Optional.empty();
+    }
+
+    private void handleFall(float distance, float damageMultiplier) {
+        getSpellOrEmpty(DisguiseSpell.class, false).ifPresent(spell -> {
+            spell.getDisguise().onImpact(this, distance, damageMultiplier);
+        });
     }
 
     @Override
     public void onJump() {
         if (gravity.isGravityNegative()) {
-            Vec3d velocity = entity.getVelocity();
-            entity.setVelocity(velocity.x, velocity.y * -1,  velocity.z);
+            entity.setVelocity(entity.getVelocity().multiply(1, -1, 1));
         }
     }
 

@@ -17,6 +17,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 
 class ManaRingSlot extends Slot {
+    private static final double TWO_PI = Math.PI * 2;
 
     public ManaRingSlot(UHud uHud, AbilitySlot normalSlot, AbilitySlot backupSlot, int x, int y, int padding, int size,
             int labelOffset, int iconSize) {
@@ -28,14 +29,15 @@ class ManaRingSlot extends Slot {
         matrices.push();
         matrices.translate(24.5, 25.5, 0);
 
-        MagicReserves mana = Pony.of(uHud.client.player).getMagicalReserves();
+        Pony pony = Pony.of(uHud.client.player);
+        MagicReserves mana = pony.getMagicalReserves();
 
         double arcBegin = 0;
 
-        arcBegin = renderRing(matrices, 17, 13, 0, mana.getMana(), 0xFF88FF99);
+        arcBegin = renderRing(matrices, 17, 13, 0, mana.getMana(), 0xFF88FF99, tickDelta);
 
         if (!uHud.client.player.isCreative()) {
-            renderRing(matrices, 13, 11, 0, mana.getXp(), 0x88880099);
+            renderRing(matrices, 13, 11, 0, mana.getXp(), 0x88880099, tickDelta);
 
             double cost = abilities.getStats().stream()
                     .mapToDouble(s -> s.getCost(KeyBindingsHandler.INSTANCE.page))
@@ -46,27 +48,38 @@ class ManaRingSlot extends Slot {
                 float percent = mana.getMana().getPercentFill();
                 float max = mana.getMana().getMax();
 
-                cost = Math.min(max, cost * 10) / max;
+                cost *= 10;
+                cost /= 1 + pony.getLevel().get();
 
-                cost = Math.min(percent, cost);
+                int color = cost / max > percent ? 0xFF000099 : 0xFFFF0099;
+
+                cost = Math.min(percent, Math.min(max, cost) / max);
 
                 double angle = cost * Math.PI * 2;
 
-                renderArc(matrices, 13, 17, arcBegin - angle, angle, 0xFFFF0099, false);
+                renderArc(matrices, 13, 17, arcBegin - angle, angle, color, false);
             }
         }
 
-        arcBegin = renderRing(matrices, 17, 13, arcBegin, mana.getEnergy(), 0xFF002299);
+        arcBegin = renderRing(matrices, 17, 13, arcBegin, mana.getEnergy(), 0xFF002299, tickDelta);
 
         matrices.pop();
 
         super.renderContents(matrices, abilities, bSwap, tickDelta);
     }
 
-    private double renderRing(MatrixStack matrices, double outerRadius, double innerRadius, double offsetAngle, Bar bar, int color) {
-        double fill = bar.getPercentFill() * Math.PI * 2;
+    private double renderRing(MatrixStack matrices, double outerRadius, double innerRadius, double offsetAngle, Bar bar, int color, float tickDelta) {
+        double fill = bar.getPercentFill() * TWO_PI;
+        double shadow = bar.getShadowFill() * TWO_PI;
 
         renderArc(matrices, innerRadius, outerRadius, offsetAngle, fill, color, true);
+
+        if (shadow > fill) {
+            color = (color & 0xFFFFFF00)
+                 | ((color & 0x000000FF) / 2);
+
+            renderArc(matrices, innerRadius, outerRadius, offsetAngle + fill, shadow - fill, color, false);
+        }
         return offsetAngle + fill;
     }
 
@@ -76,20 +89,20 @@ class ManaRingSlot extends Slot {
      * @param mirrorHorizontally Whether or not the arc must be mirrored across the horizontal plane. Will produce a bar that grows from the middle filling both sides.
      */
     static void renderArc(MatrixStack matrices, double innerRadius, double outerRadius, double startAngle, double arcAngle, int color, boolean mirrorHorizontally) {
-        float f = (color >> 24 & 255) / 255F;
+        float r = (color >> 24 & 255) / 255F;
         float g = (color >> 16 & 255) / 255F;
-        float h = (color >> 8 & 255) / 255F;
+        float b = (color >> 8 & 255) / 255F;
         float k = (color & 255) / 255F;
 
         final double num_rings = 300;
-        final double twoPi = Math.PI * 2;
-        final double increment = twoPi / num_rings;
+
+        final double increment = TWO_PI / num_rings;
 
         if (arcAngle < increment) {
             return;
         }
 
-        final double maxAngle = MathHelper.clamp(startAngle + arcAngle, 0, twoPi - increment);
+        final double maxAngle = MathHelper.clamp(startAngle + arcAngle, 0, TWO_PI - increment);
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.enableBlend();
@@ -108,22 +121,22 @@ class ManaRingSlot extends Slot {
             // center
             bufferBuilder.vertex(model,
                     (float)(innerRadius * Math.sin(angle)),
-                    (float)(innerRadius * Math.cos(angle)), 0).color(f, g, h, k).next();
+                    (float)(innerRadius * Math.cos(angle)), 0).color(r, g, b, k).next();
 
             // point one
             bufferBuilder.vertex(model,
                     (float)(outerRadius * Math.sin(angle)),
-                    (float)(outerRadius * Math.cos(angle)), 0).color(f, g, h, k).next();
+                    (float)(outerRadius * Math.cos(angle)), 0).color(r, g, b, k).next();
 
             // point two
             bufferBuilder.vertex(model,
                     (float)(outerRadius * Math.sin(angle + increment)),
-                    (float)(outerRadius * Math.cos(angle + increment)), 0).color(f, g, h, k).next();
+                    (float)(outerRadius * Math.cos(angle + increment)), 0).color(r, g, b, k).next();
 
             // back to center
             bufferBuilder.vertex(model,
                     (float)(innerRadius * Math.sin(angle + increment)),
-                    (float)(innerRadius * Math.cos(angle + increment)), 0).color(f, g, h, k).next();
+                    (float)(innerRadius * Math.cos(angle + increment)), 0).color(r, g, b, k).next();
 
         }
 

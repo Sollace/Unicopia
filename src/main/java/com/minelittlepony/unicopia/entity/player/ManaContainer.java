@@ -1,15 +1,16 @@
 package com.minelittlepony.unicopia.entity.player;
 
 import net.minecraft.entity.data.TrackedData;
+import net.minecraft.util.Tickable;
 import net.minecraft.util.math.MathHelper;
 
-public class ManaContainer implements MagicReserves {
+public class ManaContainer implements MagicReserves, Tickable {
     private final Pony pony;
 
-    private final Bar energy;
-    private final Bar exertion;
-    private final Bar mana;
-    private final Bar xp;
+    private final BarInst energy;
+    private final BarInst exertion;
+    private final BarInst mana;
+    private final BarInst xp;
 
     public ManaContainer(Pony pony) {
         this.pony = pony;
@@ -37,6 +38,28 @@ public class ManaContainer implements MagicReserves {
     @Override
     public Bar getXp() {
         return xp;
+    }
+
+    @Override
+    public void tick() {
+        exertion.tick();
+        energy.tick();
+        mana.tick();
+        xp.tick();
+
+        exertion.add(-10);
+
+        if (energy.get() > 5) {
+            energy.multiply(0.8F);
+        } else {
+            energy.add(-1);
+        }
+
+        if (!pony.getSpecies().canFly() || !pony.getPhysics().isFlying()) {
+            if (mana.getShadowFill() <= mana.getPercentFill()) {
+                mana.add(18);
+            }
+        }
     }
 
     class XpCollectingBar extends BarInst {
@@ -69,6 +92,8 @@ public class ManaContainer implements MagicReserves {
         private final TrackedData<Float> marker;
         private final float max;
 
+        private float trailingValue;
+
         BarInst(TrackedData<Float> marker, float max, float initial) {
             this.marker = marker;
             this.max = max;
@@ -81,6 +106,11 @@ public class ManaContainer implements MagicReserves {
         }
 
         @Override
+        public float getShadowFill() {
+            return trailingValue;
+        }
+
+        @Override
         public void set(float value) {
             pony.getMaster().getDataTracker().set(marker, MathHelper.clamp(value, 0, getMax()));
         }
@@ -88,6 +118,21 @@ public class ManaContainer implements MagicReserves {
         @Override
         public float getMax() {
             return max;
+        }
+
+        void tick() {
+            float fill = getPercentFill();
+            float tralingIncrement = 0.003F;
+
+            if (trailingValue > (fill - tralingIncrement) && trailingValue < (fill + tralingIncrement)) {
+                trailingValue = fill;
+            }
+            if (trailingValue < fill) {
+                trailingValue += tralingIncrement;
+            }
+            if (trailingValue > fill) {
+                trailingValue -= tralingIncrement;
+            }
         }
     }
 }

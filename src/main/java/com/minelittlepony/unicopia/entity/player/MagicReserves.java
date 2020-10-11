@@ -46,6 +46,11 @@ public interface MagicReserves {
         }
 
         /**
+         * Gets the shadow fill used for animating on the UI
+         */
+        float getShadowFill();
+
+        /**
          * Adds a percentage increment to this bar's current value
          */
         default void add(float step) {

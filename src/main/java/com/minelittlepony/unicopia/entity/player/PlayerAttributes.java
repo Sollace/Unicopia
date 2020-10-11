@@ -11,9 +11,10 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Tickable;
 import net.minecraft.util.registry.Registry;
 
-public class PlayerAttributes {
+public class PlayerAttributes implements Tickable {
 
     public static final EntityAttribute EXTENDED_REACH_DISTANCE = register("unicopia.pegasus.reach", new ClampedEntityAttribute("player.reachDistance", 0, 0, 10).setTracked(true));
     public static final EntityAttribute ENTITY_GRAVTY_MODIFIER = register("unicopia.player.gravity", (new EntityAttribute("player.gravityModifier", 1) {}).setTracked(true));
@@ -28,7 +29,14 @@ public class PlayerAttributes {
     public static final EntityAttributeModifier BAT_HANGING =
             new EntityAttributeModifier(UUID.fromString("a54f2595-521e-480b-b9d5-6e750577a564"), "Bat Pony Hanging", -2, Operation.MULTIPLY_TOTAL);
 
-    public void applyAttributes(Pony pony) {
+    private final Pony pony;
+
+    public PlayerAttributes(Pony pony) {
+        this.pony = pony;
+    }
+
+    @Override
+    public void tick() {
         PlayerEntity entity = pony.getMaster();
         Race race = pony.getSpecies();
 
