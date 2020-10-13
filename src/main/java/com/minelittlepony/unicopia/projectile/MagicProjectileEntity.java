@@ -134,9 +134,6 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
 
     @Override
     public void tick() {
-
-        System.out.println(this.getPos() + " " + this.getVelocity());
-
         if (!world.isClient()) {
             if (Math.abs(getVelocity().x) < 0.01 && Math.abs(getVelocity().x) < 0.01 && Math.abs(getVelocity().y) < 0.01) {
                 remove();
