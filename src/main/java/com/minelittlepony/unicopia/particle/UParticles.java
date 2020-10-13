@@ -11,6 +11,8 @@ public interface UParticles {
     ParticleType<MagicParticleEffect> UNICORN_MAGIC = register("unicorn_magic", FabricParticleTypes.complex(MagicParticleEffect.UNICORN_FACTORY));
     DefaultParticleType CHANGELING_MAGIC = register("changeling_magic", FabricParticleTypes.simple());
 
+    DefaultParticleType RAINBOOM_RING = register("rainboom_ring", FabricParticleTypes.simple());
+
     DefaultParticleType RAIN_DROPS = register("rain_drops", FabricParticleTypes.simple());
 
     ParticleType<SphereParticleEffect> SPHERE = register("sphere", FabricParticleTypes.complex(true, SphereParticleEffect.FACTORY));

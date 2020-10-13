@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.client.particle.ChangelingMagicParticle;
 import com.minelittlepony.unicopia.client.particle.DiskParticle;
 import com.minelittlepony.unicopia.client.particle.MagicParticle;
+import com.minelittlepony.unicopia.client.particle.RainboomParticle;
 import com.minelittlepony.unicopia.client.particle.RaindropsParticle;
 import com.minelittlepony.unicopia.client.particle.SphereParticle;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -22,6 +23,7 @@ public interface URenderers {
         ParticleFactoryRegistry.getInstance().register(UParticles.UNICORN_MAGIC, createFactory(MagicParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.CHANGELING_MAGIC, createFactory(ChangelingMagicParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.RAIN_DROPS, createFactory(RaindropsParticle::new));
+        ParticleFactoryRegistry.getInstance().register(UParticles.RAINBOOM_RING, RainboomParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.SPHERE, SphereParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.DISK, DiskParticle::new);
 
