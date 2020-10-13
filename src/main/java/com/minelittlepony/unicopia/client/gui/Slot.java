@@ -62,9 +62,21 @@ class Slot {
         return this;
     }
 
+    int getX() {
+        if (uHud.xDirection < 0) {
+            return UHud.PRIMARY_SLOT_SIZE - size - x;
+        }
+
+        return x;
+    }
+
+    int getY() {
+        return y;
+    }
+
     void renderBackground(MatrixStack matrices, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
         matrices.push();
-        matrices.translate(x, y, 0);
+        matrices.translate(getX(), getY(), 0);
 
         float cooldown = abilities.getStat(bSwap ? bSlot : aSlot).getFillProgress();
 
@@ -101,7 +113,16 @@ class Slot {
         Text label = KeyBindingsHandler.INSTANCE.getBinding(aSlot).getBoundKeyLocalizedText();
 
         matrices.push();
-        matrices.translate(x + labelX, y + labelY, 0);
+
+        int x = getX();
+        if (uHud.xDirection > 0) {
+            x += labelX;
+        } else {
+            x += labelX - size/3;
+            x -= uHud.client.textRenderer.getWidth(label)/2;
+        }
+
+        matrices.translate(x, getY() + labelY, 0);
         matrices.scale(0.5F, 0.5F, 0.5F);
 
         UHud.drawTextWithShadow(matrices, uHud.font, label, 0, 0, 0xFFFFFF);

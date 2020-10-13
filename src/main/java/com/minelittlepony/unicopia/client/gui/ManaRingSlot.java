@@ -20,7 +20,7 @@ class ManaRingSlot extends Slot {
     private static final double TWO_PI = Math.PI * 2;
 
     public ManaRingSlot(UHud uHud, AbilitySlot normalSlot, AbilitySlot backupSlot, int x, int y) {
-        super(uHud, normalSlot, backupSlot, x, y, 8, 49, 33, 43, 42);
+        super(uHud, normalSlot, backupSlot, x, y, 8, UHud.PRIMARY_SLOT_SIZE, 33, 43, 42);
         background(0, 5);
         foreground(0, 59);
     }

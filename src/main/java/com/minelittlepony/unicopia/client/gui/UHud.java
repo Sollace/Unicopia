@@ -21,6 +21,7 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
@@ -29,6 +30,8 @@ public class UHud extends DrawableHelper {
     public static final UHud INSTANCE = new UHud();
 
     public static final Identifier HUD_TEXTURE = new Identifier("unicopia", "textures/gui/hud.png");
+
+    public static final int PRIMARY_SLOT_SIZE = 49;
 
     public TextRenderer font;
 
@@ -44,6 +47,8 @@ public class UHud extends DrawableHelper {
     private Text message;
     private int messageTime;
 
+    int xDirection;
+
     public void render(InGameHud hud, MatrixStack matrices, float tickDelta) {
 
         if (client.player == null || client.player.isSpectator()) {
@@ -52,11 +57,13 @@ public class UHud extends DrawableHelper {
 
         font = client.textRenderer;
 
+        xDirection = client.player.getMainArm() == Arm.LEFT ? -1 : 1;
+
         int scaledWidth = client.getWindow().getScaledWidth();
         int scaledHeight = client.getWindow().getScaledHeight();
 
         matrices.push();
-        matrices.translate(104 + (scaledWidth - 50) / 2, scaledHeight - 50, 0);
+        matrices.translate(((scaledWidth - 50) / 2) + (104 * xDirection), scaledHeight - 50, 0);
 
         Pony pony = Pony.of(client.player);
         AbilityDispatcher abilities = pony.getAbilities();
