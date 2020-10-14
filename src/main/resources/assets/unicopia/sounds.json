@@ -38,21 +38,18 @@
   },
   "record.crusade": {
   	"category": "blocks",
-  	"subtitle": "unicopia.subtitle.record.crusade",
   	"sounds": [
   		{ "name": "unicopia:record/crusade", "stream": true}
   	]
   },
   "record.popular": {
   	"category": "blocks",
-  	"subtitle": "unicopia.subtitle.record.popular",
   	"sounds": [
   		{ "name": "unicopia:record/popular", "stream": true}
   	]
   },
   "record.pet": {
   	"category": "blocks",
-  	"subtitle": "unicopia.subtitle.record.pet",
 	"stream": true,
   	"sounds": [
   		{ "name": "unicopia:record/pet", "stream": true}
@@ -60,7 +57,6 @@
   },
   "record.funk": {
   	"category": "blocks",
-  	"subtitle": "unicopia.subtitle.record.funk",
   	"sounds": [
   		{ "name": "unicopia:record/funk", "stream": true, "attenuation_distance": 21120}
   	]
