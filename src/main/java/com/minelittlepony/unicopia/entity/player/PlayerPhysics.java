@@ -344,5 +344,4 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
         pony.getMaster().calculateDimensions();
     }
-
 }

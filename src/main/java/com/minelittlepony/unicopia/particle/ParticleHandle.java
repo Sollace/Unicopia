@@ -68,6 +68,11 @@ public class ParticleHandle {
             this.effect = caster.getSpell(false).getName();
         }
 
+        public void detach() {
+            linked = false;
+            caster = Optional.empty();
+        }
+
         public boolean linked() {
             return linked;
         }

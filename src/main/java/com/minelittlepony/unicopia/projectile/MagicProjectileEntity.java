@@ -7,6 +7,8 @@ import com.minelittlepony.unicopia.ability.magic.Magical;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.entity.EntityPhysics;
+import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
@@ -48,6 +50,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
     private static final LevelStore LEVELS = Levelled.fixed(1);
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
+
+    private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this);
 
     private BlockPos lastBlockPos;
 
@@ -95,6 +99,11 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
     @Override
     public LevelStore getLevel() {
         return LEVELS;
+    }
+
+    @Override
+    public Physics getPhysics() {
+        return physics;
     }
 
     @Override
@@ -206,7 +215,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
     @Override
     public void readCustomDataFromTag(CompoundTag compound) {
         super.readCustomDataFromTag(compound);
-
+        physics.fromNBT(compound);
         if (compound.contains("effect")) {
             setSpell(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
         }
@@ -215,6 +224,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
     @Override
     public void writeCustomDataToTag(CompoundTag compound) {
         super.writeCustomDataToTag(compound);
+        physics.toNBT(compound);
 
         if (hasSpell()) {
             compound.put("effect", SpellRegistry.toNBT(getSpell(true)));

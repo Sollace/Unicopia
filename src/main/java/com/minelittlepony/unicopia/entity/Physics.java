@@ -3,10 +3,13 @@ package com.minelittlepony.unicopia.entity;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public interface Physics extends NbtSerialisable {
 
     double calcGravity(double worldConstant);
+
+    Vec3d getMotionAngle();
 
     float getGravityModifier();
 

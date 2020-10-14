@@ -8,10 +8,11 @@ import net.minecraft.util.registry.Registry;
 
 public interface UParticles {
 
-    ParticleType<MagicParticleEffect> UNICORN_MAGIC = register("unicorn_magic", FabricParticleTypes.complex(MagicParticleEffect.UNICORN_FACTORY));
+    ParticleType<MagicParticleEffect> UNICORN_MAGIC = register("unicorn_magic", FabricParticleTypes.complex(MagicParticleEffect.FACTORY));
     DefaultParticleType CHANGELING_MAGIC = register("changeling_magic", FabricParticleTypes.simple());
 
-    DefaultParticleType RAINBOOM_RING = register("rainboom_ring", FabricParticleTypes.simple());
+    ParticleType<OrientedBillboardParticleEffect> RAINBOOM_RING = register("rainboom_ring", FabricParticleTypes.complex(OrientedBillboardParticleEffect.FACTORY));
+    DefaultParticleType RAINBOOM_TRAIL = register("rainboom_trail", FabricParticleTypes.simple());
 
     DefaultParticleType RAIN_DROPS = register("rain_drops", FabricParticleTypes.simple());
 

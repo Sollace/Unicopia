@@ -310,7 +310,6 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         prevSneaking = entity.isSneaking();
         prevLanded = entity.isOnGround();
 
-
         if (gravity.isGravityNegative() && entity.getY() > entity.world.getHeight() + 64) {
            entity.damage(DamageSource.OUT_OF_WORLD, 4.0F);
         }

@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Owned;
+import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.particle.ParticleSource;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -20,6 +21,8 @@ import net.minecraft.world.World;
  * Interface for any magically capable entities that can cast or persist spells.
  */
 public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affine, Magical, ParticleSource {
+
+    Physics getPhysics();
 
     EffectSync getPrimarySpellSlot();
 

@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class EntityPhysics<T extends Equine<?> & Owned<? extends Entity>> implements Physics, Copieable<EntityPhysics<T>> {
+public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics, Copieable<EntityPhysics<T>> {
 
     private float gravity = 1;
 
@@ -29,6 +29,11 @@ public class EntityPhysics<T extends Equine<?> & Owned<? extends Entity>> implem
     @Override
     public boolean isFlying() {
         return false;
+    }
+
+    @Override
+    public Vec3d getMotionAngle() {
+        return new Vec3d(pony.getMaster().getPitch(1), pony.getMaster().getYaw(1), 0);
     }
 
     @Override
@@ -94,17 +99,11 @@ public class EntityPhysics<T extends Equine<?> & Owned<? extends Entity>> implem
 
     @Override
     public void toNBT(CompoundTag compound) {
-        if (gravity != 0) {
-            compound.putFloat("gravity", gravity);
-        }
+        compound.putFloat("gravity", gravity);
     }
 
     @Override
     public void fromNBT(CompoundTag compound) {
-        if (compound.contains("gravity")) {
-            gravity = compound.getFloat("gravity");
-        } else {
-            gravity = 0;
-        }
+        gravity = compound.getFloat("gravity");
     }
 }

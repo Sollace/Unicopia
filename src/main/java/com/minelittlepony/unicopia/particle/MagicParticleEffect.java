@@ -14,7 +14,7 @@ import net.minecraft.util.registry.Registry;
 public class MagicParticleEffect implements ParticleEffect {
 
     public static final MagicParticleEffect UNICORN = new MagicParticleEffect(false, 0, 0, 0);
-    public static final ParticleEffect.Factory<MagicParticleEffect> UNICORN_FACTORY = new ParticleEffect.Factory<MagicParticleEffect>() {
+    public static final ParticleEffect.Factory<MagicParticleEffect> FACTORY = new ParticleEffect.Factory<MagicParticleEffect>() {
         @Override
         public MagicParticleEffect read(ParticleType<MagicParticleEffect> particleType, StringReader reader) throws CommandSyntaxException {
             reader.expect(' ');

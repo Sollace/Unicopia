@@ -24,6 +24,9 @@ public interface Abilities {
     Ability<?> GROW = register(new EarthPonyGrowAbility(), "grow", AbilitySlot.SECONDARY);
     Ability<?> STOMP = register(new EarthPonyStompAbility(), "stomp", AbilitySlot.TERTIARY);
 
+    // pegasus
+    Ability<?> RAINBOOM = register(new PegasusRainboomAbility(), "rainboom", AbilitySlot.PRIMARY);
+
     // pegasus / bat / alicorn / changeling
     Ability<?> CARRY = register(new CarryAbility(), "carry", AbilitySlot.PASSIVE);
 
