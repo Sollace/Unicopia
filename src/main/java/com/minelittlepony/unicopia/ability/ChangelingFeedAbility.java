@@ -20,8 +20,8 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.CowEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -66,7 +66,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     private boolean canDrain(Entity e) {
         return (e instanceof LivingEntity)
             && (e instanceof CowEntity
-            || e instanceof AbstractTraderEntity
+            || e instanceof MerchantEntity
             || e instanceof PlayerEntity
             || e instanceof SheepEntity
             || e instanceof PigEntity

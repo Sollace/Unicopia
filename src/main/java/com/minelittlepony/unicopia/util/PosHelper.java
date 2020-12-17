@@ -24,7 +24,7 @@ public interface PosHelper {
     }
 
     static BlockPos findSolidGroundAt(World world, BlockPos pos) {
-        while ((pos.getY() > 0 || !World.isHeightInvalid(pos))
+        while ((pos.getY() > 0 || !World.isInBuildLimit(pos))
                 && (world.isAir(pos) || !world.getBlockState(pos).canPlaceAt(world, pos))) {
             pos = pos.down();
         }

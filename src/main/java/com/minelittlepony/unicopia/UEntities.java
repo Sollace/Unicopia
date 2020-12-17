@@ -13,7 +13,8 @@ import net.minecraft.util.registry.Registry;
 public interface UEntities {
 
     EntityType<MagicProjectileEntity> THROWN_ITEM = register("thrown_item", FabricEntityTypeBuilder.<MagicProjectileEntity>create(SpawnGroup.MISC, MagicProjectileEntity::new)
-            .trackable(100, 2)
+            .trackRangeBlocks(100)
+            .trackedUpdateRate(2)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {

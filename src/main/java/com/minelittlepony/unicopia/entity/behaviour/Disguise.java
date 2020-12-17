@@ -323,7 +323,7 @@ public class Disguise implements NbtSerialisable {
             return;
         }
 
-        if (entity.method_30948()) {
+        if (entity.isCollidable()) {
             output.accept(VoxelShapes.cuboid(entity.getBoundingBox()));
         } else if (entity instanceof FallingBlockEntity) {
             BlockPos pos = entity.getBlockPos();

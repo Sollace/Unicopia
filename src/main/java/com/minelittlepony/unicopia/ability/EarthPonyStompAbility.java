@@ -168,7 +168,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     }
 
     private static BlockPos getSolidBlockBelow(BlockPos pos, World w) {
-        while (!World.isHeightInvalid(pos)) {
+        while (!World.isOutOfBuildLimitVertically(pos)) {
             pos = pos.down();
 
             if (Block.isFaceFullSquare(w.getBlockState(pos).getCollisionShape(w, pos, ShapeContext.absent()), Direction.UP)) {

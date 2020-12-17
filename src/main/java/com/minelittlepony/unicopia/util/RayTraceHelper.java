@@ -49,7 +49,7 @@ public class RayTraceHelper {
      * @return A Trace describing what was found.
      */
     public static Trace doTrace(Entity e, double distance, float tickDelta, Predicate<Entity> predicate) {
-        HitResult tracedBlock = e.rayTrace(distance, tickDelta, false);
+        HitResult tracedBlock = e.raycast(distance, tickDelta, false);
 
         final Vec3d start = e.getCameraPosVec(tickDelta);
 
@@ -69,7 +69,7 @@ public class RayTraceHelper {
         )) {
             Box entityAABB = entity.getBoundingBox().expand(entity.getTargetingMargin());
 
-            Optional<Vec3d> intercept = entityAABB.rayTrace(start, end);
+            Optional<Vec3d> intercept = entityAABB.raycast(start, end);
 
             if (entityAABB.contains(start)) {
                 if (traceDistance <= 0) {

@@ -60,15 +60,15 @@ public interface UItems {
         URecipes.bootstrap();
 
         FabricItemGroupBuilder.create(new Identifier("unicopia", "items")).appendItems(list -> {
-            list.addAll(VanillaOverrides.REGISTRY.stream().map(Item::getStackForRender).collect(Collectors.toList()));
-            list.addAll(ITEMS.stream().map(Item::getStackForRender).collect(Collectors.toList()));
-        }).icon(ZAP_APPLE::getStackForRender).build();
+            list.addAll(VanillaOverrides.REGISTRY.stream().map(Item::getDefaultStack).collect(Collectors.toList()));
+            list.addAll(ITEMS.stream().map(Item::getDefaultStack).collect(Collectors.toList()));
+        }).icon(ZAP_APPLE::getDefaultStack).build();
 
         FabricItemGroupBuilder.create(new Identifier("unicopia", "horsefeed")).appendItems(list -> {
             list.addAll(Registry.ITEM.stream()
                     .filter(item -> item instanceof ToxicHolder && ((ToxicHolder)item).getToxic().isPresent())
-                    .map(Item::getStackForRender)
+                    .map(Item::getDefaultStack)
                     .collect(Collectors.toList()));
-        }).icon(ZAP_APPLE::getStackForRender).build();
+        }).icon(ZAP_APPLE::getDefaultStack).build();
     }
 }

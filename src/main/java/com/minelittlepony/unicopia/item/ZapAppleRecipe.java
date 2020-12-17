@@ -30,7 +30,7 @@ public class ZapAppleRecipe extends ShapelessRecipe {
                 throw new JsonParseException("Too many ingredients for shapeless recipe");
             }
 
-            ItemStack stack = UItems.ZAP_APPLE.getStackForRender();
+            ItemStack stack = UItems.ZAP_APPLE.getDefaultStack();
             stack.getOrCreateTag().putString("appearance", JsonHelper.getString(json, "appearance"));
 
             return new ZapAppleRecipe(identifier, group, stack, ingredients);
