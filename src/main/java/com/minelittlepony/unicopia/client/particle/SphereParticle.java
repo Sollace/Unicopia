@@ -120,6 +120,7 @@ public class SphereParticle extends Particle implements Attachment {
         }
 
         MatrixStack matrices = new MatrixStack();
+
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         model.setPosition(
                 MathHelper.lerp(tickDelta, prevPosX, x) - camera.getPos().x,
@@ -130,8 +131,10 @@ public class SphereParticle extends Particle implements Attachment {
 
         float lerpedRad = MathHelper.lerp(tickDelta, prevRadius, radius);
 
-        VertexConsumer buffer = immediate.getBuffer(RenderLayers.magic());
+        VertexConsumer buffer;
+        buffer = immediate.getBuffer(RenderLayers.getTintedTexturedLayer(red, green, blue, alpha));
         model.render(matrices, lerpedRad + 0.1F, buffer, 1, 1, red, green, blue, alpha);
+        buffer = immediate.getBuffer(RenderLayers.getTintedTexturedLayer(red * 0.9F, green * 0.9F, blue * 0.9F, Math.min(1, alpha + 0.2F)));
         model.render(matrices, lerpedRad - 0.1F, buffer, 1, 1, red * 0.9F, green * 0.9F, blue * 0.9F, Math.min(1, alpha + 0.2F));
 
         immediate.draw();
