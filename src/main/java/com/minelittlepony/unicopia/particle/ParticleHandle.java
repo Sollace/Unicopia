@@ -69,7 +69,6 @@ public class ParticleHandle {
         }
 
         public void detach() {
-            linked = false;
             caster = Optional.empty();
         }
 

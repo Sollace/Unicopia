@@ -27,6 +27,7 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
     public RainbowTrailParticle(DefaultParticleType effect, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
         segments.add(new Segment(new Vec3d(x, y, z)));
+        setMaxAge(300);
     }
 
     @Override
@@ -36,7 +37,7 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
 
     @Override
     public boolean isStillAlive() {
-        return age < (maxAge - 1);
+        return age < getMaxAge() && (!dead || !segments.isEmpty());
     }
 
     @Override
@@ -56,6 +57,8 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
 
     @Override
     protected void renderQuads(Tessellator te, BufferBuilder buffer, float x, float y, float z, float tickDelta) {
+        float alpha = 1 - (float)age / maxAge;
+
         for (int i = 0; i < segments.size() - 1; i++) {
             Vector3f[] corners = segments.get(i).getPlane(segments.get(i + 1));
             float scale = getScale(tickDelta);
@@ -66,7 +69,7 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
                corner.add(x, y, z);
             }
 
-            renderQuad(te, buffer, corners, segments.get(i).getAlpha(), tickDelta);
+            renderQuad(te, buffer, corners, segments.get(i).getAlpha() * alpha, tickDelta);
         }
     }
 
@@ -86,11 +89,11 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
     @Override
     public void tick() {
         super.tick();
-        age = 0;
 
         if (link.linked()) {
+            age = 0;
             link.ifAbsent(() -> {}).ifPresent(this::follow);
-        } else {
+        } else if (!dead) {
             follow(Pony.of(MinecraftClient.getInstance().player));
         }
 
