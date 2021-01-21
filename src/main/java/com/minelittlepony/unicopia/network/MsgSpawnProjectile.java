@@ -22,7 +22,7 @@ public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Channel.
 
     @SuppressWarnings("unchecked")
     public MsgSpawnProjectile(Entity e) {
-        super(e, Optional.of(e instanceof Owned ? ((Owned<Entity>)e).getMaster() : null).map(Entity::getEntityId).orElse(0));
+        super(e, Optional.ofNullable(e instanceof Owned ? ((Owned<Entity>)e).getMaster() : null).map(Entity::getEntityId).orElse(0));
     }
 
     @Override
