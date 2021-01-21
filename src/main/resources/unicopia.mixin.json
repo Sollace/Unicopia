@@ -27,6 +27,7 @@
     "client.MixinEntityRenderDispatcher",
     "client.MixinGameRenderer",
     "client.MixinInGameHud",
+    "client.MixinItem",
     "client.MixinItemModels",
     "client.MixinKeyboardInput",
     "client.MixinLightmapTextureManager",

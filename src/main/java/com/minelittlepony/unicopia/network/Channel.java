@@ -3,9 +3,11 @@ package com.minelittlepony.unicopia.network;
 import java.util.function.Function;
 
 import io.netty.buffer.Unpooled;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.fabricmc.fabric.api.network.PacketContext;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.network.PacketByteBuf;
@@ -14,6 +16,7 @@ public interface Channel {
 
     SPacketType<MsgPlayerAbility<?>> CLIENT_PLAYER_ABILITY = clientToServer(new Identifier("unicopia", "player_ability"), MsgPlayerAbility::new);
     SPacketType<MsgRequestCapabilities> CLIENT_REQUEST_CAPABILITIES = clientToServer(new Identifier("unicopia", "request_capabilities"), MsgRequestCapabilities::new);
+
     CPacketType<MsgPlayerCapabilities> SERVER_PLAYER_CAPABILITIES = serverToClient(new Identifier("unicopia", "player_capabilities"), MsgPlayerCapabilities::new);
     MPacketType<MsgOtherPlayerCapabilities> SERVER_OTHER_PLAYER_CAPABILITIES = serverToClients(new Identifier("unicopia", "other_player_capabilities"), MsgOtherPlayerCapabilities::new);
     CPacketType<MsgSpawnProjectile> SERVER_SPAWN_PROJECTILE = serverToClient(new Identifier("unicopia", "projectile_entity"), MsgSpawnProjectile::new);
@@ -26,12 +29,16 @@ public interface Channel {
     }
 
     static <T extends Packet> MPacketType<T> serverToClients(Identifier id, Function<PacketByteBuf, T> factory) {
-        ClientSidePacketRegistry.INSTANCE.register(id, (context, buffer) -> factory.apply(buffer).handleOnMain(context));
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            ClientSidePacketRegistry.INSTANCE.register(id, (context, buffer) -> factory.apply(buffer).handleOnMain(context));
+        }
         return () -> id;
     }
 
     static <T extends Packet> CPacketType<T> serverToClient(Identifier id, Function<PacketByteBuf, T> factory) {
-        ClientSidePacketRegistry.INSTANCE.register(id, (context, buffer) -> factory.apply(buffer).handleOnMain(context));
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            ClientSidePacketRegistry.INSTANCE.register(id, (context, buffer) -> factory.apply(buffer).handleOnMain(context));
+        }
         return () -> id;
     }
 
@@ -67,10 +74,16 @@ public interface Channel {
         Identifier getId();
 
         default void send(T packet) {
+            if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
+                throw new RuntimeException("Client packet send called by the server");
+            }
             ClientSidePacketRegistry.INSTANCE.sendToServer(getId(), packet.toBuffer());
         }
 
         default net.minecraft.network.Packet<?> toPacket(T packet) {
+            if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
+                throw new RuntimeException("Client packet send called by the server");
+            }
             return ClientSidePacketRegistry.INSTANCE.toPacket(getId(), packet.toBuffer());
         }
     }

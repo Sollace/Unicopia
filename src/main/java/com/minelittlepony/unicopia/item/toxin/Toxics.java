@@ -51,7 +51,7 @@ public interface Toxics {
         Toxic toxic = new Toxic(action, type, lowerBound, upperbound);
         ToxicHolder holder = (ToxicHolder)target;
         holder.setToxic(toxic);
-        holder.setFood(Objects.requireNonNull(food, target.getName().toString() + " food"));
+        holder.setFood(Objects.requireNonNull(food, target.getTranslationKey() + " food"));
         return toxic;
     }
 

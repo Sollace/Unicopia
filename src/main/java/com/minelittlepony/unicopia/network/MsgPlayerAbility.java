@@ -17,7 +17,7 @@ public class MsgPlayerAbility<T extends Hit> implements Channel.Packet {
 
     @SuppressWarnings("unchecked")
     MsgPlayerAbility(PacketByteBuf buffer) {
-        power = (Ability<T>) Abilities.REGISTRY.get(new Identifier(buffer.readString()));
+        power = (Ability<T>) Abilities.REGISTRY.get(new Identifier(buffer.readString(32767)));
         data = power.getSerializer().fromBuffer(buffer);
     }
 

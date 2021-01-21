@@ -17,8 +17,10 @@ abstract class MixinItems {
             index = 1,
             argsOnly = true)
     private static Item modifyItem(Item item, Identifier id, Item itemAlso) {
-        if (VanillaOverrides.REGISTRY.containsId(id)) {
-            return VanillaOverrides.REGISTRY.get(id);
+        // Registry#containsId is client-only :thonkjang:
+        Item replacement = VanillaOverrides.REGISTRY.get(id);
+        if (replacement != null) {
+            return replacement;
         }
         return item;
     }
