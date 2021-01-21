@@ -8,41 +8,39 @@ import net.minecraft.item.Items;
 import net.minecraft.util.UseAction;
 
 public interface Toxics {
+    Toxic FORAGED = register(UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE, Items.DANDELION, Items.BLUE_ORCHID, Items.RED_TULIP, Items.ORANGE_TULIP, Items.PINK_TULIP, Items.CORNFLOWER, Items.PEONY, Items.TALL_GRASS);
+    Toxic RISKY_FORAGED = register(UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.FAIR, Items.ALLIUM, Items.WHITE_TULIP);
+    Toxic DANGER_FORAGED = register(UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SEVERE, Items.POPPY);
 
-    Toxic GRASS = register(Items.GRASS, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE, Toxin.NAUSEA);
-    Toxic FERN = register(Items.FERN, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SEVERE, Toxin.STRENGTH);
-    Toxic DEAD_BUSH = register(Items.DEAD_BUSH, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SEVERE, Toxin.NAUSEA);
+    Toxic GRASS =        register(UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE, Toxin.NAUSEA, Items.GRASS);
+    Toxic AZUER_BLUET =  register(UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE, Toxin.RADIOACTIVITY, Items.AZURE_BLUET);
+    Toxic ROSE_BUSH =    register(UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE, Toxin.DAMAGE, Items.ROSE_BUSH);
+    Toxic FERN =         register(UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SEVERE, Toxin.STRENGTH, Items.FERN);
+    Toxic DEAD_BUSH =    register(UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SEVERE, Toxin.NAUSEA, Items.DEAD_BUSH);
+    Toxic OXEYE_DAISY =  register(UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SEVERE, Toxin.BLINDNESS, Items.OXEYE_DAISY);
+    Toxic LARGE_FERN =   register(UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SEVERE, Toxin.DAMAGE, Items.LARGE_FERN);
 
-    Toxic DANDELION = register(Items.DANDELION, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE);
-    Toxic POPPY = register(Items.POPPY, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SEVERE);
-    Toxic BLUE_ORCHID = register(Items.BLUE_ORCHID, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE);
-    Toxic ALLIUM = register(Items.ALLIUM, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.FAIR);
-    Toxic AZUER_BLUET = register(Items.AZURE_BLUET, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE, Toxin.RADIOACTIVITY);
-    Toxic RED_TULIP = register(Items.RED_TULIP, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE);
-    Toxic ORANGE_TULIP = register(Items.ORANGE_TULIP, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE);
-    Toxic WHITE_TULIP = register(Items.WHITE_TULIP, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.FAIR);
-    Toxic PINK_TULIP = register(Items.PINK_TULIP, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE);
-    Toxic OXEYE_DAISY = register(Items.OXEYE_DAISY, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SEVERE, Toxin.BLINDNESS);
-    Toxic CORNFLOWER = register(Items.CORNFLOWER, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE);
+    Toxic RAW_MEAT = register(new Toxic(UseAction.EAT, FoodType.RAW_MEAT, Ailment.INNERT, Ailment.of(Toxicity.MILD)), Items.PORKCHOP, Items.BEEF, Items.MUTTON, Items.RABBIT, Items.CHICKEN);
+    Toxic COOKED_MEAT = register(new Toxic(UseAction.EAT, FoodType.COOKED_MEAT, Ailment.INNERT, Ailment.of(Toxicity.MILD)), Items.COOKED_PORKCHOP, Items.COOKED_BEEF, Items.COOKED_MUTTON, Items.COOKED_RABBIT, Items.COOKED_CHICKEN);
 
-    Toxic ROSE_BUSH = register(Items.ROSE_BUSH, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE, Toxin.DAMAGE);
-    Toxic PEONY = register(Items.PEONY, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE);
-    Toxic TALL_GRASS = register(Items.TALL_GRASS, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SAFE);
-    Toxic LARGE_FERN = register(Items.LARGE_FERN, UFoodComponents.RANDOM_FOLIAGE, FoodType.VEGAN, UseAction.EAT, Toxicity.SEVERE, Toxin.DAMAGE);
-
-    Toxic RAW_MEAT = register(new Toxic(UseAction.EAT, FoodType.RAW_MEAT, Ailment.INNERT, Ailment.of(Toxicity.MILD)), Items.PORKCHOP, Items.BEEF, Items.MUTTON, Items.RABBIT);
-    Toxic COOKED_MEAT = register(new Toxic(UseAction.EAT, FoodType.COOKED_MEAT, Ailment.INNERT, Ailment.of(Toxicity.MILD)), Items.COOKED_PORKCHOP, Items.COOKED_BEEF, Items.COOKED_MUTTON, Items.COOKED_RABBIT);
-
-    Toxic RAW_FISH = register(new Toxic(UseAction.EAT, FoodType.RAW_FISH, Ailment.INNERT, Ailment.of(Toxicity.FAIR)), Items.PUFFERFISH, Items.COD, Items.SALMON);
+    Toxic RAW_FISH = register(new Toxic(UseAction.EAT, FoodType.RAW_FISH, Ailment.INNERT, Ailment.of(Toxicity.FAIR)), Items.PUFFERFISH, Items.COD, Items.SALMON, Items.TROPICAL_FISH);
     Toxic COOKED_FISH = register(new Toxic(UseAction.EAT, FoodType.COOKED_FISH, Ailment.INNERT, Ailment.of(Toxicity.FAIR)), Items.COOKED_COD, Items.COOKED_SALMON);
 
     static void bootstrap() {}
 
-    static Toxic register(Item target, FoodComponent food, FoodType type, UseAction action, Toxicity toxicity) {
-        return register(target, food, type, action, Ailment.of(toxicity), Ailment.of(Toxicity.LETHAL));
+    static Toxic register(FoodComponent food, FoodType type, UseAction action, Toxicity toxicity, Item... items) {
+        Toxic toxic = new Toxic(action, type, Ailment.of(toxicity), Ailment.of(Toxicity.LETHAL));
+        for (Item i : items) {
+            ToxicHolder holder = (ToxicHolder)i;
+            holder.setToxic(toxic);
+            holder.setFood(Objects.requireNonNull(food, i.getTranslationKey() + " food"));
+        }
+
+        return toxic;
+
     }
 
-    static Toxic register(Item target, FoodComponent food, FoodType type, UseAction action, Toxicity toxicity, Toxin toxin) {
+    static Toxic register(FoodComponent food, FoodType type, UseAction action, Toxicity toxicity, Toxin toxin, Item target) {
         toxin = Toxin.FOOD.and(toxin);
         return register(target, food, type, action, new Ailment(toxicity, toxin), new Ailment(Toxicity.LETHAL, toxin));
     }
