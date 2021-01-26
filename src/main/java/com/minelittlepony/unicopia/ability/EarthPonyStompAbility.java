@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.BlockDestructionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -112,8 +113,10 @@ public class EarthPonyStompAbility implements Ability<Hit> {
         });
 
         BlockPos.iterate(pos.add(-rad, -rad, -rad), pos.add(rad, rad, rad)).forEach(i -> {
-            if (i.getSquaredDistance(player.getX(), player.getY(), player.getZ(), true) <= rad*rad) {
-                spawnEffect(player.world, i);
+            double dist = Math.sqrt(i.getSquaredDistance(player.getX(), player.getY(), player.getZ(), true));
+
+            if (dist <= rad) {
+                spawnEffect(player.world, i, dist);
             }
         });
 
@@ -124,11 +127,16 @@ public class EarthPonyStompAbility implements Ability<Hit> {
         iplayer.subtractEnergyCost(rad);
     }
 
-    private void spawnEffect(World w, BlockPos pos) {
+    private void spawnEffect(World w, BlockPos pos, double dist) {
         BlockState state = w.getBlockState(pos);
+        BlockDestructionManager destr = ((BlockDestructionManager.Source)w).getDestructionManager();
 
         if (!state.isAir() && w.getBlockState(pos.up()).isAir()) {
-            WorldEvent.play(WorldEvent.DESTROY_BLOCK, w, pos, state);
+            if (destr.damageBlock(pos, (int)((1 - dist / rad) * 9)) >= BlockDestructionManager.MAX_DAMAGE) {
+                w.breakBlock(pos, true);
+            } else {
+                WorldEvent.play(WorldEvent.DESTROY_BLOCK, w, pos, state);
+            }
         }
     }
 
