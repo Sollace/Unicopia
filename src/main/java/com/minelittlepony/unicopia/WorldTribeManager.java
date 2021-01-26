@@ -10,7 +10,7 @@ public class WorldTribeManager extends PersistentState {
     private Race defaultRace = Unicopia.getConfig().getPrefferedRace();
 
     public WorldTribeManager(ServerWorld world) {
-        super("unicopia:tribes" + world.getDimension().getSuffix());
+        super(nameFor(world.getDimension()));
     }
 
     public Race getDefaultRace() {

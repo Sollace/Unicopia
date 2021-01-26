@@ -7,6 +7,8 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import org.spongepowered.asm.mixin.Mixin;
+
+import com.minelittlepony.unicopia.BlockDestructionManager;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 
 import net.minecraft.entity.Entity;
@@ -16,7 +18,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 @Mixin(World.class)
-abstract class MixinWorld implements WorldAccess {
+abstract class MixinWorld implements WorldAccess, BlockDestructionManager.Source {
+
+    private final BlockDestructionManager destructions = new BlockDestructionManager((World)(Object)this);
+
+    @Override
+    public BlockDestructionManager getDestructionManager() {
+        return destructions;
+    }
+
     @Override
     public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
         if (box.getAverageSideLength() >= 1.0E-7D) {

@@ -33,7 +33,10 @@ public class Unicopia implements ModInitializer {
         UTags.bootstrap();
         Commands.bootstrap();
 
-        ServerTickEvents.END_WORLD_TICK.register(AwaitTickQueue::tick);
+        ServerTickEvents.END_WORLD_TICK.register(w -> {
+            AwaitTickQueue.tick(w);
+            ((BlockDestructionManager.Source)w).getDestructionManager().tick();
+        });
 
         UItems.bootstrap();
         UPotions.bootstrap();

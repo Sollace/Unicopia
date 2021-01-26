@@ -31,7 +31,8 @@
     "client.MixinItemModels",
     "client.MixinKeyboardInput",
     "client.MixinLightmapTextureManager",
-    "client.MixinMouse"
+    "client.MixinMouse",
+    "client.MixinWorldRenderer"
   ],
   "injectors": {
     "defaultRequire": 1

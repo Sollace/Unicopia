@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import net.minecraft.network.PacketByteBuf;
 
 public interface Channel {
@@ -20,6 +21,8 @@ public interface Channel {
     CPacketType<MsgPlayerCapabilities> SERVER_PLAYER_CAPABILITIES = serverToClient(new Identifier("unicopia", "player_capabilities"), MsgPlayerCapabilities::new);
     MPacketType<MsgOtherPlayerCapabilities> SERVER_OTHER_PLAYER_CAPABILITIES = serverToClients(new Identifier("unicopia", "other_player_capabilities"), MsgOtherPlayerCapabilities::new);
     CPacketType<MsgSpawnProjectile> SERVER_SPAWN_PROJECTILE = serverToClient(new Identifier("unicopia", "projectile_entity"), MsgSpawnProjectile::new);
+
+    MPacketType<MsgBlockDestruction> SERVER_BLOCK_DESTRUCTION = serverToClients(new Identifier("unicopia", "block_destruction"), MsgBlockDestruction::new);
 
     static void bootstrap() { }
 
@@ -45,8 +48,8 @@ public interface Channel {
     interface MPacketType<T extends Packet> {
         Identifier getId();
 
-        default void send(PlayerEntity sender, T packet) {
-            sender.world.getPlayers().forEach(player -> {
+        default void send(World world, T packet) {
+            world.getPlayers().forEach(player -> {
                 if (player != null) {
                     ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, getId(), packet.toBuffer());
                 }
