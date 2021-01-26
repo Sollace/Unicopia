@@ -118,6 +118,18 @@ public class TreeTraverser {
             return logs.size() <= (leaves.size() / 2) ? logs.size() + leaves.size() : 0;
         }
 
+        /**
+         * Counts the number of logs and leaves present in the targeted tree.
+         */
+        public static Set<BlockPos> getParts(World w, BlockState log, BlockPos pos) {
+            Set<BlockPos> parts = new HashSet<>();
+
+            countParts(parts, parts, w, log, pos);
+
+            return parts;
+        }
+
+
         private static void countParts(Set<BlockPos> logs, Set<BlockPos> leaves, World w, BlockState log, BlockPos pos) {
             if (logs.contains(pos) || leaves.contains(pos)) {
                 return;

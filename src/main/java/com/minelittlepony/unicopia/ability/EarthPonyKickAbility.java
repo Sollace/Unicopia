@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
+import com.minelittlepony.unicopia.BlockDestructionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.TreeTraverser;
 import com.minelittlepony.unicopia.TreeType;
@@ -93,15 +94,19 @@ public class EarthPonyKickAbility implements Ability<Pos> {
             return;
         }
 
-        if (harmed || player.world.random.nextInt(5) == 0) {
+        BlockPos pos = data.pos();
 
+
+        BlockDestructionManager destr = ((BlockDestructionManager.Source)player.world).getDestructionManager();
+
+        if (destr.getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
             if (!harmed || player.world.random.nextInt(30) == 0) {
-                TreeTraverser.Remover.removeTree(player.world, data.pos());
+                TreeTraverser.Remover.removeTree(player.world, pos);
             }
 
             iplayer.subtractEnergyCost(3);
         } else {
-            int cost = dropApples(player.world, data.pos());
+            int cost = dropApples(player.world, pos);
 
             if (cost > 0) {
                 iplayer.subtractEnergyCost(cost * 3);
@@ -147,7 +152,12 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     private int dropApples(World w, BlockPos pos) {
         BlockState log = w.getBlockState(pos);
         int size = TreeTraverser.Measurer.measureTree(w, log, pos);
+
         if (size > 0) {
+            BlockDestructionManager destr = ((BlockDestructionManager.Source)w).getDestructionManager();
+            TreeTraverser.Measurer.getParts(w, log, pos).forEach(position -> {
+                destr.damageBlock(position, 4);
+            });
 
             List<ItemEntity> capturedDrops = Lists.newArrayList();
 
