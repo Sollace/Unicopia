@@ -13,6 +13,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
@@ -28,7 +29,7 @@ public class AppleItem extends Item implements ItemImpl.TickableItem {
     public ActionResult onGroundTick(IItemEntity item) {
         ItemEntity entity = item.get().getMaster();
 
-        if (!entity.removed && item.getPickupDelay() == 0 && item.getAge() > 200230 && entity.world.random.nextInt(200) < 10) {
+        if (!entity.removed && item.getPickupDelay() == 0 && item.getAge() > 2030 && entity.world.random.nextInt(150) < 10) {
 
             if (!entity.world.isClient) {
                 entity.remove();
@@ -45,16 +46,17 @@ public class AppleItem extends Item implements ItemImpl.TickableItem {
                 copy.getStack().decrement(1);
 
                 entity.world.spawnEntity(copy);
-            } else {
-                float bob = MathHelper.sin(((float)item.getAge() + 1) / 10F + entity.hoverHeight) * 0.1F + 0.1F;
-
-                for (int i = 0; i < 3; i++) {
-                    entity.world.addParticle(ParticleTypes.AMBIENT_ENTITY_EFFECT, entity.getX(), entity.getY() + bob, entity.getZ(),
-                            entity.world.random.nextGaussian() - 0.5F,
-                            entity.world.random.nextGaussian() - 0.5F,
-                            entity.world.random.nextGaussian() - 0.5F);
-                }
             }
+
+            float bob = MathHelper.sin(((float)item.getAge() + 1) / 10F + entity.hoverHeight) * 0.1F + 0.1F;
+
+            for (int i = 0; i < 3; i++) {
+                entity.world.addParticle(ParticleTypes.AMBIENT_ENTITY_EFFECT, entity.getX(), entity.getY() + bob, entity.getZ(),
+                        entity.world.random.nextGaussian() - 0.5F,
+                        entity.world.random.nextGaussian() - 0.5F,
+                        entity.world.random.nextGaussian() - 0.5F);
+            }
+            entity.playSound(SoundEvents.ENTITY_ZOMBIE_DESTROY_EGG, 0.5F, 1.5F);
         }
 
         return ActionResult.PASS;
