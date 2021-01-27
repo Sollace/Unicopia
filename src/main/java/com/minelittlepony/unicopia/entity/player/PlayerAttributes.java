@@ -17,10 +17,14 @@ import net.minecraft.util.registry.Registry;
 public class PlayerAttributes implements Tickable {
 
     public static final EntityAttribute EXTENDED_REACH_DISTANCE = register("unicopia.pegasus.reach", new ClampedEntityAttribute("player.reachDistance", 0, 0, 10).setTracked(true));
+    public static final EntityAttribute EXTRA_MINING_SPEED = register("unicopia.earth.mining_speed", new ClampedEntityAttribute("player.miningSpeed", 1, 0, 5).setTracked(true));
     public static final EntityAttribute ENTITY_GRAVTY_MODIFIER = register("unicopia.player.gravity", (new EntityAttribute("player.gravityModifier", 1) {}).setTracked(true));
 
     private static final EntityAttributeModifier EARTH_PONY_STRENGTH =
             new EntityAttributeModifier(UUID.fromString("777a5505-521e-480b-b9d5-6ea54f259564"), "Earth Pony Strength", 0.6, Operation.MULTIPLY_TOTAL);
+    private static final EntityAttributeModifier EARTH_PONY_MINING_SPEED =
+            new EntityAttributeModifier(UUID.fromString("9fc9e269-152e-0b48-9bd5-564a546e59f2"), "Earth Pony Mining Speed", 0.4, Operation.MULTIPLY_TOTAL);
+
     private static final EntityAttributeModifier PEGASUS_SPEED =
             new EntityAttributeModifier(UUID.fromString("9e2699fc-3b8d-4f71-9d2d-fb92ee19b4f7"), "Pegasus Speed", 0.2, Operation.MULTIPLY_TOTAL);
     private static final EntityAttributeModifier PEGASUS_REACH =
@@ -45,6 +49,7 @@ public class PlayerAttributes implements Tickable {
         toggleAttribute(entity, EntityAttributes.GENERIC_MOVEMENT_SPEED, PEGASUS_SPEED, race.canFly());
         toggleAttribute(entity, EntityAttributes.GENERIC_ATTACK_SPEED, PEGASUS_SPEED, race.canFly());
         toggleAttribute(entity, EXTENDED_REACH_DISTANCE, PEGASUS_REACH, race.canFly());
+        toggleAttribute(entity, EXTRA_MINING_SPEED, EARTH_PONY_MINING_SPEED, race.canUseEarth());
     }
 
     private void toggleAttribute(PlayerEntity entity, EntityAttribute attribute, EntityAttributeModifier modifier, boolean enable) {

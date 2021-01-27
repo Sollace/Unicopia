@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.datafixers.util.Either;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.ItemEntity;
@@ -53,7 +54,7 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
 
     @Inject(method = "eatFood(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/item/ItemStack;",
             at = @At("HEAD"))
-    public void onEatFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> info) {
+    private void onEatFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> info) {
         if (stack.isFood()) {
             get().onEat(stack);
         }
@@ -97,7 +98,14 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
     @Inject(method = "getDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;",
             at = @At("RETURN"),
             cancellable = true)
-    public void onGetDimensions(EntityPose pose, CallbackInfoReturnable<EntityDimensions> info) {
+    private void onGetDimensions(EntityPose pose, CallbackInfoReturnable<EntityDimensions> info) {
         info.setReturnValue(get().getMotion().getDimensions().calculateDimensions(info.getReturnValue()));
+    }
+
+    @Inject(method = "getBlockBreakingSpeed(Lnet/minecraft/block/BlockState;)F",
+            at = @At("RETURN"),
+            cancellable = true)
+    private void onGetBlockBreakingSpeed(BlockState state, CallbackInfoReturnable<Float> info) {
+        info.setReturnValue(info.getReturnValue() * get().getBlockBreakingSpeed());
     }
 }

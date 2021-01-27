@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
+
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;

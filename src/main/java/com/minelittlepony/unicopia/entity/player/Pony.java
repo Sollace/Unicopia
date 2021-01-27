@@ -110,6 +110,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
         builder.add(PlayerAttributes.EXTENDED_REACH_DISTANCE);
+        builder.add(PlayerAttributes.EXTRA_MINING_SPEED);
         builder.add(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
     }
 
@@ -195,6 +196,10 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     public float getExtendedReach() {
         return (float)entity.getAttributeInstance(PlayerAttributes.EXTENDED_REACH_DISTANCE).getValue();
+    }
+
+    public float getBlockBreakingSpeed() {
+        return (float)entity.getAttributeInstance(PlayerAttributes.EXTRA_MINING_SPEED).getValue();
     }
 
     public Motion getMotion() {
