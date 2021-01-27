@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity.player;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -474,6 +475,10 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     public static boolean equal(GameProfile one, GameProfile two) {
         return one == two || (one != null && two != null && one.getId().equals(two.getId()));
+    }
+
+    public static boolean equal(Entity one, Entity two) {
+        return Objects.equals(one, two) || (one instanceof PlayerEntity && two instanceof PlayerEntity && equal((PlayerEntity)one, (PlayerEntity)two));
     }
 
     public static boolean equal(PlayerEntity one, PlayerEntity two) {

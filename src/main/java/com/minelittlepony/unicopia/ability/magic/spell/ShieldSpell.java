@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -15,6 +16,7 @@ import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
@@ -98,21 +100,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
         boolean ownerIsValid = source.getAffinity() != Affinity.BAD && EquinePredicates.PLAYER_UNICORN.test(owner);
 
         return source.findAllEntitiesInRange(radius)
-            .filter(entity -> {
-                if (!ownerIsValid) {
-                    return true;
-                }
-
-                boolean ownerEquals = (
-                        entity.equals(owner)
-                    || (entity instanceof PlayerEntity && owner instanceof PlayerEntity && Pony.equal((PlayerEntity)entity, (PlayerEntity)owner)));
-
-                if (!owner.isSneaking()) {
-                    return ownerEquals;
-                }
-
-                return !ownerEquals;
-            })
+            .filter(entity -> !(entity instanceof ItemEntity || (ownerIsValid && Pony.equal(entity, owner))))
             .collect(Collectors.toList());
     }
 
@@ -128,7 +116,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
 
                 applyRadialEffect(source, i, dist, radius);
             } catch (Throwable e) {
-                e.printStackTrace();
+                Unicopia.LOGGER.error("Error updating shield effect", e);
             }
         });
 
