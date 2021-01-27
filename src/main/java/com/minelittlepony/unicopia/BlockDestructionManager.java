@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.network.MsgBlockDestruction;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -47,6 +48,12 @@ public class BlockDestructionManager {
         amount = Math.max(getBlockDestruction(pos), 0) + amount;
         setBlockDestruction(pos, amount);
         return amount;
+    }
+
+    public void onBlockChanged(BlockPos pos, BlockState oldState, BlockState newstate) {
+        if (oldState.getBlock() != newstate.getBlock()) {
+            clearBlockDestruction(pos);
+        }
     }
 
     public void tick() {
