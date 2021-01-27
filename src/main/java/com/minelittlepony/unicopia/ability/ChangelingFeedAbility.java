@@ -159,6 +159,8 @@ public class ChangelingFeedAbility implements Ability<Hit> {
 
     @Override
     public void postApply(Pony player, AbilitySlot slot) {
-        player.spawnParticles(ParticleTypes.HEART, 1);
+        if (player.getWorld().random.nextInt(10) == 0) {
+            player.spawnParticles(ParticleTypes.HEART, 1);
+        }
     }
 }
