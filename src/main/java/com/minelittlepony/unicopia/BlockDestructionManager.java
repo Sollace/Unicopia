@@ -14,7 +14,7 @@ public class BlockDestructionManager {
     public static final int UNSET_DAMAGE = -1;
     public static final int MAX_DAMAGE = 10;
 
-    private final Destruction emptyDestruction = new Destruction(BlockPos.ORIGIN);
+    private final Destruction emptyDestruction = new Destruction();
 
     private final World world;
 
@@ -36,7 +36,7 @@ public class BlockDestructionManager {
 
     public void setBlockDestruction(BlockPos pos, int amount) {
         synchronized (locker) {
-            destructions.computeIfAbsent(pos.asLong(), p -> new Destruction(pos)).set(amount);
+            destructions.computeIfAbsent(pos.asLong(), p -> new Destruction()).set(amount);
         }
     }
 
@@ -52,17 +52,25 @@ public class BlockDestructionManager {
     public void tick() {
         synchronized (locker) {
             destructions.long2ObjectEntrySet().removeIf(entry -> entry.getValue().tick());
+
+            if (world instanceof ServerWorld) {
+                Long2ObjectMap<Integer> sent = new Long2ObjectOpenHashMap<>();
+                destructions.forEach((p, item) -> {
+                    if (item.dirty) {
+                        sent.put(p.longValue(), (Integer)item.amount);
+                    }
+                });
+                if (!sent.isEmpty()) {
+                    Channel.SERVER_BLOCK_DESTRUCTION.send(world, new MsgBlockDestruction(sent));
+                }
+            }
         }
     }
 
     private class Destruction {
-        BlockPos pos;
         int amount = -1;
         int age = 50;
-
-        Destruction(BlockPos pos) {
-            this.pos = pos;
-        }
+        boolean dirty;
 
         boolean tick() {
             if (age-- > 0) {
@@ -78,9 +86,7 @@ public class BlockDestructionManager {
         void set(int amount) {
             this.age = 50;
             this.amount = amount >= 0 && amount < MAX_DAMAGE ? amount : UNSET_DAMAGE;
-            if (world instanceof ServerWorld) {
-                Channel.SERVER_BLOCK_DESTRUCTION.send(world, new MsgBlockDestruction(pos, this.amount));
-            }
+            this.dirty = true;
         }
     }
 

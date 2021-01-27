@@ -16,12 +16,12 @@ public class ClientBlockDestructionManager {
 
     private final Object locker = new Object();
 
-    public void setBlockDestruction(BlockPos pos, int amount) {
+    public void setBlockDestruction(long pos, int amount) {
         synchronized (locker) {
             if (amount <= 0 || amount > BlockDestructionManager.MAX_DAMAGE) {
-                destructions.remove(pos.asLong());
+                destructions.remove(pos);
             } else {
-                destructions.computeIfAbsent(pos.asLong(), p -> new Destruction(pos)).set(amount);
+                destructions.computeIfAbsent(pos, p -> new Destruction(pos)).set(amount);
             }
         }
     }
@@ -52,8 +52,8 @@ public class ClientBlockDestructionManager {
 
         BlockBreakingInfo info;
 
-        Destruction(BlockPos pos) {
-            this.info = new BlockBreakingInfo(0, pos);
+        Destruction(long pos) {
+            this.info = new BlockBreakingInfo(0, BlockPos.fromLong(pos));
         }
 
         boolean tick() {
