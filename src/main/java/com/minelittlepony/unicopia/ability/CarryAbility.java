@@ -56,10 +56,12 @@ public class CarryAbility implements Ability<Hit> {
         PlayerEntity player = iplayer.getMaster();
         LivingEntity rider = findRider(player, iplayer.getWorld());
 
+        if (player.hasPassengers()) {
+            player.removeAllPassengers();
+        }
+
         if (rider != null) {
             rider.startRiding(player, true);
-        } else {
-            player.removeAllPassengers();
         }
 
         if (player instanceof ServerPlayerEntity) {
