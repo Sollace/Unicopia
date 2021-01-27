@@ -23,6 +23,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -132,7 +133,14 @@ public class EarthPonyStompAbility implements Ability<Hit> {
         BlockDestructionManager destr = ((BlockDestructionManager.Source)w).getDestructionManager();
 
         if (!state.isAir() && w.getBlockState(pos.up()).isAir()) {
-            if (destr.damageBlock(pos, (int)((1 - dist / rad) * 9)) >= BlockDestructionManager.MAX_DAMAGE) {
+
+            double amount = (1 - dist / rad) * 9;
+            float hardness = state.getHardness(w, pos);
+            float scaledHardness = (1 - hardness / 70);
+
+            int damage = hardness < 0 ? 0 : MathHelper.clamp((int)(amount * scaledHardness), 2, 9);
+
+            if (destr.damageBlock(pos, damage) >= BlockDestructionManager.MAX_DAMAGE) {
                 w.breakBlock(pos, true);
             } else {
                 WorldEvent.play(WorldEvent.DESTROY_BLOCK, w, pos, state);
@@ -155,7 +163,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     }
 
     private void spawnParticleRing(PlayerEntity player, int timeDiff, double yVel) {
-        int animationTicks = timeDiff / 10;
+        int animationTicks = timeDiff / 7;
         if (animationTicks < 6) {
             Shape shape = new Sphere(true, animationTicks, 1, 0, 1);
 
@@ -167,7 +175,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                 Vec3d point = shape.computePoint(player.getEntityWorld().random).add(player.getPos());
                 player.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.DIRT.getDefaultState()),
                         point.x,
-                        point.y + y,
+                        point.y,
                         point.z,
                         0, yVel, 0
                 );

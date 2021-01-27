@@ -41,6 +41,9 @@ public class BlockDestructionManager {
     }
 
     public int damageBlock(BlockPos pos, int amount) {
+        if (amount == 0) {
+            return getBlockDestruction(pos);
+        }
         amount = Math.max(getBlockDestruction(pos), 0) + amount;
         setBlockDestruction(pos, amount);
         return amount;
