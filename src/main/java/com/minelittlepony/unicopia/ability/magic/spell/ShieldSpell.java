@@ -74,9 +74,9 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
         int costMultiplier = applyEntities(source);
         if (costMultiplier > 0) {
             if (source.getMaster().age % 20 == 0) {
-                double cost = 4 + (source.getLevel().get() * 2);
+                double cost = 2 + source.getLevel().get();
 
-                cost *= costMultiplier / 5F;
+                cost *= Math.max(1, costMultiplier / 12F);
 
                 if (!source.subtractEnergyCost(cost)) {
                     onDestroyed(source);
@@ -87,8 +87,11 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
         return !isDead();
     }
 
+    /**
+     * Calculates the maximum radius of the shield. aka The area of effect.
+     */
     public double getDrawDropOffRange(Caster<?> source) {
-        float multiplier = (source.getMaster().isSneaking() ? 1 : 2);
+        float multiplier = source.getMaster().isSneaking() ? 1 : 2;
         return (4 + (source.getLevel().get() * 2)) / multiplier;
     }
 
