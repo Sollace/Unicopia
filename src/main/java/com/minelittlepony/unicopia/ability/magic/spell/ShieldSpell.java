@@ -102,7 +102,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
 
         Entity owner = source.getMaster();
 
-        boolean ownerIsValid = source.getAffinity() != Affinity.BAD && EquinePredicates.PLAYER_UNICORN.test(owner);
+        boolean ownerIsValid = source.getAffinity() != Affinity.BAD && (EquinePredicates.PLAYER_UNICORN.test(owner) && owner.isSneaking());
 
         return source.findAllEntitiesInRange(radius)
             .filter(entity -> {
@@ -115,8 +115,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
                         || ProjectileUtil.isFlyingProjectile(entity)
                         || entity instanceof AbstractMinecartEntity)
                         && !(entity instanceof ArmorStandEntity)
-                        && !(owner.isConnectedThroughVehicle(entity))
-                        && !(ownerIsValid && Pony.equal(entity, owner));
+                        && !(ownerIsValid && (Pony.equal(entity, owner) || owner.isConnectedThroughVehicle(entity)));
             })
             .collect(Collectors.toList());
     }
