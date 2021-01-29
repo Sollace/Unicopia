@@ -5,7 +5,6 @@ import java.util.List;
 import com.google.common.collect.Lists;
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.WorldEvent;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -62,7 +61,7 @@ public class NecromancySpell extends AbstractRangedAreaSpell {
 
         Vec3d origin = source.getOriginVector();
 
-        if (VecHelper.findInRange(source.getEntity(), source.getWorld(), source.getOrigin(), radius * 4, e -> e instanceof ZombieEntity).size() >= 10 * (1 + additional)) {
+        if (source.findAllEntitiesInRange(radius * 4, e -> e instanceof ZombieEntity).count() >= 10 * (1 + additional)) {
             return true;
         }
 

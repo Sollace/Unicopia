@@ -57,10 +57,10 @@ public class InfernoSpell extends FireSpell {
             shape = new Sphere(false, radius - 1);
             for (int i = 0; i < radius * 2; i++) {
                 if (w.random.nextInt(12) == 0) {
-                    BlockPos pos = new BlockPos(shape.computePoint(w.random).add(origin));
+                    Vec3d vec = shape.computePoint(w.random).add(origin);
 
-                    if (!applyBlocks(w, pos)) {
-                        applyEntities(source.getMaster(), w, pos);
+                    if (!applyBlocks(w, new BlockPos(vec))) {
+                        applyEntities(source.getMaster(), w, vec);
                     }
                 }
             }

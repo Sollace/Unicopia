@@ -7,8 +7,6 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.PonyContainer;
-import com.minelittlepony.unicopia.util.VecHelper;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 
@@ -17,8 +15,7 @@ public class CasterUtils {
      * Finds all surrounding spells within range from the given caster.
      */
     static Stream<Caster<?>> findInRange(Caster<?> source, double radius) {
-        return VecHelper.findInRange(source.getEntity(), source.getWorld(), source.getOrigin(), radius, EquinePredicates.IS_CASTER)
-                .stream()
+        return source.findAllEntitiesInRange(radius, EquinePredicates.IS_CASTER)
                 .map(e -> toCaster(e).filter(o -> o != source))
                 .filter(Optional::isPresent)
                 .map(Optional::get);

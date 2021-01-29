@@ -60,7 +60,7 @@ public class AttractiveSpell extends ShieldSpell implements Thrown {
     protected List<Entity> getTargets(Caster<?> source, double radius) {
 
         if (homingPos != null) {
-            return VecHelper.findInRange(source.getEntity(), source.getWorld(), source.getOrigin(), radius, i -> i instanceof ItemEntity);
+            return VecHelper.findInRange(source.getEntity(), source.getWorld(), source.getOriginVector(), radius, i -> i instanceof ItemEntity);
         }
 
         return super.getTargets(source, radius);

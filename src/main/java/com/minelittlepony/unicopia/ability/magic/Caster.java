@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -107,7 +108,11 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
         return CasterUtils.findInRange(this, radius);
     }
 
+    default Stream<Entity> findAllEntitiesInRange(double radius, @Nullable Predicate<Entity> test) {
+        return VecHelper.findInRange(getEntity(), getWorld(), getOriginVector(), radius, test).stream();
+    }
+
     default Stream<Entity> findAllEntitiesInRange(double radius) {
-        return VecHelper.findInRange(getEntity(), getWorld(), getOrigin(), radius, null).stream();
+        return findAllEntitiesInRange(radius, null);
     }
 }

@@ -21,6 +21,7 @@ import net.minecraft.entity.TntEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class IceSpell extends AbstractRangedAreaSpell implements Thrown {
@@ -50,14 +51,14 @@ public class IceSpell extends AbstractRangedAreaSpell implements Thrown {
         PosHelper.getAllInRegionMutable(source.getOrigin(), effect_range)
             .forEach(i -> applyBlockSingle(owner, source.getWorld(), i));
 
-        return applyEntities(source.getMaster(), source.getWorld(), source.getOrigin());
+        return applyEntities(source.getMaster(), source.getWorld(), source.getOriginVector());
     }
 
     @Override
     public void render(Caster<?> source) {
     }
 
-    protected boolean applyEntities(LivingEntity owner, World world, BlockPos pos) {
+    protected boolean applyEntities(LivingEntity owner, World world, Vec3d pos) {
         return !VecHelper.findInRange(owner, world, pos, 3, i -> applyEntitySingle(owner, i)).isEmpty();
     }
 

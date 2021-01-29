@@ -196,7 +196,7 @@ public class Disguise implements NbtSerialisable {
                 || entity instanceof VexEntity
                 || entity instanceof ShulkerBulletEntity
                 || entity instanceof Flutterer
-                || ProjectileUtil.isProjectile(entity)) {
+                || ProjectileUtil.isFlyingProjectile(entity)) {
             return FlightType.INSECTOID;
         }
 

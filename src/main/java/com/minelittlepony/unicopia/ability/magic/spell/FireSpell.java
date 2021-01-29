@@ -66,7 +66,7 @@ public class FireSpell extends AbstractRangedAreaSpell implements Thrown {
         return PosHelper.getAllInRegionMutable(source.getOrigin(), EFFECT_RANGE).reduce(false,
                 (r, i) -> applyBlocks(source.getWorld(), i),
                 (a, b) -> a || b)
-                || applyEntities(null, source.getWorld(), source.getOrigin());
+                || applyEntities(null, source.getWorld(), source.getOriginVector());
     }
 
     @Override
@@ -130,7 +130,7 @@ public class FireSpell extends AbstractRangedAreaSpell implements Thrown {
         return false;
     }
 
-    protected boolean applyEntities(Entity owner, World world, BlockPos pos) {
+    protected boolean applyEntities(Entity owner, World world, Vec3d pos) {
         return !VecHelper.findInRange(owner, world, pos, 3, i -> applyEntitySingle(owner, world, i)).isEmpty();
     }
 

@@ -16,9 +16,14 @@ import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.EyeOfEnderEntity;
+import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
@@ -100,7 +105,19 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
         boolean ownerIsValid = source.getAffinity() != Affinity.BAD && EquinePredicates.PLAYER_UNICORN.test(owner);
 
         return source.findAllEntitiesInRange(radius)
-            .filter(entity -> !(entity instanceof ItemEntity || (ownerIsValid && Pony.equal(entity, owner))))
+            .filter(entity -> {
+                return
+                        (entity instanceof LivingEntity
+                        || entity instanceof TntEntity
+                        || entity instanceof FallingBlockEntity
+                        || entity instanceof EyeOfEnderEntity
+                        || entity instanceof BoatEntity
+                        || ProjectileUtil.isFlyingProjectile(entity)
+                        || entity instanceof AbstractMinecartEntity)
+                        && !(entity instanceof ArmorStandEntity)
+                        && !(owner.isConnectedThroughVehicle(entity))
+                        && !(ownerIsValid && Pony.equal(entity, owner));
+            })
             .collect(Collectors.toList());
     }
 
@@ -126,7 +143,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
     protected void applyRadialEffect(Caster<?> source, Entity target, double distance, double radius) {
         Vec3d pos = source.getOriginVector();
 
-        if (ProjectileUtil.isProjectile(target)) {
+        if (ProjectileUtil.isFlyingProjectile(target)) {
             if (!ProjectileUtil.isProjectileThrownBy(target, source.getMaster())) {
                 if (distance < 1) {
                     target.playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 0.1F, 1);

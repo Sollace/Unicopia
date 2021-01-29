@@ -2,23 +2,32 @@ package com.minelittlepony.unicopia.projectile;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.mixin.MixinPersistentProjectileEntity;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.math.Vec3d;
 
-public class ProjectileUtil {
+public interface ProjectileUtil {
 
     /**
      * Checks if the given entity is a projectile.
      */
-    public static boolean isProjectile(Entity e) {
+    static boolean isProjectile(Entity e) {
         return e instanceof ProjectileEntity;
+    }
+
+    /**
+     * Checks if the given entity is a projectile that is not stuck in the ground.
+     */
+    static boolean isFlyingProjectile(Entity e) {
+        return isProjectile(e) && !(e instanceof MixinPersistentProjectileEntity && ((MixinPersistentProjectileEntity)e).isInGround());
     }
 
     /**
      * Checks if the given projectile was thrown by the given entity
      */
-    public static <T extends Entity> boolean isProjectileThrownBy(Entity throwable, @Nullable T e) {
+    static <T extends Entity> boolean isProjectileThrownBy(Entity throwable, @Nullable T e) {
         return e != null && isProjectile(throwable) && e.equals(((ProjectileEntity) throwable).getOwner());
     }
 
@@ -31,7 +40,7 @@ public class ProjectileUtil {
      * @param inaccuracy    Inaccuracy
      * @return              True the projectile's heading was set, false otherwise
      */
-    public static void setThrowableHeading(Entity throwable, Vec3d heading, float velocity, float inaccuracy) {
+    static void setThrowableHeading(Entity throwable, Vec3d heading, float velocity, float inaccuracy) {
 
         if (throwable instanceof ProjectileEntity) {
             ((ProjectileEntity)throwable).setVelocity(heading.x, heading.y, heading.z, velocity, inaccuracy);
