@@ -37,7 +37,7 @@ abstract class MixinWorldRenderer implements SynchronousResourceReloadListener, 
 
     @Redirect(method = "render("
             + "Lnet/minecraft/client/util/math/MatrixStack;"
-            + "FLZ"
+            + "FJZ"
             + "Lnet/minecraft/client/render/Camera;"
             + "Lnet/minecraft/client/render/GameRenderer;"
             + "Lnet/minecraft/client/render/LightmapTextureManager;"
