@@ -1,6 +1,9 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.Affinity;
@@ -30,6 +33,8 @@ import net.minecraft.util.math.Vec3d;
 public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
 
     private final ParticleHandle particlEffect = new ParticleHandle();
+
+    private final Map<UUID, Target> targets = new TreeMap<>();
 
     @Override
     public String getName() {
@@ -71,16 +76,15 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
 
     @Override
     public boolean updateOnPerson(Caster<?> source) {
-        int costMultiplier = applyEntities(source);
+        long costMultiplier = applyEntities(source);
         if (costMultiplier > 0) {
-            if (source.getMaster().age % 20 == 0) {
-                double cost = 2 + source.getLevel().get();
+            double cost = 2 + source.getLevel().get();
 
-                cost *= Math.max(1, costMultiplier / 12F);
+            cost *= costMultiplier / ((1 + source.getLevel().get()) * 3F);
+            cost /= 2.725D;
 
-                if (!source.subtractEnergyCost(cost)) {
-                    onDestroyed(source);
-                }
+            if (!source.subtractEnergyCost(cost)) {
+                onDestroyed(source);
             }
         }
 
@@ -123,14 +127,17 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
             .collect(Collectors.toList());
     }
 
-    protected int applyEntities(Caster<?> source) {
+    protected long applyEntities(Caster<?> source) {
         double radius = getDrawDropOffRange(source);
 
         Vec3d origin = source.getOriginVector();
 
+        this.targets.values().removeIf(Target::tick);
+
         List<Entity> targets = getTargets(source, radius);
         targets.forEach(i -> {
             try {
+                this.targets.computeIfAbsent(i.getUuid(), Target::new);
                 double dist = i.getPos().distanceTo(origin);
 
                 applyRadialEffect(source, i, dist, radius);
@@ -139,7 +146,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
             }
         });
 
-        return targets.size();
+        return this.targets.values().stream().filter(Target::canHurt).count();
     }
 
     protected void applyRadialEffect(Caster<?> source, Entity target, double distance, double radius) {
@@ -211,6 +218,22 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
 
         if (approach.length() >= motion.length()) {
             ProjectileUtil.setThrowableHeading(projectile, normal, (float)motion.length(), 0);
+        }
+    }
+
+    class Target {
+
+        int cooldown = 20;
+
+        Target(UUID id) {
+        }
+
+        boolean tick() {
+            return --cooldown < 0;
+        }
+
+        boolean canHurt() {
+            return cooldown == 20;
         }
     }
 }
