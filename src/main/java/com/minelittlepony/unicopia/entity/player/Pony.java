@@ -92,6 +92,8 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     private int ticksHanging;
 
+    private float magicExhaustion = 0;
+
     @Nullable
     private Race clientPreferredRace;
 
@@ -255,6 +257,8 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
             }
         }
 
+        magicExhaustion = burnFood(magicExhaustion);
+
         powers.tick();
 
         return false;
@@ -384,19 +388,27 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
                 mana.getMana().set(0);
                 foodSubtract -= currentMana / foodManaRatio;
 
-                int lostLevels = (int)Math.ceil(foodSubtract);
-                int food = entity.getHungerManager().getFoodLevel() - lostLevels;
-
-                if (food < 0) {
-                    entity.getHungerManager().add(-entity.getHungerManager().getFoodLevel(), 0);
-                    entity.damage(MagicalDamageSource.EXHAUSTION, -food/2);
-                } else {
-                    entity.getHungerManager().add(-lostLevels, 0);
-                }
+                magicExhaustion += foodSubtract;
             }
         }
 
         return entity.getHealth() > 0;
+    }
+
+    private float burnFood(float foodSubtract) {
+        int lostLevels = (int)Math.floor(foodSubtract);
+        if (lostLevels > 0) {
+            int food = entity.getHungerManager().getFoodLevel() - lostLevels;
+
+            if (food < 0) {
+                entity.getHungerManager().add(-entity.getHungerManager().getFoodLevel(), 0);
+                entity.damage(MagicalDamageSource.EXHAUSTION, -food/2);
+            } else {
+                entity.getHungerManager().add(-lostLevels, 0);
+            }
+        }
+
+        return foodSubtract - lostLevels;
     }
 
     public Optional<Text> trySleep(BlockPos pos) {
@@ -416,6 +428,8 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     public void toNBT(CompoundTag compound) {
         compound.putString("playerSpecies", getSpecies().name());
 
+        compound.putFloat("magicExhaustion", magicExhaustion);
+
         compound.put("powers", powers.toNBT());
         compound.put("gravity", gravity.toNBT());
 
@@ -433,6 +447,8 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
         powers.fromNBT(compound.getCompound("powers"));
         gravity.fromNBT(compound.getCompound("gravity"));
+
+        magicExhaustion = compound.getFloat("magicExhaustion");
 
         if (compound.contains("effect")) {
             effectDelegate.set(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
