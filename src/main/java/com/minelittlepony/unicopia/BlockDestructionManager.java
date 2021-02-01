@@ -1,13 +1,20 @@
 package com.minelittlepony.unicopia;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgBlockDestruction;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 public class BlockDestructionManager {
@@ -19,7 +26,7 @@ public class BlockDestructionManager {
 
     private final World world;
 
-    private final Long2ObjectMap<Destruction> destructions = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectMap<Chunk> destructions = new Long2ObjectOpenHashMap<>();
 
     private final Object locker = new Object();
 
@@ -28,7 +35,11 @@ public class BlockDestructionManager {
     }
 
     public int getBlockDestruction(BlockPos pos) {
-        return destructions.getOrDefault(pos.asLong(), emptyDestruction).amount;
+        return getDestructions(pos).getBlockDestruction(pos);
+    }
+
+    private Chunk getDestructions(BlockPos pos) {
+        return destructions.computeIfAbsent(new ChunkPos(pos).toLong(), Chunk::new);
     }
 
     public void clearBlockDestruction(BlockPos pos) {
@@ -37,7 +48,7 @@ public class BlockDestructionManager {
 
     public void setBlockDestruction(BlockPos pos, int amount) {
         synchronized (locker) {
-            destructions.computeIfAbsent(pos.asLong(), p -> new Destruction()).set(amount);
+            getDestructions(pos).setBlockDestruction(pos, amount);
         }
     }
 
@@ -61,15 +72,61 @@ public class BlockDestructionManager {
             destructions.long2ObjectEntrySet().removeIf(entry -> entry.getValue().tick());
 
             if (world instanceof ServerWorld) {
-                Long2ObjectMap<Integer> sent = new Long2ObjectOpenHashMap<>();
-                destructions.forEach((p, item) -> {
+                destructions.forEach((chunkPos, chunk) -> chunk.sendUpdates((ServerWorld)world));
+            }
+        }
+    }
+
+    private class Chunk {
+        private final Long2ObjectMap<Destruction> destructions = new Long2ObjectOpenHashMap<>();
+
+        private final long pos;
+
+        Chunk(long pos) {
+            this.pos = pos;
+        }
+
+        public int getBlockDestruction(BlockPos pos) {
+            return destructions.getOrDefault(pos.asLong(), emptyDestruction).amount;
+        }
+
+        public void setBlockDestruction(BlockPos pos, int amount) {
+            destructions.computeIfAbsent(pos.asLong(), p -> new Destruction()).set(amount);
+        }
+
+        boolean tick() {
+            destructions.long2ObjectEntrySet().removeIf(e -> e.getValue().tick());
+            return destructions.isEmpty();
+        }
+
+        void sendUpdates(ServerWorld world) {
+            if (!world.getChunkManager().isChunkLoaded(ChunkPos.getPackedX(pos), ChunkPos.getPackedZ(pos))) {
+                return;
+            }
+
+            ThreadedAnvilChunkStorage storage = world.getChunkManager().threadedAnvilChunkStorage;
+
+            List<PlayerEntity> players = storage.getPlayersWatchingChunk(new ChunkPos(pos), false).collect(Collectors.toList());
+
+            if (!players.isEmpty()) {
+                Long2ObjectOpenHashMap<Integer> values = new Long2ObjectOpenHashMap<>();
+
+                destructions.forEach((blockPos, item) -> {
                     if (item.dirty) {
-                        sent.put(p.longValue(), (Integer)item.amount);
+                        item.dirty = false;
+                        values.put(blockPos.longValue(), (Integer)item.amount);
                     }
                 });
-                if (!sent.isEmpty()) {
-                    Channel.SERVER_BLOCK_DESTRUCTION.send(world, new MsgBlockDestruction(sent));
+
+                MsgBlockDestruction msg = new MsgBlockDestruction(values);
+
+                if (msg.toBuffer().writerIndex() > 1048576) {
+                    throw new IllegalStateException("Payload may not be larger than 1048576 bytes. Here's what we were trying to send: ["
+                            + values.size() + "]\n"
+                            + Arrays.toString(values.values().stream().mapToInt(Integer::intValue).toArray()));
                 }
+
+                players.forEach(player -> Channel.SERVER_BLOCK_DESTRUCTION.send(player, msg));
             }
         }
     }

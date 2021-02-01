@@ -22,7 +22,7 @@ public interface Channel {
     MPacketType<MsgOtherPlayerCapabilities> SERVER_OTHER_PLAYER_CAPABILITIES = serverToClients(new Identifier("unicopia", "other_player_capabilities"), MsgOtherPlayerCapabilities::new);
     CPacketType<MsgSpawnProjectile> SERVER_SPAWN_PROJECTILE = serverToClient(new Identifier("unicopia", "projectile_entity"), MsgSpawnProjectile::new);
 
-    MPacketType<MsgBlockDestruction> SERVER_BLOCK_DESTRUCTION = serverToClients(new Identifier("unicopia", "block_destruction"), MsgBlockDestruction::new);
+    CPacketType<MsgBlockDestruction> SERVER_BLOCK_DESTRUCTION = serverToClient(new Identifier("unicopia", "block_destruction"), MsgBlockDestruction::new);
 
     static void bootstrap() { }
 
