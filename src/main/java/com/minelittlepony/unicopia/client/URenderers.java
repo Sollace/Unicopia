@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.client;
 import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.client.particle.ChangelingMagicParticle;
 import com.minelittlepony.unicopia.client.particle.DiskParticle;
+import com.minelittlepony.unicopia.client.particle.HealthDrainParticle;
 import com.minelittlepony.unicopia.client.particle.MagicParticle;
 import com.minelittlepony.unicopia.client.particle.RainboomParticle;
 import com.minelittlepony.unicopia.client.particle.RainbowTrailParticle;
@@ -24,6 +25,7 @@ public interface URenderers {
         ParticleFactoryRegistry.getInstance().register(UParticles.UNICORN_MAGIC, createFactory(MagicParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.CHANGELING_MAGIC, createFactory(ChangelingMagicParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.RAIN_DROPS, createFactory(RaindropsParticle::new));
+        ParticleFactoryRegistry.getInstance().register(UParticles.HEALTH_DRAIN, createFactory(HealthDrainParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.RAINBOOM_RING, RainboomParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.RAINBOOM_TRAIL, RainbowTrailParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.SPHERE, SphereParticle::new);
@@ -33,10 +35,10 @@ public interface URenderers {
     }
 
     static <T extends ParticleEffect> PendingParticleFactory<T> createFactory(ParticleSupplier<T> supplier) {
-        return provider -> (effect, world, x, y, z, dx, dy, dz) -> supplier.get(provider, world, x, y, z, dx, dy, dz);
+        return provider -> (effect, world, x, y, z, dx, dy, dz) -> supplier.get(effect, provider, world, x, y, z, dx, dy, dz);
     }
 
     interface ParticleSupplier<T extends ParticleEffect> {
-        Particle get(SpriteProvider provider, ClientWorld world, double x, double y, double z, double dx, double dy, double dz);
+        Particle get(T effect, SpriteProvider provider, ClientWorld world, double x, double y, double z, double dx, double dy, double dz);
     }
 }

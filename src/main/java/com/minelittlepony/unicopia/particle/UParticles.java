@@ -19,6 +19,8 @@ public interface UParticles {
     ParticleType<SphereParticleEffect> SPHERE = register("sphere", FabricParticleTypes.complex(true, SphereParticleEffect.FACTORY));
     ParticleType<DiskParticleEffect> DISK = register("disk", FabricParticleTypes.complex(true, DiskParticleEffect.FACTORY));
 
+    ParticleType<FollowingParticleEffect> HEALTH_DRAIN = register("health_drain", FabricParticleTypes.complex(true, FollowingParticleEffect.FACTORY));
+
     static <T extends ParticleType<?>> T register(String name, T type) {
         return Registry.register(Registry.PARTICLE_TYPE, new Identifier("unicopia", name), type);
     }

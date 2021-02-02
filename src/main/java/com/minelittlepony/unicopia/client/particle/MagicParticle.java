@@ -4,13 +4,14 @@ import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.particle.ParticleEffect;
 
 public class MagicParticle extends SpriteBillboardParticle {
     private double startX;
     private double startY;
     private double startZ;
 
-    MagicParticle(SpriteProvider provider, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ, float r, float g, float b) {
+    MagicParticle(ParticleEffect effect, SpriteProvider provider, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ, float r, float g, float b) {
         super(w, x, y, z);
         setSprite(provider);
 
@@ -28,8 +29,8 @@ public class MagicParticle extends SpriteBillboardParticle {
         colorBlue = b;
     }
 
-    public MagicParticle(SpriteProvider provider, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
-        this(provider, w, x, y, z, vX, vY, vZ, 1, 1, 1);
+    public MagicParticle(ParticleEffect effect, SpriteProvider provider, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
+        this(effect, provider, w, x, y, z, vX, vY, vZ, 1, 1, 1);
 
         colorAlpha = 0.7F;
         colorGreen *= 0.3F;

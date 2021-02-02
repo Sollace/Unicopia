@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
@@ -79,7 +80,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     protected List<LivingEntity> getTargets(Pony player) {
-        List<Entity> list = VecHelper.findInReach(player.getMaster(), 3, this::canDrain);
+        List<Entity> list = VecHelper.findInRange(player.getMaster(), player.getWorld(), player.getOriginVector(), 3, this::canDrain);
 
         RayTraceHelper.<LivingEntity>findEntity(player.getMaster(), 17, 1,
                 looked -> looked instanceof LivingEntity && !list.contains(looked) && canDrain(looked))
@@ -122,6 +123,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     public float drainFrom(PlayerEntity changeling, LivingEntity living) {
+
         DamageSource d = MagicalDamageSource.create("feed", changeling);
 
         float damage = living.getHealth()/2;
@@ -131,6 +133,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
         }
 
         ParticleUtils.spawnParticles(UParticles.CHANGELING_MAGIC, living, 7);
+        ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, changeling, 0.2F), living, 1);
 
         if (changeling.hasStatusEffect(StatusEffects.NAUSEA)) {
             StatusEffectInstance effect = changeling.getStatusEffect(StatusEffects.NAUSEA);

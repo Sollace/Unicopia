@@ -3,10 +3,11 @@ package com.minelittlepony.unicopia.client.particle;
 import net.minecraft.client.particle.RainSplashParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.particle.ParticleEffect;
 
 public class RaindropsParticle extends RainSplashParticle {
 
-    public RaindropsParticle(SpriteProvider provider, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
+    public RaindropsParticle(ParticleEffect effect, SpriteProvider provider, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
         super(world, x, y, z);
         velocityY = -0.1;
         maxAge += 19;
