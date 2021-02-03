@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.item;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
@@ -22,7 +21,7 @@ public class ZapAppleRecipe extends ShapelessRecipe {
         @Override
         public ShapelessRecipe read(Identifier identifier, JsonObject json) {
             String group = JsonHelper.getString(json, "group", "");
-            DefaultedList<Ingredient> ingredients = getIngredients(JsonHelper.getArray(json, "ingredients"));
+            DefaultedList<Ingredient> ingredients = URecipes.getIngredients(JsonHelper.getArray(json, "ingredients"));
 
             if (ingredients.isEmpty()) {
                 throw new JsonParseException("No ingredients for shapeless recipe");
@@ -47,19 +46,6 @@ public class ZapAppleRecipe extends ShapelessRecipe {
             }
 
             return new ZapAppleRecipe(identifier, group, input.readItemStack(), ingredients);
-        }
-
-        private static DefaultedList<Ingredient> getIngredients(JsonArray json) {
-            DefaultedList<Ingredient> defaultedList = DefaultedList.of();
-
-            for (int i = 0; i < json.size(); ++i) {
-                Ingredient ingredient = Ingredient.fromJson(json.get(i));
-                if (!ingredient.isEmpty()) {
-                    defaultedList.add(ingredient);
-                }
-            }
-
-            return defaultedList;
         }
     }
 }

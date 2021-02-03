@@ -13,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.item.ItemGroup;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponents;
 import net.minecraft.item.MusicDiscItem;
@@ -38,6 +39,13 @@ public interface UItems {
     Item MUSIC_DISC_PET = register("music_disc_pet", USounds.RECORD_PET);
     Item MUSIC_DISC_POPULAR = register("music_disc_popular", USounds.RECORD_POPULAR);
     Item MUSIC_DISC_FUNK = register("music_disc_funk", USounds.RECORD_FUNK);
+
+    FriendshipBraceletItem FRIENDSHIP_BRACELET = register("friendship_bracelet", new FriendshipBraceletItem(
+            new FabricItemSettings()
+            .rarity(Rarity.UNCOMMON)
+            .group(ItemGroup.TOOLS)
+            .equipmentSlot(FriendshipBraceletItem::getPreferredEquipmentSlot)
+    ));
 
     static <T extends Item> T register(String name, T item) {
         ITEMS.add(item);

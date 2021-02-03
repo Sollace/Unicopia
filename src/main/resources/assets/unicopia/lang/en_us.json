@@ -5,6 +5,10 @@
   "itemGroup.unicopia.items": "Unicopia - Misc.",
   "itemGroup.unicopia.horsefeed": "Unicopia - Horse Feed",
 
+  "item.unicopia.friendship_bracelet": "Bangle of Comradery",
+  "item.unicopia.friendship_bracelet.issuer": "Signed by %s",
+  "item.unicopia.friendship_bracelet.glowing": "Glowing",
+
   "item.unicopia.green_apple": "Granny Smith Apple",
   "item.unicopia.sweet_apple": "Sweet Apple Acres Apple",
   "item.unicopia.sour_apple": "Sour Apple",

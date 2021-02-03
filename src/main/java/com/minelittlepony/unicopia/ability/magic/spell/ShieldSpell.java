@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
@@ -114,7 +115,8 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
         return source.findAllEntitiesInRange(radius)
             .filter(entity -> {
                 return
-                        (entity instanceof LivingEntity
+                        !FriendshipBraceletItem.isComrade(source, entity)
+                        && (entity instanceof LivingEntity
                         || entity instanceof TntEntity
                         || entity instanceof FallingBlockEntity
                         || entity instanceof EyeOfEnderEntity

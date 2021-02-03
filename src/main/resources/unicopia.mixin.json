@@ -24,6 +24,7 @@
     "MixinWorld"
   ],
   "client": [
+    "client.MixinArmorFeatureRenderer",
     "client.MixinCamera",
     "client.MixinClientPlayerInteractionManager",
     "client.MixinEntityRenderDispatcher",

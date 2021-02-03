@@ -9,15 +9,18 @@ import com.minelittlepony.unicopia.client.particle.RainboomParticle;
 import com.minelittlepony.unicopia.client.particle.RainbowTrailParticle;
 import com.minelittlepony.unicopia.client.particle.RaindropsParticle;
 import com.minelittlepony.unicopia.client.particle.SphereParticle;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.particle.UParticles;
 
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry.PendingParticleFactory;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.item.DyeableItem;
 import net.minecraft.particle.ParticleEffect;
 
 public interface URenderers {
@@ -32,6 +35,8 @@ public interface URenderers {
         ParticleFactoryRegistry.getInstance().register(UParticles.DISK, DiskParticle::new);
 
         EntityRendererRegistry.INSTANCE.register(UEntities.THROWN_ITEM, (manager, context) -> new FlyingItemEntityRenderer<>(manager, context.getItemRenderer()));
+
+        ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack), UItems.FRIENDSHIP_BRACELET);
     }
 
     static <T extends ParticleEffect> PendingParticleFactory<T> createFactory(ParticleSupplier<T> supplier) {
