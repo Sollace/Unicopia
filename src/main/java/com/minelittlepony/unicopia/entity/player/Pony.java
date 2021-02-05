@@ -99,6 +99,9 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     private boolean invisible = false;
 
+    @Nullable
+    private Runnable landEvent;
+
     public Pony(PlayerEntity player) {
         this.entity = player;
         this.mana = new ManaContainer(this);
@@ -325,6 +328,10 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         }
     }
 
+    public void waitForFall(Runnable action) {
+        landEvent = action;
+    }
+
     public Optional<Float> onImpact(float distance, float damageMultiplier) {
 
         float g = gravity.getGravityModifier();
@@ -351,6 +358,10 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     }
 
     private void handleFall(float distance, float damageMultiplier) {
+        if (landEvent != null) {
+            landEvent.run();
+            landEvent = null;
+        }
         getSpellOrEmpty(DisguiseSpell.class, false).ifPresent(spell -> {
             spell.getDisguise().onImpact(this, distance, damageMultiplier);
         });

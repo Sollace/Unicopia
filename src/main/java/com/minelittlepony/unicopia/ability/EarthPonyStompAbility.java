@@ -6,25 +6,18 @@ import com.minelittlepony.unicopia.BlockDestructionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
+import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.WorldEvent;
-import com.minelittlepony.unicopia.util.shape.Shape;
-import com.minelittlepony.unicopia.util.shape.Sphere;
-
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.BlockStateParticleEffect;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
@@ -80,52 +73,54 @@ public class EarthPonyStompAbility implements Ability<Hit> {
         PlayerEntity player = iplayer.getMaster();
 
         BlockPos ppos = player.getBlockPos();
-        BlockPos pos = getSolidBlockBelow(ppos, player.getEntityWorld());
+        BlockPos pos = PosHelper.findSolidGroundAt(player.getEntityWorld(), ppos);
 
         player.addVelocity(0, -(ppos.getSquaredDistance(pos)), 0);
 
-        iplayer.getWorld().getOtherEntities(player, areaOfEffect.offset(iplayer.getOriginVector())).forEach(i -> {
-            double dist = Math.sqrt(pos.getSquaredDistance(i.getBlockPos()));
+        iplayer.waitForFall(() -> {
+            BlockPos center = PosHelper.findSolidGroundAt(player.getEntityWorld(), player.getBlockPos());
 
-            if (dist <= rad + 3) {
-                double force = dist / 5;
-                i.addVelocity(
-                        -(player.getX() - i.getX()) / force,
-                        -(player.getY() - i.getY() - 2) / force + (dist < 1 ? dist : 0),
-                        -(player.getZ() - i.getZ()) / force);
+            iplayer.getWorld().getOtherEntities(player, areaOfEffect.offset(iplayer.getOriginVector())).forEach(i -> {
+                double dist = Math.sqrt(center.getSquaredDistance(i.getBlockPos()));
 
-                DamageSource damage = MagicalDamageSource.create("smash", player);
+                if (dist <= rad + 3) {
+                    double force = dist / 5;
+                    i.addVelocity(
+                            -(player.getX() - i.getX()) / force,
+                            -(player.getY() - i.getY() - 2) / force + (dist < 1 ? dist : 0),
+                            -(player.getZ() - i.getZ()) / force);
 
-                double amount = (4 * player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue()) / (float)dist;
+                    DamageSource damage = MagicalDamageSource.create("smash", player);
 
-                if (i instanceof PlayerEntity) {
-                    Race race = Pony.of((PlayerEntity)i).getSpecies();
-                    if (race.canUseEarth()) {
-                        amount /= 3;
+                    double amount = (4 * player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue()) / (float)dist;
+
+                    if (i instanceof PlayerEntity) {
+                        Race race = Pony.of((PlayerEntity)i).getSpecies();
+                        if (race.canUseEarth()) {
+                            amount /= 3;
+                        }
+
+                        if (race.canFly()) {
+                            amount *= 4;
+                        }
                     }
 
-                    if (race.canFly()) {
-                        amount *= 4;
-                    }
+                    i.damage(damage, (float)amount);
                 }
+            });
 
-                i.damage(damage, (float)amount);
-            }
+            BlockPos.iterate(center.add(-rad, -rad, -rad), center.add(rad, rad, rad)).forEach(i -> {
+                double dist = Math.sqrt(i.getSquaredDistance(player.getX(), player.getY(), player.getZ(), true));
+
+                if (dist <= rad) {
+                    spawnEffect(player.world, i, dist);
+                }
+            });
+
+            ParticleUtils.spawnParticle(player.world, UParticles.GROUND_POUND, player.getX(), player.getY() - 1, player.getZ(), 0, 0, 0);
+
+            iplayer.subtractEnergyCost(rad);
         });
-
-        BlockPos.iterate(pos.add(-rad, -rad, -rad), pos.add(rad, rad, rad)).forEach(i -> {
-            double dist = Math.sqrt(i.getSquaredDistance(player.getX(), player.getY(), player.getZ(), true));
-
-            if (dist <= rad) {
-                spawnEffect(player.world, i, dist);
-            }
-        });
-
-        for (int i = 1; i < 202; i+= 2) {
-            spawnParticleRing(player, i, 0);
-        }
-
-        iplayer.subtractEnergyCost(rad);
     }
 
     private void spawnEffect(World w, BlockPos pos, double dist) {
@@ -155,43 +150,5 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
     @Override
     public void postApply(Pony player, AbilitySlot slot) {
-        int timeDiff = getCooldownTime(player) - player.getAbilities().getStat(slot).getRemainingCooldown();
-
-        if (player.getMaster().getEntityWorld().getTime() % 1 == 0 || timeDiff == 0) {
-            spawnParticleRing(player.getMaster(), timeDiff, 1);
-        }
-    }
-
-    private void spawnParticleRing(PlayerEntity player, int timeDiff, double yVel) {
-        int animationTicks = timeDiff / 7;
-        if (animationTicks < 6) {
-            Shape shape = new Sphere(true, animationTicks, 1, 0, 1);
-
-            double y = 0.5 + (Math.sin(animationTicks) * 1.5);
-
-            yVel *= y * 5;
-
-            for (int i = 0; i < shape.getVolumeOfSpawnableSpace(); i++) {
-                Vec3d point = shape.computePoint(player.getEntityWorld().random).add(player.getPos());
-                player.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.DIRT.getDefaultState()),
-                        point.x,
-                        point.y,
-                        point.z,
-                        0, yVel, 0
-                );
-            }
-        }
-    }
-
-    private static BlockPos getSolidBlockBelow(BlockPos pos, World w) {
-        while (!World.isOutOfBuildLimitVertically(pos)) {
-            pos = pos.down();
-
-            if (Block.isFaceFullSquare(w.getBlockState(pos).getCollisionShape(w, pos, ShapeContext.absent()), Direction.UP)) {
-                return pos;
-            }
-        }
-
-        return pos;
     }
 }
