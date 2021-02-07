@@ -7,7 +7,7 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class WorldTribeManager extends PersistentState {
 
-    private Race defaultRace = Unicopia.getConfig().getPrefferedRace();
+    private Race defaultRace = Unicopia.getConfig().preferredRace.get();
 
     public WorldTribeManager(ServerWorld world) {
         super(nameFor(world.getDimension()));
@@ -15,6 +15,10 @@ public class WorldTribeManager extends PersistentState {
 
     public Race getDefaultRace() {
         return defaultRace;
+    }
+
+    public Race setDefaultRace(Race race) {
+        return defaultRace = race;
     }
 
     @Override

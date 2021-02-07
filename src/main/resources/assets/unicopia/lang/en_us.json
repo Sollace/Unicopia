@@ -219,6 +219,14 @@
   "commands.gravity.set": "Your gravity was set to %2$f",
   "commands.gravity.set.other": "Set %1$s's gravity to %2$f",
 
+  "unicopia.options.title": "Unicopia Options",
+  "unicopia.options.ignore_mine_lp": "Ignore Mine Little Pony",
+  "unicopia.options.preferred_race": "Preferred Race: %s",
+  "unicopia.options.client": "Client Settings",
+  "unicopia.options.world": "World Settings",
+  "unicopia.options.world.default_race": "Default Race: %s",
+  "unicopia.options.lan": "Multiplayer (LAN) Settings",
+
   "unicopia.race.human": "Human",
   "unicopia.race.human.alt": "Humans",
   "unicopia.race.earth": "Earth Pony",

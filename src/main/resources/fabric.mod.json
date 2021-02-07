@@ -5,6 +5,10 @@
   "name": "Unicopia",
   "description": "Magical Abilities for Mine Little Pony!",
   "authors": [ "Sollace" ],
+  "contact": {
+    "sources": "https://github.com/Sollace/Unicopia",
+    "issues": "https://github.com/Sollace/Unicopia/issues"
+  },
   "mixins": [
     "unicopia.mixin.json"
   ],
@@ -16,6 +20,9 @@
     ],
     "client": [
       "com.minelittlepony.unicopia.client.UnicopiaClient"
+    ],
+    "modmenu": [
+      "com.minelittlepony.unicopia.modmenu.UMenuFactory"
     ]
   },
   "depends": {
@@ -23,6 +30,11 @@
     "fabric-api-base": ">=0.1.0",
     "fabric-events-lifecycle-v0": ">=0.1.0",
     "fabric-keybindings-v0": ">=0.1.0",
-    "fabric-rendering-v1": ">=0.1.0"
+    "fabric-rendering-v1": ">=0.1.0",
+    "kirin": "*"
+  },
+  "suggests": {
+    "minelp": "*",
+    "modmenu": "*"
   }
 }

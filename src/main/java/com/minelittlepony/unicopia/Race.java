@@ -105,7 +105,7 @@ public enum Race implements Affine {
             return false;
         }
 
-        Set<Race> whitelist = Unicopia.getConfig().getSpeciesWhiteList();
+        Set<Race> whitelist = Unicopia.getConfig().speciesWhiteList.get();
 
         return isDefault()
                 || whitelist.isEmpty()
