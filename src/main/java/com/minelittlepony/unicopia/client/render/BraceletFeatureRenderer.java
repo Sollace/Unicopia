@@ -18,6 +18,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
@@ -42,7 +43,7 @@ public class BraceletFeatureRenderer<
         ItemStack item = entity.getEquippedStack(EquipmentSlot.CHEST);
 
         if (item.getItem() instanceof FriendshipBraceletItem) {
-            VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(TEXTURE), false, false);
+
 
             int j = ((DyeableItem)item.getItem()).getColor(item);
 
@@ -50,6 +51,15 @@ public class BraceletFeatureRenderer<
 
             BraceletModel model = alex ? alexModel : steveModel;
 
+
+            if (entity instanceof ArmorStandEntity) {
+                ModelPart arm = entity.getMainArm() == Arm.LEFT ? getContextModel().leftArm : getContextModel().rightArm;
+                arm.visible = true;
+                VertexConsumer consumer = renderContext.getBuffer(getContextModel().getLayer(getTexture(entity)));
+                arm.render(stack, consumer, lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
+            }
+
+            VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(TEXTURE), false, false);
             model.setAngles(getContextModel());
             model.setVisible(entity.getMainArm());
             model.render(stack, consumer, ((GlowableItem)item.getItem()).isGlowing(item) ? 0x0F00F0 : lightUv, OverlayTexture.DEFAULT_UV, Color.r(j), Color.g(j), Color.b(j), 1);
