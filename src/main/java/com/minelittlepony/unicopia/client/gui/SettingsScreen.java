@@ -30,12 +30,10 @@ public class SettingsScreen extends GameGui {
     public SettingsScreen(Screen parent) {
         super(new TranslatableText("unicopia.options.title"), parent);
 
-        content.margin.top = 30;
-        content.margin.bottom = 30;
+        content.margin.setVertical(30);
+        content.padding.setHorizontal(10);
         content.padding.top = 10;
-        content.padding.right = 10;
         content.padding.bottom = 20;
-        content.padding.left = 10;
     }
 
     @Override
