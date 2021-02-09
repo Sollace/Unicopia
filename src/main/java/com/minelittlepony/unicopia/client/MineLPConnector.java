@@ -8,7 +8,7 @@ import net.minecraft.client.MinecraftClient;
 
 public final class MineLPConnector {
     public static Race getPlayerPonyRace() {
-        if (!FabricLoader.getInstance().isModLoaded("minelp")) {
+        if (!FabricLoader.getInstance().isModLoaded("minelp") || MinecraftClient.getInstance().player == null) {
             return Race.HUMAN;
         }
 

@@ -140,8 +140,8 @@ public class RaceChangeStatusEffect extends StatusEffect {
             return String.format("unicopia.effect.tribe.stage.%s", name().toLowerCase());
         }
 
-        public Text getMessage(Race species) {
-            return new TranslatableText(getTranslationKey(), new TranslatableText(species.getTranslationKey()));
+        public Text getMessage(Race race) {
+            return new TranslatableText(getTranslationKey(), race.getDisplayName());
         }
     }
 

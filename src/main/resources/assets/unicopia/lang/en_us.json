@@ -221,7 +221,13 @@
 
   "unicopia.options.title": "Unicopia Options",
   "unicopia.options.ignore_mine_lp": "Ignore Mine Little Pony",
+  "unicopia.options.ignore_mine_lp.missing": "* Mine Little Pony is not installed",
+  "unicopia.options.ignore_mine_lp.detected": "* Your detected race is %s",
+  "unicopia.options.ignore_mine_lp.undetected": "* We will not use your detected race",
   "unicopia.options.preferred_race": "Preferred Race: %s",
+  "unicopia.options.whitelist": "Enable Whitelist",
+  "unicopia.options.whitelist.race": "Allow %ss",
+  "unicopia.options.whitelist.details": "* Select the races you wish to allow",
   "unicopia.options.client": "Client Settings",
   "unicopia.options.world": "World Settings",
   "unicopia.options.world.default_race": "Default Race: %s",

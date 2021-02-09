@@ -15,6 +15,8 @@ import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.item.toxin.FoodType;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public enum Race implements Affine {
@@ -94,6 +96,10 @@ public enum Race implements Affine {
 
     public boolean canInteractWithClouds() {
         return canFly() && this != CHANGELING && this != BAT;
+    }
+
+    public Text getDisplayName() {
+        return new TranslatableText(getTranslationKey());
     }
 
     public String getTranslationKey() {
