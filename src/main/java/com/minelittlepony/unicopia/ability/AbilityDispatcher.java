@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Tickable;
 
@@ -195,6 +196,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
                     if (data != null) {
                         Channel.CLIENT_PLAYER_ABILITY.send(new MsgPlayerAbility<>(ability, data));
                     } else {
+                        player.getEntity().playSound(SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
                         setCooldown(0);
                     }
                 }
