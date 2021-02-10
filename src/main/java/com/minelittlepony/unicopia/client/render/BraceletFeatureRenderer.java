@@ -14,7 +14,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -59,10 +58,13 @@ public class BraceletFeatureRenderer<
                 arm.render(stack, consumer, lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
             }
 
-            VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(TEXTURE), false, false);
+            boolean glowing = ((GlowableItem)item.getItem()).isGlowing(item);
+
+            VertexConsumer consumer = CanvasCompat.getGlowingConsumer(glowing, renderContext, RenderLayer.getArmorCutoutNoCull(TEXTURE));
+
             model.setAngles(getContextModel());
             model.setVisible(entity.getMainArm());
-            model.render(stack, consumer, ((GlowableItem)item.getItem()).isGlowing(item) ? 0x0F00F0 : lightUv, OverlayTexture.DEFAULT_UV, Color.r(j), Color.g(j), Color.b(j), 1);
+            model.render(stack, consumer, glowing ? 0x0F00F0 : lightUv, OverlayTexture.DEFAULT_UV, Color.r(j), Color.g(j), Color.b(j), 1);
         }
     }
 
