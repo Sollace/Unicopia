@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "unicopia_canvas_compat",
+  "version": "${version}",
+  "name": "Unicopia-Canvas_compat",
+  "description": "Magical Abilities for Mine Little Pony!",
+  "authors": [ "Sollace" ],
+  "contact": {
+    "sources": "https://github.com/Sollace/Unicopia",
+    "issues": "https://github.com/Sollace/Unicopia/issues"
+  },
+  "mixins": [ ],
+  "license": "MIT",
+  "environment": "*",
+  "custom": {
+    "modmenu:clientsideOnly": true,
+    "modmenu:api": true
+  }
+}

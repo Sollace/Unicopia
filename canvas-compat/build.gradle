@@ -1,6 +1,6 @@
 plugins {
     id 'java-library'
-    id 'fabric-loom' version '0.4-SNAPSHOT'
+    id 'fabric-loom'
     id 'maven-publish'
 }
 
@@ -18,17 +18,17 @@ description = project.displayname
 archivesBaseName = project.name
 
 minecraft {
-    refmapName = 'unicopia.mixin.refmap.json'
+    
 }
 
 repositories {
     maven {
-        name = 'minelp'
-        url = 'http://repo.minelittlepony-mod.com/maven/snapshot'
+        name = "dblsaiko"
+        url = "https://maven.dblsaiko.net/"
     }
     maven {
-        name = 'minelp-release'
-        url = 'http://repo.minelittlepony-mod.com/maven/release'
+        name = "Cotton"
+        url = "http://server.bbkr.space:8081/artifactory/libs-release/"
     }
 }
 
@@ -48,17 +48,10 @@ dependencies {
 
     modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modApi "com.minelittlepony:MineLittlePony:${project.minelp_version}"
-
-    modApi "com.minelittlepony:Kirin:${project.kirin_version}"
-    include "com.minelittlepony:Kirin:${project.kirin_version}"
-
-    modCompileOnly("io.github.prospector:modmenu:${project.modmenu_version}") {
-        transitive = false
+    modCompileOnly("grondag:canvas-mc116:${project.canvas_version}") {
+        exclude(group: "net.fabricmc.fabric-api")
+        exclude(module: "fabric-loader")
     }
-
-    modCompileOnly project(":canvas-compat")
-    include project(":canvas-compat")
 }
 
 processResources {

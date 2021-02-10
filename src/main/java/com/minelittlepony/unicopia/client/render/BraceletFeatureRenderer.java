@@ -50,7 +50,6 @@ public class BraceletFeatureRenderer<
 
             BraceletModel model = alex ? alexModel : steveModel;
 
-
             if (entity instanceof ArmorStandEntity) {
                 ModelPart arm = entity.getMainArm() == Arm.LEFT ? getContextModel().leftArm : getContextModel().rightArm;
                 arm.visible = true;
