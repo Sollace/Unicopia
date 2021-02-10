@@ -5,9 +5,9 @@ import java.util.Optional;
 
 import com.minelittlepony.unicopia.Owned;
 
-import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.world.World;
@@ -35,8 +35,8 @@ public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Channel.
 
     @SuppressWarnings("unchecked")
     @Override
-    public void handle(PacketContext context) {
-        World world = context.getPlayer().world;
+    public void handle(PlayerEntity sender) {
+        World world = sender.world;
         Entity entity = getEntityTypeId().create(world);
 
         entity.updateTrackedPosition(getX(), getY(), getZ());

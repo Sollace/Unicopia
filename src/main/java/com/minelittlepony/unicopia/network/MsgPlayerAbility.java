@@ -5,8 +5,8 @@ import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.ability.Abilities;
 
-import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.util.Identifier;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 
 public class MsgPlayerAbility<T extends Hit> implements Channel.Packet {
@@ -33,8 +33,8 @@ public class MsgPlayerAbility<T extends Hit> implements Channel.Packet {
     }
 
     @Override
-    public void handle(PacketContext context) {
-        Pony player = Pony.of(context.getPlayer());
+    public void handle(PlayerEntity sender) {
+        Pony player = Pony.of(sender);
         if (player == null) {
             return;
         }

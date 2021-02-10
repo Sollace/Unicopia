@@ -4,9 +4,9 @@ import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.player.PlayerEntity;
 
 public class MsgBlockDestruction implements Channel.Packet {
 
@@ -34,7 +34,7 @@ public class MsgBlockDestruction implements Channel.Packet {
     }
 
     @Override
-    public void handle(PacketContext context) {
+    public void handle(PlayerEntity sender) {
         ClientBlockDestructionManager destr = ((ClientBlockDestructionManager.Source)MinecraftClient.getInstance().worldRenderer).getDestructionManager();
 
         destructions.forEach((i, d) -> {

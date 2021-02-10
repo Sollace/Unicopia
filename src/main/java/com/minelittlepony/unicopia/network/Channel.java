@@ -4,14 +4,15 @@ import java.util.function.Function;
 
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.EnvType;
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
-import net.fabricmc.fabric.api.network.PacketContext;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.World;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public interface Channel {
 
@@ -27,20 +28,26 @@ public interface Channel {
     static void bootstrap() { }
 
     static <T extends Packet> SPacketType<T> clientToServer(Identifier id, Function<PacketByteBuf, T> factory) {
-        ServerSidePacketRegistry.INSTANCE.register(id, (context, buffer) -> factory.apply(buffer).handleOnMain(context));
-        return () -> id;
-    }
-
-    static <T extends Packet> MPacketType<T> serverToClients(Identifier id, Function<PacketByteBuf, T> factory) {
-        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            ClientSidePacketRegistry.INSTANCE.register(id, (context, buffer) -> factory.apply(buffer).handleOnMain(context));
-        }
+        ServerPlayNetworking.registerGlobalReceiver(id, (server, player, handler, buffer, responder) -> {
+            factory.apply(buffer).handleOnMain(server, player);
+        });
         return () -> id;
     }
 
     static <T extends Packet> CPacketType<T> serverToClient(Identifier id, Function<PacketByteBuf, T> factory) {
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            ClientSidePacketRegistry.INSTANCE.register(id, (context, buffer) -> factory.apply(buffer).handleOnMain(context));
+            ClientPlayNetworking.registerGlobalReceiver(id, (client, ignore1, buffer, ignore2) -> {
+                factory.apply(buffer).handleOnMain(client, client.player);
+            });
+        }
+        return () -> id;
+    }
+
+    static <T extends Packet> MPacketType<T> serverToClients(Identifier id, Function<PacketByteBuf, T> factory) {
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            ClientPlayNetworking.registerGlobalReceiver(id, (client, ignore1, buffer, ignore2) -> {
+                factory.apply(buffer).handleOnMain(client, client.player);
+            });
         }
         return () -> id;
     }
@@ -51,13 +58,9 @@ public interface Channel {
         default void send(World world, T packet) {
             world.getPlayers().forEach(player -> {
                 if (player != null) {
-                    ServerSidePacketRegistry.INSTANCE.sendToPlayer(player, getId(), packet.toBuffer());
+                    ServerPlayNetworking.send((ServerPlayerEntity)player, getId(), packet.toBuffer());
                 }
             });
-        }
-
-        default net.minecraft.network.Packet<?> toPacket(T packet) {
-            return ServerSidePacketRegistry.INSTANCE.toPacket(getId(), packet.toBuffer());
         }
     }
 
@@ -65,11 +68,11 @@ public interface Channel {
         Identifier getId();
 
         default void send(PlayerEntity recipient, T packet) {
-            ServerSidePacketRegistry.INSTANCE.sendToPlayer(recipient, getId(), packet.toBuffer());
+            ServerPlayNetworking.send((ServerPlayerEntity)recipient, getId(), packet.toBuffer());
         }
 
         default net.minecraft.network.Packet<?> toPacket(T packet) {
-            return ServerSidePacketRegistry.INSTANCE.toPacket(getId(), packet.toBuffer());
+            return ServerPlayNetworking.createS2CPacket(getId(), packet.toBuffer());
         }
     }
 
@@ -80,24 +83,17 @@ public interface Channel {
             if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
                 throw new RuntimeException("Client packet send called by the server");
             }
-            ClientSidePacketRegistry.INSTANCE.sendToServer(getId(), packet.toBuffer());
-        }
-
-        default net.minecraft.network.Packet<?> toPacket(T packet) {
-            if (FabricLoader.getInstance().getEnvironmentType() != EnvType.CLIENT) {
-                throw new RuntimeException("Client packet send called by the server");
-            }
-            return ClientSidePacketRegistry.INSTANCE.toPacket(getId(), packet.toBuffer());
+            ClientPlayNetworking.send(getId(), packet.toBuffer());
         }
     }
 
     interface Packet {
-        void handle(PacketContext context);
+        void handle(PlayerEntity sender);
 
         void toBuffer(PacketByteBuf buffer);
 
-        default void handleOnMain(PacketContext context) {
-            context.getTaskQueue().execute(() -> handle(context));
+        default void handleOnMain(ThreadExecutor<?> server, PlayerEntity player) {
+            server.execute(() -> handle(player));
         }
 
         default PacketByteBuf toBuffer() {

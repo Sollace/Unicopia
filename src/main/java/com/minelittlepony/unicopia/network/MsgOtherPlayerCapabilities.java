@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 
 public class MsgOtherPlayerCapabilities extends MsgPlayerCapabilities {
@@ -19,7 +19,7 @@ public class MsgOtherPlayerCapabilities extends MsgPlayerCapabilities {
     }
 
     @Override
-    protected Pony getRecipient(PacketContext context) {
+    protected Pony getRecipient(PlayerEntity sender) {
         return Pony.of(MinecraftClient.getInstance().world.getPlayerByUuid(playerId));
     }
 }

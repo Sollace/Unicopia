@@ -4,7 +4,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import net.fabricmc.fabric.api.network.PacketContext;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.world.ServerWorld;
 
@@ -26,15 +26,15 @@ public class MsgRequestCapabilities implements Channel.Packet {
     }
 
     @Override
-    public void handle(PacketContext context) {
-        Pony player = Pony.of(context.getPlayer());
+    public void handle(PlayerEntity sender) {
+        Pony player = Pony.of(sender);
 
         Race worldDefaultRace = WorldTribeManager.forWorld((ServerWorld)player.getWorld()).getDefaultRace();
 
         if (player.getSpecies().isDefault() || (player.getSpecies() == worldDefaultRace && !player.isSpeciesPersisted())) {
-            player.setSpecies(clientPreferredRace.isPermitted(context.getPlayer()) ? clientPreferredRace : worldDefaultRace);
+            player.setSpecies(clientPreferredRace.isPermitted(sender) ? clientPreferredRace : worldDefaultRace);
         }
 
-        Channel.SERVER_PLAYER_CAPABILITIES.send(context.getPlayer(), new MsgPlayerCapabilities(true, player));
+        Channel.SERVER_PLAYER_CAPABILITIES.send(sender, new MsgPlayerCapabilities(true, player));
     }
 }

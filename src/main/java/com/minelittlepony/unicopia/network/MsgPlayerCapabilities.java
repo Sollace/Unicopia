@@ -11,8 +11,8 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
-import net.fabricmc.fabric.api.network.PacketContext;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 
@@ -51,8 +51,8 @@ public class MsgPlayerCapabilities implements Channel.Packet {
     }
 
     @Override
-    public void handle(PacketContext context) {
-        Pony player = getRecipient(context);
+    public void handle(PlayerEntity sender) {
+        Pony player = getRecipient(sender);
         if (player == null) {
             Unicopia.LOGGER.warn("Skipping capabilities for unknown player " + playerId.toString());
         }
@@ -63,7 +63,7 @@ public class MsgPlayerCapabilities implements Channel.Packet {
         }
     }
 
-    protected Pony getRecipient(PacketContext context) {
-        return Pony.of(context.getPlayer());
+    protected Pony getRecipient(PlayerEntity sender) {
+        return Pony.of(sender);
     }
 }
