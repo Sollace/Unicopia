@@ -4,19 +4,6 @@ plugins {
     id 'maven-publish'
 }
 
-targetCompatibility = JavaVersion.VERSION_1_8
-sourceCompatibility = JavaVersion.VERSION_1_8
-
-version = "${project.minecraft_version}-${project.version}"
-
-if (project.release != 'RELEASE') {
-    version += "-${project.release}"
-}
-
-group = project.group
-description = project.displayname
-archivesBaseName = project.name
-
 minecraft {
     
 }
@@ -29,13 +16,6 @@ repositories {
     maven {
         name = "Cotton"
         url = "http://server.bbkr.space:8081/artifactory/libs-release/"
-    }
-}
-
-// check for updates every build when on CI
-if (System.env.CI) {
-    configurations.all {
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
 }
 
@@ -52,26 +32,4 @@ dependencies {
         exclude(group: "net.fabricmc.fabric-api")
         exclude(module: "fabric-loader")
     }
-}
-
-processResources {
-    inputs.property "version", project.version
-
-    from(sourceSets.main.resources.srcDirs) {
-        include "fabric.mod.json"
-        expand "version": project.version
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude "fabric.mod.json"
-    }
-}
-
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
-    from sourceSets.main.allSource
 }
