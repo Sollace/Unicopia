@@ -1,75 +1,165 @@
 package com.minelittlepony.unicopia;
 
-import java.util.stream.Collectors;
-
-import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.Weighted;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.LeavesBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 
 public final class TreeType {
-    // TODO: move to datapack
-    private static final Set<TreeType> REGISTRY = new HashSet<>();
+    public static final TreeType NONE = new TreeType(
+            new Identifier("unicopia", "none"),
+            false,
+            new Weighted<Supplier<ItemStack>>(),
+            Collections.emptySet(),
+            Collections.emptySet()
+    );
+    private static final Direction[] WIDE_DIRS = new Direction[] { Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST };
 
-    private static final Supplier<ItemStack> ROTTEN = () -> new ItemStack(UItems.ROTTEN_APPLE);
-    private static final Supplier<ItemStack> SWEET = () -> new ItemStack(UItems.SWEET_APPLE);
-    private static final Supplier<ItemStack> GREEN = () -> new ItemStack(UItems.GREEN_APPLE);
-    private static final Supplier<ItemStack> ZAP = () -> new ItemStack(UItems.ZAP_APPLE);
-    private static final Supplier<ItemStack> SOUR = () -> new ItemStack(UItems.SOUR_APPLE);
-    private static final Supplier<ItemStack> RED = () -> new ItemStack(Items.APPLE);
-
-    public static final TreeType NONE = new TreeType("none", new Weighted<Supplier<ItemStack>>());
-    public static final TreeType OAK = new TreeType("oak", new Weighted<Supplier<ItemStack>>()
-            .put(1, ROTTEN)
-            .put(2, GREEN)
-            .put(3, RED), Blocks.OAK_LOG, Blocks.OAK_LEAVES);
-    public static final TreeType BIRCH = new TreeType("birch", new Weighted<Supplier<ItemStack>>()
-            .put(1, ROTTEN)
-            .put(2, SWEET)
-            .put(5, GREEN), Blocks.BIRCH_LOG, Blocks.BIRCH_LEAVES);
-    public static final TreeType SPRUCE = new TreeType("spruce", new Weighted<Supplier<ItemStack>>()
-            .put(1, SOUR)
-            .put(2, GREEN)
-            .put(3, SWEET)
-            .put(4, ROTTEN), Blocks.SPRUCE_LOG, Blocks.SPRUCE_LEAVES);
-    public static final TreeType ACACIA = new TreeType("acacia", new Weighted<Supplier<ItemStack>>()
-            .put(1, ROTTEN)
-            .put(2, SWEET)
-            .put(5, GREEN), Blocks.ACACIA_LOG, Blocks.ACACIA_LEAVES);
-    public static final TreeType JUNGLE = new TreeType("jungle", new Weighted<Supplier<ItemStack>>()
-            .put(5, GREEN)
-            .put(2, SWEET)
-            .put(1, ZAP), Blocks.JUNGLE_LOG, Blocks.JUNGLE_LEAVES);
-    public static final TreeType DARK_OAK = new TreeType("dark_oak", new Weighted<Supplier<ItemStack>>()
-            .put(1, ROTTEN)
-            .put(2, SWEET)
-            .put(5, ZAP), Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_LEAVES);
-
-    private final String name;
-    private final Set<Identifier> blocks;
+    private final Identifier name;
+    private final boolean wideTrunk;
+    private final Set<Identifier> logs;
+    private final Set<Identifier> leaves;
     private final Weighted<Supplier<ItemStack>> pool;
 
-    private TreeType(String name, Weighted<Supplier<ItemStack>> pool, Block...blocks) {
+    TreeType(Identifier name, boolean wideTrunk, Weighted<Supplier<ItemStack>> pool, Set<Identifier> logs, Set<Identifier> leaves) {
         this.name = name;
+        this.wideTrunk = wideTrunk;
         this.pool = pool;
-        this.blocks = Arrays.stream(blocks).map(Registry.BLOCK::getId)
-                .collect(Collectors.toSet());
-        REGISTRY.add(this);
+        this.logs = logs;
+        this.leaves = leaves;
+    }
+
+    public void traverse(World w, BlockPos start, Reactor consumer) {
+        traverse(w, start, consumer, consumer);
+    }
+
+    public void traverse(World w, BlockPos start, Reactor logConsumer, Reactor leavesConsumer) {
+        traverse(new HashSet<>(), new HashSet<>(), w, start, 0, 50, logConsumer, leavesConsumer);
+    }
+
+    public void traverse(Set<BlockPos> logs, Set<BlockPos> leaves, World w, BlockPos start, int recurseLevel, int maxRecurse, Reactor logConsumer, Reactor leavesConsumer) {
+        if (this == NONE) {
+            return;
+        }
+
+        traverseInner(logs, leaves, w, findBase(w, start), recurseLevel, maxRecurse, logConsumer, leavesConsumer);
+    }
+
+    private void traverseInner(Set<BlockPos> logs, Set<BlockPos> leaves, World w, BlockPos pos, int recurseLevel, int maxRecurse, Reactor logConsumer, Reactor leavesConsumer) {
+
+        if (this == NONE || (maxRecurse > 0 && recurseLevel >= maxRecurse) || logs.contains(pos) || leaves.contains(pos)) {
+            return;
+        }
+
+        BlockState state = w.getBlockState(pos);
+        boolean yay = false;
+
+        if (isLeaves(state)) {
+            leaves.add(pos);
+            yay = true;
+            if (leavesConsumer != null) {
+                leavesConsumer.react(w, state, pos, recurseLevel);
+            }
+        } else if (isLog(state)) {
+            logs.add(pos);
+            yay = true;
+            if (logConsumer != null) {
+                logConsumer.react(w, state, pos, recurseLevel);
+            }
+        }
+
+        if (yay) {
+            PosHelper.all(pos, p -> traverseInner(logs, leaves, w, p, recurseLevel + 1, maxRecurse, logConsumer, leavesConsumer), WIDE_DIRS);
+        }
+    }
+
+    /**
+     * Recursively locates the base of the tree.
+     */
+    public BlockPos findBase(World w, BlockPos pos) {
+        return findBase(new HashSet<BlockPos>(), w, new BlockPos.Mutable(pos.getX(), pos.getY(), pos.getZ())).get();
+    }
+
+    private Optional<BlockPos> findBase(Set<BlockPos> done, World w, BlockPos.Mutable pos) {
+        if (done.contains(pos) || !isLog(w.getBlockState(pos))) {
+            return Optional.empty();
+        }
+
+        done.add(pos.toImmutable());
+        while (isLog(w.getBlockState(pos.down()))) {
+            done.add(pos.move(Direction.DOWN).toImmutable());
+        }
+
+        if (wideTrunk) {
+            PosHelper.all(pos.toImmutable(), p -> findBase(done, w, new BlockPos.Mutable(p.getX(), p.getY(), p.getZ()))
+                    .filter(a -> a.getY() < pos.getY())
+                    .ifPresent(pos::set), PosHelper.HORIZONTAL);
+        }
+
+        done.add(pos.toImmutable());
+        return Optional.of(pos.toImmutable());
+    }
+
+    /**
+     * Counts the number of logs and leaves present in the targeted tree.
+     */
+    public int countBlocks(World w, BlockPos pos) {
+        if (this == NONE) {
+            return 0;
+        }
+
+        Set<BlockPos> logs = new HashSet<>();
+        Set<BlockPos> leaves = new HashSet<>();
+
+        traverseInner(logs, leaves, w, findBase(w, pos), 0, 50, null, null);
+
+        int logCount = logs.size();
+
+        logs.clear();
+        leaves.clear();
+
+        traverseInner(logs, leaves, w, findCanopy(w, pos), 0, 50, null, null);
+
+        return logCount <= (leaves.size() / 2) ? logCount + leaves.size() : 0;
+    }
+
+    /**
+     * Locates the top of the tree's trunk. Usually the point where wood meets leaves.
+     */
+    public BlockPos findCanopy(World w, BlockPos pos) {
+        while (isLog(w.getBlockState(pos.up()))) {
+            if (PosHelper.any(pos, p -> isLeaves(w.getBlockState(p)), PosHelper.HORIZONTAL)) {
+                break;
+            }
+
+            pos = pos.up();
+        }
+        return pos;
+    }
+
+    public boolean isLeaves(BlockState state) {
+        return findMatch(leaves, state) && (!state.contains(LeavesBlock.PERSISTENT) || !state.get(LeavesBlock.PERSISTENT));
+    }
+
+    public boolean isLog(BlockState state) {
+        return findMatch(logs, state);
     }
 
     public boolean matches(BlockState state) {
-        return blocks.contains(Registry.BLOCK.getId(state.getBlock()));
+        return isLeaves(state) || isLog(state);
     }
 
     public ItemStack pickRandomStack() {
@@ -77,7 +167,7 @@ public final class TreeType {
     }
 
     public static TreeType get(BlockState state) {
-        return REGISTRY.stream().filter(type -> type.matches(state)).findFirst().orElse(TreeType.NONE);
+        return TreeTypeLoader.INSTANCE.get(state);
     }
 
     @Override
@@ -85,8 +175,16 @@ public final class TreeType {
         return o instanceof TreeType && name.compareTo(((TreeType)o).name) == 0;
     }
 
+    private static boolean findMatch(Set<Identifier> ids, BlockState state) {
+        return ids.contains(Registry.BLOCK.getId(state.getBlock()));
+    }
+
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    public interface Reactor {
+        void react(World w, BlockState state, BlockPos pos, int recurseLevel);
     }
 }

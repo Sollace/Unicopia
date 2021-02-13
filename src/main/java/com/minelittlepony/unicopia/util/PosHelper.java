@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.util;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators.AbstractSpliterator;
@@ -18,6 +19,8 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
 public interface PosHelper {
+
+    Direction[] HORIZONTAL = Arrays.stream(Direction.values()).filter(d -> d.getAxis().isHorizontal()).toArray(Direction[]::new);
 
     static Vec3d offset(Vec3d a, Vec3i b) {
         return a.add(b.getX(), b.getY(), b.getZ());

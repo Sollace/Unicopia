@@ -1,0 +1,10 @@
+{
+	"logs": [ "minecraft:jungle_log", "minecraft:jungle_wood" ],
+	"leaves": [ "minecraft:jungle_leaves" ],
+	"wideTrunk": true,
+	"drops": [
+		{ "weight": 5, "item": "unicopia:green_apple" },
+		{ "weight": 2, "item": "unicopia:sweet_apple" },
+		{ "weight": 1, "item": "unicopia:zap_apple" }
+	]
+}

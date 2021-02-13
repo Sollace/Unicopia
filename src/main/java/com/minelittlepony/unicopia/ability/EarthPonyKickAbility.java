@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,29 +8,23 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Lists;
 import com.minelittlepony.unicopia.BlockDestructionManager;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.TreeTraverser;
 import com.minelittlepony.unicopia.TreeType;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
 import com.minelittlepony.unicopia.util.WorldEvent;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
-import net.minecraft.block.BlockState;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 /**
  * Earth Pony kicking ability
@@ -65,11 +58,11 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
         if (p.isPresent()) {
             BlockPos pos = p.get();
-            BlockState state = player.getWorld().getBlockState(pos);
+            TreeType tree = TreeType.get(player.getWorld().getBlockState(pos));
 
-            if (state.getBlock().isIn(BlockTags.LOGS)) {
-                pos = TreeTraverser.Descender.descendTree(player.getWorld(), state, pos).get();
-                if (TreeTraverser.Measurer.measureTree(player.getWorld(), state, pos) > 0) {
+            if (tree != TreeType.NONE) {
+                pos = tree.findBase(player.getWorld(), pos);
+                if (tree.countBlocks(player.getWorld(), pos) > 0) {
                     return new Pos(pos);
                 }
             }
@@ -101,12 +94,19 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
         if (destr.getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
             if (!harmed || player.world.random.nextInt(30) == 0) {
-                TreeTraverser.Remover.removeTree(player.world, pos);
+                TreeType.get(player.world.getBlockState(pos)).traverse(player.world, pos, (w, state, p, recurseLevel) -> {
+                    if (recurseLevel < 5) {
+                        w.breakBlock(p, true);
+                    } else {
+                        Block.dropStacks(w.getBlockState(p), w, p);
+                        w.setBlockState(p, Blocks.AIR.getDefaultState(), 3);
+                    }
+                });
             }
 
             iplayer.subtractEnergyCost(3);
         } else {
-            int cost = dropApples(player.world, pos);
+            int cost = dropApples(player, pos);
 
             if (cost > 0) {
                 iplayer.subtractEnergyCost(cost * 3);
@@ -149,23 +149,32 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         }
     }
 
-    private int dropApples(World w, BlockPos pos) {
-        BlockState log = w.getBlockState(pos);
-        int size = TreeTraverser.Measurer.measureTree(w, log, pos);
+    private int dropApples(PlayerEntity player, BlockPos pos) {
+        TreeType tree = TreeType.get(player.world.getBlockState(pos));
 
-        if (size > 0) {
-            BlockDestructionManager destr = ((BlockDestructionManager.Source)w).getDestructionManager();
-            TreeTraverser.Measurer.getParts(w, log, pos).forEach(position -> {
-                destr.damageBlock(position, 4);
-            });
+        if (tree.countBlocks(player.world, pos) > 0) {
 
             List<ItemEntity> capturedDrops = Lists.newArrayList();
 
-            dropApplesPart(capturedDrops, new ArrayList<BlockPos>(), w, log, pos, 0);
+            tree.traverse(player.world, pos, (world, state, position, recurse) -> {
+                affectBlockChange(player, position);
+            }, (world, state, position, recurse) -> {
+                affectBlockChange(player, position);
+
+                if (world.getBlockState(position.down()).isAir()) {
+                    WorldEvent.play(WorldEvent.DESTROY_BLOCK, world, position, state);
+                    capturedDrops.add(new ItemEntity(world,
+                            position.getX() + world.random.nextFloat(),
+                            position.getY() - 0.5,
+                            position.getZ() + world.random.nextFloat(),
+                            tree.pickRandomStack()
+                        ));
+                }
+            });
 
             capturedDrops.forEach(item -> {
                 item.setToDefaultPickupDelay();
-                w.spawnEntity(item);
+                player.world.spawnEntity(item);
             });
 
             return capturedDrops.size() / 3;
@@ -174,27 +183,10 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         return 0;
     }
 
-    private static void dropApplesPart(List<ItemEntity> drops, List<BlockPos> done, World w, BlockState log, BlockPos pos, int level) {
-        if (!done.contains(pos)) {
-            done.add(pos);
-            pos = TreeTraverser.Ascender.ascendTree(w, log, pos, false);
-            if (level < 10 && TreeTraverser.isWoodOrLeaf(w, log, pos)) {
-                BlockState state = w.getBlockState(pos);
+    private void affectBlockChange(PlayerEntity player, BlockPos position) {
+        BlockDestructionManager destr = ((BlockDestructionManager.Source)player.world).getDestructionManager();
 
-                if (state.getBlock() instanceof LeavesBlock && w.getBlockState(pos.down()).isAir()) {
-                    WorldEvent.play(WorldEvent.DESTROY_BLOCK, w, pos, state);
-                    drops.add(new ItemEntity(w,
-                            pos.getX() + w.random.nextFloat(),
-                            pos.getY() - 0.5,
-                            pos.getZ() + w.random.nextFloat(),
-                            TreeType.get(log).pickRandomStack()
-                        ));
-                }
+        destr.damageBlock(position, 4);
 
-                PosHelper.all(pos, p -> {
-                    dropApplesPart(drops, done, w, log, p, level + 1);
-                }, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
-            }
-        }
     }
 }
