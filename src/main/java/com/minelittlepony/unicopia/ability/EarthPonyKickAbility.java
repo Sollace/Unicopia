@@ -12,18 +12,24 @@ import com.minelittlepony.unicopia.TreeType;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
 import com.minelittlepony.unicopia.util.WorldEvent;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
+import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -188,5 +194,29 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
         destr.damageBlock(position, 4);
 
+        PosHelper.all(position, p -> {
+            BlockState s = player.world.getBlockState(p);
+
+            if (s.getBlock() instanceof BeehiveBlock) {
+                BeehiveBlockEntity hive = (BeehiveBlockEntity)player.world.getBlockEntity(p);
+                if (hive != null) {
+                    hive.angerBees(player, s, BeehiveBlockEntity.BeeState.BEE_RELEASED);
+                }
+
+                Box area = new Box(position).expand(8, 6, 8);
+                List<BeeEntity> nearbyBees = player.world.getNonSpectatingEntities(BeeEntity.class, area);
+
+                if (!nearbyBees.isEmpty()) {
+                   List<PlayerEntity> nearbyPlayers = player.world.getNonSpectatingEntities(PlayerEntity.class, area);
+                   int i = nearbyPlayers.size();
+
+                   for (BeeEntity bee : nearbyBees) {
+                      if (bee.getTarget() == null) {
+                         bee.setTarget(nearbyPlayers.get(player.world.random.nextInt(i)));
+                      }
+                   }
+                }
+            }
+        }, PosHelper.HORIZONTAL);
     }
 }
