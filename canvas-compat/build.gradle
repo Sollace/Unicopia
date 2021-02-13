@@ -1,11 +1,5 @@
 plugins {
     id 'java-library'
-    id 'fabric-loom'
-    id 'maven-publish'
-}
-
-minecraft {
-    
 }
 
 repositories {
@@ -20,14 +14,6 @@ repositories {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}"
-    modApi "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
-
-    modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
     modCompileOnly("grondag:canvas-mc116:${project.canvas_version}") {
         exclude(group: "net.fabricmc.fabric-api")
         exclude(module: "fabric-loader")
