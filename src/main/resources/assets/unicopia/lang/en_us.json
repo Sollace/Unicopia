@@ -132,6 +132,7 @@
   "ability.unicopia.shoot": "Magic Missle",
   "ability.unicopia.cast": "Counterspell",
   "ability.unicopia.teleport": "Teleport",
+  "ability.unicopia.group_teleport": "Teleport (Group)",
   "ability.unicopia.grow": "Earthly Nourishment",
   "ability.unicopia.stomp": "Ground Pound",
   "ability.unicopia.kick": "Crushing Blow",

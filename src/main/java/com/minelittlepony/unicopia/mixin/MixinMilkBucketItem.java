@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.ability.magic.CasterUtils;
+import com.minelittlepony.unicopia.ability.magic.Caster;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -18,6 +18,6 @@ abstract class MixinMilkBucketItem extends Item {
 
     @Inject(method = "finishUsing", at = @At("HEAD"), cancellable = true)
     private void finishUsing(ItemStack stack, World world, LivingEntity entity, CallbackInfoReturnable<ItemStack> info) {
-        CasterUtils.toCaster(entity).ifPresent(c -> c.setSpell(null));
+        Caster.of(entity).ifPresent(c -> c.setSpell(null));
     }
 }

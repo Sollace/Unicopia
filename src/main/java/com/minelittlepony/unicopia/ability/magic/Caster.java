@@ -6,8 +6,10 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.entity.Physics;
+import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.particle.ParticleSource;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -105,7 +107,11 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     }
 
     default Stream<Caster<?>> findAllSpellsInRange(double radius) {
-        return CasterUtils.findInRange(this, radius);
+        return findAllSpellsInRange(radius, null);
+    }
+
+    default Stream<Caster<?>> findAllSpellsInRange(double radius, @Nullable Predicate<Entity> test) {
+        return stream(findAllEntitiesInRange(radius, test == null ? EquinePredicates.IS_CASTER : EquinePredicates.IS_CASTER.and(test)));
     }
 
     default Stream<Entity> findAllEntitiesInRange(double radius, @Nullable Predicate<Entity> test) {
@@ -114,5 +120,27 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
 
     default Stream<Entity> findAllEntitiesInRange(double radius) {
         return findAllEntitiesInRange(radius, null);
+    }
+
+    static Stream<Caster<?>> stream(Stream<Entity> entities) {
+        return entities
+                .map(Caster::of)
+                .filter(Optional::isPresent)
+                .map(Optional::get);
+    }
+
+    /**
+     * Attempts to convert the passed entity into a caster using all the known methods.
+     */
+    static Optional<Caster<?>> of(@Nullable Entity entity) {
+        if (entity instanceof Caster<?>) {
+            return Optional.of((Caster<?>)entity);
+        }
+
+        if (entity instanceof LivingEntity && !(entity instanceof Magical)) {
+            return PonyContainer.of(entity).map(PonyContainer::getCaster);
+        }
+
+        return Optional.empty();
     }
 }

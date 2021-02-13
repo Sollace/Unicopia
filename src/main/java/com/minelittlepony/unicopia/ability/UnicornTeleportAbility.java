@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
+import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
@@ -12,6 +13,7 @@ import net.minecraft.block.FenceBlock;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.WallBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -23,6 +25,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
@@ -30,9 +33,6 @@ import net.minecraft.world.World;
  */
 public class UnicornTeleportAbility implements Ability<Pos> {
 
-    /**
-     * The icon representing this ability on the UI and HUD.
-     */
     @Override
     public Identifier getIcon(Pony player, boolean swap) {
         Identifier id = Abilities.REGISTRY.getId(this);
@@ -125,10 +125,15 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
     @Override
     public void apply(Pony iplayer, Pos data) {
-        iplayer.getWorld().playSound(null, iplayer.getOrigin(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
+        teleport(iplayer, iplayer, data);
+    }
 
-        PlayerEntity player = iplayer.getMaster();
-        double distance = data.distanceTo(iplayer) / 10;
+    protected void teleport(Pony teleporter, Caster<?> teleportee, Pos destination) {
+        teleportee.getWorld().playSound(null, teleportee.getOrigin(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
+
+        double distance = destination.distanceTo(teleportee) / 10;
+
+        LivingEntity player = teleportee.getMaster();
 
         if (player.hasVehicle()) {
             Entity mount = player.getVehicle();
@@ -140,15 +145,17 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             }
         }
 
+        Vec3d offset = teleportee.getOriginVector().subtract(teleporter.getOriginVector());
+
         player.teleport(
-                data.x + (player.getX() - Math.floor(player.getX())),
-                data.y,
-                data.z + (player.getZ() - Math.floor(player.getZ())));
-        iplayer.subtractEnergyCost(distance);
+                destination.x + offset.x + (player.getX() - Math.floor(player.getX())),
+                destination.y + offset.y,
+                destination.z + offset.z + (player.getZ() - Math.floor(player.getZ())));
+        teleporter.subtractEnergyCost(distance);
 
         player.fallDistance /= distance;
 
-        player.world.playSound(null, data.pos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
+        player.world.playSound(null, destination.pos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
     }
 
     private boolean enterable(World w, BlockPos pos) {
