@@ -30,7 +30,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
     @Nullable
     private Race prevRace;
-    private long maxPage;
+    private long maxPage = -1;
 
     public AbilityDispatcher(Pony player) {
         this.player = player;
@@ -38,6 +38,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
     public void clear(AbilitySlot slot) {
         Stat stat = getStat(slot);
+
 
         if (stat.canSwitchStates()) {
             stat.setActiveAbility(null);
@@ -61,9 +62,12 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
     }
 
     public long getMaxPage() {
-        if (prevRace != player.getSpecies()) {
+        if (maxPage < 0 || prevRace != player.getSpecies()) {
             prevRace = player.getSpecies();
-            maxPage = Math.max(0, stats.values().stream().mapToLong(Stat::getMaxPage).reduce(0, Math::max) - 1);
+            maxPage = 0;
+            for (AbilitySlot slot : AbilitySlot.values()) {
+                maxPage = Math.max(maxPage, getStat(slot).getMaxPage() - 1);
+            }
         }
         return maxPage;
     }
