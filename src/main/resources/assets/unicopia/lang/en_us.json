@@ -153,6 +153,9 @@
   "key.unicopia.tertiary": "Tertiary Ability",
   "key.unicopia.passive": "Passive Ability",
 
+  "key.unicopia.hud_page_dn": "Hud Previous Page",
+  "key.unicopia.hud_page_up": "Hud Next Page",
+
   "commands.race.success.self": "Your race has been updated",
   "commands.race.success.otherself": "%1$s changed race to %2$s",
   "commands.race.success.other": "Changed %1$s's race to %2$s",
