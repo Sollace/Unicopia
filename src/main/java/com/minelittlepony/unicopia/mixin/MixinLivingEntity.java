@@ -22,6 +22,7 @@ import com.minelittlepony.unicopia.entity.ItemWielder;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Hand;
@@ -109,6 +110,11 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
     @Inject(method = "<clinit>()V", at = @At("RETURN"), remap = false)
     private static void clinit(CallbackInfo info) {
         Creature.boostrap();
+    }
+
+    @Inject(method = "damage(Lnet/minecraft/entity/damage/DamageSource;F)Z", at = @At("HEAD"), cancellable = true)
+    private void onDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
+        get().onDamage(source, amount).ifPresent(info::setReturnValue);
     }
 
     @Inject(method = "writeCustomDataToTag(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("HEAD"))

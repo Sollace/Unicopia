@@ -1,18 +1,24 @@
 package com.minelittlepony.unicopia.entity;
 
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.EffectSync;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Hand;
 
 public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T> {
 
@@ -25,6 +31,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Nullable
     private Runnable landEvent;
+
+    private int invinsibilityTicks;
 
     protected Living(T entity, TrackedData<CompoundTag> effect) {
         this.entity = entity;
@@ -75,6 +83,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             }
         }
 
+        if (invinsibilityTicks > 0) {
+            invinsibilityTicks--;
+        }
+
         prevSneaking = entity.isSneaking();
         prevLanded = entity.isOnGround();
 
@@ -88,6 +100,35 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         if (getPhysics().isGravityNegative()) {
             entity.setVelocity(entity.getVelocity().multiply(1, -1, 1));
         }
+    }
+
+    @Override
+    public Optional<Boolean> onDamage(DamageSource source, float amount) {
+
+        if (source == DamageSource.LIGHTNING_BOLT) {
+            if (invinsibilityTicks > 0 || tryCaptureLightning()) {
+                return Optional.of(false);
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    private boolean tryCaptureLightning() {
+        return getInventoryStacks().filter(stack -> !stack.isEmpty() && stack.getItem() == UItems.EMPTY_JAR).findFirst().map(stack -> {
+            invinsibilityTicks = 20;
+            stack.split(1);
+            giveBackItem(UItems.LIGHTNING_JAR.getDefaultStack());
+            return stack;
+        }).isPresent();
+    }
+
+    protected Stream<ItemStack> getInventoryStacks() {
+        return Stream.of(entity.getStackInHand(Hand.MAIN_HAND), entity.getStackInHand(Hand.OFF_HAND));
+    }
+
+    protected void giveBackItem(ItemStack stack) {
+        entity.dropStack(stack);
     }
 
     @Override

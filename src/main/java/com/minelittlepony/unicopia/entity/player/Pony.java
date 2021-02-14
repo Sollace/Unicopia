@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.entity.player;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -30,6 +31,7 @@ import com.minelittlepony.unicopia.util.Copieable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.common.util.animation.LinearInterpolator;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Streams;
 import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
 
@@ -342,6 +344,21 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         }
 
         return foodSubtract - lostLevels;
+    }
+
+    @Override
+    protected Stream<ItemStack> getInventoryStacks() {
+        return Streams.concat(
+                super.getInventoryStacks(),
+                entity.inventory.main.stream()
+        );
+    }
+
+    @Override
+    protected void giveBackItem(ItemStack stack) {
+        if (!entity.giveItemStack(stack)) {
+            entity.dropItem(stack, false);
+        }
     }
 
     public Optional<Text> trySleep(BlockPos pos) {
