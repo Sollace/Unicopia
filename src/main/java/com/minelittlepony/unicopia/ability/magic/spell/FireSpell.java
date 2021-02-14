@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Magical;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.block.state.StateMaps;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -55,9 +56,9 @@ public class FireSpell extends AbstractRangedAreaSpell implements Thrown {
     }
 
     @Override
-    public void onImpact(Caster<?> caster, BlockPos pos, BlockState state) {
-        if (!caster.isClient()) {
-            caster.getWorld().createExplosion(caster.getMaster(), pos.getX(), pos.getY(), pos.getZ(), 2, DestructionType.DESTROY);
+    public void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
+        if (!projectile.isClient()) {
+            projectile.getWorld().createExplosion(projectile.getMaster(), pos.getX(), pos.getY(), pos.getZ(), 2, DestructionType.DESTROY);
         }
     }
 

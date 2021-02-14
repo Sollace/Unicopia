@@ -3,11 +3,13 @@ package com.minelittlepony.unicopia.ability.magic;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
-import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -15,21 +17,23 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
  * Magic effects that can be thrown.
  */
-public interface Thrown extends Spell {
+public interface Thrown extends Spell, ProjectileDelegate {
 
-    /**
-     * Called once the projectile lands either hitting the ground or an entity.
-     */
-    default void onImpact(Caster<?> caster, BlockPos pos, BlockState state) {
-        if (!caster.isClient()) {
-            update(caster);
+    @Override
+    default void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
+        if (!projectile.isClient()) {
+            update(projectile);
         }
+    }
+
+    @Override
+    default void onImpact(MagicProjectileEntity projectile, Entity entity) {
+
     }
 
     /**
@@ -64,24 +68,18 @@ public interface Thrown extends Spell {
     default MagicProjectileEntity toss(Caster<?> caster) {
         World world = caster.getWorld();
 
-        Entity entity = caster.getMaster();
+        LivingEntity entity = caster.getMaster();
 
         world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), getThrowSound(caster), SoundCategory.NEUTRAL, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
         if (!caster.isClient()) {
-            Vec3d rot = entity.getRotationVec(1);
-
-            MagicProjectileEntity projectile = new MagicProjectileEntity(UEntities.THROWN_ITEM, world, caster.getMaster(), entity.getRotationVec(1));
+            MagicProjectileEntity projectile = new MagicProjectileEntity(world, entity);
 
             projectile.setItem(getCastAppearance(caster));
             projectile.setThrowDamage(getThrowDamage(caster));
             projectile.setSpell(this);
             projectile.setHydrophobic();
-            projectile.updatePosition(
-                    entity.getX() + rot.x * 4,
-                    entity.getBodyY(0.5D) + 0.5,
-                    projectile.getZ() + rot.z * 4
-            );
+            projectile.setProperties(entity, entity.pitch, entity.yaw, 0, 1.5F, 1);
 
             world.spawnEntity(projectile);
 

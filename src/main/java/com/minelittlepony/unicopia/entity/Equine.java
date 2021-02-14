@@ -1,11 +1,14 @@
 package com.minelittlepony.unicopia.entity;
 
+import java.util.Optional;
+
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.Tickable;
 
@@ -38,7 +41,6 @@ public interface Equine<T extends Entity> extends NbtSerialisable, Tickable {
         return false;
     }
 
-
     /**
      * Event triggered when this entity is hit by a projectile.
      */
@@ -51,6 +53,13 @@ public interface Equine<T extends Entity> extends NbtSerialisable, Tickable {
      */
     default void onJump() {
 
+    }
+
+    /**
+     * Called when an entity is harmed.
+     */
+    default Optional<Boolean> onDamage(DamageSource source, float amount) {
+        return Optional.empty();
     }
 
     @Nullable

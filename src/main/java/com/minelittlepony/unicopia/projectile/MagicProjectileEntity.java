@@ -1,11 +1,11 @@
 package com.minelittlepony.unicopia.projectile;
 
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.Magical;
 import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.Physics;
@@ -59,12 +59,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
         super(type, world);
     }
 
-    public MagicProjectileEntity(EntityType<MagicProjectileEntity> type, World world, LivingEntity thrower, Vec3d velocity) {
-        super(type, world);
-        refreshPositionAndAngles(thrower.getX(), thrower.getY(), thrower.getZ(), thrower.yaw, thrower.pitch);
-        refreshPosition();
-        setVelocity(velocity);
-        setOwner(thrower);
+    public MagicProjectileEntity(World world, LivingEntity thrower) {
+        super(UEntities.THROWN_ITEM, thrower, world);
     }
 
     @Override
@@ -249,9 +245,13 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
         if (hasSpell()) {
             Spell effect = getSpell(true);
 
-            if (effect instanceof Thrown) {
-                ((Thrown)effect).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));
+            if (effect instanceof ProjectileDelegate) {
+                ((ProjectileDelegate)effect).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));
             }
+        }
+
+        if (getItem().getItem() instanceof ProjectileDelegate) {
+            ((ProjectileDelegate)getItem().getItem()).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));
         }
     }
 
@@ -265,6 +265,10 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
 
         if (entity != null) {
             entity.damage(DamageSource.thrownProjectile(this, getOwner()), getThrowDamage());
+        }
+
+        if (getItem().getItem() instanceof ProjectileDelegate) {
+            ((ProjectileDelegate)getItem().getItem()).onImpact(this, entity);
         }
     }
 
