@@ -17,8 +17,9 @@
   "item.unicopia.zap_apple": "Zap Apple",
 
   "item.unicopia.empty_jar": "Glass Jar",
-  "item.unicopia.rain_cloud_jar": "Rain Cloud in a Jar",
-  "item.unicopia.storm_cloud_jar": "Storm Cloud in a Jar",
+  "item.unicopia.filled_jar": "%s in a Jar",
+  "item.unicopia.rain_cloud_jar": "Rain in a Jar",
+  "item.unicopia.storm_cloud_jar": "Storm in a Jar",
   "item.unicopia.lightning_jar": "Lightning in a Jar",
   "item.unicopia.zap_apple_jam_jar": "Zap Apple Jam",
 

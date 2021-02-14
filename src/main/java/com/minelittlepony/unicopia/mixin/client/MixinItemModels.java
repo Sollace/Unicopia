@@ -4,8 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import com.minelittlepony.unicopia.item.ZapAppleItem;
-
+import com.minelittlepony.unicopia.item.ChameleonItem;
 import net.minecraft.client.render.item.ItemModels;
 import net.minecraft.item.ItemStack;
 
@@ -15,8 +14,8 @@ abstract class MixinItemModels {
             at = @At("HEAD"),
             index = 1)
     private ItemStack modifyStack(ItemStack stack) {
-        if (stack.getItem() instanceof ZapAppleItem) {
-            return ((ZapAppleItem)stack.getItem()).getAppearanceStack(stack);
+        if (stack.getItem() instanceof ChameleonItem && ((ChameleonItem)stack.getItem()).isFullyDisguised()) {
+            return ((ChameleonItem)stack.getItem()).getAppearanceStack(stack);
         }
         return stack;
     }

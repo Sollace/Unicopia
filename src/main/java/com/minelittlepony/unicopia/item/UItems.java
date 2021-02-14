@@ -48,6 +48,7 @@ public interface UItems {
     ));
 
     Item EMPTY_JAR = register("empty_jar", new JarItem(new Item.Settings().group(ItemGroup.DECORATIONS).maxCount(16).fireproof(), false, false, false));
+    FilledJarItem FILLED_JAR = register("filled_jar", new FilledJarItem(new Item.Settings().maxCount(1)));
     Item RAIN_CLOUD_JAR  = register("rain_cloud_jar", new JarItem(new Item.Settings().group(ItemGroup.DECORATIONS).maxCount(1).fireproof(), true, false, false));
     Item STORM_CLOUD_JAR  = register("storm_cloud_jar", new JarItem(new Item.Settings().group(ItemGroup.DECORATIONS).maxCount(1).fireproof(), true, true, false));
     Item LIGHTNING_JAR  = register("lightning_jar", new JarItem(new Item.Settings().group(ItemGroup.DECORATIONS).maxCount(1).fireproof(), false, false, true));
@@ -75,7 +76,11 @@ public interface UItems {
 
         FabricItemGroupBuilder.create(new Identifier("unicopia", "items")).appendItems(list -> {
             list.addAll(VanillaOverrides.REGISTRY.stream().map(Item::getDefaultStack).collect(Collectors.toList()));
-            list.addAll(ITEMS.stream().map(Item::getDefaultStack).collect(Collectors.toList()));
+            list.addAll(ITEMS.stream()
+                    .filter(item -> !(item instanceof ChameleonItem) || ((ChameleonItem)item).isFullyDisguised())
+                    .map(Item::getDefaultStack)
+                    .collect(Collectors.toList())
+            );
         }).icon(ZAP_APPLE::getDefaultStack).build();
 
         FabricItemGroupBuilder.create(new Identifier("unicopia", "horsefeed")).appendItems(list -> {

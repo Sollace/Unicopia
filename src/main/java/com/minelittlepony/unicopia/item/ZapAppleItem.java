@@ -24,13 +24,12 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
-public class ZapAppleItem extends AppleItem {
+public class ZapAppleItem extends AppleItem implements ChameleonItem {
 
     public ZapAppleItem(Settings settings) {
         super(settings);
@@ -99,25 +98,6 @@ public class ZapAppleItem extends AppleItem {
                 }
             });
         }
-    }
-
-    public ItemStack getAppearanceStack(ItemStack stack) {
-        Item appearance = ((ZapAppleItem)stack.getItem()).getAppearance(stack);
-        if (appearance != Items.AIR) {
-            ItemStack newAppearance = new ItemStack(appearance, stack.getCount());
-            newAppearance.setTag(stack.getTag().copy());
-            newAppearance.removeSubTag("appearance");
-            return newAppearance;
-        }
-        return stack;
-    }
-
-    public Item getAppearance(ItemStack stack) {
-        if (stack.hasTag() && stack.getTag().contains("appearance")) {
-            return Registry.ITEM.get(new Identifier(stack.getTag().getString("appearance")));
-        }
-
-        return Items.AIR;
     }
 
     @Override

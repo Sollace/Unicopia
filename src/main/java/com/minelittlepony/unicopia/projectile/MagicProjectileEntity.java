@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.Physics;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
@@ -191,6 +192,10 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
 
        if (stack.isEmpty()) {
            return ParticleTypes.ITEM_SNOWBALL;
+       }
+
+       if (stack.getItem() == UItems.FILLED_JAR) {
+           stack = UItems.EMPTY_JAR.getDefaultStack();
        }
 
        return new ItemStackParticleEffect(ParticleTypes.ITEM, stack);

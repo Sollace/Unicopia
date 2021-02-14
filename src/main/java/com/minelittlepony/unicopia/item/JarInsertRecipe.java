@@ -2,14 +2,13 @@ package com.minelittlepony.unicopia.item;
 
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
-public class GlowingRecipe extends ItemCombinationRecipe {
+public class JarInsertRecipe extends ItemCombinationRecipe {
 
-    public GlowingRecipe(Identifier id) {
+    public JarInsertRecipe(Identifier id) {
         super(id);
     }
 
@@ -17,30 +16,29 @@ public class GlowingRecipe extends ItemCombinationRecipe {
     public final ItemStack craft(CraftingInventory inventory) {
         Pair<ItemStack, ItemStack> pair = runMatch(inventory);
 
-        ItemStack result = pair.getLeft().copy();
-
-        ((GlowableItem)result.getItem()).setGlowing(result, pair.getRight().getItem() == Items.GLOWSTONE_DUST);
+        ItemStack result = new ItemStack(UItems.FILLED_JAR);
+        UItems.FILLED_JAR.setAppearance(result, pair.getRight().getItem());
 
         return result;
     }
 
     @Override
     protected boolean isContainerItem(ItemStack stack) {
-        return stack.getItem() instanceof GlowableItem;
+        return stack.getItem() == UItems.EMPTY_JAR;
     }
 
     @Override
     protected boolean isInsertItem(ItemStack stack) {
-        return stack.getItem() == Items.GLOWSTONE_DUST || stack.getItem() == Items.INK_SAC;
+        return !(stack.getItem() instanceof JarItem);
     }
 
     @Override
     protected boolean isCombinationInvalid(ItemStack bangle, ItemStack dust) {
-        return (dust.getItem() == Items.GLOWSTONE_DUST) == ((GlowableItem)bangle.getItem()).isGlowing(bangle);
+        return false;
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return URecipes.GLOWING_SERIALIZER;
+        return URecipes.JAR_INSERT_SERIALIZER;
     }
 }

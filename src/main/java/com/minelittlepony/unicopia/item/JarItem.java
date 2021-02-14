@@ -8,13 +8,11 @@ import com.minelittlepony.unicopia.util.WorldEvent;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -39,8 +37,6 @@ public class JarItem extends Item implements ProjectileDelegate, ItemImpl.Tickab
         this.rain = rain;
         this.thunder = thunder;
         this.lightning = lightning;
-
-        DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
     }
 
     @Override
@@ -69,7 +65,6 @@ public class JarItem extends Item implements ProjectileDelegate, ItemImpl.Tickab
 
         return TypedActionResult.success(stack, world.isClient());
     }
-
 
     @Override
     public ActionResult onGroundTick(IItemEntity item) {
@@ -118,9 +113,7 @@ public class JarItem extends Item implements ProjectileDelegate, ItemImpl.Tickab
         onImpact(projectile);
     }
 
-    private void onImpact(MagicProjectileEntity projectile) {
-
-
+    protected void onImpact(MagicProjectileEntity projectile) {
         if (!projectile.isClient()) {
             ServerWorld world = (ServerWorld)projectile.world;
 

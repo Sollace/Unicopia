@@ -16,6 +16,7 @@ public interface URecipes {
 
     RecipeSerializer<ShapelessRecipe> ZAP_APPLE_SERIALIZER = register("crafting_zap_apple", new ZapAppleRecipe.Serializer());
     RecipeSerializer<GlowingRecipe> GLOWING_SERIALIZER = register("crafting_glowing", new SpecialRecipeSerializer<>(GlowingRecipe::new));
+    RecipeSerializer<JarInsertRecipe> JAR_INSERT_SERIALIZER = register("jar_insert", new SpecialRecipeSerializer<>(JarInsertRecipe::new));
 
     static <T extends Recipe<?>> RecipeType<T> register(final String id) {
         return Registry.register(Registry.RECIPE_TYPE, new Identifier("unicopia", id), new RecipeType<T>() {
