@@ -51,7 +51,7 @@ public class JarItem extends Item implements ProjectileDelegate, ItemImpl.Tickab
         if (!world.isClient) {
             MagicProjectileEntity projectile = new MagicProjectileEntity(world, player);
             projectile.setItem(stack);
-            projectile.setThrowDamage(0.5F);
+            projectile.setThrowDamage(getProjectileDamage(stack));
             projectile.setProperties(player, player.pitch, player.yaw, 0, 1.5F, 1);
 
             world.spawnEntity(projectile);
@@ -64,6 +64,10 @@ public class JarItem extends Item implements ProjectileDelegate, ItemImpl.Tickab
         }
 
         return TypedActionResult.success(stack, world.isClient());
+    }
+
+    protected float getProjectileDamage(ItemStack stack) {
+        return 0.5F;
     }
 
     @Override
