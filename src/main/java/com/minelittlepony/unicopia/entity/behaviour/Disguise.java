@@ -159,7 +159,7 @@ public class Disguise implements NbtSerialisable {
         return entity;
     }
 
-    public void onImpact(Pony pony, float distance, float damageMultiplier) {
+    public void onImpact(Caster<?> pony, float distance, float damageMultiplier) {
         EntityBehaviour.forEntity(entity).onImpact(pony, entity, distance, damageMultiplier);
     }
 

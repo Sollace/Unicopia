@@ -12,21 +12,17 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
-import com.minelittlepony.unicopia.ability.magic.Attached;
-import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.ShieldSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.PonyContainer;
-import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.Trap;
 import com.minelittlepony.unicopia.item.toxin.FoodType;
 import com.minelittlepony.unicopia.item.toxin.Toxicity;
 import com.minelittlepony.unicopia.item.toxin.Toxin;
 import com.minelittlepony.unicopia.network.Channel;
-import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgOtherPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
 import com.minelittlepony.unicopia.network.Transmittable;
@@ -40,12 +36,10 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
@@ -57,7 +51,7 @@ import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmittable, Copieable<Pony> {
+public class Pony extends Living<PlayerEntity> implements Transmittable, Copieable<Pony> {
 
     private static final TrackedData<Integer> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
@@ -67,7 +61,6 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     static final TrackedData<Float> XP = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
     private static final TrackedData<CompoundTag> EFFECT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
-    private static final TrackedData<CompoundTag> HELD_EFFECT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
 
     private final AbilityDispatcher powers = new AbilityDispatcher(this);
     private final PlayerPhysics gravity = new PlayerPhysics(this);
@@ -78,17 +71,11 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     private final List<Tickable> tickers;
 
-    private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
-
     private final Interpolator interpolator = new LinearInterpolator();
-
-    private final PlayerEntity entity;
 
     private boolean dirty;
     private boolean speciesSet;
     private boolean speciesPersisted;
-    private boolean prevSneaking;
-    private boolean prevLanded;
 
     private int ticksHanging;
 
@@ -99,18 +86,13 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
     private boolean invisible = false;
 
-    @Nullable
-    private Runnable landEvent;
-
     public Pony(PlayerEntity player) {
-        this.entity = player;
+        super(player, EFFECT);
         this.mana = new ManaContainer(this);
         this.levels = new PlayerLevelStore(this);
         this.tickers = Lists.newArrayList(gravity, mana, attributes);
 
         player.getDataTracker().startTracking(RACE, Race.HUMAN.ordinal());
-        player.getDataTracker().startTracking(EFFECT, new CompoundTag());
-        player.getDataTracker().startTracking(HELD_EFFECT, new CompoundTag());
     }
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
@@ -126,14 +108,6 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         }
 
         return Race.fromId(getMaster().getDataTracker().get(RACE));
-    }
-
-    public boolean sneakingChanged() {
-        return entity.isSneaking() != prevSneaking;
-    }
-
-    public boolean landedChanged() {
-        return entity.isOnGround() != prevLanded;
     }
 
     @Override
@@ -300,36 +274,13 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
             ticksHanging = 0;
         }
 
-        if (hasSpell()) {
-            Attached effect = getSpell(Attached.class, true);
-
-            if (effect != null) {
-                if (entity.getEntityWorld().isClient()) {
-                    effect.renderOnPerson(this);
-                }
-
-                if (!effect.updateOnPerson(this)) {
-                    setSpell(null);
-                }
-            }
-        }
+        super.tick();
 
         tickers.forEach(Tickable::tick);
 
         if (dirty) {
             sendCapabilities(true);
         }
-
-        prevSneaking = entity.isSneaking();
-        prevLanded = entity.isOnGround();
-
-        if (gravity.isGravityNegative() && entity.getY() > entity.world.getHeight() + 64) {
-           entity.damage(DamageSource.OUT_OF_WORLD, 4.0F);
-        }
-    }
-
-    public void waitForFall(Runnable action) {
-        landEvent = action;
     }
 
     public Optional<Float> onImpact(float distance, float damageMultiplier) {
@@ -355,35 +306,6 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
 
         handleFall(distance, damageMultiplier);
         return Optional.empty();
-    }
-
-    private void handleFall(float distance, float damageMultiplier) {
-        if (landEvent != null) {
-            landEvent.run();
-            landEvent = null;
-        }
-        getSpellOrEmpty(DisguiseSpell.class, false).ifPresent(spell -> {
-            spell.getDisguise().onImpact(this, distance, damageMultiplier);
-        });
-    }
-
-    @Override
-    public void onJump() {
-        if (gravity.isGravityNegative()) {
-            entity.setVelocity(entity.getVelocity().multiply(1, -1, 1));
-        }
-    }
-
-    @Override
-    public boolean onProjectileImpact(ProjectileEntity projectile) {
-        if (hasSpell()) {
-            Spell effect = getSpell(true);
-            if (!effect.isDead() && effect.handleProjectileImpact(projectile)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @Override
@@ -462,7 +384,7 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
         magicExhaustion = compound.getFloat("magicExhaustion");
 
         if (compound.contains("effect")) {
-            effectDelegate.set(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
+            getPrimarySpellSlot().set(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
         }
     }
 
@@ -477,23 +399,9 @@ public class Pony implements Caster<PlayerEntity>, Equine<PlayerEntity>, Transmi
     }
 
     @Override
-    public EffectSync getPrimarySpellSlot() {
-        return effectDelegate;
-    }
-
-    @Override
     public void setSpell(@Nullable Spell effect) {
-        Caster.super.setSpell(effect);
+        super.setSpell(effect);
         setDirty();
-    }
-
-    @Override
-    public void setMaster(PlayerEntity owner) {
-    }
-
-    @Override
-    public PlayerEntity getMaster() {
-        return entity;
     }
 
     public boolean isClientPlayer() {
