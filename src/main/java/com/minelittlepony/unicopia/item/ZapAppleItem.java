@@ -15,12 +15,11 @@ import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.Hand;
@@ -101,19 +100,18 @@ public class ZapAppleItem extends AppleItem implements ChameleonItem {
     }
 
     @Override
-    public String getTranslationKey(ItemStack stack) {
-        Item appearance = getAppearance(stack);
-        return appearance == Items.AIR ? super.getTranslationKey() : appearance.getTranslationKey(stack);
+    public Text getName(ItemStack stack) {
+        return hasAppearance(stack) ? getAppearanceStack(stack).getName() : super.getName(stack);
     }
 
     @Override
     public Toxicity getToxicity(ItemStack stack) {
-        return getAppearance(stack) == Items.AIR ? Toxicity.SEVERE : Toxicity.SAFE;
+        return hasAppearance(stack) ? Toxicity.SEVERE : Toxicity.SAFE;
     }
 
     @Override
     public Rarity getRarity(ItemStack stack) {
-        if (getAppearance(stack) == Items.AIR) {
+        if (hasAppearance(stack)) {
             return Rarity.EPIC;
         }
 

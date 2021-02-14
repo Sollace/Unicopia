@@ -16,10 +16,7 @@ public class JarInsertRecipe extends ItemCombinationRecipe {
     public final ItemStack craft(CraftingInventory inventory) {
         Pair<ItemStack, ItemStack> pair = runMatch(inventory);
 
-        ItemStack result = new ItemStack(UItems.FILLED_JAR);
-        UItems.FILLED_JAR.setAppearance(result, pair.getRight().getItem());
-
-        return result;
+        return UItems.FILLED_JAR.setAppearance(UItems.FILLED_JAR.getDefaultStack(), pair.getRight());
     }
 
     @Override

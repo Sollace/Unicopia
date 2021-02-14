@@ -21,10 +21,11 @@ public interface ChameleonItem {
     }
 
     default ItemStack createAppearanceStack(ItemStack stack, Item appearance) {
-        ItemStack newAppearance = new ItemStack(appearance, stack.getCount());
+        ItemStack newAppearance = appearance.getDefaultStack();
         if (stack.hasTag()) {
             newAppearance.setTag(stack.getTag().copy());
         }
+        newAppearance.setCount(stack.getCount());
         newAppearance.removeSubTag("appearance");
         return newAppearance;
     }
@@ -41,7 +42,17 @@ public interface ChameleonItem {
         return Items.AIR;
     }
 
-    default void setAppearance(ItemStack stack, Item appearance) {
-        stack.getOrCreateTag().putString("appearance", Registry.ITEM.getId(appearance).toString());
+    default ItemStack setAppearance(ItemStack stack, ItemStack appearance) {
+        ItemStack result = stack.copy();
+
+        if (appearance.hasTag()) {
+            result.setTag(appearance.getTag().copy());
+            result.removeCustomName();
+            result.setDamage(stack.getDamage());
+            result.setCount(stack.getCount());
+        }
+        result.getOrCreateTag().putString("appearance", Registry.ITEM.getId(appearance.getItem()).toString());
+
+        return result;
     }
 }

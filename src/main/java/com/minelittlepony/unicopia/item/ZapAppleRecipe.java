@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -10,6 +11,7 @@ import net.minecraft.recipe.ShapelessRecipe;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.registry.Registry;
 
 public class ZapAppleRecipe extends ShapelessRecipe {
 
@@ -29,10 +31,11 @@ public class ZapAppleRecipe extends ShapelessRecipe {
                 throw new JsonParseException("Too many ingredients for shapeless recipe");
             }
 
-            ItemStack stack = UItems.ZAP_APPLE.getDefaultStack();
-            stack.getOrCreateTag().putString("appearance", JsonHelper.getString(json, "appearance"));
+            Identifier id = new Identifier(JsonHelper.getString(json, "appearance"));
 
-            return new ZapAppleRecipe(identifier, group, stack, ingredients);
+            return new ZapAppleRecipe(identifier, group, UItems.ZAP_APPLE.setAppearance(UItems.ZAP_APPLE.getDefaultStack(), Registry.ITEM.getOrEmpty(id).orElseThrow(() -> {
+                return new JsonSyntaxException("Unknown item '" + id + "'");
+            }).getDefaultStack()), ingredients);
         }
 
         @Override
