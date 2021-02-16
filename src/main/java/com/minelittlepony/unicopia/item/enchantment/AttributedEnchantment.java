@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.item.enchantment;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.IntFunction;
-
 import com.minelittlepony.unicopia.entity.Living;
 
 import net.minecraft.enchantment.EnchantmentTarget;
@@ -15,7 +13,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 
 public class AttributedEnchantment extends SimpleEnchantment {
 
-    private final Map<EntityAttribute, IntFunction<EntityAttributeModifier>> modifiers = new HashMap<>();
+    private final Map<EntityAttribute, ModifierFactory> modifiers = new HashMap<>();
 
     protected AttributedEnchantment(Rarity rarity, EnchantmentTarget target, boolean cursed, int maxLevel, EquipmentSlot... slots) {
         super(rarity, target, cursed, maxLevel, slots);
@@ -25,7 +23,7 @@ public class AttributedEnchantment extends SimpleEnchantment {
         super(rarity, cursed, maxLevel, slots);
     }
 
-    public AttributedEnchantment addModifier(EntityAttribute attribute, IntFunction<EntityAttributeModifier> modifierSupplier) {
+    public AttributedEnchantment addModifier(EntityAttribute attribute, ModifierFactory modifierSupplier) {
         modifiers.put(attribute, modifierSupplier);
         return this;
     }
@@ -37,7 +35,7 @@ public class AttributedEnchantment extends SimpleEnchantment {
             modifiers.forEach((attr, modifierSupplier) -> {
                 EntityAttributeInstance instance = entity.getAttributeInstance(attr);
 
-                EntityAttributeModifier modifier = modifierSupplier.apply(level);
+                EntityAttributeModifier modifier = modifierSupplier.get(user, level);
 
                 instance.removeModifier(modifier.getId());
                 instance.addPersistentModifier(modifier);
@@ -51,12 +49,16 @@ public class AttributedEnchantment extends SimpleEnchantment {
         modifiers.forEach((attr, modifierSupplier) -> {
             EntityAttributeInstance instance = entity.getAttributeInstance(attr);
 
-            instance.tryRemoveModifier(modifierSupplier.apply(1).getId());
+            instance.tryRemoveModifier(modifierSupplier.get(user, 1).getId());
         });
         user.getEnchants().remove(this);
     }
 
     protected boolean shouldChangeModifiers(Living<?> user, int level) {
         return user.getEnchants().computeIfAbsent(this, Data::new).update(level);
+    }
+
+    interface ModifierFactory {
+        EntityAttributeModifier get(Living<?> user, int level);
     }
 }

@@ -32,14 +32,9 @@ public interface UEnchantments {
 
     /**
      * Heavy players move more slowly but are less likely to be flung around wildly.
-     *
-     * TODO:
      */
     Enchantment HEAVY = register("heavy", new AttributedEnchantment(Rarity.COMMON, EnchantmentTarget.ARMOR_FEET, false, 4, EquipmentSlot.FEET))
-            .addModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED, level -> {
-                // 1 -> 0.9
-                // 2 -> 0.8
-                // 3 -> 0.7
+            .addModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED, (user, level) -> {
                 return new EntityAttributeModifier(UUID.fromString("a3d5a94f-4c40-48f6-a343-558502a13e10"), "Heavyness", (1 - level/(float)10) - 1, Operation.MULTIPLY_TOTAL);
             });
 
@@ -47,10 +42,8 @@ public interface UEnchantments {
      * It's dangerous to go alone, take this!
      *
      * Weapons will become stronger the more allies you have around.
-     *
-     * TODO:
      */
-    Enchantment COLLABORATOR = register("collaborator", new SimpleEnchantment(Rarity.COMMON, EnchantmentTarget.WEAPON, false, 1, EquipmentSlot.MAINHAND));
+    Enchantment COLLABORATOR = register("collaborator", new CollaboratorEnchantment());
 
     /**
      * I want it, I neeeed it!
