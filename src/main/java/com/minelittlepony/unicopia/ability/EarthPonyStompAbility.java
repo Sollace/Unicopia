@@ -116,6 +116,10 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                         }
                     }
 
+                    if (i instanceof LivingEntity) {
+                        amount /= 1 + (EnchantmentHelper.getEquipmentLevel(UEnchantments.PADDED, (LivingEntity)i) / 6F);
+                    }
+
                     i.damage(damage, (float)amount);
                 }
             });

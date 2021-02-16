@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
+import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.MutableVector;
 
@@ -37,6 +38,8 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
     public boolean isFlyingEither = false;
     public boolean isFlyingSurvival = false;
+
+    private int wallHitCooldown;
 
     private Vec3d lastPos = Vec3d.ZERO;
 
@@ -69,6 +72,9 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
     @Override
     public void tick() {
+        if (wallHitCooldown > 0) {
+            wallHitCooldown--;
+        }
         PlayerEntity entity = pony.getMaster();
 
         if (isGravityNegative() && !entity.isSneaking() && entity.isInSneakingPose()) {
@@ -97,9 +103,15 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
                 if (entity.abilities.flying && entity.horizontalCollision) {
                     handleWallCollission(entity, velocity);
+
+                    entity.setVelocity(velocity.toImmutable());
+                    entity.abilities.flying = false;
+                    return;
                 }
 
                 entity.abilities.flying = false;
+                isFlyingSurvival = entity.abilities.flying && !creative;
+                isFlyingEither = isFlyingSurvival || (creative && entity.abilities.flying);
             }
         }
 
@@ -210,26 +222,41 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     }
 
     private SoundEvent getWingSound() {
-        return pony.getSpecies() == Race.CHANGELING ? USounds.CHANGELING_BUZZ : USounds.WING_FLAP;
+        return pony.getSpecies() == Race.CHANGELING ? USounds.ENTITY_PLAYER_CHANGELING_BUZZ : USounds.ENTITY_PLAYER_PEGASUS_WINGSFLAP;
     }
 
     protected void handleWallCollission(PlayerEntity player, MutableVector velocity) {
 
-        if (!player.world.isClient) {
-            BlockPos pos = new BlockPos(player.getCameraPosVec(1).add(player.getRotationVec(1).normalize().multiply(2)));
+        if (wallHitCooldown > 0) {
+            return;
+        }
 
-            BlockState state = player.world.getBlockState(pos);
+        BlockPos pos = new BlockPos(player.getCameraPosVec(1).add(player.getRotationVec(1).normalize().multiply(2)));
 
-            if (!player.world.isAir(pos) && Block.isFaceFullSquare(state.getCollisionShape(player.world, pos), player.getHorizontalFacing().getOpposite())) {
-                double motion = Math.sqrt(getHorizontalMotion(player));
+        BlockState state = player.world.getBlockState(pos);
 
-                float distance = (float)(motion * 20 - 3);
+        if (!player.world.isAir(pos) && Block.isFaceFullSquare(state.getCollisionShape(player.world, pos), player.getHorizontalFacing().getOpposite())) {
+            double motion = Math.sqrt(getHorizontalMotion(player));
 
-                if (distance > 0) {
-                    player.playSound(distance > 4 ? SoundEvents.ENTITY_PLAYER_BIG_FALL : SoundEvents.ENTITY_PLAYER_SMALL_FALL, 1, 1);
+            float distance = (float)(motion * 20 - 3);
 
-                    player.damage(DamageSource.FLY_INTO_WALL, distance);
+            float bouncyness = EnchantmentHelper.getEquipmentLevel(UEnchantments.PADDED, player) * 6;
+
+            System.out.println(bouncyness);
+
+            if (distance > 0) {
+                wallHitCooldown = 30;
+
+                if (bouncyness > 0) {
+                    player.world.playSoundFromEntity(null, player, USounds.ENTITY_PLAYER_REBOUND, SoundCategory.PLAYERS, 1, 1);
+                    ProjectileUtil.ricochet(player, Vec3d.of(pos), 0.4F + Math.min(2, bouncyness / 18F));
+                    velocity.fromImmutable(player.getVelocity());
+                    distance /= bouncyness;
+                } else {
+                    player.world.playSoundFromEntity(null, player, distance > 4 ? SoundEvents.ENTITY_PLAYER_BIG_FALL : SoundEvents.ENTITY_PLAYER_SMALL_FALL, SoundCategory.PLAYERS, 1, 1);
+                    //player.playSound(distance > 4 ? SoundEvents.ENTITY_PLAYER_BIG_FALL : SoundEvents.ENTITY_PLAYER_SMALL_FALL, 1, 1);
                 }
+                player.damage(DamageSource.FLY_INTO_WALL, distance);
             }
         }
     }
@@ -298,7 +325,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         }
 
         if (forward >= 1) {
-            player.world.playSound(null, player.getBlockPos(), USounds.WIND_RUSH, SoundCategory.AMBIENT, 3, 1);
+            player.world.playSound(null, player.getBlockPos(), USounds.AMBIENT_WIND_GUST, SoundCategory.AMBIENT, 3, 1);
         }
 
         forward = Math.min(forward, 7);

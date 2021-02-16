@@ -14,6 +14,12 @@ public class MutableVector {
         z = vec.z;
     }
 
+    public void fromImmutable(Vec3d vec) {
+        x = vec.x;
+        y = vec.y;
+        z = vec.z;
+    }
+
     public Vec3d toImmutable() {
         return new Vec3d(x, y, z);
     }

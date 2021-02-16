@@ -23,7 +23,7 @@ public class MagicAuraSoundInstance extends MovingSoundInstance {
     private boolean fadingOut;
 
     public MagicAuraSoundInstance(SoundCategory category, Living<?> living) {
-        super(USounds.AURA, category);
+        super(USounds.ITEM_MAGIC_AURA, category);
         this.looping = true;
         this.repeat = true;
         this.living = living;

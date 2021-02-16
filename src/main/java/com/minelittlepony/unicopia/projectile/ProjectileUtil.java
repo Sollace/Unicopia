@@ -52,4 +52,21 @@ public interface ProjectileUtil {
             throwable.addVelocity(heading.x - vel.x, heading.y - vel.y, heading.z - vel.z);
         }
     }
+
+    /**
+     * Reverses a projectile's direction to deflect it off a surface.
+     */
+    static void ricochet(Entity projectile, Vec3d pos, float absorbtionRate) {
+        Vec3d position = projectile.getPos();
+        Vec3d motion = projectile.getVelocity();
+
+        Vec3d normal = position.subtract(pos).normalize();
+        Vec3d approach = motion.subtract(normal);
+
+        if (approach.length() < motion.length()) {
+            normal = normal.multiply(-1);
+        }
+
+        setThrowableHeading(projectile, normal, (float)motion.length() * absorbtionRate, 0);
+    }
 }

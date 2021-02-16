@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.entity.effect.UPotions;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.Channel;
 
 public class Unicopia implements ModInitializer {
@@ -41,6 +42,7 @@ public class Unicopia implements ModInitializer {
             ((BlockDestructionManager.Source)w).getDestructionManager().tick();
         });
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(TreeTypeLoader.INSTANCE);
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(UEnchantments.POISON_JOKE);
 
         UItems.bootstrap();
         UPotions.bootstrap();

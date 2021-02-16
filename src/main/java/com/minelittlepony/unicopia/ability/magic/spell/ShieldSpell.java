@@ -162,7 +162,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
                     target.playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 0.1F, 1);
                     target.remove();
                 } else {
-                    ricochet(target, pos);
+                    ProjectileUtil.ricochet(target, pos, 0.9F);
                 }
             }
         } else if (target instanceof LivingEntity) {
@@ -212,21 +212,6 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
         }
 
         return force;
-    }
-
-    /**
-     * Reverses a projectiles direction to deflect it off the shield's surface.
-     */
-    protected void ricochet(Entity projectile, Vec3d pos) {
-        Vec3d position = projectile.getPos();
-        Vec3d motion = projectile.getVelocity();
-
-        Vec3d normal = position.subtract(pos).normalize();
-        Vec3d approach = motion.subtract(normal);
-
-        if (approach.length() >= motion.length()) {
-            ProjectileUtil.setThrowableHeading(projectile, normal, (float)motion.length(), 0);
-        }
     }
 
     class Target {

@@ -5,14 +5,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public interface USounds {
+    SoundEvent AMBIENT_WIND_GUST = register("ambient.wind.gust");
 
-    SoundEvent WING_FLAP = register("wing_flap");
-    SoundEvent WIND_RUSH = register("wind_rush");
+    SoundEvent ENTITY_PLAYER_BATPONY_SCREECH = register("entity.player.batpony.screech");
+    SoundEvent ENTITY_PLAYER_REBOUND = register("entity.player.rebound");
+    SoundEvent ENTITY_PLAYER_PEGASUS_WINGSFLAP = register("entity.player.pegasus.wingsflap");
+    SoundEvent ENTITY_PLAYER_CHANGELING_BUZZ = register("entity.player.changeling.buzz");
 
-    SoundEvent BATPONY_EEEE = register("batpony_eeee");
-    SoundEvent CHANGELING_BUZZ = register("changeling_buzz");
-
-    SoundEvent AURA = register("aura");
+    SoundEvent ITEM_MAGIC_AURA = register("item.magic.aura");
 
     SoundEvent RECORD_CRUSADE = register("record.crusade");
     SoundEvent RECORD_PET = register("record.pet");

@@ -25,8 +25,6 @@ public interface UEnchantments {
 
     /**
      * Protects against wall collisions and earth pony attacks!
-     *
-     * TODO:
      */
     Enchantment PADDED = register("padded", new SimpleEnchantment(Rarity.COMMON, EnchantmentTarget.ARMOR, false, 3, EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET));
 
@@ -56,10 +54,8 @@ public interface UEnchantments {
      * Hahaha geddit?
      *
      * Random things happen.
-     *
-     * TODO:
      */
-    Enchantment POISON_JOKE = register("poison_joke", new SimpleEnchantment(Rarity.COMMON, true, 3, EquipmentSlot.values()));
+    PoisonedJokeEnchantment POISON_JOKE = register("poison_joke", new PoisonedJokeEnchantment());
 
     /**
      * Who doesn't like a good freakout?

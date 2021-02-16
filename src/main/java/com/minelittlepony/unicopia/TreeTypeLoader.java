@@ -25,8 +25,7 @@ import net.minecraft.util.registry.Registry;
 public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
 
     private static final Identifier ID = new Identifier("unicopia", "data/tree_type");
-
-    private static final Gson GSON = new GsonBuilder()
+    public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(Identifier.class, new ToStringAdapter<>(Identifier::new))
             .create();
 

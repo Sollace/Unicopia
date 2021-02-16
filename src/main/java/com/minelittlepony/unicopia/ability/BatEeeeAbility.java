@@ -61,14 +61,14 @@ public class BatEeeeAbility implements Ability<Hit> {
         int count = 1 + rng.nextInt(10);
 
         for (int i = 0; i < count; i++) {
-            player.getWorld().playSound(null, player.getOrigin(), USounds.BATPONY_EEEE, SoundCategory.PLAYERS,
+            player.getWorld().playSound(null, player.getOrigin(), USounds.ENTITY_PLAYER_BATPONY_SCREECH, SoundCategory.PLAYERS,
                     0.9F + (rng.nextFloat() - 0.5F) / 2F,
                     1.6F + (rng.nextFloat() - 0.5F)
             );
         }
         AwaitTickQueue.scheduleTask(player.getWorld(), w -> {
             for (int i = 0; i < count; i++) {
-                player.getWorld().playSound(null, player.getOrigin(), USounds.BATPONY_EEEE, SoundCategory.PLAYERS,
+                player.getWorld().playSound(null, player.getOrigin(), USounds.ENTITY_PLAYER_BATPONY_SCREECH, SoundCategory.PLAYERS,
                         0.9F + (rng.nextFloat() - 0.5F) / 2F,
                         1.6F + (rng.nextFloat() - 0.5F)
                 );

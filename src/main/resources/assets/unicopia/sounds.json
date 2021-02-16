@@ -1,5 +1,5 @@
 {
-  "wing_flap": {
+  "entity.player.pegasus.wingsflap": {
     "category": "player",
     "subtitle": "unicopia.subtitle.flap_wings",
     "sounds": [
@@ -9,13 +9,24 @@
        "unicopia:wing/wing3"
      ]
   },
-  "aura": {
+  "item.magic.aura": {
   	"category": "player",
   	"sounds": [
   		"unicopia:aura/aura0"
   	]
   },
-  "batpony_eeee": {
+  "entity.player.rebound": {
+  	"category": "player",
+  	"sounds": [
+  		"unicopia:boing/boing0",
+  		"unicopia:boing/boing1",
+  		"unicopia:boing/boing2",
+  		"unicopia:boing/boing3",
+  		"unicopia:boing/boing4",
+  		"unicopia:boing/boing5"
+  	]
+  },
+  "entity.player.batpony.screech": {
   	"category": "player",
   	"subtitle": "unicopia.subtitle.batpony_eeee",
   	"sounds": [
@@ -25,7 +36,7 @@
   		"unicopia:batpony/screep1"
   	]
   },
-  "changeling_buzz": {
+  "entity.player.changeling.buzz": {
     "category": "player",
     "subtitle": "unicopia.subtitle.changeling_buzz",
     "sounds": [
@@ -34,7 +45,7 @@
       "unicopia:cicada/cicada_6"
     ]
   },
-  "wind_rush": {
+  "ambient.wind.gust": {
     "category": "ambient",
     "subtitle": "unicopia.subtitle.wind_rush",
     "sounds": [
