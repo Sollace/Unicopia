@@ -15,6 +15,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -304,6 +306,13 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
         velocity.x += - forward * MathHelper.sin((player.yaw + glance) * 0.017453292F);
         velocity.z += forward * MathHelper.cos((player.yaw + glance) * 0.017453292F);
+
+        if (!player.world.isClient && player.world.isThundering() && player.world.random.nextInt(9000) == 0) {
+            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(player.world);
+            lightning.refreshPositionAfterTeleport(player.getX(), player.getY(), player.getZ());
+
+            player.world.spawnEntity(lightning);
+        }
     }
 
     protected double getHorizontalMotion(Entity e) {
