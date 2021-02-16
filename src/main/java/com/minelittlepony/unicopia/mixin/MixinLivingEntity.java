@@ -22,6 +22,7 @@ import com.minelittlepony.unicopia.entity.ItemWielder;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -56,6 +57,11 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
             caster = create();
         }
         return caster;
+    }
+
+    @Inject(method = "createLivingAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
+    private static void onCreateAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {
+        Creature.registerAttributes(info.getReturnValue());
     }
 
     @Inject(method = "isClimbing()Z", at = @At("HEAD"), cancellable = true)

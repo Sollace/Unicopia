@@ -163,6 +163,14 @@
 
   "key.unicopia.hud_page_dn": "Hud Previous Page",
   "key.unicopia.hud_page_up": "Hud Next Page",
+  
+  "enchantment.unicopia.gem_location": "Gem Locator",
+  "enchantment.unicopia.padded": "Padded",
+  "enchantment.unicopia.heavy": "Heavy",
+  "enchantment.unicopia.collaborator": "Collaborator",
+  "enchantment.unicopia.desired": "Want It Need It",
+  "enchantment.unicopia.poison_joke": "Poisoned Joke",
+  "enchantment.unicopia.stress": "Stressful",
 
   "commands.race.success.self": "Your race has been updated",
   "commands.race.success.otherself": "%1$s changed race to %2$s",

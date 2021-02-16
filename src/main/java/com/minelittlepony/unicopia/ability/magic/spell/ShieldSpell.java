@@ -13,12 +13,14 @@ import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
+import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.entity.FallingBlockEntity;
@@ -181,6 +183,10 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
      */
     protected void applyForce(Vec3d pos, Entity target, double force, double distance) {
         pos = target.getPos().subtract(pos).normalize().multiply(force);
+
+        if (target instanceof LivingEntity) {
+            pos = pos.multiply(1 / (1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, (LivingEntity)target)));
+        }
 
         target.addVelocity(
                 pos.x,

@@ -12,6 +12,8 @@ public interface USounds {
     SoundEvent BATPONY_EEEE = register("batpony_eeee");
     SoundEvent CHANGELING_BUZZ = register("changeling_buzz");
 
+    SoundEvent AURA = register("aura");
+
     SoundEvent RECORD_CRUSADE = register("record.crusade");
     SoundEvent RECORD_PET = register("record.pet");
     SoundEvent RECORD_POPULAR = register("record.popular");

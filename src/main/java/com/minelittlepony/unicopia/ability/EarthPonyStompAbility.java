@@ -6,12 +6,15 @@ import com.minelittlepony.unicopia.BlockDestructionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.WorldEvent;
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -80,19 +83,27 @@ public class EarthPonyStompAbility implements Ability<Hit> {
         iplayer.waitForFall(() -> {
             BlockPos center = PosHelper.findSolidGroundAt(player.getEntityWorld(), player.getBlockPos());
 
+            float heavyness = 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, player);
+
             iplayer.getWorld().getOtherEntities(player, areaOfEffect.offset(iplayer.getOriginVector())).forEach(i -> {
                 double dist = Math.sqrt(center.getSquaredDistance(i.getBlockPos()));
 
                 if (dist <= rad + 3) {
-                    double force = dist / 5;
+                    double inertia = dist / 5;
+
+                    if (i instanceof LivingEntity) {
+                        inertia *= 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, (LivingEntity)i);
+                    }
+                    inertia /= heavyness;
+
                     i.addVelocity(
-                            -(player.getX() - i.getX()) / force,
-                            -(player.getY() - i.getY() - 2) / force + (dist < 1 ? dist : 0),
-                            -(player.getZ() - i.getZ()) / force);
+                            -(player.getX() - i.getX()) / inertia,
+                            -(player.getY() - i.getY() - 2) / inertia + (dist < 1 ? dist : 0),
+                            -(player.getZ() - i.getZ()) / inertia);
 
                     DamageSource damage = MagicalDamageSource.create("smash", player);
 
-                    double amount = (4 * player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue()) / (float)dist;
+                    double amount = (4 * player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue() + heavyness * 0.4) / (float)dist;
 
                     if (i instanceof PlayerEntity) {
                         Race race = Pony.of((PlayerEntity)i).getSpecies();
@@ -109,10 +120,12 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                 }
             });
 
-            BlockPos.iterate(center.add(-rad, -rad, -rad), center.add(rad, rad, rad)).forEach(i -> {
+            double radius = rad + heavyness * 0.3;
+
+            BlockPos.iterate(center.add(-radius, -radius, -radius), center.add(radius, radius, radius)).forEach(i -> {
                 double dist = Math.sqrt(i.getSquaredDistance(player.getX(), player.getY(), player.getZ(), true));
 
-                if (dist <= rad) {
+                if (dist <= radius) {
                     spawnEffect(player.world, i, dist);
                 }
             });

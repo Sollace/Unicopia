@@ -276,9 +276,9 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             ticksHanging = 0;
         }
 
-        super.tick();
-
         tickers.forEach(Tickable::tick);
+
+        super.tick();
 
         if (dirty) {
             sendCapabilities(true);
@@ -376,6 +376,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     @Override
     public void toNBT(CompoundTag compound) {
+        super.toNBT(compound);
         compound.putString("playerSpecies", getSpecies().name());
 
         compound.putFloat("magicExhaustion", magicExhaustion);
@@ -392,6 +393,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     @Override
     public void fromNBT(CompoundTag compound) {
+        super.fromNBT(compound);
         speciesPersisted = true;
         setSpecies(Race.fromName(compound.getString("playerSpecies")));
 

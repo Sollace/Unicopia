@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.toxin.ToxicHolder;
 import com.minelittlepony.unicopia.item.toxin.Toxics;
 import com.minelittlepony.unicopia.item.toxin.UFoodComponents;
@@ -72,6 +73,7 @@ public interface UItems {
 
     static void bootstrap() {
         Toxics.bootstrap();
+        UEnchantments.bootstrap();
         URecipes.bootstrap();
 
         FabricItemGroupBuilder.create(new Identifier("unicopia", "items")).appendItems(list -> {
@@ -81,7 +83,7 @@ public interface UItems {
                     .map(Item::getDefaultStack)
                     .collect(Collectors.toList())
             );
-        }).icon(ZAP_APPLE::getDefaultStack).build();
+        }).icon(EMPTY_JAR::getDefaultStack).build();
 
         FabricItemGroupBuilder.create(new Identifier("unicopia", "horsefeed")).appendItems(list -> {
             list.addAll(Registry.ITEM.stream()

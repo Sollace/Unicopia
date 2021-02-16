@@ -34,6 +34,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     private int invinsibilityTicks;
 
+    private final Enchantments enchants = new Enchantments(this);
+
     protected Living(T entity, TrackedData<CompoundTag> effect) {
         this.entity = entity;
         this.effectDelegate = new EffectSync(this, effect);
@@ -56,6 +58,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Override
     public EffectSync getPrimarySpellSlot() {
         return effectDelegate;
+    }
+
+    public Enchantments getEnchants() {
+        return enchants;
     }
 
     @Override
@@ -93,6 +99,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         if (getPhysics().isGravityNegative() && entity.getY() > entity.world.getHeight() + 64) {
             entity.damage(DamageSource.OUT_OF_WORLD, 4.0F);
         }
+
+        enchants.tick();
     }
 
     @Override
@@ -151,5 +159,15 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         getSpellOrEmpty(DisguiseSpell.class, false).ifPresent(spell -> {
             spell.getDisguise().onImpact(this, distance, damageMultiplier);
         });
+    }
+
+    @Override
+    public void toNBT(CompoundTag compound) {
+        enchants.toNBT(compound);
+    }
+
+    @Override
+    public void fromNBT(CompoundTag compound) {
+        enchants.fromNBT(compound);
     }
 }

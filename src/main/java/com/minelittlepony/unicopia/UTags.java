@@ -7,17 +7,22 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 
 public interface UTags {
-    Tag<Item> APPLES = register("apples");
-    Tag<Item> FESH_APPLES = register("fresh_apples");
+    Tag<Item> APPLES = item("apples");
+    Tag<Item> FESH_APPLES = item("fresh_apples");
 
-    Tag<Item> NON_TOXIC = register("non_toxic");
-    Tag<Item> FAIRLY_TOXIC = register("fairly_toxic");
-    Tag<Item> SEVERELY_TOXIC = register("severely_toxic");
+    Tag<Item> NON_TOXIC = item("non_toxic");
+    Tag<Item> FAIRLY_TOXIC = item("fairly_toxic");
+    Tag<Item> SEVERELY_TOXIC = item("severely_toxic");
 
-    Tag<Block> FRAGILE = TagRegistry.block(new Identifier("unicopia", "fragile"));
+    Tag<Block> FRAGILE = block("fragile");
+    Tag<Block> INTERESTING = block("interesting");
 
-    static Tag<Item> register(String name) {
+    static Tag<Item> item(String name) {
         return TagRegistry.item(new Identifier("unicopia", name));
+    }
+
+    static Tag<Block> block(String name) {
+        return TagRegistry.block(new Identifier("unicopia", name));
     }
 
     static void bootstrap() { }

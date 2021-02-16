@@ -6,11 +6,13 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
+import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.MutableVector;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -196,6 +198,12 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
         lastPos = new Vec3d(entity.getX(), 0, entity.getZ());
 
+        if (!entity.isOnGround()) {
+            float heavyness = 1 - EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.015F;
+            velocity.x *= heavyness;
+            velocity.z *= heavyness;
+        }
+
         entity.setVelocity(velocity.toImmutable());
     }
 
@@ -245,12 +253,17 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             thrustScale *= 0.1889F;
         }
 
+        float heavyness = EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, player) / 6F;
         float thrustStrength = 0.135F * thrustScale;
+        if (heavyness > 0) {
+            thrustStrength /= heavyness;
+        }
+
         Vec3d direction = player.getRotationVec(1).normalize().multiply(thrustStrength);
 
         velocity.x += direction.x;
         velocity.z += direction.z;
-        velocity.y += (direction.y * 2.45 + Math.abs(direction.y) * 10) * getGravitySignum();
+        velocity.y += (direction.y * 2.45 + Math.abs(direction.y) * 10) * getGravitySignum() - heavyness / 5F;
 
         if (player.isSneaking()) {
             if (!isGravityNegative()) {
@@ -264,7 +277,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         }
     }
 
-    protected void applyTurbulance(Entity player, MutableVector velocity) {
+    protected void applyTurbulance(PlayerEntity player, MutableVector velocity) {
         float glance = 360 * player.world.random.nextFloat();
         float forward = 0.015F * player.world.random.nextFloat() *  player.world.getRainGradient(1);
 
@@ -287,6 +300,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         }
 
         forward = Math.min(forward, 7);
+        forward /= 1 + (EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, player) * 0.8F);
 
         velocity.x += - forward * MathHelper.sin((player.yaw + glance) * 0.017453292F);
         velocity.z += forward * MathHelper.cos((player.yaw + glance) * 0.017453292F);

@@ -6,10 +6,17 @@ import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.entity.ai.WantItNeedItTargetGoal;
+import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;
+
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.GoalSelector;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
 
 public class Creature extends Living<LivingEntity> {
@@ -24,6 +31,16 @@ public class Creature extends Living<LivingEntity> {
 
     public Creature(LivingEntity entity) {
         super(entity, EFFECT);
+    }
+
+    public void initAi(GoalSelector goals, GoalSelector targets) {
+        targets.add(1, new WantItNeedItTargetGoal((MobEntity)entity));
+        goals.add(1, new WantItTakeItGoal((MobEntity)entity));
+    }
+
+    public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
+        builder.add(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+        builder.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
     }
 
     @Override
@@ -55,6 +72,7 @@ public class Creature extends Living<LivingEntity> {
 
     @Override
     public void toNBT(CompoundTag compound) {
+        super.toNBT(compound);
         Spell effect = getSpell(true);
 
         if (effect != null) {
@@ -65,6 +83,7 @@ public class Creature extends Living<LivingEntity> {
 
     @Override
     public void fromNBT(CompoundTag compound) {
+        super.fromNBT(compound);
         if (compound.contains("effect")) {
             setSpell(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
         }

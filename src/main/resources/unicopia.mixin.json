@@ -13,6 +13,7 @@
     "MixinItems",
     "MixinLivingEntity",
     "MixinMilkBucketItem",
+    "MixinMobEntity",
     "MixinPersistentProjectileEntity",
     "MixinPlayerEntity",
     "MixinProjectileEntity",

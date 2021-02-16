@@ -9,6 +9,12 @@
        "unicopia:wing/wing3"
      ]
   },
+  "aura": {
+  	"category": "player",
+  	"sounds": [
+  		"unicopia:aura/aura0"
+  	]
+  },
   "batpony_eeee": {
   	"category": "player",
   	"subtitle": "unicopia.subtitle.batpony_eeee",
