@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,6 +19,7 @@ import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.entity.Jumper;
 import com.minelittlepony.unicopia.entity.ItemWielder;
 
 import net.minecraft.entity.Entity;
@@ -30,7 +32,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 
 @Mixin(LivingEntity.class)
-abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<?>>, ItemWielder {
+abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<?>>, ItemWielder, Jumper {
     @Shadow
     protected ItemStack activeItemStack;
     @Shadow
@@ -58,6 +60,10 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
         }
         return caster;
     }
+
+    @Override
+    @Accessor("jumping")
+    public abstract boolean isJumping();
 
     @Inject(method = "createLivingAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
     private static void onCreateAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {

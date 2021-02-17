@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
+import com.minelittlepony.unicopia.entity.Jumper;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
@@ -51,16 +52,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     }
 
     @Override
-    public float getGravityModifier() {
-        if (pony.getMaster().getAttributes() == null) {
-            // may be null due to order of execution in the contructor.
-            // Will have the default (1) here in any case, so it's safe to ignore the attribute a this point.
-            return super.getGravityModifier();
-        }
-        return super.getGravityModifier() * (float)pony.getMaster().getAttributeValue(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
-    }
-
-    @Override
     public PlayerDimensions getDimensions() {
         return dimensions;
     }
@@ -77,6 +68,8 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         }
         PlayerEntity entity = pony.getMaster();
 
+        final MutableVector velocity = new MutableVector(entity.getVelocity());
+
         if (isGravityNegative() && !entity.isSneaking() && entity.isInSneakingPose()) {
             float currentHeight = entity.getDimensions(entity.getPose()).height;
             float sneakingHeight = entity.getDimensions(EntityPose.STANDING).height;
@@ -84,8 +77,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             entity.setPos(entity.getX(), entity.getY() + currentHeight - sneakingHeight, entity.getZ());
             entity.setPose(EntityPose.STANDING);
         }
-
-        final MutableVector velocity = new MutableVector(entity.getVelocity());
 
         boolean creative = entity.abilities.creativeMode || pony.getMaster().isSpectator();
 
@@ -118,13 +109,17 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         isFlyingSurvival = entity.abilities.flying && !creative;
         isFlyingEither = isFlyingSurvival || (creative && entity.abilities.flying);
 
-        if (pony.getPhysics().isGravityNegative()) {
+        if (isGravityNegative()) {
             entity.setOnGround(!entity.world.isAir(new BlockPos(entity.getX(), entity.getY() + entity.getHeight() + 0.5F, entity.getZ())));
 
             if (entity.isOnGround() || entity.horizontalCollision) {
                 entity.abilities.flying = false;
                 isFlyingEither = false;
                 isFlyingSurvival = false;
+            }
+
+            if (entity.isClimbing() && (entity.horizontalCollision || ((Jumper)entity).isJumping())) {
+                velocity.y = -0.2F;
             }
         }
 
