@@ -75,7 +75,7 @@ public interface UEnchantments {
     /**
      * This item just wants to be held.
      */
-    Enchantment CLINGY = register("clingy", new SimpleEnchantment(Rarity.VERY_RARE, true, 1, EquipmentSlot.values()));
+    Enchantment CLINGY = register("clingy", new SimpleEnchantment(Rarity.VERY_RARE, true, 6, EquipmentSlot.values()));
 
     static void bootstrap() { }
 
