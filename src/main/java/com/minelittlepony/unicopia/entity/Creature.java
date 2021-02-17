@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.entity.ai.WantItNeedItTargetGoal;
 import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;
+import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.GoalSelector;
@@ -41,6 +42,7 @@ public class Creature extends Living<LivingEntity> {
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
         builder.add(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         builder.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
+        builder.add(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
     }
 
     @Override

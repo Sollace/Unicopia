@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
+
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantment.Rarity;
 import net.minecraft.entity.EquipmentSlot;
@@ -44,6 +46,14 @@ public interface UEnchantments {
     Enchantment COLLABORATOR = register("collaborator", new CollaboratorEnchantment());
 
     /**
+     * Alters gravity
+     */
+    Enchantment REPULSION = register("repulsion", new AttributedEnchantment(Rarity.VERY_RARE, false, 3, EquipmentSlot.FEET))
+            .addModifier(PlayerAttributes.ENTITY_GRAVTY_MODIFIER, (user, level) -> {
+                return new EntityAttributeModifier(UUID.fromString("1734bbd6-1916-4124-b710-5450ea70fbdb"), "Anti Grav", (0.5F - (0.375 * (level - 1))) - 1, Operation.MULTIPLY_TOTAL);
+            });
+
+    /**
      * I want it, I neeeed it!
      *
      * Mobs really want your candy. You'd better give it to them.
@@ -61,6 +71,11 @@ public interface UEnchantments {
      * Who doesn't like a good freakout?
      */
     Enchantment STRESS = register("stress", new StressfulEnchantment());
+
+    /**
+     * This item just wants to be held.
+     */
+    Enchantment CLINGY = register("clingy", new SimpleEnchantment(Rarity.VERY_RARE, true, 1, EquipmentSlot.values()));
 
     static void bootstrap() { }
 

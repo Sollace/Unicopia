@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.Owned;
+import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
 import com.minelittlepony.unicopia.util.Copieable;
 
 import net.minecraft.block.Block;
@@ -8,6 +9,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -89,6 +91,17 @@ public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics
 
     @Override
     public float getGravityModifier() {
+        Entity master = pony.getMaster();
+
+        if (master instanceof LivingEntity) {
+            if (((LivingEntity)master).getAttributes() == null) {
+                // may be null due to order of execution in the constructor.
+                // Will have the default (1) here in any case, so it's safe to ignore the attribute at this point.
+                return gravity;
+            }
+            return gravity * (float)((LivingEntity)master).getAttributeValue(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+        }
+
         return gravity;
     }
 
