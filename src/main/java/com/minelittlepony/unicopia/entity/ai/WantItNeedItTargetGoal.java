@@ -53,7 +53,7 @@ public class WantItNeedItTargetGoal extends Goal {
     }
 
     static boolean canTarget(LivingEntity e) {
-        return EnchantmentHelper.getEquipmentLevel(UEnchantments.DESIRED, e) > 0;
+        return EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) > 0;
     }
 
 }

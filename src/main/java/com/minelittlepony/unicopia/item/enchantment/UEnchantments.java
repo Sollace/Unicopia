@@ -23,7 +23,7 @@ public interface UEnchantments {
     /**
      * Makes a sound when there are interesting blocks in your area.
      */
-    Enchantment GEM_LOCATION = register("gem_location", new GemFindingEnchantment());
+    Enchantment GEM_FINDER = register("gem_finder", new GemFindingEnchantment());
 
     /**
      * Protects against wall collisions and earth pony attacks!
@@ -43,7 +43,7 @@ public interface UEnchantments {
      *
      * Weapons will become stronger the more allies you have around.
      */
-    Enchantment COLLABORATOR = register("collaborator", new CollaboratorEnchantment());
+    Enchantment HERDS = register("herds", new CollaboratorEnchantment());
 
     /**
      * Alters gravity
@@ -58,19 +58,19 @@ public interface UEnchantments {
      *
      * Mobs really want your candy. You'd better give it to them.
      */
-    Enchantment DESIRED = register("desired", new WantItNeedItEnchantment());
+    Enchantment WANT_IT_NEED_IT = register("want_it_need_it", new WantItNeedItEnchantment());
 
     /**
      * Hahaha geddit?
      *
      * Random things happen.
      */
-    PoisonedJokeEnchantment POISON_JOKE = register("poison_joke", new PoisonedJokeEnchantment());
+    PoisonedJokeEnchantment POISONED_JOKE = register("poisoned_joke", new PoisonedJokeEnchantment());
 
     /**
      * Who doesn't like a good freakout?
      */
-    Enchantment STRESS = register("stress", new StressfulEnchantment());
+    Enchantment STRESSED = register("stressed", new StressfulEnchantment());
 
     /**
      * This item just wants to be held.

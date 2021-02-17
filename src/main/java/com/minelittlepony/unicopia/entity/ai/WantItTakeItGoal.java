@@ -44,7 +44,7 @@ public class WantItTakeItGoal extends Goal {
         if (target == null || !WantItNeedItTargetGoal.canTarget(target)) {
 
             Optional<ItemEntity> item = VecHelper.findInRange(mob, mob.world, mob.getPos(), 16,
-                    e -> !e.removed && e instanceof ItemEntity && EnchantmentHelper.getLevel(UEnchantments.DESIRED, ((ItemEntity)e).getStack()) > 0)
+                    e -> !e.removed && e instanceof ItemEntity && EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, ((ItemEntity)e).getStack()) > 0)
                 .stream()
                 .map(e -> (ItemEntity)e)
                 .sorted(Comparator.comparing((Entity e) -> mob.distanceTo(e)))
@@ -115,7 +115,7 @@ public class WantItTakeItGoal extends Goal {
                     if (mob.world.random.nextInt(20) == 0) {
                         for (EquipmentSlot slot : EquipmentSlot.values()) {
                             ItemStack stack = target.getEquippedStack(slot);
-                            if (EnchantmentHelper.getLevel(UEnchantments.DESIRED, stack) > 0) {
+                            if (EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, stack) > 0) {
                                 target.equipStack(slot, ItemStack.EMPTY);
                                 AwaitTickQueue.scheduleTask(mob.world, w -> {
                                     mob.tryEquip(stack);

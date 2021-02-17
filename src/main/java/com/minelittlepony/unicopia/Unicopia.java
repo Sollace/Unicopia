@@ -42,7 +42,7 @@ public class Unicopia implements ModInitializer {
             ((BlockDestructionManager.Source)w).getDestructionManager().tick();
         });
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(TreeTypeLoader.INSTANCE);
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(UEnchantments.POISON_JOKE);
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(UEnchantments.POISONED_JOKE);
 
         UItems.bootstrap();
         UPotions.bootstrap();

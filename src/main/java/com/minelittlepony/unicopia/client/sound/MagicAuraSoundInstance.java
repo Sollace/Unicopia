@@ -38,7 +38,7 @@ public class MagicAuraSoundInstance extends MovingSoundInstance {
 
     @Override
     public void tick() {
-        Optional<SimpleEnchantment.Data> data = living.getEnchants().getOrEmpty(UEnchantments.GEM_LOCATION);
+        Optional<SimpleEnchantment.Data> data = living.getEnchants().getOrEmpty(UEnchantments.GEM_FINDER);
 
         Vec3d pos = living.getOriginVector();
         x = pos.x;
