@@ -84,8 +84,11 @@ dependencies {
         transitive = false
     }
 
-    modCompileOnly project(":canvas-compat") {
-        transitive = false
+    // Fix circular error when gradle tries to build this project as a pre-requisite to :canvas-compat
+    // Build will fail if the sub-project isn't built first though,
+    // so make sure to run gradlew :canvas-compat:build before doing gradlew build
+    if (file("./canvas-compat/build/libs/${project(':canvas-compat').jar.archiveName}").exists()) {
+        modCompileOnly project(":canvas-compat")
     }
 
     afterEvaluate {
