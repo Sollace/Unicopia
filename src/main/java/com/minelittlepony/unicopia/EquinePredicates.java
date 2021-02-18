@@ -6,8 +6,11 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 public interface EquinePredicates {
@@ -22,6 +25,8 @@ public interface EquinePredicates {
     Predicate<Entity> PLAYER_PEGASUS = IS_PLAYER.and(entity -> ((PlayerEntity)entity).abilities.creativeMode || RACE_INTERACT_WITH_CLOUDS.test(entity));
 
     Predicate<Entity> IS_CASTER = e -> !e.removed && (e instanceof Caster || PLAYER_UNICORN.test(e));
+
+    Predicate<LivingEntity> HAS_WANT_IT_NEED_IT = e -> EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) > 0;
 
     static Predicate<Entity> carryingSpell(Class<? extends Spell> type) {
         return IS_PLAYER.and(entity -> Pony.of((PlayerEntity)entity).getSpellOrEmpty(type, false).isPresent());

@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.AwaitTickQueue;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
@@ -41,10 +42,10 @@ public class WantItTakeItGoal extends Goal {
     @Override
     public boolean canStart() {
         LivingEntity target = mob.getTarget();
-        if (target == null || !WantItNeedItTargetGoal.canTarget(target)) {
+        if (target == null || !EquinePredicates.HAS_WANT_IT_NEED_IT.test(target)) {
 
             Optional<ItemEntity> item = VecHelper.findInRange(mob, mob.world, mob.getPos(), 16,
-                    e -> !e.removed && e instanceof ItemEntity && EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, ((ItemEntity)e).getStack()) > 0)
+                    e -> !e.removed && mob.canSee(e) && e instanceof ItemEntity && EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, ((ItemEntity)e).getStack()) > 0)
                 .stream()
                 .map(e -> (ItemEntity)e)
                 .sorted(Comparator.comparing((Entity e) -> mob.distanceTo(e)))
@@ -66,7 +67,7 @@ public class WantItTakeItGoal extends Goal {
     public boolean shouldContinue() {
         return (target == null || (
                 target.isAlive()
-                && WantItNeedItTargetGoal.canTarget(target)
+                && EquinePredicates.HAS_WANT_IT_NEED_IT.test(target)
                 && mob.squaredDistanceTo(target) <= 225))
                 && (item == null || item.isAlive())
                 && (!mob.getNavigation().isIdle() || canStart());

@@ -3,8 +3,7 @@ package com.minelittlepony.unicopia.entity.ai;
 import java.util.Comparator;
 import java.util.Optional;
 
-import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
-import net.minecraft.enchantment.EnchantmentHelper;
+import com.minelittlepony.unicopia.EquinePredicates;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -22,7 +21,7 @@ public class WantItNeedItTargetGoal extends Goal {
     public WantItNeedItTargetGoal(MobEntity mob) {
         this.predicate = new TargetPredicate()
                 .setBaseMaxDistance(64)
-                .setPredicate(WantItNeedItTargetGoal::canTarget);
+                .setPredicate(EquinePredicates.HAS_WANT_IT_NEED_IT);
         this.mob = mob;
     }
 
@@ -51,9 +50,4 @@ public class WantItNeedItTargetGoal extends Goal {
         LivingEntity target = mob.getTarget();
         return target != null && mob.isTarget(target, TargetPredicate.DEFAULT);
     }
-
-    static boolean canTarget(LivingEntity e) {
-        return EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) > 0;
-    }
-
 }

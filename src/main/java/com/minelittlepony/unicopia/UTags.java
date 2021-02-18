@@ -17,6 +17,9 @@ public interface UTags {
     Tag<Block> FRAGILE = block("fragile");
     Tag<Block> INTERESTING = block("interesting");
 
+    Tag<Block> CRYSTAL_HEART_BASE = block("crystal_heart_base");
+    Tag<Block> CRYSTAL_HEART_ORNAMENT = block("crystal_heart_ornament");
+
     static Tag<Item> item(String name) {
         return TagRegistry.item(new Identifier("unicopia", name));
     }

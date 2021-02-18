@@ -5,12 +5,12 @@ import java.util.Optional;
 
 import com.minelittlepony.unicopia.Owned;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
-import net.minecraft.world.World;
 
 public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Channel.Packet {
 
@@ -36,7 +36,7 @@ public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Channel.
     @SuppressWarnings("unchecked")
     @Override
     public void handle(PlayerEntity sender) {
-        World world = sender.world;
+        ClientWorld world = MinecraftClient.getInstance().world;
         Entity entity = getEntityTypeId().create(world);
 
         entity.updateTrackedPosition(getX(), getY(), getZ());
@@ -48,10 +48,10 @@ public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Channel.
         entity.setUuid(getUuid());
 
         if (entity instanceof Owned) {
-            ((Owned<Entity>) entity).setMaster(world.getEntityById(this.getEntityData()));
+            ((Owned<Entity>) entity).setMaster(world.getEntityById(getEntityData()));
         }
 
-        ((ClientWorld)world).addEntity(getId(), entity);
+        world.addEntity(getId(), entity);
     }
 }
 

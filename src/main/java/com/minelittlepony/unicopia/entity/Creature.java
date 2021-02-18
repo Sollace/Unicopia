@@ -6,11 +6,13 @@ import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.entity.ai.BreakHeartGoal;
 import com.minelittlepony.unicopia.entity.ai.WantItNeedItTargetGoal;
 import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;
 import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -37,6 +39,9 @@ public class Creature extends Living<LivingEntity> {
     public void initAi(GoalSelector goals, GoalSelector targets) {
         targets.add(1, new WantItNeedItTargetGoal((MobEntity)entity));
         goals.add(1, new WantItTakeItGoal((MobEntity)entity));
+        if (entity.getType().getSpawnGroup() == SpawnGroup.MONSTER) {
+            goals.add(2, new BreakHeartGoal((MobEntity)entity));
+        }
     }
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {

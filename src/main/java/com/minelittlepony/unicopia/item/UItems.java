@@ -55,6 +55,8 @@ public interface UItems {
     Item LIGHTNING_JAR  = register("lightning_jar", new JarItem(new Item.Settings().group(ItemGroup.DECORATIONS).maxCount(1).fireproof(), false, false, true));
     Item ZAP_APPLE_JAM_JAR = register("zap_apple_jam_jar", new JarItem(new Item.Settings().group(ItemGroup.DECORATIONS).maxCount(1).fireproof(), false, false, true));
 
+    Item CRYSTAL_HEART = register("crystal_heart", new CrystalHeartItem(new Item.Settings().group(ItemGroup.DECORATIONS).maxCount(1)));
+
     static <T extends Item> T register(String name, T item) {
         ITEMS.add(item);
         if (item instanceof BlockItem) {
