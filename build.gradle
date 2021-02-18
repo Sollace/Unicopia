@@ -84,10 +84,11 @@ dependencies {
         transitive = false
     }
 
-    modCompileOnly project(":canvas-compat")
-	afterEvaluate {
-		subprojects.each {
-			include project(":canvas-compat")
-		}
-	}
+    modCompileOnly project(":canvas-compat") {
+        transitive = false
+    }
+
+    afterEvaluate {
+        include project(":canvas-compat")
+    }
 }
