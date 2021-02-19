@@ -2,6 +2,9 @@ package com.minelittlepony.unicopia.item;
 
 import com.google.gson.JsonArray;
 
+import net.fabricmc.fabric.api.loot.v1.FabricLootSupplier;
+import net.fabricmc.fabric.api.loot.v1.event.LootTableLoadingCallback;
+import net.minecraft.loot.LootTable;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
@@ -45,5 +48,17 @@ public interface URecipes {
         return defaultedList;
     }
 
-    static void bootstrap() {}
+    static void bootstrap() {
+        LootTableLoadingCallback.EVENT.register((res, manager, id, supplier, setter) -> {
+            if (!"minecraft".contentEquals(id.getNamespace())) {
+                return;
+            }
+
+            Identifier modId = new Identifier("unicopiamc", id.getPath());
+            LootTable table = manager.getTable(modId);
+            if (table != LootTable.EMPTY) {
+                supplier.withPools(((FabricLootSupplier)table).getPools());
+            }
+        });
+    }
 }

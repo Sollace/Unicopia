@@ -25,6 +25,7 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -151,7 +152,8 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
     @Override
     public ActionResult onArtifactDestroyed(FloatingArtefactEntity entity) {
         entity.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE, 0.75F, 1);
-        return ActionResult.PASS;
+        entity.dropStack(new ItemStack(UItems.CRYSTAL_SHARD, 1 + entity.world.random.nextInt(5)), 0);
+        return ActionResult.SUCCESS;
     }
 
     private boolean findStructure(FloatingArtefactEntity entity) {
