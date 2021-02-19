@@ -1,97 +1,42 @@
 package com.minelittlepony.unicopia.entity.ai;
 
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.util.VecHelper;
-
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
 
-public class WantItTakeItGoal extends Goal {
+public class WantItTakeItGoal extends BreakHeartGoal {
 
-    private final MobEntity mob;
+    private final TargetPredicate predicate = new TargetPredicate()
+            .setBaseMaxDistance(64)
+            .setPredicate(EquinePredicates.HAS_WANT_IT_NEED_IT);
 
-    @Nullable
-    private LivingEntity target;
-    @Nullable
-    private ItemEntity item;
+    protected int cooldown;
 
-    private int cooldown;
-
-    public WantItTakeItGoal(MobEntity mob) {
-        this.mob = mob;
-        this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+    public WantItTakeItGoal(MobEntity mob, DynamicTargetGoal targetter) {
+        super(mob, targetter);
     }
 
     @Override
-    public boolean canStart() {
-        LivingEntity target = mob.getTarget();
-        if (target == null || !EquinePredicates.HAS_WANT_IT_NEED_IT.test(target)) {
-
-            Optional<ItemEntity> item = VecHelper.findInRange(mob, mob.world, mob.getPos(), 16,
-                    e -> !e.removed && mob.canSee(e) && e instanceof ItemEntity && EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, ((ItemEntity)e).getStack()) > 0)
-                .stream()
-                .map(e -> (ItemEntity)e)
-                .sorted(Comparator.comparing((Entity e) -> mob.distanceTo(e)))
-                .findFirst();
-
-            if (item.isPresent()) {
-                this.item = item.get();
-                return true;
-            }
-
-            return false;
-        }
-
-        this.target = target;
-        return true;
+    protected boolean canTarget(Entity e) {
+        return (!e.removed && e instanceof ItemEntity && EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, ((ItemEntity)e).getStack()) > 0)
+            || (e instanceof LivingEntity && predicate.test(mob, (LivingEntity)e));
     }
 
     @Override
-    public boolean shouldContinue() {
-        return (target == null || (
-                target.isAlive()
-                && EquinePredicates.HAS_WANT_IT_NEED_IT.test(target)
-                && mob.squaredDistanceTo(target) <= 225))
-                && (item == null || item.isAlive())
-                && (!mob.getNavigation().isIdle() || canStart());
-    }
-
-    @Override
-    public void stop() {
-        target = null;
-        item = null;
-        mob.getNavigation().stop();
-    }
-
-    @Override
-    public void tick() {
-        if (target == null && (item == null || item.removed)) {
-            return;
-        }
-
-        Entity targetEntity = target == null ? item : target;
-
-        mob.getLookControl().lookAt(targetEntity, 30, 30);
-
-        double reach = mob.getWidth() * 2 * mob.getWidth() * 2;
-        double distance = mob.squaredDistanceTo(targetEntity.getX(), targetEntity.getY(), targetEntity.getZ());
+    protected void attackTarget(Entity target, double reach, double distance) {
+        ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, mob, 0.2F), mob, 1);
 
         double speed = 0.8D;
 
@@ -100,22 +45,25 @@ public class WantItTakeItGoal extends Goal {
         } else if (distance < 225) {
             speed = 0.6;
         }
-        speed *= 2;
+        if (Math.abs(reach - distance) > 1) {
+            speed *= 2;
+        }
 
-        ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, mob, 0.2F), mob, 1);
+        mob.getNavigation().startMovingTo(target, speed);
 
-        mob.getNavigation().startMovingTo(targetEntity, speed);
+        cooldown = Math.max(cooldown - 1, 0);
 
-        cooldown = Math.max(this.cooldown - 1, 0);
         if (distance <= reach) {
-            if (target != null) {
+            if (target instanceof LivingEntity) {
                 if (cooldown <= 0) {
                     cooldown = 20;
                     mob.tryAttack(target);
+                    mob.swingHand(Hand.MAIN_HAND);
 
                     if (mob.world.random.nextInt(20) == 0) {
+
                         for (EquipmentSlot slot : EquipmentSlot.values()) {
-                            ItemStack stack = target.getEquippedStack(slot);
+                            ItemStack stack = ((LivingEntity)target).getEquippedStack(slot);
                             if (EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, stack) > 0) {
                                 target.equipStack(slot, ItemStack.EMPTY);
                                 AwaitTickQueue.scheduleTask(mob.world, w -> {
@@ -125,9 +73,11 @@ public class WantItTakeItGoal extends Goal {
                         }
                     }
                 }
-            } else {
-                ItemStack stack = item.getStack();
+            } else if (target instanceof ItemEntity) {
                 AwaitTickQueue.scheduleTask(mob.world, w -> {
+                    ItemEntity item = (ItemEntity)target;
+                    ItemStack stack = item.getStack();
+
                     if (!item.removed) {
                         mob.tryEquip(stack);
                         mob.method_29499(item);
