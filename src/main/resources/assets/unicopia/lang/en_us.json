@@ -2,6 +2,11 @@
 
   "block.unicopia.bed.not_safe": "You may not rest here, there are enemies nearby",
 
+  "ability.unicopia.empty_hooves": "I need to find a jar",
+  "ability.unicopia.indoors": "I can't see the sky from here",
+  "ability.unicopia.too_low": "I need to get higher up",
+  "ability.unicopia.clear_skies": "The skies already look pretty clear",
+
   "itemGroup.unicopia.items": "Unicopia - Misc.",
   "itemGroup.unicopia.horsefeed": "Unicopia - Horse Feed",
 
@@ -151,6 +156,7 @@
   "ability.unicopia.hang": "Cling to Ceiling",
   "ability.unicopia.eee": "Deafening Screech",
   "ability.unicopia.feed": "Collect Love",
+  "ability.unicopia.capture_cloud": "Cloudbust",
   "ability.unicopia.disguise": "Shapeshift",
   "ability.unicopia.rainboom": "Sonic Rainboom",
 

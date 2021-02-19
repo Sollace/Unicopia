@@ -26,6 +26,7 @@ public interface Abilities {
 
     // pegasus
     Ability<?> RAINBOOM = register(new PegasusRainboomAbility(), "rainboom", AbilitySlot.PRIMARY);
+    Ability<?> CAPTURE_CLOUD = register(new PegasusCaptureStormAbility(), "capture_cloud", AbilitySlot.SECONDARY);
 
     // pegasus / bat / alicorn / changeling
     Ability<?> CARRY = register(new CarryAbility(), "carry", AbilitySlot.PASSIVE);

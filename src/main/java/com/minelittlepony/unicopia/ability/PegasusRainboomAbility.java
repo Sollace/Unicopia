@@ -13,7 +13,7 @@ import com.minelittlepony.unicopia.particle.UParticles;
 import net.minecraft.util.math.Vec3d;
 
 /**
- * Changeling ability to restore health from mobs
+ * Pegasus ability to perform rainbooms
  */
 public class PegasusRainboomAbility implements Ability<Hit> {
 
