@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.entity.FloatingArtefactEntity.State;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
+import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.block.BlockState;
@@ -19,7 +20,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -59,7 +59,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
 
         if (world instanceof ServerWorld) {
 
-            FloatingArtefactEntity entity = UEntities.FLOATING_ARTEFACT.create((ServerWorld)world, context.getStack().getTag(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, true, true);
+            FloatingArtefactEntity entity = UEntities.FLOATING_ARTEFACT.create((ServerWorld)world, context.getStack().getTag(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, false, true);
 
             if (entity == null) {
                 return ActionResult.FAIL;
@@ -137,13 +137,14 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                 }
 
                 inputs.forEach(input -> {
-                    input.damage(DamageSource.MAGIC, takes);
+                    input.damage(MagicalDamageSource.create("feed"), takes);
                     ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, entity, 0.2F), input, 1);
                 });
                 outputs.forEach(output -> {
                     ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, output, 0.2F), entity, 1);
                     output.heal(gives);
                 });
+                entity.addSpin((int)gives);
             }
         }
 

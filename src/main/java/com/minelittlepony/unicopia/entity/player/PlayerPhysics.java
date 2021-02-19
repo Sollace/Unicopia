@@ -141,7 +141,12 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                 if (ticksInAir++ > (level * 100)) {
                     Bar mana = pony.getMagicalReserves().getMana();
 
-                    mana.add((float)-getHorizontalMotion(entity) * 20F / level);
+                    float cost = (float)-getHorizontalMotion(entity) * 20F / level;
+                    if (entity.isSneaking()) {
+                        cost /= 10;
+                    }
+
+                    mana.add(cost);
 
                     if (mana.getPercentFill() < 0.2) {
                         pony.getMagicalReserves().getExertion().add(2);
@@ -236,8 +241,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             float distance = (float)(motion * 20 - 3);
 
             float bouncyness = EnchantmentHelper.getEquipmentLevel(UEnchantments.PADDED, player) * 6;
-
-            System.out.println(bouncyness);
 
             if (distance > 0) {
                 wallHitCooldown = 30;

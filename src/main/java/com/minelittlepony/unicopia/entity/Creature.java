@@ -40,7 +40,7 @@ public class Creature extends Living<LivingEntity> {
         targets.add(1, new WantItNeedItTargetGoal((MobEntity)entity));
         goals.add(1, new WantItTakeItGoal((MobEntity)entity));
         if (entity.getType().getSpawnGroup() == SpawnGroup.MONSTER) {
-            goals.add(2, new BreakHeartGoal((MobEntity)entity));
+            goals.add(3, new BreakHeartGoal((MobEntity)entity));
         }
     }
 

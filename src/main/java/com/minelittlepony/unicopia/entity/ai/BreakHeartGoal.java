@@ -31,7 +31,11 @@ public class BreakHeartGoal extends Goal {
     @Override
     public boolean canStart() {
         Optional<FloatingArtefactEntity> item = VecHelper.findInRange(mob, mob.world, mob.getPos(), 16,
-                e -> !e.removed && e instanceof FloatingArtefactEntity && ((FloatingArtefactEntity)e).getStack().getItem() == UItems.CRYSTAL_HEART)
+                e -> !e.removed
+                && e instanceof FloatingArtefactEntity
+                && ((FloatingArtefactEntity)e).getStack().getItem() == UItems.CRYSTAL_HEART
+                && mob.getVisibilityCache().canSee(e)
+            )
             .stream()
             .map(e -> (FloatingArtefactEntity)e)
             .sorted(Comparator.comparing((Entity e) -> mob.distanceTo(e)))
@@ -73,7 +77,7 @@ public class BreakHeartGoal extends Goal {
         if (distance > reach && distance < 16) {
             speed = 1.23;
         } else if (distance < 225) {
-            speed = 0.6;
+            speed = 1.6;
         }
 
         mob.getNavigation().startMovingTo(target, speed);
