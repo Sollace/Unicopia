@@ -94,7 +94,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                 double dist = Math.sqrt(center.getSquaredDistance(i.getBlockPos()));
 
                 if (dist <= rad + 3) {
-                    double inertia = dist / 5;
+                    double inertia = 2 / dist;
 
                     if (i instanceof LivingEntity) {
                         inertia *= 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, (LivingEntity)i);
@@ -110,7 +110,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
                     DamageSource damage = MagicalDamageSource.create("smash", player);
 
-                    double amount = (4 * player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue() + heavyness * 0.4) / (float)dist;
+                    double amount = (1.5F * player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue() + heavyness * 0.4) / (float)(dist * 1.3F);
 
                     if (i instanceof PlayerEntity) {
                         Race race = Pony.of((PlayerEntity)i).getSpecies();
