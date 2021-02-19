@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import com.minelittlepony.unicopia.util.shape.Shape;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.BlockState;
@@ -32,27 +32,18 @@ public class GroundPoundParticle extends Particle {
     public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f) {
     }
 
+    protected Vec3d getPos() {
+        return new Vec3d(x, y, z);
+    }
+
     @Override
     public void tick() {
         super.tick();
 
-        spawnParticleRing(age, 1);
-    }
+        Vec3d vel = new Vec3d(0, (0.5 + (Math.sin(age) * 2.5)) * 5, 0);
 
-
-    private void spawnParticleRing(int timeDiff, double yVel) {
-
-        Shape shape = new Sphere(true, timeDiff, 1, 0, 1);
-
-        double y = 0.5 + (Math.sin(timeDiff) * 2.5);
-
-        yVel *= y * 5;
-
-        Vec3d center = new Vec3d(x, this.y, z);
-        for (int i = 0; i < shape.getVolumeOfSpawnableSpace(); i++) {
-            Vec3d point = shape.computePoint(random).add(center);
-
-            BlockPos pos = new BlockPos(point.x, center.y - 1, point.z);
+        new Sphere(true, age, 1, 0, 1).offset(getPos()).randomPoints(random).forEach(point -> {
+            BlockPos pos = new BlockPos(point).down();
 
             BlockState state = world.getBlockState(pos);
             if (state.isAir()) {
@@ -62,13 +53,7 @@ public class GroundPoundParticle extends Particle {
                 }
             }
 
-            world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, state),
-                    point.x,
-                    point.y,
-                    point.z,
-                    0, yVel, 0
-            );
-        }
+            ParticleUtils.spawnParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), world, point, vel);
+        });
     }
-
 }

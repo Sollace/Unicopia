@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemImpl;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.WorldEvent;
@@ -138,6 +139,15 @@ public class JarItem extends Item implements ProjectileDelegate, ItemImpl.Tickab
 
         if (rain || thunder) {
             projectile.world.syncWorldEvent(WorldEvent.PROJECTILE_HIT, projectile.getBlockPos(), thunder ? 0x888888 : 0xF8F8F8);
+
+            for (int i = projectile.world.random.nextInt(3) + 1; i >= 0; i--) {
+                projectile.world.addParticle(UParticles.CLOUDS_ESCAPING, true,
+                        projectile.getX(), projectile.getY(), projectile.getZ(),
+                        projectile.world.random.nextFloat() - 0.5,
+                        0,
+                        projectile.world.random.nextFloat() - 0.5
+                );
+            }
         }
 
         WorldEvent.play(WorldEvent.DESTROY_BLOCK, projectile.world, projectile.getBlockPos(), Blocks.GLASS.getDefaultState());

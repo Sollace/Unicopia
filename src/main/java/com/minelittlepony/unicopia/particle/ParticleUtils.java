@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
@@ -28,12 +29,15 @@ public final class ParticleUtils {
         });
     }
 
+    public static void spawnParticle(ParticleEffect particleId, World world, Vec3d pos, Vec3d vel) {
+        spawnParticle(world, particleId, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
+    }
+
     public static void spawnParticle(World world, ParticleEffect effect, double x, double y, double z, double vX, double vY, double vZ) {
         if (world instanceof ServerWorld) {
             ((ServerWorld)world).spawnParticles(effect, x, y, z, 1, vX, vY, vZ, 0);
         } else {
             world.addParticle(effect, x, y, z, vX, vY, vZ);
         }
-
     }
 }
