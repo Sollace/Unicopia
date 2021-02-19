@@ -115,7 +115,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
 
     @Override
     public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
-        this.applyUpdateEffect(target, amplifier);
+        applyUpdateEffect(target, amplifier);
     }
 
     @Override
@@ -144,6 +144,4 @@ public class RaceChangeStatusEffect extends StatusEffect {
             return new TranslatableText(getTranslationKey(), race.getDisplayName());
         }
     }
-
-    static void bootstrap() { }
 }
