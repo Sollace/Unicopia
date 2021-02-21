@@ -78,6 +78,7 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
     private void onDropItem(ItemStack itemStack_1, boolean scatter, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info) {
         PonyContainer.of(info.getReturnValue()).ifPresent(container -> {
             container.get().setSpecies(get().getSpecies());
+            container.get().getPhysics().setBaseGravityModifier(get().getPhysics().getGravityModifier());
         });
     }
 

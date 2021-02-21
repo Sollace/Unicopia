@@ -2,7 +2,9 @@ package com.minelittlepony.unicopia.client.render;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -30,7 +32,7 @@ import net.minecraft.util.math.Vec3d;
 public class WorldRenderDelegate {
     public static final WorldRenderDelegate INSTANCE = new WorldRenderDelegate();
 
-    public boolean onEntityRender(EntityRenderDispatcher dispatcher, Pony pony,
+    public boolean onEntityRender(EntityRenderDispatcher dispatcher, Living<?> pony,
             double x, double y, double z, float yaw,
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 
@@ -42,7 +44,7 @@ public class WorldRenderDelegate {
 
         float roll = negative ? 180 : 0;
 
-        roll = pony.getInterpolator().interpolate("g_roll", roll, 15);
+        roll = pony instanceof Pony ? ((Pony)pony).getInterpolator().interpolate("g_roll", roll, 15) : roll;
 
         if (negative) {
             matrices.translate(x, y, z);
@@ -55,29 +57,34 @@ public class WorldRenderDelegate {
             matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(roll));
         }
 
-        int fireTicks = pony.getMaster().doesRenderOnFire() ? 1 : 0;
+        if (pony instanceof Caster<?>) {
 
-        return pony.getSpellOrEmpty(DisguiseSpell.class, true).map(effect -> {
-            effect.update(pony, false);
+            int fireTicks = pony.getMaster().doesRenderOnFire() ? 1 : 0;
 
-            Disguise ve = effect.getDisguise();
-            Entity e = ve.getAppearance();
+            return ((Caster<?>)pony).getSpellOrEmpty(DisguiseSpell.class, true).map(effect -> {
+                effect.update(pony, false);
 
-            if (e != null) {
-                renderDisguise(dispatcher, ve, e, x, y, z, fireTicks, tickDelta, matrices, vertexConsumers, light);
-                ve.getAttachments().forEach(ee -> {
-                    Vec3d difference = ee.getPos().subtract(e.getPos());
-                    renderDisguise(dispatcher, ve, ee, x + difference.x, y + difference.y, z + difference.z, fireTicks, tickDelta, matrices, vertexConsumers, light);
-                });
+                Disguise ve = effect.getDisguise();
+                Entity e = ve.getAppearance();
 
-                afterEntityRender(pony, matrices);
-                return true;
-            }
-            return false;
-        }).orElse(false);
+                if (e != null) {
+                    renderDisguise(dispatcher, ve, e, x, y, z, fireTicks, tickDelta, matrices, vertexConsumers, light);
+                    ve.getAttachments().forEach(ee -> {
+                        Vec3d difference = ee.getPos().subtract(e.getPos());
+                        renderDisguise(dispatcher, ve, ee, x + difference.x, y + difference.y, z + difference.z, fireTicks, tickDelta, matrices, vertexConsumers, light);
+                    });
+
+                    afterEntityRender(pony, matrices);
+                    return true;
+                }
+                return false;
+            }).orElse(false);
+        }
+
+        return false;
     }
 
-    public void afterEntityRender(Pony pony, MatrixStack matrices) {
+    public void afterEntityRender(Living<?> pony, MatrixStack matrices) {
 
         matrices.pop();
 

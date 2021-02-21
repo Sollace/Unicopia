@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.data.DataTracker;
@@ -20,6 +21,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
@@ -88,6 +90,21 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
             if (stack.getItem() instanceof TickableItem) {
                 return ((TickableItem)stack.getItem()).onGroundTick(i) == ActionResult.SUCCESS;
             }
+        }
+
+        if (physics.isGravityNegative()) {
+            owner.setNoGravity(true);
+            owner.setOnGround(owner.verticalCollision);
+
+            float g = 0.98f;
+            if (owner.isOnGround()) {
+               g *= owner.world.getBlockState(owner.getBlockPos().up()).getBlock().getSlipperiness();
+            }
+
+            owner.setVelocity(owner.getVelocity()
+                    .add(0, physics.calcGravity(-0.04D), 0)
+                    .multiply(g, 1, g));
+
         }
 
         return false;
