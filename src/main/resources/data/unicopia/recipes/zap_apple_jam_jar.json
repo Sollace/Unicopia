@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+  	"***",
+  	"***",
+  	" U "
+  ],
+  "key": {
+  	"*": {
+  		"item": "unicopia:cooked_zap_apple"
+  	},
+  	"U": {
+  		"item": "unicopia:empty_jar"
+  	}
+  },
+  "result": {
+  	"item": "unicopia:zap_apple_jam_jar"
+  }
+}
