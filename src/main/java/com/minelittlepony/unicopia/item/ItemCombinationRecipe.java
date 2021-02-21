@@ -40,7 +40,7 @@ public abstract class ItemCombinationRecipe extends SpecialCraftingRecipe {
 
                  bangle = stack;
               } else {
-                 if (!isInsertItem(stack)) {
+                 if (!dust.isEmpty() || !isInsertItem(stack)) {
                      return new Pair<>(bangle, dust);
                  }
 
