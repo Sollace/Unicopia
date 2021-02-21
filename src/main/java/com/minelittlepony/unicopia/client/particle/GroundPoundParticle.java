@@ -39,7 +39,10 @@ public class GroundPoundParticle extends Particle {
     @Override
     public void tick() {
         super.tick();
+        spawnChildParticles();
+    }
 
+    protected void spawnChildParticles() {
         Vec3d vel = new Vec3d(0, (0.5 + (Math.sin(age) * 2.5)) * 5, 0);
 
         new Sphere(true, age, 1, 0, 1).offset(getPos()).randomPoints(random).forEach(point -> {

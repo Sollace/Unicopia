@@ -17,25 +17,7 @@ public class CloudsEscapingParticle extends GroundPoundParticle {
     }
 
     @Override
-    public void tick() {
-        this.prevPosX = this.x;
-        this.prevPosY = this.y;
-        this.prevPosZ = this.z;
-        if (this.age++ >= this.maxAge) {
-           this.markDead();
-        } else {
-           this.velocityY -= 0.04D * this.gravityStrength;
-           this.move(this.velocityX, this.velocityY, this.velocityZ);
-           this.velocityX *= 0.9800000190734863D;
-           this.velocityY *= 0.9800000190734863D;
-           this.velocityZ *= 0.9800000190734863D;
-           if (this.onGround) {
-              this.velocityX *= 0.699999988079071D;
-              this.velocityZ *= 0.699999988079071D;
-           }
-
-        }
-
+    public void spawnChildParticles() {
         this.velocityY += 0.125;
 
         Vec3d center = getPos();

@@ -23,10 +23,20 @@ public class FloatingArtefactEntity extends Entity {
 
     private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(FloatingArtefactEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<Byte> STATE = DataTracker.registerData(FloatingArtefactEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private static final TrackedData<Float> SPIN = DataTracker.registerData(FloatingArtefactEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
-    private int age;
+    private float bobAmount;
+    private float spinAmount;
+
     private float health = 1;
     public final float positionSeed;
+
+    private int spinupDuration;
+
+    private float sourceSpin = 1;
+    private float targetSpin = 1;
+    private float spinChange;
+    private float spinChangeProgress;
 
     public FloatingArtefactEntity(EntityType<?> entityType, World world) {
         super(entityType, world);
@@ -38,6 +48,7 @@ public class FloatingArtefactEntity extends Entity {
     protected void initDataTracker() {
         dataTracker.startTracking(ITEM, ItemStack.EMPTY);
         dataTracker.startTracking(STATE, (byte)0);
+        dataTracker.startTracking(SPIN, 1F);
     }
 
     public ItemStack getStack() {
@@ -56,10 +67,19 @@ public class FloatingArtefactEntity extends Entity {
         dataTracker.set(STATE, (byte)state.ordinal());
     }
 
-    public void addSpin(int spin) {
-        if (age != -32768) {
-            age += spin;
+    public void addSpin(float spin, int duration) {
+        if (spin >= getSpin()) {
+            setSpin(spin);
+            spinupDuration = duration;
         }
+    }
+
+    public void setSpin(float spin) {
+        dataTracker.set(SPIN, spin);
+    }
+
+    public float getSpin() {
+        return dataTracker.get(SPIN);
     }
 
     @Override
@@ -76,6 +96,33 @@ public class FloatingArtefactEntity extends Entity {
             setStack(UItems.EMPTY_JAR.getDefaultStack());
         }
 
+        if (world.isClient) {
+            float spin = getSpin();
+            if (Math.abs(spin - targetSpin) > 1.0E-5F) {
+                spinChange = spin - targetSpin;
+                targetSpin = spin;
+                spinChangeProgress = 0;
+            }
+
+            if (spinChange != 0) {
+                if (spinChangeProgress < 1) {
+                    spinChangeProgress += 0.05F;
+                } else {
+                    sourceSpin = targetSpin;
+                    spinChange = 0;
+                    spinChangeProgress = 0;
+                }
+            }
+
+            spinAmount += sourceSpin + (spinChange * spinChangeProgress);
+            bobAmount++;
+        } else {
+            spinupDuration = Math.max(0, spinupDuration - 1);
+            if (spinupDuration <= 0) {
+                setSpin(1);
+            }
+        }
+
         if (stack.getItem() instanceof Artifact) {
             ((Artifact)stack.getItem()).onArtifactTick(this);
         }
@@ -84,16 +131,14 @@ public class FloatingArtefactEntity extends Entity {
             State state = getState();
             playSound(SoundEvents.BLOCK_BEACON_AMBIENT, state.getVolume(), state.getPitch());
         }
-
-        addSpin(1);
     }
 
     public float getVerticalOffset(float tickDelta) {
-        return MathHelper.sin((age + tickDelta) / 10F + positionSeed) * 0.025F + 0.05F;
+        return MathHelper.sin((bobAmount + tickDelta) / 10F + positionSeed) * 0.025F + 0.05F;
     }
 
     public float getRotation(float tickDelta) {
-        return (age + tickDelta) / 20 + positionSeed;
+        return (spinAmount + tickDelta) / 20 + positionSeed;
     }
 
     @Override

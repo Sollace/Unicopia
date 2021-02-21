@@ -88,7 +88,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                 entity.setState(State.INITIALISING);
             }
 
-            entity.addSpin(2);
+            entity.addSpin(2, 10);
 
             BlockPos pos = entity.getBlockPos();
             entity.world.addParticle(ParticleTypes.COMPOSTER,
@@ -144,7 +144,8 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                     ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, output, 0.2F), entity, 1);
                     output.heal(gives);
                 });
-                entity.addSpin((int)gives);
+
+                entity.addSpin(gives > 0 ? 20 : 10, 30);
             }
         }
 
