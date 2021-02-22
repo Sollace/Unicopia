@@ -50,7 +50,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
         World world = context.getWorld();
         BlockPos blockPos = new ItemPlacementContext(context).getBlockPos();
 
-        Box placementArea = UEntities.FLOATING_ARTEFACT.getDimensions().method_30757(Vec3d.ofBottomCenter(blockPos));
+        Box placementArea = UEntities.FLOATING_ARTEFACT.getDimensions().getBoxAt(Vec3d.ofBottomCenter(blockPos));
 
         if (!world.isSpaceEmpty(null, placementArea, (entity) -> !(entity instanceof ItemEntity))
             || !world.getOtherEntities(null, placementArea).stream().noneMatch(e -> !(e instanceof ItemEntity))) {
