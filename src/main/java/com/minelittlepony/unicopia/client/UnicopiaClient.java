@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.client;
 
 import java.util.Optional;
-
 import com.minelittlepony.common.event.ScreenInitCallback;
 import com.minelittlepony.common.event.ScreenInitCallback.ButtonList;
 import com.minelittlepony.unicopia.InteractionManager;
@@ -11,9 +10,9 @@ import com.minelittlepony.unicopia.client.gui.SettingsScreen;
 import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.entity.player.PlayerCamera;
 import com.minelittlepony.unicopia.entity.player.Pony;
-
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
@@ -57,6 +56,7 @@ public class UnicopiaClient implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
         ScreenInitCallback.EVENT.register(this::onScreenInit);
+        ItemTooltipCallback.EVENT.register(new ModifierTooltipRenderer());
     }
 
     private void onTick(MinecraftClient client) {
@@ -69,4 +69,5 @@ public class UnicopiaClient implements ClientModInitializer {
             buttons.add(SettingsScreen.createRaceSelector(screen));
         }
     }
+
 }

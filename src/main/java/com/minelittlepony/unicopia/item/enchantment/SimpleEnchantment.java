@@ -15,11 +15,14 @@ public class SimpleEnchantment extends Enchantment {
 
     private final int maxLevel;
 
+    private final EquipmentSlot[] slots;
+
     protected SimpleEnchantment(Rarity rarity, EnchantmentTarget target, boolean cursed, int maxLevel, EquipmentSlot... slots) {
         super(rarity, target, slots);
         this.cursed = cursed;
         this.allItems = false;
         this.maxLevel = maxLevel;
+        this.slots = slots;
     }
 
     protected SimpleEnchantment(Rarity rarity, boolean cursed, int maxLevel, EquipmentSlot... slots) {
@@ -27,6 +30,7 @@ public class SimpleEnchantment extends Enchantment {
         this.cursed = cursed;
         this.allItems = true;
         this.maxLevel = maxLevel;
+        this.slots = slots;
     }
 
     public void onUserTick(Living<?> user, int level) {
@@ -46,6 +50,9 @@ public class SimpleEnchantment extends Enchantment {
        return allItems || super.isAcceptableItem(itemStack);
     }
 
+    public EquipmentSlot[] getSlots() {
+        return slots;
+    }
 
     @Override
     public int getMaxLevel() {

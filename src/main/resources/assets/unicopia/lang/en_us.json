@@ -47,6 +47,10 @@
 
   "effect.food_poisoning": "Food Poisoning",
 
+  "player.reachDistance": "Reach Distance",
+  "player.miningSpeed": "Mining Speed",
+  "player.gravityModifier": "Gravity",
+
   "effect.unicopia.change_race_earth": "Earth Pony Metamorphosis",
   "item.minecraft.potion.effect.unicopia.tribe_swap_earth": "Potion of Earth Pony Metamorphosis",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_earth": "Splash Potion of Earth Pony Metamorphosis",
@@ -176,7 +180,7 @@
   "enchantment.unicopia.gem_finder": "Gem Finder",
   "enchantment.unicopia.padded": "Padded",
   "enchantment.unicopia.clingy": "Clings",
-  "enchantment.unicopia.repulsion": "Repulsive",
+  "enchantment.unicopia.repulsion": "Repulsion",
   "enchantment.unicopia.heavy": "Heavy",
   "enchantment.unicopia.herds": "Herds",
   "enchantment.unicopia.want_it_need_it": "Want It Need It",
