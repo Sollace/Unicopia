@@ -46,13 +46,14 @@ import net.minecraft.world.World;
 public class MagicProjectileEntity extends ThrownItemEntity implements Magical, Caster<LivingEntity> {
 
     private static final TrackedData<Float> DAMAGE = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    private static final TrackedData<Float> GRAVITY = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<CompoundTag> EFFECT = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
     private static final LevelStore LEVELS = Levelled.fixed(1);
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
 
-    private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this);
+    private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this, GRAVITY, false);
 
     private BlockPos lastBlockPos;
 
@@ -67,7 +68,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        getDataTracker().startTracking(DAMAGE, (float)0);
+        getDataTracker().startTracking(GRAVITY, 1F);
+        getDataTracker().startTracking(DAMAGE, 0F);
         getDataTracker().startTracking(EFFECT, new CompoundTag());
         getDataTracker().startTracking(HYDROPHOBIC, false);
     }

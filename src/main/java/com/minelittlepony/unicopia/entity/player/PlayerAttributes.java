@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.Race;
@@ -15,6 +17,8 @@ import net.minecraft.util.Tickable;
 import net.minecraft.util.registry.Registry;
 
 public class PlayerAttributes implements Tickable {
+
+    public static final List<EntityAttribute> REGISTRY = new ArrayList<>();
 
     public static final EntityAttribute EXTENDED_REACH_DISTANCE = register("unicopia.pegasus.reach", new ClampedEntityAttribute("player.reachDistance", 0, 0, 10).setTracked(true));
     public static final EntityAttribute EXTRA_MINING_SPEED = register("unicopia.earth.mining_speed", new ClampedEntityAttribute("player.miningSpeed", 1, 0, 5).setTracked(true));
@@ -66,6 +70,7 @@ public class PlayerAttributes implements Tickable {
     }
 
     private static EntityAttribute register(String id, EntityAttribute attribute) {
+        REGISTRY.add(attribute);
         return Registry.register(Registry.ATTRIBUTE, id, attribute);
     }
 }

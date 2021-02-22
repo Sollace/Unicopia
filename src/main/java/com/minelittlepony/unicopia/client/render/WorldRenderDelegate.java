@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -32,7 +34,28 @@ import net.minecraft.util.math.Vec3d;
 public class WorldRenderDelegate {
     public static final WorldRenderDelegate INSTANCE = new WorldRenderDelegate();
 
-    public boolean onEntityRender(EntityRenderDispatcher dispatcher, Living<?> pony,
+    public boolean onEntityRender(EntityRenderDispatcher dispatcher, Equine<?> pony,
+            double x, double y, double z, float yaw,
+            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+
+        if (pony instanceof ItemImpl) {
+            matrices.push();
+
+            if (pony.getPhysics().isGravityNegative()) {
+                matrices.translate(0, -((ItemImpl) pony).getMaster().getHeight() * 1.1, 0);
+            }
+
+            return false;
+        }
+
+        if (pony instanceof Living) {
+            return onLivingRender(dispatcher, (Living<?>)pony, x, y, z, yaw, tickDelta, matrices, vertices, light);
+        }
+
+        return false;
+    }
+
+    private boolean onLivingRender(EntityRenderDispatcher dispatcher, Living<?> pony,
             double x, double y, double z, float yaw,
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 
@@ -84,12 +107,14 @@ public class WorldRenderDelegate {
         return false;
     }
 
-    public void afterEntityRender(Living<?> pony, MatrixStack matrices) {
+    public void afterEntityRender(Equine<?> pony, MatrixStack matrices) {
 
-        matrices.pop();
+        if (pony instanceof ItemImpl || pony instanceof Living) {
+            matrices.pop();
 
-        if (pony.getPhysics().isGravityNegative()) {
-            flipAngles(pony.getMaster());
+            if (pony instanceof Living && pony.getPhysics().isGravityNegative()) {
+                flipAngles(((Living<?>)pony).getMaster());
+            }
         }
     }
 

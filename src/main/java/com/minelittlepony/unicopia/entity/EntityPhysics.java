@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -20,12 +21,21 @@ import net.minecraft.util.math.Vec3d;
 
 public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics, Copieable<EntityPhysics<T>> {
 
-    private float gravity = 1;
+    private final TrackedData<Float> gravity;
 
     protected final T pony;
 
-    public EntityPhysics(T pony) {
+    public EntityPhysics(T pony, TrackedData<Float> gravity) {
+        this(pony, gravity, true);
+    }
+
+    public EntityPhysics(T pony, TrackedData<Float> gravity, boolean register) {
         this.pony = pony;
+        this.gravity = gravity;
+
+        if (register) {
+            this.pony.getMaster().getDataTracker().startTracking(gravity, 1F);
+        }
     }
 
     @Override
@@ -86,7 +96,12 @@ public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics
 
     @Override
     public void setBaseGravityModifier(float constant) {
-        gravity = constant;
+        pony.getMaster().getDataTracker().set(gravity, constant);
+    }
+
+    @Override
+    public float getBaseGravityModifier() {
+        return pony.getMaster().getDataTracker().get(gravity);
     }
 
     @Override
@@ -97,26 +112,26 @@ public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics
             if (((LivingEntity)master).getAttributes() == null) {
                 // may be null due to order of execution in the constructor.
                 // Will have the default (1) here in any case, so it's safe to ignore the attribute at this point.
-                return gravity;
+                return getBaseGravityModifier();
             }
-            return gravity * (float)((LivingEntity)master).getAttributeValue(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+            return getBaseGravityModifier() * (float)((LivingEntity)master).getAttributeValue(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
         }
 
-        return gravity;
+        return getBaseGravityModifier();
     }
 
     @Override
     public void copyFrom(EntityPhysics<T> other) {
-        gravity = other.gravity;
+        setBaseGravityModifier(other.getBaseGravityModifier());
     }
 
     @Override
     public void toNBT(CompoundTag compound) {
-        compound.putFloat("gravity", gravity);
+        compound.putFloat("gravity", getBaseGravityModifier());
     }
 
     @Override
     public void fromNBT(CompoundTag compound) {
-        gravity = compound.getFloat("gravity");
+        setBaseGravityModifier(compound.getFloat("gravity"));
     }
 }

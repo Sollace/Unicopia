@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.Jumper;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
@@ -47,7 +48,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     private final PlayerDimensions dimensions;
 
     public PlayerPhysics(Pony pony) {
-        super(pony);
+        super(pony, Creature.GRAVITY);
         dimensions = new PlayerDimensions(pony, this);
     }
 

@@ -25,12 +25,13 @@ import net.minecraft.nbt.CompoundTag;
 public class Creature extends Living<LivingEntity> {
 
     private static final TrackedData<CompoundTag> EFFECT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+    public static final TrackedData<Float> GRAVITY = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
     private static final LevelStore LEVELS = Levelled.fixed(0);
 
     public static void boostrap() {}
 
-    private final Physics physics = new EntityPhysics<>(this);
+    private final Physics physics = new EntityPhysics<>(this, GRAVITY);
 
     public Creature(LivingEntity entity) {
         super(entity, EFFECT);

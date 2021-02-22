@@ -13,6 +13,8 @@ public interface Physics extends NbtSerialisable {
 
     float getGravityModifier();
 
+    float getBaseGravityModifier();
+
     void setBaseGravityModifier(float constant);
 
     boolean isFlying();

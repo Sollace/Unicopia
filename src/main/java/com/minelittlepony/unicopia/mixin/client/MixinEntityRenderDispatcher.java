@@ -12,7 +12,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 
 @Mixin(EntityRenderDispatcher.class)
 abstract class MixinEntityRenderDispatcher {
@@ -21,9 +20,6 @@ abstract class MixinEntityRenderDispatcher {
 
     @Inject(method = RENDER, at = @At("HEAD"), cancellable = true)
     private <E extends Entity> void beforeRender(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
-        if (!(entity instanceof LivingEntity)) {
-            return;
-        }
         if (WorldRenderDelegate.INSTANCE.onEntityRender((EntityRenderDispatcher)(Object)this, Equine.of(entity), x, y, z, yaw, tickDelta, matrices, vertexConsumers, light)) {
             info.cancel();
         }
@@ -31,9 +27,6 @@ abstract class MixinEntityRenderDispatcher {
 
     @Inject(method = RENDER, at = @At("RETURN"))
     private <E extends Entity> void afterRender(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
-        if (!(entity instanceof LivingEntity)) {
-            return;
-        }
         WorldRenderDelegate.INSTANCE.afterEntityRender(Equine.of(entity), matrices);
     }
 }
