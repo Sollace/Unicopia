@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
@@ -28,6 +29,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.Flutterer;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.AmbientEntity;
@@ -171,6 +173,10 @@ public class Disguise implements NbtSerialisable {
         }
 
         Caster.of(entity).ifPresent(c -> c.setSpell(null));
+
+        if (entity instanceof LivingEntity) {
+            ((LivingEntity) entity).getAttributeInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER).clearModifiers();
+        }
 
         if (source.isClient()) {
             source.getWorld().spawnEntity(entity);

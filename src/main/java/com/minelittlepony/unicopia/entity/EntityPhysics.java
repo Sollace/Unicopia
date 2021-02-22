@@ -114,6 +114,7 @@ public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics
                 // Will have the default (1) here in any case, so it's safe to ignore the attribute at this point.
                 return getBaseGravityModifier();
             }
+
             return getBaseGravityModifier() * (float)((LivingEntity)master).getAttributeValue(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
         }
 
