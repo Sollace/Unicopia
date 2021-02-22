@@ -9,9 +9,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.Equine;
+
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.world.World;
 
 @Mixin(MobEntity.class)
 abstract class MixinMobEntity extends LivingEntity implements PonyContainer<Equine<?>> {
@@ -22,8 +25,8 @@ abstract class MixinMobEntity extends LivingEntity implements PonyContainer<Equi
     @Shadow
     protected @Final GoalSelector targetSelector;
 
-    @Inject(method = "<init>()V", at = @At("RETURN"), remap = false)
-    private void init(CallbackInfo info) {
+    @Inject(method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V", at = @At("RETURN"))
+    private void init(EntityType<? extends MobEntity> entityType, World world, CallbackInfo info) {
         ((Creature)get()).initAi(goalSelector, targetSelector);
     }
 }
