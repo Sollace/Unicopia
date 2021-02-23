@@ -144,7 +144,12 @@ public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics
     public float getGravityModifier() {
         Entity master = pony.getMaster();
 
+
         if (master instanceof LivingEntity) {
+            if (((LivingEntity)master).isSleeping()) {
+                return 1;
+            }
+
             if (((LivingEntity)master).getAttributes() == null) {
                 // may be null due to order of execution in the constructor.
                 // Will have the default (1) here in any case, so it's safe to ignore the attribute at this point.
