@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 
 import com.minelittlepony.unicopia.BlockDestructionManager;
+import com.minelittlepony.unicopia.entity.RotatedView;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 
 import net.minecraft.entity.Entity;
@@ -18,9 +19,29 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 @Mixin(World.class)
-abstract class MixinWorld implements WorldAccess, BlockDestructionManager.Source {
+abstract class MixinWorld implements WorldAccess, BlockDestructionManager.Source, RotatedView {
 
     private final BlockDestructionManager destructions = new BlockDestructionManager((World)(Object)this);
+
+    private int rotationY;
+    private int rotationIncrements;
+
+    @Override
+    public void setRotationCenter(int y, int increments) {
+        rotationY = y;
+        rotationIncrements = increments;
+    }
+
+    @Override
+    public int getRotationY() {
+        return rotationY;
+    }
+
+    @Override
+    public int getRotationIncrements() {
+        return rotationIncrements;
+    }
+
 
     @Override
     public BlockDestructionManager getDestructionManager() {
