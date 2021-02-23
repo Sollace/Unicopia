@@ -25,7 +25,7 @@ public class PlayerCamera extends MotionCompositor {
         }
 
         if (player.getPhysics().isGravityNegative()) {
-           roll = -roll;
+           roll *= -1;
            roll += 180;
         }
 
