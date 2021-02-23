@@ -10,20 +10,25 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics, Copieable<EntityPhysics<T>> {
+public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics, Copieable<EntityPhysics<T>>, Tickable {
 
     private final TrackedData<Float> gravity;
 
     protected final T pony;
+
+    private float lastGravity = 1;
 
     public EntityPhysics(T pony, TrackedData<Float> gravity) {
         this(pony, gravity, true);
@@ -35,6 +40,37 @@ public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics
 
         if (register) {
             this.pony.getMaster().getDataTracker().startTracking(gravity, 1F);
+        }
+    }
+
+    @Override
+    public void tick() {
+        Entity entity = pony.getMaster();
+
+        if (isGravityNegative()) {
+            if (entity.getY() > entity.world.getHeight() + 64) {
+                entity.damage(DamageSource.OUT_OF_WORLD, 4.0F);
+            }
+
+            entity.setOnGround(!entity.world.isAir(new BlockPos(entity.getX(), Math.floor(entity.getBoundingBox().maxY + 0.25), entity.getZ())));
+        }
+
+        float gravity = this.getGravityModifier();
+        if (gravity != lastGravity) {
+            lastGravity = gravity;
+
+            onGravitychanged();
+        }
+    }
+
+    protected void onGravitychanged() {
+        Entity entity = pony.getMaster();
+
+        entity.calculateDimensions();
+
+        if (!entity.world.isClient && entity instanceof MobEntity) {
+            ((MobEntity)entity).getNavigation().stop();
+            ((MobEntity)entity).setTarget(null);
         }
     }
 
@@ -135,4 +171,5 @@ public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics
     public void fromNBT(CompoundTag compound) {
         setBaseGravityModifier(compound.getFloat("gravity"));
     }
+
 }

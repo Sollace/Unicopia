@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.entity.Living;
 
 import net.minecraft.enchantment.EnchantmentTarget;
@@ -44,7 +43,6 @@ public class AttributedEnchantment extends SimpleEnchantment {
                 instance.removeModifier(modifier.getId());
                 instance.addPersistentModifier(modifier);
             });
-            entity.calculateDimensions();
         }
     }
 
@@ -57,9 +55,6 @@ public class AttributedEnchantment extends SimpleEnchantment {
             instance.tryRemoveModifier(modifierSupplier.get(user, 1).getId());
         });
         user.getEnchants().remove(this);
-        AwaitTickQueue.scheduleTask(entity.world, w -> {
-            entity.calculateDimensions();
-       }, 1);
     }
 
     public void getModifiers(Living<?> user, int level, Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> output) {

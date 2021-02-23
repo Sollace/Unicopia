@@ -31,7 +31,7 @@ public class Creature extends Living<LivingEntity> {
 
     public static void boostrap() {}
 
-    private final Physics physics = new EntityPhysics<>(this, GRAVITY);
+    private final EntityPhysics<Creature> physics = new EntityPhysics<>(this, GRAVITY);
 
     public Creature(LivingEntity entity) {
         super(entity, EFFECT);
@@ -50,6 +50,13 @@ public class Creature extends Living<LivingEntity> {
         builder.add(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         builder.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
         builder.add(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+    }
+
+
+    @Override
+    public void tick() {
+        super.tick();
+        physics.tick();
     }
 
     @Override

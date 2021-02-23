@@ -64,6 +64,8 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
     @Override
     public void tick() {
+        super.tick();
+
         if (wallHitCooldown > 0) {
             wallHitCooldown--;
         }
