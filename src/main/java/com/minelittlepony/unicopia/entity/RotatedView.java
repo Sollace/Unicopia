@@ -1,17 +1,23 @@
 package com.minelittlepony.unicopia.entity;
 
+import java.util.Stack;
+
 import net.minecraft.util.math.BlockPos;
 
 public interface RotatedView {
 
-    void setRotationCenter(int y, int increments);
+    Stack<Integer> getRotations();
 
-    int getRotationY();
+    boolean hasTransform();
 
-    int getRotationIncrements();
+    default void pushRotation(int y) {
+        getRotations().add(y);
+    }
 
-    default void clearRotation() {
-        setRotationCenter(0, 0);
+    default void popRotation() {
+        if (!getRotations().isEmpty()) {
+            getRotations().pop();
+        }
     }
 
     default BlockPos applyRotation(BlockPos pos) {
@@ -19,14 +25,14 @@ public interface RotatedView {
         if (newY == pos.getY()) {
             return pos;
         }
-        return new BlockPos(pos.getX(), applyRotation(pos.getY()), pos.getZ());
+        return new BlockPos(pos.getX(), newY, pos.getZ());
     }
 
     default int applyRotation(int y) {
-        if (getRotationIncrements() == 0) {
+        if (!hasTransform() || getRotations().isEmpty()) {
             return y;
         }
-        return y - ((y - getRotationY()) * 2);
+        return y - ((y - getRotations().peek()) * 2);
     }
 
 }

@@ -14,7 +14,7 @@ abstract class MixinWorldChunk {
 
     @ModifyVariable(method = {
             "getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/BlockState;",
-            "setBlockState(Lnet/minecraft/util/math/BlockPos;)V",
+            "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Z)Lnet/minecraft/block/BlockState;",
             "getBlockEntity(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/chunk/WorldChunk$CreationType;)Lnet/minecraft/block/entity/BlockEntity;",
             "setBlockEntity(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/entity/BlockEntity;)V",
             "removeBlockEntity(Lnet/minecraft/util/math/BlockPos;)V",

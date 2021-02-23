@@ -7,6 +7,7 @@
   "mixins": [
     "MixinBlockEntity",
     "MixinBlockItem",
+    "MixinBrain",
     "MixinFallingBlock",
     "MixinItem",
     "MixinItemEntity",

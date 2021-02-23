@@ -37,12 +37,12 @@ abstract class MixinMobEntity extends LivingEntity implements PonyContainer<Equi
         Equine<?> eq = Equine.of(this);
 
         if (eq instanceof Living<?> && eq.getPhysics().isGravityNegative()) {
-            ((RotatedView)world).setRotationCenter((int)getY(), 1);
+            ((RotatedView)world).pushRotation((int)getY());
         }
     }
 
     @Inject(method = "tickNewAi", at = @At("RETURN"))
     public void afterTickAi(CallbackInfo into) {
-        ((RotatedView)world).clearRotation();
+        ((RotatedView)world).popRotation();
     }
 }
