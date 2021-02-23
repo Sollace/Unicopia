@@ -26,6 +26,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -69,15 +70,13 @@ public class WorldRenderDelegate {
 
         roll = pony instanceof Pony ? ((Pony)pony).getInterpolator().interpolate("g_roll", roll, 15) : roll;
 
-        if (negative) {
-            matrices.translate(x, y, z);
-            matrices.translate(0, owner.getHeight(), 0);
-            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(roll));
-            matrices.translate(-x, -y, -z);
+        matrices.translate(x, y + owner.getHeight() / 2, z);
+        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(roll));
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(roll));
+        matrices.translate(-x, -y - owner.getHeight() / 2, -z);
 
+        if (negative) {
             flipAngles(owner);
-        } else {
-            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(roll));
         }
 
         if (pony instanceof Caster<?>) {
@@ -183,18 +182,18 @@ public class WorldRenderDelegate {
     }
 
     private void flipAngles(Entity entity) {
-        if (!MinecraftClient.getInstance().options.getPerspective().isFirstPerson()) {
+        if (entity instanceof PlayerEntity) {
             entity.prevYaw *= -1;
             entity.yaw *= -1;
+        }
 
-            if (entity instanceof LivingEntity) {
-                LivingEntity living = (LivingEntity)entity;
+        if (entity instanceof LivingEntity) {
+            LivingEntity living = (LivingEntity)entity;
 
-                living.bodyYaw = -living.bodyYaw;
-                living.prevBodyYaw = -living.prevBodyYaw;
-                living.headYaw = -living.headYaw;
-                living.prevHeadYaw = -living.prevHeadYaw;
-            }
+            living.bodyYaw = -living.bodyYaw;
+            living.prevBodyYaw = -living.prevBodyYaw;
+            living.headYaw = -living.headYaw;
+            living.prevHeadYaw = -living.prevHeadYaw;
         }
         entity.prevPitch *= -1;
         entity.pitch *= -1;
