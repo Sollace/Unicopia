@@ -185,6 +185,9 @@ public class WorldRenderDelegate {
         if (entity instanceof PlayerEntity) {
             entity.prevYaw *= -1;
             entity.yaw *= -1;
+
+            entity.prevPitch *= -1;
+            entity.pitch *= -1;
         }
 
         if (entity instanceof LivingEntity) {
@@ -195,7 +198,5 @@ public class WorldRenderDelegate {
             living.headYaw = -living.headYaw;
             living.prevHeadYaw = -living.prevHeadYaw;
         }
-        entity.prevPitch *= -1;
-        entity.pitch *= -1;
     }
 }
