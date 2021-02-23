@@ -22,7 +22,8 @@
     "MixinSheepEntity",
     "MixinShulkerEntity",
     "MixinTargetPredicate",
-    "MixinWorld"
+    "MixinWorld",
+    "MixinWorldChunk"
   ],
   "client": [
     "client.MixinArmorFeatureRenderer",
