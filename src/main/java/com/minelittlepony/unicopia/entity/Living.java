@@ -19,6 +19,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 
 public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T> {
 
@@ -98,6 +99,9 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
         if (getPhysics().isGravityNegative() && entity.getY() > entity.world.getHeight() + 64) {
             entity.damage(DamageSource.OUT_OF_WORLD, 4.0F);
+        }
+        if (getPhysics().isGravityNegative()) {
+            entity.setOnGround(!entity.world.isAir(new BlockPos(entity.getX(), Math.floor(entity.getBoundingBox().maxY + 0.25), entity.getZ())));
         }
 
         enchants.tick();

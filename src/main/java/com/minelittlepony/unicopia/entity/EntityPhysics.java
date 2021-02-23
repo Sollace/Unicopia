@@ -74,7 +74,7 @@ public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics
                 return below;
             }
         } else {
-            pony.getMaster().setOnGround(true);
+            entity.setOnGround(true);
         }
 
         return pos;

@@ -111,8 +111,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         isFlyingEither = isFlyingSurvival || (creative && entity.abilities.flying);
 
         if (isGravityNegative()) {
-            entity.setOnGround(!entity.world.isAir(new BlockPos(entity.getX(), entity.getY() + entity.getHeight() + 0.5F, entity.getZ())));
-
             if (entity.isOnGround() || (!creative && entity.horizontalCollision)) {
                 entity.abilities.flying = false;
                 isFlyingEither = false;
