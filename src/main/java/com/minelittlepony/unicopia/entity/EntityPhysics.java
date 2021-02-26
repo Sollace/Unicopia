@@ -146,14 +146,14 @@ public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics
 
 
         if (master instanceof LivingEntity) {
-            if (((LivingEntity)master).isSleeping()) {
-                return 1;
-            }
-
             if (((LivingEntity)master).getAttributes() == null) {
                 // may be null due to order of execution in the constructor.
                 // Will have the default (1) here in any case, so it's safe to ignore the attribute at this point.
                 return getBaseGravityModifier();
+            }
+
+            if (((LivingEntity)master).isSleeping()) {
+                return 1;
             }
 
             return getBaseGravityModifier() * (float)((LivingEntity)master).getAttributeValue(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
