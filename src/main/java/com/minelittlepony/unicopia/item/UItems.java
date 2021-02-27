@@ -45,7 +45,6 @@ public interface UItems {
             new FabricItemSettings()
             .rarity(Rarity.UNCOMMON)
             .group(ItemGroup.TOOLS)
-            .equipmentSlot(FriendshipBraceletItem::getPreferredEquipmentSlot)
     ));
 
     Item EMPTY_JAR = register("empty_jar", new JarItem(new Item.Settings().group(ItemGroup.DECORATIONS).maxCount(16).fireproof(), false, false, false));
@@ -66,7 +65,7 @@ public interface UItems {
     Item GOLDEN_FEATHER = register("golden_feather", new Item(new Item.Settings().rarity(Rarity.UNCOMMON).group(ItemGroup.MATERIALS)));
     Item GOLDEN_WING = register("golden_wing", new Item(new Item.Settings().rarity(Rarity.UNCOMMON).group(ItemGroup.MATERIALS)));
 
-    AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new AmuletItem(new AmuletItem.Settings("pegasus_amulet")
+    AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new AmuletItem(new FabricItemSettings()
             .maxDamage(890)
             .rarity(Rarity.UNCOMMON)
             .group(ItemGroup.DECORATIONS), 900, 10));

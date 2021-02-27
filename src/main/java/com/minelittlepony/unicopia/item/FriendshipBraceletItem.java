@@ -8,18 +8,14 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.DispenserBlock;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.DyeableItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Wearable;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
@@ -29,11 +25,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class FriendshipBraceletItem extends Item implements DyeableItem, Wearable, GlowableItem {
+public class FriendshipBraceletItem extends WearableItem implements DyeableItem, GlowableItem {
 
-    public FriendshipBraceletItem(Settings settings) {
+    public FriendshipBraceletItem(FabricItemSettings settings) {
         super(settings);
-        DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
     }
 
     @Override
@@ -63,22 +58,7 @@ public class FriendshipBraceletItem extends Item implements DyeableItem, Wearabl
             return TypedActionResult.consume(stack);
         }
 
-        EquipmentSlot slot = MobEntity.getPreferredEquipmentSlot(stack);
-        ItemStack currentArmor = player.getEquippedStack(slot);
-
-        if (currentArmor.isEmpty()) {
-            ItemStack result = stack.copy();
-            result.setCount(1);
-
-            if (!player.abilities.creativeMode) {
-                stack.decrement(1);
-            }
-
-            player.equipStack(slot, result);
-            return TypedActionResult.success(stack, world.isClient());
-        }
-
-        return TypedActionResult.fail(stack);
+        return super.use(world, player, hand);
     }
 
     @Override
@@ -90,6 +70,11 @@ public class FriendshipBraceletItem extends Item implements DyeableItem, Wearabl
         if (isGlowing(stack)) {
             list.add(new TranslatableText("item.unicopia.friendship_bracelet.glowing").formatted(Formatting.ITALIC, Formatting.GRAY));
         }
+    }
+
+    @Override
+    public EquipmentSlot getPreferredSlot(ItemStack stack) {
+        return isSigned(stack) ? EquipmentSlot.CHEST : super.getPreferredSlot(stack);
     }
 
     private boolean checkSignature(ItemStack stack, PlayerEntity player) {
@@ -118,9 +103,5 @@ public class FriendshipBraceletItem extends Item implements DyeableItem, Wearabl
         }
 
         return false;
-    }
-
-    public static EquipmentSlot getPreferredEquipmentSlot(ItemStack stack) {
-        return isSigned(stack) ? EquipmentSlot.CHEST : EquipmentSlot.OFFHAND;
     }
 }

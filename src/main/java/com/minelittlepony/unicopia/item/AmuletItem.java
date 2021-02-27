@@ -16,14 +16,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.ArmorMaterials;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Wearable;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
@@ -33,7 +26,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
-public class AmuletItem extends Item implements Wearable {
+public class AmuletItem extends WearableItem {
 
     private final int maxEnergy;
     private final float drain;
@@ -45,7 +38,7 @@ public class AmuletItem extends Item implements Wearable {
     }
 
     public AmuletItem(FabricItemSettings settings, int maxEnergy, int drainRate, ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> modifiers) {
-        super(settings.equipmentSlot(s -> EquipmentSlot.CHEST));
+        super(settings);
         this.maxEnergy = maxEnergy;
         drain = ((float)drainRate / (float)maxEnergy) / 10;
 
@@ -54,9 +47,12 @@ public class AmuletItem extends Item implements Wearable {
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+        /*if (world.isClient) {
+            return;
+        }
         if (isChargable() && entity instanceof LivingEntity && ((LivingEntity) entity).getEquippedStack(EquipmentSlot.CHEST) == stack) {
             consumeEnergy(stack, drain);
-        }
+        }*/
     }
 
     @Override
@@ -75,6 +71,11 @@ public class AmuletItem extends Item implements Wearable {
         if (isChargable()) {
             list.add(new TranslatableText("item.unicopia.amulet.energy", (int)Math.floor(getEnergy(stack)), maxEnergy));
         }
+    }
+
+    @Override
+    public EquipmentSlot getPreferredSlot(ItemStack stack) {
+        return EquipmentSlot.CHEST;
     }
 
     @Override
@@ -120,73 +121,6 @@ public class AmuletItem extends Item implements Wearable {
             stack.removeSubTag("energy");
         } else {
             stack.getOrCreateTag().putFloat("energy", energy);
-        }
-    }
-
-    public static class Settings extends FabricItemSettings implements ArmorMaterial {
-
-        private final String name;
-        private int protection;
-        private float toughness;
-        private float resistance;
-
-        public Settings(String name) {
-            this.name = name;
-        }
-
-        public Settings protection(int protection) {
-            this.protection = protection;
-            return this;
-        }
-
-        public Settings toughness(int toughness) {
-            this.toughness = toughness;
-            return this;
-        }
-
-        public Settings resistance(int resistance) {
-            this.resistance = resistance;
-            return this;
-        }
-
-        @Override
-        public int getDurability(EquipmentSlot slot) {
-            return ArmorMaterials.LEATHER.getDurability(slot);
-        }
-
-        @Override
-        public int getProtectionAmount(EquipmentSlot slot) {
-            return protection;
-        }
-
-        @Override
-        public int getEnchantability() {
-            return 0;
-        }
-
-        @Override
-        public SoundEvent getEquipSound() {
-            return SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND;
-        }
-
-        @Override
-        public Ingredient getRepairIngredient() {
-            return Ingredient.EMPTY;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public float getToughness() {
-            return toughness;
-        }
-
-        @Override
-        public float getKnockbackResistance() {
-            return resistance;
         }
     }
 }
