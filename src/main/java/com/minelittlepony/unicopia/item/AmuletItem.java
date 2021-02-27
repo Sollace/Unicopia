@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.MinecraftClient;
@@ -17,6 +18,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
@@ -53,6 +55,14 @@ public class AmuletItem extends WearableItem {
         if (isChargable() && entity instanceof LivingEntity && ((LivingEntity) entity).getEquippedStack(EquipmentSlot.CHEST) == stack) {
             consumeEnergy(stack, drain);
         }*/
+
+        if (this == UItems.PEGASUS_AMULET
+                && entity.world.getTime() % 6 == 0
+                && entity instanceof LivingEntity
+                && ((LivingEntity) entity).getEquippedStack(EquipmentSlot.CHEST) == stack
+                && isApplicable((LivingEntity)entity)) {
+            ParticleUtils.spawnParticles(ParticleTypes.COMPOSTER, entity, 1);
+        }
     }
 
     @Override

@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.MutableVector;
@@ -30,6 +31,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Tickable;
@@ -43,7 +45,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
     private float thrustScale = 0;
 
-    private FlightType lastFlightType;
+    private FlightType lastFlightType = FlightType.NONE;
 
     public boolean isFlyingEither = false;
     public boolean isFlyingSurvival = false;
@@ -83,16 +85,19 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     public float getWingAngle() {
         float spreadAmount = -0.5F;
 
+        PlayerEntity entity = pony.getMaster();
+
         if (isFlying()) {
             //spreadAmount += Math.sin(pony.getEntity().age / 4F) * 8;
             spreadAmount += isGliding() ? 3 : thrustScale * 60;
         }
 
-        if (pony.getEntity().isSneaking()) {
+        if (entity.isSneaking()) {
             spreadAmount += 2;
         }
 
-        spreadAmount += Math.sin(pony.getEntity().age / 9F) / 9F;
+        spreadAmount += MathHelper.clamp(-entity.getVelocity().y, 0, 2);
+        spreadAmount += Math.sin(entity.age / 9F) / 9F;
         spreadAmount = MathHelper.clamp(spreadAmount, -2, 5);
 
         return pony.getInterpolator().interpolate("wingSpreadAmount", spreadAmount, 10);
@@ -121,7 +126,13 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
         FlightType type = getFlightType();
 
-        entity.abilities.allowFlying = type.canFlyCreative();
+        if (type != lastFlightType && (lastFlightType.isArtifical() || type.isArtifical())) {
+            ParticleUtils.spawnParticles(ParticleTypes.CLOUD, entity, 10);
+
+            entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BLOCK_BELL_RESONATE, SoundCategory.PLAYERS, 0.1125F, 1.5F, true);
+        }
+
+        entity.abilities.allowFlying = type.canFlyCreative(entity);
 
         if (!creative) {
             entity.abilities.flying |= (type.canFly() || entity.abilities.allowFlying) && isFlyingEither;
@@ -195,8 +206,8 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                             entity.world.playSoundFromEntity(null, entity, SoundEvents.BLOCK_CHAIN_STEP, SoundCategory.PLAYERS, 0.13F, 0.5F);
                         }
 
-                        if (entity.world.random.nextInt(50) == 0) {
-                            stack.damage(1, entity, e -> e.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+                        if (entity.world.random.nextInt(20) == 0) {
+                            stack.damage(1 + entity.world.random.nextInt(50), entity, e -> e.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
                         }
 
                         if (!getFlightType().canFly()) {
@@ -420,9 +431,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     }
 
     private FlightType getFlightType() {
-        if (pony.getMaster().isCreative() || pony.getMaster().isSpectator()) {
-            return FlightType.CREATIVE;
-        }
 
         if (UItems.PEGASUS_AMULET.isApplicable(pony.getMaster())) {
             return FlightType.ARTIFICIAL;
@@ -443,7 +451,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
         FlightType type = getFlightType();
 
-        entity.abilities.allowFlying = type.canFlyCreative();
+        entity.abilities.allowFlying = type.canFlyCreative(entity);
 
         if (type.canFly() || entity.abilities.allowFlying) {
             entity.abilities.flying |= flying;
