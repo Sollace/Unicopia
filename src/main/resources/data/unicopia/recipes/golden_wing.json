@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+  	"***",
+  	"***",
+  	"***"
+  ],
+  "key": {
+  	"*": {
+  		"item": "unicopia:golden_feather"
+  	}
+  },
+  "result": {
+  	"item": "unicopia:golden_wing"
+  }
+}

@@ -2,14 +2,25 @@ package com.minelittlepony.unicopia;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.minecraft.sound.SoundEvent;
+
 public enum FlightType {
     NONE,
     CREATIVE,
     AVIAN,
-    INSECTOID;
+    INSECTOID,
+    ARTIFICIAL;
 
     public boolean isGrounded() {
         return this == NONE;
+    }
+
+    public boolean isAvian() {
+        return this == AVIAN || isArtifical();
+    }
+
+    public boolean isArtifical() {
+        return this == ARTIFICIAL;
     }
 
     public boolean canFly() {
@@ -22,6 +33,10 @@ public enum FlightType {
 
     public boolean canFlySurvival() {
         return canFly() && !canFlyCreative();
+    }
+
+    public SoundEvent getWingFlapSound() {
+        return this == INSECTOID ? USounds.ENTITY_PLAYER_CHANGELING_BUZZ : USounds.ENTITY_PLAYER_PEGASUS_WINGSFLAP;
     }
 
     /**

@@ -30,6 +30,16 @@
   
   "item.unicopia.crystal_heart": "Crystal Heart",
   "item.unicopia.crystal_shard": "Crystal Shard",
+  "item.unicopia.gemstone": "Gemstone",
+  
+  "item.unicopia.pegasus_feather": "Pegasus Feather",
+  "item.unicopia.gryphon_feather": "Gryphon Feather",
+  "item.unicopia.golden_feather": "Golden Feather",
+  "item.unicopia.golden_wing": "Golden Wing",
+  
+  "item.unicopia.pegasus_amulet": "Wings of Icarus",
+  "item.unicopia.pegasus_amulet.lore": "Grants temporary flight to whoever wears it",
+  "item.unicopia.amulet.energy": "Energy: %d / %d",
 
   "item.unicopia.music_disc_pet": "Music Disc",
   "item.unicopia.music_disc_pet.desc": "Danial Ingram - pet",

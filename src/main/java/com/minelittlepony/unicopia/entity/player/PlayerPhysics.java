@@ -8,6 +8,8 @@ import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.Jumper;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
+import com.minelittlepony.unicopia.item.AmuletItem;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
@@ -19,13 +21,14 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
@@ -37,6 +40,8 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     private int ticksInAir;
 
     private float thrustScale = 0;
+
+    private FlightType lastFlightType;
 
     public boolean isFlyingEither = false;
     public boolean isFlyingSurvival = false;
@@ -89,6 +94,9 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
         if (!creative) {
             entity.abilities.flying |= (type.canFly() || entity.abilities.allowFlying) && isFlyingEither;
+            if (!type.canFly() && (type != lastFlightType)) {
+                entity.abilities.flying = false;
+            }
 
             if ((entity.isOnGround() && entity.isSneaking())
                     || entity.isTouchingWater()
@@ -108,6 +116,8 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                 isFlyingEither = isFlyingSurvival || (creative && entity.abilities.flying);
             }
         }
+
+        lastFlightType = type;
 
         isFlyingSurvival = entity.abilities.flying && !creative;
         isFlyingEither = isFlyingSurvival || (creative && entity.abilities.flying);
@@ -137,35 +147,65 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                     }
                 }
 
-                int level = pony.getLevel().get() + 1;
+                ticksInAir++;
 
-                if (ticksInAir++ > (level * 100)) {
-                    Bar mana = pony.getMagicalReserves().getMana();
+                if (type.isArtifical()) {
+                    if (ticksInAir % 10 == 0 && !entity.world.isClient) {
+                        ItemStack stack = entity.getEquippedStack(EquipmentSlot.CHEST);
 
-                    float cost = (float)-getHorizontalMotion(entity) * 20F / level;
-                    if (entity.isSneaking()) {
-                        cost /= 10;
+                        float energyConsumed = 2 + (float)getHorizontalMotion(entity) / 10F;
+                        if (entity.world.hasRain(entity.getBlockPos())) {
+                            energyConsumed *= 3;
+                        }
+
+                        AmuletItem.consumeEnergy(stack, energyConsumed);
+
+                        if (AmuletItem.getEnergy(stack) < 9) {
+                            entity.world.playSoundFromEntity(null, entity, SoundEvents.BLOCK_CHAIN_STEP, SoundCategory.PLAYERS, 0.13F, 0.5F);
+                        }
+
+                        if (entity.world.random.nextInt(50) == 0) {
+                            stack.damage(1, entity, e -> e.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+                        }
+
+                        if (!getFlightType().canFly()) {
+                            entity.world.playSoundFromEntity(null, entity, SoundEvents.ITEM_SHIELD_BREAK, SoundCategory.PLAYERS, 1, 2);
+                            entity.abilities.flying = false;
+                            isFlyingEither = false;
+                            isFlyingSurvival = false;
+                        }
                     }
+                } else {
+                    int level = pony.getLevel().get() + 1;
 
-                    mana.add(cost);
+                    if (ticksInAir > (level * 100)) {
+                        Bar mana = pony.getMagicalReserves().getMana();
 
-                    if (mana.getPercentFill() < 0.2) {
-                        pony.getMagicalReserves().getExertion().add(2);
-                        pony.getMagicalReserves().getEnergy().add(2 + (int)(getHorizontalMotion(entity) * 5));
+                        float cost = (float)-getHorizontalMotion(entity) * 20F / level;
+                        if (entity.isSneaking()) {
+                            cost /= 10;
+                        }
 
-                        if (mana.getPercentFill() < 0.1 && ticksInAir % 10 == 0) {
-                            float exhaustion = (0.3F * ticksInAir) / 70;
-                            if (entity.isSprinting()) {
-                                exhaustion *= 3.11F;
+                        mana.add(cost);
+
+                        if (mana.getPercentFill() < 0.2) {
+                            pony.getMagicalReserves().getExertion().add(2);
+                            pony.getMagicalReserves().getEnergy().add(2 + (int)(getHorizontalMotion(entity) * 5));
+
+                            if (mana.getPercentFill() < 0.1 && ticksInAir % 10 == 0) {
+                                float exhaustion = (0.3F * ticksInAir) / 70;
+                                if (entity.isSprinting()) {
+                                    exhaustion *= 3.11F;
+                                }
+
+                                entity.addExhaustion(exhaustion);
                             }
-
-                            entity.addExhaustion(exhaustion);
                         }
                     }
                 }
 
                 entity.fallDistance = 0;
-                if (type == FlightType.AVIAN) {
+                if (type.isAvian()) {
                     applyThrust(entity, velocity);
                 }
                 moveFlying(entity, velocity);
@@ -173,9 +213,9 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                     applyTurbulance(entity, velocity);
                 }
 
-                if (type == FlightType.AVIAN) {
+                if (type.isAvian()) {
                     if (entity.world.isClient && ticksInAir % 20 == 0 && entity.getVelocity().length() < 0.29) {
-                        entity.playSound(getWingSound(), 0.5F, 1);
+                        entity.playSound(getFlightType().getWingFlapSound(), 0.5F, 1);
                         thrustScale = 1;
                     }
                     velocity.y -= 0.02 * getGravitySignum();
@@ -185,7 +225,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             } else {
                 ticksInAir = 0;
 
-                if (!creative && type == FlightType.AVIAN) {
+                if (!creative && type.isAvian()) {
 
                     double horMotion = getHorizontalMotion(entity);
                     double motion = entity.getPos().subtract(lastPos).lengthSquared();
@@ -220,10 +260,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         }
 
         entity.setVelocity(velocity.toImmutable());
-    }
-
-    private SoundEvent getWingSound() {
-        return pony.getSpecies() == Race.CHANGELING ? USounds.ENTITY_PLAYER_CHANGELING_BUZZ : USounds.ENTITY_PLAYER_PEGASUS_WINGSFLAP;
     }
 
     protected void handleWallCollission(PlayerEntity player, MutableVector velocity) {
@@ -276,7 +312,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     protected void applyThrust(PlayerEntity player, MutableVector velocity) {
         if (pony.sneakingChanged() && player.isSneaking()) {
             thrustScale = 1;
-            player.playSound(getWingSound(), 0.5F, 1);
+            player.playSound(getFlightType().getWingFlapSound(), 0.5F, 1);
         } else {
             thrustScale *= 0.1889F;
         }
@@ -348,6 +384,10 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     private FlightType getFlightType() {
         if (pony.getMaster().isCreative() || pony.getMaster().isSpectator()) {
             return FlightType.CREATIVE;
+        }
+
+        if (UItems.PEGASUS_AMULET.isApplicable(pony.getMaster())) {
+            return FlightType.ARTIFICIAL;
         }
 
         if (pony.hasSpell()) {

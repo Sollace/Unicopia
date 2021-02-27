@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+  	"***",
+  	"*#*",
+  	"***"
+  ],
+  "key": {
+  	"#": [
+  		{ "item": "unicopia:pegasus_feather" },
+  		{ "item": "unicopia:gryphon_feather" }
+  	],
+  	"*": {
+  		"item": "minecraft:gold_nugget"
+  	}
+  },
+  "result": {
+  	"item": "unicopia:golden_feather"
+  }
+}

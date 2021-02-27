@@ -58,6 +58,22 @@ public interface UItems {
     Item CRYSTAL_HEART = register("crystal_heart", new CrystalHeartItem(new Item.Settings().group(ItemGroup.DECORATIONS).maxCount(1)));
     Item CRYSTAL_SHARD = register("crystal_shard", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 
+    Item GEMSTONE = register("gemstone", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+
+    Item PEGASUS_FEATHER = register("pegasus_feather", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+    Item GRYPHON_FEATHER = register("gryphon_feather", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+
+    Item GOLDEN_FEATHER = register("golden_feather", new Item(new Item.Settings().rarity(Rarity.UNCOMMON).group(ItemGroup.MATERIALS)));
+    Item GOLDEN_WING = register("golden_wing", new Item(new Item.Settings().rarity(Rarity.UNCOMMON).group(ItemGroup.MATERIALS)));
+
+    AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new AmuletItem(new AmuletItem.Settings("pegasus_amulet")
+            .maxDamage(890)
+            .rarity(Rarity.UNCOMMON)
+            .group(ItemGroup.DECORATIONS), 900, 10));
+    /*AmuletItem ALICORN_AMULET = register("alicorn_amulet", new AmuletItem(new AmuletItem.Settings("alicorn_amulet")
+            .toughness(900000000)
+            .resistance(90000000)
+            .group(ItemGroup.DECORATIONS), 0, 0));*/
 
     static <T extends Item> T register(String name, T item) {
         ITEMS.add(item);

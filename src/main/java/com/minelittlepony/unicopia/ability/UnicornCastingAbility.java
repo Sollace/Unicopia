@@ -1,5 +1,11 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
+
+import javax.annotation.Nullable;
+
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
@@ -7,7 +13,16 @@ import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.ShieldSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Pair;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * A magic casting ability for unicorns.
@@ -31,8 +46,10 @@ public class UnicornCastingAbility implements Ability<Hit> {
     }
 
     @Override
+    @Nullable
     public Hit tryActivate(Pony player) {
-        return Hit.INSTANCE;
+        System.out.println(getCostEstimate(player) + " " + player.getMagicalReserves().getMana().get());
+        return getCostEstimate(player) <= player.getMagicalReserves().getMana().get() ? Hit.INSTANCE : null;
     }
 
     @Override
@@ -42,49 +59,80 @@ public class UnicornCastingAbility implements Ability<Hit> {
 
     @Override
     public double getCostEstimate(Pony player) {
-        if (player.hasSpell()) {
-            String current = player.getSpell(true).getName();
-            Spell replaced = Streams.stream(player.getMaster().getItemsHand())
-                    .map(SpellRegistry::getKeyFromStack)
-                    .filter(i -> i != null && !current.equals(i))
-                    .map(SpellRegistry.instance()::getSpellFromName)
-                    .filter(i -> i != null)
-                    .findFirst()
-                    .orElse(null);
-            return replaced == null ? 2 : 4;
-        }
-
-        return 4;
+        return getAmulet(player)
+                .map(pair -> Math.min(player.getMagicalReserves().getMana().get(), pair.getLeft().getChargeRemainder(pair.getRight())))
+                .orElseGet(() -> player.hasSpell() && getNewSpell(player).isPresent() ? 4F : 2F);
     }
 
     @Override
     public void apply(Pony player, Hit data) {
+        getAmulet(player).filter(pair -> {
+            float amount = -Math.min(player.getMagicalReserves().getMana().get(), pair.getLeft().getChargeRemainder(pair.getRight()));
 
-        if (player.hasSpell()) {
-            String current = player.getSpell(true).getName();
-            Spell spell = Streams.stream(player.getMaster().getItemsHand())
-                    .map(SpellRegistry::getKeyFromStack)
-                    .filter(i -> i != null && !current.equals(i))
-                    .map(SpellRegistry.instance()::getSpellFromName)
-                    .filter(i -> i != null)
-                    .findFirst()
-                    .orElse(null);
+            if (amount < 0) {
+                AmuletItem.consumeEnergy(pair.getRight(), amount);
+                player.getMagicalReserves().getMana().add(amount * player.getMagicalReserves().getMana().getMax());
+                player.getWorld().playSoundFromEntity(null, player.getMaster(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1, 1);
+            }
+            return true;
+        }).orElseGet(() -> {
+            Optional<Spell> newSpell = getNewSpell(player);
+
+            @Nullable
+            Spell spell = player.hasSpell() ? newSpell.orElse(null) : newSpell.orElseGet(ShieldSpell::new);
+
             player.subtractEnergyCost(spell == null ? 2 : 4);
             player.setSpell(spell);
-        } else {
-            player.subtractEnergyCost(4);
-            player.setSpell(Streams.stream(player.getMaster().getItemsHand())
-                    .map(SpellRegistry.instance()::getSpellFrom)
-                    .filter(i -> i != null)
-                    .findFirst()
-                    .orElseGet(ShieldSpell::new));
+
+            return null;
+        });
+    }
+
+    private Optional<Pair<AmuletItem, ItemStack>> getAmulet(Pony player) {
+
+        ItemStack stack = player.getMaster().getStackInHand(Hand.MAIN_HAND);
+
+        if (stack.getItem() instanceof AmuletItem) {
+            AmuletItem amulet = (AmuletItem)stack.getItem();
+            if (amulet.canCharge(stack)) {
+                return Optional.of(new Pair<>(amulet, stack));
+
+            }
         }
+
+        return Optional.empty();
+    }
+
+    private Optional<Spell> getNewSpell(Pony player) {
+        final String current = player.hasSpell() ? player.getSpell(true).getName() : null;
+        return Streams.stream(player.getMaster().getItemsHand())
+                .map(SpellRegistry::getKeyFromStack)
+                .filter(i -> !Objects.equals(i, current))
+                .map(SpellRegistry.instance()::getSpellFromName)
+                .filter(Objects::nonNull)
+                .findFirst();
     }
 
     @Override
     public void preApply(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getEnergy().multiply(3.3F);
-        player.spawnParticles(MagicParticleEffect.UNICORN, 5);
+
+        if (getAmulet(player).isPresent()) {
+            Vec3d eyes = player.getMaster().getCameraPosVec(1);
+
+            float i = player.getAbilities().getStat(slot).getFillProgress();
+
+            Random rng = player.getWorld().random;
+
+            player.getWorld().addParticle(i > 0.5F ? ParticleTypes.LARGE_SMOKE : ParticleTypes.CLOUD, eyes.x, eyes.y, eyes.z,
+                    (rng.nextGaussian() - 0.5) / 10,
+                    (rng.nextGaussian() - 0.5) / 10,
+                    (rng.nextGaussian() - 0.5) / 10
+            );
+            player.getWorld().playSound(player.getEntity().getX(), player.getEntity().getY(), player.getEntity().getZ(), SoundEvents.ENTITY_GUARDIAN_ATTACK, SoundCategory.PLAYERS, 1, i / 20, true);
+        } else {
+            player.spawnParticles(MagicParticleEffect.UNICORN, 5);
+        }
     }
 
     @Override
