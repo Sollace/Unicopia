@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.client.render.AccessoryFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.AmuletFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.FloatingArtefactEntityRenderer;
+import com.minelittlepony.unicopia.client.render.WingsFeatureRenderer;
 import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -51,6 +52,7 @@ public interface URenderers {
 
         AccessoryFeatureRenderer.register(BraceletFeatureRenderer::new);
         AccessoryFeatureRenderer.register(AmuletFeatureRenderer::new);
+        AccessoryFeatureRenderer.register(WingsFeatureRenderer::new);
 
         EntityRendererRegistry.INSTANCE.register(UEntities.THROWN_ITEM, (manager, context) -> new FlyingItemEntityRenderer<>(manager, context.getItemRenderer()));
         EntityRendererRegistry.INSTANCE.register(UEntities.FLOATING_ARTEFACT, FloatingArtefactEntityRenderer::new);
