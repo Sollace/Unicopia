@@ -61,7 +61,7 @@ public class AmuletItem extends WearableItem {
                 && entity instanceof LivingEntity
                 && ((LivingEntity) entity).getEquippedStack(EquipmentSlot.CHEST) == stack
                 && isApplicable((LivingEntity)entity)) {
-            ParticleUtils.spawnParticles(ParticleTypes.COMPOSTER, entity, 1);
+            ParticleUtils.spawnParticles(entity.world.getDimension().isUltrawarm() ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.COMPOSTER, entity, 1);
         }
     }
 

@@ -20,6 +20,7 @@ import net.minecraft.util.Identifier;
 public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
 
     private static final Identifier ICARUS_WINGS = new Identifier("unicopia", "textures/models/wings/icarus.png");
+    private static final Identifier ICARUS_WINGS_CORRUPTED = new Identifier("unicopia", "textures/models/wings/icarus_corrupted.png");
     private static final Identifier PEGASUS_WINGS = new Identifier("unicopia", "textures/models/wings/pegasus.png");
 
     private final WingsModel model = new WingsModel();
@@ -37,7 +38,7 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
         boolean icarus = UItems.PEGASUS_AMULET.isApplicable(entity);
 
         if (icarus || pegasus) {
-            Identifier texture = pegasus ? PEGASUS_WINGS : ICARUS_WINGS;
+            Identifier texture = pegasus ? PEGASUS_WINGS : entity.world.getDimension().isUltrawarm() ? ICARUS_WINGS_CORRUPTED : ICARUS_WINGS;
             VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getEntityTranslucent(texture), false, false);
 
             model.setAngles(entity, context.getModel());

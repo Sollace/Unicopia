@@ -129,7 +129,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         if (type != lastFlightType && (lastFlightType.isArtifical() || type.isArtifical())) {
             ParticleUtils.spawnParticles(ParticleTypes.CLOUD, entity, 10);
 
-            entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BLOCK_BELL_RESONATE, SoundCategory.PLAYERS, 0.1125F, 1.5F, true);
+            entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), entity.world.getDimension().isUltrawarm() ? SoundEvents.BLOCK_BELL_USE : SoundEvents.BLOCK_BELL_RESONATE, SoundCategory.PLAYERS, 0.1125F, 1.5F, true);
         }
 
         entity.abilities.allowFlying = type.canFlyCreative(entity);
@@ -195,9 +195,17 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                     if (ticksInAir % 10 == 0 && !entity.world.isClient) {
                         ItemStack stack = entity.getEquippedStack(EquipmentSlot.CHEST);
 
+                        int damageInterval = 20;
+                        int minDamage = 1;
+
                         float energyConsumed = 2 + (float)getHorizontalMotion(entity) / 10F;
                         if (entity.world.hasRain(entity.getBlockPos())) {
                             energyConsumed *= 3;
+                        }
+                        if (entity.world.getDimension().isUltrawarm()) {
+                            energyConsumed *= 4;
+                            damageInterval /= 2;
+                            minDamage *= 3;
                         }
 
                         AmuletItem.consumeEnergy(stack, energyConsumed);
@@ -206,8 +214,8 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                             entity.world.playSoundFromEntity(null, entity, SoundEvents.BLOCK_CHAIN_STEP, SoundCategory.PLAYERS, 0.13F, 0.5F);
                         }
 
-                        if (entity.world.random.nextInt(20) == 0) {
-                            stack.damage(1 + entity.world.random.nextInt(50), entity, e -> e.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+                        if (entity.world.random.nextInt(damageInterval) == 0) {
+                            stack.damage(minDamage + entity.world.random.nextInt(50), entity, e -> e.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
                         }
 
                         if (!getFlightType().canFly()) {
