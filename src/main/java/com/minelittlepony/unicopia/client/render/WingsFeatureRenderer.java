@@ -108,28 +108,23 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
             }
 
             void setAngles(LivingEntity entity) {
-                if (entity instanceof PlayerEntity) {
-                    Pony pony = Pony.of((PlayerEntity)entity);
+                float spreadAmount = entity instanceof PlayerEntity ? Pony.of((PlayerEntity)entity).getMotion().getWingAngle() : 0;
 
-                    float spreadAmount = pony.getMotion().getWingAngle();
+                base.pitch = 1.5F + 0.8F - spreadAmount / 9F;
+                base.yaw = k * (0.8F + spreadAmount / 3F);
 
-                    base.pitch = 1.5F + 0.8F - spreadAmount / 9F;
-                    base.yaw = k * (0.8F + spreadAmount / 3F);
+                spreadAmount /= 7F;
 
-                    spreadAmount /= 7F;
+                final float ratio = 4F;
 
-                    final float ratio = 4F;
+                for (int i = 0; i < feathers.length; i++) {
 
-                    for (int i = 0; i < feathers.length; i++) {
+                    float spread = i/ratio + 1.5F;
+                    spread -= spreadAmount * ratio;
+                    spread += spreadAmount * i / ratio;
 
-                        float spread = i/ratio + 1.5F;
-                        spread -= spreadAmount * ratio;
-                        spread += spreadAmount * i / ratio;
-
-                        feathers[i].pitch = -spread;
-                        feathers[i].yaw = k * 0.3F;
-                    }
-
+                    feathers[i].pitch = -spread;
+                    feathers[i].yaw = k * 0.3F;
                 }
             }
         }
