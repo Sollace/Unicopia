@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.Jumper;
+import com.minelittlepony.unicopia.entity.Leaner;
 import com.minelittlepony.unicopia.entity.ItemWielder;
 
 import net.minecraft.entity.Entity;
@@ -32,7 +33,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 
 @Mixin(LivingEntity.class)
-abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<?>>, ItemWielder, Jumper {
+abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<?>>, ItemWielder, Jumper, Leaner {
     @Shadow
     protected ItemStack activeItemStack;
     @Shadow
@@ -64,6 +65,14 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
     @Override
     @Accessor("jumping")
     public abstract boolean isJumping();
+
+    @Override
+    @Accessor("leaningPitch")
+    public abstract float getLeaningPitch();
+
+    @Override
+    @Accessor("leaningPitch")
+    public abstract void setLeaningPitch(float pitch);
 
     @Inject(method = "createLivingAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
     private static void onCreateAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {

@@ -11,7 +11,6 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -23,17 +22,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 
-public class BraceletFeatureRenderer<
-        E extends LivingEntity,
-        M extends BipedEntityModel<E>> extends FeatureRenderer<E, M> {
+public class BraceletFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
 
     private static final Identifier TEXTURE = new Identifier("unicopia", "textures/models/armor/bracelet.png");
 
     private final BraceletModel steveModel = new BraceletModel(0.3F, false);
     private final BraceletModel alexModel = new BraceletModel(0.3F, true);
 
-    public BraceletFeatureRenderer(FeatureRendererContext<E, M> context) {
-        super(context);
+    private final FeatureRendererContext<E, ? extends BipedEntityModel<E>> context;
+
+    public BraceletFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
+        this.context = context;
     }
 
     @Override
@@ -51,9 +50,9 @@ public class BraceletFeatureRenderer<
             BraceletModel model = alex ? alexModel : steveModel;
 
             if (entity instanceof ArmorStandEntity) {
-                ModelPart arm = entity.getMainArm() == Arm.LEFT ? getContextModel().leftArm : getContextModel().rightArm;
+                ModelPart arm = entity.getMainArm() == Arm.LEFT ? context.getModel().leftArm : context.getModel().rightArm;
                 arm.visible = true;
-                VertexConsumer consumer = renderContext.getBuffer(getContextModel().getLayer(getTexture(entity)));
+                VertexConsumer consumer = renderContext.getBuffer(context.getModel().getLayer(context.getTexture(entity)));
                 arm.render(stack, consumer, lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
             }
 
@@ -61,7 +60,7 @@ public class BraceletFeatureRenderer<
 
             VertexConsumer consumer = CanvasCompat.getGlowingConsumer(glowing, renderContext, RenderLayer.getArmorCutoutNoCull(TEXTURE));
 
-            model.setAngles(getContextModel());
+            model.setAngles(context.getModel());
             model.setVisible(entity.getMainArm());
             model.render(stack, consumer, glowing ? 0x0F00F0 : lightUv, OverlayTexture.DEFAULT_UV, Color.r(j), Color.g(j), Color.b(j), 1);
         }

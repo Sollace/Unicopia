@@ -16,11 +16,11 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Wearable;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -33,19 +33,19 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
-public class AmuletItem extends ArmorItem {
+public class AmuletItem extends Item implements Wearable {
 
     private final int maxEnergy;
     private final float drain;
 
     private final ImmutableMultimap<EntityAttribute, EntityAttributeModifier> modifiers;
 
-    public AmuletItem(Item.Settings settings, int maxEnergy, int drainRate) {
+    public AmuletItem(FabricItemSettings settings, int maxEnergy, int drainRate) {
         this(settings, maxEnergy, drainRate, ImmutableMultimap.builder());
     }
 
-    public AmuletItem(Item.Settings settings, int maxEnergy, int drainRate, ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> modifiers) {
-        super((Settings)settings, EquipmentSlot.CHEST, settings);
+    public AmuletItem(FabricItemSettings settings, int maxEnergy, int drainRate, ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> modifiers) {
+        super(settings.equipmentSlot(s -> EquipmentSlot.CHEST));
         this.maxEnergy = maxEnergy;
         drain = ((float)drainRate / (float)maxEnergy) / 10;
 
@@ -54,7 +54,7 @@ public class AmuletItem extends ArmorItem {
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if (isChargable() && entity instanceof LivingEntity && ((LivingEntity) entity).getEquippedStack(getSlotType()) == stack) {
+        if (isChargable() && entity instanceof LivingEntity && ((LivingEntity) entity).getEquippedStack(EquipmentSlot.CHEST) == stack) {
             consumeEnergy(stack, drain);
         }
     }
@@ -84,7 +84,7 @@ public class AmuletItem extends ArmorItem {
 
     @Override
     public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-        return slot == getSlotType() ? modifiers : ImmutableMultimap.of();
+        return slot == EquipmentSlot.CHEST ? modifiers : ImmutableMultimap.of();
     }
 
     public boolean isApplicable(ItemStack stack) {
@@ -92,7 +92,7 @@ public class AmuletItem extends ArmorItem {
     }
 
     public boolean isApplicable(LivingEntity entity) {
-        return isApplicable(entity.getEquippedStack(getSlotType()));
+        return isApplicable(entity.getEquippedStack(EquipmentSlot.CHEST));
     }
 
     public boolean isChargable() {

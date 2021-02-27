@@ -9,5 +9,9 @@ public interface Motion {
      */
     boolean isFlying();
 
+    boolean isGliding();
+
+    float getWingAngle();
+
     PlayerDimensions getDimensions();
 }

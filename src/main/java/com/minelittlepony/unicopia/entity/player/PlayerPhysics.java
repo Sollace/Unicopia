@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.Jumper;
+import com.minelittlepony.unicopia.entity.Leaner;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
@@ -65,6 +66,30 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     @Override
     public boolean isFlying() {
         return isFlyingSurvival && !pony.getMaster().isFallFlying() && !pony.getMaster().hasVehicle();
+    }
+
+    @Override
+    public boolean isGliding() {
+        return isFlying() && (pony.getMaster().isSneaking() || ((Jumper)pony.getMaster()).isJumping()) && !pony.sneakingChanged();
+    }
+
+    @Override
+    public float getWingAngle() {
+        float spreadAmount = -0.5F;
+
+        if (isFlying()) {
+            //spreadAmount += Math.sin(pony.getEntity().age / 4F) * 8;
+            spreadAmount += isGliding() ? 3 : thrustScale * 60;
+        }
+
+        if (pony.getEntity().isSneaking()) {
+            spreadAmount += 2;
+        }
+
+        spreadAmount += Math.sin(pony.getEntity().age / 9F) / 9F;
+        spreadAmount = MathHelper.clamp(spreadAmount, -2, 5);
+
+        return pony.getInterpolator().interpolate("wingSpreadAmount", spreadAmount, 10);
     }
 
     @Override
@@ -260,6 +285,13 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         }
 
         entity.setVelocity(velocity.toImmutable());
+
+        if (isFlying() && !entity.isInSwimmingPose()) {
+            float pitch = ((Leaner)entity).getLeaningPitch();
+            if (pitch < 1) {
+                ((Leaner)entity).setLeaningPitch(Math.max(0, pitch + 0.18F));
+            }
+        }
     }
 
     protected void handleWallCollission(PlayerEntity player, MutableVector velocity) {

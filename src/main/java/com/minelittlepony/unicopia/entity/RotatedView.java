@@ -15,8 +15,11 @@ public interface RotatedView {
     }
 
     default void popRotation() {
-        if (!getRotations().isEmpty()) {
-            getRotations().pop();
+        Stack<Integer> rotations = getRotations();
+        synchronized (rotations) {
+            if (!rotations.isEmpty()) {
+                rotations.pop();
+            }
         }
     }
 
@@ -29,10 +32,13 @@ public interface RotatedView {
     }
 
     default int applyRotation(int y) {
-        if (!hasTransform() || getRotations().isEmpty()) {
-            return y;
+        Stack<Integer> rotations = getRotations();
+        synchronized (rotations) {
+            if (!hasTransform() || rotations.isEmpty()) {
+                return y;
+            }
+            return y - ((y - rotations.peek()) * 2);
         }
-        return y - ((y - getRotations().peek()) * 2);
     }
 
 }
