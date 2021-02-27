@@ -11,6 +11,8 @@ public interface Motion {
 
     boolean isGliding();
 
+    boolean isRainbooming();
+
     float getWingAngle();
 
     PlayerDimensions getDimensions();

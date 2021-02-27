@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.JoustingSpell;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.Jumper;
@@ -71,6 +72,11 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     @Override
     public boolean isGliding() {
         return isFlying() && (pony.getMaster().isSneaking() || ((Jumper)pony.getMaster()).isJumping()) && !pony.sneakingChanged();
+    }
+
+    @Override
+    public boolean isRainbooming() {
+        return pony.getSpellOrEmpty(JoustingSpell.class).isPresent();
     }
 
     @Override

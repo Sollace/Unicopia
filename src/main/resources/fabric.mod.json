@@ -24,6 +24,9 @@
     ],
     "modmenu": [
       "com.minelittlepony.unicopia.modmenu.UMenuFactory"
+    ],
+    "minelittlepony": [
+      "com.minelittlepony.unicopia.client.minelittlepony.Main"
     ]
   },
   "depends": {
