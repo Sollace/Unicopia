@@ -86,10 +86,10 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
             }
 
             if (stack.getItem().isIn(UTags.FALLS_SLOWLY)) {
-                if (!owner.isOnGround()) {
+                if (!owner.isOnGround() && Math.signum(owner.getVelocity().y) != getPhysics().getGravitySignum()) {
                     double ticks = ((Entity)owner).age;
                     double shift = Math.sin(ticks / 9D) / 9D;
-                    double rise = Math.cos(ticks / 9D) * getPhysics().getGravitySignum();
+                    double rise = -Math.cos(ticks / 9D) * getPhysics().getGravitySignum();
 
                     owner.prevYaw = owner.prevYaw;
                     owner.yaw += 0.3F;
