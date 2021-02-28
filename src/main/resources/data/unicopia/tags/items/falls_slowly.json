@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:feather",
+    "unicopia:pegasus_feather",
+    "unicopia:gryphon_feather"
+  ]
+}

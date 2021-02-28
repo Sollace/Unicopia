@@ -4,10 +4,12 @@ import java.util.Random;
 
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.data.DataTracker;
@@ -51,13 +53,12 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
         }
 
         ItemStack stack = owner.getStack();
+        IItemEntity i = (IItemEntity)owner;
 
         if (!stack.isEmpty()) {
 
             Item item = stack.getItem();
             ClingyItem clingy = item instanceof ClingyItem ? (ClingyItem)item : ClingyItem.DEFAULT;
-
-            IItemEntity i = (IItemEntity)owner;
 
             if (clingy.isClingy(stack)) {
                 Random rng = owner.world.random;
@@ -82,6 +83,24 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
 
                         clingy.interactWithPlayer(i, (PlayerEntity)player);
                     });
+            }
+
+            if (stack.getItem().isIn(UTags.FALLS_SLOWLY)) {
+                if (!owner.isOnGround()) {
+                    double ticks = ((Entity)owner).age;
+                    double shift = Math.sin(ticks / 9D) / 9D;
+                    double rise = Math.cos(ticks / 9D) * getPhysics().getGravitySignum();
+
+                    owner.prevYaw = owner.prevYaw;
+                    owner.yaw += 0.3F;
+
+                    owner.setVelocity(
+                            owner.getVelocity()
+                                .multiply(0.25, 0, 0.25)
+                                .add(0, rise, 0)
+                                .add(owner.getRotationVec(1)).normalize().multiply(shift)
+                    );
+                }
             }
 
             if (stack.getItem() instanceof TickableItem) {

@@ -14,6 +14,8 @@ public interface UTags {
     Tag<Item> FAIRLY_TOXIC = item("fairly_toxic");
     Tag<Item> SEVERELY_TOXIC = item("severely_toxic");
 
+    Tag<Item> FALLS_SLOWLY = item("falls_slowly");
+
     Tag<Block> FRAGILE = block("fragile");
     Tag<Block> INTERESTING = block("interesting");
 
