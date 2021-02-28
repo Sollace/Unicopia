@@ -257,6 +257,10 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
                 entity.fallDistance = 0;
                 if (type.isAvian()) {
                     applyThrust(entity, velocity);
+
+                    if (entity.world.random.nextInt(9000) == 0) {
+                        entity.dropItem(UItems.PEGASUS_FEATHER);
+                    }
                 }
                 moveFlying(entity, velocity);
                 if (entity.world.hasRain(entity.getBlockPos())) {
