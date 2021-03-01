@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -20,19 +19,8 @@ import net.minecraft.util.registry.Registry;
 
 public class AwkwardSpell extends AbstractSpell implements Thrown {
 
-    @Override
-    public String getName() {
-        return "awkward";
-    }
-
-    @Override
-    public Affinity getAffinity() {
-        return Affinity.NEUTRAL;
-    }
-
-    @Override
-    public int getTint() {
-        return 0xE1239C;
+    protected AwkwardSpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override

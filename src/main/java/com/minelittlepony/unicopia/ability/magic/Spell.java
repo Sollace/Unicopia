@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic;
 
-import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -11,14 +12,9 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 public interface Spell extends NbtSerialisable, Affine {
 
     /**
-     * Gets the name used to identify this effect.
+     * Returns the registered type of this spell.
      */
-    String getName();
-
-    /**
-     * Gets the tint for this spell when applied to a gem.
-     */
-    int getTint();
+    SpellType<?> getType();
 
     /**
      * Sets this effect as dead.
@@ -87,6 +83,11 @@ public interface Spell extends NbtSerialisable, Affine {
      */
     void render(Caster<?> source);
 
+    @Override
+    default Affinity getAffinity() {
+        return getType().getAffinity();
+    }
+
     /**
      * Return true to allow the gem update and move.
      */
@@ -98,6 +99,6 @@ public interface Spell extends NbtSerialisable, Affine {
      * Returns a new, deep-copied instance of this spell.
      */
     default Spell copy() {
-        return SpellRegistry.instance().copyInstance(this);
+        return SpellType.copy(this);
     }
 }

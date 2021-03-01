@@ -2,18 +2,14 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
-import com.minelittlepony.unicopia.item.toxin.ToxicHolder;
 import com.minelittlepony.unicopia.item.toxin.Toxics;
 import com.minelittlepony.unicopia.item.toxin.UFoodComponents;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.Settings;
 import net.minecraft.item.ItemGroup;
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponents;
@@ -57,7 +53,7 @@ public interface UItems {
     Item CRYSTAL_HEART = register("crystal_heart", new CrystalHeartItem(new Item.Settings().group(ItemGroup.DECORATIONS).maxCount(1)));
     Item CRYSTAL_SHARD = register("crystal_shard", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 
-    Item GEMSTONE = register("gemstone", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+    Item GEMSTONE = register("gemstone", new GemstoneItem(new Item.Settings().group(ItemGroup.MATERIALS)));
 
     Item PEGASUS_FEATHER = register("pegasus_feather", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     Item GRYPHON_FEATHER = register("gryphon_feather", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
@@ -94,21 +90,6 @@ public interface UItems {
         Toxics.bootstrap();
         UEnchantments.bootstrap();
         URecipes.bootstrap();
-
-        FabricItemGroupBuilder.create(new Identifier("unicopia", "items")).appendItems(list -> {
-            list.addAll(VanillaOverrides.REGISTRY.stream().map(Item::getDefaultStack).collect(Collectors.toList()));
-            list.addAll(ITEMS.stream()
-                    .filter(item -> !(item instanceof ChameleonItem) || ((ChameleonItem)item).isFullyDisguised())
-                    .map(Item::getDefaultStack)
-                    .collect(Collectors.toList())
-            );
-        }).icon(EMPTY_JAR::getDefaultStack).build();
-
-        FabricItemGroupBuilder.create(new Identifier("unicopia", "horsefeed")).appendItems(list -> {
-            list.addAll(Registry.ITEM.stream()
-                    .filter(item -> item instanceof ToxicHolder && ((ToxicHolder)item).getToxic().isPresent())
-                    .map(Item::getDefaultStack)
-                    .collect(Collectors.toList()));
-        }).icon(ZAP_APPLE::getDefaultStack).build();
+        UItemGroups.bootstrap();
     }
 }

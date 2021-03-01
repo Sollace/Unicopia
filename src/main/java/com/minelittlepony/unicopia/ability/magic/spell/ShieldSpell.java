@@ -39,19 +39,8 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
 
     private final Map<UUID, Target> targets = new TreeMap<>();
 
-    @Override
-    public String getName() {
-        return "shield";
-    }
-
-    @Override
-    public Affinity getAffinity() {
-        return Affinity.NEUTRAL;
-    }
-
-    @Override
-    public int getTint() {
-        return 0x66CDAA;
+    protected ShieldSpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override
@@ -65,15 +54,15 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
         float radius = (float)getDrawDropOffRange(source);
 
         source.spawnParticles(new Sphere(true, radius), (int)(radius * 6), pos -> {
-            source.addParticle(new MagicParticleEffect(getTint()), pos, Vec3d.ZERO);
+            source.addParticle(new MagicParticleEffect(getType().getColor()), pos, Vec3d.ZERO);
         });
 
         particlEffect.ifAbsent(source, spawner -> {
-            spawner.addParticle(new SphereParticleEffect(getTint(), 0.3F, radius), source.getOriginVector(), Vec3d.ZERO);
+            spawner.addParticle(new SphereParticleEffect(getType().getColor(), 0.3F, radius), source.getOriginVector(), Vec3d.ZERO);
         }).ifPresent(p -> {
             p.attach(source);
             p.setAttribute(0, radius);
-            p.setAttribute(1, getTint());
+            p.setAttribute(1, getType().getColor());
         });
     }
 

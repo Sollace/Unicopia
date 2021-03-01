@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.block.state.StateMaps;
@@ -29,19 +28,8 @@ public class IceSpell extends AbstractRangedAreaSpell implements Thrown {
     private final int rad = 3;
     private final Shape effect_range = new Sphere(false, rad);
 
-    @Override
-    public String getName() {
-        return "ice";
-    }
-
-    @Override
-    public Affinity getAffinity() {
-        return Affinity.GOOD;
-    }
-
-    @Override
-    public int getTint() {
-        return 0xBDBDF9;
+    protected IceSpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override

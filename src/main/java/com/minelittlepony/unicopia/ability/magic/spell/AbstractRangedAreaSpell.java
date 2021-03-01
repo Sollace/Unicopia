@@ -5,6 +5,10 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 
 public abstract class AbstractRangedAreaSpell extends AbstractSpell implements Attached {
 
+    protected AbstractRangedAreaSpell(SpellType<?> type) {
+        super(type);
+    }
+
     @Override
     public int getMaxLevelCutOff(Caster<?> source) {
         return 17;

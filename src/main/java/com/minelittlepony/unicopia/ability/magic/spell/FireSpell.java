@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Magical;
@@ -40,19 +39,8 @@ public class FireSpell extends AbstractRangedAreaSpell implements Thrown {
     private static final Shape VISUAL_EFFECT_RANGE = new Sphere(false, 0.5);
     private static final Shape EFFECT_RANGE = new Sphere(false, 4);
 
-    @Override
-    public String getName() {
-        return "fire";
-    }
-
-    @Override
-    public Affinity getAffinity() {
-        return Affinity.GOOD;
-    }
-
-    @Override
-    public int getTint() {
-        return 0xFF5D00;
+    protected FireSpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.command;
 import java.util.function.Function;
 
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -63,7 +64,7 @@ public class DisguiseCommand {
         DisguiseSpell effect = iplayer.getSpell(DisguiseSpell.class, true);
 
         if (effect == null) {
-            iplayer.setSpell(new DisguiseSpell().setDisguise(entity));
+            iplayer.setSpell(SpellType.DISGUISE.create().setDisguise(entity));
         } else {
             effect.setDisguise(entity);
         }

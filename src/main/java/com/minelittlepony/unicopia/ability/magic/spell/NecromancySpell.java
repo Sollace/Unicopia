@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.util.WorldEvent;
 import com.minelittlepony.unicopia.util.shape.Shape;
@@ -26,19 +25,8 @@ public class NecromancySpell extends AbstractRangedAreaSpell {
             EntityType.ZOMBIFIED_PIGLIN
     );
 
-    @Override
-    public String getName() {
-        return "necromancy";
-    }
-
-    @Override
-    public Affinity getAffinity() {
-        return Affinity.BAD;
-    }
-
-    @Override
-    public int getTint() {
-        return 0x3A3A3A;
+    protected NecromancySpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override

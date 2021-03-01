@@ -10,6 +10,17 @@ public abstract class AbstractSpell implements Spell {
     protected boolean isDead;
     protected boolean isDirty;
 
+    private final SpellType<?> type;
+
+    protected AbstractSpell(SpellType<?> type) {
+        this.type = type;
+    }
+
+    @Override
+    public SpellType<?> getType() {
+        return type;
+    }
+
     @Override
     public void setDead() {
         isDead = true;

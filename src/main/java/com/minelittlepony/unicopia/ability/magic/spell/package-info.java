@@ -1,1 +1,0 @@
-package com.minelittlepony.unicopia.ability.magic.spell;

@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
@@ -30,19 +29,9 @@ public class JoustingSpell extends AbstractRangedAreaSpell implements Thrown {
 
     private int age;
 
-    @Override
-    public String getName() {
-        return "joust";
-    }
-
-    @Override
-    public Affinity getAffinity() {
-        return Affinity.GOOD;
-    }
-
-    @Override
-    public int getTint() {
-        return 0xBDBDF9;
+    protected JoustingSpell(SpellType<?> type) {
+        super(type);
+        // TODO Auto-generated constructor stub
     }
 
     @Override

@@ -23,14 +23,8 @@ import net.minecraft.util.math.Vec3d;
  */
 public class SiphoningSpell extends AbstractRangedAreaSpell implements Thrown {
 
-    @Override
-    public String getName() {
-        return "siphon";
-    }
-
-    @Override
-    public int getTint() {
-        return 0xe308ab;
+    protected SiphoningSpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override
@@ -125,10 +119,5 @@ public class SiphoningSpell extends AbstractRangedAreaSpell implements Thrown {
                 source.addParticle(direction == 1 ? ParticleTypes.HEART : ParticleTypes.ANGRY_VILLAGER, pos, velocity);
             }
         });
-    }
-
-    @Override
-    public Affinity getAffinity() {
-        return Affinity.NEUTRAL;
     }
 }

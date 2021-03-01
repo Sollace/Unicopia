@@ -2,17 +2,15 @@ package com.minelittlepony.unicopia.ability.magic;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.Affinity;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.item.GemstoneItem;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -54,9 +52,7 @@ public interface Thrown extends Spell, ProjectileDelegate {
      * Gets the appearance to be used when projecting this spell.
      */
     default ItemStack getCastAppearance(Caster<?> caster) {
-        Item item = getAffinity() == Affinity.BAD ? Items.MAGMA_CREAM : Items.SNOWBALL;
-
-        return SpellRegistry.instance().enchantStack(new ItemStack(item), getName());
+        return GemstoneItem.enchanted(UItems.GEMSTONE.getDefaultStack(), getType());
     }
 
     /**

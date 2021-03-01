@@ -31,6 +31,7 @@
   "item.unicopia.crystal_heart": "Crystal Heart",
   "item.unicopia.crystal_shard": "Crystal Shard",
   "item.unicopia.gemstone": "Gemstone",
+  "item.unicopia.gemstone.enchanted": "%s Gem",
   
   "item.unicopia.pegasus_feather": "Pegasus Feather",
   "item.unicopia.gryphon_feather": "Gryphon Feather",
@@ -95,62 +96,56 @@
   "affinity.neutral": "Neutral",
   "affinity.curse": "Corrupt",
 
-  "spell.shield": "Defense",
-  "spell.shield.tagline": "Protection I",
+  "spell.unicopia.shield": "Protective",
+  "spell.unicopia.shield.tagline": "Protection I",
 
-  "spell.awkward": "Awkwardness",
-  "spell.awkward.tagline": "*Derp*",
+  "spell.unicopia.awkward": "Unstable",
+  "spell.unicopia.awkward.tagline": "*Derp*",
 
-  "spell.portal": "Transportation",
-  "spell.portal.tagline": "Teleportation I",
+  "spell.unicopia.light": "Illumination",
+  "spell.unicopia.light.tagline": "Discovery I",
 
-  "spell.light": "Illumination",
-  "spell.light.tagline": "Discovery I",
+  "spell.unicopia.reveal": "Revealing",
+  "spell.unicopia.reveal.tagline": "Discovery II",
 
-  "spell.reveal": "Revealing",
-  "spell.reveal.tagline": "Discovery II",
+  "spell.unicopia.flame": "Burning",
+  "spell.unicopia.flame.tagline": "Fire I",
 
-  "spell.flame": "Burning",
-  "spell.flame.tagline": "Fire I",
+  "spell.unicopia.fire": "Flaming",
+  "spell.unicopia.fire.tagline": "Fire II",
 
-  "spell.fire": "Flame",
-  "spell.fire.tagline": "Fire II",
+  "spell.unicopia.vortex": "Retention",
+  "spell.unicopia.vortex.tagline": "Containment I",
 
-  "spell.vortex": "Retention",
-  "spell.vortex.tagline": "Containment I",
+  "spell.unicopia.siphon": "Siphoning",
+  "spell.unicopia.siphon.tagline": "Energy II",
 
-  "spell.charge": "Channeling",
-  "spell.charge.tagline": "Energy I",
+  "spell.unicopia.ice": "Frost",
+  "spell.unicopia.ice.tagline": "Ice I",
 
-  "spell.siphon": "Pilon",
-  "spell.siphon.tagline": "Energy II",
+  "curse.unicopia.shield": "Repulsive",
+  "curse.unicopia.shield.tagline": "Hostility I",
 
-  "spell.ice": "Frost",
-  "spell.ice.tagline": "Ice I",
+  "curse.unicopia.darkness": "Dark",
+  "curse.unicopia.darkness.tagline": "Golomancy I/Resurrection II",
 
-  "curse.shield": "Repulsion",
-  "curse.shield.tagline": "Hostility I",
+  "curse.unicopia.harm": "Harmful",
+  "curse.unicopia.harm.tagline": "Hostility II",
 
-  "curse.darkness": "Darkness",
-  "curse.darkness.tagline": "Golomancy I/Resurrection II",
+  "curse.unicopia.awkward": "Awkward",
+  "curse.unicopia.awkward.tagline": "*Derp*",
 
-  "curse.harm": "Hurting",
-  "curse.harm.tagline": "Hostility II",
+  "curse.unicopia.vortex": "Suffering",
+  "curse.unicopia.vortex.tagline": "Torture I",
 
-  "curse.awkward": "Awkwardness",
-  "curse.awkward.tagline": "*Derp*",
+  "curse.unicopia.necromancy": "Resurrection",
+  "curse.unicopia.necromancy.tagline": "Resurrection I",
 
-  "curse.vortex": "Suffering",
-  "curse.vortex.tagline": "Torture I",
+  "curse.unicopia.inferno": "Inferno",
+  "curse.unicopia.inferno.tagline": "Fire III",
 
-  "curse.necromancy": "Necromancy",
-  "curse.necromancy.tagline": "Resurrection I",
-
-  "curse.inferno": "Inferno",
-  "curse.inferno.tagline": "Fire III",
-
-  "curse.siphon": "Siphoning",
-  "curse.siphon.tagline": "Energy III",
+  "curse.unicopia.siphon": "Siphoning",
+  "curse.unicopia.siphon.tagline": "Energy III",
 
   "toxicity.safe.name": "Safe",
   "toxicity.mild.name": "Mildly Toxic",

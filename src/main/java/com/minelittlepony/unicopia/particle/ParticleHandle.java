@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.Equine;
 
 import net.fabricmc.api.EnvType;
@@ -59,13 +60,13 @@ public class ParticleHandle {
     public static final class Link {
 
         private Optional<Caster<?>> caster = Optional.empty();
-        private String effect;
+        private SpellType<?> effect;
         private boolean linked;
 
         public void attach(Caster<?> caster) {
             this.linked = true;
             this.caster = Optional.of(caster);
-            this.effect = caster.getSpell(false).getName();
+            this.effect = caster.getSpell(false).getType();
         }
 
         public void detach() {
@@ -83,7 +84,7 @@ public class ParticleHandle {
 
                 return Equine.of(e) == c
                         && c.hasSpell()
-                        && c.getSpell(false).getName().equals(effect)
+                        && c.getSpell(false).getType().equals(effect)
                         && e != null
                         && c.getWorld().getEntityById(e.getEntityId()) != null;
             });

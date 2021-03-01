@@ -1,38 +1,12 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import java.util.function.Supplier;
-
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 
 public class GenericSpell extends AbstractSpell {
 
-    private final String name;
-
-    private final int tint;
-
-    private final Affinity affinity;
-
-    static Supplier<Spell> factory(String name, int tint, Affinity affinity) {
-        return () -> new GenericSpell(name, tint, affinity);
-    }
-
-    public GenericSpell(String name, int tint, Affinity affinity) {
-        this.name = name;
-        this.tint = tint;
-        this.affinity = affinity;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public int getTint() {
-        return tint;
+    protected GenericSpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override
@@ -42,11 +16,6 @@ public class GenericSpell extends AbstractSpell {
 
     @Override
     public void render(Caster<?> source) {
-        source.spawnParticles(new MagicParticleEffect(getTint()), 1);
-    }
-
-    @Override
-    public Affinity getAffinity() {
-        return affinity;
+        source.spawnParticles(new MagicParticleEffect(getType().getColor()), 1);
     }
 }

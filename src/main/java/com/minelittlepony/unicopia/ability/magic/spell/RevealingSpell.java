@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Suppressable;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
@@ -17,14 +16,8 @@ import net.minecraft.util.math.Vec3d;
  */
 public class RevealingSpell extends AbstractSpell implements Thrown {
 
-    @Override
-    public String getName() {
-        return "reveal";
-    }
-
-    @Override
-    public int getTint() {
-        return 0x5CE81F;
+    protected RevealingSpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override
@@ -50,17 +43,11 @@ public class RevealingSpell extends AbstractSpell implements Thrown {
     public void render(Caster<?> source) {
         Shape area = new Sphere(false, 15);
 
-        MagicParticleEffect effect = new MagicParticleEffect(getTint());
+        MagicParticleEffect effect = new MagicParticleEffect(getType().getColor());
 
         source.spawnParticles(area, 5, pos -> {
             source.addParticle(effect, pos, Vec3d.ZERO);
         });
         source.spawnParticles(effect, 5);
     }
-
-    @Override
-    public Affinity getAffinity() {
-        return Affinity.GOOD;
-    }
-
 }

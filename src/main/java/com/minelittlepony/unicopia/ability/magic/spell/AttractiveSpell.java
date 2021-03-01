@@ -26,19 +26,8 @@ public class AttractiveSpell extends ShieldSpell implements Thrown {
     @Nullable
     private BlockPos homingPos;
 
-    @Override
-    public String getName() {
-        return "vortex";
-    }
-
-    @Override
-    public int getTint() {
-        return 0x4CDEE7;
-    }
-
-    @Override
-    public Affinity getAffinity() {
-        return Affinity.NEUTRAL;
+    protected AttractiveSpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override
@@ -47,7 +36,7 @@ public class AttractiveSpell extends ShieldSpell implements Thrown {
         Vec3d pos = source.getOriginVector();
 
         source.spawnParticles(new Sphere(false, range), range * 9, p -> {
-            source.addParticle(new MagicParticleEffect(getTint()), p, p.subtract(pos));
+            source.addParticle(new MagicParticleEffect(getType().getColor()), p, p.subtract(pos));
         });
     }
 

@@ -15,7 +15,7 @@ import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.ShieldSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.Living;
@@ -387,7 +387,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         Spell effect = getSpell(true);
 
         if (effect != null) {
-            compound.put("effect", SpellRegistry.toNBT(effect));
+            compound.put("effect", SpellType.toNBT(effect));
         }
     }
 
@@ -403,7 +403,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         magicExhaustion = compound.getFloat("magicExhaustion");
 
         if (compound.contains("effect")) {
-            getPrimarySpellSlot().set(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
+            getPrimarySpellSlot().set(SpellType.fromNBT(compound.getCompound("effect")));
         }
     }
 

@@ -10,10 +10,10 @@ import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.ShieldSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
+import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 
 import net.minecraft.item.ItemStack;
@@ -79,7 +79,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
             Optional<Spell> newSpell = getNewSpell(player);
 
             @Nullable
-            Spell spell = player.hasSpell() ? newSpell.orElse(null) : newSpell.orElseGet(ShieldSpell::new);
+            Spell spell = player.hasSpell() ? newSpell.orElse(null) : newSpell.orElseGet(SpellType.SHIELD::create);
 
             player.subtractEnergyCost(spell == null ? 2 : 4);
             player.setSpell(spell);
@@ -104,11 +104,11 @@ public class UnicornCastingAbility implements Ability<Hit> {
     }
 
     private Optional<Spell> getNewSpell(Pony player) {
-        final String current = player.hasSpell() ? player.getSpell(true).getName() : null;
+        final SpellType<?> current = player.hasSpell() ? player.getSpell(true).getType() : null;
         return Streams.stream(player.getMaster().getItemsHand())
-                .map(SpellRegistry::getKeyFromStack)
+                .map(GemstoneItem::getSpellKey)
                 .filter(i -> !Objects.equals(i, current))
-                .map(SpellRegistry.instance()::getSpellFromName)
+                .map(SpellType::create)
                 .filter(Objects::nonNull)
                 .findFirst();
     }

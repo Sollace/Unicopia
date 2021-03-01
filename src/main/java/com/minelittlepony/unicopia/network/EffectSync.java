@@ -6,10 +6,11 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
 
 /**
  * Synchronisation class for spell effects.
@@ -35,30 +36,6 @@ public class EffectSync {
         this.param = param;
     }
 
-    public boolean has() {
-        CompoundTag comp = owned.getEntity().getDataTracker().get(param);
-
-        if (comp == null || !comp.contains("effect_id")) {
-            if (effect != null) {
-                effect.setDead();
-                effect = null;
-            }
-        } else {
-            String id = comp.getString("effect_id");
-
-            if (effect == null || !effect.getName().contentEquals(id)) {
-                if (effect != null) {
-                    effect.setDead();
-                }
-                effect = SpellRegistry.instance().createEffectFromNBT(comp);
-            } else if (!owned.getEntity().world.isClient() && effect.isDirty()) {
-                set(effect);
-            }
-        }
-
-        return effect != null;
-    }
-
     public <T extends Spell> Optional<T> getOrEmpty(Class<T> type, boolean update) {
         T effect = get(type, update);
 
@@ -72,7 +49,7 @@ public class EffectSync {
     @SuppressWarnings("unchecked")
     public <E extends Spell> E get(Class<E> type, boolean update) {
         if (update) {
-            sync();
+            sync(true);
         }
 
         if (effect == null || type == null || type.isAssignableFrom(effect.getClass())) {
@@ -82,7 +59,12 @@ public class EffectSync {
         return null;
     }
 
-    private void sync() {
+    public boolean has() {
+        sync(false);
+        return effect != null;
+    }
+
+    private void sync(boolean force) {
         CompoundTag comp = owned.getEntity().getDataTracker().get(param);
 
         if (comp == null || !comp.contains("effect_id")) {
@@ -92,19 +74,17 @@ public class EffectSync {
             }
             return;
         } else {
-            String id = comp.getString("effect_id");
-
-            if (effect == null || !effect.getName().contentEquals(id)) {
+            if (effect == null || !effect.getType().getId().equals(new Identifier(comp.getString("effect_id")))) {
                 if (effect != null) {
                     effect.setDead();
                 }
-                effect = SpellRegistry.instance().createEffectFromNBT(comp);
+                effect = SpellType.fromNBT(comp);
             } else if (owned.getEntity().world.isClient()) {
                 if (lastValue != comp || !(comp == null || comp.equals(lastValue))) {
                     lastValue = comp;
                     effect.fromNBT(comp);
                 }
-            } else if (effect.isDirty()) {
+            } else if ((force || !owned.getEntity().world.isClient()) && effect.isDirty()) {
                 set(effect);
             }
         }
@@ -119,7 +99,7 @@ public class EffectSync {
         if (effect == null) {
             owned.getEntity().getDataTracker().set(param, new CompoundTag());
         } else {
-            owned.getEntity().getDataTracker().set(param, SpellRegistry.toNBT(effect));
+            owned.getEntity().getDataTracker().set(param, SpellType.toNBT(effect));
         }
     }
 }

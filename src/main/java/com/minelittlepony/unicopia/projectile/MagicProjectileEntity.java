@@ -6,7 +6,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.Magical;
 import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.item.UItems;
@@ -220,7 +220,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
         super.readCustomDataFromTag(compound);
         physics.fromNBT(compound);
         if (compound.contains("effect")) {
-            setSpell(SpellRegistry.instance().createEffectFromNBT(compound.getCompound("effect")));
+            setSpell(SpellType.fromNBT(compound.getCompound("effect")));
         }
     }
 
@@ -230,7 +230,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
         physics.toNBT(compound);
 
         if (hasSpell()) {
-            compound.put("effect", SpellRegistry.toNBT(getSpell(true)));
+            compound.put("effect", SpellType.toNBT(getSpell(true)));
         }
     }
 

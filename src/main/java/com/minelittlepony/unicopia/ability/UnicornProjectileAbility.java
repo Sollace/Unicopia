@@ -6,9 +6,9 @@ import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
-import com.minelittlepony.unicopia.ability.magic.spell.AttractiveSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellRegistry;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 
 import net.minecraft.util.Identifier;
@@ -61,12 +61,13 @@ public class UnicornProjectileAbility implements Ability<Hit> {
     @Override
     public void apply(Pony player, Hit data) {
         player.subtractEnergyCost(getCostEstimate(player));
-        getThrown(player).orElseGet(AttractiveSpell::new).toss(player);
+        getThrown(player).orElseGet(SpellType.VORTEX::create).toss(player);
     }
 
     private Optional<Thrown> getThrown(Pony player) {
         return Streams.stream(player.getMaster().getItemsHand())
-                .map(SpellRegistry.instance()::getSpellFrom)
+                .map(GemstoneItem::getSpellKey)
+                .map(SpellType::create)
                 .filter(i -> i != null && i instanceof Thrown)
                 .map(Thrown.class::cast)
                 .findFirst();
