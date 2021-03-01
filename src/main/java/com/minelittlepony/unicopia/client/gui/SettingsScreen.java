@@ -19,7 +19,7 @@ import com.minelittlepony.unicopia.Config;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.WorldTribeManager;
-import com.minelittlepony.unicopia.client.MineLPConnector;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;

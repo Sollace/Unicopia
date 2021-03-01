@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.client;
+package com.minelittlepony.unicopia.client.minelittlepony;
 
 import com.minelittlepony.client.MineLittlePony;
 import com.minelittlepony.unicopia.Race;

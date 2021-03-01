@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.SettingsScreen;
 import com.minelittlepony.unicopia.client.gui.UHud;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
 import com.minelittlepony.unicopia.entity.player.PlayerCamera;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.fabricmc.api.ClientModInitializer;
