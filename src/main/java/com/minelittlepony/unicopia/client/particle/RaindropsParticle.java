@@ -11,6 +11,7 @@ public class RaindropsParticle extends RainSplashParticle {
         super(world, x, y, z);
         velocityY = -0.1;
         maxAge += 19;
+        setSprite(provider);
     }
 
     @Override
