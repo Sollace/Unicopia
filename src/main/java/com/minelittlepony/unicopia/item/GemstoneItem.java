@@ -1,13 +1,19 @@
 package com.minelittlepony.unicopia.item;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -40,8 +46,8 @@ public class GemstoneItem extends Item {
     }
 
     @Override
-    public String getTranslationKey(ItemStack stack) {
-        return getTranslationKey();
+    public boolean hasGlint(ItemStack stack) {
+        return super.hasGlint(stack) || (Unicopia.SIDE.getPlayerSpecies().canCast() && isEnchanted(stack));
     }
 
     @Override
@@ -50,6 +56,30 @@ public class GemstoneItem extends Item {
             return new TranslatableText(getTranslationKey(stack) + ".enchanted", getSpellKey(stack).getName());
         }
         return super.getName();
+    }
+
+    public static Stream<Spell> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable SpellType<?> exclude, Predicate<Spell> test) {
+        SpellType<Spell> key = GemstoneItem.getSpellKey(stack);
+
+        if (key == null  || Objects.equals(key, exclude)) {
+            return Stream.empty();
+        }
+
+        Spell spell = key.create();
+
+        if (spell == null || !test.test(spell)) {
+            return Stream.empty();
+        }
+
+        if (!player.world.isClient) {
+            if (stack.getCount() == 1) {
+                GemstoneItem.unenchanted(stack);
+            } else {
+                player.giveItemStack(GemstoneItem.unenchanted(stack.split(1)));
+            }
+        }
+
+        return Stream.of(spell);
     }
 
     public static boolean isEnchanted(ItemStack stack) {
@@ -61,7 +91,7 @@ public class GemstoneItem extends Item {
         return stack;
     }
 
-    public ItemStack unenchanted(ItemStack stack) {
+    public static ItemStack unenchanted(ItemStack stack) {
         if (isEnchanted(stack)) {
             stack.getTag().remove("spell");
 

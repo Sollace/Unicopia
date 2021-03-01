@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
@@ -9,6 +8,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -48,7 +48,6 @@ public class UnicornCastingAbility implements Ability<Hit> {
     @Override
     @Nullable
     public Hit tryActivate(Pony player) {
-        System.out.println(getCostEstimate(player) + " " + player.getMagicalReserves().getMana().get());
         return getCostEstimate(player) <= player.getMagicalReserves().getMana().get() ? Hit.INSTANCE : null;
     }
 
@@ -106,10 +105,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
     private Optional<Spell> getNewSpell(Pony player) {
         final SpellType<?> current = player.hasSpell() ? player.getSpell(true).getType() : null;
         return Streams.stream(player.getMaster().getItemsHand())
-                .map(GemstoneItem::getSpellKey)
-                .filter(i -> !Objects.equals(i, current))
-                .map(SpellType::create)
-                .filter(Objects::nonNull)
+                .flatMap(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), current, i -> i instanceof Attached))
                 .findFirst();
     }
 

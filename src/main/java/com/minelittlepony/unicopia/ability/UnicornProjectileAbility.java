@@ -66,9 +66,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
 
     private Optional<Thrown> getThrown(Pony player) {
         return Streams.stream(player.getMaster().getItemsHand())
-                .map(GemstoneItem::getSpellKey)
-                .map(SpellType::create)
-                .filter(i -> i != null && i instanceof Thrown)
+                .flatMap(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), null, i -> i instanceof Thrown))
                 .map(Thrown.class::cast)
                 .findFirst();
     }

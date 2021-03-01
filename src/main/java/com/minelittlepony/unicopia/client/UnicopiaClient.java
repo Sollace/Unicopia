@@ -58,6 +58,8 @@ public class UnicopiaClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
         ScreenInitCallback.EVENT.register(this::onScreenInit);
         ItemTooltipCallback.EVENT.register(new ModifierTooltipRenderer());
+
+        Unicopia.SIDE = () -> Optional.ofNullable(MinecraftClient.getInstance().player).map(Pony::of);
     }
 
     private void onTick(MinecraftClient client) {
