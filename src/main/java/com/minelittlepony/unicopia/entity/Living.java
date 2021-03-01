@@ -44,7 +44,11 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public void waitForFall(Runnable action) {
-        landEvent = action;
+        if (entity.isOnGround()) {
+            action.run();
+        } else {
+            landEvent = action;
+        }
     }
 
     public boolean sneakingChanged() {
@@ -93,10 +97,15 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             invinsibilityTicks--;
         }
 
-        prevSneaking = entity.isSneaking();
-        prevLanded = entity.isOnGround();
+        if (landEvent != null && entity.isOnGround() && landedChanged()) {
+            landEvent.run();
+            landEvent = null;
+        }
 
         enchants.tick();
+
+        prevSneaking = entity.isSneaking();
+        prevLanded = entity.isOnGround();
     }
 
     @Override
@@ -148,10 +157,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     protected void handleFall(float distance, float damageMultiplier) {
-        if (landEvent != null) {
-            landEvent.run();
-            landEvent = null;
-        }
         getSpellOrEmpty(DisguiseSpell.class, false).ifPresent(spell -> {
             spell.getDisguise().onImpact(this, distance, damageMultiplier);
         });
