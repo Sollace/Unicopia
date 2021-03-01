@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.util.shape.Shape;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
@@ -26,10 +27,9 @@ public interface PosHelper {
         return a.add(b.getX(), b.getY(), b.getZ());
     }
 
-    static BlockPos findSolidGroundAt(World world, BlockPos pos) {
-        while ((pos.getY() > 0 || !World.isInBuildLimit(pos))
-                && (world.isAir(pos) || !world.getBlockState(pos).canPlaceAt(world, pos))) {
-            pos = pos.down();
+    static BlockPos findSolidGroundAt(World world, BlockPos pos, int signum) {
+        while (World.isInBuildLimit(pos) && (world.isAir(pos) || !world.getBlockState(pos).canPlaceAt(world, pos))) {
+            pos = pos.offset(Axis.Y, -signum);
         }
 
         return pos;

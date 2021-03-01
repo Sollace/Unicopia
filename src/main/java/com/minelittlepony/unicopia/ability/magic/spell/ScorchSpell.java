@@ -30,7 +30,7 @@ public class ScorchSpell extends FireSpell {
     @Override
     public boolean update(Caster<?> source) {
 
-        BlockPos pos = PosHelper.findSolidGroundAt(source.getWorld(), source.getOrigin());
+        BlockPos pos = PosHelper.findSolidGroundAt(source.getWorld(), source.getOrigin(), source.getPhysics().getGravitySignum());
 
         BlockState state = source.getWorld().getBlockState(pos);
 

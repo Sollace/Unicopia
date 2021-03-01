@@ -58,8 +58,8 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     @Nullable
     @Override
     public Hit tryActivate(Pony player) {
-        if (!player.getMaster().isOnGround() && !player.getMaster().abilities.flying) {
-            thrustDownwards(player.getMaster());
+        if (!player.getMaster().isOnGround() && player.getMaster().getVelocity().y * player.getPhysics().getGravitySignum() < 0 && !player.getMaster().abilities.flying) {
+            thrustDownwards(player);
             return Hit.INSTANCE;
         }
 
@@ -71,22 +71,22 @@ public class EarthPonyStompAbility implements Ability<Hit> {
         return Hit.SERIALIZER;
     }
 
-    private void thrustDownwards(PlayerEntity player) {
-        BlockPos ppos = player.getBlockPos();
-        BlockPos pos = PosHelper.findSolidGroundAt(player.getEntityWorld(), ppos);
+    private void thrustDownwards(Pony player) {
+        BlockPos ppos = player.getOrigin();
+        BlockPos pos = PosHelper.findSolidGroundAt(player.getWorld(), ppos, player.getPhysics().getGravitySignum());
 
-        double downV = Math.sqrt(ppos.getSquaredDistance(pos));
-        player.addVelocity(0, -downV, 0);
+        double downV = Math.sqrt(ppos.getSquaredDistance(pos)) * player.getPhysics().getGravitySignum();
+        player.getMaster().addVelocity(0, -downV, 0);
     }
 
     @Override
     public void apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.getMaster();
 
-        thrustDownwards(player);
+        thrustDownwards(iplayer);
 
         iplayer.waitForFall(() -> {
-            BlockPos center = PosHelper.findSolidGroundAt(player.getEntityWorld(), player.getBlockPos());
+            BlockPos center = PosHelper.findSolidGroundAt(player.getEntityWorld(), player.getBlockPos(), iplayer.getPhysics().getGravitySignum());
 
             float heavyness = 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, player);
 
@@ -101,7 +101,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                     }
                     inertia /= heavyness;
 
-                    double liftAmount = Math.sin(Math.PI * dist / rad) * 12;
+                    double liftAmount = Math.sin(Math.PI * dist / rad) * 12 * iplayer.getPhysics().getGravitySignum();
 
                     i.addVelocity(
                             -(player.getX() - i.getX()) / inertia,
