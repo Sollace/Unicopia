@@ -6,8 +6,6 @@ import java.util.List;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.util.shape.Sphere;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
@@ -36,15 +34,11 @@ public class AwkwardSpell extends AbstractSpell implements Thrown {
 
             int index = (int)MathHelper.nextDouble(source.getWorld().random, 0, names.size());
 
-            @SuppressWarnings("unchecked")
-            ParticleType<ParticleEffect> type = (ParticleType<ParticleEffect>)Registry.PARTICLE_TYPE.get(names.get(index));
+            Identifier id = names.get(index);
+            ParticleType<?> type = Registry.PARTICLE_TYPE.get(id);
 
-            if (shouldSpawnParticle(type)) {
-                try {
-                    source.addParticle(type.getParametersFactory().read(type, new StringReader("0 0 0")), pos, Vec3d.ZERO);
-                } catch (CommandSyntaxException e) {
-                    e.printStackTrace();
-                }
+            if (type instanceof ParticleEffect && shouldSpawnParticle(type)) {
+                source.addParticle((ParticleEffect)type, pos, Vec3d.ZERO);
             }
         });
     }

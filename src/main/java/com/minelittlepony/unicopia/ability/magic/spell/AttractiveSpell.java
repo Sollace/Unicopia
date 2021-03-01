@@ -59,7 +59,7 @@ public class AttractiveSpell extends ShieldSpell implements Thrown {
     protected void applyRadialEffect(Caster<?> source, Entity target, double distance, double radius) {
         Vec3d pos = homingPos == null ? source.getOriginVector() : Vec3d.of(homingPos);
 
-        double force = 2.5F / distance;
+        double force = 2.5F * distance;
 
         if (source.getAffinity() != Affinity.BAD && target instanceof PlayerEntity) {
             force *= calculateAdjustedForce(Pony.of((PlayerEntity)target));
