@@ -22,7 +22,7 @@ public class ScorchSpell extends FireSpell {
     }
 
     @Override
-    public boolean update(Caster<?> source) {
+    public boolean onThrownTick(Caster<?> source) {
 
         BlockPos pos = PosHelper.findSolidGroundAt(source.getWorld(), source.getOrigin(), source.getPhysics().getGravitySignum());
 
@@ -41,7 +41,7 @@ public class ScorchSpell extends FireSpell {
     }
 
     @Override
-    public void render(Caster<?> source) {
+    protected void generateParticles(Caster<?> source) {
         source.addParticle(ParticleTypes.END_ROD, source.getOriginVector(), Vec3d.ZERO);
         source.spawnParticles(ParticleTypes.FLAME, 3);
         source.spawnParticles(new MagicParticleEffect(getType().getColor()), 3);

@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.block.state.StateMaps;
@@ -24,7 +25,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class IceSpell extends AbstractRangedAreaSpell implements Thrown {
+public class IceSpell extends AbstractSpell implements Thrown, Attached {
 
     private final int rad = 3;
     private final Shape effect_range = new Sphere(false, rad);
@@ -34,17 +35,18 @@ public class IceSpell extends AbstractRangedAreaSpell implements Thrown {
     }
 
     @Override
-    public boolean update(Caster<?> source) {
+    public boolean onBodyTick(Caster<?> source) {
+        return onThrownTick(source);
+    }
+
+    @Override
+    public boolean onThrownTick(Caster<?> source) {
         LivingEntity owner = source.getMaster();
 
         PosHelper.getAllInRegionMutable(source.getOrigin(), effect_range)
             .forEach(i -> applyBlockSingle(owner, source.getWorld(), i));
 
         return applyEntities(source.getMaster(), source.getWorld(), source.getOriginVector());
-    }
-
-    @Override
-    public void render(Caster<?> source) {
     }
 
     protected boolean applyEntities(LivingEntity owner, World world, Vec3d pos) {
@@ -85,13 +87,13 @@ public class IceSpell extends AbstractRangedAreaSpell implements Thrown {
         world.addParticle(ParticleTypes.SPLASH, pos.getX() + world.random.nextFloat(), pos.getY() + 1, pos.getZ() + world.random.nextFloat(), 0, 0, 0);
     }
 
-    public static boolean isSurroundedByIce(World w, BlockPos pos) {
+    private static boolean isSurroundedByIce(World w, BlockPos pos) {
         return !PosHelper.adjacentNeighbours(pos).anyMatch(i ->
             w.getBlockState(i).getMaterial() == Material.ICE
         );
     }
 
-    private void incrementIce(World world, BlockPos pos) {
+    private static void incrementIce(World world, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
         Block id = state.getBlock();
 

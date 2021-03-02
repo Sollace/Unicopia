@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
@@ -33,7 +34,7 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
-public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
+public class ShieldSpell extends AbstractSpell implements Attached, Thrown {
 
     private final ParticleHandle particlEffect = new ParticleHandle();
 
@@ -49,8 +50,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
         particlEffect.destroy();
     }
 
-    @Override
-    public void render(Caster<?> source) {
+    protected void generateParticles(Caster<?> source) {
         float radius = (float)getDrawDropOffRange(source);
 
         source.spawnParticles(new Sphere(true, radius), (int)(radius * 6), pos -> {
@@ -67,7 +67,21 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
     }
 
     @Override
-    public boolean updateOnPerson(Caster<?> source) {
+    public boolean onThrownTick(Caster<?> source) {
+        if (source.isClient()) {
+            generateParticles(source);
+        }
+
+        applyEntities(source);
+        return true;
+    }
+
+    @Override
+    public boolean onBodyTick(Caster<?> source) {
+        if (source.isClient()) {
+            generateParticles(source);
+        }
+
         long costMultiplier = applyEntities(source);
         if (costMultiplier > 0) {
             double cost = 2 + source.getLevel().get();
@@ -89,12 +103,6 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
     public double getDrawDropOffRange(Caster<?> source) {
         float multiplier = source.getMaster().isSneaking() ? 1 : 2;
         return (4 + (source.getLevel().get() * 2)) / multiplier;
-    }
-
-    @Override
-    public boolean update(Caster<?> source) {
-        applyEntities(source);
-        return true;
     }
 
     protected List<Entity> getTargets(Caster<?> source, double radius) {

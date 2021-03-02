@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import java.util.function.BiFunction;
+
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 

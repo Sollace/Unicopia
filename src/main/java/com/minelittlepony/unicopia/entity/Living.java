@@ -83,11 +83,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             Attached effect = getSpell(Attached.class, true);
 
             if (effect != null) {
-                if (entity.getEntityWorld().isClient()) {
-                    effect.renderOnPerson(this);
-                }
-
-                if (!effect.updateOnPerson(this)) {
+                if (!effect.onBodyTick(this)) {
                     setSpell(null);
                 }
             }

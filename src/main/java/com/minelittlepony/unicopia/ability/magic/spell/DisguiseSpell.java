@@ -78,17 +78,21 @@ public class DisguiseSpell extends AbstractSpell implements Attached, Suppressab
     }
 
     @Override
-    public boolean updateOnPerson(Caster<?> caster) {
-        return update(caster);
-    }
-
-    @Override
-    public boolean update(Caster<?> source) {
+    public boolean onBodyTick(Caster<?> source) {
         return update(source, true);
     }
 
     @SuppressWarnings("unchecked")
     public boolean update(Caster<?> source, boolean tick) {
+        if (source.isClient()) {
+            if (isSuppressed()) {
+                source.spawnParticles(MagicParticleEffect.UNICORN, 5);
+                source.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
+            } else if (source.getWorld().random.nextInt(30) == 0) {
+                source.spawnParticles(UParticles.CHANGELING_MAGIC, 2);
+            }
+        }
+
         LivingEntity owner = source.getMaster();
 
         Entity entity = disguise.getAppearance();
@@ -166,16 +170,6 @@ public class DisguiseSpell extends AbstractSpell implements Attached, Suppressab
     public void setDead() {
         super.setDead();
         disguise.remove();
-    }
-
-    @Override
-    public void render(Caster<?> source) {
-        if (isSuppressed()) {
-            source.spawnParticles(MagicParticleEffect.UNICORN, 5);
-            source.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
-        } else if (source.getWorld().random.nextInt(30) == 0) {
-            source.spawnParticles(UParticles.CHANGELING_MAGIC, 2);
-        }
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.Magical;
 import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.Physics;
@@ -162,16 +163,12 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
                 lastBlockPos = getBlockPos();
             }
 
-            Spell spell = getSpell(true);
+            Thrown spell = getSpell(Thrown.class, true);
 
             if (spell.isDead()) {
                 remove();
             } else {
-                spell.update(this);
-
-                if (world.isClient()) {
-                    spell.render(this);
-                }
+                spell.onThrownTick(this);
             }
         }
 

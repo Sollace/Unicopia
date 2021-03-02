@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.minelittlepony.common.util.animation.MotionCompositor;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+
 import net.minecraft.util.math.Vec3d;
 
 public class PlayerCamera extends MotionCompositor {

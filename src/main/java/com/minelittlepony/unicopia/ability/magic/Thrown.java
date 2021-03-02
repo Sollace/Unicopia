@@ -22,10 +22,18 @@ import net.minecraft.world.World;
  */
 public interface Thrown extends Spell, ProjectileDelegate {
 
+    /**
+     * Called every tick when attached to an entity.
+     * Called on both sides.
+     *
+     * @param source   The entity we are currently attached to.
+     */
+    boolean onThrownTick(Caster<?> source);
+
     @Override
     default void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
         if (!projectile.isClient()) {
-            update(projectile);
+            onThrownTick(projectile);
         }
     }
 

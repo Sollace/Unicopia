@@ -23,25 +23,24 @@ public class AwkwardSpell extends AbstractSpell implements Thrown {
     }
 
     @Override
-    public boolean update(Caster<?> source) {
+    public boolean onThrownTick(Caster<?> source) {
+        if (source.isClient()) {
+            source.spawnParticles(new Sphere(false, (1 + source.getLevel().get()) * 8), 10, pos -> {
+
+                List<Identifier> names = new ArrayList<>(Registry.PARTICLE_TYPE.getIds());
+
+                int index = (int)MathHelper.nextDouble(source.getWorld().random, 0, names.size());
+
+                Identifier id = names.get(index);
+                ParticleType<?> type = Registry.PARTICLE_TYPE.get(id);
+
+                if (type instanceof ParticleEffect && shouldSpawnParticle(type)) {
+                    source.addParticle((ParticleEffect)type, pos, Vec3d.ZERO);
+                }
+            });
+        }
+
         return true;
-    }
-
-    @Override
-    public void render(Caster<?> source) {
-        source.spawnParticles(new Sphere(false, (1 + source.getLevel().get()) * 8), 10, pos -> {
-
-            List<Identifier> names = new ArrayList<>(Registry.PARTICLE_TYPE.getIds());
-
-            int index = (int)MathHelper.nextDouble(source.getWorld().random, 0, names.size());
-
-            Identifier id = names.get(index);
-            ParticleType<?> type = Registry.PARTICLE_TYPE.get(id);
-
-            if (type instanceof ParticleEffect && shouldSpawnParticle(type)) {
-                source.addParticle((ParticleEffect)type, pos, Vec3d.ZERO);
-            }
-        });
     }
 
     protected boolean shouldSpawnParticle(ParticleType<?> type) {

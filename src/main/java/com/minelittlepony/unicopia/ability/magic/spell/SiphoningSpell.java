@@ -5,8 +5,8 @@ import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -21,16 +21,30 @@ import net.minecraft.util.math.Vec3d;
 /**
  * A spell that pulls health from other entities and delivers it to the caster.
  */
-public class SiphoningSpell extends AbstractRangedAreaSpell implements Thrown {
+public class SiphoningSpell extends AbstractSpell implements Attached {
 
     protected SiphoningSpell(SpellType<?> type, Affinity affinity) {
         super(type, affinity);
     }
 
     @Override
-    public boolean update(Caster<?> source) {
-
+    public boolean onBodyTick(Caster<?> source) {
         int radius = 4 + source.getLevel().get();
+
+        if (source.isClient()) {
+            Vec3d origin = source.getOriginVector();
+            int direction = !isEnemy(source) ? 1 : -1;
+
+            source.spawnParticles(new Sphere(true, radius, 1, 0, 1), 1, pos -> {
+                if (!source.getWorld().isAir(new BlockPos(pos).down())) {
+
+                    double dist = pos.distanceTo(origin);
+                    Vec3d velocity = pos.subtract(origin).normalize().multiply(direction * dist);
+
+                    source.addParticle(direction == 1 ? ParticleTypes.HEART : ParticleTypes.ANGRY_VILLAGER, pos, velocity);
+                }
+            });
+        }
 
         LivingEntity owner = source.getMaster();
 
@@ -39,7 +53,7 @@ public class SiphoningSpell extends AbstractRangedAreaSpell implements Thrown {
                 .map(e -> (LivingEntity)e)
                 .collect(Collectors.toList());
 
-        DamageSource damage = damageSource(owner);
+        DamageSource damage = MagicalDamageSource.create("drain", owner);
 
         if (!isFriendlyTogether(source)) {
             if (owner != null) {
@@ -93,31 +107,5 @@ public class SiphoningSpell extends AbstractRangedAreaSpell implements Thrown {
         }
 
         return false;
-    }
-
-    protected DamageSource damageSource(LivingEntity actor) {
-        if (actor == null) {
-            return MagicalDamageSource.create("drain");
-        }
-
-        return MagicalDamageSource.create("drain", actor);
-    }
-
-    @Override
-    public void render(Caster<?> source) {
-        int radius = 4 + source.getLevel().get();
-
-        Vec3d origin = source.getOriginVector();
-        int direction = !isEnemy(source) ? 1 : -1;
-
-        source.spawnParticles(new Sphere(true, radius, 1, 0, 1), 1, pos -> {
-            if (!source.getWorld().isAir(new BlockPos(pos).down())) {
-
-                double dist = pos.distanceTo(origin);
-                Vec3d velocity = pos.subtract(origin).normalize().multiply(direction * dist);
-
-                source.addParticle(direction == 1 ? ParticleTypes.HEART : ParticleTypes.ANGRY_VILLAGER, pos, velocity);
-            }
-        });
     }
 }

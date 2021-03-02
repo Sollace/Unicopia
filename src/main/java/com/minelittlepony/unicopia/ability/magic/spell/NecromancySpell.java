@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.util.WorldEvent;
 import com.minelittlepony.unicopia.util.shape.Shape;
@@ -18,7 +19,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 
-public class NecromancySpell extends AbstractRangedAreaSpell {
+public class NecromancySpell extends AbstractSpell implements Attached {
 
     private final List<EntityType<? extends LivingEntity>> spawns = Lists.newArrayList(
             EntityType.ZOMBIE,
@@ -31,15 +32,27 @@ public class NecromancySpell extends AbstractRangedAreaSpell {
     }
 
     @Override
-    public boolean update(Caster<?> source) {
+    public boolean onBodyTick(Caster<?> source) {
 
-        if (source.getWorld().isClient || source.getWorld().getDifficulty() == Difficulty.PEACEFUL) {
+        int radius = source.getLevel().get() + 1;
+
+        if (source.isClient()) {
+            Shape affectRegion = new Sphere(false, radius * 4);
+
+            source.spawnParticles(affectRegion, 5, pos -> {
+                if (!source.getWorld().isAir(new BlockPos(pos).down())) {
+                    source.addParticle(ParticleTypes.FLAME, pos, Vec3d.ZERO);
+                }
+            });
+
+            return true;
+        }
+
+        if (source.getWorld().getDifficulty() == Difficulty.PEACEFUL) {
             return true;
         }
 
         float additional = source.getWorld().getLocalDifficulty(source.getOrigin()).getLocalDifficulty();
-
-        int radius = source.getLevel().get() + 1;
 
         Shape affectRegion = new Sphere(false, radius * 4);
 
@@ -79,16 +92,5 @@ public class NecromancySpell extends AbstractRangedAreaSpell {
         source.getWorld().syncWorldEvent(WorldEvent.ZOMBIE_BREAK_WOODEN_DOOR, zombie.getBlockPos(), 0);
 
         source.getWorld().spawnEntity(zombie);
-    }
-
-    @Override
-    public void render(Caster<?> source) {
-        Shape affectRegion = new Sphere(false, (1 + source.getLevel().get()) * 4);
-
-        source.spawnParticles(affectRegion, 5, pos -> {
-            if (!source.getWorld().isAir(new BlockPos(pos).down())) {
-                source.addParticle(ParticleTypes.FLAME, pos, Vec3d.ZERO);
-            }
-        });
     }
 }

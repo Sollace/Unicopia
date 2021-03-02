@@ -31,7 +31,7 @@ public class AttractiveSpell extends ShieldSpell implements Thrown {
     }
 
     @Override
-    public void render(Caster<?> source) {
+    public void generateParticles(Caster<?> source) {
         int range = 4 + (source.getLevel().get() * 2);
         Vec3d pos = source.getOriginVector();
 

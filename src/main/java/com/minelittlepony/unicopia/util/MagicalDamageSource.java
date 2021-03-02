@@ -36,7 +36,7 @@ public class MagicalDamageSource extends EntityDamageSource {
         this(type, null, direct, unblockable);
     }
 
-    protected MagicalDamageSource(String type, Entity source, boolean direct, boolean unblockable) {
+    protected MagicalDamageSource(String type, @Nullable Entity source, boolean direct, boolean unblockable) {
         super(type, source);
         setUsesMagic();
         if (direct) {

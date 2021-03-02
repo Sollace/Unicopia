@@ -36,19 +36,6 @@ public interface Spell extends NbtSerialisable, Affine {
     void setDirty(boolean dirty);
 
     /**
-     * Gets the highest level this spell can be safely operated at.
-     * Gems may go higher, however chance of explosion/exhaustion increases with every level.
-     */
-    int getMaxLevelCutOff(Caster<?> caster);
-
-    float getMaxExhaustion(Caster<?> caster);
-
-    /**
-     * Gets the chances of this effect turning into an innert gem or exploding.
-     */
-    float getExhaustion(Caster<?> caster);
-
-    /**
      * Called when first attached to a gem.
      */
     default void onPlaced(Caster<?> caster) {
@@ -63,29 +50,6 @@ public interface Spell extends NbtSerialisable, Affine {
     }
 
     default boolean handleProjectileImpact(ProjectileEntity projectile) {
-        return false;
-    }
-
-    /**
-     * Called every tick when attached to an entity.
-     * Called on both sides.
-     *
-     * @param source   The entity we are currently attached to.
-     */
-    boolean update(Caster<?> source);
-
-    /**
-     * Called every tick when attached to an entity to produce particle effects.
-     * Is only called on the client side.
-     *
-     * @param source    The entity we are attached to.
-     */
-    void render(Caster<?> source);
-
-    /**
-     * Return true to allow the gem update and move.
-     */
-    default boolean allowAI() {
         return false;
     }
 

@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Magical;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
@@ -35,7 +36,7 @@ import net.minecraft.world.explosion.Explosion.DestructionType;
 /**
  * Simple fire spell that triggers an effect when used on a block.
  */
-public class FireSpell extends AbstractRangedAreaSpell implements Thrown {
+public class FireSpell extends AbstractSpell implements Thrown, Attached {
 
     private static final Shape VISUAL_EFFECT_RANGE = new Sphere(false, 0.5);
     private static final Shape EFFECT_RANGE = new Sphere(false, 4);
@@ -52,15 +53,23 @@ public class FireSpell extends AbstractRangedAreaSpell implements Thrown {
     }
 
     @Override
-    public boolean update(Caster<?> source) {
+    public boolean onBodyTick(Caster<?> source) {
+        return onThrownTick(source);
+    }
+
+    @Override
+    public boolean onThrownTick(Caster<?> source) {
+        if (source.isClient()) {
+            generateParticles(source);
+        }
+
         return PosHelper.getAllInRegionMutable(source.getOrigin(), EFFECT_RANGE).reduce(false,
                 (r, i) -> applyBlocks(source.getWorld(), i),
                 (a, b) -> a || b)
                 || applyEntities(null, source.getWorld(), source.getOriginVector());
     }
 
-    @Override
-    public void render(Caster<?> source) {
+    protected void generateParticles(Caster<?> source) {
         source.spawnParticles(VISUAL_EFFECT_RANGE, source.getLevel().get() * 6, pos -> {
             source.addParticle(ParticleTypes.LARGE_SMOKE, pos, Vec3d.ZERO);
         });

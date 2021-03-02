@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Suppressable;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
@@ -15,7 +16,7 @@ import net.minecraft.util.math.Vec3d;
 /**
  * A spell for revealing changelings.
  */
-public class RevealingSpell extends AbstractSpell implements Thrown {
+public class RevealingSpell extends AbstractSpell implements Attached, Thrown {
     private static final Shape AREA = new Sphere(false, 15);
 
     protected RevealingSpell(SpellType<?> type, Affinity affinity) {
@@ -28,7 +29,22 @@ public class RevealingSpell extends AbstractSpell implements Thrown {
     }
 
     @Override
-    public boolean update(Caster<?> source) {
+    public boolean onBodyTick(Caster<?> source) {
+        return onThrownTick(source);
+    }
+
+    @Override
+    public boolean onThrownTick(Caster<?> source) {
+
+        if (source.isClient()) {
+            MagicParticleEffect effect = new MagicParticleEffect(getType().getColor());
+
+            source.spawnParticles(AREA, 5, pos -> {
+                source.addParticle(effect, pos, Vec3d.ZERO);
+            });
+            source.spawnParticles(effect, 5);
+        }
+
         source.findAllSpellsInRange(15).forEach(e -> {
             Suppressable spell = e.getSpell(Suppressable.class, false);
 
@@ -39,15 +55,5 @@ public class RevealingSpell extends AbstractSpell implements Thrown {
         });
 
         return true;
-    }
-
-    @Override
-    public void render(Caster<?> source) {
-        MagicParticleEffect effect = new MagicParticleEffect(getType().getColor());
-
-        source.spawnParticles(AREA, 5, pos -> {
-            source.addParticle(effect, pos, Vec3d.ZERO);
-        });
-        source.spawnParticles(effect, 5);
     }
 }

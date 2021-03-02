@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
@@ -21,7 +21,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 
-public class JoustingSpell extends AbstractRangedAreaSpell implements Thrown {
+public class JoustingSpell extends AbstractSpell implements Attached {
 
     private final int rad = 5;
     private final Shape effect_range = new Sphere(false, rad);
@@ -41,7 +41,14 @@ public class JoustingSpell extends AbstractRangedAreaSpell implements Thrown {
     }
 
     @Override
-    public boolean update(Caster<?> source) {
+    public boolean onBodyTick(Caster<?> source) {
+        if (source.isClient()) {
+            particlEffect.ifAbsent(source, spawner -> {
+                spawner.addParticle(UParticles.RAINBOOM_TRAIL, source.getOriginVector(), Vec3d.ZERO);
+                spawner.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, source.getPhysics().getMotionAngle()), source.getOriginVector(), Vec3d.ZERO);
+            }).ifPresent(p -> p.attach(source));
+        }
+
         LivingEntity owner = source.getMaster();
 
         source.findAllEntitiesInRange(rad).forEach(e -> {
@@ -76,14 +83,6 @@ public class JoustingSpell extends AbstractRangedAreaSpell implements Thrown {
         }
 
         return entity.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
-    }
-
-    @Override
-    public void render(Caster<?> source) {
-        particlEffect.ifAbsent(source, spawner -> {
-            spawner.addParticle(UParticles.RAINBOOM_TRAIL, source.getOriginVector(), Vec3d.ZERO);
-            spawner.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, source.getPhysics().getMotionAngle()), source.getOriginVector(), Vec3d.ZERO);
-        }).ifPresent(p -> p.attach(source));
     }
 
     @Override

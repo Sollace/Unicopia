@@ -22,7 +22,7 @@ public class InfernoSpell extends FireSpell {
     }
 
     @Override
-    public boolean update(Caster<?> source) {
+    public boolean onThrownTick(Caster<?> source) {
         World w = source.getWorld();
 
         if (!w.isClient) {
