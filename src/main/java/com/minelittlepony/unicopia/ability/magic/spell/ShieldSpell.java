@@ -39,8 +39,8 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
 
     private final Map<UUID, Target> targets = new TreeMap<>();
 
-    protected ShieldSpell(SpellType<?> type) {
-        super(type);
+    protected ShieldSpell(SpellType<?> type, Affinity affinity) {
+        super(type, affinity);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
 
         Entity owner = source.getMaster();
 
-        boolean ownerIsValid = source.getAffinity() != Affinity.BAD && (EquinePredicates.PLAYER_UNICORN.test(owner) && owner.isSneaking());
+        boolean ownerIsValid = isFriendlyTogether(source) && (EquinePredicates.PLAYER_UNICORN.test(owner) && owner.isSneaking());
 
         return source.findAllEntitiesInRange(radius)
             .filter(entity -> {
@@ -157,7 +157,7 @@ public class ShieldSpell extends AbstractRangedAreaSpell implements Attached {
         } else if (target instanceof LivingEntity) {
             double force = Math.max(0.1, radius / 4);
 
-            if (source.getAffinity() != Affinity.BAD && target instanceof PlayerEntity) {
+            if (isFriendlyTogether(source) && target instanceof PlayerEntity) {
                 force *= calculateAdjustedForce(Pony.of((PlayerEntity)target));
             } else {
                 force *= 0.75;

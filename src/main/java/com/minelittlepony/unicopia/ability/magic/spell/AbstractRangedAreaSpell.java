@@ -1,12 +1,13 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 
 public abstract class AbstractRangedAreaSpell extends AbstractSpell implements Attached {
 
-    protected AbstractRangedAreaSpell(SpellType<?> type) {
-        super(type);
+    protected AbstractRangedAreaSpell(SpellType<?> type, Affinity affinity) {
+        super(type, affinity);
     }
 
     @Override

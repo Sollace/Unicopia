@@ -26,8 +26,8 @@ public class AttractiveSpell extends ShieldSpell implements Thrown {
     @Nullable
     private BlockPos homingPos;
 
-    protected AttractiveSpell(SpellType<?> type) {
-        super(type);
+    protected AttractiveSpell(SpellType<?> type, Affinity affinity) {
+        super(type, affinity);
     }
 
     @Override
@@ -61,17 +61,19 @@ public class AttractiveSpell extends ShieldSpell implements Thrown {
 
         double force = 2.5F * distance;
 
-        if (source.getAffinity() != Affinity.BAD && target instanceof PlayerEntity) {
+        boolean isGood = isFriendlyTogether(source);
+
+        if (isGood && target instanceof PlayerEntity) {
             force *= calculateAdjustedForce(Pony.of((PlayerEntity)target));
         }
 
-        if (source.getAffinity() == Affinity.BAD && source.getWorld().random.nextInt(4500) == 0) {
+        if (!isGood && source.getWorld().random.nextInt(4500) == 0) {
             source.getEntity().damage(MagicalDamageSource.create("vortex"), 4);
         }
 
         applyForce(pos, target, -force, 0);
 
-        float maxVel = source.getAffinity() == Affinity.BAD ? 1 : 1.6f;
+        float maxVel = !isFriendlyTogether(source) ? 1 : 1.6f;
 
         Vec3d vel = target.getVelocity();
 

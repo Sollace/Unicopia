@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia;
 
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public enum Affinity {
@@ -15,21 +13,19 @@ public enum Affinity {
 
     private Affinity[] implications;
 
+    public static final Affinity[] VALUES = values();
+
     Affinity(Formatting color, int corruption) {
         this.color = color;
         this.corruption = corruption;
     }
 
-    public Formatting getColourCode() {
+    public Formatting getColor() {
         return color;
     }
 
     public String getTranslationKey() {
         return this == BAD ? "curse" : "spell";
-    }
-
-    public Text getName() {
-        return new TranslatableText("affinity." + getTranslationKey()).styled(s -> s.withColor(getColourCode()));
     }
 
     public int getCorruption() {
@@ -50,7 +46,7 @@ public enum Affinity {
         }
 
         if (this == NEUTRAL) {
-            implications = values();
+            implications = new Affinity[] { GOOD, BAD };
         } else {
             implications = new Affinity[] { this };
         }
@@ -58,12 +54,7 @@ public enum Affinity {
         return implications;
     }
 
-    public static Affinity of(String s) {
-        try {
-            if (s != null)
-                return valueOf(s.toUpperCase());
-        } catch (Throwable e) {}
-
-        return Affinity.NEUTRAL;
+    public static Affinity of(int ordinal, Affinity fallback) {
+        return ordinal < 0 || ordinal >= VALUES.length ? fallback : VALUES[ordinal];
     }
 }

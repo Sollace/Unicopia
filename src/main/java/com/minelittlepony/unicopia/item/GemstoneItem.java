@@ -31,17 +31,26 @@ public class GemstoneItem extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+
+        if (isEnchanted(stack)) {
+            SpellType<?> key = getSpellKey(stack);
+            Affinity affinity = getAffinity(stack);
+
+            list.add(new TranslatableText(key.getTranslationKey(affinity) + ".lore").formatted(affinity.getColor()));
+        }
     }
 
     @Override
     public void appendStacks(ItemGroup tab, DefaultedList<ItemStack> items) {
         super.appendStacks(tab, items);
         if (isIn(tab)) {
-            SpellType.byAffinity(Affinity.GOOD).forEach(type -> {
-                if (type.isObtainable()) {
-                    items.add(enchanted(getDefaultStack(), type));
-                }
-            });
+            for (Affinity i : Affinity.VALUES) {
+                SpellType.byAffinity(i).forEach(type -> {
+                    if (type.isObtainable()) {
+                        items.add(enchanted(getDefaultStack(), type, i));
+                    }
+                });
+            }
         }
     }
 
@@ -53,7 +62,7 @@ public class GemstoneItem extends Item {
     @Override
     public Text getName(ItemStack stack) {
         if (isEnchanted(stack)) {
-            return new TranslatableText(getTranslationKey(stack) + ".enchanted", getSpellKey(stack).getName());
+            return new TranslatableText(getTranslationKey(stack) + ".enchanted", getSpellKey(stack).getName(getAffinity(stack)));
         }
         return super.getName();
     }
@@ -61,11 +70,11 @@ public class GemstoneItem extends Item {
     public static Stream<Spell> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable SpellType<?> exclude, Predicate<Spell> test) {
         SpellType<Spell> key = GemstoneItem.getSpellKey(stack);
 
-        if (key == null  || Objects.equals(key, exclude)) {
+        if (Objects.equals(key, exclude)) {
             return Stream.empty();
         }
 
-        Spell spell = key.create();
+        Spell spell = key.create(getAffinity(stack));
 
         if (spell == null || !test.test(spell)) {
             return Stream.empty();
@@ -87,23 +96,31 @@ public class GemstoneItem extends Item {
     }
 
     public static ItemStack enchanted(ItemStack stack, SpellType<?> type) {
+        return enchanted(stack, type, type.getAffinity());
+    }
+
+    public static ItemStack enchanted(ItemStack stack, SpellType<?> type, Affinity affinity) {
         stack.getOrCreateTag().putString("spell", type.getId().toString());
+        stack.getOrCreateTag().putInt("affinity", affinity.ordinal());
         return stack;
     }
 
     public static ItemStack unenchanted(ItemStack stack) {
-        if (isEnchanted(stack)) {
-            stack.getTag().remove("spell");
-
-            if (stack.getTag().isEmpty()) {
-                stack.setTag(null);
-            }
-        }
-
+        stack.removeSubTag("spell");
+        stack.removeSubTag("affinity");
         return stack;
     }
 
     public static <T extends Spell> SpellType<T> getSpellKey(ItemStack stack) {
         return SpellType.getKey(isEnchanted(stack) ? new Identifier(stack.getTag().getString("spell")) : SpellType.EMPTY_ID);
+    }
+
+    public static Affinity getAffinity(ItemStack stack) {
+        Affinity fallback = getSpellKey(stack).getAffinity();
+
+        if (stack.hasTag() && stack.getTag().contains("affinity")) {
+            return Affinity.of(stack.getTag().getInt("affinity"), fallback);
+        }
+        return fallback;
     }
 }

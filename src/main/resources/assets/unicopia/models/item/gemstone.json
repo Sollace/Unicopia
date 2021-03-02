@@ -2,5 +2,19 @@
     "parent": "item/generated",
     "textures": {
         "layer0": "unicopia:item/gemstone"
-    }
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "affinity": 1
+            },
+            "model": "unicopia:item/gemstone_pure"
+        },
+        {
+            "predicate": {
+                "affinity": 3
+            },
+            "model": "unicopia:item/gemstone_corrupted"
+        }
+    ]
 }

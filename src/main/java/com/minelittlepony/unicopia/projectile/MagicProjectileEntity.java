@@ -76,8 +76,11 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
 
     @Override
     protected Item getDefaultItem() {
-        Spell spell = this.getSpell(false);
-        return spell == null ? Items.AIR : spell.getAffinity() == Affinity.BAD ? Items.MAGMA_CREAM : Items.SNOWBALL;
+        switch (getSpellOrEmpty(Spell.class, false).map(Spell::getAffinity).orElse(Affinity.NEUTRAL)) {
+            case GOOD: return Items.SNOWBALL;
+            case BAD: return Items.MAGMA_CREAM;
+            default: return Items.AIR;
+        }
      }
 
     @Override
@@ -107,7 +110,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
 
     @Override
     public Affinity getAffinity() {
-        return hasSpell() ? Affinity.NEUTRAL : getSpell(true).getAffinity();
+        return hasSpell() ? getSpell(true).getAffinity() : Affinity.NEUTRAL;
     }
 
     @Override

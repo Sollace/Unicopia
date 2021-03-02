@@ -23,8 +23,8 @@ import net.minecraft.util.math.Vec3d;
  */
 public class SiphoningSpell extends AbstractRangedAreaSpell implements Thrown {
 
-    protected SiphoningSpell(SpellType<?> type) {
-        super(type);
+    protected SiphoningSpell(SpellType<?> type, Affinity affinity) {
+        super(type, affinity);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class SiphoningSpell extends AbstractRangedAreaSpell implements Thrown {
 
         DamageSource damage = damageSource(owner);
 
-        if (source.getAffinity() == Affinity.BAD) {
+        if (!isFriendlyTogether(source)) {
             if (owner != null) {
                 float healthGain = 0;
                 float maxHealthGain = owner.getMaxHealth() - owner.getHealth();
@@ -108,7 +108,7 @@ public class SiphoningSpell extends AbstractRangedAreaSpell implements Thrown {
         int radius = 4 + source.getLevel().get();
 
         Vec3d origin = source.getOriginVector();
-        int direction = source.getAffinity() == Affinity.GOOD ? 1 : -1;
+        int direction = !isEnemy(source) ? 1 : -1;
 
         source.spawnParticles(new Sphere(true, radius, 1, 0, 1), 1, pos -> {
             if (!source.getWorld().isAir(new BlockPos(pos).down())) {

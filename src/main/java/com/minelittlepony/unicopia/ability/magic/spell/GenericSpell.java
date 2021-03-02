@@ -1,12 +1,13 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 
 public class GenericSpell extends AbstractSpell {
 
-    protected GenericSpell(SpellType<?> type) {
-        super(type);
+    protected GenericSpell(SpellType<?> type, Affinity affinity) {
+        super(type, affinity);
     }
 
     @Override

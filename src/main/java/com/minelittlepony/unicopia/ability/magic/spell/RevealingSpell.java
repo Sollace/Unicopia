@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Suppressable;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
@@ -15,9 +16,10 @@ import net.minecraft.util.math.Vec3d;
  * A spell for revealing changelings.
  */
 public class RevealingSpell extends AbstractSpell implements Thrown {
+    private static final Shape AREA = new Sphere(false, 15);
 
-    protected RevealingSpell(SpellType<?> type) {
-        super(type);
+    protected RevealingSpell(SpellType<?> type, Affinity affinity) {
+        super(type, affinity);
     }
 
     @Override
@@ -41,11 +43,9 @@ public class RevealingSpell extends AbstractSpell implements Thrown {
 
     @Override
     public void render(Caster<?> source) {
-        Shape area = new Sphere(false, 15);
-
         MagicParticleEffect effect = new MagicParticleEffect(getType().getColor());
 
-        source.spawnParticles(area, 5, pos -> {
+        source.spawnParticles(AREA, 5, pos -> {
             source.addParticle(effect, pos, Vec3d.ZERO);
         });
         source.spawnParticles(effect, 5);

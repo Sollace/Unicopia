@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Attached;
@@ -31,8 +32,8 @@ public class DisguiseSpell extends AbstractSpell implements Attached, Suppressab
 
     private int suppressionCounter;
 
-    protected DisguiseSpell(SpellType<?> type) {
-        super(type);
+    protected DisguiseSpell(SpellType<?> type, Affinity affinity) {
+        super(type, affinity);
     }
 
     @Override

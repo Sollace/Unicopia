@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
@@ -16,8 +17,8 @@ import net.minecraft.world.World;
 
 public class InfernoSpell extends FireSpell {
 
-    protected InfernoSpell(SpellType<?> type) {
-        super(type);
+    protected InfernoSpell(SpellType<?> type, Affinity affinity) {
+        super(type, affinity);
     }
 
     @Override

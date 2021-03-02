@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
@@ -82,11 +81,6 @@ public interface Spell extends NbtSerialisable, Affine {
      * @param source    The entity we are attached to.
      */
     void render(Caster<?> source);
-
-    @Override
-    default Affinity getAffinity() {
-        return getType().getAffinity();
-    }
 
     /**
      * Return true to allow the gem update and move.

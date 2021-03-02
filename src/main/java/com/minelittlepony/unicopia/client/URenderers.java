@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.FloatingArtefactEntityRenderer;
 import com.minelittlepony.unicopia.client.render.WingsFeatureRenderer;
 import com.minelittlepony.unicopia.item.ChameleonItem;
+import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.particle.UParticles;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
@@ -24,6 +25,7 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry.Pendin
 import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
+import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.SpriteProvider;
@@ -36,6 +38,7 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.util.Identifier;
 
 public interface URenderers {
     static void bootstrap() {
@@ -89,6 +92,12 @@ public interface URenderers {
             matrices.push();
 
         });
+        FabricModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity) -> {
+            return GemstoneItem.isEnchanted(stack) ? 1 + GemstoneItem.getAffinity(stack).ordinal() : 0;
+        });
+        ColorProviderRegistry.ITEM.register((stack, i) -> {
+            return i > 0 || !GemstoneItem.isEnchanted(stack) ? -1 : GemstoneItem.getSpellKey(stack).getColor();
+        }, UItems.GEMSTONE);
     }
 
     static <T extends ParticleEffect> PendingParticleFactory<T> createFactory(ParticleSupplier<T> supplier) {

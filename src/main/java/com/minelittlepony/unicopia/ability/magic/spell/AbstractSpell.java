@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 
@@ -12,8 +13,11 @@ public abstract class AbstractSpell implements Spell {
 
     private final SpellType<?> type;
 
-    protected AbstractSpell(SpellType<?> type) {
+    private Affinity affinity;
+
+    protected AbstractSpell(SpellType<?> type, Affinity affinity) {
         this.type = type;
+        this.affinity = affinity;
     }
 
     @Override
@@ -57,13 +61,20 @@ public abstract class AbstractSpell implements Spell {
     }
 
     @Override
+    public Affinity getAffinity() {
+        return affinity;
+    }
+
+    @Override
     public void toNBT(CompoundTag compound) {
         compound.putBoolean("dead", isDead);
+        compound.putInt("affinity", affinity.ordinal());
     }
 
     @Override
     public void fromNBT(CompoundTag compound) {
         setDirty(false);
         isDead = compound.getBoolean("dead");
+        affinity = Affinity.of(compound.getInt("affinity"), getType().getAffinity());
     }
 }

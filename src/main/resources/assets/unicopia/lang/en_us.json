@@ -92,60 +92,44 @@
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_bat": "Lingering Potion of Bat Pony Metamorphosis",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_bat": "Arrow of Bat Pony Metamorphosis",
 
-  "affinity.good": "Pure",
-  "affinity.neutral": "Neutral",
-  "affinity.curse": "Corrupt",
+  "spell.unicopia.frost": "Frost",
+  "spell.unicopia.frost.lore": "Ice I",
 
+  "curse.unicopia.scorch": "Scorching",
+  "curse.unicopia.scorch.lore": "Fire I",
+
+  "spell.unicopia.flame": "Flaming",
+  "spell.unicopia.flame.lore": "Fire II",
+
+  "curse.unicopia.infernal": "Infernal",
+  "curse.unicopia.infernal.lore": "Fire III",
+	
   "spell.unicopia.shield": "Protective",
-  "spell.unicopia.shield.tagline": "Protection I",
-
-  "spell.unicopia.awkward": "Unstable",
-  "spell.unicopia.awkward.tagline": "*Derp*",
-
-  "spell.unicopia.light": "Illumination",
-  "spell.unicopia.light.tagline": "Discovery I",
-
-  "spell.unicopia.reveal": "Revealing",
-  "spell.unicopia.reveal.tagline": "Discovery II",
-
-  "spell.unicopia.flame": "Burning",
-  "spell.unicopia.flame.tagline": "Fire I",
-
-  "spell.unicopia.fire": "Flaming",
-  "spell.unicopia.fire.tagline": "Fire II",
-
-  "spell.unicopia.vortex": "Retention",
-  "spell.unicopia.vortex.tagline": "Containment I",
-
-  "spell.unicopia.siphon": "Siphoning",
-  "spell.unicopia.siphon.tagline": "Energy II",
-
-  "spell.unicopia.ice": "Frost",
-  "spell.unicopia.ice.tagline": "Ice I",
+  "spell.unicopia.shield.lore": "Protection I",
 
   "curse.unicopia.shield": "Repulsive",
-  "curse.unicopia.shield.tagline": "Hostility I",
-
-  "curse.unicopia.darkness": "Dark",
-  "curse.unicopia.darkness.tagline": "Golomancy I/Resurrection II",
-
-  "curse.unicopia.harm": "Harmful",
-  "curse.unicopia.harm.tagline": "Hostility II",
-
-  "curse.unicopia.awkward": "Awkward",
-  "curse.unicopia.awkward.tagline": "*Derp*",
+  "curse.unicopia.shield.lore": "Hostility I",
+	
+  "spell.unicopia.vortex": "Attractive",
+  "spell.unicopia.vortex.lore": "Containment I",
 
   "curse.unicopia.vortex": "Suffering",
-  "curse.unicopia.vortex.tagline": "Torture I",
-
+  "curse.unicopia.vortex.lore": "Torture I",
+	
   "curse.unicopia.necromancy": "Resurrection",
-  "curse.unicopia.necromancy.tagline": "Resurrection I",
+  "curse.unicopia.necromancy.lore": "Resurrection I",
+	
+  "spell.unicopia.siphoning": "Siphoning",
+  "spell.unicopia.siphoning.lore": "Energy II",
 
-  "curse.unicopia.inferno": "Inferno",
-  "curse.unicopia.inferno.tagline": "Fire III",
+  "curse.unicopia.siphoning": "Siphoning",
+  "curse.unicopia.siphoning.lore": "Energy III",
+	
+  "spell.unicopia.reveal": "Revealing",
+  "spell.unicopia.reveal.lore": "Discovery II",
 
-  "curse.unicopia.siphon": "Siphoning",
-  "curse.unicopia.siphon.tagline": "Energy III",
+  "spell.unicopia.awkward": "Unstable",
+  "spell.unicopia.awkward.lore": "Chaos I",
 
   "toxicity.safe.name": "Safe",
   "toxicity.mild.name": "Mildly Toxic",

@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.util.WorldEvent;
 import com.minelittlepony.unicopia.util.shape.Shape;
@@ -25,8 +26,8 @@ public class NecromancySpell extends AbstractRangedAreaSpell {
             EntityType.ZOMBIFIED_PIGLIN
     );
 
-    protected NecromancySpell(SpellType<?> type) {
-        super(type);
+    protected NecromancySpell(SpellType<?> type, Affinity affinity) {
+        super(type, affinity);
     }
 
     @Override
@@ -35,7 +36,6 @@ public class NecromancySpell extends AbstractRangedAreaSpell {
         if (source.getWorld().isClient || source.getWorld().getDifficulty() == Difficulty.PEACEFUL) {
             return true;
         }
-
 
         float additional = source.getWorld().getLocalDifficulty(source.getOrigin()).getLocalDifficulty();
 
@@ -61,7 +61,7 @@ public class NecromancySpell extends AbstractRangedAreaSpell {
             if (source.getWorld().isAir(loc.up()) && !source.getWorld().isAir(loc)) {
                 spawnMonster(source, pos);
 
-                return true;
+                return false;
             }
         }
 
@@ -72,8 +72,8 @@ public class NecromancySpell extends AbstractRangedAreaSpell {
     protected void spawnMonster(Caster<?> source, Vec3d pos) {
         int index = (int)MathHelper.nextDouble(source.getWorld().random, 0, spawns.size());
         LivingEntity zombie = spawns.get(index).create(source.getWorld());
-        zombie.setPos(pos.x, pos.y, pos.z);
 
+        zombie.updatePositionAndAngles(pos.x, pos.y, pos.z, 0, 0);
         zombie.setVelocity(0, 0.3, 0);
 
         source.getWorld().syncWorldEvent(WorldEvent.ZOMBIE_BREAK_WOODEN_DOOR, zombie.getBlockPos(), 0);
