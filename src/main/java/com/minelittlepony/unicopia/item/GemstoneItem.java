@@ -16,8 +16,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -31,13 +33,19 @@ public class GemstoneItem extends Item {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> lines, TooltipContext tooltipContext) {
 
         if (isEnchanted(stack)) {
             SpellType<?> key = getSpellKey(stack);
             Affinity affinity = getAffinity(stack);
 
-            list.add(new TranslatableText(key.getTranslationKey(affinity) + ".lore").formatted(affinity.getColor()));
+            MutableText line = new TranslatableText(key.getTranslationKey(affinity) + ".lore").formatted(affinity.getColor());
+
+            if (!Unicopia.SIDE.getPlayerSpecies().canCast()) {
+                line = line.formatted(Formatting.OBFUSCATED);
+            }
+
+            lines.add(line);
         }
     }
 
@@ -63,6 +71,10 @@ public class GemstoneItem extends Item {
     @Override
     public Text getName(ItemStack stack) {
         if (isEnchanted(stack)) {
+            if (!Unicopia.SIDE.getPlayerSpecies().canCast()) {
+                return new TranslatableText(getTranslationKey(stack) + ".obfuscated");
+            }
+
             return new TranslatableText(getTranslationKey(stack) + ".enchanted", getSpellKey(stack).getName(getAffinity(stack)));
         }
         return super.getName();
