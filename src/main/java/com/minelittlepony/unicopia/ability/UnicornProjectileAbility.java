@@ -1,17 +1,20 @@
 package com.minelittlepony.unicopia.ability;
 
-import java.util.Optional;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
 
 /**
  * A magic casting ability for unicorns.
@@ -45,7 +48,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
 
     @Override
     public Hit tryActivate(Pony player) {
-        return Hit.INSTANCE;
+        return Hit.of(getNewSpell(player).getResult() != ActionResult.FAIL);
     }
 
     @Override
@@ -60,15 +63,27 @@ public class UnicornProjectileAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
-        player.subtractEnergyCost(getCostEstimate(player));
-        getThrown(player).orElseGet(SpellType.VORTEX::create).toss(player);
+        TypedActionResult<Spell> thrown = getNewSpell(player);
+
+        if (thrown.getResult() != ActionResult.FAIL) {
+            @Nullable
+            Thrown spell = (Thrown)thrown.getValue();
+
+            if (spell == null) {
+                spell = SpellType.VORTEX.create();
+            }
+
+            player.subtractEnergyCost(getCostEstimate(player));
+            spell.toss(player);
+        }
     }
 
-    private Optional<Thrown> getThrown(Pony player) {
+    private TypedActionResult<Spell> getNewSpell(Pony player) {
         return Streams.stream(player.getMaster().getItemsHand())
-                .flatMap(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), null, i -> i instanceof Thrown))
-                .map(Thrown.class::cast)
-                .findFirst();
+                .filter(GemstoneItem::isEnchanted)
+                .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), null, i -> i instanceof Thrown))
+                .findFirst()
+                .orElse(TypedActionResult.<Spell>pass(null));
     }
 
     @Override

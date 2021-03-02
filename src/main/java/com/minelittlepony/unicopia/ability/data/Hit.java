@@ -7,6 +7,10 @@ public class Hit {
     public static final Hit INSTANCE = new Hit();
     public static final Serializer<Hit> SERIALIZER = buf -> INSTANCE;
 
+    public static Hit of(boolean value) {
+        return value ? INSTANCE : null;
+    }
+
     protected Hit() {
 
     }

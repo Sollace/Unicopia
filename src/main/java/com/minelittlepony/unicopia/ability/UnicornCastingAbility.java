@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability;
 
-import java.util.Optional;
 import java.util.Random;
 
 import javax.annotation.Nullable;
@@ -20,8 +19,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Pair;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -48,7 +48,21 @@ public class UnicornCastingAbility implements Ability<Hit> {
     @Override
     @Nullable
     public Hit tryActivate(Pony player) {
-        return getCostEstimate(player) <= player.getMagicalReserves().getMana().get() ? Hit.INSTANCE : null;
+        float manaLevel = player.getMagicalReserves().getMana().get();
+
+        TypedActionResult<ItemStack> amulet = getAmulet(player);
+
+        if (amulet.getResult().isAccepted()) {
+            return Hit.of(manaLevel > 0 && ((AmuletItem)amulet.getValue().getItem()).canCharge(amulet.getValue()));
+        }
+
+        ActionResult spell = getNewSpell(player).getResult();
+
+        if (spell != ActionResult.PASS) {
+            return Hit.of(spell != ActionResult.FAIL && manaLevel > 4F);
+        }
+
+        return Hit.of(manaLevel > (player.hasSpell() ? 2F : 4F));
     }
 
     @Override
@@ -58,62 +72,87 @@ public class UnicornCastingAbility implements Ability<Hit> {
 
     @Override
     public double getCostEstimate(Pony player) {
-        return getAmulet(player)
-                .map(pair -> Math.min(player.getMagicalReserves().getMana().get(), pair.getLeft().getChargeRemainder(pair.getRight())))
-                .orElseGet(() -> player.hasSpell() && getNewSpell(player).isPresent() ? 4F : 2F);
+        TypedActionResult<ItemStack> amulet = getAmulet(player);
+
+        if (amulet.getResult().isAccepted()) {
+            float manaLevel = player.getMagicalReserves().getMana().get();
+
+            return Math.min(manaLevel, ((AmuletItem)amulet.getValue().getItem()).getChargeRemainder(amulet.getValue()));
+        }
+
+        if (getNewSpell(player).getResult() == ActionResult.CONSUME) {
+            return 4F;
+        }
+
+        if (player.hasSpell()) {
+            return 2F;
+        }
+
+        return 4F;
     }
 
     @Override
     public void apply(Pony player, Hit data) {
-        getAmulet(player).filter(pair -> {
-            float amount = -Math.min(player.getMagicalReserves().getMana().get(), pair.getLeft().getChargeRemainder(pair.getRight()));
+        TypedActionResult<ItemStack> amulet = getAmulet(player);
 
-            if (amount < 0) {
-                AmuletItem.consumeEnergy(pair.getRight(), amount);
-                player.getMagicalReserves().getMana().add(amount * player.getMagicalReserves().getMana().getMax());
-                player.getWorld().playSoundFromEntity(null, player.getMaster(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1, 1);
+        if (amulet.getResult().isAccepted()) {
+            ItemStack stack = amulet.getValue();
+            AmuletItem item = (AmuletItem)stack.getItem();
+
+            if (item.canCharge(stack)) {
+                float amount = -Math.min(player.getMagicalReserves().getMana().get(), item.getChargeRemainder(stack));
+
+                if (amount < 0) {
+                    AmuletItem.consumeEnergy(stack, amount);
+                    player.getMagicalReserves().getMana().add(amount * player.getMagicalReserves().getMana().getMax());
+                    player.getWorld().playSoundFromEntity(null, player.getMaster(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1, 1);
+                }
             }
-            return true;
-        }).orElseGet(() -> {
-            Optional<Spell> newSpell = getNewSpell(player);
+        } else {
+            TypedActionResult<Spell> newSpell = getNewSpell(player);
 
-            @Nullable
-            Spell spell = player.hasSpell() ? newSpell.orElse(null) : newSpell.orElseGet(SpellType.SHIELD::create);
+            if (newSpell.getResult() != ActionResult.FAIL) {
+                @Nullable
+                Spell spell = newSpell.getValue();
+                if (!player.hasSpell() && spell == null) {
+                    spell = SpellType.SHIELD.create();
+                }
 
-            player.subtractEnergyCost(spell == null ? 2 : 4);
-            player.setSpell(spell);
-
-            return null;
-        });
+                player.subtractEnergyCost(spell == null ? 2 : 4);
+                player.setSpell(spell);
+            }
+        }
     }
 
-    private Optional<Pair<AmuletItem, ItemStack>> getAmulet(Pony player) {
+    private TypedActionResult<ItemStack> getAmulet(Pony player) {
 
         ItemStack stack = player.getMaster().getStackInHand(Hand.MAIN_HAND);
 
         if (stack.getItem() instanceof AmuletItem) {
-            AmuletItem amulet = (AmuletItem)stack.getItem();
-            if (amulet.canCharge(stack)) {
-                return Optional.of(new Pair<>(amulet, stack));
-
+            if (((AmuletItem)stack.getItem()).isChargable()) {
+                return TypedActionResult.consume(stack);
             }
+
+            return TypedActionResult.success(stack);
         }
 
-        return Optional.empty();
+        return TypedActionResult.pass(stack);
     }
 
-    private Optional<Spell> getNewSpell(Pony player) {
+    private TypedActionResult<Spell> getNewSpell(Pony player) {
         final SpellType<?> current = player.hasSpell() ? player.getSpell(true).getType() : null;
         return Streams.stream(player.getMaster().getItemsHand())
-                .flatMap(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), current, i -> i instanceof Attached))
-                .findFirst();
+                .filter(GemstoneItem::isEnchanted)
+                .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), current, i -> i instanceof Attached))
+                .findFirst()
+                .orElse(TypedActionResult.<Spell>pass(null));
     }
 
     @Override
     public void preApply(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getEnergy().multiply(3.3F);
 
-        if (getAmulet(player).isPresent()) {
+        if (getAmulet(player).getResult() == ActionResult.CONSUME) {
             Vec3d eyes = player.getMaster().getCameraPosVec(1);
 
             float i = player.getAbilities().getStat(slot).getFillProgress();

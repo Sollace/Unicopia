@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.item;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -19,7 +18,9 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
@@ -67,20 +68,27 @@ public class GemstoneItem extends Item {
         return super.getName();
     }
 
-    public static Stream<Spell> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable SpellType<?> exclude, Predicate<Spell> test) {
+    public static TypedActionResult<Spell> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable SpellType<?> exclude, Predicate<Spell> test) {
+
+        if (!isEnchanted(stack)) {
+            return TypedActionResult.pass(null);
+        }
+
         SpellType<Spell> key = GemstoneItem.getSpellKey(stack);
 
         if (Objects.equals(key, exclude)) {
-            return Stream.empty();
+            return TypedActionResult.fail(null);
         }
 
         Spell spell = key.create(getAffinity(stack));
 
         if (spell == null || !test.test(spell)) {
-            return Stream.empty();
+            return TypedActionResult.fail(null);
         }
 
         if (!player.world.isClient) {
+            player.swingHand(player.getStackInHand(Hand.OFF_HAND) == stack ? Hand.OFF_HAND : Hand.MAIN_HAND);
+
             if (stack.getCount() == 1) {
                 GemstoneItem.unenchanted(stack);
             } else {
@@ -88,7 +96,7 @@ public class GemstoneItem extends Item {
             }
         }
 
-        return Stream.of(spell);
+        return TypedActionResult.consume(spell);
     }
 
     public static boolean isEnchanted(ItemStack stack) {
