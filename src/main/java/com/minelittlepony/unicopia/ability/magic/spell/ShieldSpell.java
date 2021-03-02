@@ -6,7 +6,6 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Attached;
@@ -40,8 +39,8 @@ public class ShieldSpell extends AbstractSpell implements Attached, Thrown {
 
     private final Map<UUID, Target> targets = new TreeMap<>();
 
-    protected ShieldSpell(SpellType<?> type, Affinity affinity) {
-        super(type, affinity);
+    protected ShieldSpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override

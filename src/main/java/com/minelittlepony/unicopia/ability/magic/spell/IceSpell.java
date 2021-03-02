@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
@@ -30,8 +29,8 @@ public class IceSpell extends AbstractSpell implements Thrown, Attached {
     private final int rad = 3;
     private final Shape effect_range = new Sphere(false, rad);
 
-    protected IceSpell(SpellType<?> type, Affinity affinity) {
-        super(type, affinity);
+    protected IceSpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override

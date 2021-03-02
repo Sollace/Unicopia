@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -63,27 +62,27 @@ public class UnicornProjectileAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
-        TypedActionResult<Spell> thrown = getNewSpell(player);
+        TypedActionResult<SpellType<?>> thrown = getNewSpell(player);
 
         if (thrown.getResult() != ActionResult.FAIL) {
             @Nullable
-            Thrown spell = (Thrown)thrown.getValue();
+            SpellType<?> spell = thrown.getValue();
 
             if (spell == null) {
-                spell = SpellType.VORTEX.create();
+                spell = SpellType.VORTEX;
             }
 
             player.subtractEnergyCost(getCostEstimate(player));
-            spell.toss(player);
+            ((Thrown)spell.create()).toss(player);
         }
     }
 
-    private TypedActionResult<Spell> getNewSpell(Pony player) {
+    private TypedActionResult<SpellType<?>> getNewSpell(Pony player) {
         return Streams.stream(player.getMaster().getItemsHand())
                 .filter(GemstoneItem::isEnchanted)
-                .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), null, i -> i instanceof Thrown))
+                .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), null, SpellType::mayThrow))
                 .findFirst()
-                .orElse(TypedActionResult.<Spell>pass(null));
+                .orElse(TypedActionResult.<SpellType<?>>pass(null));
     }
 
     @Override

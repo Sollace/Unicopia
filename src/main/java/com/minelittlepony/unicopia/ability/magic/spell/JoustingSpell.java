@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -30,8 +29,8 @@ public class JoustingSpell extends AbstractSpell implements Attached {
 
     private int age;
 
-    protected JoustingSpell(SpellType<?> type, Affinity affinity) {
-        super(type, affinity);
+    protected JoustingSpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override

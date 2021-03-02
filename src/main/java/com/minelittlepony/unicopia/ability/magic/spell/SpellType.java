@@ -10,7 +10,9 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Affine;
+import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.Thrown;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.Text;
@@ -21,7 +23,7 @@ import net.minecraft.util.Util;
 public class SpellType<T extends Spell> implements Affine {
 
     public static final Identifier EMPTY_ID = new Identifier("unicopia", "null");
-    public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, (t, a) -> null);
+    public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, t -> null);
 
     private static final Map<Identifier, SpellType<?>> REGISTRY = new HashMap<>();
     private static final Map<Affinity, Set<SpellType<?>>> BY_AFFINITY = new EnumMap<>(Affinity.class);
@@ -30,10 +32,13 @@ public class SpellType<T extends Spell> implements Affine {
     public static final SpellType<ScorchSpell> SCORCH = register("scorch", Affinity.BAD, 0, true, ScorchSpell::new);
     public static final SpellType<FireSpell> FLAME = register("flame", Affinity.GOOD, 0xFF5D00, true, FireSpell::new);
     public static final SpellType<InfernoSpell> INFERNAL = register("infernal", Affinity.BAD, 0xF00F00, true, InfernoSpell::new);
-    public static final SpellType<ShieldSpell> SHIELD = register("shield", Affinity.NEUTRAL, 0x66CDAA, true, ShieldSpell::new);
-    public static final SpellType<AttractiveSpell> VORTEX = register("vortex", Affinity.NEUTRAL, 0x4CDEE7, true, AttractiveSpell::new);
+    public static final SpellType<ShieldSpell> SHIELD = register("shield", Affinity.GOOD, 0x66CDAA, true, ShieldSpell::new);
+    public static final SpellType<ShieldSpell> REPULSE = register("repulse", Affinity.BAD, 0x66CDAA, true, ShieldSpell::new);
+    public static final SpellType<AttractiveSpell> VORTEX = register("vortex", Affinity.GOOD, 0x4CDEE7, true, AttractiveSpell::new);
+    public static final SpellType<AttractiveSpell> SUFFER = register("suffer", Affinity.BAD, 0x4CDEE7, true, AttractiveSpell::new);
     public static final SpellType<NecromancySpell> NECROMANCY = register("necromancy", Affinity.BAD, 0x3A3A3A, true, NecromancySpell::new);
-    public static final SpellType<SiphoningSpell> SIPHONING = register("siphoning", Affinity.NEUTRAL, 0xe308ab, true, SiphoningSpell::new);
+    public static final SpellType<SiphoningSpell> SIPHONING = register("siphoning", Affinity.GOOD, 0xe308ab, true, SiphoningSpell::new);
+    public static final SpellType<SiphoningSpell> DRAINING = register("draining", Affinity.BAD, 0xe308ab, true, SiphoningSpell::new);
     public static final SpellType<DisguiseSpell> DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, DisguiseSpell::new);
     public static final SpellType<RevealingSpell> REVEALING = register("reveal", Affinity.GOOD, 0x5CE81F, true, RevealingSpell::new);
     public static final SpellType<JoustingSpell> JOUSTING = register("joust", Affinity.GOOD, 0xBDBDF9, false, JoustingSpell::new);
@@ -46,7 +51,11 @@ public class SpellType<T extends Spell> implements Affine {
 
     private final Factory<T> factory;
 
-    private final Map<Affinity, String> translationKeys = new EnumMap<>(Affinity.class);
+    private final boolean thrown;
+    private final boolean attached;
+
+    @Nullable
+    private String translationKey;
 
     SpellType(Identifier id, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
         this.id = id;
@@ -54,10 +63,22 @@ public class SpellType<T extends Spell> implements Affine {
         this.color = color;
         this.obtainable = obtainable;
         this.factory = factory;
+
+        Spell inst = create();
+        thrown = inst instanceof Thrown;
+        attached = inst instanceof Attached;
     }
 
     public boolean isObtainable() {
         return obtainable;
+    }
+
+    public boolean mayThrow() {
+        return thrown;
+    }
+
+    public boolean mayAttach() {
+        return attached;
     }
 
     public Identifier getId() {
@@ -76,23 +97,21 @@ public class SpellType<T extends Spell> implements Affine {
         return affinity;
     }
 
-    public String getTranslationKey(Affinity affinity) {
-        return translationKeys.computeIfAbsent(affinity, a -> Util.createTranslationKey(a.getTranslationKey(), getId()));
+    public String getTranslationKey() {
+        if (translationKey == null) {
+            translationKey = Util.createTranslationKey(getAffinity().getTranslationKey(), getId());
+        }
+        return translationKey;
     }
 
-    public Text getName(Affinity affinity) {
-        return new TranslatableText(getTranslationKey(affinity));
+    public Text getName() {
+        return new TranslatableText(getTranslationKey());
     }
 
     @Nullable
     public T create() {
-        return create(getAffinity());
-    }
-
-    @Nullable
-    public T create(Affinity affinity) {
         try {
-            return factory.create(this, affinity);
+            return factory.create(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,11 +121,7 @@ public class SpellType<T extends Spell> implements Affine {
 
     public static <T extends Spell> SpellType<T> register(Identifier id, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
         SpellType<T> type = new SpellType<>(id, affinity, color, obtainable, factory);
-
-        for (Affinity i : affinity.getImplicators()) {
-            byAffinity(i).add(type);
-        }
-
+        byAffinity(affinity).add(type);
         REGISTRY.put(id, type);
         return type;
     }
@@ -153,6 +168,6 @@ public class SpellType<T extends Spell> implements Affine {
     }
 
     public interface Factory<T extends Spell> {
-        T create(SpellType<T> type, Affinity affinity);
+        T create(SpellType<T> type);
     }
 }

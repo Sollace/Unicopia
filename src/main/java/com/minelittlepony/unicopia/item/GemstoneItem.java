@@ -37,9 +37,8 @@ public class GemstoneItem extends Item {
 
         if (isEnchanted(stack)) {
             SpellType<?> key = getSpellKey(stack);
-            Affinity affinity = getAffinity(stack);
 
-            MutableText line = new TranslatableText(key.getTranslationKey(affinity) + ".lore").formatted(affinity.getColor());
+            MutableText line = new TranslatableText(key.getTranslationKey() + ".lore").formatted(key.getAffinity().getColor());
 
             if (!Unicopia.SIDE.getPlayerSpecies().canCast()) {
                 line = line.formatted(Formatting.OBFUSCATED);
@@ -75,26 +74,24 @@ public class GemstoneItem extends Item {
                 return new TranslatableText(getTranslationKey(stack) + ".obfuscated");
             }
 
-            return new TranslatableText(getTranslationKey(stack) + ".enchanted", getSpellKey(stack).getName(getAffinity(stack)));
+            return new TranslatableText(getTranslationKey(stack) + ".enchanted", getSpellKey(stack).getName());
         }
         return super.getName();
     }
 
-    public static TypedActionResult<Spell> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable SpellType<?> exclude, Predicate<Spell> test) {
+    public static TypedActionResult<SpellType<?>> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable SpellType<?> exclude, Predicate<SpellType<?>> test) {
 
         if (!isEnchanted(stack)) {
             return TypedActionResult.pass(null);
         }
 
-        SpellType<Spell> key = GemstoneItem.getSpellKey(stack);
+        SpellType<Spell> key = getSpellKey(stack);
 
         if (Objects.equals(key, exclude)) {
             return TypedActionResult.fail(null);
         }
 
-        Spell spell = key.create(getAffinity(stack));
-
-        if (spell == null || !test.test(spell)) {
+        if (key == SpellType.EMPTY_KEY || !test.test(key)) {
             return TypedActionResult.fail(null);
         }
 
@@ -102,13 +99,13 @@ public class GemstoneItem extends Item {
             player.swingHand(player.getStackInHand(Hand.OFF_HAND) == stack ? Hand.OFF_HAND : Hand.MAIN_HAND);
 
             if (stack.getCount() == 1) {
-                GemstoneItem.unenchanted(stack);
+                unenchanted(stack);
             } else {
-                player.giveItemStack(GemstoneItem.unenchanted(stack.split(1)));
+                player.giveItemStack(unenchanted(stack.split(1)));
             }
         }
 
-        return TypedActionResult.consume(spell);
+        return TypedActionResult.consume(key);
     }
 
     public static boolean isEnchanted(ItemStack stack) {
@@ -121,26 +118,15 @@ public class GemstoneItem extends Item {
 
     public static ItemStack enchanted(ItemStack stack, SpellType<?> type, Affinity affinity) {
         stack.getOrCreateTag().putString("spell", type.getId().toString());
-        stack.getOrCreateTag().putInt("affinity", affinity.ordinal());
         return stack;
     }
 
     public static ItemStack unenchanted(ItemStack stack) {
         stack.removeSubTag("spell");
-        stack.removeSubTag("affinity");
         return stack;
     }
 
     public static <T extends Spell> SpellType<T> getSpellKey(ItemStack stack) {
         return SpellType.getKey(isEnchanted(stack) ? new Identifier(stack.getTag().getString("spell")) : SpellType.EMPTY_ID);
-    }
-
-    public static Affinity getAffinity(ItemStack stack) {
-        Affinity fallback = getSpellKey(stack).getAffinity();
-
-        if (stack.hasTag() && stack.getTag().contains("affinity")) {
-            return Affinity.of(stack.getTag().getInt("affinity"), fallback);
-        }
-        return fallback;
     }
 }

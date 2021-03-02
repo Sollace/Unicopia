@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import java.util.List;
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -26,8 +25,8 @@ public class AttractiveSpell extends ShieldSpell implements Thrown {
     @Nullable
     private BlockPos homingPos;
 
-    protected AttractiveSpell(SpellType<?> type, Affinity affinity) {
-        super(type, affinity);
+    protected AttractiveSpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override

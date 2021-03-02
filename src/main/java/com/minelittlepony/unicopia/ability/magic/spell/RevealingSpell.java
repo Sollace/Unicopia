@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Suppressable;
@@ -19,8 +18,8 @@ import net.minecraft.util.math.Vec3d;
 public class RevealingSpell extends AbstractSpell implements Attached, Thrown {
     private static final Shape AREA = new Sphere(false, 15);
 
-    protected RevealingSpell(SpellType<?> type, Affinity affinity) {
-        super(type, affinity);
+    protected RevealingSpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override

@@ -11,8 +11,6 @@ public enum Affinity {
 
     private final int corruption;
 
-    private Affinity[] implications;
-
     public static final Affinity[] VALUES = values();
 
     Affinity(Formatting color, int corruption) {
@@ -38,20 +36,6 @@ public enum Affinity {
 
     public boolean alignsWith(Affinity other) {
         return isNeutral() || other.isNeutral() || this == other;
-    }
-
-    public Affinity[] getImplicators() {
-        if (implications != null) {
-            return implications;
-        }
-
-        if (this == NEUTRAL) {
-            implications = new Affinity[] { GOOD, BAD };
-        } else {
-            implications = new Affinity[] { this };
-        }
-
-        return implications;
     }
 
     public static Affinity of(int ordinal, Affinity fallback) {

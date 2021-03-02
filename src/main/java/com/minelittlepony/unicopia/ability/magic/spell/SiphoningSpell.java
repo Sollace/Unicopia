@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -23,8 +22,8 @@ import net.minecraft.util.math.Vec3d;
  */
 public class SiphoningSpell extends AbstractSpell implements Attached {
 
-    protected SiphoningSpell(SpellType<?> type, Affinity affinity) {
-        super(type, affinity);
+    protected SiphoningSpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override

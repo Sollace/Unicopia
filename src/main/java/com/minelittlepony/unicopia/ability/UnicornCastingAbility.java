@@ -7,8 +7,6 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.ability.magic.Attached;
-import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
@@ -109,17 +107,17 @@ public class UnicornCastingAbility implements Ability<Hit> {
                 }
             }
         } else {
-            TypedActionResult<Spell> newSpell = getNewSpell(player);
+            TypedActionResult<SpellType<?>> newSpell = getNewSpell(player);
 
             if (newSpell.getResult() != ActionResult.FAIL) {
                 @Nullable
-                Spell spell = newSpell.getValue();
+                SpellType<?> spell = newSpell.getValue();
                 if (!player.hasSpell() && spell == null) {
-                    spell = SpellType.SHIELD.create();
+                    spell = SpellType.SHIELD;
                 }
 
                 player.subtractEnergyCost(spell == null ? 2 : 4);
-                player.setSpell(spell);
+                player.setSpell(spell == null ? null : spell.create());
             }
         }
     }
@@ -139,13 +137,13 @@ public class UnicornCastingAbility implements Ability<Hit> {
         return TypedActionResult.pass(stack);
     }
 
-    private TypedActionResult<Spell> getNewSpell(Pony player) {
+    private TypedActionResult<SpellType<?>> getNewSpell(Pony player) {
         final SpellType<?> current = player.hasSpell() ? player.getSpell(true).getType() : null;
         return Streams.stream(player.getMaster().getItemsHand())
                 .filter(GemstoneItem::isEnchanted)
-                .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), current, i -> i instanceof Attached))
+                .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), current, SpellType::mayAttach))
                 .findFirst()
-                .orElse(TypedActionResult.<Spell>pass(null));
+                .orElse(TypedActionResult.<SpellType<?>>pass(null));
     }
 
     @Override

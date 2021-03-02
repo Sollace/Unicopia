@@ -93,7 +93,7 @@ public interface URenderers {
 
         });
         FabricModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity) -> {
-            return GemstoneItem.isEnchanted(stack) ? 1 + GemstoneItem.getAffinity(stack).ordinal() : 0;
+            return GemstoneItem.isEnchanted(stack) ? 1 + GemstoneItem.getSpellKey(stack).getAffinity().ordinal() : 0;
         });
         ColorProviderRegistry.ITEM.register((stack, i) -> {
             return i > 0 || !GemstoneItem.isEnchanted(stack) ? -1 : GemstoneItem.getSpellKey(stack).getColor();

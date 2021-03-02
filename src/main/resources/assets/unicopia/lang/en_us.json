@@ -108,14 +108,14 @@
   "spell.unicopia.shield": "Protective",
   "spell.unicopia.shield.lore": "Protection I",
 
-  "curse.unicopia.shield": "Repulsive",
-  "curse.unicopia.shield.lore": "Hostility I",
+  "curse.unicopia.repulse": "Repulsive",
+  "curse.unicopia.repulse.lore": "Hostility I",
 	
   "spell.unicopia.vortex": "Attractive",
   "spell.unicopia.vortex.lore": "Containment I",
 
-  "curse.unicopia.vortex": "Suffering",
-  "curse.unicopia.vortex.lore": "Torture I",
+  "curse.unicopia.suffer": "Suffering",
+  "curse.unicopia.suffer.lore": "Torture I",
 	
   "curse.unicopia.necromancy": "Resurrection",
   "curse.unicopia.necromancy.lore": "Resurrection I",
@@ -123,8 +123,8 @@
   "spell.unicopia.siphoning": "Siphoning",
   "spell.unicopia.siphoning.lore": "Energy II",
 
-  "curse.unicopia.siphoning": "Siphoning",
-  "curse.unicopia.siphoning.lore": "Energy III",
+  "curse.unicopia.draining": "Siphoning",
+  "curse.unicopia.draining.lore": "Energy III",
 	
   "spell.unicopia.reveal": "Revealing",
   "spell.unicopia.reveal.lore": "Discovery II",

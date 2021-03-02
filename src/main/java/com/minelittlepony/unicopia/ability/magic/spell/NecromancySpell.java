@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.util.WorldEvent;
@@ -27,8 +26,8 @@ public class NecromancySpell extends AbstractSpell implements Attached {
             EntityType.ZOMBIFIED_PIGLIN
     );
 
-    protected NecromancySpell(SpellType<?> type, Affinity affinity) {
-        super(type, affinity);
+    protected NecromancySpell(SpellType<?> type) {
+        super(type);
     }
 
     @Override
