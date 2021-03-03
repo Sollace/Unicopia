@@ -18,6 +18,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
@@ -77,7 +78,15 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     }
 
     default Stream<Entity> findAllEntitiesInRange(double radius, @Nullable Predicate<Entity> test) {
-        return VecHelper.findInRange(getEntity(), getWorld(), getOriginVector(), radius, test).stream();
+        return findAllEntitiesInRange(getOriginVector(), radius, test);
+    }
+
+    default Stream<Entity> findAllEntitiesInRange(Vec3d origin, double radius, @Nullable Predicate<Entity> test) {
+        return VecHelper.findInRange(getEntity(), getWorld(), origin, radius, test).stream();
+    }
+
+    default Stream<Entity> findAllEntitiesInRange(Vec3d origin, double radius) {
+        return findAllEntitiesInRange(origin, radius, null);
     }
 
     default Stream<Entity> findAllEntitiesInRange(double radius) {

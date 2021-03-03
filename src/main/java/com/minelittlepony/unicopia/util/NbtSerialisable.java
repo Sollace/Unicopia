@@ -1,7 +1,9 @@
 package com.minelittlepony.unicopia.util;
 
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.util.math.Vec3d;
 
 public interface NbtSerialisable {
     /**
@@ -28,21 +30,15 @@ public interface NbtSerialisable {
         return compound;
     }
 
-    static CompoundTag writeBlockPos(BlockPos pos) {
-        CompoundTag dest = new CompoundTag();
-
-        dest.putInt("X", pos.getX());
-        dest.putInt("Y", pos.getY());
-        dest.putInt("Z", pos.getZ());
-
-        return dest;
+    static ListTag writeVector(Vec3d vector) {
+        ListTag list = new ListTag();
+        list.add(DoubleTag.of(vector.getX()));
+        list.add(DoubleTag.of(vector.getY()));
+        list.add(DoubleTag.of(vector.getZ()));
+        return list;
     }
 
-    static BlockPos readBlockPos(CompoundTag compound) {
-        return new BlockPos(
-                compound.getInt("X"),
-                compound.getInt("Y"),
-                compound.getInt("Z")
-        );
+    static Vec3d readVector(ListTag list) {
+        return new Vec3d(list.getDouble(0), list.getDouble(1), list.getDouble(2));
     }
 }

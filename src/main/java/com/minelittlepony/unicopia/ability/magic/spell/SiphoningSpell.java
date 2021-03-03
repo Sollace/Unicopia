@@ -2,12 +2,16 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
+import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.LivingEntity;
@@ -20,21 +24,20 @@ import net.minecraft.util.math.Vec3d;
 /**
  * A spell that pulls health from other entities and delivers it to the caster.
  */
-public class SiphoningSpell extends AbstractSpell implements Attached {
+public class SiphoningSpell extends AbstractPlacedSpell {
 
     protected SiphoningSpell(SpellType<?> type) {
         super(type);
     }
 
     @Override
-    public boolean onBodyTick(Caster<?> source) {
-        int radius = 4 + source.getLevel().get();
+    public boolean onGroundTick(Caster<?> source) {
 
         if (source.isClient()) {
-            Vec3d origin = source.getOriginVector();
-            int direction = !isEnemy(source) ? 1 : -1;
+            int radius = 4 + source.getLevel().get();
+            int direction = isFriendlyTogether(source) ? 1 : -1;
 
-            source.spawnParticles(new Sphere(true, radius, 1, 0, 1), 1, pos -> {
+            source.spawnParticles(origin, new Sphere(true, radius, 1, 0, 1), 1, pos -> {
                 if (!source.getWorld().isAir(new BlockPos(pos).down())) {
 
                     double dist = pos.distanceTo(origin);
@@ -45,66 +48,90 @@ public class SiphoningSpell extends AbstractSpell implements Attached {
             });
         }
 
-        LivingEntity owner = source.getMaster();
+        if (source.getWorld().getTime() % 10 != 0) {
+            return true;
+        }
 
-        List<LivingEntity> target = source.findAllEntitiesInRange(radius)
-                .filter(e -> e instanceof LivingEntity)
-                .map(e -> (LivingEntity)e)
-                .collect(Collectors.toList());
+        if (isFriendlyTogether(source)) {
+            distributeHealth(source);
+        } else {
+            collectHealth(source);
+        }
+
+        return true;
+    }
+
+    private Stream<LivingEntity> getTargets(Caster<?> source) {
+        return VecHelper.findInRange(null, source.getWorld(), origin, 4 + source.getLevel().get(), e -> e instanceof LivingEntity)
+                .stream()
+                .map(e -> (LivingEntity)e);
+    }
+
+    private void distributeHealth(Caster<?> source) {
+        LivingEntity owner = source.getMaster();
+        DamageSource damage = MagicalDamageSource.create("drain", owner);
+
+        getTargets(source).forEach(e -> {
+            float maxHealthGain = e.getMaxHealth() - e.getHealth();
+
+            source.subtractEnergyCost(0.2F);
+
+            if (maxHealthGain <= 0) {
+                if (source.getWorld().random.nextInt(30) == 0) {
+                    onDestroyed(source);
+                } else {
+                    e.damage(damage, e.getHealth() / 4);
+                }
+            } else {
+                e.heal((float)Math.min(0.5F * (1 + source.getLevel().get()), maxHealthGain * 0.6));
+                ParticleUtils.spawnParticle(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, e, 0.2F), e.world, e.getPos(), Vec3d.ZERO);
+            }
+        });
+    }
+
+    private void collectHealth(Caster<?> source) {
+        LivingEntity owner = source.getMaster();
+        float maxHealthGain = owner.getMaxHealth() - owner.getHealth();
+
+        if (maxHealthGain == 0) {
+            return;
+        }
+
+        List<LivingEntity> targets = getTargets(source).collect(Collectors.toList());
+        if (targets.isEmpty()) {
+            return;
+        }
+
+        float attackAmount = Math.max(maxHealthGain / targets.size(), 0.5F);
 
         DamageSource damage = MagicalDamageSource.create("drain", owner);
 
-        if (!isFriendlyTogether(source)) {
-            if (owner != null) {
-                float healthGain = 0;
-                float maxHealthGain = owner.getMaxHealth() - owner.getHealth();
+        float healthGain = 0;
 
-                if (maxHealthGain > 0) {
-                    float attackAmount = Math.max(maxHealthGain / target.size(), 0.5F);
+        for (LivingEntity e : targets) {
+            if (!e.equals(owner)) {
+                float dealt = Math.min(e.getHealth(), attackAmount);
 
-                    for (LivingEntity e : target) {
-                        if (!e.equals(owner)) {
-                            float dealt = Math.min(e.getHealth(), attackAmount);
+                if (e instanceof PlayerEntity) {
+                    Pony player = Pony.of((PlayerEntity)e);
 
-                            if (e instanceof PlayerEntity) {
-                                Pony player = Pony.of((PlayerEntity)e);
+                    Race race = player.getSpecies();
 
-                                Race race = player.getSpecies();
-
-                                if (race.canCast()) {
-                                    dealt /= 2;
-                                }
-                                if (race.canUseEarth()) {
-                                    dealt *= 2;
-                                }
-                            }
-
-                            e.damage(damage, dealt);
-
-                            healthGain += dealt;
-                        }
+                    if (race.canCast()) {
+                        dealt /= 2;
+                    }
+                    if (race.canUseEarth()) {
+                        dealt *= 2;
                     }
                 }
 
-                owner.heal(healthGain);
+                e.damage(damage, dealt);
+                ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, owner, 0.2F), e, 1);
+
+                healthGain += dealt;
             }
-
-        } else {
-            target.forEach(e -> {
-                float maxHealthGain = e.getMaxHealth() - e.getHealth();
-
-                if (maxHealthGain <= 0) {
-                    if (source.getWorld().random.nextInt(30) == 0) {
-                        onDestroyed(source);
-                    } else {
-                        e.damage(damage, e.getHealth() / 4);
-                    }
-                } else {
-                    e.heal((float)Math.min(0.5F * (1 + source.getLevel().get()), maxHealthGain * 0.6));
-                }
-            });
         }
 
-        return false;
+        owner.heal(healthGain);
     }
 }

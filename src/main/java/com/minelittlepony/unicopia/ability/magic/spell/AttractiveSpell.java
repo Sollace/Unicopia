@@ -8,7 +8,6 @@ import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -16,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -91,7 +91,7 @@ public class AttractiveSpell extends ShieldSpell implements Thrown {
     public void toNBT(CompoundTag compound) {
         super.toNBT(compound);
         if (homingPos != null) {
-            compound.put("homingPos", NbtSerialisable.writeBlockPos(homingPos));
+            compound.put("homingPos", NbtHelper.fromBlockPos(homingPos));
         }
     }
 
@@ -99,7 +99,7 @@ public class AttractiveSpell extends ShieldSpell implements Thrown {
     public void fromNBT(CompoundTag compound) {
         super.fromNBT(compound);
         if (compound.contains("homingPos")) {
-            homingPos = NbtSerialisable.readBlockPos(compound.getCompound("homingPos"));
+            homingPos = NbtHelper.toBlockPos(compound.getCompound("homingPos"));
         }
     }
 
