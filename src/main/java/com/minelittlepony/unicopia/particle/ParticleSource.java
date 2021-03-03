@@ -30,12 +30,15 @@ public interface ParticleSource extends ParticleSpawner {
     }
 
     default void spawnParticles(Shape area, int count, Consumer<Vec3d> particleSpawner) {
-        Vec3d pos = getOriginVector();
+        spawnParticles(getOriginVector(), area, count, particleSpawner);
+    }
 
+    default void spawnParticles(Vec3d pos, Shape area, int count, Consumer<Vec3d> particleSpawner) {
         area.randomPoints(count, getWorld().random)
             .map(point -> point.add(pos))
             .forEach(particleSpawner);
     }
+
 
     @Override
     default void addParticle(ParticleEffect effect, Vec3d position, Vec3d velocity) {

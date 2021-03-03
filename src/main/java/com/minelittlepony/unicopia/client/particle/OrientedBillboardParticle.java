@@ -19,7 +19,7 @@ public abstract class OrientedBillboardParticle extends AbstractBillboardParticl
         super(world, x, y, z, velocityX, velocityY, velocityZ);
 
         fixed = effect.isAngleFixed();
-        if (!fixed) {
+        if (fixed) {
             rotation.hamiltonProduct(Vector3f.POSITIVE_X.getDegreesQuaternion(180 - effect.getYaw()));
             rotation.hamiltonProduct(Vector3f.POSITIVE_Y.getDegreesQuaternion(effect.getPitch()));
         }
@@ -27,7 +27,7 @@ public abstract class OrientedBillboardParticle extends AbstractBillboardParticl
 
     @Override
     public void buildGeometry(VertexConsumer drawer, Camera camera, float tickDelta) {
-        if (fixed) {
+        if (!fixed) {
             rotation = camera.getRotation();
         }
         super.buildGeometry(drawer, camera, tickDelta);

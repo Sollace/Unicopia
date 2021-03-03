@@ -23,7 +23,6 @@ public abstract class AbstractBillboardParticle extends Particle {
 
     public AbstractBillboardParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
-
     }
 
     @Override
@@ -36,7 +35,7 @@ public abstract class AbstractBillboardParticle extends Particle {
         Tessellator te = Tessellator.getInstance();
         BufferBuilder buffer = te.getBuffer();
 
-        MinecraftClient.getInstance().getTextureManager().bindTexture(getTexture());
+        bindTexture(getTexture());
 
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
@@ -61,6 +60,10 @@ public abstract class AbstractBillboardParticle extends Particle {
     }
 
     protected abstract void renderQuads(Tessellator te, BufferBuilder buffer, float x, float y, float z, float tickDelta);
+
+    protected void bindTexture(Identifier texture) {
+        MinecraftClient.getInstance().getTextureManager().bindTexture(texture);
+    }
 
     protected void renderQuad(Tessellator te, BufferBuilder buffer, Vector3f[] corners, float alpha, float tickDelta) {
         int light = getColorMultiplier(tickDelta);

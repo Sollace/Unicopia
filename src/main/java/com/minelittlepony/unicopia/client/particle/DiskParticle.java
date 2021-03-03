@@ -28,7 +28,7 @@ public class DiskParticle extends SphereParticle {
 
     @Override
     public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
-        if (alpha <= 0) {
+        if (colorAlpha <= 0) {
             return;
         }
 
@@ -36,7 +36,7 @@ public class DiskParticle extends SphereParticle {
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         model.setPosition(x, y, z);
         model.setRotation(rotX, rotY, rotZ);
-        model.render(matrices, radius, immediate.getBuffer(RenderLayer.getTranslucent()), 1, 1, red, green, blue, alpha);
+        model.render(matrices, radius, immediate.getBuffer(RenderLayer.getTranslucent()), 1, 1, colorRed, colorGreen, colorBlue, colorAlpha);
         immediate.draw();
     }
 }

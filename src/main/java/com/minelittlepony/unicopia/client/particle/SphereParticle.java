@@ -19,11 +19,6 @@ import com.minelittlepony.common.util.Color;
 
 public class SphereParticle extends Particle implements Attachment {
 
-    protected float red;
-    protected float green;
-    protected float blue;
-    protected float alpha;
-
     protected float prevRadius;
     protected float radius;
 
@@ -47,10 +42,10 @@ public class SphereParticle extends Particle implements Attachment {
         super(w, x, y, z);
 
         this.radius = effect.getRadius();
-        this.red = effect.getRed()/255F;
-        this.green = effect.getGreen()/255F;
-        this.blue = effect.getBlue()/255F;
-        this.alpha = effect.getAlpha();
+        this.colorRed = effect.getRed()/255F;
+        this.colorGreen = effect.getGreen()/255F;
+        this.colorBlue = effect.getBlue()/255F;
+        this.colorAlpha = effect.getAlpha();
 
         setMaxAge(10);
     }
@@ -63,7 +58,7 @@ public class SphereParticle extends Particle implements Attachment {
     @Override
     public void attach(Caster<?> caster) {
         setMaxAge(50000);
-        this.link.attach(caster);
+        link.attach(caster);
     }
 
     @Override
@@ -80,9 +75,9 @@ public class SphereParticle extends Particle implements Attachment {
         }
         if (key == 1) {
             int tint = (int)value;
-            red = Color.r(tint);
-            green = Color.g(tint);
-            blue = Color.b(tint);
+            colorRed = Color.r(tint);
+            colorGreen = Color.g(tint);
+            colorBlue = Color.b(tint);
         }
     }
 
@@ -115,7 +110,7 @@ public class SphereParticle extends Particle implements Attachment {
     @Override
     public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
 
-        if (alpha <= 0 || radius <= 0) {
+        if (colorAlpha <= 0 || radius <= 0) {
             return;
         }
 
@@ -132,10 +127,10 @@ public class SphereParticle extends Particle implements Attachment {
         float lerpedRad = MathHelper.lerp(tickDelta, prevRadius, radius);
 
         VertexConsumer buffer;
-        buffer = immediate.getBuffer(RenderLayers.getTintedTexturedLayer(red, green, blue, alpha));
-        model.render(matrices, lerpedRad + 0.1F, buffer, 1, 1, red, green, blue, alpha);
-        buffer = immediate.getBuffer(RenderLayers.getTintedTexturedLayer(red * 0.9F, green * 0.9F, blue * 0.9F, Math.min(1, alpha + 0.2F)));
-        model.render(matrices, lerpedRad - 0.1F, buffer, 1, 1, red * 0.9F, green * 0.9F, blue * 0.9F, Math.min(1, alpha + 0.2F));
+        buffer = immediate.getBuffer(RenderLayers.getTintedTexturedLayer(colorRed, colorGreen, colorBlue, colorAlpha));
+        model.render(matrices, lerpedRad + 0.1F, buffer, 1, 1, colorRed, colorGreen, colorBlue, colorAlpha);
+        buffer = immediate.getBuffer(RenderLayers.getTintedTexturedLayer(colorRed * 0.9F, colorGreen * 0.9F, colorBlue * 0.9F, Math.min(1, colorAlpha + 0.2F)));
+        model.render(matrices, lerpedRad - 0.1F, buffer, 1, 1, colorRed * 0.9F, colorGreen * 0.9F, colorBlue * 0.9F, Math.min(1, colorAlpha + 0.2F));
 
         immediate.draw();
 
