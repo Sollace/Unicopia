@@ -64,11 +64,11 @@ public interface UItems {
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new AmuletItem(new FabricItemSettings()
             .maxDamage(890)
             .rarity(Rarity.UNCOMMON)
-            .group(ItemGroup.DECORATIONS), 900, 10));
+            .group(ItemGroup.DECORATIONS), 900));
     /*AmuletItem ALICORN_AMULET = register("alicorn_amulet", new AmuletItem(new AmuletItem.Settings("alicorn_amulet")
             .toughness(900000000)
             .resistance(90000000)
-            .group(ItemGroup.DECORATIONS), 0, 0));*/
+            .group(ItemGroup.DECORATIONS), 0));*/
 
     static <T extends Item> T register(String name, T item) {
         ITEMS.add(item);

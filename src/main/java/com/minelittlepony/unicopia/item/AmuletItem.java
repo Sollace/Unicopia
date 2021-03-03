@@ -31,31 +31,21 @@ import net.minecraft.world.World;
 public class AmuletItem extends WearableItem {
 
     private final int maxEnergy;
-    private final float drain;
 
     private final ImmutableMultimap<EntityAttribute, EntityAttributeModifier> modifiers;
 
-    public AmuletItem(FabricItemSettings settings, int maxEnergy, int drainRate) {
-        this(settings, maxEnergy, drainRate, ImmutableMultimap.builder());
+    public AmuletItem(FabricItemSettings settings, int maxEnergy) {
+        this(settings, maxEnergy, ImmutableMultimap.builder());
     }
 
-    public AmuletItem(FabricItemSettings settings, int maxEnergy, int drainRate, ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> modifiers) {
+    public AmuletItem(FabricItemSettings settings, int maxEnergy, ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> modifiers) {
         super(settings);
         this.maxEnergy = maxEnergy;
-        drain = ((float)drainRate / (float)maxEnergy) / 10;
-
         this.modifiers = modifiers.build();
     }
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        /*if (world.isClient) {
-            return;
-        }
-        if (isChargable() && entity instanceof LivingEntity && ((LivingEntity) entity).getEquippedStack(EquipmentSlot.CHEST) == stack) {
-            consumeEnergy(stack, drain);
-        }*/
-
         if (this == UItems.PEGASUS_AMULET
                 && entity.world.getTime() % 6 == 0
                 && entity instanceof LivingEntity
