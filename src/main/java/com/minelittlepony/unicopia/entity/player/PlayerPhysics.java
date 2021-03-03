@@ -3,8 +3,7 @@ package com.minelittlepony.unicopia.entity.player;
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.JoustingSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.Jumper;
@@ -78,7 +77,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
     @Override
     public boolean isRainbooming() {
-        return pony.getSpellOrEmpty(JoustingSpell.class).isPresent();
+        return pony.getSpellSlot().get(SpellType.JOUSTING, true).isPresent();
     }
 
     @Override
@@ -448,14 +447,10 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             return FlightType.ARTIFICIAL;
         }
 
-        if (pony.hasSpell()) {
-            Spell effect = pony.getSpell(true);
-            if (!effect.isDead() && effect instanceof FlightType.Provider) {
-                return ((FlightType.Provider)effect).getFlightType(pony);
-            }
-        }
-
-        return pony.getSpecies().getFlightType();
+        return pony.getSpellSlot().get(true)
+            .filter(effect -> !effect.isDead() && effect instanceof FlightType.Provider)
+            .map(effect -> ((FlightType.Provider)effect).getFlightType(pony))
+            .orElse(pony.getSpecies().getFlightType());
     }
 
     public void updateFlightStat(boolean flying) {

@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
@@ -82,7 +83,7 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
     @Inject(method = "isClimbing()Z", at = @At("HEAD"), cancellable = true)
     public void onIsClimbing(CallbackInfoReturnable<Boolean> info) {
         if (get() instanceof Pony && horizontalCollision) {
-            ((Pony)get()).getSpellOrEmpty(DisguiseSpell.class, false)
+            ((Pony)get()).getSpellSlot().get(SpellType.DISGUISE, false)
             .map(DisguiseSpell::getDisguise)
             .filter(Disguise::canClimbWalls)
             .ifPresent(v -> {
@@ -95,7 +96,7 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
     @Inject(method = "isPushable()Z", at = @At("HEAD"), cancellable = true)
     private void onIsPushable(CallbackInfoReturnable<Boolean> info) {
         Caster.of(this)
-            .flatMap(c -> c.getSpellOrEmpty(DisguiseSpell.class, false))
+            .flatMap(c -> c.getSpellSlot().get(SpellType.DISGUISE, false))
             .map(DisguiseSpell::getDisguise)
             .map(Disguise::getAppearance)
             .filter(Entity::isPushable)

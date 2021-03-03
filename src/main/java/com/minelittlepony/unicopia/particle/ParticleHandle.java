@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.Equine;
 
@@ -66,7 +67,7 @@ public class ParticleHandle {
         public void attach(Caster<?> caster) {
             this.linked = true;
             this.caster = Optional.of(caster);
-            this.effect = caster.getSpell(false).getType();
+            this.effect = caster.getSpellSlot().get(false).map(Spell::getType).orElse(null);
         }
 
         public void detach() {
@@ -81,10 +82,10 @@ public class ParticleHandle {
             caster = caster.filter(c -> {
                 Entity e = c.getEntity();
 
-
                 return Equine.of(e) == c
-                        && c.hasSpell()
-                        && c.getSpell(false).getType().equals(effect)
+                        && c.getSpellSlot().get(false)
+                            .filter(s -> s.getType() == effect)
+                            .isPresent()
                         && e != null
                         && c.getWorld().getEntityById(e.getEntityId()) != null;
             });

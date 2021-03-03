@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.minelittlepony.common.util.animation.MotionCompositor;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 
 import net.minecraft.util.math.Vec3d;
 
@@ -46,7 +47,8 @@ public class PlayerCamera extends MotionCompositor {
     }
 
     public Optional<Double> calculateDistance(double distance) {
-        return player.getSpellOrEmpty(DisguiseSpell.class, false)
+        return player.getSpellSlot()
+            .get(SpellType.DISGUISE, false)
             .map(DisguiseSpell::getDisguise)
             .flatMap(d -> d.getDistance(player))
             .map(d -> distance * d);

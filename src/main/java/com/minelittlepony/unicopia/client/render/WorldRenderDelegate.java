@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.client.render;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.Living;
@@ -83,7 +83,7 @@ public class WorldRenderDelegate {
 
             int fireTicks = pony.getMaster().doesRenderOnFire() ? 1 : 0;
 
-            return ((Caster<?>)pony).getSpellOrEmpty(DisguiseSpell.class, true).map(effect -> {
+            return ((Caster<?>)pony).getSpellSlot().get(SpellType.DISGUISE, true).map(effect -> {
                 effect.update(pony, false);
 
                 Disguise ve = effect.getDisguise();

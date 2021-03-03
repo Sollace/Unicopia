@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Suppressable;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.shape.Shape;
@@ -45,12 +44,12 @@ public class RevealingSpell extends AbstractSpell implements Attached, Thrown {
         }
 
         source.findAllSpellsInRange(15).forEach(e -> {
-            Suppressable spell = e.getSpell(Suppressable.class, false);
-
-            if (spell != null && spell.isVulnerable(source, this)) {
+            e.getSpellSlot().get(SpellPredicate.IS_SUPPRESSABLE, false)
+                .filter(spell -> spell.isVulnerable(source, this))
+                .ifPresent(spell -> {
                 spell.onSuppressed(source);
                 source.getWorld().playSound(null, e.getOrigin(), SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, SoundCategory.PLAYERS, 0.2F, 0.5F);
-            }
+            });
         });
 
         return true;

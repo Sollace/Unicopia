@@ -8,7 +8,7 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.ability.magic.spell.ShieldSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
@@ -23,7 +23,7 @@ import net.minecraft.util.math.Vec3d;
  */
 public class BatEeeeAbility implements Ability<Hit> {
 
-    private static final Predicate<Entity> HAS_SHIELD = EquinePredicates.carryingSpell(ShieldSpell.class);
+    private static final Predicate<Entity> HAS_SHIELD = EquinePredicates.carryingSpell(SpellType.SHIELD);
 
     @Override
     public int getWarmupTime(Pony player) {

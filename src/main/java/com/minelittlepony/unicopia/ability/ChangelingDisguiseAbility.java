@@ -44,7 +44,8 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
 
         Entity looked = trace.getEntity().map(e -> {
             return e instanceof PlayerEntity ? Pony.of((PlayerEntity)e)
-                    .getSpellOrEmpty(DisguiseSpell.class)
+                    .getSpellSlot()
+                    .get(SpellType.DISGUISE, true)
                     .map(DisguiseSpell::getDisguise)
                     .map(Disguise::getAppearance)
                     .orElse(e) : e;
@@ -57,7 +58,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
 
         player.getEntityWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PARROT_IMITATE_RAVAGER, SoundCategory.PLAYERS, 1.4F, 0.4F);
 
-        iplayer.getSpellOrEmpty(DisguiseSpell.class).orElseGet(() -> {
+        iplayer.getSpellSlot().get(SpellType.DISGUISE, true).orElseGet(() -> {
             DisguiseSpell disc = SpellType.DISGUISE.create();
 
             iplayer.setSpell(disc);

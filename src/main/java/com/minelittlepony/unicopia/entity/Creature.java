@@ -4,7 +4,6 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
-import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.ai.BreakHeartGoal;
 import com.minelittlepony.unicopia.entity.ai.DynamicTargetGoal;
@@ -89,11 +88,9 @@ public class Creature extends Living<LivingEntity> {
     @Override
     public void toNBT(CompoundTag compound) {
         super.toNBT(compound);
-        Spell effect = getSpell(true);
-
-        if (effect != null) {
+        getSpellSlot().get(true).ifPresent(effect -> {
             compound.put("effect", SpellType.toNBT(effect));
-        }
+        });
         physics.toNBT(compound);
     }
 

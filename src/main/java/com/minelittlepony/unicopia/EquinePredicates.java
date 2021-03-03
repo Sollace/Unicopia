@@ -2,8 +2,10 @@ package com.minelittlepony.unicopia;
 
 import java.util.function.Predicate;
 
+import javax.annotation.Nullable;
+
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
@@ -28,7 +30,7 @@ public interface EquinePredicates {
 
     Predicate<LivingEntity> HAS_WANT_IT_NEED_IT = e -> EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) > 0;
 
-    static Predicate<Entity> carryingSpell(Class<? extends Spell> type) {
-        return IS_PLAYER.and(entity -> Pony.of((PlayerEntity)entity).getSpellOrEmpty(type, false).isPresent());
+    static Predicate<Entity> carryingSpell(@Nullable SpellType<?> type) {
+        return IS_PLAYER.and(entity -> Pony.of((PlayerEntity)entity).getSpellSlot().get(type, false).isPresent());
     }
 }

@@ -14,7 +14,6 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.ShieldSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.PonyContainer;
@@ -134,7 +133,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     @Override
     public boolean isInvisible() {
-        return invisible && hasSpell();
+        return invisible && getSpellSlot().isPresent();
     }
 
     public boolean isSpeciesPersisted() {
@@ -289,7 +288,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
         float g = gravity.getGravityModifier();
 
-        boolean extraProtection = getSpell(ShieldSpell.class, false) != null;
+        boolean extraProtection = getSpellSlot().get(SpellType.SHIELD, false).isPresent();
 
         if (g != 1 || extraProtection || getSpecies().canFly() && !entity.isCreative() && !entity.isSpectator()) {
 
@@ -384,11 +383,9 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         compound.put("powers", powers.toNBT());
         compound.put("gravity", gravity.toNBT());
 
-        Spell effect = getSpell(true);
-
-        if (effect != null) {
+        getSpellSlot().get(true).ifPresent(effect ->{
             compound.put("effect", SpellType.toNBT(effect));
-        }
+        });
     }
 
     @Override
@@ -403,7 +400,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         magicExhaustion = compound.getFloat("magicExhaustion");
 
         if (compound.contains("effect")) {
-            getPrimarySpellSlot().set(SpellType.fromNBT(compound.getCompound("effect")));
+            getSpellSlot().put(SpellType.fromNBT(compound.getCompound("effect")));
         }
     }
 
@@ -411,7 +408,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     public void copyFrom(Pony oldPlayer) {
         speciesPersisted = oldPlayer.speciesPersisted;
         if (!oldPlayer.getEntity().removed) {
-            setSpell(oldPlayer.getSpell(true));
+            setSpell(oldPlayer.getSpellSlot().get(true).orElse(null));
         }
         setSpecies(oldPlayer.getSpecies());
         setDirty();

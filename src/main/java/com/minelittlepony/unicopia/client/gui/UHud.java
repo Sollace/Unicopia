@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -88,7 +89,7 @@ public class UHud extends DrawableHelper {
         matrices.pop();
 
         if (pony.getSpecies() == Race.CHANGELING && !client.player.isSneaking()) {
-            pony.getSpellOrEmpty(DisguiseSpell.class, false).map(DisguiseSpell::getDisguise)
+            pony.getSpellSlot().get(SpellType.DISGUISE, false).map(DisguiseSpell::getDisguise)
                 .map(Disguise::getAppearance)
                 .ifPresent(appearance -> {
 

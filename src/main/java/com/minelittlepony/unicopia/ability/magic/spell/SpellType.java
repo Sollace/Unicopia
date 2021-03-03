@@ -10,9 +10,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Affine;
-import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.Thrown;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.Text;
@@ -20,7 +18,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
-public class SpellType<T extends Spell> implements Affine {
+public final class SpellType<T extends Spell> implements Affine, SpellPredicate<T> {
 
     public static final Identifier EMPTY_ID = new Identifier("unicopia", "null");
     public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, t -> null);
@@ -57,7 +55,7 @@ public class SpellType<T extends Spell> implements Affine {
     @Nullable
     private String translationKey;
 
-    SpellType(Identifier id, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
+    private SpellType(Identifier id, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
         this.id = id;
         this.affinity = affinity;
         this.color = color;
@@ -65,8 +63,8 @@ public class SpellType<T extends Spell> implements Affine {
         this.factory = factory;
 
         Spell inst = create();
-        thrown = inst instanceof Thrown;
-        attached = inst instanceof Attached;
+        thrown = SpellPredicate.IS_THROWN.test(inst);
+        attached = SpellPredicate.IS_ATTACHED.test(inst);
     }
 
     public boolean isObtainable() {
@@ -119,6 +117,11 @@ public class SpellType<T extends Spell> implements Affine {
         return null;
     }
 
+    @Override
+    public boolean test(@Nullable Spell spell) {
+        return spell != null && spell.getType() == this;
+    }
+
     public static <T extends Spell> SpellType<T> register(Identifier id, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
         SpellType<T> type = new SpellType<>(id, affinity, color, obtainable, factory);
         byAffinity(affinity).add(type);
@@ -132,16 +135,11 @@ public class SpellType<T extends Spell> implements Affine {
 
     @SuppressWarnings("unchecked")
     public static <T extends Spell> SpellType<T> getKey(Identifier id) {
-        return (SpellType<T>)REGISTRY.getOrDefault(id, EMPTY_KEY);
+        return (SpellType<T>)(EMPTY_ID.equals(id) ? EMPTY_KEY : REGISTRY.getOrDefault(id, EMPTY_KEY));
     }
 
     public static Set<SpellType<?>> byAffinity(Affinity affinity) {
         return BY_AFFINITY.computeIfAbsent(affinity, a -> new HashSet<>());
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends Spell> T copy(T effect) {
-        return (T)fromNBT(toNBT(effect));
     }
 
     @Nullable

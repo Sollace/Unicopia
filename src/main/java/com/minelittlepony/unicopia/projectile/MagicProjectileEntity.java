@@ -2,11 +2,12 @@ package com.minelittlepony.unicopia.projectile;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.UEntities;
+import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.Magical;
 import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.Thrown;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.Physics;
@@ -77,7 +78,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
 
     @Override
     protected Item getDefaultItem() {
-        switch (getSpellOrEmpty(Spell.class, false).map(Spell::getAffinity).orElse(Affinity.NEUTRAL)) {
+        switch (getSpellSlot().get(false).map(Spell::getAffinity).orElse(Affinity.NEUTRAL)) {
             case GOOD: return Items.SNOWBALL;
             case BAD: return Items.MAGMA_CREAM;
             default: return Items.AIR;
@@ -111,11 +112,11 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
 
     @Override
     public Affinity getAffinity() {
-        return hasSpell() ? getSpell(true).getAffinity() : Affinity.NEUTRAL;
+        return getSpellSlot().get(true).map(Affine::getAffinity).orElse(Affinity.NEUTRAL);
     }
 
     @Override
-    public EffectSync getPrimarySpellSlot() {
+    public EffectSync getSpellSlot() {
         return effectDelegate;
     }
 
@@ -158,17 +159,13 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
             setNoGravity(false);
         }
 
-        if (hasSpell()) {
+        if (getSpellSlot().isPresent()) {
             if (lastBlockPos == null || !lastBlockPos.equals(getBlockPos())) {
                 lastBlockPos = getBlockPos();
             }
 
-            Thrown spell = getSpell(Thrown.class, true);
-
-            if (spell.isDead()) {
+            if (!getSpellSlot().get(SpellPredicate.IS_THROWN, true).filter(spell -> spell.onThrownTick(this)).isPresent()) {
                 remove();
-            } else {
-                spell.onThrownTick(this);
             }
         }
 
@@ -228,10 +225,9 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
     public void writeCustomDataToTag(CompoundTag compound) {
         super.writeCustomDataToTag(compound);
         physics.toNBT(compound);
-
-        if (hasSpell()) {
-            compound.put("effect", SpellType.toNBT(getSpell(true)));
-        }
+        getSpellSlot().get(true).ifPresent(effect -> {
+            compound.put("effect", SpellType.toNBT(effect));
+        });
     }
 
     @Override
@@ -249,13 +245,9 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
 
     @Override
     protected void onBlockHit(BlockHitResult hit) {
-        if (hasSpell()) {
-            Spell effect = getSpell(true);
-
-            if (effect instanceof ProjectileDelegate) {
-                ((ProjectileDelegate)effect).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));
-            }
-        }
+        getSpellSlot().get(SpellPredicate.IS_THROWN, true).ifPresent(effect -> {
+            effect.onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));
+        });
 
         if (getItem().getItem() instanceof ProjectileDelegate) {
             ((ProjectileDelegate)getItem().getItem()).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));

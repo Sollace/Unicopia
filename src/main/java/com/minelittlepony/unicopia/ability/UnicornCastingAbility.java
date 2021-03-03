@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
@@ -60,7 +61,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
             return Hit.of(spell != ActionResult.FAIL && manaLevel > 4F);
         }
 
-        return Hit.of(manaLevel > (player.hasSpell() ? 2F : 4F));
+        return Hit.of(manaLevel > (player.getSpellSlot().isPresent() ? 2F : 4F));
     }
 
     @Override
@@ -82,7 +83,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
             return 4F;
         }
 
-        if (player.hasSpell()) {
+        if (player.getSpellSlot().isPresent()) {
             return 2F;
         }
 
@@ -112,7 +113,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
             if (newSpell.getResult() != ActionResult.FAIL) {
                 @Nullable
                 SpellType<?> spell = newSpell.getValue();
-                if (!player.hasSpell() && spell == null) {
+                if (!player.getSpellSlot().isPresent() && spell == null) {
                     spell = SpellType.SHIELD;
                 }
 
@@ -138,7 +139,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
     }
 
     private TypedActionResult<SpellType<?>> getNewSpell(Pony player) {
-        final SpellType<?> current = player.hasSpell() ? player.getSpell(true).getType() : null;
+        final SpellType<?> current = player.getSpellSlot().get(true).map(Spell::getType).orElse(null);
         return Streams.stream(player.getMaster().getItemsHand())
                 .filter(GemstoneItem::isEnchanted)
                 .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), current, SpellType::mayAttach))

@@ -27,48 +27,10 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
 
     Physics getPhysics();
 
-    EffectSync getPrimarySpellSlot();
+    EffectSync getSpellSlot();
 
     default void setSpell(@Nullable Spell spell) {
-        getPrimarySpellSlot().set(spell);
-    }
-
-    /**
-     * Gets the active effect for this caster.
-     */
-    @Nullable
-    default Spell getSpell(boolean update) {
-        return getSpell(null, update);
-    }
-
-    /**
-     * Gets the active effect for the matching given type.
-     * Returns null if no such effect exists for this caster.
-     */
-    @Nullable
-    default <T extends Spell> T getSpell(@Nullable Class<T> type, boolean update) {
-        return getPrimarySpellSlot().get(type, update);
-    }
-
-    /**
-     * Gets the active effect for this caster updating it if needed.
-     */
-    default <T extends Spell> Optional<T> getSpellOrEmpty(Class<T> type, boolean update) {
-        return getPrimarySpellSlot().getOrEmpty(type, update);
-    }
-
-    /**
-     * Gets the active effect for this caster updating it if needed.
-     */
-    default <T extends Spell> Optional<T> getSpellOrEmpty(Class<T> type) {
-        return getSpellOrEmpty(type, true);
-    }
-
-    /**
-     * Returns true if this caster has an active effect attached to it.
-     */
-    default boolean hasSpell() {
-        return getPrimarySpellSlot().has();
+        getSpellSlot().put(spell);
     }
 
     /**
@@ -80,7 +42,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     }
 
     /**
-     * gets the minecraft world
+     * Gets the minecraft world
      */
     @Override
     default World getWorld() {

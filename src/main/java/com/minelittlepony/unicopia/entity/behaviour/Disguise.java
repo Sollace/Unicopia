@@ -14,7 +14,7 @@ import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
@@ -345,7 +345,7 @@ public class Disguise implements NbtSerialisable {
         VoxelShape entityShape = VoxelShapes.cuboid(box.expand(1.0E-6D));
 
         world.getOtherEntities(entity, box.expand(0.5), predicate.and(e -> {
-            Caster.of(e).flatMap(c -> c.getSpellOrEmpty(DisguiseSpell.class, false)).ifPresent(p -> {
+            Caster.of(e).flatMap(c -> c.getSpellSlot().get(SpellType.DISGUISE, false)).ifPresent(p -> {
                 p.getDisguise().getCollissionShapes(ctx, shape -> {
                     if (!shape.isEmpty() && VoxelShapes.matchesAnywhere(shape, entityShape, BooleanBiFunction.AND)) {
                         shapes.add(shape);

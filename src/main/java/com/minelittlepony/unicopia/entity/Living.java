@@ -5,10 +5,9 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
-import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.EffectSync;
 
@@ -60,7 +59,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     @Override
-    public EffectSync getPrimarySpellSlot() {
+    public EffectSync getSpellSlot() {
         return effectDelegate;
     }
 
@@ -79,15 +78,11 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public void tick() {
-        if (hasSpell()) {
-            Attached effect = getSpell(Attached.class, true);
-
-            if (effect != null) {
-                if (!effect.onBodyTick(this)) {
-                    setSpell(null);
-                }
+        getSpellSlot().get(SpellPredicate.IS_ATTACHED, true).ifPresent(effect -> {
+            if (!effect.onBodyTick(this)) {
+                setSpell(null);
             }
-        }
+        });
 
         if (invinsibilityTicks > 0) {
             invinsibilityTicks--;
@@ -142,18 +137,13 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public boolean onProjectileImpact(ProjectileEntity projectile) {
-        if (hasSpell()) {
-            Spell effect = getSpell(true);
-            if (!effect.isDead() && effect.handleProjectileImpact(projectile)) {
-                return true;
-            }
-        }
-
-        return false;
+        return getSpellSlot().get(true)
+                .filter(effect -> !effect.isDead() && effect.handleProjectileImpact(projectile))
+                .isPresent();
     }
 
     protected void handleFall(float distance, float damageMultiplier) {
-        getSpellOrEmpty(DisguiseSpell.class, false).ifPresent(spell -> {
+        getSpellSlot().get(SpellType.DISGUISE, false).ifPresent(spell -> {
             spell.getDisguise().onImpact(this, distance, damageMultiplier);
         });
     }

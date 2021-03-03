@@ -52,11 +52,4 @@ public interface Spell extends NbtSerialisable, Affine {
     default boolean handleProjectileImpact(ProjectileEntity projectile) {
         return false;
     }
-
-    /**
-     * Returns a new, deep-copied instance of this spell.
-     */
-    default Spell copy() {
-        return SpellType.copy(this);
-    }
 }
