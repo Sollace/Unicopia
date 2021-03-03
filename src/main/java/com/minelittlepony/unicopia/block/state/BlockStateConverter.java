@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.world.World;
 
 public interface BlockStateConverter {
     /**
@@ -23,5 +24,5 @@ public interface BlockStateConverter {
      * @return    The converted state if there is one, otherwise null
      */
     @Nonnull
-    BlockState getConverted(@Nonnull BlockState state);
+    BlockState getConverted(World world, @Nonnull BlockState state);
 }

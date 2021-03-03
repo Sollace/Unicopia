@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Magical;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.block.state.StateMaps;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
@@ -37,7 +38,6 @@ import net.minecraft.world.explosion.Explosion.DestructionType;
  */
 public class FireSpell extends AbstractSpell implements Thrown, Attached {
 
-    private static final Shape VISUAL_EFFECT_RANGE = new Sphere(false, 0.5);
     private static final Shape EFFECT_RANGE = new Sphere(false, 4);
 
     protected FireSpell(SpellType<?> type) {
@@ -69,7 +69,7 @@ public class FireSpell extends AbstractSpell implements Thrown, Attached {
     }
 
     protected void generateParticles(Caster<?> source) {
-        source.spawnParticles(VISUAL_EFFECT_RANGE, source.getLevel().get() * 6, pos -> {
+        source.spawnParticles(EFFECT_RANGE, (1 + source.getLevel().get()) * 6, pos -> {
             source.addParticle(ParticleTypes.LARGE_SMOKE, pos, Vec3d.ZERO);
         });
     }
@@ -79,13 +79,8 @@ public class FireSpell extends AbstractSpell implements Thrown, Attached {
         Block id = state.getBlock();
 
         if (id != Blocks.AIR) {
-            if (id == Blocks.ICE || id == Blocks.PACKED_ICE) {
-                world.setBlockState(pos, (world.getDimension().isUltrawarm() ? Blocks.AIR : Blocks.WATER).getDefaultState());
-                playEffect(world, pos);
-
-                return true;
-            } else if (id == Blocks.NETHERRACK) {
-                if (world.getBlockState(pos.up()).getMaterial() == Material.AIR) {
+            if (id == Blocks.NETHERRACK) {
+                if (world.isAir(pos.up())) {
 
                     if (world.random.nextInt(300) == 0) {
                         world.setBlockState(pos.up(), Blocks.FIRE.getDefaultState());
@@ -114,7 +109,7 @@ public class FireSpell extends AbstractSpell implements Thrown, Attached {
                     return true;
                 }
             } else {
-                BlockState newState = StateMaps.FIRE_AFFECTED.getConverted(state);
+                BlockState newState = StateMaps.FIRE_AFFECTED.getConverted(world, state);
 
                 if (!state.equals(newState)) {
                     world.setBlockState(pos, newState, 3);
@@ -175,10 +170,14 @@ public class FireSpell extends AbstractSpell implements Thrown, Attached {
         int y = pos.getY();
         int z = pos.getZ();
 
-        world.playSound(x + 0.5F, y + 0.5F, z + 0.5F, SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, SoundCategory.AMBIENT, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F, true);
+        world.playSound(null, pos, SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, SoundCategory.AMBIENT, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
 
         for (int i = 0; i < 8; ++i) {
-            world.addParticle(ParticleTypes.LARGE_SMOKE, x + Math.random(), y + Math.random(), z + Math.random(), 0, 0, 0);
+            ParticleUtils.spawnParticle(ParticleTypes.LARGE_SMOKE, world, new Vec3d(
+                    x + Math.random(),
+                    y + Math.random(),
+                    z + Math.random()
+            ), Vec3d.ZERO);
         }
     }
 

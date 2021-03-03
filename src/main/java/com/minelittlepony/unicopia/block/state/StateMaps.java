@@ -7,19 +7,20 @@ import net.minecraft.block.OreBlock;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.block.SnowBlock;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Util;
 
 public class StateMaps {
     public static final BlockStateConverter ICE_AFFECTED = register(Util.make(new BlockStateMap(), a -> {
         a.add(StateMapping.build(
                 s -> s.getMaterial() == Material.WATER,
-                s -> Blocks.ICE.getDefaultState()));
+                (w, s) -> Blocks.ICE.getDefaultState()));
         a.add(StateMapping.build(
                 s -> s.getMaterial() == Material.LAVA,
-                s -> Blocks.OBSIDIAN.getDefaultState()));
+                (w, s) -> Blocks.OBSIDIAN.getDefaultState()));
         a.add(StateMapping.build(
                 s -> s.getBlock() == Blocks.SNOW,
-                s -> {
+                (w, s) -> {
                     s = s.cycle(SnowBlock.LAYERS);
                     if (s.get(SnowBlock.LAYERS) >= 7) {
                         return Blocks.SNOW_BLOCK.getDefaultState();
@@ -53,8 +54,11 @@ public class StateMaps {
     }), "infestation");
 
     public static final BlockStateConverter FIRE_AFFECTED = register(Util.make(new BlockStateMap(), a -> {
-        a.removeBlock(s -> s.getBlock() == Blocks.SNOW || s.getBlock() == Blocks.SNOW_BLOCK);
+        a.removeBlock(Blocks.SNOW);
+        a.removeBlock(Blocks.SNOW_BLOCK);
         a.removeBlock(s -> s.getBlock() instanceof PlantBlock);
+        a.replaceBlock(Blocks.ICE, Blocks.WATER);
+        a.replaceBlock(Blocks.PACKED_ICE, Blocks.WATER);
         a.replaceBlock(Blocks.CLAY, Blocks.BROWN_CONCRETE);
         a.replaceBlock(Blocks.OBSIDIAN, Blocks.LAVA);
         a.replaceBlock(Blocks.GRASS_BLOCK, Blocks.DIRT);
@@ -66,24 +70,42 @@ public class StateMaps {
         a.setProperty(Blocks.FARMLAND, FarmlandBlock.MOISTURE, 0);
         a.add(StateMapping.build(
                 s -> s.getBlock() == Blocks.DIRT,
-                s -> (Math.random() <= 0.15 ? Blocks.COARSE_DIRT.getDefaultState() : s)));
+                (w, s) -> (w.random.nextFloat() <= 0.15 ? Blocks.COARSE_DIRT.getDefaultState() : s)));
     }), "fire");
 
-    public static final BlockStateConverter HELLFIRE_AFFECTED = register(Util.make(new BlockStateMap(), a -> {
-        a.add(StateMapping.build(
-                s -> s.getBlock() == Blocks.GRASS_BLOCK || s.getBlock() == Blocks.DIRT || s.getBlock() == Blocks.STONE,
-                s -> Blocks.NETHERRACK.getDefaultState()));
+    public static final ReversableBlockStateConverter HELLFIRE_AFFECTED = register(Util.make(new ReversableBlockStateMap(), a -> {
+        a.replaceBlock(Blocks.GRASS_BLOCK, Blocks.WARPED_NYLIUM);
+        a.replaceBlock(Blocks.STONE, Blocks.NETHERRACK);
         a.replaceBlock(Blocks.SAND, Blocks.SOUL_SAND);
         a.replaceBlock(Blocks.GRAVEL, Blocks.SOUL_SAND);
+        a.replaceBlock(Blocks.DIRT, Blocks.SOUL_SOIL);
+        a.replaceBlock(Blocks.COARSE_DIRT, Blocks.SOUL_SOIL);
+        a.replaceBlock(Blocks.TORCH, Blocks.SOUL_TORCH);
+        a.replaceBlock(Blocks.WALL_TORCH, Blocks.SOUL_WALL_TORCH);
+        a.replaceBlock(Blocks.OAK_LOG, Blocks.WARPED_STEM);
+        a.replaceBlock(Blocks.STRIPPED_OAK_LOG, Blocks.STRIPPED_WARPED_STEM);
+        a.replaceBlock(Blocks.STRIPPED_OAK_WOOD, Blocks.STRIPPED_WARPED_HYPHAE);
+        a.replaceBlock(Blocks.OAK_PLANKS, Blocks.WARPED_PLANKS);
+        a.replaceBlock(Blocks.OAK_DOOR, Blocks.WARPED_DOOR);
+        a.replaceBlock(Blocks.OAK_STAIRS, Blocks.WARPED_STAIRS);
+        a.replaceBlock(Blocks.OAK_TRAPDOOR, Blocks.WARPED_TRAPDOOR);
+        a.replaceBlock(Blocks.OAK_PRESSURE_PLATE, Blocks.WARPED_PRESSURE_PLATE);
+        a.replaceBlock(Blocks.OAK_BUTTON, Blocks.WARPED_BUTTON);
+        a.replaceBlock(Blocks.OAK_FENCE, Blocks.WARPED_FENCE);
+        a.replaceBlock(Blocks.OAK_FENCE_GATE, Blocks.WARPED_FENCE_GATE);
+        a.replaceBlock(BlockTags.LEAVES, Blocks.WARPED_HYPHAE);
         a.add(StateMapping.build(
                 s -> s.getMaterial() == Material.WATER,
-                s -> Blocks.OBSIDIAN.getDefaultState()));
+                (w, s) -> Blocks.OBSIDIAN.getDefaultState(),
+                s -> StateMapping.replaceBlock(Blocks.OBSIDIAN, Blocks.WATER)));
         a.add(StateMapping.build(
                 s -> s.getBlock() instanceof PlantBlock,
-                s -> Blocks.NETHER_WART.getDefaultState()));
+                (w, s) -> Blocks.NETHER_WART.getDefaultState(),
+                s -> StateMapping.replaceBlock(Blocks.NETHER_WART, Blocks.GRASS)));
         a.add(StateMapping.build(
                 s -> (s.getBlock() != Blocks.NETHER_QUARTZ_ORE) && (s.getBlock() instanceof OreBlock),
-                s -> Blocks.NETHER_QUARTZ_ORE.getDefaultState()));
+                (w, s) -> Blocks.NETHER_QUARTZ_ORE.getDefaultState(),
+                s -> StateMapping.replaceBlock(Blocks.NETHER_QUARTZ_ORE, Blocks.COAL_ORE)));
     }), "hellfire");
 
     private static <T extends BlockStateConverter> T register(T value, String name) {

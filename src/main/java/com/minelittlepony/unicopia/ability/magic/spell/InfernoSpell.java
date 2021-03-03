@@ -1,12 +1,15 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.block.state.BlockStateConverter;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.DoorBlock;
+import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -22,6 +25,10 @@ public class InfernoSpell extends FireSpell {
 
     @Override
     public boolean onThrownTick(Caster<?> source) {
+        if (source.isClient()) {
+            generateParticles(source);
+        }
+
         World w = source.getWorld();
 
         if (!w.isClient) {
@@ -30,14 +37,24 @@ public class InfernoSpell extends FireSpell {
 
             Vec3d origin = source.getOriginVector();
 
+            BlockStateConverter converter = w.getDimension().isUltrawarm() ? StateMaps.HELLFIRE_AFFECTED.getInverse() : StateMaps.HELLFIRE_AFFECTED;
+
             for (int i = 0; i < radius; i++) {
                 BlockPos pos = new BlockPos(shape.computePoint(w.random).add(origin));
 
                 BlockState state = w.getBlockState(pos);
-                BlockState newState = StateMaps.HELLFIRE_AFFECTED.getConverted(state);
+                BlockState newState = converter.getConverted(w, state);
 
                 if (!state.equals(newState)) {
-                    w.setBlockState(pos, newState, 3);
+
+                    if (newState.getBlock() instanceof DoorBlock) {
+                        boolean lower = newState.get(DoorBlock.HALF) == DoubleBlockHalf.LOWER;
+                        BlockPos other = lower ? pos.up() : pos.down();
+
+                        w.setBlockState(other, newState.with(DoorBlock.HALF, lower ? DoubleBlockHalf.UPPER : DoubleBlockHalf.LOWER), 16 | 2);
+                    }
+
+                    w.setBlockState(pos, newState, 16 | 2);
 
                     playEffect(w, pos);
                 }
@@ -54,7 +71,7 @@ public class InfernoSpell extends FireSpell {
                 }
             }
         }
-        return false;
+        return true;
     }
 
     @Override

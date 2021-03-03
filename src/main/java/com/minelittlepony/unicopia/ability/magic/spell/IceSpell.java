@@ -69,7 +69,7 @@ public class IceSpell extends AbstractSpell implements Thrown, Attached {
         BlockState state = world.getBlockState(pos);
         Block id = state.getBlock();
 
-        BlockState converted = StateMaps.ICE_AFFECTED.getConverted(state);
+        BlockState converted = StateMaps.ICE_AFFECTED.getConverted(world, state);
 
         if (!state.equals(converted)) {
             world.setBlockState(pos, converted, 3);

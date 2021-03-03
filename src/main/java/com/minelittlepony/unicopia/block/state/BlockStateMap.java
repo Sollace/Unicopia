@@ -9,6 +9,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.property.Property;
+import net.minecraft.tag.Tag;
+import net.minecraft.world.World;
 
 /**
  * A collection of block-state mappings.
@@ -21,7 +23,16 @@ class BlockStateMap extends ArrayList<StateMapping> implements BlockStateConvert
         add(StateMapping.removeBlock(mapper));
     }
 
+    public void removeBlock(Block from) {
+        add(StateMapping.removeBlock(from));
+    }
+
+
     public void replaceBlock(Block from, Block to) {
+        add(StateMapping.replaceBlock(from, to));
+    }
+
+    public void replaceBlock(Tag<Block> from, Block to) {
         add(StateMapping.replaceBlock(from, to));
     }
 
@@ -40,10 +51,10 @@ class BlockStateMap extends ArrayList<StateMapping> implements BlockStateConvert
 
     @Override
     @Nonnull
-    public BlockState getConverted(@Nonnull BlockState state) {
+    public BlockState getConverted(World world, @Nonnull BlockState state) {
         for (StateMapping i : this) {
             if (i.test(state)) {
-                return i.apply(state);
+                return i.apply(world, state);
             }
         }
 

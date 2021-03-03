@@ -27,7 +27,7 @@ public class ScorchSpell extends FireSpell {
 
         BlockState state = source.getWorld().getBlockState(pos);
 
-        BlockState newState = StateMaps.FIRE_AFFECTED.getConverted(state);
+        BlockState newState = StateMaps.FIRE_AFFECTED.getConverted(source.getWorld(), state);
 
         if (!state.equals(newState)) {
             source.getWorld().setBlockState(pos, newState, 3);
