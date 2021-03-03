@@ -9,7 +9,6 @@ import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -25,12 +24,7 @@ public class ScorchSpell extends FireSpell {
 
         BlockPos pos = PosHelper.findSolidGroundAt(source.getWorld(), source.getOrigin(), source.getPhysics().getGravitySignum());
 
-        BlockState state = source.getWorld().getBlockState(pos);
-
-        BlockState newState = StateMaps.FIRE_AFFECTED.getConverted(source.getWorld(), state);
-
-        if (!state.equals(newState)) {
-            source.getWorld().setBlockState(pos, newState, 3);
+        if (StateMaps.FIRE_AFFECTED.convert(source.getWorld(), pos)) {
             source.spawnParticles(new Sphere(false, 1), 5, p -> {
                 source.addParticle(ParticleTypes.SMOKE, PosHelper.offset(p, pos), Vec3d.ZERO);
             });

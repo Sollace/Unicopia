@@ -17,7 +17,6 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.Material;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -76,10 +75,9 @@ public class FireSpell extends AbstractSpell implements Thrown, Attached {
 
     protected boolean applyBlocks(World world, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
-        Block id = state.getBlock();
 
-        if (id != Blocks.AIR) {
-            if (id == Blocks.NETHERRACK) {
+        if (!state.isAir()) {
+            if (state.isOf(Blocks.NETHERRACK)) {
                 if (world.isAir(pos.up())) {
 
                     if (world.random.nextInt(300) == 0) {
@@ -88,7 +86,7 @@ public class FireSpell extends AbstractSpell implements Thrown, Attached {
 
                     return true;
                 }
-            } else if (id == Blocks.REDSTONE_WIRE) {
+            } else if (state.isOf(Blocks.REDSTONE_WIRE)) {
                 int power = world.random.nextInt(5) == 3 ? 15 : 3;
 
                 sendPower(world, pos, power, 3, 0);
@@ -102,21 +100,15 @@ public class FireSpell extends AbstractSpell implements Thrown, Attached {
                     return true;
                 }
             } else if (state.isIn(BlockTags.LEAVES)) {
-                if (world.getBlockState(pos.up()).getMaterial() == Material.AIR) {
+                if (world.isAir(pos.up())) {
                     world.setBlockState(pos.up(), Blocks.FIRE.getDefaultState());
 
                     playEffect(world, pos);
                     return true;
                 }
-            } else {
-                BlockState newState = StateMaps.FIRE_AFFECTED.getConverted(world, state);
-
-                if (!state.equals(newState)) {
-                    world.setBlockState(pos, newState, 3);
-
-                    playEffect(world, pos);
-                    return true;
-                }
+            } else if (StateMaps.FIRE_AFFECTED.convert(world, pos)) {
+                playEffect(world, pos);
+                return true;
             }
         }
 

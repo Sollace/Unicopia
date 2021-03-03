@@ -7,9 +7,6 @@ import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.DoorBlock;
-import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -42,20 +39,7 @@ public class InfernoSpell extends FireSpell {
             for (int i = 0; i < radius; i++) {
                 BlockPos pos = new BlockPos(shape.computePoint(w.random).add(origin));
 
-                BlockState state = w.getBlockState(pos);
-                BlockState newState = converter.getConverted(w, state);
-
-                if (!state.equals(newState)) {
-
-                    if (newState.getBlock() instanceof DoorBlock) {
-                        boolean lower = newState.get(DoorBlock.HALF) == DoubleBlockHalf.LOWER;
-                        BlockPos other = lower ? pos.up() : pos.down();
-
-                        w.setBlockState(other, newState.with(DoorBlock.HALF, lower ? DoubleBlockHalf.UPPER : DoubleBlockHalf.LOWER), 16 | 2);
-                    }
-
-                    w.setBlockState(pos, newState, 16 | 2);
-
+                if (converter.convert(w, pos)) {
                     playEffect(w, pos);
                 }
             }

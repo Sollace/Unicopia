@@ -16,9 +16,7 @@ public class SilverfishBehaviour extends EntityBehaviour<SilverfishEntity> {
             BlockPos pos = entity.getBlockPos().down();
             BlockState state = entity.world.getBlockState(pos);
 
-            if (StateMaps.SILVERFISH_AFFECTED.canConvert(state)) {
-
-                entity.world.setBlockState(pos, StateMaps.SILVERFISH_AFFECTED.getConverted(entity.world, state));
+            if (StateMaps.SILVERFISH_AFFECTED.convert(entity.world, pos)) {
                 WorldEvent.play(WorldEvent.DESTROY_BLOCK, entity.world, pos, state);
             }
         }
