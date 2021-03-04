@@ -21,7 +21,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
 public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
@@ -36,8 +35,7 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
 
     private final EntityPhysics<CastSpellEntity> physics = new EntityPhysics<>(this, GRAVITY);
 
-    private UUID ownerUuid;
-    private int ownerEntityId;
+    private final EntityReference<LivingEntity> owner = new EntityReference<>();
 
     public CastSpellEntity(EntityType<?> type, World world) {
         super(type, world);
@@ -80,10 +78,7 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
 
     @Override
     public void setMaster(LivingEntity owner) {
-        if (owner != null) {
-            ownerUuid = owner.getUuid();
-            ownerEntityId = owner.getEntityId();
-         }
+        this.owner.set(owner);
     }
 
     @Override
@@ -98,15 +93,7 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
 
     @Override
     public LivingEntity getMaster() {
-        if (ownerUuid != null && world instanceof ServerWorld) {
-            return (LivingEntity)((ServerWorld)world).getEntity(ownerUuid);
-        }
-
-        if (ownerEntityId != 0) {
-            return (LivingEntity)world.getEntityById(ownerEntityId);
-        }
-
-        return null;
+        return owner.get(world);
     }
 
     @Override
@@ -131,18 +118,14 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
 
     @Override
     protected void writeCustomDataToTag(CompoundTag tag) {
-        if (ownerUuid != null) {
-            tag.putUuid("Owner", ownerUuid);
-        }
-        tag.putInt("OwnerId", ownerEntityId);
+        tag.put("owner", owner.toNBT());
     }
 
     @Override
     protected void readCustomDataFromTag(CompoundTag tag) {
-        if (tag.containsUuid("Owner")) {
-            ownerUuid = tag.getUuid("Owner");
+        if (tag.contains("owner")) {
+            owner.fromNBT(tag.getCompound("owner"));
         }
-        ownerEntityId = tag.getInt("OwnerId");
     }
 
 

@@ -6,9 +6,11 @@ import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.CastSpellEntity;
+import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.UParticles;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
@@ -19,6 +21,8 @@ public abstract class AbstractPlacedSpell extends AbstractSpell implements Attac
     private Identifier dimension;
 
     private final ParticleHandle particlEffect = new ParticleHandle();
+
+    private final EntityReference<CastSpellEntity> castEntity = new EntityReference<>();
 
     protected AbstractPlacedSpell(SpellType<?> type) {
         super(type);
@@ -39,13 +43,15 @@ public abstract class AbstractPlacedSpell extends AbstractSpell implements Attac
                 dimension = source.getWorld().getRegistryKey().getValue();
                 setDirty(true);
 
-                if (!source.isClient()) {
+                if (!source.isClient() && !castEntity.isPresent(source.getWorld())) {
                     CastSpellEntity entity = UEntities.CAST_SPELL.create(source.getWorld());
                     Vec3d pos = source.getOriginVector();
                     entity.updatePositionAndAngles(pos.x, pos.y, pos.z, 0, 0);
                     entity.setSpell(this);
                     entity.setMaster(source.getMaster());
                     entity.world.spawnEntity(entity);
+
+                    castEntity.set(entity);
                 }
             }
 
@@ -75,6 +81,7 @@ public abstract class AbstractPlacedSpell extends AbstractSpell implements Attac
         if (dimension != null) {
             compound.putString("dimension", dimension.toString());
         }
+        compound.put("owner", castEntity.toNBT());
     }
 
     @Override
@@ -83,6 +90,9 @@ public abstract class AbstractPlacedSpell extends AbstractSpell implements Attac
 
         if (compound.contains("dimension")) {
             dimension = new Identifier(compound.getString("dimension"));
+        }
+        if (compound.contains("castEntity")) {
+            castEntity.fromNBT(compound.getCompound("castEntity"));
         }
     }
 }

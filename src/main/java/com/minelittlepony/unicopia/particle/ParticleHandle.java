@@ -1,11 +1,11 @@
 package com.minelittlepony.unicopia.particle;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -60,13 +60,13 @@ public class ParticleHandle {
     public static final class Link {
 
         private Optional<Caster<?>> caster = Optional.empty();
-        private SpellType<?> effect;
+        private UUID effect;
         private boolean linked;
 
         public void attach(Caster<?> caster) {
             this.linked = true;
             this.caster = Optional.of(caster);
-            this.effect = caster.getSpellSlot().get(false).map(Spell::getType).orElse(null);
+            this.effect = caster.getSpellSlot().get(false).map(Spell::getUuid).orElse(null);
         }
 
         public void detach() {
@@ -83,7 +83,7 @@ public class ParticleHandle {
 
                 return Caster.of(e).orElse(null) == c
                         && c.getSpellSlot().get(false)
-                            .filter(s -> s.getType() == effect)
+                            .filter(s -> s.getUuid().equals(effect))
                             .isPresent()
                         && e != null
                         && c.getWorld().getEntityById(e.getEntityId()) != null;
