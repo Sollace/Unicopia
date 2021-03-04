@@ -32,16 +32,17 @@ public class SiphoningSpell extends AbstractPlacedSpell {
 
     @Override
     public boolean onGroundTick(Caster<?> source) {
+        super.onGroundTick(source);
 
         if (source.isClient()) {
             int radius = 4 + source.getLevel().get();
             int direction = isFriendlyTogether(source) ? 1 : -1;
 
-            source.spawnParticles(origin, new Sphere(true, radius, 1, 0, 1), 1, pos -> {
+            source.spawnParticles(new Sphere(true, radius, 1, 0, 1), 1, pos -> {
                 if (!source.getWorld().isAir(new BlockPos(pos).down())) {
 
-                    double dist = pos.distanceTo(origin);
-                    Vec3d velocity = pos.subtract(origin).normalize().multiply(direction * dist);
+                    double dist = pos.distanceTo(source.getOriginVector());
+                    Vec3d velocity = pos.subtract(source.getOriginVector()).normalize().multiply(direction * dist);
 
                     source.addParticle(direction == 1 ? ParticleTypes.HEART : ParticleTypes.ANGRY_VILLAGER, pos, velocity);
                 }
@@ -62,7 +63,7 @@ public class SiphoningSpell extends AbstractPlacedSpell {
     }
 
     private Stream<LivingEntity> getTargets(Caster<?> source) {
-        return VecHelper.findInRange(null, source.getWorld(), origin, 4 + source.getLevel().get(), e -> e instanceof LivingEntity)
+        return VecHelper.findInRange(null, source.getWorld(), source.getOriginVector(), 4 + source.getLevel().get(), e -> e instanceof LivingEntity)
                 .stream()
                 .map(e -> (LivingEntity)e);
     }

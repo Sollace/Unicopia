@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
-import com.minelittlepony.unicopia.entity.Equine;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -82,7 +81,7 @@ public class ParticleHandle {
             caster = caster.filter(c -> {
                 Entity e = c.getEntity();
 
-                return Equine.of(e) == c
+                return Caster.of(e).orElse(null) == c
                         && c.getSpellSlot().get(false)
                             .filter(s -> s.getType() == effect)
                             .isPresent()

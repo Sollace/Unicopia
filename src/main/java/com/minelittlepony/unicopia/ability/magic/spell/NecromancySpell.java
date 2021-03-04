@@ -31,11 +31,12 @@ public class NecromancySpell extends AbstractPlacedSpell {
 
     @Override
     public boolean onGroundTick(Caster<?> source) {
+        super.onGroundTick(source);
 
         int radius = (source.getLevel().get() + 1) * 4;
 
         if (source.isClient()) {
-            source.spawnParticles(origin, new Sphere(false, radius), 5, pos -> {
+            source.spawnParticles(new Sphere(false, radius), 5, pos -> {
                 if (!source.getWorld().isAir(new BlockPos(pos).down())) {
                     source.addParticle(ParticleTypes.FLAME, pos, Vec3d.ZERO);
                 }
@@ -47,7 +48,7 @@ public class NecromancySpell extends AbstractPlacedSpell {
             return true;
         }
 
-        float additional = source.getWorld().getLocalDifficulty(placement).getLocalDifficulty();
+        float additional = source.getWorld().getLocalDifficulty(source.getOrigin()).getLocalDifficulty();
 
         Shape affectRegion = new Sphere(false, radius);
 
@@ -60,7 +61,7 @@ public class NecromancySpell extends AbstractPlacedSpell {
         }
 
         for (int i = 0; i < 10; i++) {
-            Vec3d pos = affectRegion.computePoint(source.getWorld().random).add(origin);
+            Vec3d pos = affectRegion.computePoint(source.getWorld().random).add(source.getOriginVector());
 
             BlockPos loc = new BlockPos(pos);
 

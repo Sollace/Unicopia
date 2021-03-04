@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia;
 
+import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.FloatingArtefactEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
@@ -18,6 +19,9 @@ public interface UEntities {
             .trackedUpdateRate(2)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));
     EntityType<FloatingArtefactEntity> FLOATING_ARTEFACT = register("floating_artefact", FabricEntityTypeBuilder.create(SpawnGroup.MISC, FloatingArtefactEntity::new)
+            .trackRangeBlocks(200)
+            .dimensions(EntityDimensions.fixed(1, 1)));
+    EntityType<CastSpellEntity> CAST_SPELL = register("cast_spell", FabricEntityTypeBuilder.create(SpawnGroup.MISC, CastSpellEntity::new)
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(1, 1)));
 

@@ -38,7 +38,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Motion, NbtSerialisable {
+public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickable, Motion, NbtSerialisable {
 
     private int ticksInAir;
 
@@ -55,8 +55,11 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
     private final PlayerDimensions dimensions;
 
+    private final Pony pony;
+
     public PlayerPhysics(Pony pony) {
-        super(pony, Creature.GRAVITY);
+        super(pony.getMaster(), Creature.GRAVITY);
+        this.pony = pony;
         dimensions = new PlayerDimensions(pony, this);
     }
 
@@ -67,12 +70,12 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
     @Override
     public boolean isFlying() {
-        return isFlyingSurvival && !pony.getMaster().isFallFlying() && !pony.getMaster().hasVehicle();
+        return isFlyingSurvival && !entity.isFallFlying() && !entity.hasVehicle();
     }
 
     @Override
     public boolean isGliding() {
-        return isFlying() && (pony.getMaster().isSneaking() || ((Jumper)pony.getMaster()).isJumping()) && !pony.sneakingChanged();
+        return isFlying() && (entity.isSneaking() || ((Jumper)entity).isJumping()) && !pony.sneakingChanged();
     }
 
     @Override
@@ -83,8 +86,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     @Override
     public float getWingAngle() {
         float spreadAmount = -0.5F;
-
-        PlayerEntity entity = pony.getMaster();
 
         if (isFlying()) {
             //spreadAmount += Math.sin(pony.getEntity().age / 4F) * 8;
@@ -109,7 +110,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         if (wallHitCooldown > 0) {
             wallHitCooldown--;
         }
-        PlayerEntity entity = pony.getMaster();
 
         final MutableVector velocity = new MutableVector(entity.getVelocity());
 
@@ -121,7 +121,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
             entity.setPose(EntityPose.STANDING);
         }
 
-        boolean creative = entity.abilities.creativeMode || pony.getMaster().isSpectator();
+        boolean creative = entity.abilities.creativeMode || entity.isSpectator();
 
         FlightType type = getFlightType();
 
@@ -443,7 +443,7 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
 
     private FlightType getFlightType() {
 
-        if (UItems.PEGASUS_AMULET.isApplicable(pony.getMaster())) {
+        if (UItems.PEGASUS_AMULET.isApplicable(entity)) {
             return FlightType.ARTIFICIAL;
         }
 
@@ -454,8 +454,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
     }
 
     public void updateFlightStat(boolean flying) {
-        PlayerEntity entity = pony.getMaster();
-
         FlightType type = getFlightType();
 
         entity.abilities.allowFlying = type.canFlyCreative(entity);
@@ -484,6 +482,6 @@ public class PlayerPhysics extends EntityPhysics<Pony> implements Tickable, Moti
         isFlyingEither = compound.getBoolean("isFlyingEither");
         ticksInAir = compound.getInt("ticksInAir");
 
-        pony.getMaster().calculateDimensions();
+        entity.calculateDimensions();
     }
 }

@@ -30,12 +30,13 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
 
     private final ItemEntity owner;
 
-    private final ItemPhysics physics = new ItemPhysics(this);
+    private final ItemPhysics physics;
 
     private Race serverRace;
 
     public ItemImpl(ItemEntity owner) {
         this.owner = owner;
+        this.physics = new ItemPhysics(owner);
         owner.getDataTracker().startTracking(ITEM_GRAVITY, 1F);
         owner.getDataTracker().startTracking(ITEM_RACE, Race.HUMAN.ordinal());
     }

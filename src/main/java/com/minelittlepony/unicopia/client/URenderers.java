@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.client.particle.SphereParticle;
 import com.minelittlepony.unicopia.client.render.AccessoryFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.AmuletFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer;
+import com.minelittlepony.unicopia.client.render.CastSpellEntityRenderer;
 import com.minelittlepony.unicopia.client.render.FloatingArtefactEntityRenderer;
 import com.minelittlepony.unicopia.client.render.WingsFeatureRenderer;
 import com.minelittlepony.unicopia.item.ChameleonItem;
@@ -61,6 +62,7 @@ public interface URenderers {
 
         EntityRendererRegistry.INSTANCE.register(UEntities.THROWN_ITEM, (manager, context) -> new FlyingItemEntityRenderer<>(manager, context.getItemRenderer()));
         EntityRendererRegistry.INSTANCE.register(UEntities.FLOATING_ARTEFACT, FloatingArtefactEntityRenderer::new);
+        EntityRendererRegistry.INSTANCE.register(UEntities.CAST_SPELL, CastSpellEntityRenderer::new);
 
         ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack), UItems.FRIENDSHIP_BRACELET);
         BuiltinItemRendererRegistry.INSTANCE.register(UItems.FILLED_JAR, (stack, mode, matrices, vertexConsumers, light, overlay) -> {

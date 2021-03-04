@@ -2,25 +2,19 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
-
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public abstract class AbstractPlacedSpell extends AbstractSpell implements Attached {
 
-    @Nullable
-    protected Vec3d origin;
-    @Nullable
-    protected BlockPos placement;
     @Nullable
     private Identifier dimension;
 
@@ -39,39 +33,45 @@ public abstract class AbstractPlacedSpell extends AbstractSpell implements Attac
     @Override
     public boolean onBodyTick(Caster<?> source) {
 
-        if (origin == null) {
-            origin = source.getOriginVector();
-            placement = source.getOrigin();
-            dimension = source.getWorld().getRegistryKey().getValue();
+        if (!source.isClient()) {
+
+            if (dimension == null) {
+                dimension = source.getWorld().getRegistryKey().getValue();
+                setDirty(true);
+
+                if (!source.isClient()) {
+                    CastSpellEntity entity = UEntities.CAST_SPELL.create(source.getWorld());
+                    Vec3d pos = source.getOriginVector();
+                    entity.updatePositionAndAngles(pos.x, pos.y, pos.z, 0, 0);
+                    entity.setSpell(this);
+                    entity.setMaster(source.getMaster());
+                    entity.world.spawnEntity(entity);
+                }
+            }
+
+            if (!source.getWorld().getRegistryKey().getValue().equals(dimension)) {
+                return false;
+            }
         }
 
-        if (!source.getWorld().getRegistryKey().getValue().equals(dimension)) {
-            return false;
-        }
-
-        if (source.isClient()) {
-            particlEffect.ifAbsent(source, spawner -> {
-                spawner.addParticle(new OrientedBillboardParticleEffect(UParticles.MAGIC_RUNES, 90, 0), origin, Vec3d.ZERO);
-            }).ifPresent(p -> {
-                p.attach(source);
-                p.setAttribute(1, getType().getColor());
-            });
-        }
-
-        return onGroundTick(source);
+        return true;
     }
 
-    protected abstract boolean onGroundTick(Caster<?> source);
+    public boolean onGroundTick(Caster<?> source) {
+        particlEffect.ifAbsent(source, spawner -> {
+            spawner.addParticle(new OrientedBillboardParticleEffect(UParticles.MAGIC_RUNES, 90, 0), source.getOriginVector(), Vec3d.ZERO);
+        }).ifPresent(p -> {
+            p.attach(source);
+            p.setAttribute(1, getType().getColor());
+        });
+
+        return true;
+    }
 
     @Override
     public void toNBT(CompoundTag compound) {
         super.toNBT(compound);
-        if (placement != null) {
-            compound.put("placement", NbtHelper.fromBlockPos(placement));
-        }
-        if (origin != null) {
-            compound.put("origin", NbtSerialisable.writeVector(origin));
-        }
+
         if (dimension != null) {
             compound.putString("dimension", dimension.toString());
         }
@@ -80,12 +80,7 @@ public abstract class AbstractPlacedSpell extends AbstractSpell implements Attac
     @Override
     public void fromNBT(CompoundTag compound) {
         super.fromNBT(compound);
-        if (compound.contains("placement")) {
-            placement = NbtHelper.toBlockPos(compound.getCompound("placement"));
-        }
-        if (compound.contains("origin")) {
-            origin = NbtSerialisable.readVector(compound.getList("origin", 6));
-        }
+
         if (compound.contains("dimension")) {
             dimension = new Identifier(compound.getString("dimension"));
         }

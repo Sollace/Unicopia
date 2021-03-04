@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.entity;
 
-import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
 import com.minelittlepony.unicopia.util.Copieable;
 
@@ -22,31 +21,29 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics, Copieable<EntityPhysics<T>>, Tickable {
+public class EntityPhysics<T extends Entity> implements Physics, Copieable<EntityPhysics<T>>, Tickable {
 
     private final TrackedData<Float> gravity;
 
-    protected final T pony;
+    protected final T entity;
 
     private float lastGravity = 1;
 
-    public EntityPhysics(T pony, TrackedData<Float> gravity) {
-        this(pony, gravity, true);
+    public EntityPhysics(T entity, TrackedData<Float> gravity) {
+        this(entity, gravity, true);
     }
 
-    public EntityPhysics(T pony, TrackedData<Float> gravity, boolean register) {
-        this.pony = pony;
+    public EntityPhysics(T entity, TrackedData<Float> gravity, boolean register) {
+        this.entity = entity;
         this.gravity = gravity;
 
         if (register) {
-            this.pony.getMaster().getDataTracker().startTracking(gravity, 1F);
+            this.entity.getDataTracker().startTracking(gravity, 1F);
         }
     }
 
     @Override
     public void tick() {
-        Entity entity = pony.getMaster();
-
         if (isGravityNegative()) {
             if (entity.getY() > entity.world.getHeight() + 64) {
                 entity.damage(DamageSource.OUT_OF_WORLD, 4.0F);
@@ -64,8 +61,6 @@ public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics
     }
 
     protected void onGravitychanged() {
-        Entity entity = pony.getMaster();
-
         entity.calculateDimensions();
 
         if (!entity.world.isClient && entity instanceof MobEntity) {
@@ -81,7 +76,7 @@ public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics
 
     @Override
     public Vec3d getMotionAngle() {
-        return new Vec3d(pony.getMaster().getPitch(1), pony.getMaster().getYaw(1), 0);
+        return new Vec3d(entity.getPitch(1), entity.getYaw(1), 0);
     }
 
     @Override
@@ -91,8 +86,6 @@ public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics
 
     @Override
     public BlockPos getHeadPosition() {
-
-        Entity entity = pony.getMaster();
 
         entity.setOnGround(false);
 
@@ -118,7 +111,6 @@ public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics
 
     @Override
     public void spawnSprintingParticles() {
-        Entity entity = pony.getMaster();
         BlockState state = entity.world.getBlockState(getHeadPosition());
         if (state.getRenderType() != BlockRenderType.INVISIBLE) {
             Vec3d vel = entity.getVelocity();
@@ -132,31 +124,29 @@ public class EntityPhysics<T extends Owned<? extends Entity>> implements Physics
 
     @Override
     public void setBaseGravityModifier(float constant) {
-        pony.getMaster().getDataTracker().set(gravity, constant);
+        entity.getDataTracker().set(gravity, constant);
     }
 
     @Override
     public float getBaseGravityModifier() {
-        return pony.getMaster().getDataTracker().get(gravity);
+        return entity.getDataTracker().get(gravity);
     }
 
     @Override
     public float getGravityModifier() {
-        Entity master = pony.getMaster();
 
-
-        if (master instanceof LivingEntity) {
-            if (((LivingEntity)master).getAttributes() == null) {
+        if (entity instanceof LivingEntity) {
+            if (((LivingEntity)entity).getAttributes() == null) {
                 // may be null due to order of execution in the constructor.
                 // Will have the default (1) here in any case, so it's safe to ignore the attribute at this point.
                 return getBaseGravityModifier();
             }
 
-            if (((LivingEntity)master).isSleeping()) {
+            if (((LivingEntity)entity).isSleeping()) {
                 return 1;
             }
 
-            return getBaseGravityModifier() * (float)((LivingEntity)master).getAttributeValue(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+            return getBaseGravityModifier() * (float)((LivingEntity)entity).getAttributeValue(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
         }
 
         return getBaseGravityModifier();

@@ -30,10 +30,11 @@ public class Creature extends Living<LivingEntity> {
 
     public static void boostrap() {}
 
-    private final EntityPhysics<Creature> physics = new EntityPhysics<>(this, GRAVITY);
+    private final EntityPhysics<LivingEntity> physics;
 
     public Creature(LivingEntity entity) {
         super(entity, EFFECT);
+        physics = new EntityPhysics<>(entity, GRAVITY);
     }
 
     public void initAi(GoalSelector goals, GoalSelector targets) {
