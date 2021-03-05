@@ -55,6 +55,7 @@ public class MsgPlayerCapabilities implements Channel.Packet {
         Pony player = getRecipient(sender);
         if (player == null) {
             Unicopia.LOGGER.warn("Skipping capabilities for unknown player " + playerId.toString());
+            return;
         }
         if (compoundTag.isEmpty()) {
             player.setSpecies(newRace);
