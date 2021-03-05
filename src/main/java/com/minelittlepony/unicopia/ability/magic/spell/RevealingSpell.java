@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -27,12 +28,12 @@ public class RevealingSpell extends AbstractSpell implements Attached, Thrown {
     }
 
     @Override
-    public boolean onBodyTick(Caster<?> source) {
-        return onThrownTick(source);
+    public boolean onThrownTick(MagicProjectileEntity projectile) {
+        return onBodyTick(projectile);
     }
 
     @Override
-    public boolean onThrownTick(Caster<?> source) {
+    public boolean onBodyTick(Caster<?> source) {
 
         if (source.isClient()) {
             MagicParticleEffect effect = new MagicParticleEffect(getType().getColor());

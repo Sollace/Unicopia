@@ -51,12 +51,12 @@ public class FireSpell extends AbstractSpell implements Thrown, Attached {
     }
 
     @Override
-    public boolean onBodyTick(Caster<?> source) {
-        return onThrownTick(source);
+    public boolean onThrownTick(MagicProjectileEntity projectile) {
+        return onBodyTick(projectile);
     }
 
     @Override
-    public boolean onThrownTick(Caster<?> source) {
+    public boolean onBodyTick(Caster<?> source) {
         if (source.isClient()) {
             generateParticles(source);
         }

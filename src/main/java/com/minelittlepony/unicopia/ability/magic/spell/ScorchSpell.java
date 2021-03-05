@@ -20,7 +20,7 @@ public class ScorchSpell extends FireSpell {
     }
 
     @Override
-    public boolean onThrownTick(Caster<?> source) {
+    public boolean onBodyTick(Caster<?> source) {
 
         BlockPos pos = PosHelper.findSolidGroundAt(source.getWorld(), source.getOrigin(), source.getPhysics().getGravitySignum());
 

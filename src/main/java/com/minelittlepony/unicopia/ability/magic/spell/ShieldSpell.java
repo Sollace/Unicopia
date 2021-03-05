@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -66,7 +67,7 @@ public class ShieldSpell extends AbstractSpell implements Attached, Thrown {
     }
 
     @Override
-    public boolean onThrownTick(Caster<?> source) {
+    public boolean onThrownTick(MagicProjectileEntity source) {
         if (source.isClient()) {
             generateParticles(source);
         }

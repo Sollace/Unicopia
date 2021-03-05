@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -35,12 +36,12 @@ public class IceSpell extends AbstractSpell implements Thrown, Attached {
     }
 
     @Override
-    public boolean onBodyTick(Caster<?> source) {
-        return onThrownTick(source);
+    public boolean onThrownTick(MagicProjectileEntity projectile) {
+        return onBodyTick(projectile);
     }
 
     @Override
-    public boolean onThrownTick(Caster<?> source) {
+    public boolean onBodyTick(Caster<?> source) {
         LivingEntity owner = source.getMaster();
 
         PosHelper.getAllInRegionMutable(source.getOrigin(), effect_range)

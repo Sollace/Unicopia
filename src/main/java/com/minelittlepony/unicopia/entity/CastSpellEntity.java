@@ -7,10 +7,10 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractPlacedSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
 import com.minelittlepony.unicopia.network.Channel;
-import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
 
 import net.minecraft.entity.Entity;
@@ -112,8 +112,8 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
     }
 
     @Override
-    public EffectSync getSpellSlot() {
-        return Caster.of(getMaster()).map(Caster::getSpellSlot).orElse(null);
+    public SpellContainer getSpellSlot() {
+        return Caster.of(getMaster()).map(Caster::getSpellSlot).orElse(SpellContainer.EMPTY);
     }
 
     @Override

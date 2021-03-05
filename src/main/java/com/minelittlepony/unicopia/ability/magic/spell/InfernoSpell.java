@@ -21,7 +21,7 @@ public class InfernoSpell extends FireSpell {
     }
 
     @Override
-    public boolean onThrownTick(Caster<?> source) {
+    public boolean onBodyTick(Caster<?> source) {
         if (source.isClient()) {
             generateParticles(source);
         }
