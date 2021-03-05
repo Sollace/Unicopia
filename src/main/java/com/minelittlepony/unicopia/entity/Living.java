@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.item.UItems;
@@ -59,7 +60,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     @Override
-    public EffectSync getSpellSlot() {
+    public SpellContainer getSpellSlot() {
         return effectDelegate;
     }
 

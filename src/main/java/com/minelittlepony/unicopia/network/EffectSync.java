@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 
@@ -20,7 +21,7 @@ import net.minecraft.util.Identifier;
  *
  * @param <T> The owning entity
  */
-public class EffectSync {
+public class EffectSync implements SpellContainer {
 
     private Optional<Spell> spell = Optional.empty();
 
@@ -36,16 +37,7 @@ public class EffectSync {
         this.param = param;
     }
 
-    /**
-     * Gets the active effect for this caster updating it if needed.
-     */
-    public <T extends Spell> Optional<T> get(boolean update) {
-        return get(null, update);
-    }
-
-    /**
-     * Gets the active effect for this caster updating it if needed.
-     */
+    @Override
     @SuppressWarnings("unchecked")
     public <T extends Spell> Optional<T> get(@Nullable SpellPredicate<T> type, boolean update) {
         if (update) {
@@ -59,9 +51,7 @@ public class EffectSync {
         return Optional.empty();
     }
 
-    /**
-     * Returns true if this caster has an active effect attached to it.
-     */
+    @Override
     public boolean isPresent() {
         sync(false);
         return checkReference();
@@ -90,6 +80,7 @@ public class EffectSync {
         }
     }
 
+    @Override
     public void put(@Nullable Spell effect) {
         updateReference(effect);
         owner.getEntity().getDataTracker().set(param, effect == null ? new CompoundTag() : SpellType.toNBT(effect));

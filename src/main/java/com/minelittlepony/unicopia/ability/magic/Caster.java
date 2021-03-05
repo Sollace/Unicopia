@@ -10,7 +10,6 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.PonyContainer;
-import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.particle.ParticleSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -28,7 +27,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
 
     Physics getPhysics();
 
-    EffectSync getSpellSlot();
+    SpellContainer getSpellSlot();
 
     default void setSpell(@Nullable Spell spell) {
         getSpellSlot().put(spell);

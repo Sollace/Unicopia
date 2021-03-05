@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.Magical;
 import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
@@ -116,7 +117,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
     }
 
     @Override
-    public EffectSync getSpellSlot() {
+    public SpellContainer getSpellSlot() {
         return effectDelegate;
     }
 

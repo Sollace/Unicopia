@@ -28,7 +28,7 @@ public interface Thrown extends Spell, ProjectileDelegate {
      *
      * @param source   The entity we are currently attached to.
      */
-    boolean onThrownTick(Caster<?> source);
+    boolean onThrownTick(MagicProjectileEntity projectile);
 
     @Override
     default void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
