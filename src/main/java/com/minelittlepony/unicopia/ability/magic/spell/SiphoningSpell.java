@@ -47,19 +47,19 @@ public class SiphoningSpell extends AbstractPlacedSpell {
                     source.addParticle(direction == 1 ? ParticleTypes.HEART : ParticleTypes.ANGRY_VILLAGER, pos, velocity);
                 }
             });
-        }
-
-        if (source.getWorld().getTime() % 10 != 0) {
-            return true;
-        }
-
-        if (isFriendlyTogether(source)) {
-            distributeHealth(source);
         } else {
-            collectHealth(source);
-        }
 
-        return true;
+            if (source.getWorld().getTime() % 10 != 0) {
+                return true;
+            }
+
+            if (isFriendlyTogether(source)) {
+                distributeHealth(source);
+            } else {
+                collectHealth(source);
+            }
+        }
+        return !isDead();
     }
 
     private Stream<LivingEntity> getTargets(Caster<?> source) {
