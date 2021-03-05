@@ -86,7 +86,6 @@ public abstract class AbstractPlacedSpell extends AbstractSpell implements Attac
     @Override
     public void fromNBT(CompoundTag compound) {
         super.fromNBT(compound);
-        System.out.println("Loaded!");
         if (compound.contains("dimension")) {
             dimension = new Identifier(compound.getString("dimension"));
         }

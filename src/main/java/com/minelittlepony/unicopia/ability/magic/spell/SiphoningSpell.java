@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -26,6 +27,8 @@ import net.minecraft.util.math.Vec3d;
  */
 public class SiphoningSpell extends AbstractPlacedSpell {
 
+    private int ticksUpset;
+
     protected SiphoningSpell(SpellType<?> type) {
         super(type);
     }
@@ -33,6 +36,10 @@ public class SiphoningSpell extends AbstractPlacedSpell {
     @Override
     public boolean onGroundTick(Caster<?> source) {
         super.onGroundTick(source);
+
+        if (ticksUpset > 0) {
+            ticksUpset--;
+        }
 
         if (source.isClient()) {
             int radius = 4 + source.getLevel().get();
@@ -44,7 +51,7 @@ public class SiphoningSpell extends AbstractPlacedSpell {
                     double dist = pos.distanceTo(source.getOriginVector());
                     Vec3d velocity = pos.subtract(source.getOriginVector()).normalize().multiply(direction * dist);
 
-                    source.addParticle(direction == 1 ? ParticleTypes.HEART : ParticleTypes.ANGRY_VILLAGER, pos, velocity);
+                    source.addParticle(direction == 1 && ticksUpset == 0 ? ParticleTypes.HEART : ParticleTypes.ANGRY_VILLAGER, pos, velocity);
                 }
             });
         } else {
@@ -77,12 +84,16 @@ public class SiphoningSpell extends AbstractPlacedSpell {
 
             source.subtractEnergyCost(0.2F);
 
-            if (maxHealthGain <= 0) {
+            if (ticksUpset > 0 || maxHealthGain <= 0) {
                 if (source.getWorld().random.nextInt(3000) == 0) {
                     onDestroyed(source);
                 } else {
                     e.damage(damage, e.getHealth() / 4);
                 }
+                if (maxHealthGain <= 0) {
+                    ticksUpset = 100;
+                }
+                setDirty(true);
             } else {
                 e.heal((float)Math.min(0.5F * (1 + source.getLevel().get()), maxHealthGain * 0.6));
                 ParticleUtils.spawnParticle(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, e, 0.2F), e.world, e.getPos(), Vec3d.ZERO);
@@ -134,5 +145,18 @@ public class SiphoningSpell extends AbstractPlacedSpell {
         }
 
         owner.heal(healthGain);
+    }
+
+
+    @Override
+    public void toNBT(CompoundTag compound) {
+        super.toNBT(compound);
+        compound.putInt("upset", ticksUpset);
+    }
+
+    @Override
+    public void fromNBT(CompoundTag compound) {
+        super.fromNBT(compound);
+        ticksUpset = compound.getInt("upset");
     }
 }
