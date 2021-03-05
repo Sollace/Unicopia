@@ -78,7 +78,7 @@ public class SiphoningSpell extends AbstractPlacedSpell {
             source.subtractEnergyCost(0.2F);
 
             if (maxHealthGain <= 0) {
-                if (source.getWorld().random.nextInt(30) == 0) {
+                if (source.getWorld().random.nextInt(3000) == 0) {
                     onDestroyed(source);
                 } else {
                     e.damage(damage, e.getHealth() / 4);
