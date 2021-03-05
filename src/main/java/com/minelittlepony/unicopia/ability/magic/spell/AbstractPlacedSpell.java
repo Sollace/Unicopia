@@ -42,25 +42,24 @@ public abstract class AbstractPlacedSpell extends AbstractSpell implements Attac
             if (dimension == null) {
                 dimension = source.getWorld().getRegistryKey().getValue();
                 setDirty(true);
-
-                if (!source.isClient() && !castEntity.isPresent(source.getWorld())) {
-                    CastSpellEntity entity = UEntities.CAST_SPELL.create(source.getWorld());
-                    Vec3d pos = source.getOriginVector();
-                    entity.updatePositionAndAngles(pos.x, pos.y, pos.z, 0, 0);
-                    entity.setSpell(this);
-                    entity.setMaster(source.getMaster());
-                    entity.world.spawnEntity(entity);
-
-                    castEntity.set(entity);
-                }
+            } else if (!source.getWorld().getRegistryKey().getValue().equals(dimension)) {
+                return false;
             }
 
-            if (!source.getWorld().getRegistryKey().getValue().equals(dimension)) {
-                return false;
+            if (!castEntity.isPresent(source.getWorld())) {
+                CastSpellEntity entity = UEntities.CAST_SPELL.create(source.getWorld());
+                Vec3d pos = castEntity.getPosition().orElse(source.getOriginVector());
+                entity.updatePositionAndAngles(pos.x, pos.y, pos.z, 0, 0);
+                entity.setSpell(this);
+                entity.setMaster(source.getMaster());
+                entity.world.spawnEntity(entity);
+
+                castEntity.set(entity);
+                setDirty(true);
             }
         }
 
-        return true;
+        return !isDead();
     }
 
     public boolean onGroundTick(Caster<?> source) {
@@ -81,13 +80,13 @@ public abstract class AbstractPlacedSpell extends AbstractSpell implements Attac
         if (dimension != null) {
             compound.putString("dimension", dimension.toString());
         }
-        compound.put("owner", castEntity.toNBT());
+        compound.put("castEntity", castEntity.toNBT());
     }
 
     @Override
     public void fromNBT(CompoundTag compound) {
         super.fromNBT(compound);
-
+        System.out.println("Loaded!");
         if (compound.contains("dimension")) {
             dimension = new Identifier(compound.getString("dimension"));
         }

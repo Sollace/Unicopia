@@ -14,6 +14,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3d;
 
 public class RunesParticle extends OrientedBillboardParticle implements Attachment {
 
@@ -56,6 +57,8 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
         velocityX = 0;
         velocityY = 0;
         velocityZ = 0;
+        Vec3d pos = caster.getOriginVector();
+        setPos(pos.x, pos.y, pos.z);
     }
 
     @Override

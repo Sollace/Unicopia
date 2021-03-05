@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -9,6 +10,7 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EntityReference<T extends Entity> implements NbtSerialisable {
@@ -16,11 +18,18 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
     private UUID uuid;
     private int clientId;
 
+    private Optional<Vec3d> pos = Optional.empty();
+
     public void set(@Nullable T entity) {
         if (entity != null) {
             uuid = entity.getUuid();
             clientId = entity.getEntityId();
+            pos = Optional.of(entity.getPos());
         }
+    }
+
+    public Optional<Vec3d> getPosition() {
+        return pos;
     }
 
     public boolean isPresent(World world) {
@@ -47,14 +56,16 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
         if (uuid != null) {
             tag.putUuid("uuid", uuid);
         }
+        pos.ifPresent(p -> {
+            tag.put("pos", NbtSerialisable.writeVector(p));
+        });
         tag.putInt("clientId", clientId);
     }
 
     @Override
     public void fromNBT(CompoundTag tag) {
-        if (tag.containsUuid("uuid")) {
-            uuid = tag.getUuid("uuid");
-        }
+        uuid = tag.containsUuid("uuid") ? tag.getUuid("uuid") : null;
+        pos = tag.contains("pos") ? Optional.ofNullable(NbtSerialisable.readVector(tag.getList("pos", 6))) : Optional.empty();
         clientId = tag.getInt("clientId");
     }
 }
