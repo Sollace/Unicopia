@@ -1,9 +1,11 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.util.WorldEvent;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -11,6 +13,8 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -24,6 +28,8 @@ public class NecromancySpell extends AbstractPlacedSpell {
             EntityType.HUSK,
             EntityType.ZOMBIFIED_PIGLIN
     );
+
+    private final List<EntityReference<LivingEntity>> summonedEntities = new ArrayList<>();
 
     protected NecromancySpell(SpellType<?> type) {
         super(type);
@@ -70,7 +76,25 @@ public class NecromancySpell extends AbstractPlacedSpell {
             }
         }
 
+        summonedEntities.removeIf(ref -> !ref.isPresent(source.getWorld()));
+
         return true;
+    }
+
+    @Override
+    public void onDestroyed(Caster<?> caster) {
+        super.onDestroyed(caster);
+        LivingEntity master = caster.getMaster();
+        summonedEntities.forEach(ref -> {
+            ref.ifPresent(caster.getWorld(), e -> {
+                if (master != null) {
+                    master.dealDamage(master, e);
+                }
+                if (caster.getWorld().random.nextInt(2000) != 0) {
+                    e.setHealth(0);
+                }
+            });
+        });
     }
 
     protected void spawnMonster(Caster<?> source, Vec3d pos) {
@@ -85,5 +109,32 @@ public class NecromancySpell extends AbstractPlacedSpell {
         source.getWorld().syncWorldEvent(WorldEvent.ZOMBIE_BREAK_WOODEN_DOOR, zombie.getBlockPos(), 0);
 
         source.getWorld().spawnEntity(zombie);
+
+        EntityReference<LivingEntity> ref = new EntityReference<>();
+        ref.set(zombie);
+        summonedEntities.add(ref);
+    }
+
+    @Override
+    public void toNBT(CompoundTag compound) {
+        super.toNBT(compound);
+        if (summonedEntities.size() > 0) {
+            ListTag list = new ListTag();
+            summonedEntities.forEach(ref -> list.add(ref.toNBT()));
+            compound.put("summonedEntities", list);
+        }
+    }
+
+    @Override
+    public void fromNBT(CompoundTag compound) {
+        super.fromNBT(compound);
+        if (compound.contains("summonedEntities")) {
+            summonedEntities.clear();
+            compound.getList("summonedEntities", 10).forEach(tag -> {
+                EntityReference<LivingEntity> ref = new EntityReference<>();
+                ref.fromNBT((CompoundTag)tag);
+                summonedEntities.add(ref);
+            });
+        }
     }
 }

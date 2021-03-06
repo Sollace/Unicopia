@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.entity;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
@@ -35,6 +36,12 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
     public boolean isPresent(World world) {
         T entity = get(world);
         return entity != null && !entity.removed;
+    }
+
+    public void ifPresent(World world, Consumer<T> consumer) {
+        if (isPresent(world)) {
+            consumer.accept(get(world));
+        }
     }
 
     @SuppressWarnings("unchecked")
