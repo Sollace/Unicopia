@@ -3,9 +3,9 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.util.Weighted;
 import com.minelittlepony.unicopia.util.WorldEvent;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -17,17 +17,17 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 
 public class NecromancySpell extends AbstractPlacedSpell {
 
-    private final List<EntityType<? extends LivingEntity>> spawns = Lists.newArrayList(
-            EntityType.ZOMBIE,
-            EntityType.HUSK,
-            EntityType.ZOMBIFIED_PIGLIN
-    );
+    private final Weighted<EntityType<? extends LivingEntity>> spawnPool = new Weighted<EntityType<? extends LivingEntity>>()
+            .put(7, EntityType.ZOMBIE)
+            .put(4, EntityType.HUSK)
+            .put(2, EntityType.ZOMBIFIED_PIGLIN)
+            .put(1, EntityType.ZOMBIE_VILLAGER)
+            .put(1, EntityType.ZOMBIE_HORSE);
 
     private final List<EntityReference<LivingEntity>> summonedEntities = new ArrayList<>();
 
@@ -54,6 +54,8 @@ public class NecromancySpell extends AbstractPlacedSpell {
             return true;
         }
 
+        summonedEntities.removeIf(ref -> !ref.isPresent(source.getWorld()));
+
         float additional = source.getWorld().getLocalDifficulty(source.getOrigin()).getLocalDifficulty();
 
         Shape affectRegion = new Sphere(false, radius);
@@ -72,11 +74,11 @@ public class NecromancySpell extends AbstractPlacedSpell {
             BlockPos loc = new BlockPos(pos);
 
             if (source.getWorld().isAir(loc.up()) && !source.getWorld().isAir(loc)) {
-                spawnMonster(source, pos);
+                spawnPool.get().ifPresent(type -> {
+                    spawnMonster(source, pos, type);
+                });
             }
         }
-
-        summonedEntities.removeIf(ref -> !ref.isPresent(source.getWorld()));
 
         return true;
     }
@@ -97,9 +99,8 @@ public class NecromancySpell extends AbstractPlacedSpell {
         });
     }
 
-    protected void spawnMonster(Caster<?> source, Vec3d pos) {
-        int index = (int)MathHelper.nextDouble(source.getWorld().random, 0, spawns.size());
-        LivingEntity zombie = spawns.get(index).create(source.getWorld());
+    protected void spawnMonster(Caster<?> source, Vec3d pos, EntityType<? extends LivingEntity> type) {
+        LivingEntity zombie = type.create(source.getWorld());
 
         source.subtractEnergyCost(3);
 
@@ -113,6 +114,7 @@ public class NecromancySpell extends AbstractPlacedSpell {
         EntityReference<LivingEntity> ref = new EntityReference<>();
         ref.set(zombie);
         summonedEntities.add(ref);
+        setDirty();
     }
 
     @Override
@@ -128,8 +130,8 @@ public class NecromancySpell extends AbstractPlacedSpell {
     @Override
     public void fromNBT(CompoundTag compound) {
         super.fromNBT(compound);
+        summonedEntities.clear();
         if (compound.contains("summonedEntities")) {
-            summonedEntities.clear();
             compound.getList("summonedEntities", 10).forEach(tag -> {
                 EntityReference<LivingEntity> ref = new EntityReference<>();
                 ref.fromNBT((CompoundTag)tag);
