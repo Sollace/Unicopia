@@ -15,7 +15,6 @@ import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -63,10 +62,10 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
         return getEntity().getBlockPos();
     }
 
-    default boolean subtractEnergyCost(double amount) {
-        getMaster().damage(DamageSource.MAGIC, (int)amount/2);
-        return getMaster().getHealth() > 0;
-    }
+    /**
+     * Removes the desired amount of mana or health from this caster in exchange for a spell's benefits.
+     */
+    boolean subtractEnergyCost(double amount);
 
     default Stream<Caster<?>> findAllSpellsInRange(double radius) {
         return findAllSpellsInRange(radius, null);

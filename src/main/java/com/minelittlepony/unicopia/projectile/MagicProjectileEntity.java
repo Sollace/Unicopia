@@ -84,7 +84,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
             case BAD: return Items.MAGMA_CREAM;
             default: return Items.AIR;
         }
-     }
+    }
 
     @Override
     public Entity getEntity() {
@@ -119,6 +119,11 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
     @Override
     public SpellContainer getSpellSlot() {
         return effectDelegate;
+    }
+
+    @Override
+    public boolean subtractEnergyCost(double amount) {
+        return Caster.of(getMaster()).filter(c -> c.subtractEnergyCost(amount)).isPresent();
     }
 
     public void setThrowDamage(float damage) {

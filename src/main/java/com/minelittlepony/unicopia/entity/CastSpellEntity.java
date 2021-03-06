@@ -146,6 +146,11 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
     }
 
     @Override
+    public boolean subtractEnergyCost(double amount) {
+        return Caster.of(getMaster()).filter(c -> c.subtractEnergyCost(amount)).isPresent();
+    }
+
+    @Override
     protected void writeCustomDataToTag(CompoundTag tag) {
         tag.put("owner", owner.toNBT());
         dataTracker.get(SPELL).ifPresent(spellId -> {
