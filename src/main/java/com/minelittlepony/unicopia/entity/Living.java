@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.EffectSync;
+import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -139,7 +140,9 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Override
     public boolean onProjectileImpact(ProjectileEntity projectile) {
         return getSpellSlot().get(true)
-                .filter(effect -> !effect.isDead() && effect.handleProjectileImpact(projectile))
+                .filter(effect -> !effect.isDead()
+                        && effect instanceof ProjectileImpactListener
+                        && ((ProjectileImpactListener)effect).onProjectileImpact(projectile))
                 .isPresent();
     }
 

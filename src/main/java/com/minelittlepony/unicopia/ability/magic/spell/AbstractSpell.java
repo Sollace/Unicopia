@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 
 import net.minecraft.nbt.CompoundTag;
@@ -34,6 +35,7 @@ public abstract class AbstractSpell implements Spell {
     @Override
     public void setDead() {
         isDead = true;
+        setDirty();
     }
 
     @Override
@@ -47,13 +49,24 @@ public abstract class AbstractSpell implements Spell {
     }
 
     @Override
-    public void setDirty(boolean dirty) {
-        isDirty = dirty;
+    public void setDirty() {
+        isDirty = true;
     }
 
     @Override
     public Affinity getAffinity() {
         return getType().getAffinity();
+    }
+
+    @Override
+    public boolean apply(Caster<?> caster) {
+        caster.setSpell(this);
+        return true;
+    }
+
+    @Override
+    public void onDestroyed(Caster<?> caster) {
+        setDead();
     }
 
     @Override
@@ -64,7 +77,7 @@ public abstract class AbstractSpell implements Spell {
 
     @Override
     public void fromNBT(CompoundTag compound) {
-        setDirty(false);
+        isDirty = false;
         if (compound.contains("uuid")) {
             uuid = compound.getUuid("uuid");
         }

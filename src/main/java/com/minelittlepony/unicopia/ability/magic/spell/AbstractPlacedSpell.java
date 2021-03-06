@@ -41,7 +41,7 @@ public abstract class AbstractPlacedSpell extends AbstractSpell implements Attac
 
             if (dimension == null) {
                 dimension = source.getWorld().getRegistryKey().getValue();
-                setDirty(true);
+                setDirty();
             } else if (!source.getWorld().getRegistryKey().getValue().equals(dimension)) {
                 return false;
             }
@@ -55,7 +55,7 @@ public abstract class AbstractPlacedSpell extends AbstractSpell implements Attac
                 entity.world.spawnEntity(entity);
 
                 castEntity.set(entity);
-                setDirty(true);
+                setDirty();
             }
         }
 

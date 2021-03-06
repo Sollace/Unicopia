@@ -89,6 +89,7 @@ public class EffectSync implements SpellContainer {
     private void updateReference(@Nullable Spell effect) {
         if (spell.isPresent() && spell.get() != effect) {
             spell.get().setDead();
+            spell.get().onDestroyed(owner);
         }
         spell = Optional.ofNullable(effect);
     }

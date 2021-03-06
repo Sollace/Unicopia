@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Affine;
+import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 
 import net.minecraft.nbt.CompoundTag;
@@ -117,9 +118,22 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         return null;
     }
 
+    public boolean apply(Caster<?> caster) {
+        if (isEmpty()) {
+            caster.setSpell(null);
+            return false;
+        }
+
+        return create().apply(caster);
+    }
+
     @Override
     public boolean test(@Nullable Spell spell) {
         return spell != null && spell.getType() == this;
+    }
+
+    public boolean isEmpty() {
+        return this == EMPTY_KEY;
     }
 
     public static <T extends Spell> SpellType<T> register(Identifier id, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
@@ -131,6 +145,11 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     public static <T extends Spell> SpellType<T> register(String name, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
         return register(new Identifier("unicopia", name), affinity, color, obtainable, factory);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Spell> SpellType<T> empty() {
+        return (SpellType<T>)EMPTY_KEY;
     }
 
     @SuppressWarnings("unchecked")

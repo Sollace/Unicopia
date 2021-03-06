@@ -5,8 +5,6 @@ import java.util.UUID;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
-import net.minecraft.entity.projectile.ProjectileEntity;
-
 /**
  * Interface for a magic spells
  */
@@ -38,25 +36,17 @@ public interface Spell extends NbtSerialisable, Affine {
     boolean isDirty();
 
     /**
-     * Marks this effect as dirty.
+     * Applies this spell to the supplied caster.
      */
-    void setDirty(boolean dirty);
+    boolean apply(Caster<?> caster);
 
     /**
-     * Called when first attached to a gem.
+     * Marks this effect as dirty.
      */
-    default void onPlaced(Caster<?> caster) {
-
-    }
+    void setDirty();
 
     /**
      * Called when a gem is destroyed.
      */
-    default void onDestroyed(Caster<?> caster) {
-        setDead();
-    }
-
-    default boolean handleProjectileImpact(ProjectileEntity projectile) {
-        return false;
-    }
+    void onDestroyed(Caster<?> caster);
 }

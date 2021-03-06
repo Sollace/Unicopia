@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.command;
 
 import java.util.function.Function;
 
+import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.brigadier.CommandDispatcher;
@@ -79,9 +80,7 @@ public class DisguiseCommand {
 
     static int reveal(ServerCommandSource source, PlayerEntity player) {
         Pony iplayer = Pony.of(player);
-        iplayer.getSpellSlot().get(SpellType.DISGUISE, true).ifPresent(disguise -> {
-            disguise.onDestroyed(iplayer);
-        });
+        iplayer.getSpellSlot().get(SpellType.DISGUISE, true).ifPresent(Spell::setDead);
 
         if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
             player.sendMessage(new TranslatableText("commands.disguise.removed"), false);

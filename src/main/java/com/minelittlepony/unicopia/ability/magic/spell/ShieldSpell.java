@@ -90,7 +90,7 @@ public class ShieldSpell extends AbstractSpell implements Attached, Thrown {
             cost /= 2.725D;
 
             if (!source.subtractEnergyCost(cost)) {
-                onDestroyed(source);
+                setDead();
             }
         }
 

@@ -5,6 +5,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.entity.Entity;
@@ -12,7 +13,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.Tickable;
 
-public interface Equine<T extends Entity> extends NbtSerialisable, Tickable {
+public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, ProjectileImpactListener {
     Race getSpecies();
 
     Physics getPhysics();
@@ -44,6 +45,7 @@ public interface Equine<T extends Entity> extends NbtSerialisable, Tickable {
     /**
      * Event triggered when this entity is hit by a projectile.
      */
+    @Override
     default boolean onProjectileImpact(ProjectileEntity projectile) {
         return false;
     }

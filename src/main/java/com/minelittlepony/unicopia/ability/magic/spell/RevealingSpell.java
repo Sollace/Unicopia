@@ -23,11 +23,6 @@ public class RevealingSpell extends AbstractSpell implements Attached, Thrown {
     }
 
     @Override
-    public void onPlaced(Caster<?> source) {
-        source.getLevel().set(1);
-    }
-
-    @Override
     public boolean onThrownTick(MagicProjectileEntity projectile) {
         return onBodyTick(projectile);
     }

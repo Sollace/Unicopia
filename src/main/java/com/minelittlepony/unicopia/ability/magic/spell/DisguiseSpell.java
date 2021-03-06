@@ -16,6 +16,8 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.PlayerDimensions;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
+import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.LivingEntity;
@@ -25,7 +27,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.CompoundTag;
 
-public class DisguiseSpell extends AbstractSpell implements Attached, Suppressable, FlightType.Provider, PlayerDimensions.Provider {
+public class DisguiseSpell extends AbstractSpell implements Attached, Suppressable, FlightType.Provider, PlayerDimensions.Provider, ProjectileImpactListener {
 
     private final Disguise disguise = new Disguise();
 
@@ -49,7 +51,7 @@ public class DisguiseSpell extends AbstractSpell implements Attached, Suppressab
     @Override
     public void onSuppressed(Caster<?> otherSource) {
         suppressionCounter = 100;
-        setDirty(true);
+        setDirty();
     }
 
     @Override
@@ -67,12 +69,12 @@ public class DisguiseSpell extends AbstractSpell implements Attached, Suppressab
         }
 
         disguise.setAppearance(entity);
-        setDirty(true);
+        setDirty();
         return this;
     }
 
     @Override
-    public boolean handleProjectileImpact(ProjectileEntity projectile) {
+    public boolean onProjectileImpact(ProjectileEntity projectile) {
         return disguise.getAppearance() == projectile;
     }
 

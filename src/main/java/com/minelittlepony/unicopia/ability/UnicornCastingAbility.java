@@ -111,14 +111,10 @@ public class UnicornCastingAbility implements Ability<Hit> {
             TypedActionResult<SpellType<?>> newSpell = getNewSpell(player);
 
             if (newSpell.getResult() != ActionResult.FAIL) {
-                @Nullable
                 SpellType<?> spell = newSpell.getValue();
-                if (!player.getSpellSlot().isPresent() && spell == null) {
-                    spell = SpellType.SHIELD;
-                }
 
-                player.subtractEnergyCost(spell == null ? 2 : 4);
-                player.setSpell(spell == null ? null : spell.create());
+                player.subtractEnergyCost(spell.isEmpty() ? 2 : 4);
+                spell.apply(player);
             }
         }
     }
@@ -139,12 +135,12 @@ public class UnicornCastingAbility implements Ability<Hit> {
     }
 
     private TypedActionResult<SpellType<?>> getNewSpell(Pony player) {
-        final SpellType<?> current = player.getSpellSlot().get(true).map(Spell::getType).orElse(null);
+        final SpellType<?> current = player.getSpellSlot().get(true).map(Spell::getType).orElse(SpellType.empty());
         return Streams.stream(player.getMaster().getItemsHand())
                 .filter(GemstoneItem::isEnchanted)
                 .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), current, SpellType::mayAttach))
                 .findFirst()
-                .orElse(TypedActionResult.<SpellType<?>>pass(null));
+                .orElse(TypedActionResult.<SpellType<?>>pass(current == SpellType.EMPTY_KEY ? SpellType.SHIELD : SpellType.EMPTY_KEY));
     }
 
     @Override

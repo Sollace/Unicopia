@@ -121,15 +121,6 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Magical, 
         return effectDelegate;
     }
 
-    @Override
-    public void setSpell(Spell effect) {
-        Caster.super.setSpell(effect);
-
-        if (effect != null) {
-            effect.onPlaced(this);
-        }
-    }
-
     public void setThrowDamage(float damage) {
         getDataTracker().set(DAMAGE, Math.max(0, damage));
     }

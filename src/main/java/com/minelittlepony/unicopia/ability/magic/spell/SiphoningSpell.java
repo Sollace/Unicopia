@@ -86,14 +86,14 @@ public class SiphoningSpell extends AbstractPlacedSpell {
 
             if (ticksUpset > 0 || maxHealthGain <= 0) {
                 if (source.getWorld().random.nextInt(3000) == 0) {
-                    onDestroyed(source);
+                    setDead();
                 } else {
                     e.damage(damage, e.getHealth() / 4);
                 }
                 if (maxHealthGain <= 0) {
                     ticksUpset = 100;
                 }
-                setDirty(true);
+                setDirty();
             } else {
                 e.heal((float)Math.min(0.5F * (1 + source.getLevel().get()), maxHealthGain * 0.6));
                 ParticleUtils.spawnParticle(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, e, 0.2F), e.world, e.getPos(), Vec3d.ZERO);
