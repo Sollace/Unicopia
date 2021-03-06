@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.entity;
 
-import com.minelittlepony.unicopia.ability.magic.Magical;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
@@ -20,7 +19,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class FloatingArtefactEntity extends Entity implements Magical {
+public class FloatingArtefactEntity extends Entity {
 
     private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(FloatingArtefactEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<Byte> STATE = DataTracker.registerData(FloatingArtefactEntity.class, TrackedDataHandlerRegistry.BYTE);

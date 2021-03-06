@@ -11,8 +11,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.entity.Equine;
-import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.enchantment.AttributedEnchantment;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.MinecraftClient;
@@ -45,9 +45,10 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
 
             Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> modifiers = new HashMap<>();
 
-            Living<?> living = Equine.of(MinecraftClient.getInstance().player);
-            getEnchantments(stack).filter(p -> p.getRight() instanceof AttributedEnchantment).forEach(pair -> {
-                ((AttributedEnchantment)pair.getRight()).getModifiers(living, pair.getLeft(), modifiers);
+            Equine.<PlayerEntity, Pony>of(MinecraftClient.getInstance().player).ifPresent(eq -> {
+                getEnchantments(stack).filter(p -> p.getRight() instanceof AttributedEnchantment).forEach(pair -> {
+                    ((AttributedEnchantment)pair.getRight()).getModifiers(eq, pair.getLeft(), modifiers);
+                });
             });
 
             modifiers.forEach((slot, modifs) -> {

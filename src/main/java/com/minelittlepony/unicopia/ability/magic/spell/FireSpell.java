@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Magical;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
@@ -122,7 +121,7 @@ public class FireSpell extends AbstractSpell implements Thrown, Attached {
     protected boolean applyEntitySingle(Entity owner, World world, Entity e) {
         if ((!e.equals(owner) ||
                 (owner instanceof PlayerEntity && !EquinePredicates.PLAYER_UNICORN.test(owner))) && !(e instanceof ItemEntity)
-        && !(e instanceof Magical)) {
+        && !(e instanceof Caster<?>)) {
             e.setOnFireFor(60);
             e.damage(getDamageCause(e, (LivingEntity)owner), 0.1f);
             playEffect(world, e.getBlockPos());

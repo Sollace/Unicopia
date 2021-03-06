@@ -16,13 +16,12 @@ import com.minelittlepony.unicopia.util.VecHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
  * Interface for any magically capable entities that can cast or persist spells.
  */
-public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affine, Magical, ParticleSource {
+public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affine, ParticleSource {
 
     Physics getPhysics();
 
@@ -76,15 +75,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     }
 
     default Stream<Entity> findAllEntitiesInRange(double radius, @Nullable Predicate<Entity> test) {
-        return findAllEntitiesInRange(getOriginVector(), radius, test);
-    }
-
-    default Stream<Entity> findAllEntitiesInRange(Vec3d origin, double radius, @Nullable Predicate<Entity> test) {
-        return VecHelper.findInRange(getEntity(), getWorld(), origin, radius, test).stream();
-    }
-
-    default Stream<Entity> findAllEntitiesInRange(Vec3d origin, double radius) {
-        return findAllEntitiesInRange(origin, radius, null);
+        return VecHelper.findInRange(getEntity(), getWorld(), getOriginVector(), radius, test).stream();
     }
 
     default Stream<Entity> findAllEntitiesInRange(double radius) {
@@ -106,10 +97,9 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
             return Optional.of((Caster<?>)entity);
         }
 
-        if (entity instanceof LivingEntity && !(entity instanceof Magical)) {
-            return PonyContainer.of(entity).map(PonyContainer::getCaster);
-        }
-
-        return Optional.empty();
+        return PonyContainer.of(entity)
+                .map(PonyContainer::get)
+                .filter(c -> c instanceof Caster<?>)
+                .map(c -> (Caster<?>)c);
     }
 }

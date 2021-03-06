@@ -53,7 +53,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
             return;
         }
 
-        Equine<?> eq = Equine.of(entity);
+        Equine<?> eq = Equine.of(entity).orElse(null);
 
         if (eq == null) {
             return;

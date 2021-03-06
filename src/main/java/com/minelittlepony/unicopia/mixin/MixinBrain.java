@@ -17,7 +17,7 @@ abstract class MixinBrain<E extends LivingEntity> {
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void beforeTickAi(ServerWorld world, E entity, CallbackInfo into) {
-        Equine<?> eq = Equine.of(entity);
+        Equine<?> eq = Equine.of(entity).orElse(null);
 
         if (eq instanceof Living<?> && eq.getPhysics().isGravityNegative()) {
             ((RotatedView)world).pushRotation((int)entity.getY());

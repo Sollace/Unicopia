@@ -69,10 +69,7 @@ public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, Pro
         return Optional.empty();
     }
 
-    @Nullable
-    static <T extends Equine<?>> T of(Entity entity) {
-        return PonyContainer.<Entity, T>of(entity)
-                .map(PonyContainer::get)
-                .orElse(null);
+    static <E extends Entity, T extends Equine<E>> Optional<T> of(@Nullable E entity) {
+        return PonyContainer.<E, T>of(entity).map(PonyContainer::get);
     }
 }

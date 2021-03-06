@@ -18,7 +18,7 @@ import net.minecraft.entity.ai.TargetPredicate;
 abstract class MixinTargetPredicate {
     @Inject(method = "test", at = @At("HEAD"), cancellable = true)
     public void onTest(@Nullable LivingEntity baseEntity, LivingEntity targetEntity, CallbackInfoReturnable<Boolean> info) {
-        Equine<?> eq = Equine.of(targetEntity);
+        Equine<?> eq = Equine.of(targetEntity).orElse(null);
         if (eq instanceof Pony) {
             ((Pony)eq).getSpellSlot().get(SpellType.DISGUISE, true).ifPresent(spell -> {
                 if (spell.getDisguise().getAppearance() == baseEntity) {

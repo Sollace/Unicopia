@@ -18,19 +18,27 @@ import net.minecraft.entity.player.PlayerEntity;
 public interface EquinePredicates {
     Predicate<Entity> IS_PLAYER = e -> e instanceof PlayerEntity;
 
-    Predicate<Entity> RACE_INTERACT_WITH_CLOUDS = entity -> Equine.of(entity).getSpecies().canInteractWithClouds();
+    Predicate<Entity> RACE_INTERACT_WITH_CLOUDS = raceMatches(Race::canInteractWithClouds);
 
-    Predicate<Entity> PLAYER_EARTH = IS_PLAYER.and(entity -> Equine.of(entity).getSpecies() == Race.EARTH);
-    Predicate<Entity> PLAYER_BAT = IS_PLAYER.and(entity -> Equine.of(entity).getSpecies() == Race.BAT);
-    Predicate<Entity> PLAYER_UNICORN = IS_PLAYER.and(entity -> Equine.of(entity).getSpecies().canCast());
-    Predicate<Entity> PLAYER_CHANGELING = IS_PLAYER.and(entity -> Equine.of(entity).getSpecies() == Race.CHANGELING);
-    Predicate<Entity> PLAYER_PEGASUS = IS_PLAYER.and(entity -> ((PlayerEntity)entity).abilities.creativeMode || RACE_INTERACT_WITH_CLOUDS.test(entity));
+    Predicate<Entity> PLAYER_EARTH = IS_PLAYER.and(ofRace(Race.EARTH));
+    Predicate<Entity> PLAYER_BAT = IS_PLAYER.and(ofRace(Race.BAT));
+    Predicate<Entity> PLAYER_UNICORN = IS_PLAYER.and(raceMatches(Race::canCast));
+    Predicate<Entity> PLAYER_CHANGELING = IS_PLAYER.and(ofRace(Race.CHANGELING));
+    Predicate<Entity> PLAYER_PEGASUS = IS_PLAYER.and(e -> ((PlayerEntity)e).abilities.creativeMode || RACE_INTERACT_WITH_CLOUDS.test(e));
 
     Predicate<Entity> IS_CASTER = e -> !e.removed && (e instanceof Caster || PLAYER_UNICORN.test(e));
 
     Predicate<LivingEntity> HAS_WANT_IT_NEED_IT = e -> EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) > 0;
 
     static Predicate<Entity> carryingSpell(@Nullable SpellType<?> type) {
-        return IS_PLAYER.and(entity -> Pony.of((PlayerEntity)entity).getSpellSlot().get(type, false).isPresent());
+        return IS_PLAYER.and(e -> Pony.of((PlayerEntity)e).getSpellSlot().get(type, false).isPresent());
+    }
+
+    static Predicate<Entity> ofRace(Race race) {
+        return raceMatches(race::equals);
+    }
+
+    static Predicate<Entity> raceMatches(Predicate<Race> predicate) {
+        return e -> Equine.of(e).map(Equine::getSpecies).filter(predicate).isPresent();
     }
 }

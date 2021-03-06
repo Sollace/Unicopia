@@ -19,6 +19,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -70,7 +71,7 @@ public class SiphoningSpell extends AbstractPlacedSpell {
     }
 
     private Stream<LivingEntity> getTargets(Caster<?> source) {
-        return VecHelper.findInRange(null, source.getWorld(), source.getOriginVector(), 4 + source.getLevel().get(), e -> e instanceof LivingEntity)
+        return VecHelper.findInRange(null, source.getWorld(), source.getOriginVector(), 4 + source.getLevel().get(), EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.and(e -> e instanceof LivingEntity))
                 .stream()
                 .map(e -> (LivingEntity)e);
     }

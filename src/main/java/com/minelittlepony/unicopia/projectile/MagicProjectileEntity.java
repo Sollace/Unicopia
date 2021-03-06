@@ -5,7 +5,6 @@ import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
-import com.minelittlepony.unicopia.ability.magic.Magical;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
@@ -46,7 +45,7 @@ import net.minecraft.world.World;
  *
  * Can also carry a spell if needed.
  */
-public class MagicProjectileEntity extends ThrownItemEntity implements Magical, Caster<LivingEntity> {
+public class MagicProjectileEntity extends ThrownItemEntity implements Caster<LivingEntity> {
 
     private static final TrackedData<Float> DAMAGE = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Float> GRAVITY = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
