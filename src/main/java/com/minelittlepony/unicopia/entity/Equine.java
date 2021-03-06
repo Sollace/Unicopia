@@ -21,6 +21,11 @@ public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, Pro
     void setSpecies(Race race);
 
     /**
+     * Gets the last magical entity to attack us.
+     */
+    Entity getAttacker();
+
+    /**
      * Returns true if this player is fully invisible.
      * Held items and other effects will be hidden as well.
      */

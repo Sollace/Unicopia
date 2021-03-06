@@ -78,13 +78,13 @@ public class BatEeeeAbility implements Ability<Hit> {
         Vec3d origin = player.getOriginVector();
 
         if (rng.nextInt(20000) == 0) {
-            player.getMaster().damage(MagicalDamageSource.create("eeee", player.getMaster()), 0.1F);
+            player.getMaster().damage(MagicalDamageSource.create("eeee", player), 0.1F);
         }
 
         player.findAllEntitiesInRange(5).forEach(e -> {
             if (e instanceof LivingEntity && !HAS_SHIELD.test(e)) {
                 boolean isEarthPony = EquinePredicates.PLAYER_EARTH.test(e);
-                e.damage(MagicalDamageSource.create("eeee", player.getMaster()), isEarthPony ? 0.1F : 0.3F);
+                e.damage(MagicalDamageSource.create("eeee", player), isEarthPony ? 0.1F : 0.3F);
 
                 Vec3d knockVec = origin.subtract(e.getPos());
                 ((LivingEntity) e).takeKnockback(isEarthPony ? 0.3F : 0.5F, knockVec.getX(), knockVec.getZ());

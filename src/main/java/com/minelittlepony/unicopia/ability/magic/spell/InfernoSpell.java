@@ -61,7 +61,7 @@ public class InfernoSpell extends FireSpell {
     @Override
     protected DamageSource getDamageCause(Entity target, LivingEntity attacker) {
         if (attacker != null && attacker.getUuid().equals(target.getUuid())) {
-            return MagicalDamageSource.create("fire.own", null);
+            return MagicalDamageSource.create("fire.own");
         }
         return MagicalDamageSource.create("fire", attacker);
     }

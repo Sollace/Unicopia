@@ -108,7 +108,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                             -(player.getY() - i.getY() - liftAmount) / inertia + (dist < 1 ? dist : 0),
                             -(player.getZ() - i.getZ()) / inertia);
 
-                    DamageSource damage = MagicalDamageSource.create("smash", player);
+                    DamageSource damage = MagicalDamageSource.create("smash", iplayer);
 
                     double amount = (1.5F * player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue() + heavyness * 0.4) / (float)(dist * 1.3F);
 

@@ -76,8 +76,7 @@ public class SiphoningSpell extends AbstractPlacedSpell {
     }
 
     private void distributeHealth(Caster<?> source) {
-        LivingEntity owner = source.getMaster();
-        DamageSource damage = MagicalDamageSource.create("drain", owner);
+        DamageSource damage = MagicalDamageSource.create("drain", source);
 
         getTargets(source).forEach(e -> {
             float maxHealthGain = e.getMaxHealth() - e.getHealth();
@@ -114,7 +113,7 @@ public class SiphoningSpell extends AbstractPlacedSpell {
 
         float attackAmount = Math.max(maxHealthGain / targets.size(), 0.5F);
 
-        DamageSource damage = MagicalDamageSource.create("drain", owner);
+        DamageSource damage = MagicalDamageSource.create("drain", source);
 
         float healthGain = 0;
 

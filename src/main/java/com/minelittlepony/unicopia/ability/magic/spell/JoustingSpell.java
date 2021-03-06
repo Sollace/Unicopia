@@ -51,7 +51,7 @@ public class JoustingSpell extends AbstractSpell implements Attached {
         LivingEntity owner = source.getMaster();
 
         source.findAllEntitiesInRange(rad).forEach(e -> {
-            e.damage(MagicalDamageSource.create("rainboom", owner), 6);
+            e.damage(MagicalDamageSource.create("rainboom", source), 6);
         });
         PosHelper.getAllInRegionMutable(source.getOrigin(), effect_range).forEach(pos -> {
             BlockState state = source.getWorld().getBlockState(pos);

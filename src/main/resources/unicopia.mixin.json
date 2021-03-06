@@ -8,6 +8,7 @@
     "MixinBlockEntity",
     "MixinBlockItem",
     "MixinBrain",
+    "MixinDamageSource",
     "MixinFallingBlock",
     "MixinItem",
     "MixinItemEntity",

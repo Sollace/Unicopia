@@ -42,6 +42,11 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
     }
 
     @Override
+    public Entity getAttacker() {
+        return null;
+    }
+
+    @Override
     public boolean beforeUpdate() {
 
         if (!owner.world.isClient) {

@@ -21,6 +21,8 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -49,6 +51,15 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
     @Override
     protected void initDataTracker() {
         getDataTracker().startTracking(SPELL, Optional.empty());
+    }
+
+    @Override
+    public Text getName() {
+        Entity master = getMaster();
+        if (master != null) {
+            return new TranslatableText("entity.unicopia.cast_spell.by", master.getName());
+        }
+        return super.getName();
     }
 
     @Override

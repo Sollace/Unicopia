@@ -52,6 +52,9 @@
   "item.unicopia.music_disc_funk": "Music Disc",
   "item.unicopia.music_disc_funk.desc": "funk, just funk",
 
+  "entity.unicopia.cast_spell": "Cast Spell",
+  "entity.unicopia.cast_spell.by": "a spell cast by %s",
+
   "unicopia.effect.tribe.stage.initial": "It appears to have no effect.",
   "unicopia.effect.tribe.stage.crawling": "You feel the skin crawling on your back.",
   "unicopia.effect.tribe.stage.determination": "As your bones realign you are filled determination.",
@@ -272,12 +275,16 @@
   "unicopia.race.bat": "Bat Pony",
   "unicopia.race.bat.alt": "Bat Ponies",
 
+  "death.attack.generic.and_also": "%1$s and %2$s",
   "death.attack.tribe_swap": "%1$s was reborn into a different tribe",
   "death.attack.magical_exhaustion": "%1$s exhausted themselves",
   "death.attack.alicorn_amulet": "%1$s was driven insane",
   "death.attack.darkness": "%1$s went missing",
   "death.attack.feed": "%1$s was drained of all life",
   "death.attack.feed.attacker": "%1$s died to feed %2$s",
+  "death.attack.drain": "%1$s was drained of all life",
+  "death.attack.drain.self": "%1$s was killed by their own spell",
+  "death.attack.drain.attacker": "%1$s was killed by a spell cast by %2$s",
   "death.attack.eeee": "%1$s was firghtened to death",
   "death.attack.eeee.attacker": "%2$s scared %1$s",
   "death.attack.eeee.attacker.item": "%1$s was frightened to death by %2$s using %3$s",

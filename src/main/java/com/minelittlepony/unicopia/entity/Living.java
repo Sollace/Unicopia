@@ -12,7 +12,9 @@ import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
+import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.TrackedData;
@@ -32,6 +34,9 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Nullable
     private Runnable landEvent;
+
+    @Nullable
+    private Entity attacker;
 
     private int invinsibilityTicks;
 
@@ -108,12 +113,25 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         }
     }
 
+    @Nullable
+    @Override
+    public final Entity getAttacker() {
+        return attacker;
+    }
+
     @Override
     public Optional<Boolean> onDamage(DamageSource source, float amount) {
 
         if (source == DamageSource.LIGHTNING_BOLT) {
             if (invinsibilityTicks > 0 || tryCaptureLightning()) {
                 return Optional.of(false);
+            }
+        }
+
+        if (source instanceof MagicalDamageSource) {
+            Entity attacker = ((MagicalDamageSource)source).getSpell();
+            if (attacker != null) {
+                this.attacker = attacker;
             }
         }
 
