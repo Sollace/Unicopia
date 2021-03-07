@@ -118,13 +118,19 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         return null;
     }
 
-    public boolean apply(Caster<?> caster) {
+    @Nullable
+    public T apply(Caster<?> caster) {
         if (isEmpty()) {
             caster.setSpell(null);
-            return false;
+            return null;
         }
 
-        return create().apply(caster);
+        T spell = create();
+        if (spell.apply(caster)) {
+            return spell;
+        }
+
+        return null;
     }
 
     @Override
@@ -162,8 +168,8 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     }
 
     @Nullable
-    public static Spell fromNBT(CompoundTag compound) {
-        if (compound.contains("effect_id")) {
+    public static Spell fromNBT(@Nullable CompoundTag compound) {
+        if (compound != null && compound.contains("effect_id")) {
             Spell effect = getKey(new Identifier(compound.getString("effect_id"))).create();
 
             if (effect != null) {

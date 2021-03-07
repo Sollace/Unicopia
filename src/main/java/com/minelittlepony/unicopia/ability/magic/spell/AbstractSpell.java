@@ -66,7 +66,6 @@ public abstract class AbstractSpell implements Spell {
 
     @Override
     public void onDestroyed(Caster<?> caster) {
-        setDead();
     }
 
     @Override

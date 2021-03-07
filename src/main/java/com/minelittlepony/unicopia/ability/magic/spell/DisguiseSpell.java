@@ -44,8 +44,12 @@ public class DisguiseSpell extends AbstractSpell implements Attached, Suppressab
 
     @Override
     public void onDestroyed(Caster<?> caster) {
-        super.onDestroyed(caster);
         caster.getEntity().calculateDimensions();
+        caster.getEntity().setInvisible(false);
+        if (caster instanceof Pony) {
+            ((Pony) caster).setInvisible(false);
+        }
+        disguise.remove();
     }
 
     @Override
@@ -164,7 +168,7 @@ public class DisguiseSpell extends AbstractSpell implements Attached, Suppressab
             }
         }
 
-        return !source.getMaster().isDead();
+        return !isDead() && !source.getMaster().isDead();
     }
 
     @Override

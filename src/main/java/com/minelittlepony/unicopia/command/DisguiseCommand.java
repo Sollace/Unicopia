@@ -61,9 +61,8 @@ public class DisguiseCommand {
             throw FAILED_EXCEPTION.create();
         }
 
-        iplayer.getSpellSlot()
-            .get(SpellType.DISGUISE, true)
-            .orElseGet(SpellType.DISGUISE::create)
+        iplayer.getSpellSlot().get(SpellType.DISGUISE, true)
+            .orElseGet(() -> SpellType.DISGUISE.apply(iplayer))
             .setDisguise(entity);
 
         if (!isSelf) {

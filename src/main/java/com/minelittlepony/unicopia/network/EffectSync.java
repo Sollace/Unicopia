@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.network;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -12,7 +13,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Identifier;
 
 /**
  * Synchronisation class for spells.
@@ -66,31 +66,39 @@ public class EffectSync implements SpellContainer {
 
         Spell effect = spell.orElse(null);
 
-        if (comp == null || !comp.contains("effect_id")) {
-            updateReference(null);
-        } else if (!checkReference() || !effect.getType().getId().equals(new Identifier(comp.getString("effect_id")))) {
+        if (comp == null || !comp.contains("effect_id") || !comp.contains("uuid")) {
+            if (effect != null) {
+                updateReference(null);
+            }
+        } else if (effect == null || !effect.getUuid().equals(comp.getUuid("uuid"))) {
             updateReference(SpellType.fromNBT(comp));
-        } else if (owner.getEntity().world.isClient()) {
-            if (lastValue != comp || !(comp == null || comp.equals(lastValue))) {
+        } else if (owner.isClient()) {
+            if (!Objects.equals(lastValue, comp)) {
                 lastValue = comp;
                 effect.fromNBT(comp);
             }
-        } else if ((force || !owner.isClient()) && effect.isDirty()) {
+        } else if (force && effect.isDirty()) {
             put(effect);
         }
     }
 
     @Override
     public void put(@Nullable Spell effect) {
+        effect = effect == null || effect.isDead() ? null : effect;
         updateReference(effect);
         owner.getEntity().getDataTracker().set(param, effect == null ? new CompoundTag() : SpellType.toNBT(effect));
     }
 
     private void updateReference(@Nullable Spell effect) {
-        if (spell.isPresent() && spell.get() != effect) {
-            spell.get().setDead();
-            spell.get().onDestroyed(owner);
+        @Nullable
+        Spell old = spell.orElse(null);
+        if (old != effect) {
+            spell = Optional.ofNullable(effect);
+
+            if (old != null && (effect == null || !old.getUuid().equals(effect.getUuid()))) {
+                old.setDead();
+                old.onDestroyed(owner);
+            }
         }
-        spell = Optional.ofNullable(effect);
     }
 }

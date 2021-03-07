@@ -85,7 +85,6 @@ public class NecromancySpell extends AbstractPlacedSpell {
 
     @Override
     public void onDestroyed(Caster<?> caster) {
-        super.onDestroyed(caster);
         LivingEntity master = caster.getMaster();
         summonedEntities.forEach(ref -> {
             ref.ifPresent(caster.getWorld(), e -> {
