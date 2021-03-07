@@ -62,8 +62,10 @@ public class EffectSync implements SpellContainer {
     }
 
     private void sync(boolean force) {
+        @Nullable
         CompoundTag comp = owner.getEntity().getDataTracker().get(param);
 
+        @Nullable
         Spell effect = spell.orElse(null);
 
         if (comp == null || !comp.contains("effect_id") || !comp.contains("uuid")) {
