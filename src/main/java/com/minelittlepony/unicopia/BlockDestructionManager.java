@@ -120,7 +120,7 @@ public class BlockDestructionManager {
 
                 MsgBlockDestruction msg = new MsgBlockDestruction(values);
 
-                if (msg.toBuffer().writerIndex() > 1048576) {
+                if (Channel.toBuffer(msg).writerIndex() > 1048576) {
                     throw new IllegalStateException("Payload may not be larger than 1048576 bytes. Here's what we were trying to send: ["
                             + values.size() + "]\n"
                             + Arrays.toString(values.values().stream().mapToInt(Integer::intValue).toArray()));

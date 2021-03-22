@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import com.minelittlepony.unicopia.Owned;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -33,9 +35,17 @@ public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Channel.
         }
     }
 
-    @SuppressWarnings("unchecked")
+
     @Override
     public void handle(PlayerEntity sender) {
+        if (sender.world.isClient) {
+            handledByClient(sender);
+        }
+    }
+
+    @Environment(EnvType.CLIENT)
+    @SuppressWarnings("unchecked")
+    private void handledByClient(PlayerEntity sender) {
         ClientWorld world = MinecraftClient.getInstance().world;
         Entity entity = getEntityTypeId().create(world);
 

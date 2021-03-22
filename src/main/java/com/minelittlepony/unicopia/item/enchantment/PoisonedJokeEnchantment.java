@@ -30,6 +30,7 @@ import net.minecraft.util.registry.Registry;
 
 public class PoisonedJokeEnchantment extends SimpleEnchantment implements IdentifiableResourceReloadListener {
     private static final Identifier ID = new Identifier("unicopia", "data/poisoned_joke_sounds");
+    private static final Identifier FILE = new Identifier("unicopia", "poisoned_joke_sounds.json");
     private static final Type TYPE = TypeUtils.parameterize(List.class, Identifier.class);
     private List<SoundEvent> sounds = new ArrayList<>();
 
@@ -76,9 +77,8 @@ public class PoisonedJokeEnchantment extends SimpleEnchantment implements Identi
             clientProfiler.startTick();
             clientProfiler.push("Loading poisoned joke sound options");
 
-            sounds = manager.getAllNamespaces().stream()
-                .map(domain -> new Identifier(domain, "poisoned_joke_sounds.json"))
-                .flatMap(id -> getResources(manager, id))
+
+            sounds = getResources(manager, FILE)
                 .flatMap(this::loadFile)
                 .distinct()
                 .flatMap(this::findSound)

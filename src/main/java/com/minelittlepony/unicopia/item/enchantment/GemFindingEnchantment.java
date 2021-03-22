@@ -4,6 +4,8 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.client.sound.MagicAuraSoundInstance;
 import com.minelittlepony.unicopia.entity.Living;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
@@ -32,6 +34,7 @@ public class GemFindingEnchantment extends SimpleEnchantment {
         user.getEnchants().computeIfAbsent(this, Data::new).level = volume * (1.3F + level * 0.3F);
     }
 
+    @Environment(EnvType.CLIENT)
     @Override
     public void onEquipped(Living<?> user) {
         if (user.isClient()) {
