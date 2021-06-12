@@ -3,10 +3,10 @@ package com.minelittlepony.unicopia.item.toxin;
 public enum FoodType {
     RAW_MEAT, COOKED_MEAT,
     RAW_FISH, COOKED_FISH,
-    VEGAN;
+    FORAGE;
 
     public boolean isRaw() {
-        return this == RAW_MEAT || this == RAW_FISH || this == VEGAN;
+        return this == RAW_MEAT || this == RAW_FISH || this == FORAGE;
     }
 
     public boolean isMeat() {

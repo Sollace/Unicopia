@@ -87,7 +87,6 @@ public interface UItems {
     }
 
     static void bootstrap() {
-        Toxics.bootstrap();
         UEnchantments.bootstrap();
         URecipes.bootstrap();
         UItemGroups.bootstrap();

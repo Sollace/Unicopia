@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia;
 
+import com.minelittlepony.unicopia.item.toxin.Toxics;
+
 import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -9,10 +11,6 @@ import net.minecraft.util.Identifier;
 public interface UTags {
     Tag<Item> APPLES = item("apples");
     Tag<Item> FESH_APPLES = item("fresh_apples");
-
-    Tag<Item> NON_TOXIC = item("non_toxic");
-    Tag<Item> FAIRLY_TOXIC = item("fairly_toxic");
-    Tag<Item> SEVERELY_TOXIC = item("severely_toxic");
 
     Tag<Item> FALLS_SLOWLY = item("falls_slowly");
 
@@ -30,5 +28,7 @@ public interface UTags {
         return TagRegistry.block(new Identifier("unicopia", name));
     }
 
-    static void bootstrap() { }
+    static void bootstrap() {
+        Toxics.bootstrap();
+    }
 }

@@ -51,7 +51,7 @@ public enum Race implements Affine {
 
     public boolean canConsume(FoodType type) {
         if (!isUsable()) {
-            return type != FoodType.VEGAN;
+            return type != FoodType.FORAGE;
         }
         if (type.isMeat()) {
             return this == BAT ||  this == CHANGELING || this == HUMAN;

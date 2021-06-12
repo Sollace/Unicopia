@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.item.toxin;
 
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.minelittlepony.unicopia.Race;
@@ -10,6 +12,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.FoodComponent;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -25,11 +29,25 @@ public class Toxic {
 
     private final FoodType type;
 
-    Toxic(UseAction action, FoodType type, Ailment lowerBound, Ailment upperBound) {
+    private final Optional<FoodComponent> component;
+
+    private final Predicate<Item> tag;
+
+    Toxic(UseAction action, FoodType type, Optional<FoodComponent> component, Predicate<Item> tag, Ailment lowerBound, Ailment upperBound) {
         this.action = action;
         this.type = type;
+        this.component = component;
+        this.tag = tag;
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
+    }
+
+    public boolean matches(Item item) {
+        return tag.test(item);
+    }
+
+    public Optional<FoodComponent> getFoodComponent() {
+        return component;
     }
 
     public UseAction getUseAction(ItemStack stack) {
