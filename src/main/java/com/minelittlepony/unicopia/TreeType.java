@@ -55,7 +55,9 @@ public final class TreeType {
             return;
         }
 
-        traverseInner(logs, leaves, w, findBase(w, start), recurseLevel, maxRecurse, logConsumer, leavesConsumer);
+        findBase(w, start).ifPresent(base -> {
+            traverseInner(logs, leaves, w, base, recurseLevel, maxRecurse, logConsumer, leavesConsumer);
+        });
     }
 
     private void traverseInner(Set<BlockPos> logs, Set<BlockPos> leaves, World w, BlockPos pos, int recurseLevel, int maxRecurse, Reactor logConsumer, Reactor leavesConsumer) {
@@ -89,8 +91,8 @@ public final class TreeType {
     /**
      * Recursively locates the base of the tree.
      */
-    public BlockPos findBase(World w, BlockPos pos) {
-        return findBase(new HashSet<BlockPos>(), w, new BlockPos.Mutable(pos.getX(), pos.getY(), pos.getZ())).get();
+    public Optional<BlockPos> findBase(World w, BlockPos pos) {
+        return findBase(new HashSet<BlockPos>(), w, new BlockPos.Mutable(pos.getX(), pos.getY(), pos.getZ()));
     }
 
     private Optional<BlockPos> findBase(Set<BlockPos> done, World w, BlockPos.Mutable pos) {
@@ -124,7 +126,7 @@ public final class TreeType {
         Set<BlockPos> logs = new HashSet<>();
         Set<BlockPos> leaves = new HashSet<>();
 
-        traverseInner(logs, leaves, w, findBase(w, pos), 0, 50, null, null);
+        findBase(w, pos).ifPresent(base -> traverseInner(logs, leaves, w, base, 0, 50, null, null));
 
         int logCount = logs.size();
 

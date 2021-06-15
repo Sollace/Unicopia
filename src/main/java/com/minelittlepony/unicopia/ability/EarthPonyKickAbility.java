@@ -67,10 +67,9 @@ public class EarthPonyKickAbility implements Ability<Pos> {
             TreeType tree = TreeType.get(player.getWorld().getBlockState(pos));
 
             if (tree != TreeType.NONE) {
-                pos = tree.findBase(player.getWorld(), pos);
-                if (tree.countBlocks(player.getWorld(), pos) > 0) {
-                    return new Pos(pos);
-                }
+                return tree.findBase(player.getWorld(), pos).map(base -> {
+                    return tree.countBlocks(player.getWorld(), pos) > 0 ? new Pos(base) : null;
+                }).orElse(null);
             }
         }
 
