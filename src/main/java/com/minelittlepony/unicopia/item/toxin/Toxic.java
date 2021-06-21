@@ -1,21 +1,15 @@
 package com.minelittlepony.unicopia.item.toxin;
 
 import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
@@ -31,9 +25,9 @@ public class Toxic {
 
     private final Optional<FoodComponent> component;
 
-    private final Predicate<Item> tag;
+    private final Tag<Item> tag;
 
-    Toxic(UseAction action, FoodType type, Optional<FoodComponent> component, Predicate<Item> tag, Ailment lowerBound, Ailment upperBound) {
+    Toxic(UseAction action, FoodType type, Optional<FoodComponent> component, Tag<Item> tag, Ailment lowerBound, Ailment upperBound) {
         this.action = action;
         this.type = type;
         this.component = component;
@@ -43,7 +37,7 @@ public class Toxic {
     }
 
     public boolean matches(Item item) {
-        return tag.test(item);
+        return tag.contains(item);
     }
 
     public Optional<FoodComponent> getFoodComponent() {
@@ -54,31 +48,26 @@ public class Toxic {
         return action;
     }
 
-    @Environment(EnvType.CLIENT)
-    public Text getTooltip(ItemStack stack) {
-        Pony pony = Pony.of(MinecraftClient.getInstance().player);
+    public Ailment getAilmentFor(PlayerEntity player) {
+        Pony pony = Pony.of(player);
         if (pony != null && !pony.getSpecies().canConsume(type)) {
-            return upperBound.getToxicity().getTooltip();
+            return upperBound;
         }
-        return lowerBound.getToxicity().getTooltip();
+        return lowerBound;
     }
 
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
         if (entity instanceof PlayerEntity) {
-            Race race = Pony.of((PlayerEntity)entity).getSpecies();
-
-            (race.canConsume(type) ? lowerBound : upperBound).afflict((PlayerEntity)entity, type, stack);
+            getAilmentFor((PlayerEntity)entity).afflict((PlayerEntity)entity, type, stack);
         }
 
         return stack;
     }
 
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand, Supplier<TypedActionResult<ItemStack>> sup) {
-
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         if (!Pony.of(player).getSpecies().hasIronGut()) {
             return TypedActionResult.fail(player.getStackInHand(hand));
         }
-
-        return sup.get();
+        return null;
     }
 }

@@ -4,8 +4,9 @@ import java.util.Optional;
 
 import javax.annotation.Nullable;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -23,22 +24,27 @@ import net.minecraft.world.World;
 @Mixin(Item.class)
 abstract class MixinItem implements ToxicHolder {
 
+    private boolean foodLoaded;
     @Nullable
     private FoodComponent originalFoodComponent;
 
-    @Override
-    @Accessor("foodComponent")
-    public abstract void setFood(FoodComponent food);
+    @Shadow
+    private @Final FoodComponent foodComponent;
 
     @Override
     public Optional<Toxic> getToxic() {
-        if (originalFoodComponent == null) {
+        if (!foodLoaded) {
+            foodLoaded = true;
             originalFoodComponent = ((Item)(Object)this).getFoodComponent();
         }
-        setFood(originalFoodComponent);
 
-        Optional<Toxic> toxic = Toxics.REGISTRY.stream().filter(i -> i.matches((Item)(Object)this)).map(t -> {
-            t.getFoodComponent().ifPresent(this::setFood);
+        foodComponent = originalFoodComponent;
+        Optional<Toxic> toxic = Toxics.REGISTRY.stream()
+                .filter(i -> i.matches((Item)(Object)this))
+                .map(t -> {
+            if (originalFoodComponent == null) {
+                t.getFoodComponent().ifPresent(s -> foodComponent = s);
+            }
             return t;
         }).findFirst();
 
@@ -50,8 +56,6 @@ abstract class MixinItem implements ToxicHolder {
 
     @Inject(method = "finishUsing", at = @At("HEAD"), cancellable = true)
     private void finishUsing(ItemStack stack, World world, LivingEntity entity, CallbackInfoReturnable<ItemStack> info) {
-        if (getToxic().isPresent()) {
-            getToxic().get().finishUsing(stack, world, entity);
-        }
+        getToxic().ifPresent(t -> t.finishUsing(stack, world, entity));
     }
 }

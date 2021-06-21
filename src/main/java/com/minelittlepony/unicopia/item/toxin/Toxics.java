@@ -1,14 +1,11 @@
 package com.minelittlepony.unicopia.item.toxin;
 
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.item.FoodComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.registry.Registry;
@@ -42,25 +39,22 @@ public interface Toxics {
         if (toxin != FOOD) {
             toxin = FOOD.and(toxin);
         }
-        name = "forage_" + name;
-
-        return register(name, UseAction.EAT, FoodType.FORAGE,
+        return register("forage_" + name, UseAction.EAT, FoodType.FORAGE,
                 Optional.of(UFoodComponents.RANDOM_FOLIAGE),
-                UTags.item(name)::contains,
                 new Ailment(toxicity, toxin),
                 new Ailment(Toxicity.LETHAL, toxin));
     }
 
     static Toxic meat(FoodType type, Toxicity toxicity) {
-        String name = type.name().toLowerCase();
-        return register(name, UseAction.EAT, type,
+        return register(type.name().toLowerCase(), UseAction.EAT, type,
                 Optional.empty(),
-                UTags.item(name)::contains,
                 Ailment.INNERT,
                 Ailment.of(toxicity));
     }
 
-    static Toxic register(String name, UseAction action, FoodType type, Optional<FoodComponent> component, Predicate<Item> tag, Ailment lower, Ailment upper) {
-        return Registry.register(REGISTRY, name, new Toxic(action, type, component, tag, lower, upper));
+    static Toxic register(String name, UseAction action, FoodType type, Optional<FoodComponent> component,
+            Ailment lower,
+            Ailment upper) {
+        return Registry.register(REGISTRY, name, new Toxic(action, type, component, UTags.item(name), lower, upper));
     }
 }
