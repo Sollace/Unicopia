@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
-import com.minelittlepony.unicopia.item.toxin.Toxics;
 import com.minelittlepony.unicopia.item.toxin.UFoodComponents;
 
 import net.minecraft.item.Item;
