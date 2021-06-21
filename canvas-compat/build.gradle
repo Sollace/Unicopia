@@ -9,13 +9,19 @@ repositories {
     }
     maven {
         name = "Cotton"
+        allowInsecureProtocol = true
         url = "http://server.bbkr.space:8081/artifactory/libs-release/"
+    }
+    maven {
+        name = "Shedanial"
+        url = "https://maven.shedaniel.me/"
     }
 }
 
 dependencies {
     modCompileOnly("grondag:canvas-mc116:${project.canvas_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
+        exclude(module: "fabric-api")
         exclude(module: "fabric-loader")
+        transitive = false
     }
 }

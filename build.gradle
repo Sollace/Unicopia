@@ -1,6 +1,6 @@
 plugins {
     id 'java-library'
-    id 'fabric-loom' version '0.4-SNAPSHOT' apply false
+    id 'fabric-loom' version '0.8-SNAPSHOT' apply false
 }
 
 allprojects {
@@ -30,23 +30,16 @@ allprojects {
         minecraft "com.mojang:minecraft:${project.minecraft_version}"
         mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
         modApi "net.fabricmc:fabric-loader:${project.loader_version}"
-    
+        modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
         compileOnly "com.google.code.findbugs:jsr305:3.0.2"
-    
-        modCompile "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     }
 
     processResources {
         inputs.property "version", project.version
     
-        from(sourceSets.main.resources.srcDirs) {
-            include "fabric.mod.json"
-            expand "version": project.version
-        }
-    
-        from(sourceSets.main.resources.srcDirs) {
-            exclude "fabric.mod.json"
-        }
+	    filesMatching("fabric.mod.json") {
+	        expand "version": project.version
+	    }
     }
     
     tasks.withType(JavaCompile) {
@@ -66,11 +59,11 @@ minecraft {
 repositories {
     maven {
         name = 'minelp'
-        url = 'http://repo.minelittlepony-mod.com/maven/snapshot'
+        url = 'https://repo.minelittlepony-mod.com/maven/snapshot'
     }
     maven {
         name = 'minelp-release'
-        url = 'http://repo.minelittlepony-mod.com/maven/release'
+        url = 'https://repo.minelittlepony-mod.com/maven/release'
     }
 }
 
@@ -88,7 +81,9 @@ dependencies {
     // Build will fail if the sub-project isn't built first though,
     // so make sure to run gradlew :canvas-compat:build before doing gradlew build
     if (file("./canvas-compat/build/libs/${project(':canvas-compat').jar.archiveName}").exists()) {
-        modCompileOnly project(":canvas-compat")
+        modCompileOnly(project(":canvas-compat")) {
+            transitive = false
+        }
     }
 
     afterEvaluate {
