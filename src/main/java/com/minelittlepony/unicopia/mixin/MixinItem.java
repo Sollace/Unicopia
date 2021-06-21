@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,7 +29,7 @@ abstract class MixinItem implements ToxicHolder {
     @Nullable
     private FoodComponent originalFoodComponent;
 
-    @Shadow
+    @Shadow @Mutable
     private @Final FoodComponent foodComponent;
 
     @Override

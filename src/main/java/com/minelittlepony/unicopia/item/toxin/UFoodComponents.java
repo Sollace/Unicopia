@@ -14,8 +14,9 @@ public interface UFoodComponents {
     FoodComponent HAY_BURGER = builder(3, 4).build();
     FoodComponent HAY_FRIES = builder(1, 5).build();
     FoodComponent SALAD = builder(4, 2).build();
+    FoodComponent CIDER = builder(4, 2).alwaysEdible().build();
     FoodComponent RANDOM_FOLIAGE = builder(2, 1).build();
-    FoodComponent JUICE = builder(2, 2).build();
+    FoodComponent JUICE = builder(2, 2).alwaysEdible().build();
     FoodComponent BURNED_JUICE = builder(3, 1).build();
     FoodComponent WORMS = builder(1, 0).alwaysEdible().build();
 

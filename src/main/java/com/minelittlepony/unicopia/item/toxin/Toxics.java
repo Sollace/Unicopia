@@ -17,7 +17,8 @@ public interface Toxics {
     Registry<Toxic> REGISTRY = Registries.createSimple(new Identifier("unicopia:toxic"));
 
     Toxic EDIBLE =              forage("edible", SAFE, FOOD);
-    Toxic RISKY =               forage("risky",  FAIR, FOOD);
+    Toxic RISKY =               forage("risky", FAIR, FOOD);
+    Toxic MODERATE =            forage("moderate", MILD, FOOD);
     Toxic DANGEROUS =           forage("dangerous", SEVERE, FOOD);
     Toxic NAUSEATING =          forage("nauseating", SAFE, NAUSEA);
     Toxic RADIOACTIVE =         forage("radioactive", SAFE, RADIOACTIVITY);

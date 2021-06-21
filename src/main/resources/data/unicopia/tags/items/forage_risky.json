@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "minecraft:allium",
-    "minecraft:white_tulip"
+    "minecraft:white_tulip",
+    "unicopia:burned_juice"
   ]
 }
