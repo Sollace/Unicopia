@@ -14,6 +14,8 @@ public interface UTags {
 
     Tag<Item> FALLS_SLOWLY = item("falls_slowly");
 
+    Tag<Item> MAGIC_FEATHERS = item("magic_feathers");
+
     Tag<Block> FRAGILE = block("fragile");
     Tag<Block> INTERESTING = block("interesting");
 
