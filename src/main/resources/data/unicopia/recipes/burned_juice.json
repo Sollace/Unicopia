@@ -1,0 +1,9 @@
+{
+  "type": "smelting",
+  "ingredient": {
+    "item": "unicopia:juice"
+  },
+  "result": "unicopia:burned_juice",
+  "experience": 0,
+  "cookingtime": 100
+}

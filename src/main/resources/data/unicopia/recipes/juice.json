@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  
+  "pattern": [
+    "AAA",
+    "AAA",
+    " B "
+  ],
+  "key": {
+    "B": [
+      { "item": "minecraft:glass_bottle" }
+    ],
+    "A": [
+      { "tag": "unicopia:fresh_apples" }
+    ]
+  },
+  "result": { "item": "unicopia:juice" }
+}
