@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
+import com.minelittlepony.unicopia.util.network.Packet;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -8,7 +9,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 
-public class MsgBlockDestruction implements Channel.Packet {
+public class MsgBlockDestruction implements Packet<PlayerEntity> {
 
     private final Long2ObjectMap<Integer> destructions;
 

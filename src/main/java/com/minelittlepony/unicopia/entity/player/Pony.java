@@ -160,7 +160,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
         if (entity instanceof ServerPlayerEntity) {
             MsgOtherPlayerCapabilities packet = new MsgOtherPlayerCapabilities(full, this);
-            Channel.SERVER_PLAYER_CAPABILITIES.send(entity, packet);
+            Channel.SERVER_PLAYER_CAPABILITIES.send((ServerPlayerEntity)entity, packet);
             Channel.SERVER_OTHER_PLAYER_CAPABILITIES.send(entity.world, packet);
         }
     }

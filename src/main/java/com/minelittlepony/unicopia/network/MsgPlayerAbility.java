@@ -3,13 +3,14 @@ package com.minelittlepony.unicopia.network;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.network.Packet;
 import com.minelittlepony.unicopia.ability.Abilities;
 
 import net.minecraft.util.Identifier;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 
-public class MsgPlayerAbility<T extends Hit> implements Channel.Packet {
+public class MsgPlayerAbility<T extends Hit> implements Packet<ServerPlayerEntity> {
 
     private final Ability<T> power;
 
@@ -33,7 +34,7 @@ public class MsgPlayerAbility<T extends Hit> implements Channel.Packet {
     }
 
     @Override
-    public void handle(PlayerEntity sender) {
+    public void handle(ServerPlayerEntity sender) {
         Pony player = Pony.of(sender);
         if (player == null) {
             return;

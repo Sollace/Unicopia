@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.math.BlockPos;
@@ -120,13 +121,17 @@ public class BlockDestructionManager {
 
                 MsgBlockDestruction msg = new MsgBlockDestruction(values);
 
-                if (Channel.toBuffer(msg).writerIndex() > 1048576) {
+                if (msg.toBuffer().writerIndex() > 1048576) {
                     throw new IllegalStateException("Payload may not be larger than 1048576 bytes. Here's what we were trying to send: ["
                             + values.size() + "]\n"
                             + Arrays.toString(values.values().stream().mapToInt(Integer::intValue).toArray()));
                 }
 
-                players.forEach(player -> Channel.SERVER_BLOCK_DESTRUCTION.send(player, msg));
+                players.forEach(player -> {
+                    if (player instanceof ServerPlayerEntity) {
+                        Channel.SERVER_BLOCK_DESTRUCTION.send((ServerPlayerEntity)player, msg);
+                    }
+                });
             }
         }
     }

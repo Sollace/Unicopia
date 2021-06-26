@@ -8,6 +8,7 @@ import java.util.UUID;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.network.Packet;
 
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
@@ -16,7 +17,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 
-public class MsgPlayerCapabilities implements Channel.Packet {
+public class MsgPlayerCapabilities implements Packet<PlayerEntity> {
 
     protected final UUID playerId;
 

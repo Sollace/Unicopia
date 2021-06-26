@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.Owned;
+import com.minelittlepony.unicopia.util.network.Packet;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,7 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 
-public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Channel.Packet {
+public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Packet<PlayerEntity> {
 
     MsgSpawnProjectile(PacketByteBuf buffer) {
         try {

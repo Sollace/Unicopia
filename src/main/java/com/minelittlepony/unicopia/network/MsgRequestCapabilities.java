@@ -3,12 +3,13 @@ package com.minelittlepony.unicopia.network;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.network.Packet;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
-public class MsgRequestCapabilities implements Channel.Packet {
+public class MsgRequestCapabilities implements Packet<ServerPlayerEntity> {
 
     private final Race clientPreferredRace;
 
@@ -26,7 +27,7 @@ public class MsgRequestCapabilities implements Channel.Packet {
     }
 
     @Override
-    public void handle(PlayerEntity sender) {
+    public void handle(ServerPlayerEntity sender) {
         Pony player = Pony.of(sender);
 
         Race worldDefaultRace = WorldTribeManager.forWorld((ServerWorld)player.getWorld()).getDefaultRace();
