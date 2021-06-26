@@ -13,6 +13,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -58,7 +59,7 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
 
             boolean glowing = ((GlowableItem)item.getItem()).isGlowing(item);
 
-            VertexConsumer consumer = CanvasCompat.getGlowingConsumer(glowing, renderContext, RenderLayer.getArmorCutoutNoCull(TEXTURE));
+            VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(TEXTURE), false, false);
 
             model.setAngles(context.getModel());
             model.setVisible(entity.getMainArm());

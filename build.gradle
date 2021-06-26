@@ -1,59 +1,66 @@
 plugins {
     id 'java-library'
-    id 'fabric-loom' version '0.8-SNAPSHOT' apply false
+    id 'fabric-loom' version '0.8-SNAPSHOT'
 }
 
-allprojects {
-    apply plugin: 'fabric-loom'
+apply plugin: 'fabric-loom'
 
-    targetCompatibility = JavaVersion.VERSION_1_8
-    sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_1_8
 
-    version = "${project.minecraft_version}-${project.version}"
+version = "${project.minecraft_version}-${project.version}"
 
-    if (project.release != 'RELEASE') {
-        version += "-${project.release}"
-    }
+if (project.release != 'RELEASE') {
+    version += "-${project.release}"
+}
 
-    group = project.group
-    description = project.displayname
-    archivesBaseName = project.name
+group = project.group
+description = project.displayname
+archivesBaseName = project.name
 
-    // check for updates every build when on CI
-    if (System.env.CI) {
-        configurations.all {
-            resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-        }
-    }
-
-    dependencies {
-        minecraft "com.mojang:minecraft:${project.minecraft_version}"
-        mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-        modApi "net.fabricmc:fabric-loader:${project.loader_version}"
-        modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-        compileOnly "com.google.code.findbugs:jsr305:3.0.2"
-    }
-
-    processResources {
-        inputs.property "version", project.version
-    
-	    filesMatching("fabric.mod.json") {
-	        expand "version": project.version
-	    }
-    }
-    
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-    }
-    
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = "sources"
-        from sourceSets.main.allSource
+// check for updates every build when on CI
+if (System.env.CI) {
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     }
 }
 
 minecraft {
     refmapName = 'unicopia.mixin.refmap.json'
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modApi "net.fabricmc:fabric-loader:${project.loader_version}"
+    modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
+
+    modApi "com.minelittlepony:MineLittlePony:${project.minelp_version}"
+
+    modApi "com.minelittlepony:Kirin:${project.kirin_version}"
+    include "com.minelittlepony:Kirin:${project.kirin_version}"
+
+    modCompileOnly("io.github.prospector:modmenu:${project.modmenu_version}") {
+        transitive = false
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = "sources"
+    from sourceSets.main.allSource
 }
 
 repositories {
@@ -67,26 +74,4 @@ repositories {
     }
 }
 
-dependencies {
-    modApi "com.minelittlepony:MineLittlePony:${project.minelp_version}"
 
-    modApi "com.minelittlepony:Kirin:${project.kirin_version}"
-    include "com.minelittlepony:Kirin:${project.kirin_version}"
-
-    modCompileOnly("io.github.prospector:modmenu:${project.modmenu_version}") {
-        transitive = false
-    }
-
-    // Fix circular error when gradle tries to build this project as a pre-requisite to :canvas-compat
-    // Build will fail if the sub-project isn't built first though,
-    // so make sure to run gradlew :canvas-compat:build before doing gradlew build
-    if (file("./canvas-compat/build/libs/${project(':canvas-compat').jar.archiveName}").exists()) {
-        modCompileOnly(project(":canvas-compat")) {
-            transitive = false
-        }
-    }
-
-    afterEvaluate {
-        include project(":canvas-compat")
-    }
-}

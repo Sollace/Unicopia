@@ -9,5 +9,3 @@ pluginManagement {
     }
 }
 rootProject.name = 'Unicopia'
-
-include 'canvas-compat'
