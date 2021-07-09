@@ -49,7 +49,7 @@ public class EntityPhysics<T extends Entity> implements Physics, Copieable<Entit
                 entity.damage(DamageSource.OUT_OF_WORLD, 4.0F);
             }
 
-            entity.setOnGround(!entity.world.isAir(new BlockPos(entity.getX(), Math.floor(entity.getBoundingBox().maxY + 0.25), entity.getZ())));
+            entity.setOnGround(entity.verticalCollision && entity.getVelocity().getY() > 0);
         }
 
         float gravity = this.getGravityModifier();
