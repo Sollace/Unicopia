@@ -1,21 +1,21 @@
 package com.minelittlepony.unicopia.util.network;
 
-import com.google.common.base.Preconditions;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 /**
- * A server packet type. Sent by the client to the server.
+ * A client packet type. Sent by the server to a specific player.
  */
-public interface S2CPacketType<T extends Packet<ServerPlayerEntity>> {
+public interface S2CPacketType<T extends Packet<PlayerEntity>> {
     Identifier getId();
 
-    default void send(T packet) {
-        Preconditions.checkState(FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT, "Client packet send called by the server");
-        ClientPlayNetworking.send(getId(), packet.toBuffer());
+    default void send(ServerPlayerEntity recipient, T packet) {
+        ServerPlayNetworking.send(recipient, getId(), packet.toBuffer());
+    }
+
+    default net.minecraft.network.Packet<?> toPacket(T packet) {
+        return ServerPlayNetworking.createS2CPacket(getId(), packet.toBuffer());
     }
 }

@@ -23,7 +23,7 @@ import net.minecraft.util.Identifier;
  * All of the above is handled in a black-box style by this class.
  * <p>
  * <ul>
- * <li>Packets are automatically reigstered on the appropriate sides.</li>
+ * <li>Packets are automatically registered on the appropriate sides.</li>
  * <li>Sending is done in the same way by calling `send` on your packet type.</li>
  * <li>Your packet's <code>handle</code> method is executed on the main thread where it is safe to interact with the world.</li>
  */
@@ -41,7 +41,7 @@ public final class SimpleNetworking {
      *
      * @return A registered PacketType
      */
-    public static <T extends Packet<ServerPlayerEntity>> S2CPacketType<T> clientToServer(Identifier id, Function<PacketByteBuf, T> factory) {
+    public static <T extends Packet<ServerPlayerEntity>> C2SPacketType<T> clientToServer(Identifier id, Function<PacketByteBuf, T> factory) {
         ServerPlayNetworking.registerGlobalReceiver(id, (server, player, handler, buffer, responder) -> {
             T packet = factory.apply(buffer);
             server.execute(() -> packet.handle(player));
@@ -59,7 +59,7 @@ public final class SimpleNetworking {
      *
      * @return A registered PacketType
      */
-    public static <T extends Packet<PlayerEntity>> C2SPacketType<T> serverToClient(Identifier id, Function<PacketByteBuf, T> factory) {
+    public static <T extends Packet<PlayerEntity>> S2CPacketType<T> serverToClient(Identifier id, Function<PacketByteBuf, T> factory) {
         if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
             ClientProxy.register(id, factory);
         }
