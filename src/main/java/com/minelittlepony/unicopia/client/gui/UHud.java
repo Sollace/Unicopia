@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
@@ -25,6 +25,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.Quaternion;
 
 public class UHud extends DrawableHelper {
 
@@ -73,10 +74,9 @@ public class UHud extends DrawableHelper {
             renderMessage(matrices, tickDelta);
         }
 
-        RenderSystem.enableAlphaTest();
         RenderSystem.enableBlend();
 
-        client.getTextureManager().bindTexture(HUD_TEXTURE);
+        RenderSystem.setShaderTexture(0, HUD_TEXTURE);
 
         boolean swap = client.options.keySneak.isPressed();
 
@@ -84,7 +84,6 @@ public class UHud extends DrawableHelper {
         slots.forEach(slot -> slot.renderLabel(matrices, abilities, tickDelta));
 
         RenderSystem.disableBlend();
-        RenderSystem.disableAlphaTest();
 
         matrices.pop();
 
@@ -100,13 +99,17 @@ public class UHud extends DrawableHelper {
                     int x = scaledWidth / 2 + 67;
                     int y = scaledHeight - 25;
 
-                    RenderSystem.pushMatrix();
-                    RenderSystem.translatef(x, y, 0);
-                    RenderSystem.rotatef(45, -0.2F, 1, 0);
+                    MatrixStack view = RenderSystem.getModelViewStack();
+
+                    view.push();
+                    view.translate(x, y, 0);
+                    view.multiply(new Quaternion(-9, 45, 0, true));
                     InventoryScreen.drawEntity(0, 0, scale, 0, -20, client.player);
-                    RenderSystem.popMatrix();
+                    view.pop();
                 });
         }
+
+
     }
 
     private void renderMessage(MatrixStack matrices, float tickDelta) {
@@ -139,9 +142,9 @@ public class UHud extends DrawableHelper {
 
     void renderAbilityIcon(MatrixStack matrices, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
         stat.getAbility(KeyBindingsHandler.INSTANCE.page).ifPresent(ability -> {
-            client.getTextureManager().bindTexture(ability.getIcon(Pony.of(client.player), client.options.keySneak.isPressed()));
+            RenderSystem.setShaderTexture(0, ability.getIcon(Pony.of(client.player), client.options.keySneak.isPressed()));
             drawTexture(matrices, x, y, 0, 0, frameWidth, frameHeight, u, v);
-            client.getTextureManager().bindTexture(HUD_TEXTURE);
+            RenderSystem.setShaderTexture(0, HUD_TEXTURE);
         });
     }
 

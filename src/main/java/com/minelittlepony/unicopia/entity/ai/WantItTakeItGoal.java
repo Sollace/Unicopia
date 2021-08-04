@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -18,7 +19,7 @@ import net.minecraft.util.Hand;
 
 public class WantItTakeItGoal extends BreakHeartGoal {
 
-    private final TargetPredicate predicate = new TargetPredicate()
+    private final TargetPredicate predicate = TargetPredicate.createAttackable()
             .setBaseMaxDistance(64)
             .setPredicate(EquinePredicates.HAS_WANT_IT_NEED_IT);
 
@@ -30,7 +31,7 @@ public class WantItTakeItGoal extends BreakHeartGoal {
 
     @Override
     protected boolean canTarget(Entity e) {
-        return (!e.removed && e instanceof ItemEntity && EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, ((ItemEntity)e).getStack()) > 0)
+        return (!e.isRemoved() && e instanceof ItemEntity && EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, ((ItemEntity)e).getStack()) > 0)
             || (e instanceof LivingEntity && predicate.test(mob, (LivingEntity)e));
     }
 
@@ -78,11 +79,11 @@ public class WantItTakeItGoal extends BreakHeartGoal {
                     ItemEntity item = (ItemEntity)target;
                     ItemStack stack = item.getStack();
 
-                    if (!item.removed) {
+                    if (!item.isRemoved()) {
                         mob.tryEquip(stack);
-                        mob.method_29499(item);
+                        mob.triggerItemPickedUpByEntityCriteria(item);
                         mob.sendPickup(item, stack.getCount());
-                        item.remove();
+                        item.remove(RemovalReason.DISCARDED);
                     }
                 }, 0);
             }

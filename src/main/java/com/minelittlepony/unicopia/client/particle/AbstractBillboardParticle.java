@@ -10,8 +10,9 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -43,8 +44,6 @@ public abstract class AbstractBillboardParticle extends Particle {
                 GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA,
                 GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA
         );
-        RenderSystem.alphaFunc(516, 0.003921569F);
-
 
         Vec3d cam = camera.getPos();
 
@@ -55,7 +54,6 @@ public abstract class AbstractBillboardParticle extends Particle {
         renderQuads(te, buffer, renderX, renderY, renderZ, tickDelta);
 
         RenderSystem.enableCull();
-        RenderSystem.defaultAlphaFunc();
         RenderSystem.defaultBlendFunc();
     }
 
@@ -65,10 +63,10 @@ public abstract class AbstractBillboardParticle extends Particle {
         MinecraftClient.getInstance().getTextureManager().bindTexture(texture);
     }
 
-    protected void renderQuad(Tessellator te, BufferBuilder buffer, Vector3f[] corners, float alpha, float tickDelta) {
-        int light = getColorMultiplier(tickDelta);
+    protected void renderQuad(Tessellator te, BufferBuilder buffer, Vec3f[] corners, float alpha, float tickDelta) {
+        int light = getBrightness(tickDelta);
 
-        buffer.begin(7, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
         buffer.vertex(corners[0].getX(), corners[0].getY(), corners[0].getZ()).texture(0, 0).color(colorRed, colorGreen, colorBlue, alpha).light(light).next();
         buffer.vertex(corners[1].getX(), corners[1].getY(), corners[1].getZ()).texture(1, 0).color(colorRed, colorGreen, colorBlue, alpha).light(light).next();
         buffer.vertex(corners[2].getX(), corners[2].getY(), corners[2].getZ()).texture(1, 1).color(colorRed, colorGreen, colorBlue, alpha).light(light).next();

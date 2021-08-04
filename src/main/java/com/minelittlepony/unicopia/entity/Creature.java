@@ -20,11 +20,11 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 public class Creature extends Living<LivingEntity> {
 
-    private static final TrackedData<CompoundTag> EFFECT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+    private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
     public static final TrackedData<Float> GRAVITY = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
     private static final LevelStore LEVELS = Levelled.fixed(0);
@@ -94,7 +94,7 @@ public class Creature extends Living<LivingEntity> {
     }
 
     @Override
-    public void toNBT(CompoundTag compound) {
+    public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
         getSpellSlot().get(true).ifPresent(effect -> {
             compound.put("effect", SpellType.toNBT(effect));
@@ -103,7 +103,7 @@ public class Creature extends Living<LivingEntity> {
     }
 
     @Override
-    public void fromNBT(CompoundTag compound) {
+    public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         if (compound.contains("effect")) {
             setSpell(SpellType.fromNBT(compound.getCompound("effect")));

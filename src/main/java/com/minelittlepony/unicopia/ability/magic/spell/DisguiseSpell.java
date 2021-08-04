@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.Optional;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Owned;
@@ -25,7 +25,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 public class DisguiseSpell extends AbstractSpell implements Attached, Suppressable, FlightType.Provider, PlayerDimensions.Provider, ProjectileImpactListener {
 
@@ -178,7 +178,7 @@ public class DisguiseSpell extends AbstractSpell implements Attached, Suppressab
     }
 
     @Override
-    public void toNBT(CompoundTag compound) {
+    public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
 
         compound.putInt("suppressionCounter", suppressionCounter);
@@ -186,7 +186,7 @@ public class DisguiseSpell extends AbstractSpell implements Attached, Suppressab
     }
 
     @Override
-    public void fromNBT(CompoundTag compound) {
+    public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
 
         suppressionCounter = compound.getInt("suppressionCounter");

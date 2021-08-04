@@ -86,7 +86,7 @@ public class ParticleHandle {
                             .filter(s -> s.getUuid().equals(effect))
                             .isPresent()
                         && e != null
-                        && c.getWorld().getEntityById(e.getEntityId()) != null;
+                        && c.getWorld().getEntityById(e.getId()) != null;
             });
             if (!caster.isPresent()) {
                 action.run();

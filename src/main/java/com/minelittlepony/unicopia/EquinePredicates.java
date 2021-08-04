@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia;
 
 import java.util.function.Predicate;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
@@ -24,9 +24,9 @@ public interface EquinePredicates {
     Predicate<Entity> PLAYER_BAT = IS_PLAYER.and(ofRace(Race.BAT));
     Predicate<Entity> PLAYER_UNICORN = IS_PLAYER.and(raceMatches(Race::canCast));
     Predicate<Entity> PLAYER_CHANGELING = IS_PLAYER.and(ofRace(Race.CHANGELING));
-    Predicate<Entity> PLAYER_PEGASUS = IS_PLAYER.and(e -> ((PlayerEntity)e).abilities.creativeMode || RACE_INTERACT_WITH_CLOUDS.test(e));
+    Predicate<Entity> PLAYER_PEGASUS = IS_PLAYER.and(e -> ((PlayerEntity)e).getAbilities().creativeMode || RACE_INTERACT_WITH_CLOUDS.test(e));
 
-    Predicate<Entity> IS_CASTER = e -> !e.removed && (e instanceof Caster || PLAYER_UNICORN.test(e));
+    Predicate<Entity> IS_CASTER = e -> !e.isRemoved() && (e instanceof Caster || PLAYER_UNICORN.test(e));
 
     Predicate<LivingEntity> HAS_WANT_IT_NEED_IT = e -> EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) > 0;
 

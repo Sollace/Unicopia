@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.render;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -16,14 +17,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -71,8 +71,8 @@ public class WorldRenderDelegate {
         roll = pony instanceof Pony ? ((Pony)pony).getInterpolator().interpolate("g_roll", roll, 15) : roll;
 
         matrices.translate(x, y + owner.getHeight() / 2, z);
-        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(roll));
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(roll));
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(roll));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(roll));
         matrices.translate(-x, -y - owner.getHeight() / 2, -z);
 
         if (negative) {
@@ -132,9 +132,9 @@ public class WorldRenderDelegate {
         BlockEntity blockEntity = ve.getBlockEntity();
 
         if (blockEntity != null) {
-            BlockEntityRenderer<BlockEntity> r = BlockEntityRenderDispatcher.INSTANCE.get(blockEntity);
+            BlockEntityRenderer<BlockEntity> r = MinecraftClient.getInstance().getBlockEntityRenderDispatcher().get(blockEntity);
             if (r != null) {
-                blockEntity.setPos(e.getBlockPos());
+                ((MixinBlockEntity)blockEntity).setPos(e.getBlockPos());
                 matrices.push();
 
                 BlockState state = blockEntity.getCachedState();
@@ -143,7 +143,7 @@ public class WorldRenderDelegate {
                 matrices.translate(x, y, z);
 
                 matrices.multiply(direction.getRotationQuaternion());
-                matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(90));
+                matrices.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(90));
 
                 matrices.translate(-0.5, 0, -0.5);
 
@@ -161,7 +161,7 @@ public class WorldRenderDelegate {
         }
 
         e.setFireTicks(fireTicks);
-        dispatcher.render(e, x, y, z, e.yaw, tickDelta, matrices, vertexConsumers, light);
+        dispatcher.render(e, x, y, z, e.getYaw(), tickDelta, matrices, vertexConsumers, light);
         e.setFireTicks(0);
 
         if (model != null) {
@@ -184,10 +184,10 @@ public class WorldRenderDelegate {
     private void flipAngles(Entity entity) {
         if (entity instanceof PlayerEntity) {
             entity.prevYaw *= -1;
-            entity.yaw *= -1;
+            entity.setYaw(entity.getYaw() * -1);
 
             entity.prevPitch *= -1;
-            entity.pitch *= -1;
+            entity.setPitch(entity.getPitch() * -1);
         }
 
         if (entity instanceof LivingEntity) {

@@ -13,6 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -47,20 +48,20 @@ public class JarItem extends Item implements ProjectileDelegate, ItemImpl.Tickab
         world.playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL,
                 0.5F,
-                0.4F / (RANDOM.nextFloat() * 0.4F + 0.8F));
+                0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
         if (!world.isClient) {
             MagicProjectileEntity projectile = new MagicProjectileEntity(world, player);
             projectile.setItem(stack);
             projectile.setThrowDamage(getProjectileDamage(stack));
-            projectile.setProperties(player, player.pitch, player.yaw, 0, 1.5F, 1);
+            projectile.setProperties(player, player.getPitch(), player.getYaw(), 0, 1.5F, 1);
 
             world.spawnEntity(projectile);
         }
 
         player.incrementStat(Stats.USED.getOrCreateStat(this));
 
-        if (!player.abilities.creativeMode) {
+        if (!player.getAbilities().creativeMode) {
             stack.decrement(1);
         }
 
@@ -79,15 +80,15 @@ public class JarItem extends Item implements ProjectileDelegate, ItemImpl.Tickab
 
         if (!lightning
                 && !entity.world.isClient
-                && !entity.removed
-                && entity.getAge() > 100
+                && !entity.isRemoved()
+                && entity.getItemAge() > 100
                 && entity.world.isThundering()
                 && entity.world.isSkyVisible(entity.getBlockPos())
                 && entity.world.random.nextInt(130) == 0) {
             LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(entity.world);
             lightning.refreshPositionAfterTeleport(entity.getX(), entity.getY(), entity.getZ());
 
-            entity.remove();
+            entity.remove(RemovalReason.DISCARDED);
             entity.world.spawnEntity(lightning);
 
             ItemEntity neu = EntityType.ITEM.create(entity.world);

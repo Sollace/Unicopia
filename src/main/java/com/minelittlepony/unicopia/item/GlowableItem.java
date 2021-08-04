@@ -1,11 +1,11 @@
 package com.minelittlepony.unicopia.item;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 public interface GlowableItem {
     default boolean isGlowing(ItemStack stack) {
-        CompoundTag tag = stack.getSubTag("display");
+        NbtCompound tag = stack.getSubTag("display");
         return tag != null && tag.getBoolean("glowing");
     }
 

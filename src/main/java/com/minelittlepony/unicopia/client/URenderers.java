@@ -60,7 +60,7 @@ public interface URenderers {
         AccessoryFeatureRenderer.register(AmuletFeatureRenderer::new);
         AccessoryFeatureRenderer.register(WingsFeatureRenderer::new);
 
-        EntityRendererRegistry.INSTANCE.register(UEntities.THROWN_ITEM, (manager, context) -> new FlyingItemEntityRenderer<>(manager, context.getItemRenderer()));
+        EntityRendererRegistry.INSTANCE.register(UEntities.THROWN_ITEM, FlyingItemEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(UEntities.FLOATING_ARTEFACT, FloatingArtefactEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(UEntities.CAST_SPELL, CastSpellEntityRenderer::new);
 
@@ -84,10 +84,10 @@ public interface URenderers {
                 matrices.push();
                 matrices.scale(0.5F, 0.5F, 0.5F);
                 matrices.translate(0.0125, 0.1, 0);
-                renderer.renderItem(item.getAppearanceStack(stack), mode, light, overlay, matrices, immediate);
+                renderer.renderItem(item.getAppearanceStack(stack), mode, light, overlay, matrices, immediate, 0);
                 matrices.pop();
             }
-            renderer.renderItem(item.createAppearanceStack(stack, UItems.EMPTY_JAR), mode, light, OverlayTexture.DEFAULT_UV, matrices, immediate);
+            renderer.renderItem(item.createAppearanceStack(stack, UItems.EMPTY_JAR), mode, light, OverlayTexture.DEFAULT_UV, matrices, immediate, 0);
             immediate.draw();
 
             if (mode == ModelTransformation.Mode.GUI) {
@@ -96,7 +96,7 @@ public interface URenderers {
             matrices.push();
 
         });
-        FabricModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity) -> {
+        FabricModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> {
             return GemstoneItem.isEnchanted(stack) ? 1 + GemstoneItem.getSpellKey(stack).getAffinity().ordinal() : 0;
         });
         ColorProviderRegistry.ITEM.register((stack, i) -> {

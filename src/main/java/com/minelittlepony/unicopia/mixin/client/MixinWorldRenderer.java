@@ -16,10 +16,10 @@ import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.minecraft.client.render.BlockBreakingInfo;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 
 @Mixin(WorldRenderer.class)
-abstract class MixinWorldRenderer implements SynchronousResourceReloadListener, AutoCloseable, ClientBlockDestructionManager.Source {
+abstract class MixinWorldRenderer implements SynchronousResourceReloader, AutoCloseable, ClientBlockDestructionManager.Source {
 
     private final ClientBlockDestructionManager destructions = new ClientBlockDestructionManager();
 

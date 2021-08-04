@@ -1,8 +1,6 @@
 package com.minelittlepony.unicopia.network;
 
-import java.io.IOException;
 import java.util.Optional;
-
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.util.network.Packet;
 
@@ -18,22 +16,17 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Packet<PlayerEntity> {
 
     MsgSpawnProjectile(PacketByteBuf buffer) {
-        try {
-            read(buffer);
-        } catch (IOException e) { }
+        super(buffer);
     }
 
     @SuppressWarnings("unchecked")
     public MsgSpawnProjectile(Entity e) {
-        super(e, Optional.ofNullable(e instanceof Owned ? ((Owned<Entity>)e).getMaster() : null).map(Entity::getEntityId).orElse(0));
+        super(e, Optional.ofNullable(e instanceof Owned ? ((Owned<Entity>)e).getMaster() : null).map(Entity::getId).orElse(0));
     }
 
     @Override
     public void toBuffer(PacketByteBuf buffer) {
-        try {
-            write(buffer);
-        } catch (IOException e) {
-        }
+        write(buffer);
     }
 
 
@@ -53,9 +46,9 @@ public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Packet<P
         entity.updateTrackedPosition(getX(), getY(), getZ());
         entity.refreshPositionAfterTeleport(getX(), getY(), getZ());
         entity.setVelocity(getVelocityX(), getVelocityY(), getVelocityZ());
-        entity.pitch = getPitch() * 360 / 256F;
-        entity.yaw = getYaw() * 360 / 256F;
-        entity.setEntityId(getId());
+        entity.setPitch(getPitch() * 360 / 256F);
+        entity.setYaw(getYaw() * 360 / 256F);
+        entity.setId(getId());
         entity.setUuid(getUuid());
 
         if (entity instanceof Owned) {
@@ -65,9 +58,3 @@ public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Packet<P
         world.addEntity(getId(), entity);
     }
 }
-
-
-
-
-
-

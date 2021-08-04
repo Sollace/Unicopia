@@ -45,7 +45,7 @@ public class MagicAuraSoundInstance extends MovingSoundInstance {
         y = pos.y;
         z = pos.z;
 
-        if (!living.getEntity().removed && data.isPresent()) {
+        if (!living.getEntity().isRemoved() && data.isPresent()) {
             float level = data.get().level;
             if (level != targetVolume) {
                 setTargetVolume(level);

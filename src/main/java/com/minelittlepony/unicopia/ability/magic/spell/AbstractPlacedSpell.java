@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.ability.magic.Attached;
@@ -11,7 +11,7 @@ import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.UParticles;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
@@ -74,7 +74,7 @@ public abstract class AbstractPlacedSpell extends AbstractSpell implements Attac
     }
 
     @Override
-    public void toNBT(CompoundTag compound) {
+    public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
 
         if (dimension != null) {
@@ -84,7 +84,7 @@ public abstract class AbstractPlacedSpell extends AbstractSpell implements Attac
     }
 
     @Override
-    public void fromNBT(CompoundTag compound) {
+    public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         if (compound.contains("dimension")) {
             dimension = new Identifier(compound.getString("dimension"));

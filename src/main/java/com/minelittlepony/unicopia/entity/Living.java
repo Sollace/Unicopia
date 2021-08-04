@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.entity;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
@@ -20,7 +20,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Hand;
 
 public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T> {
@@ -42,11 +42,11 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     private final Enchantments enchants = new Enchantments(this);
 
-    protected Living(T entity, TrackedData<CompoundTag> effect) {
+    protected Living(T entity, TrackedData<NbtCompound> effect) {
         this.entity = entity;
         this.effectDelegate = new EffectSync(this, effect);
 
-        entity.getDataTracker().startTracking(effect, new CompoundTag());
+        entity.getDataTracker().startTracking(effect, new NbtCompound());
     }
 
     public void waitForFall(Runnable action) {
@@ -164,19 +164,19 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 .isPresent();
     }
 
-    protected void handleFall(float distance, float damageMultiplier) {
+    protected void handleFall(float distance, float damageMultiplier, DamageSource cause) {
         getSpellSlot().get(SpellType.DISGUISE, false).ifPresent(spell -> {
-            spell.getDisguise().onImpact(this, distance, damageMultiplier);
+            spell.getDisguise().onImpact(this, distance, damageMultiplier, cause);
         });
     }
 
     @Override
-    public void toNBT(CompoundTag compound) {
+    public void toNBT(NbtCompound compound) {
         enchants.toNBT(compound);
     }
 
     @Override
-    public void fromNBT(CompoundTag compound) {
+    public void fromNBT(NbtCompound compound) {
         enchants.fromNBT(compound);
     }
 }

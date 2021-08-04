@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.block.state;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.DoubleBlockHalf;
@@ -27,8 +27,8 @@ public interface BlockStateConverter {
      *
      * @return    The converted state if there is one, otherwise the original state is returned
      */
-    @Nonnull
-    BlockState getConverted(World world, @Nonnull BlockState state);
+    @NotNull
+    BlockState getConverted(World world, @NotNull BlockState state);
 
     /**
      * Attempts to convert a block state at a position.

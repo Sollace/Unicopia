@@ -69,7 +69,7 @@ public class UnicopiaClient implements ClientModInitializer {
 
     private void onScreenInit(Screen screen, ButtonList buttons) {
         if (screen instanceof CreateWorldScreen) {
-            buttons.add(SettingsScreen.createRaceSelector(screen));
+            buttons.addButton(SettingsScreen.createRaceSelector(screen));
         }
     }
 

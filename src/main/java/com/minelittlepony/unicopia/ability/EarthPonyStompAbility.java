@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.ability;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.BlockDestructionManager;
 import com.minelittlepony.unicopia.Race;
@@ -58,7 +58,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     @Nullable
     @Override
     public Hit tryActivate(Pony player) {
-        if (!player.getMaster().isOnGround() && player.getMaster().getVelocity().y * player.getPhysics().getGravitySignum() < 0 && !player.getMaster().abilities.flying) {
+        if (!player.getMaster().isOnGround() && player.getMaster().getVelocity().y * player.getPhysics().getGravitySignum() < 0 && !player.getMaster().getAbilities().flying) {
             thrustDownwards(player);
             return Hit.INSTANCE;
         }

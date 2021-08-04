@@ -5,8 +5,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
+import org.jetbrains.annotations.NotNull;
 
 import com.google.common.collect.Lists;
 
@@ -26,7 +25,7 @@ public class Weighted<T> {
         return result;
     }
 
-    public Weighted<T> put(int weight, @Nonnull T value) {
+    public Weighted<T> put(int weight, @NotNull T value) {
         entries.add(new Entry(weight, value));
 
         totalWeight += weight;
@@ -60,7 +59,6 @@ public class Weighted<T> {
                 .findFirst();
     }
 
-    @Immutable
     class Entry {
 
         final float weight;

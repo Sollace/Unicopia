@@ -11,7 +11,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -142,17 +142,17 @@ public class FloatingArtefactEntity extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromTag(CompoundTag compound) {
-        ItemStack itemStack = ItemStack.fromTag(compound.getCompound("Item"));
+    protected void readCustomDataFromNbt(NbtCompound compound) {
+        ItemStack itemStack = ItemStack.fromNbt(compound.getCompound("Item"));
         setStack(itemStack);
         setState(State.valueOf(compound.getInt("State")));
     }
 
     @Override
-    protected void writeCustomDataToTag(CompoundTag compound) {
+    protected void writeCustomDataToNbt(NbtCompound compound) {
         ItemStack stack = getStack();
         if (!stack.isEmpty()) {
-            compound.put("Item", stack.toTag(new CompoundTag()));
+            compound.put("Item", stack.writeNbt(new NbtCompound()));
         }
         compound.putInt("State", getState().ordinal());
     }
@@ -167,7 +167,7 @@ public class FloatingArtefactEntity extends Entity {
 
         health -= amount;
         if (health <= 0) {
-            remove();
+            remove(RemovalReason.KILLED);
 
             ItemStack stack = getStack();
 

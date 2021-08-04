@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.util;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -14,10 +14,10 @@ public class CustomStatusEffect extends StatusEffect {
 
     private int tickDelay = 40;
 
-    @Nonnull
+    @NotNull
     private DirectEffect direct = DirectEffect.NONE;
 
-    @Nonnull
+    @NotNull
     private IndirectEffect indirect = IndirectEffect.NONE;
 
     public CustomStatusEffect(Identifier id, StatusEffectType type, int color) {
@@ -30,13 +30,13 @@ public class CustomStatusEffect extends StatusEffect {
         return this;
     }
 
-    public CustomStatusEffect direct(@Nonnull DirectEffect applicator) {
+    public CustomStatusEffect direct(@NotNull DirectEffect applicator) {
         this.direct = applicator;
 
         return this;
     }
 
-    public CustomStatusEffect indirect(@Nonnull IndirectEffect applicator) {
+    public CustomStatusEffect indirect(@NotNull IndirectEffect applicator) {
         this.indirect = applicator;
 
         return this;

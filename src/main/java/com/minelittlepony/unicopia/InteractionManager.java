@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.entity.player.dummy.DummyPlayerEntity;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyServerPlayerEntity;
@@ -38,7 +38,7 @@ public class InteractionManager {
      *
      * Returns an implementation of PlayerEntity appropriate to the side being called on.
      */
-    @Nonnull
+    @NotNull
     public PlayerEntity createPlayer(Entity observer, GameProfile profile) {
         if (observer.world instanceof ServerWorld) {
             return new DummyServerPlayerEntity((ServerWorld)observer.world, profile);

@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.entity;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 
 class ItemPhysics extends EntityPhysics<ItemEntity> {
@@ -22,7 +21,7 @@ class ItemPhysics extends EntityPhysics<ItemEntity> {
             );
 
             if (!entity.isOnGround()
-                    || Entity.squaredHorizontalLength(entity.getVelocity()) > 9.999999747378752E-6D) {
+                    || entity.getVelocity().horizontalLengthSquared() > 9.999999747378752E-6D) {
 
                 float above = 0.98f;
                 if (entity.verticalCollision) {

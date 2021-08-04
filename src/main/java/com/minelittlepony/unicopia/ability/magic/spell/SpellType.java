@@ -6,14 +6,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -168,7 +168,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     }
 
     @Nullable
-    public static Spell fromNBT(@Nullable CompoundTag compound) {
+    public static Spell fromNBT(@Nullable NbtCompound compound) {
         if (compound != null && compound.contains("effect_id")) {
             Spell effect = getKey(new Identifier(compound.getString("effect_id"))).create();
 
@@ -182,8 +182,8 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         return null;
     }
 
-    public static CompoundTag toNBT(Spell effect) {
-        CompoundTag compound = effect.toNBT();
+    public static NbtCompound toNBT(Spell effect) {
+        NbtCompound compound = effect.toNBT();
 
         compound.putString("effect_id", effect.getType().getId().toString());
 

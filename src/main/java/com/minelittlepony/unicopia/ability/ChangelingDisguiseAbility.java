@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;

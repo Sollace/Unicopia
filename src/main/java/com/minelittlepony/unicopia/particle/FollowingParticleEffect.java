@@ -13,7 +13,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class FollowingParticleEffect implements ParticleEffect {
-    public static final ParticleEffect.Factory<FollowingParticleEffect> FACTORY = new ParticleEffect.Factory<FollowingParticleEffect>() {
+    public static final ParticleEffect.Factory<FollowingParticleEffect> FACTORY = new ParticleEffect.Factory<>() {
         @Override
         public FollowingParticleEffect read(ParticleType<FollowingParticleEffect> type, StringReader reader) throws CommandSyntaxException {
             reader.expect(' ');
@@ -49,7 +49,7 @@ public class FollowingParticleEffect implements ParticleEffect {
     }
 
     public FollowingParticleEffect(ParticleType<FollowingParticleEffect> type, Entity target, float followSpeed) {
-        this(type, target.getEntityId(), target.getCameraPosVec(1), followSpeed);
+        this(type, target.getId(), target.getCameraPosVec(1), followSpeed);
     }
 
     private FollowingParticleEffect(ParticleType<FollowingParticleEffect> type, int movingTarget, Vec3d fixedTarget, float followSpeed) {

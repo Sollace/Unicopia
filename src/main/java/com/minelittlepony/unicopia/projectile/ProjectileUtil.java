@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.projectile;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.mixin.MixinPersistentProjectileEntity;
 

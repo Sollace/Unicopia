@@ -1,32 +1,43 @@
 plugins {
     id 'java-library'
     id 'fabric-loom' version '0.8-SNAPSHOT'
+    id 'org.ajoberstar.reckon' version '0.13.0'
 }
 
-apply plugin: 'fabric-loom'
-
-targetCompatibility = JavaVersion.VERSION_1_8
-sourceCompatibility = JavaVersion.VERSION_1_8
-
-version = "${project.minecraft_version}-${project.version}"
-
-if (project.release != 'RELEASE') {
-    version += "-${project.release}"
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(16)
+    }
 }
 
 group = project.group
 description = project.displayname
 archivesBaseName = project.name
 
-// check for updates every build when on CI
-if (System.env.CI) {
-    configurations.all {
-        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    }
-}
-
 minecraft {
     refmapName = 'unicopia.mixin.refmap.json'
+    accessWidener 'src/main/resources/unicopia.aw'
+}
+
+reckon {
+    scopeFromProp()
+    stageFromProp('beta', 'rc', 'final')
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        name = 'modmenu'
+        url = 'https://maven.terraformersmc.com/releases'
+    }
+    maven {
+        name = 'minelp'
+        url = 'https://repo.minelittlepony-mod.com/maven/snapshot'
+    }
+    maven {
+        name = 'minelp-release'
+        url = 'https://repo.minelittlepony-mod.com/maven/release'
+    }
 }
 
 dependencies {
@@ -34,23 +45,20 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modApi "net.fabricmc:fabric-loader:${project.loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    compileOnly "com.google.code.findbugs:jsr305:3.0.2"
 
-    modApi "com.minelittlepony:MineLittlePony:${project.minelp_version}"
+    modApi "com.minelittlepony:minelittlepony:${project.minelp_version}"
 
-    modApi "com.minelittlepony:Kirin:${project.kirin_version}"
-    include "com.minelittlepony:Kirin:${project.kirin_version}"
+    modApi "com.minelittlepony:kirin:${project.kirin_version}"
+    include "com.minelittlepony:kirin:${project.kirin_version}"
 
-    modCompileOnly("io.github.prospector:modmenu:${project.modmenu_version}") {
-        transitive = false
-    }
+    modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
 }
 
 processResources {
-    inputs.property "version", project.version
+    inputs.property "version", project.version.toString()
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand "version": project.version.toString()
     }
 }
 
@@ -62,16 +70,3 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = "sources"
     from sourceSets.main.allSource
 }
-
-repositories {
-    maven {
-        name = 'minelp'
-        url = 'https://repo.minelittlepony-mod.com/maven/snapshot'
-    }
-    maven {
-        name = 'minelp-release'
-        url = 'https://repo.minelittlepony-mod.com/maven/release'
-    }
-}
-
-

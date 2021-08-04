@@ -4,12 +4,12 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -24,7 +24,7 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
     public void set(@Nullable T entity) {
         if (entity != null) {
             uuid = entity.getUuid();
-            clientId = entity.getEntityId();
+            clientId = entity.getId();
             pos = Optional.of(entity.getPos());
         }
     }
@@ -35,7 +35,7 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
 
     public boolean isPresent(World world) {
         T entity = get(world);
-        return entity != null && !entity.removed;
+        return entity != null && !entity.isRemoved();
     }
 
     public void ifPresent(World world, Consumer<T> consumer) {
@@ -59,7 +59,7 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
     }
 
     @Override
-    public void toNBT(CompoundTag tag) {
+    public void toNBT(NbtCompound tag) {
         if (uuid != null) {
             tag.putUuid("uuid", uuid);
         }
@@ -70,7 +70,7 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
     }
 
     @Override
-    public void fromNBT(CompoundTag tag) {
+    public void fromNBT(NbtCompound tag) {
         uuid = tag.containsUuid("uuid") ? tag.getUuid("uuid") : null;
         pos = tag.contains("pos") ? Optional.ofNullable(NbtSerialisable.readVector(tag.getList("pos", 6))) : Optional.empty();
         clientId = tag.getInt("clientId");

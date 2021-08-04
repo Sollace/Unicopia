@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.entity.effect;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Caster;

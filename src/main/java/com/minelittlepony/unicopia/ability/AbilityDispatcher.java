@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
@@ -16,11 +16,11 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.Tickable;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Tickable;
 
 public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
@@ -78,10 +78,10 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
     }
 
     @Override
-    public void toNBT(CompoundTag compound) {
+    public void toNBT(NbtCompound compound) {
         if (compound.contains("stats")) {
             stats.clear();
-            CompoundTag li = compound.getCompound("stats");
+            NbtCompound li = compound.getCompound("stats");
             li.getKeys().forEach(key -> {
                 getStat(AbilitySlot.valueOf(key)).fromNBT(li.getCompound(key));
             });
@@ -89,8 +89,8 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
     }
 
     @Override
-    public void fromNBT(CompoundTag compound) {
-        CompoundTag li = new CompoundTag();
+    public void fromNBT(NbtCompound compound) {
+        NbtCompound li = new NbtCompound();
         stats.forEach((key, value) -> li.put(key.name(), value.toNBT()));
         compound.put("stats", li);
     }
@@ -251,7 +251,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         }
 
         @Override
-        public void toNBT(CompoundTag compound) {
+        public void toNBT(NbtCompound compound) {
             compound.putInt("warmup", warmup);
             compound.putInt("cooldown", cooldown);
             compound.putInt("maxWarmup", maxWarmup);
@@ -263,7 +263,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         }
 
         @Override
-        public void fromNBT(CompoundTag compound) {
+        public void fromNBT(NbtCompound compound) {
             warmup = compound.getInt("warmup");
             cooldown = compound.getInt("cooldown");
             maxWarmup = compound.getInt("maxWarmup");

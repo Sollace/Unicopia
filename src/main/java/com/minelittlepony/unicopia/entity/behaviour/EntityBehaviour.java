@@ -3,21 +3,24 @@ package com.minelittlepony.unicopia.entity.behaviour;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.ItemWielder;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.mixin.MixinEntity;
 import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
@@ -47,7 +50,7 @@ public class EntityBehaviour<T extends Entity> {
 
     }
 
-    public void onImpact(Caster<?> source, T entity, float distance, float damageMultiplier) {
+    public void onImpact(Caster<?> source, T entity, float distance, float damageMultiplier, DamageSource cause) {
 
     }
 
@@ -59,7 +62,7 @@ public class EntityBehaviour<T extends Entity> {
     public void onDestroy(T entity) {
         entity.setInvulnerable(false);
         entity.setNoGravity(false);
-        entity.remove();
+        entity.remove(RemovalReason.KILLED);
     }
 
     public Optional<Double> getCameraDistance(Entity entity, Pony player) {
@@ -97,7 +100,7 @@ public class EntityBehaviour<T extends Entity> {
     public void copyBaseAttributes(LivingEntity from, Entity to, Vec3d positionOffset) {
         // Set first because position calculations rely on it
         to.age = from.age;
-        to.removed = from.removed;
+        ((MixinEntity)to).setRemovalReason(from.getRemovalReason());
         to.setOnGround(from.isOnGround());
 
         if (!from.world.isClient) {
@@ -143,10 +146,6 @@ public class EntityBehaviour<T extends Entity> {
             to.prevY = positionOffset.y + from.prevY;
             to.prevZ = positionOffset.z + from.prevZ;
 
-            to.chunkX = from.chunkX;
-            to.chunkY = from.chunkY;
-            to.chunkZ = from.chunkZ;
-
             to.lastRenderX = positionOffset.x + from.lastRenderX;
             to.lastRenderY = positionOffset.y + from.lastRenderY;
             to.lastRenderZ = positionOffset.z + from.lastRenderZ;
@@ -162,9 +161,9 @@ public class EntityBehaviour<T extends Entity> {
 
         to.setVelocity(from.getVelocity());
 
-        to.pitch = from.pitch;
+        to.setPitch(from.getPitch());
         to.prevPitch = from.prevPitch;
-        to.yaw = from.yaw;
+        to.setYaw(from.getYaw());
         to.prevYaw = from.prevYaw;
         to.horizontalSpeed = from.horizontalSpeed;
         to.prevHorizontalSpeed = from.prevHorizontalSpeed;
@@ -245,7 +244,7 @@ public class EntityBehaviour<T extends Entity> {
 
     protected boolean isSneakingOnGround(Caster<?> source) {
         Entity e = source.getEntity();
-        return e.isSneaking() && (e.isOnGround() || !(e instanceof PlayerEntity && ((PlayerEntity)e).abilities.flying));
+        return e.isSneaking() && (e.isOnGround() || !(e instanceof PlayerEntity && ((PlayerEntity)e).getAbilities().flying));
     }
 
     public static <T extends Entity> void register(Supplier<EntityBehaviour<T>> behaviour, EntityType<?>... types) {

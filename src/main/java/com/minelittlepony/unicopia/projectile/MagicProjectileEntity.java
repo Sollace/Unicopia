@@ -28,7 +28,7 @@ import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
@@ -50,7 +50,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     private static final TrackedData<Float> DAMAGE = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Float> GRAVITY = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<CompoundTag> EFFECT = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+    private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
     private static final LevelStore LEVELS = Levelled.fixed(1);
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
@@ -72,7 +72,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
         super.initDataTracker();
         getDataTracker().startTracking(GRAVITY, 1F);
         getDataTracker().startTracking(DAMAGE, 0F);
-        getDataTracker().startTracking(EFFECT, new CompoundTag());
+        getDataTracker().startTracking(EFFECT, new NbtCompound());
         getDataTracker().startTracking(HYDROPHOBIC, false);
     }
 
@@ -145,7 +145,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     public void tick() {
         if (!world.isClient()) {
             if (Math.abs(getVelocity().x) < 0.01 && Math.abs(getVelocity().x) < 0.01 && Math.abs(getVelocity().y) < 0.01) {
-                remove();
+                remove(RemovalReason.DISCARDED);
             }
         }
 
@@ -161,7 +161,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
             }
 
             if (!getSpellSlot().get(SpellPredicate.IS_THROWN, true).filter(spell -> spell.onThrownTick(this)).isPresent()) {
-                remove();
+                remove(RemovalReason.DISCARDED);
             }
         }
 
@@ -209,8 +209,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag compound) {
-        super.readCustomDataFromTag(compound);
+    public void readCustomDataFromNbt(NbtCompound compound) {
+        super.readCustomDataFromNbt(compound);
         physics.fromNBT(compound);
         if (compound.contains("effect")) {
             setSpell(SpellType.fromNBT(compound.getCompound("effect")));
@@ -218,8 +218,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag compound) {
-        super.writeCustomDataToTag(compound);
+    public void writeCustomDataToNbt(NbtCompound compound) {
+        super.writeCustomDataToNbt(compound);
         physics.toNBT(compound);
         getSpellSlot().get(true).ifPresent(effect -> {
             compound.put("effect", SpellType.toNBT(effect));
@@ -228,13 +228,13 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
 
     @Override
     protected void onCollision(HitResult result) {
-        if (!removed) {
-            remove();
+        if (!isRemoved()) {
+            remove(RemovalReason.DISCARDED);
             super.onCollision(result);
 
             if (!world.isClient()) {
                 world.sendEntityStatus(this, (byte)3);
-                remove();
+                remove(RemovalReason.DISCARDED);
             }
         }
     }

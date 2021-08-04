@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.client;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -15,7 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 
 public class ClientInteractionManager extends InteractionManager {
     @Override
-    @Nonnull
+    @NotNull
     public PlayerEntity createPlayer(Entity observer, GameProfile profile) {
         if (observer.world instanceof ClientWorld) {
             return new DummyClientPlayerEntity((ClientWorld)observer.world, profile);

@@ -101,7 +101,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                 List<LivingEntity> inputs = new ArrayList<>();
                 List<LivingEntity> outputs = new ArrayList<>();
 
-                VecHelper.findInRange(entity, entity.world, entity.getPos(), 20, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(e -> !e.removed && (e instanceof PlayerEntity || e instanceof MobEntity))).forEach(e -> {
+                VecHelper.findInRange(entity, entity.world, entity.getPos(), 20, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(e -> !e.isRemoved() && (e instanceof PlayerEntity || e instanceof MobEntity))).forEach(e -> {
                     LivingEntity living = (LivingEntity)e;
 
                     if (e instanceof PlayerEntity

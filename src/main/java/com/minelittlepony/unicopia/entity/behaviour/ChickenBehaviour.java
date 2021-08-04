@@ -35,9 +35,9 @@ public class ChickenBehaviour extends EntityBehaviour<ChickenEntity> {
                     if (egg.isEmpty()) {
                         egg = new ItemStack(Items.EGG);
 
-                        int slot = player.getMaster().inventory.method_7371(egg);
+                        int slot = player.getMaster().getInventory().indexOf(egg);
                         if (slot > -1) {
-                            player.getMaster().inventory.removeStack(slot, 1);
+                            player.getMaster().getInventory().removeStack(slot, 1);
                             entity.playSound(SoundEvents.ENTITY_CHICKEN_EGG,
                                     1,
                                     (entity.world.random.nextFloat() - entity.world.random.nextFloat()) * 0.2F + 4
@@ -54,7 +54,7 @@ public class ChickenBehaviour extends EntityBehaviour<ChickenEntity> {
 
         Entity src = source.getEntity();
 
-        if (src.isOnGround() || src instanceof PlayerEntity && ((PlayerEntity)src).abilities.flying) {
+        if (src.isOnGround() || src instanceof PlayerEntity && ((PlayerEntity)src).getAbilities().flying) {
             return;
         }
 

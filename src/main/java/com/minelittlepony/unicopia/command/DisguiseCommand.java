@@ -11,12 +11,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
 import net.minecraft.command.argument.EntitySummonArgumentType;
-import net.minecraft.command.argument.NbtCompoundTagArgumentType;
+import net.minecraft.command.argument.NbtCompoundArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
@@ -38,18 +38,18 @@ public class DisguiseCommand {
                 .executes(context -> disguise(context.getSource(),
                         context.getSource().getPlayer(),
                         EntitySummonArgumentType.getEntitySummon(context, "entity"),
-                        new CompoundTag(), true))
-         .then(CommandManager.argument("nbt", NbtCompoundTagArgumentType.nbtCompound())
+                        new NbtCompound(), true))
+         .then(CommandManager.argument("nbt", NbtCompoundArgumentType.nbtCompound())
                 .executes(context -> disguise(context.getSource(),
                         context.getSource().getPlayer(),
                         EntitySummonArgumentType.getEntitySummon(context, "entity"),
-                        NbtCompoundTagArgumentType.getCompoundTag(context, "nbt"), false))
+                        NbtCompoundArgumentType.getNbtCompound(context, "nbt"), false))
          ));
 
         dispatcher.register(builder);
     }
 
-    static int disguise(ServerCommandSource source, PlayerEntity player, Identifier id, CompoundTag nbt, boolean isSelf) throws CommandSyntaxException {
+    static int disguise(ServerCommandSource source, PlayerEntity player, Identifier id, NbtCompound nbt, boolean isSelf) throws CommandSyntaxException {
         nbt = nbt.copy();
         nbt.putString("id", id.toString());
 

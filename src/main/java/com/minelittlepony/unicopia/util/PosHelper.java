@@ -28,7 +28,7 @@ public interface PosHelper {
     }
 
     static BlockPos findSolidGroundAt(World world, BlockPos pos, int signum) {
-        while (World.isInBuildLimit(pos) && (world.isAir(pos) || !world.getBlockState(pos).canPlaceAt(world, pos))) {
+        while (world.isInBuildLimit(pos) && (world.isAir(pos) || !world.getBlockState(pos).canPlaceAt(world, pos))) {
             pos = pos.offset(Axis.Y, -signum);
         }
 

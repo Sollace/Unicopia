@@ -15,7 +15,7 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -72,7 +72,7 @@ public class JoustingSpell extends AbstractSpell implements Attached {
             ((Pony)source).getMagicalReserves().getEnergy().multiply(0.2F);
         }
 
-        return !source.getEntity().removed && age++ < 90 + 7 * (source.getLevel().get() + 1);
+        return !source.getEntity().isRemoved() && age++ < 90 + 7 * (source.getLevel().get() + 1);
     }
 
     private boolean canBreak(BlockPos pos, LivingEntity entity) {
@@ -85,13 +85,13 @@ public class JoustingSpell extends AbstractSpell implements Attached {
     }
 
     @Override
-    public void toNBT(CompoundTag compound) {
+    public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
         compound.putInt("age", age);
     }
 
     @Override
-    public void fromNBT(CompoundTag compound) {
+    public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         age = compound.getInt("age");
     }

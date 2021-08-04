@@ -10,7 +10,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 
 public class GemFindingEnchantment extends SimpleEnchantment {
 
@@ -24,14 +23,16 @@ public class GemFindingEnchantment extends SimpleEnchantment {
 
         BlockPos origin = user.getOrigin();
 
-        float volume = BlockPos.findClosest(origin, radius, radius, pos -> user.getWorld().getBlockState(pos).isIn(UTags.INTERESTING))
+
+
+        double volume = BlockPos.findClosest(origin, radius, radius, pos -> user.getWorld().getBlockState(pos).isIn(UTags.INTERESTING))
             .map(p -> user.getOriginVector().squaredDistanceTo(p.getX(), p.getY(), p.getZ()))
-            .map(find -> (1 - (MathHelper.sqrt(find) / radius)))
-            .orElse(-1F);
+            .map(find -> (1 - (Math.sqrt(find) / radius)))
+            .orElse(-1D);
 
         volume = Math.max(volume, 0.04F);
 
-        user.getEnchants().computeIfAbsent(this, Data::new).level = volume * (1.3F + level * 0.3F);
+        user.getEnchants().computeIfAbsent(this, Data::new).level = (float)volume * (1.3F + level * 0.3F);
     }
 
     @Environment(EnvType.CLIENT)

@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.util;
 
 import java.util.List;
 import java.util.function.Predicate;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Box;
@@ -20,6 +20,7 @@ public interface VecHelper {
     }
 
     static List<Entity> findInRange(@Nullable Entity origin, World w, Vec3d pos, double radius, @Nullable Predicate<Entity> predicate) {
-        return w.getOtherEntities(origin, Box.method_29968(pos).expand(radius), predicate == null ? inRange(pos, radius) : inRange(pos, radius).and(predicate));
+        double diameter = radius * 2;
+        return w.getOtherEntities(origin, Box.of(pos, diameter, diameter, diameter), predicate == null ? inRange(pos, radius) : inRange(pos, radius).and(predicate));
     }
 }

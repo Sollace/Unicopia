@@ -4,8 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.minelittlepony.unicopia.item.AmuletItem;
+
+import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -22,7 +29,7 @@ import net.minecraft.util.registry.Registry;
 
 public class AmuletFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
 
-    private final AmuletModel model = new AmuletModel(0.3F);
+    private final AmuletModel model;
 
     private final Map<Identifier, Identifier> textures = new HashMap<>();
 
@@ -30,6 +37,7 @@ public class AmuletFeatureRenderer<E extends LivingEntity> implements AccessoryF
 
     public AmuletFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
         this.context = context;
+        this.model = new AmuletModel(AmuletModel.getData(new Dilation(0.3F)).createModel());
     }
 
     @Override
@@ -49,22 +57,29 @@ public class AmuletFeatureRenderer<E extends LivingEntity> implements AccessoryF
 
     static class AmuletModel extends Model {
 
-        private final ModelPart torso;
+        private final ModelPart amulet;
 
-        public AmuletModel(float dilate) {
+        public AmuletModel(ModelPart tree) {
             super(RenderLayer::getEntityTranslucent);
-            torso = new ModelPart(this, 0, 0);
-            torso.addCuboid(-4, 0, -2, 8, 12, 4, dilate);
-            torso.setPivot(0, 0, 0);
+            amulet = tree.getChild("amulet");
+        }
+
+        public static TexturedModelData getData(Dilation dilation) {
+            ModelData data = new ModelData();
+            ModelPartData root = data.getRoot();
+
+            root.addChild("amulet", ModelPartBuilder.create().cuboid(-4, 0, -2, 8, 12, 4, dilation), ModelTransform.NONE);
+
+            return TexturedModelData.of(data, 64, 64);
         }
 
         public void setAngles(LivingEntity entity, BipedEntityModel<?> biped) {
-            torso.copyPositionAndRotation(biped.torso);
+            amulet.copyTransform(biped.body);
         }
 
         @Override
         public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
-            torso.render(matrices, vertexConsumer, i, j, f, g, h, k);
+            amulet.render(matrices, vertexConsumer, i, j, f, g, h, k);
         }
     }
 }

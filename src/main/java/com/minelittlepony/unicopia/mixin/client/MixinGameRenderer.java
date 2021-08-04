@@ -11,13 +11,13 @@ import com.minelittlepony.unicopia.client.UnicopiaClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 
 @Mixin(GameRenderer.class)
-abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceReloadListener {
+abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceReloader {
     @Inject(method = "getFov(Lnet/minecraft/client/render/Camera;FZ)D",
             at = @At("RETURN"),
             cancellable = true)
@@ -28,7 +28,7 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
     @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V",
             at = @At("HEAD"))
     private void onRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
-        UnicopiaClient.getCamera().ifPresent(c -> matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(c.calculateRoll())));
+        UnicopiaClient.getCamera().ifPresent(c -> matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(c.calculateRoll())));
     }
 
     @Inject(method = "getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F",

@@ -64,8 +64,8 @@ public class MagicParticle extends SpriteBillboardParticle {
     }
 
     @Override
-    public int getColorMultiplier(float tint) {
-        int light = super.getColorMultiplier(tint);
+    public int getBrightness(float tint) {
+        int light = super.getBrightness(tint);
         float timer = (float)age / (float)maxAge;
 
         int v = light >> 16 & 255;

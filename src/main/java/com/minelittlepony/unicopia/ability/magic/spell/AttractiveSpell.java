@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.List;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Thrown;
@@ -14,7 +14,7 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -88,7 +88,7 @@ public class AttractiveSpell extends ShieldSpell implements Thrown {
     }
 
     @Override
-    public void toNBT(CompoundTag compound) {
+    public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
         if (homingPos != null) {
             compound.put("homingPos", NbtHelper.fromBlockPos(homingPos));
@@ -96,7 +96,7 @@ public class AttractiveSpell extends ShieldSpell implements Thrown {
     }
 
     @Override
-    public void fromNBT(CompoundTag compound) {
+    public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         if (compound.contains("homingPos")) {
             homingPos = NbtHelper.toBlockPos(compound.getCompound("homingPos"));

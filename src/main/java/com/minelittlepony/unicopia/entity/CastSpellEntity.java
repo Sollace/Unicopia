@@ -19,7 +19,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -66,7 +66,7 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
     public void tick() {
         super.tick();
 
-        if (removed) {
+        if (isRemoved()) {
             return;
         }
 
@@ -83,11 +83,11 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
         }
         LivingEntity master = getMaster();
 
-        if (master == null || master.removed) {
+        if (master == null || master.isRemoved()) {
             if (orphanedTicks-- > 0) {
                 return;
             }
-            remove();
+            remove(RemovalReason.DISCARDED);
             return;
         }
 
@@ -104,13 +104,13 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
 
             return true;
         }).isPresent()) {
-            remove();
+            remove(RemovalReason.DISCARDED);
         }
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void remove(RemovalReason reason) {
+        super.remove(reason);
         if (world.isClient) {
             world.getLightingProvider().checkBlock(getBlockPos());
         }
@@ -162,7 +162,7 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
     }
 
     @Override
-    protected void writeCustomDataToTag(CompoundTag tag) {
+    protected void writeCustomDataToNbt(NbtCompound tag) {
         tag.put("owner", owner.toNBT());
         dataTracker.get(SPELL).ifPresent(spellId -> {
             tag.putUuid("spellId", spellId);
@@ -171,7 +171,7 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
     }
 
     @Override
-    protected void readCustomDataFromTag(CompoundTag tag) {
+    protected void readCustomDataFromNbt(NbtCompound tag) {
         if (tag.contains("owner")) {
             owner.fromNBT(tag.getCompound("owner"));
         }

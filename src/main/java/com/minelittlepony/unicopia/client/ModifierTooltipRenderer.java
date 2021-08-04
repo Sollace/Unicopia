@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.entity.Equine;
@@ -25,7 +25,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -152,7 +152,7 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
         if (!stack.isEmpty()) {
             return stack.getEnchantments()
                     .stream()
-                    .map(t -> (CompoundTag)t)
+                    .map(t -> (NbtCompound)t)
                     .map(tag -> Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(tag.getString("id")))
                                 .map(ench -> new Pair<>(tag.getInt("lvl"), ench)))
                     .filter(Optional::isPresent)

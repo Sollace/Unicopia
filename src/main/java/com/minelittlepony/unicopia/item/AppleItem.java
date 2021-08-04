@@ -1,13 +1,14 @@
 package com.minelittlepony.unicopia.item;
 
 import java.util.List;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.item.toxin.Toxicity;
 
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
@@ -29,10 +30,10 @@ public class AppleItem extends Item implements ItemImpl.TickableItem {
     public ActionResult onGroundTick(IItemEntity item) {
         ItemEntity entity = item.get().getMaster();
 
-        if (!entity.removed && item.getPickupDelay() == 0 && item.getAge() > 2030 && entity.world.random.nextInt(150) < 10) {
+        if (!entity.isRemoved() && item.getPickupDelay() == 0 && item.getAge() > 2030 && entity.world.random.nextInt(150) < 10) {
 
             if (!entity.world.isClient) {
-                entity.remove();
+                entity.remove(RemovalReason.KILLED);
 
                 ItemEntity neu = EntityType.ITEM.create(entity.world);
                 neu.copyPositionAndRotation(entity);
@@ -48,7 +49,7 @@ public class AppleItem extends Item implements ItemImpl.TickableItem {
                 entity.world.spawnEntity(copy);
             }
 
-            float bob = MathHelper.sin(((float)item.getAge() + 1) / 10F + entity.hoverHeight) * 0.1F + 0.1F;
+            float bob = MathHelper.sin(((float)item.getAge() + 1) / 10F + entity.uniqueOffset) * 0.1F + 0.1F;
 
             for (int i = 0; i < 3; i++) {
                 entity.world.addParticle(ParticleTypes.AMBIENT_ENTITY_EFFECT, entity.getX(), entity.getY() + bob, entity.getZ(),

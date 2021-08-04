@@ -1,7 +1,8 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import com.minelittlepony.unicopia.util.Tickable;
+
 import net.minecraft.entity.data.TrackedData;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.math.MathHelper;
 
 public class ManaContainer implements MagicReserves, Tickable {

@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlock;
+import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -21,9 +22,9 @@ import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.FallingBlockEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
@@ -39,10 +40,10 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
     }
 
     @Override
-    public void onImpact(Caster<?> source, FallingBlockEntity entity, float distance, float damageMultiplier) {
+    public void onImpact(Caster<?> source, FallingBlockEntity entity, float distance, float damageMultiplier, DamageSource cause) {
         if (source.getEntity().fallDistance > 3) {
             entity.fallDistance = source.getEntity().fallDistance;
-            entity.handleFallDamage(distance, damageMultiplier);
+            entity.handleFallDamage(distance, damageMultiplier, cause);
 
             BlockState state = entity.getBlockState();
             if (state.getBlock() instanceof FallingBlock) {
@@ -77,9 +78,7 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
         }
 
         if (block instanceof BlockEntityProvider) {
-            BlockEntity b = ((BlockEntityProvider)block).createBlockEntity(entity.world);
-            ((MixinBlockEntity)b).setCachedState(state);
-            context.addBlockEntity(b);
+            context.addBlockEntity(((BlockEntityProvider)block).createBlockEntity(entity.getBlockPos(), state));
         }
 
         return configure(entity, block);
@@ -115,9 +114,10 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
                 be.onSyncedBlockEvent(1, isSneakingOnGround(source) ? 1 : 0);
             }
 
-            be.setLocation(entity.world, entity.getBlockPos());
+            be.setWorld(entity.world);
+            ((MixinBlockEntity)be).setPos(entity.getBlockPos());
             ceb.tick();
-            be.setLocation(null, entity.getBlockPos());
+            be.setWorld(null);
         }
     }
 }

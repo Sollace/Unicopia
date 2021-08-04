@@ -78,7 +78,7 @@ public class ZapAppleItem extends AppleItem implements ChameleonItem {
             e.onStruckByLightning((ServerWorld)e.world, lightning);
         }
 
-        if (!player.abilities.creativeMode) {
+        if (!player.getAbilities().creativeMode) {
             stack.decrement(1);
         }
 

@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -42,7 +42,7 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
             result.setCount(1);
             result.getOrCreateTag().putString("issuer", player.getName().asString());
 
-            if (!player.abilities.creativeMode) {
+            if (!player.getAbilities().creativeMode) {
                 stack.decrement(1);
             }
 

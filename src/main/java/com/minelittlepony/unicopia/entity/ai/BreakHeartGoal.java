@@ -28,7 +28,7 @@ public class BreakHeartGoal extends Goal {
     }
 
     protected boolean canTarget(Entity e) {
-        return !e.removed
+        return !e.isRemoved()
                 && e instanceof FloatingArtefactEntity
                 && ((FloatingArtefactEntity)e).getStack().getItem() == UItems.CRYSTAL_HEART
                 && mob.getVisibilityCache().canSee(e);

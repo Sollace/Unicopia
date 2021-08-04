@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.client.gui;
 
 import java.util.Set;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.common.client.gui.ScrollContainer;
@@ -54,9 +54,9 @@ public class SettingsScreen extends GameGui {
         super(new TranslatableText("unicopia.options.title"), parent);
 
         content.margin.setVertical(30);
-        content.padding.setHorizontal(10);
-        content.padding.top = 10;
-        content.padding.bottom = 20;
+        content.getContentPadding().setHorizontal(10);
+        content.getContentPadding().top = 10;
+        content.getContentPadding().bottom = 20;
     }
 
     @Override
@@ -89,7 +89,7 @@ public class SettingsScreen extends GameGui {
             RIGHT = LEFT;
         }
 
-        children().add(content);
+        getChildElements().add(content);
 
         int row = 0;
 
@@ -115,7 +115,7 @@ public class SettingsScreen extends GameGui {
 
         content.addButton(new EnumSlider<>(LEFT, row += 25, config.preferredRace.get()))
                 .onChange(config.preferredRace::set)
-                .setFormatter(v -> new TranslatableText("unicopia.options.preferred_race", v.getDisplayName()).getString());
+                .setTextFormat(v -> new TranslatableText("unicopia.options.preferred_race", v.getValue().getDisplayName()));
 
         if (server != null) {
             row += 20;
@@ -125,7 +125,7 @@ public class SettingsScreen extends GameGui {
 
             content.addButton(new EnumSlider<>(LEFT, row += 20, tribes.getDefaultRace()))
                     .onChange(tribes::setDefaultRace)
-                    .setFormatter(v -> new TranslatableText("unicopia.options.world.default_race", v.getDisplayName()).getString())
+                    .setTextFormat(v -> new TranslatableText("unicopia.options.world.default_race", v.getValue().getDisplayName()))
                     .setEnabled(client.isInSingleplayer());
         }
 

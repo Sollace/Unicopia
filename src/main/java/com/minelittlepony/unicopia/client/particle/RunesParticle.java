@@ -9,7 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -91,7 +91,7 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
     }
 
     @Override
-    protected int getColorMultiplier(float tint) {
+    protected int getBrightness(float tint) {
         return 0xF000F0;
     }
 
@@ -105,22 +105,22 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
         for (int i = 0; i < TEXTURES.length; i++) {
             bindTexture(TEXTURES[i]);
 
-            RenderSystem.color3f(colorRed, colorGreen, colorBlue);
+            RenderSystem.setShaderColor(colorRed, colorGreen, colorBlue, alpha);
 
-            Vector3f[] corners = new Vector3f[]{
-                    new Vector3f(-1, -1, 0),
-                    new Vector3f(-1,  1, 0),
-                    new Vector3f( 1,  1, 0),
-                    new Vector3f( 1, -1, 0)
+            Vec3f[] corners = new Vec3f[]{
+                    new Vec3f(-1, -1, 0),
+                    new Vec3f(-1,  1, 0),
+                    new Vec3f( 1,  1, 0),
+                    new Vec3f( 1, -1, 0)
             };
             float scale = getScale(tickDelta);
 
             float ringSpeed = (i % 2 == 0 ? i : -1) * i;
 
-            Quaternion ringAngle = Vector3f.POSITIVE_Z.getDegreesQuaternion(angle * ringSpeed);
+            Quaternion ringAngle = Vec3f.POSITIVE_Z.getDegreesQuaternion(angle * ringSpeed);
 
             for(int k = 0; k < 4; ++k) {
-               Vector3f corner = corners[k];
+               Vec3f corner = corners[k];
                corner.rotate(ringAngle);
                corner.rotate(rotation);
                corner.scale(scale);

@@ -2,16 +2,15 @@ package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.entity.CastSpellEntity;
 
-import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
 
 public class CastSpellEntityRenderer extends EntityRenderer<CastSpellEntity> {
 
-    public CastSpellEntityRenderer(EntityRenderDispatcher dispatcher, EntityRendererRegistry.Context context) {
-        super(dispatcher);
+    public CastSpellEntityRenderer(EntityRendererFactory.Context ctx) {
+        super(ctx);
     }
 
     @Override

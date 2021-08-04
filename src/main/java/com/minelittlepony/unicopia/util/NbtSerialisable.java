@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.util;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.DoubleTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.Vec3d;
 
 public interface NbtSerialisable {
@@ -11,7 +11,7 @@ public interface NbtSerialisable {
      *
      * @param compound  Compound tag to write to.
      */
-    default void toNBT(CompoundTag compound) {
+    default void toNBT(NbtCompound compound) {
 
     }
 
@@ -20,25 +20,25 @@ public interface NbtSerialisable {
      *
      * @param compound  Compound tag to read from.
      */
-    default void fromNBT(CompoundTag compound) {
+    default void fromNBT(NbtCompound compound) {
 
     }
 
-    default CompoundTag toNBT() {
-        CompoundTag compound = new CompoundTag();
+    default NbtCompound toNBT() {
+        NbtCompound compound = new NbtCompound();
         toNBT(compound);
         return compound;
     }
 
-    static ListTag writeVector(Vec3d vector) {
-        ListTag list = new ListTag();
-        list.add(DoubleTag.of(vector.getX()));
-        list.add(DoubleTag.of(vector.getY()));
-        list.add(DoubleTag.of(vector.getZ()));
+    static NbtList writeVector(Vec3d vector) {
+        NbtList list = new NbtList();
+        list.add(NbtDouble.of(vector.getX()));
+        list.add(NbtDouble.of(vector.getY()));
+        list.add(NbtDouble.of(vector.getZ()));
         return list;
     }
 
-    static Vec3d readVector(ListTag list) {
+    static Vec3d readVector(NbtList list) {
         return new Vec3d(list.getDouble(0), list.getDouble(1), list.getDouble(2));
     }
 }

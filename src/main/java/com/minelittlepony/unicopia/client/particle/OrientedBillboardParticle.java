@@ -6,7 +6,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.Quaternion;
 
@@ -20,8 +20,8 @@ public abstract class OrientedBillboardParticle extends AbstractBillboardParticl
 
         fixed = effect.isAngleFixed();
         if (fixed) {
-            rotation.hamiltonProduct(Vector3f.POSITIVE_X.getDegreesQuaternion(180 - effect.getYaw()));
-            rotation.hamiltonProduct(Vector3f.POSITIVE_Y.getDegreesQuaternion(effect.getPitch()));
+            rotation.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(180 - effect.getYaw()));
+            rotation.hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(effect.getPitch()));
         }
     }
 
@@ -35,16 +35,16 @@ public abstract class OrientedBillboardParticle extends AbstractBillboardParticl
 
     @Override
     protected void renderQuads(Tessellator te, BufferBuilder buffer, float x, float y, float z, float tickDelta) {
-        Vector3f[] corners = new Vector3f[]{
-                new Vector3f(-1, -1, 0),
-                new Vector3f(-1,  1, 0),
-                new Vector3f( 1,  1, 0),
-                new Vector3f( 1, -1, 0)
+        Vec3f[] corners = new Vec3f[]{
+                new Vec3f(-1, -1, 0),
+                new Vec3f(-1,  1, 0),
+                new Vec3f( 1,  1, 0),
+                new Vec3f( 1, -1, 0)
         };
         float scale = getScale(tickDelta);
 
         for(int k = 0; k < 4; ++k) {
-           Vector3f corner = corners[k];
+           Vec3f corner = corners[k];
            corner.rotate(rotation);
            corner.scale(scale);
            corner.add(x, y, z);

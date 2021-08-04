@@ -20,6 +20,7 @@ import net.minecraft.block.PlantBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -63,7 +64,7 @@ public class IceSpell extends AbstractSpell implements Thrown, Attached {
 
     protected boolean applyEntitySingle(LivingEntity owner, Entity e) {
         if (e instanceof TntEntity) {
-            e.remove();
+            e.remove(RemovalReason.DISCARDED);
             e.getEntityWorld().setBlockState(e.getBlockPos(), Blocks.TNT.getDefaultState());
         } else if (e.isOnFire()) {
             e.extinguish();

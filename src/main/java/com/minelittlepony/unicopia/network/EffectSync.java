@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.network;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
@@ -12,7 +12,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 
 import net.minecraft.entity.data.TrackedData;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 /**
  * Synchronisation class for spells.
@@ -27,12 +27,12 @@ public class EffectSync implements SpellContainer {
 
     private final Caster<?> owner;
 
-    private final TrackedData<CompoundTag> param;
+    private final TrackedData<NbtCompound> param;
 
     @Nullable
-    private CompoundTag lastValue;
+    private NbtCompound lastValue;
 
-    public EffectSync(Caster<?> owner, TrackedData<CompoundTag> param) {
+    public EffectSync(Caster<?> owner, TrackedData<NbtCompound> param) {
         this.owner = owner;
         this.param = param;
     }
@@ -63,7 +63,7 @@ public class EffectSync implements SpellContainer {
 
     private void sync(boolean force) {
         @Nullable
-        CompoundTag comp = owner.getEntity().getDataTracker().get(param);
+        NbtCompound comp = owner.getEntity().getDataTracker().get(param);
 
         @Nullable
         Spell effect = spell.orElse(null);
@@ -88,7 +88,7 @@ public class EffectSync implements SpellContainer {
     public void put(@Nullable Spell effect) {
         effect = effect == null || effect.isDead() ? null : effect;
         updateReference(effect);
-        owner.getEntity().getDataTracker().set(param, effect == null ? new CompoundTag() : SpellType.toNBT(effect));
+        owner.getEntity().getDataTracker().set(param, effect == null ? new NbtCompound() : SpellType.toNBT(effect));
     }
 
     private void updateReference(@Nullable Spell effect) {

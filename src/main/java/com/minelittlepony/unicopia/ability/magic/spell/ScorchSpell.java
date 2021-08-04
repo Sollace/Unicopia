@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.block.state.StateMaps;

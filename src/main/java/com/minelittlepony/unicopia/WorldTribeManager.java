@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.DimensionType;
@@ -9,8 +9,10 @@ public class WorldTribeManager extends PersistentState {
 
     private Race defaultRace = Unicopia.getConfig().preferredRace.get();
 
-    public WorldTribeManager(ServerWorld world) {
-        super(nameFor(world.getDimension()));
+    public WorldTribeManager() {}
+
+    public WorldTribeManager(NbtCompound nbt) {
+        defaultRace = Race.fromName(nbt.getString("defaultRace"));
     }
 
     public Race getDefaultRace() {
@@ -22,12 +24,7 @@ public class WorldTribeManager extends PersistentState {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        defaultRace = Race.fromName(tag.getString("defaultRace"));
-    }
-
-    @Override
-    public CompoundTag toTag(CompoundTag tag) {
+    public NbtCompound writeNbt(NbtCompound tag) {
         tag.putString("defaultRace", defaultRace.name());
         return tag;
     }
@@ -37,6 +34,6 @@ public class WorldTribeManager extends PersistentState {
     }
 
     public static WorldTribeManager forWorld(ServerWorld world) {
-        return world.getPersistentStateManager().getOrCreate(() -> new WorldTribeManager(world), nameFor(world.getDimension()));
+        return world.getPersistentStateManager().getOrCreate(WorldTribeManager::new, WorldTribeManager::new, nameFor(world.getDimension()));
     }
 }

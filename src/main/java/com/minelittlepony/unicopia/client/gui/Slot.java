@@ -97,7 +97,6 @@ class Slot {
 
             // progress
             UHud.fill(matrices, slotPadding, progressTop, size - slotPadding, progressBottom, 0xCFFFFFFF);
-            RenderSystem.enableAlphaTest();
             RenderSystem.enableBlend();
         }
 

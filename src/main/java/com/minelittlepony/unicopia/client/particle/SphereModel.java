@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.client.particle;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.client.util.math.Vector4f;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vector4f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 
@@ -21,9 +21,9 @@ public class SphereModel {
     }
 
     public void setRotation(float x, float y, float z) {
-        rotX = Vector3f.POSITIVE_X.getDegreesQuaternion(x);
-        rotY = Vector3f.POSITIVE_Y.getDegreesQuaternion(y);
-        rotZ = Vector3f.POSITIVE_Z.getDegreesQuaternion(z);
+        rotX = Vec3f.POSITIVE_X.getDegreesQuaternion(x);
+        rotY = Vec3f.POSITIVE_Y.getDegreesQuaternion(y);
+        rotZ = Vec3f.POSITIVE_Z.getDegreesQuaternion(z);
     }
 
     public void render(MatrixStack matrices, float scale, VertexConsumer vertexWriter, int light, int overlay, float r, float g, float b, float a) {

@@ -4,8 +4,14 @@ import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.GlowableItem;
 
+import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -13,6 +19,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
@@ -27,13 +34,16 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
 
     private static final Identifier TEXTURE = new Identifier("unicopia", "textures/models/armor/bracelet.png");
 
-    private final BraceletModel steveModel = new BraceletModel(0.3F, false);
-    private final BraceletModel alexModel = new BraceletModel(0.3F, true);
+    private final BraceletModel steveModel;
+    private final BraceletModel alexModel;
 
     private final FeatureRendererContext<E, ? extends BipedEntityModel<E>> context;
 
     public BraceletFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
         this.context = context;
+        Dilation dilation = new Dilation(0.3F);
+        steveModel = new BraceletModel(BraceletModel.getData(dilation, false).createModel(), false);
+        alexModel = new BraceletModel(BraceletModel.getData(dilation, true).createModel(), true);
     }
 
     @Override
@@ -74,19 +84,26 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
 
         private final boolean alex;
 
-        public BraceletModel(float dilate, boolean alex) {
+        public BraceletModel(ModelPart tree, boolean alex) {
             super(RenderLayer::getEntityTranslucent);
             this.alex = alex;
-            rightArm = new ModelPart(this, 0, alex ? 6 : 0);
-            rightArm.addCuboid(-3, 7, -2, alex ? 3 : 4, 2, 4, dilate);
-            leftArm = new ModelPart(this, 0, alex ? 6 : 0);
-            leftArm.mirror = true;
-            leftArm.addCuboid(-1, 7, -2, alex ? 3 : 4, 2, 4, dilate);
+            this.leftArm = tree.getChild(EntityModelPartNames.LEFT_ARM);
+            this.rightArm = tree.getChild(EntityModelPartNames.RIGHT_ARM);
+        }
+
+        public static TexturedModelData getData(Dilation dilation, boolean alex) {
+            ModelData data = new ModelData();
+            ModelPartData root = data.getRoot();
+
+            root.addChild(EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create().uv(0, alex ? 6 : 0).cuboid(-3, 7, -2, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
+            root.addChild(EntityModelPartNames.LEFT_ARM,  ModelPartBuilder.create().mirrored().uv(0, alex ? 6 : 0).cuboid(-1, 7, -2, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
+
+            return TexturedModelData.of(data, 64, 64);
         }
 
         public void setAngles(BipedEntityModel<?> biped) {
-            leftArm.copyPositionAndRotation(biped.leftArm);
-            rightArm.copyPositionAndRotation(biped.rightArm);
+            leftArm.copyTransform(biped.leftArm);
+            rightArm.copyTransform(biped.rightArm);
             if (alex) {
                 rightArm.pivotX++;
             }

@@ -11,7 +11,7 @@ import com.minelittlepony.unicopia.entity.ItemImpl;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 @Mixin(ItemEntity.class)
 abstract class MixinItemEntity extends Entity implements IItemEntity {
@@ -45,19 +45,19 @@ abstract class MixinItemEntity extends Entity implements IItemEntity {
         get().tick();
     }
 
-    @Inject(method = "writeCustomDataToTag(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("HEAD"))
-    private void onWriteCustomDataToTag(CompoundTag tag, CallbackInfo info) {
+    @Inject(method = "writeCustomDataToNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("HEAD"))
+    private void onWriteCustomDataToTag(NbtCompound tag, CallbackInfo info) {
         tag.put("unicopia_caster", get().toNBT());
     }
 
-    @Inject(method = "readCustomDataFromTag(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("HEAD"))
-    private void onReadCustomDataFromTag(CompoundTag tag, CallbackInfo info) {
+    @Inject(method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("HEAD"))
+    private void onReadCustomDataFromTag(NbtCompound tag, CallbackInfo info) {
         if (tag.contains("unicopia_caster")) {
             get().fromNBT(tag.getCompound("unicopia_caster"));
         }
     }
 
-    @Accessor("age")
+    @Accessor("itemAge")
     @Override
     public abstract int getAge();
 

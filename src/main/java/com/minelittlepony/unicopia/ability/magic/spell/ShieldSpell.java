@@ -27,6 +27,7 @@ import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -157,7 +158,7 @@ public class ShieldSpell extends AbstractSpell implements Attached, Thrown {
             if (!ProjectileUtil.isProjectileThrownBy(target, source.getMaster())) {
                 if (distance < 1) {
                     target.playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 0.1F, 1);
-                    target.remove();
+                    target.remove(RemovalReason.DISCARDED);
                 } else {
                     ProjectileUtil.ricochet(target, pos, 0.9F);
                 }

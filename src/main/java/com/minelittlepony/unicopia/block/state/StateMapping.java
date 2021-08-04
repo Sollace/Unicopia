@@ -4,7 +4,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -124,7 +124,7 @@ interface StateMapping extends Predicate<BlockState>, BiFunction<World, BlockSta
      * @return    True if the state can be converted
      */
     @Override
-    boolean test(@Nonnull BlockState state);
+    boolean test(@NotNull BlockState state);
 
     /**
      * Converts the given state based on this mapping
@@ -133,13 +133,13 @@ interface StateMapping extends Predicate<BlockState>, BiFunction<World, BlockSta
      *
      * @return    The converted state
      */
-    @Nonnull
+    @NotNull
     @Override
-    BlockState apply(World world, @Nonnull BlockState state);
+    BlockState apply(World world, @NotNull BlockState state);
 
     /**
      * Gets the inverse of this mapping if one exists. Otherwise returns itself.
      */
-    @Nonnull
+    @NotNull
     StateMapping inverse();
 }

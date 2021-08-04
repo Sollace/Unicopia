@@ -7,19 +7,19 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.item.enchantment.SimpleEnchantment;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.registry.Registry;
 
 public class Enchantments implements NbtSerialisable, Tickable {
@@ -74,19 +74,19 @@ public class Enchantments implements NbtSerialisable, Tickable {
     }
 
     @Override
-    public void toNBT(CompoundTag compound) {
-        ListTag list = new ListTag();
+    public void toNBT(NbtCompound compound) {
+        NbtList list = new NbtList();
         equippedEnchantments.forEach(enchant -> {
             Identifier id = Registry.ENCHANTMENT.getId(enchant);
             if (id != null) {
-                list.add(StringTag.of(id.toString()));
+                list.add(NbtString.of(id.toString()));
             }
         });
         compound.put("enchants", list);
     }
 
     @Override
-    public void fromNBT(CompoundTag compound) {
+    public void fromNBT(NbtCompound compound) {
         equippedEnchantments.clear();
         if (compound.contains("enchants")) {
             compound.getList("enchants", 8).forEach(tag -> {

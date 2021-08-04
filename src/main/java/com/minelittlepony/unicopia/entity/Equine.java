@@ -2,16 +2,16 @@ package com.minelittlepony.unicopia.entity;
 
 import java.util.Optional;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.util.Tickable;
 
 public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, ProjectileImpactListener {
     Race getSpecies();

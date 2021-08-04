@@ -13,8 +13,8 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -89,7 +89,7 @@ public class NecromancySpell extends AbstractPlacedSpell {
         summonedEntities.forEach(ref -> {
             ref.ifPresent(caster.getWorld(), e -> {
                 if (master != null) {
-                    master.dealDamage(master, e);
+                    master.applyDamageEffects(master, e);
                 }
                 if (caster.getWorld().random.nextInt(2000) != 0) {
                     e.setHealth(0);
@@ -117,23 +117,23 @@ public class NecromancySpell extends AbstractPlacedSpell {
     }
 
     @Override
-    public void toNBT(CompoundTag compound) {
+    public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
         if (summonedEntities.size() > 0) {
-            ListTag list = new ListTag();
+            NbtList list = new NbtList();
             summonedEntities.forEach(ref -> list.add(ref.toNBT()));
             compound.put("summonedEntities", list);
         }
     }
 
     @Override
-    public void fromNBT(CompoundTag compound) {
+    public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         summonedEntities.clear();
         if (compound.contains("summonedEntities")) {
             compound.getList("summonedEntities", 10).forEach(tag -> {
                 EntityReference<LivingEntity> ref = new EntityReference<>();
-                ref.fromNBT((CompoundTag)tag);
+                ref.fromNBT((NbtCompound)tag);
                 summonedEntities.add(ref);
             });
         }

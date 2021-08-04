@@ -3,8 +3,14 @@ package com.minelittlepony.unicopia.client.render;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 
+import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.ModelPartBuilder;
+import net.minecraft.client.model.ModelPartData;
+import net.minecraft.client.model.ModelTransform;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -23,12 +29,13 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
     private static final Identifier ICARUS_WINGS_CORRUPTED = new Identifier("unicopia", "textures/models/wings/icarus_corrupted.png");
     private static final Identifier PEGASUS_WINGS = new Identifier("unicopia", "textures/models/wings/pegasus.png");
 
-    private final WingsModel model = new WingsModel();
+    private final WingsModel model;
 
     private final FeatureRendererContext<E, ? extends BipedEntityModel<E>> context;
 
     public WingsFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
         this.context = context;
+        this.model = new WingsModel(WingsModel.getData(Dilation.NONE).createModel());
     }
 
     @Override
@@ -51,19 +58,24 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
         private final ModelPart root;
         private final Wing[] wings;
 
-        public WingsModel() {
+        public WingsModel(ModelPart tree) {
             super(RenderLayer::getEntityTranslucent);
-            this.textureHeight = 23;
-            this.textureWidth = 24;
-            root = new ModelPart(this, 0, 0);
+            root = tree;
             wings = new Wing[] {
-                    new Wing(this, root, -1),
-                    new Wing(this, root, 1)
+                    new Wing(tree.getChild("left_wing"), -1),
+                    new Wing(tree.getChild("right_wing"), 1)
             };
         }
 
+        static TexturedModelData getData(Dilation dilation) {
+            ModelData data = new ModelData();
+            Wing.getData("left_wing", data.getRoot(), dilation, -1);
+            Wing.getData("right_wing", data.getRoot(), dilation, 1);
+            return TexturedModelData.of(data, 24, 23);
+        }
+
         public void setAngles(LivingEntity entity, BipedEntityModel<?> biped) {
-            root.copyPositionAndRotation(biped.torso);
+            root.copyTransform(biped.body);
             for (Wing wing : wings) {
                 wing.setAngles(entity);
             }
@@ -75,36 +87,36 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
         }
 
         static class Wing {
-            ModelPart base;
+            final ModelPart base;
 
-            ModelPart[] feathers;
+            final ModelPart[] feathers = new ModelPart[8];
 
-            int k;
+            final int k;
 
-            Wing(Model model, ModelPart torso, int k) {
+            Wing(ModelPart tree, int k) {
                 this.k = k;
-                base = new ModelPart(model, 0, 0);
-
-                base.setPivot(k * 2, 2, 2 + k * 0.5F);
-                base.addCuboid(0, 0, 0, 2, 10, 2);
-
-                feathers = new ModelPart[8];
-
+                base = tree;
                 for (int i = 0; i < feathers.length; i++) {
-                    int texX = (i % 2) * 8;
-
-                    ModelPart feather = new ModelPart(model, 8 + texX, 0);
-                    feather.setPivot(0, 9, 0);
-
-                    int featherLength = 21 - i * 2;
-
-                    feather.addCuboid(-k * (i % 2) / 90F, 0, 0, 2, featherLength, 2);
-
-                    base.addChild(feather);
-                    feathers[i] = feather;
+                    feathers[i] = base.getChild("feather_" + i);
                 }
+            }
 
-                torso.addChild(base);
+            static void getData(String name, ModelPartData parent, Dilation dilation, int k) {
+                ModelPartData base = parent.addChild(name,
+                        ModelPartBuilder.create().cuboid(0, 0, 0, 2, 10, 2, dilation),
+                        ModelTransform.pivot(k * 2, 2, 2 + k * 0.5F));
+
+                int featherCount = 8;
+
+                for (int i = 0; i < featherCount; i++) {
+                    int texX = (i % 2) * 8;
+                    int featherLength = 21 - i * 2;
+                    base.addChild("feather_" + i,
+                            ModelPartBuilder.create()
+                                .uv(8 + texX, 0)
+                                .cuboid(-k * (i % 2) / 90F, 0, 0, 2, featherLength, 2, dilation),
+                            ModelTransform.pivot(0, 9, 0));
+                }
             }
 
             void setAngles(LivingEntity entity) {

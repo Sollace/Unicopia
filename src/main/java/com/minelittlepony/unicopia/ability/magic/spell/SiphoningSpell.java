@@ -17,7 +17,7 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.BlockPos;
@@ -71,7 +71,7 @@ public class SiphoningSpell extends AbstractPlacedSpell {
     }
 
     private Stream<LivingEntity> getTargets(Caster<?> source) {
-        return VecHelper.findInRange(null, source.getWorld(), source.getOriginVector(), 4 + source.getLevel().get(), EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.and(e -> e instanceof LivingEntity))
+        return VecHelper.findInRange(null, source.getWorld(), source.getOriginVector(), 4 + source.getLevel().get(), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(e -> e instanceof LivingEntity))
                 .stream()
                 .map(e -> (LivingEntity)e);
     }
@@ -147,13 +147,13 @@ public class SiphoningSpell extends AbstractPlacedSpell {
 
 
     @Override
-    public void toNBT(CompoundTag compound) {
+    public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
         compound.putInt("upset", ticksUpset);
     }
 
     @Override
-    public void fromNBT(CompoundTag compound) {
+    public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         ticksUpset = compound.getInt("upset");
     }

@@ -7,8 +7,8 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
@@ -31,6 +31,7 @@ import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.mob.FlyingEntity;
@@ -39,7 +40,7 @@ import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -49,7 +50,7 @@ import net.minecraft.world.WorldAccess;
 
 public class Disguise implements NbtSerialisable {
 
-    @Nonnull
+    @NotNull
     private String entityId = "";
 
     @Nullable
@@ -63,7 +64,7 @@ public class Disguise implements NbtSerialisable {
     private Optional<EntityDimensions> dimensions = Optional.empty();
 
     @Nullable
-    private CompoundTag entityNbt;
+    private NbtCompound entityNbt;
 
     @Nullable
     public Entity getAppearance() {
@@ -110,12 +111,12 @@ public class Disguise implements NbtSerialisable {
         }
     }
 
-    private synchronized void createPlayer(CompoundTag nbt, GameProfile profile, Caster<?> source) {
+    private synchronized void createPlayer(NbtCompound nbt, GameProfile profile, Caster<?> source) {
         remove();
 
         entity = InteractionManager.instance().createPlayer(source.getEntity(), profile);
         entity.setCustomName(source.getMaster().getName());
-        ((PlayerEntity)entity).fromTag(nbt.getCompound("playerNbt"));
+        ((PlayerEntity)entity).readNbt(nbt.getCompound("playerNbt"));
         entity.setUuid(UUID.randomUUID());
         entity.extinguish();
 
@@ -124,7 +125,7 @@ public class Disguise implements NbtSerialisable {
 
     public Entity getOrCreate(Caster<?> source) {
         if (entity == null && entityNbt != null) {
-            CompoundTag nbt = entityNbt;
+            NbtCompound nbt = entityNbt;
             entityNbt = null;
             attachments.clear();
 
@@ -133,16 +134,14 @@ public class Disguise implements NbtSerialisable {
                         nbt.getUuid("playerId"),
                         nbt.getString("playerName")
                     ), source);
-                new Thread(() -> createPlayer(nbt, SkullBlockEntity.loadProperties(new GameProfile(
-                    null,
-                    nbt.getString("playerName")
-                )), source)).start();
+
+                SkullBlockEntity.loadProperties(new GameProfile(null, nbt.getString("playerName")), profile ->{ });
             } else {
                 if (source.isClient()) {
-                    entity = EntityType.fromTag(nbt).map(type -> type.create(source.getWorld())).orElse(null);
+                    entity = EntityType.fromNbt(nbt).map(type -> type.create(source.getWorld())).orElse(null);
                     if (entity != null) {
                         try {
-                            entity.fromTag(nbt);
+                            entity.readNbt(nbt);
                         } catch (Exception ignored) {
                             // Mojang pls
                         }
@@ -161,8 +160,8 @@ public class Disguise implements NbtSerialisable {
         return entity;
     }
 
-    public void onImpact(Caster<?> pony, float distance, float damageMultiplier) {
-        EntityBehaviour.forEntity(entity).onImpact(pony, entity, distance, damageMultiplier);
+    public void onImpact(Caster<?> pony, float distance, float damageMultiplier, DamageSource cause) {
+        EntityBehaviour.forEntity(entity).onImpact(pony, entity, distance, damageMultiplier, cause);
     }
 
     private void onEntityLoaded(Caster<?> source) {
@@ -251,7 +250,7 @@ public class Disguise implements NbtSerialisable {
     }
 
     @Override
-    public void toNBT(CompoundTag compound) {
+    public void toNBT(NbtCompound compound) {
         compound.putString("entityId", entityId);
 
         if (entityNbt != null) {
@@ -262,7 +261,7 @@ public class Disguise implements NbtSerialisable {
     }
 
     @Override
-    public void fromNBT(CompoundTag compound) {
+    public void fromNBT(NbtCompound compound) {
         String newId = compound.getString("entityId");
 
         if (!newId.contentEquals(entityId)) {
@@ -279,7 +278,7 @@ public class Disguise implements NbtSerialisable {
 
             if (entity != null) {
                 try {
-                    entity.fromTag(entityNbt);
+                    entity.readNbt(entityNbt);
                 } catch (Exception ignored) {
                     // Mojang pls
                 }
@@ -296,8 +295,8 @@ public class Disguise implements NbtSerialisable {
             || entity instanceof FallingBlockEntity;
     }
 
-    private static CompoundTag encodeEntityToNBT(Entity entity) {
-        CompoundTag entityNbt = new CompoundTag();
+    private static NbtCompound encodeEntityToNBT(Entity entity) {
+        NbtCompound entityNbt = new NbtCompound();
 
         if (entity instanceof PlayerEntity) {
             GameProfile profile = ((PlayerEntity)entity).getGameProfile();
@@ -306,13 +305,13 @@ public class Disguise implements NbtSerialisable {
             entityNbt.putUuid("playerId", profile.getId());
             entityNbt.putString("playerName", profile.getName());
 
-            CompoundTag tag = new CompoundTag();
+            NbtCompound tag = new NbtCompound();
 
-            entity.saveToTag(tag);
+            entity.writeNbt(tag);
 
             entityNbt.put("playerNbt", tag);
         } else {
-            entity.saveToTag(entityNbt);
+            entity.writeNbt(entityNbt);
         }
 
         return entityNbt;

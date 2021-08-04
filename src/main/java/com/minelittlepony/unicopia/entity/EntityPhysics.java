@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
 import com.minelittlepony.unicopia.util.Copieable;
+import com.minelittlepony.unicopia.util.Tickable;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
@@ -12,11 +12,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -97,8 +96,8 @@ public class EntityPhysics<T extends Entity> implements Physics, Copieable<Entit
 
         if (entity.world.getBlockState(pos).isAir()) {
             BlockPos below = pos.down();
-            Block block = entity.world.getBlockState(below).getBlock();
-            if (block.isIn(BlockTags.FENCES) || block.isIn(BlockTags.WALLS) || block instanceof FenceGateBlock) {
+            BlockState block = entity.world.getBlockState(below);
+            if (block.isIn(BlockTags.FENCES) || block.isIn(BlockTags.WALLS) || block.getBlock() instanceof FenceGateBlock) {
                 entity.setOnGround(true);
                 return below;
             }
@@ -158,12 +157,12 @@ public class EntityPhysics<T extends Entity> implements Physics, Copieable<Entit
     }
 
     @Override
-    public void toNBT(CompoundTag compound) {
+    public void toNBT(NbtCompound compound) {
         compound.putFloat("gravity", getBaseGravityModifier());
     }
 
     @Override
-    public void fromNBT(CompoundTag compound) {
+    public void fromNBT(NbtCompound compound) {
         setBaseGravityModifier(compound.getFloat("gravity"));
     }
 

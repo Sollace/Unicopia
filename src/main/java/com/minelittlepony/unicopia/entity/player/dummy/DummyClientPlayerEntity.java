@@ -1,11 +1,12 @@
 package com.minelittlepony.unicopia.entity.player.dummy;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.mojang.authlib.GameProfile;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -38,7 +39,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
     }
 
     @Override
-    @Nonnull
+    @NotNull
     protected PlayerListEntry getPlayerListEntry() {
         if (playerInfo == null) {
             ClientPlayNetworkHandler connection = MinecraftClient.getInstance().getNetworkHandler();
@@ -74,11 +75,13 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
     }
 
     private final class Packet extends PlayerListS2CPacket {
+        public Packet() { super(PacketByteBufs.empty()); }
+
         PlayerListS2CPacket.Entry entry() {
             return new PlayerListS2CPacket.Entry(
                     getGameProfile(),
                     0,
-                    GameMode.NOT_SET,
+                    GameMode.DEFAULT,
                     new LiteralText(getGameProfile().getName()));
         }
     }

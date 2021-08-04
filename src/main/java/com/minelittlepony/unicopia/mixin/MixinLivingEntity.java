@@ -29,7 +29,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 
@@ -139,13 +139,13 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
         get().onDamage(source, amount).ifPresent(info::setReturnValue);
     }
 
-    @Inject(method = "writeCustomDataToTag(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("HEAD"))
-    private void onWriteCustomDataToTag(CompoundTag tag, CallbackInfo info) {
+    @Inject(method = "writeCustomDataToNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("HEAD"))
+    private void onWriteCustomDataToTag(NbtCompound tag, CallbackInfo info) {
         tag.put("unicopia_caster", get().toNBT());
     }
 
-    @Inject(method = "readCustomDataFromTag(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("HEAD"))
-    private void onReadCustomDataFromTag(CompoundTag tag, CallbackInfo info) {
+    @Inject(method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("HEAD"))
+    private void onReadCustomDataFromTag(NbtCompound tag, CallbackInfo info) {
         if (tag.contains("unicopia_caster")) {
             get().fromNBT(tag.getCompound("unicopia_caster"));
         }
@@ -171,11 +171,11 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
     }
 
     @Override
-    protected BlockPos getLandingPos() {
+    public BlockPos getBlockPos() {
         if (get().getPhysics().isGravityNegative()) {
             return get().getPhysics().getHeadPosition();
         }
-        return super.getLandingPos();
+        return super.getBlockPos();
     }
 
     @Override

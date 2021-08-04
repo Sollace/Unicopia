@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -31,8 +31,8 @@ class BlockStateMap implements BlockStateConverter {
     }
 
     @Override
-    @Nonnull
-    public BlockState getConverted(World world, @Nonnull BlockState state) {
+    @NotNull
+    public BlockState getConverted(World world, @NotNull BlockState state) {
         for (StateMapping i : mappings) {
             if (i.test(state)) {
                 return i.apply(world, state);

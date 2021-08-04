@@ -9,6 +9,14 @@ public class SpellcastingIllagerBehaviour extends EntityBehaviour<SpellcastingIl
     @Override
     public void update(Pony player, SpellcastingIllagerEntity entity, DisguiseSpell s) {
         if (player.sneakingChanged()) {
+            SpellCastAccess.setSpell(player, entity, s);
+        }
+    }
+
+    private static abstract class SpellCastAccess extends SpellcastingIllagerEntity {
+        SpellCastAccess() {super(null, null);}
+
+        static void setSpell(Pony player, SpellcastingIllagerEntity entity, DisguiseSpell s) {
             if (player.getMaster().isSneaking()) {
                 SpellcastingIllagerEntity.Spell[] spells = SpellcastingIllagerEntity.Spell.values();
                 SpellcastingIllagerEntity.Spell spell = spells[entity.world.random.nextInt(spells.length - 1) + 1];

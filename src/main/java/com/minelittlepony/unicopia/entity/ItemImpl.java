@@ -18,7 +18,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.ActionResult;
@@ -91,14 +91,14 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
                     });
             }
 
-            if (stack.getItem().isIn(UTags.FALLS_SLOWLY)) {
+            if (stack.isIn(UTags.FALLS_SLOWLY)) {
                 if (!owner.isOnGround() && Math.signum(owner.getVelocity().y) != getPhysics().getGravitySignum()) {
                     double ticks = ((Entity)owner).age;
                     double shift = Math.sin(ticks / 9D) / 9D;
                     double rise = -Math.cos(ticks / 9D) * getPhysics().getGravitySignum();
 
                     owner.prevYaw = owner.prevYaw;
-                    owner.yaw += 0.3F;
+                    owner.setYaw(owner.getYaw() + 0.3F);
 
                     owner.setVelocity(
                             owner.getVelocity()
@@ -139,13 +139,13 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
     }
 
     @Override
-    public void toNBT(CompoundTag compound) {
+    public void toNBT(NbtCompound compound) {
         compound.putString("owner_species", getSpecies().name());
         physics.toNBT(compound);
     }
 
     @Override
-    public void fromNBT(CompoundTag compound) {
+    public void fromNBT(NbtCompound compound) {
         setSpecies(Race.fromName(compound.getString("owner_species")));
         physics.fromNBT(compound);
     }

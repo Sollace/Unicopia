@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -13,7 +14,6 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.registry.Registry;
 
 public class PlayerAttributes implements Tickable {

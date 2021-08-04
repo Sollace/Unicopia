@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.ability;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
@@ -73,7 +73,7 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
         } else if (player.getOrigin().getY() < 120) {
             tell(player, "ability.unicopia.too_low");
         } else {
-            if (!player.getMaster().abilities.creativeMode) {
+            if (!player.getMaster().getAbilities().creativeMode) {
                 stack.decrement(1);
             }
 

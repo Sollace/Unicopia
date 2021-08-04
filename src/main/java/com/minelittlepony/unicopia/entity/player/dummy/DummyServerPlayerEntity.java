@@ -7,7 +7,6 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 
 public class DummyServerPlayerEntity extends ServerPlayerEntity implements Owned<PlayerEntity> {
@@ -15,7 +14,7 @@ public class DummyServerPlayerEntity extends ServerPlayerEntity implements Owned
     private PlayerEntity owner;
 
     public DummyServerPlayerEntity(ServerWorld world, GameProfile profile) {
-        super(world.getServer(), world, profile, new ServerPlayerInteractionManager(world));
+        super(world.getServer(), world, profile);
     }
 
     @Override

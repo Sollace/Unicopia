@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.ability;
 
 import java.util.Random;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;

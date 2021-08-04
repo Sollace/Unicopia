@@ -6,7 +6,7 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 public abstract class AbstractSpell implements Spell {
 
@@ -69,13 +69,13 @@ public abstract class AbstractSpell implements Spell {
     }
 
     @Override
-    public void toNBT(CompoundTag compound) {
+    public void toNBT(NbtCompound compound) {
         compound.putBoolean("dead", isDead);
         compound.putUuid("uuid", uuid);
     }
 
     @Override
-    public void fromNBT(CompoundTag compound) {
+    public void fromNBT(NbtCompound compound) {
         isDirty = false;
         if (compound.contains("uuid")) {
             uuid = compound.getUuid("uuid");

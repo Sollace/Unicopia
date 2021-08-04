@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.ability.magic;
 
 import java.util.Optional;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
 

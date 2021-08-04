@@ -14,7 +14,7 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 
 public class MsgPlayerCapabilities implements Packet<PlayerEntity> {
@@ -23,7 +23,7 @@ public class MsgPlayerCapabilities implements Packet<PlayerEntity> {
 
     private final Race newRace;
 
-    private final CompoundTag compoundTag;
+    private final NbtCompound compoundTag;
 
     MsgPlayerCapabilities(PacketByteBuf buffer) {
         playerId = buffer.readUuid();
@@ -38,7 +38,7 @@ public class MsgPlayerCapabilities implements Packet<PlayerEntity> {
     public MsgPlayerCapabilities(boolean full, Pony player) {
         playerId = player.getMaster().getUuid();
         newRace = player.getSpecies();
-        compoundTag = full ? player.toNBT() : new CompoundTag();
+        compoundTag = full ? player.toNBT() : new NbtCompound();
     }
 
     @Override

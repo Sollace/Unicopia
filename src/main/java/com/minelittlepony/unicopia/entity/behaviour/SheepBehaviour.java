@@ -44,13 +44,14 @@ public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
                     entity.setSheared(true);
 
                     Random rng = entity.world.random;
-                    PlayerInventory inv = player.getMaster().inventory;
+                    PlayerInventory inv = player.getMaster().getInventory();
 
                     int dropAmount = rng.nextInt(3);
                     int slot;
 
                     do {
-                        slot = inv.method_7371(dropType);
+                        slot = inv.indexOf(dropType);
+
                         if (slot < 0) {
                             break;
                         }
