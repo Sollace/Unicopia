@@ -10,7 +10,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "tag": "unicopia:golden_wing" }
+          { "item": "unicopia:golden_wing" }
         ]
       }
     },

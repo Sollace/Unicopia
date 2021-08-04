@@ -10,7 +10,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "tag": "unicopia:empty_jar" }
+          { "item": "unicopia:empty_jar" }
         ]
       }
     },
