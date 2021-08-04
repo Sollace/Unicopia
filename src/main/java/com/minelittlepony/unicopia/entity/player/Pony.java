@@ -119,7 +119,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
         entity.getDataTracker().set(RACE, race.ordinal());
 
-        gravity.updateFlightStat(entity.getAbilities().flying);
+        gravity.updateFlightState();
         entity.sendAbilitiesUpdate();
     }
 
