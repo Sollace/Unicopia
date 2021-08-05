@@ -15,6 +15,8 @@ import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Link;
+import com.minelittlepony.unicopia.util.ColorHelper;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.minelittlepony.common.util.Color;
 
 public class SphereParticle extends Particle implements Attachment {
@@ -28,7 +30,7 @@ public class SphereParticle extends Particle implements Attachment {
 
     private final Link link = new Link();
 
-    private static final SphereModel model = new SphereModel();
+    private static final SphereModel MODEL = new SphereModel();
 
     public SphereParticle(SphereParticleEffect effect, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
         this(effect, w, x, y, z);
@@ -42,9 +44,9 @@ public class SphereParticle extends Particle implements Attachment {
         super(w, x, y, z);
 
         this.radius = effect.getRadius();
-        this.colorRed = effect.getRed()/255F;
-        this.colorGreen = effect.getGreen()/255F;
-        this.colorBlue = effect.getBlue()/255F;
+        this.colorRed = effect.getRed() / 255F;
+        this.colorGreen = effect.getGreen() / 255F;
+        this.colorBlue = effect.getBlue() / 255F;
         this.colorAlpha = effect.getAlpha();
 
         setMaxAge(10);
@@ -92,10 +94,10 @@ public class SphereParticle extends Particle implements Attachment {
 
         if (link.linked()) {
             link.ifAbsent(this::markDead).map(Caster::getEntity).ifPresent(e -> {
-                setPos(e.getX(), e.getY(), e.getZ());
+                setPos(e.getX(), e.getY() + 0.5, e.getZ());
 
                 prevPosX = e.lastRenderX;
-                prevPosY = e.lastRenderY;
+                prevPosY = e.lastRenderY + 0.5;
                 prevPosZ = e.lastRenderZ;
             });
 
@@ -114,27 +116,34 @@ public class SphereParticle extends Particle implements Attachment {
             return;
         }
 
-        MatrixStack matrices = new MatrixStack();
-
-        VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        model.setPosition(
+        MODEL.setPosition(
                 MathHelper.lerp(tickDelta, prevPosX, x) - camera.getPos().x,
                 MathHelper.lerp(tickDelta, prevPosY, y) - camera.getPos().y,
                 MathHelper.lerp(tickDelta, prevPosZ, z) - camera.getPos().z
         );
-        model.setRotation(0, 0, 0);
+        MODEL.setRotation(0, 0, 0);
 
         float lerpedRad = MathHelper.lerp(tickDelta, prevRadius, radius);
 
-        VertexConsumer buffer;
-        buffer = immediate.getBuffer(RenderLayers.getTintedTexturedLayer(colorRed, colorGreen, colorBlue, colorAlpha));
-        model.render(matrices, lerpedRad + 0.1F, buffer, 1, 1, colorRed, colorGreen, colorBlue, colorAlpha);
-        buffer = immediate.getBuffer(RenderLayers.getTintedTexturedLayer(colorRed * 0.9F, colorGreen * 0.9F, colorBlue * 0.9F, Math.min(1, colorAlpha + 0.2F)));
-        model.render(matrices, lerpedRad - 0.1F, buffer, 1, 1, colorRed * 0.9F, colorGreen * 0.9F, colorBlue * 0.9F, Math.min(1, colorAlpha + 0.2F));
+        float[] color = ColorHelper.changeSaturation(colorRed, colorGreen, colorBlue, 4);
+        RenderSystem.setShaderColor(color[0], color[1], color[2], colorAlpha / 3F);
+
+        VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        VertexConsumer buffer = immediate.getBuffer(RenderLayers.getMagicGlow());
+
+        float thickness = 0.05F;
+
+        int light = getBrightness(tickDelta);
+
+        MatrixStack matrices = new MatrixStack();
+        MODEL.render(matrices, lerpedRad + thickness, buffer, light, 1, 1, 1, 1, 0.8F);
+        MODEL.render(matrices, lerpedRad - thickness, buffer, light, 1, 1, 1, 1, 1);
 
         immediate.draw();
 
         prevRadius = radius;
+
+        RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 }
 

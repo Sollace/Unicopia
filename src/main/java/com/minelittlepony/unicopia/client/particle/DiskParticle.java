@@ -1,10 +1,12 @@
 package com.minelittlepony.unicopia.client.particle;
 
+import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
+import com.minelittlepony.unicopia.util.ColorHelper;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -12,7 +14,7 @@ import net.minecraft.client.world.ClientWorld;
 
 public class DiskParticle extends SphereParticle {
 
-    private static final DiskModel model = new DiskModel();
+    private static final DiskModel MODEL = new DiskModel();
 
     protected float rotX;
     protected float rotY;
@@ -32,12 +34,23 @@ public class DiskParticle extends SphereParticle {
             return;
         }
 
-        MatrixStack matrices = new MatrixStack();
+        MODEL.setPosition(x, y, z);
+        MODEL.setRotation(rotX, rotY, rotZ);
+
+        float[] color = ColorHelper.changeSaturation(colorRed, colorGreen, colorBlue, 4);
+        RenderSystem.setShaderColor(color[0], color[1], color[2], colorAlpha / 3F);
+
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        model.setPosition(x, y, z);
-        model.setRotation(rotX, rotY, rotZ);
-        model.render(matrices, radius, immediate.getBuffer(RenderLayer.getTranslucent()), 1, 1, colorRed, colorGreen, colorBlue, colorAlpha);
+        VertexConsumer buffer = immediate.getBuffer(RenderLayers.getMagicGlow());
+
+        int light = getBrightness(tickDelta);
+
+        MatrixStack matrices = new MatrixStack();
+        MODEL.render(matrices, radius, buffer, 1, light, 1, 1, 1, 1);
+
         immediate.draw();
+
+        RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 }
 

@@ -58,8 +58,8 @@ public class SphereModel {
 
         double radius = 1;
 
-        for(double zenith = -pi; zenith < pi; zenith += zenithIncrement) {
-            for(double azimuth = -two_pi; azimuth < two_pi; azimuth += azimuthIncrement) {
+        for (double zenith = -pi; zenith < pi; zenith += zenithIncrement) {
+            for (double azimuth = -two_pi; azimuth < two_pi; azimuth += azimuthIncrement) {
                 drawQuad(model, vertexWriter, radius, zenith, azimuth, zenithIncrement, azimuthIncrement, light, overlay, r, g, b, a);
             }
         }
