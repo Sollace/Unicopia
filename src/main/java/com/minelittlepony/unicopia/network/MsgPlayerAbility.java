@@ -10,6 +10,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+/**
+ * Sent to the server when a player activates an ability.
+ */
 public class MsgPlayerAbility<T extends Hit> implements Packet<ServerPlayerEntity> {
 
     private final Ability<T> power;

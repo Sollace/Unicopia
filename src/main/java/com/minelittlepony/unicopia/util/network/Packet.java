@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.util.network;
 
-import io.netty.buffer.Unpooled;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 
@@ -28,7 +28,7 @@ public interface Packet<P extends PlayerEntity> {
      * @return The resulting buffer for transmission
      */
     default PacketByteBuf toBuffer() {
-        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        PacketByteBuf buf = PacketByteBufs.create();
         toBuffer(buf);
         return buf;
     }

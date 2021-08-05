@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -102,6 +103,10 @@ public enum Race implements Affine {
         return new TranslatableText(getTranslationKey());
     }
 
+    public Text getAltDisplayName() {
+        return new TranslatableText(getTranslationKey() + ".alt");
+    }
+
     public String getTranslationKey() {
         return String.format("unicopia.race.%s", name().toLowerCase());
     }
@@ -130,7 +135,7 @@ public enum Race implements Affine {
         return this;
     }
 
-    public Style getStyle() {
+    public Style createStyle() {
         return new Style()
                 .setIcon(new TextureSprite()
                         .setPosition(2, 2)
@@ -158,6 +163,10 @@ public enum Race implements Affine {
         } catch (NumberFormatException e) { }
 
         return def;
+    }
+
+    public static Collection<Race> all() {
+        return REGISTRY.values();
     }
 
     public static Race fromName(String name) {

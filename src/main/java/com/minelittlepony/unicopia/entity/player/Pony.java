@@ -24,7 +24,7 @@ import com.minelittlepony.unicopia.item.toxin.Toxicity;
 import com.minelittlepony.unicopia.item.toxin.Toxin;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgOtherPlayerCapabilities;
-import com.minelittlepony.unicopia.network.MsgRequestCapabilities;
+import com.minelittlepony.unicopia.network.MsgRequestSpeciesChange;
 import com.minelittlepony.unicopia.network.Transmittable;
 import com.minelittlepony.unicopia.util.Copieable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
@@ -210,7 +210,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
                 clientPreferredRace = race;
 
                 if (race != getSpecies()) {
-                    Channel.CLIENT_REQUEST_CAPABILITIES.send(new MsgRequestCapabilities(race));
+                    Channel.CLIENT_REQUEST_SPECIES_CHANGE.send(new MsgRequestSpeciesChange(race));
                 }
             }
         }

@@ -172,7 +172,7 @@ public class SettingsScreen extends GameGui {
                                 return v;
                             })
                             .setEnabled(canEditWhitelist)
-                            .setStyle(race.getStyle());
+                            .setStyle(race.createStyle());
 
                         ((TextureSprite)button.getStyle().getIcon()).setPosition(-20, 0);
                     }
@@ -220,12 +220,12 @@ public class SettingsScreen extends GameGui {
                 }
             }
         }.setStyles(
-                Race.EARTH.getStyle(),
-                Race.UNICORN.getStyle(),
-                Race.PEGASUS.getStyle(),
-                Race.BAT.getStyle(),
-                Race.ALICORN.getStyle(),
-                Race.CHANGELING.getStyle()
+                Race.EARTH.createStyle(),
+                Race.UNICORN.createStyle(),
+                Race.PEGASUS.createStyle(),
+                Race.BAT.createStyle(),
+                Race.ALICORN.createStyle(),
+                Race.CHANGELING.createStyle()
         ).onChange(i -> {
             Unicopia.getConfig().preferredRace.set(Race.fromId(i + 1));
             Unicopia.getConfig().save();

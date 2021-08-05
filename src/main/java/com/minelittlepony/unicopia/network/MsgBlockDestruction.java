@@ -9,6 +9,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 
+/**
+ * Sent by the server to update block destruction progress on the client.
+ */
 public class MsgBlockDestruction implements Packet<PlayerEntity> {
 
     private final Long2ObjectMap<Integer> destructions;

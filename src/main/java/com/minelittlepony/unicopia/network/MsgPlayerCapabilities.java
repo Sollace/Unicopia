@@ -17,6 +17,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 
+/**
+ * Sent to the client to update various data pertaining to a particular player.
+ * <p>
+ * Also used by the server to notify a race change.
+ */
 public class MsgPlayerCapabilities implements Packet<PlayerEntity> {
 
     protected final UUID playerId;

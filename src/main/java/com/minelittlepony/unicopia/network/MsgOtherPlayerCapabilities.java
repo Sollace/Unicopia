@@ -6,6 +6,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 
+/**
+ * Sent by the server to update other player's capabilities.
+ */
 public class MsgOtherPlayerCapabilities extends MsgPlayerCapabilities {
 
     MsgOtherPlayerCapabilities(PacketByteBuf buffer) {

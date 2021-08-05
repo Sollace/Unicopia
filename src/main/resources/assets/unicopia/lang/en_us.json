@@ -27,28 +27,28 @@
   "item.unicopia.storm_cloud_jar": "Storm in a Jar",
   "item.unicopia.lightning_jar": "Lightning in a Jar",
   "item.unicopia.zap_apple_jam_jar": "Zap Apple Jam",
-  
+
   "item.unicopia.crystal_heart": "Crystal Heart",
   "item.unicopia.crystal_shard": "Crystal Shard",
   "item.unicopia.gemstone": "Gemstone",
   "item.unicopia.gemstone.enchanted": "%s Gem",
   "item.unicopia.gemstone.obfuscated": "Mysterious Gem",
-  
+
   "item.unicopia.pegasus_feather": "Pegasus Feather",
   "item.unicopia.gryphon_feather": "Gryphon Feather",
   "item.unicopia.golden_feather": "Golden Feather",
   "item.unicopia.golden_wing": "Golden Wing",
-  
+
   "item.unicopia.mug": "Mug",
   "item.unicopia.cider": "Cider",
   "item.unicopia.juice": "Juice",
   "item.unicopia.burned_juice": "Burned Juice",
-  
+
   "item.unicopia.daffodil_daisy_sandwich": "Daffodil Daisy Sandwich",
   "item.unicopia.hay_burger": "Hay Burger",
   "item.unicopia.hay_fries": "Hay Fries",
   "item.unicopia.wheat_worms": "Wheat Worms",
-  
+
   "item.unicopia.pegasus_amulet": "Wings of Icarus",
   "item.unicopia.pegasus_amulet.lore": "Grants temporary flight to whoever wears it",
   "item.unicopia.amulet.energy": "Energy: %d / %d",
@@ -99,7 +99,7 @@
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_changeling": "Splash Potion of Changeling Metamorphosis",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_changeling": "Lingering Potion of Changeling Metamorphosis",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_changeling": "Arrow of Changeling Metamorphosis",
-  
+
   "effect.unicopia.change_race_bat": "Bat Pony Metamorphosis",
   "item.minecraft.potion.effect.unicopia.tribe_swap_bat": "Potion of Bat Pony Metamorphosis",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_bat": "Splash Potion of Bat Pony Metamorphosis",
@@ -117,28 +117,28 @@
 
   "curse.unicopia.infernal": "Infernal",
   "curse.unicopia.infernal.lore": "Fire III",
-	
+
   "spell.unicopia.shield": "Protective",
   "spell.unicopia.shield.lore": "Protection I",
 
   "curse.unicopia.repulse": "Repulsive",
   "curse.unicopia.repulse.lore": "Hostility I",
-	
+
   "spell.unicopia.vortex": "Attractive",
   "spell.unicopia.vortex.lore": "Containment I",
 
   "curse.unicopia.suffer": "Suffering",
   "curse.unicopia.suffer.lore": "Torture I",
-	
+
   "curse.unicopia.necromancy": "Resurrection",
   "curse.unicopia.necromancy.lore": "Resurrection I",
-	
+
   "spell.unicopia.siphoning": "Siphoning",
   "spell.unicopia.siphoning.lore": "Energy II",
 
   "curse.unicopia.draining": "Siphoning",
   "curse.unicopia.draining.lore": "Energy III",
-	
+
   "spell.unicopia.reveal": "Revealing",
   "spell.unicopia.reveal.lore": "Discovery II",
 
@@ -170,6 +170,67 @@
   "gui.unicopia": "Unicopia...",
   "gui.unicopia.page_num": "%d of %d",
 
+  "gui.unicopia.tribe_selection": "Select Your Tribe",
+  "gui.unicopia.tribe_selection.welcome": "Welcome to Equestria!",
+  "gui.unicopia.tribe_selection.welcome.journey": "A journey into magic and adventure awaits, traveller! But before you go, you must select your path.",
+  "gui.unicopia.tribe_selection.welcome.choice": "Choose wisely, for the choice you make now will change the world around you and the paths you may take.",
+  "gui.unicopia.tribe_selection.preference": "Your current preferred tribe is set to %s.",
+  "gui.unicopia.tribe_selection.options": "Available Tribes:",
+  "gui.unicopia.tribe_selection.options.disabled": "Option Unavailable",
+
+  "gui.unicopia.tribe_selection.describe.earth": "Join the Earth Tribe",
+  "gui.unicopia.tribe_selection.describe.unicorn": "Join the Unicorn Tribe, master the arcane arts",
+  "gui.unicopia.tribe_selection.describe.pegasus": "Join the Pegasus Tribe, soar with the Wonderbolts",
+  "gui.unicopia.tribe_selection.describe.bat": "Join the Bat Tribe, become the darkest night",
+  "gui.unicopia.tribe_selection.describe.changeling": "Join the Changeling Hive, your Queen demands it",
+
+  "gui.unicopia.tribe_selection.confirm": "You have selected %s",
+  "gui.unicopia.tribe_selection.confirm.goods": "%s enjoy the following perks:",
+
+  "gui.unicopia.tribe_selection.confirm.goods.1.earth": " - Stronger knockback and resistance to magic",
+  "gui.unicopia.tribe_selection.confirm.goods.2.earth": " - Have extra weight makes them effective against magic and brute force",
+  "gui.unicopia.tribe_selection.confirm.goods.3.earth": " - A special connection to the earth that makes farming 10,000% more effective!",
+
+  "gui.unicopia.tribe_selection.confirm.goods.1.unicorn": " - Able to teleport and cast powerful spells",
+  "gui.unicopia.tribe_selection.confirm.goods.2.unicorn": " - Research and craft magical artefacts that enhance their abilities",
+  "gui.unicopia.tribe_selection.confirm.goods.3.unicorn": " - Can use magic to detect or reveal nearby changelings",
+  "gui.unicopia.tribe_selection.confirm.goods.4.unicorn": " - Have pointy sticks on their heads",
+
+  "gui.unicopia.tribe_selection.confirm.goods.1.pegasus": " - Flight and the ability to train to build endurace",
+  "gui.unicopia.tribe_selection.confirm.goods.2.pegasus": " - Use stored mana to perform a powerful rainboom",
+  "gui.unicopia.tribe_selection.confirm.goods.3.pegasus": " - Moves faster and takes less fall damage",
+  "gui.unicopia.tribe_selection.confirm.goods.4.pegasus": " - Can eat vegitables and certain types of fish",
+
+  "gui.unicopia.tribe_selection.confirm.goods.1.bat": " - Flight and the ability to train to build endurance",
+  "gui.unicopia.tribe_selection.confirm.goods.2.bat": " - Sees better in the night",
+  "gui.unicopia.tribe_selection.confirm.goods.3.bat": " - Able to cling to the underside of blocks",
+  "gui.unicopia.tribe_selection.confirm.goods.4.bat": " - Has a terrifying, yet adorable, but still slightly annoying screech",
+
+  "gui.unicopia.tribe_selection.confirm.goods.1.changeling": " - Able to fly and hover in place",
+  "gui.unicopia.tribe_selection.confirm.goods.2.changeling": " - Shapeshift and morph into nearly anyone or anyling",
+  "gui.unicopia.tribe_selection.confirm.goods.3.changeling": " - Is carnivorous. Can eat anything that doesn't make them sick",
+
+  "gui.unicopia.tribe_selection.confirm.bads": "but they...",
+  "gui.unicopia.tribe_selection.confirm.bads.1.earth": " - Cannot fly",
+  "gui.unicopia.tribe_selection.confirm.bads.2.earth": " - Are weak to certain types of magic",
+  "gui.unicopia.tribe_selection.confirm.bads.3.earth": " - Can only eat plants and vegitables",
+
+  "gui.unicopia.tribe_selection.confirm.bads.1.unicorn": " - Cannot fly",
+  "gui.unicopia.tribe_selection.confirm.bads.2.unicorn": " - Are weak to brute force attacks",
+  "gui.unicopia.tribe_selection.confirm.bads.3.unicorn": " - Can only eat plants and vegitables",
+
+  "gui.unicopia.tribe_selection.confirm.bads.1.pegasus": " - Light weight makes them the weakest to brute force",
+  "gui.unicopia.tribe_selection.confirm.bads.2.pegasus": " - Must rest between flights to regain their strength",
+
+  "gui.unicopia.tribe_selection.confirm.bads.1.bat": " - Light weight makes them weak to brute force attacks.",
+  "gui.unicopia.tribe_selection.confirm.bads.2.bat": " - Must rest between flights to regain their strength",
+  "gui.unicopia.tribe_selection.confirm.bads.3.bat": " - Is sometimes scared of even themselves",
+  "gui.unicopia.tribe_selection.confirm.bads.4.bat": " - Is carnivorous. Can eat anything that doesn't make them sick",
+
+  "gui.unicopia.tribe_selection.confirm.bads.1.changeling": " - Are always starving",
+  "gui.unicopia.tribe_selection.confirm.bads.2.changeling": " - Require love, collected from ponies or other hostile mobs to subsidise their diet",
+  "gui.unicopia.tribe_selection.confirm.bads.3.changeling": " - Becomes sick from eating regular food and must eat love hasten a cure",
+
   "unicopia.category.name": "Pony Abilities",
 
   "key.unicopia.primary": "Primary Ability",
@@ -179,7 +240,7 @@
 
   "key.unicopia.hud_page_dn": "Hud Previous Page",
   "key.unicopia.hud_page_up": "Hud Next Page",
-  
+
   "enchantment.unicopia.gem_finder": "Gem Finder",
   "enchantment.unicopia.padded": "Padded",
   "enchantment.unicopia.clingy": "Clings",
@@ -227,7 +288,7 @@
   "commands.race.describe.changeling.1": "Beware the changeling, for they can appear when least expected.",
   "commands.race.describe.changeling.2": "Changelings can fly but but do not interact with clouds.",
   "commands.race.describe.changeling.3": "They have to feed on mobs and other players to eat.",
-  
+
   "commands.race.describe.bat.1": "I am the night! EEEEEEEEEEEEE!!!",
   "commands.race.describe.bat.2": "Bat Ponies can fly but but do not interact with clouds.",
   "commands.race.describe.bat.3": "They love mangoes. Give them one, and they will follow you forever.",

@@ -53,6 +53,10 @@ public class UHud extends DrawableHelper {
 
     public void render(InGameHud hud, MatrixStack matrices, float tickDelta) {
 
+        if (client.currentScreen instanceof HidesHud) {
+            return;
+        }
+
         if (client.player == null || client.player.isSpectator() || client.options.hudHidden) {
             return;
         }
