@@ -79,8 +79,11 @@ public class UHud extends DrawableHelper {
             renderMessage(matrices, tickDelta);
         }
 
-        RenderSystem.enableBlend();
 
+        float progress = messageTime >= 20 ? 1 : (messageTime - tickDelta) / 20;
+
+        RenderSystem.setShaderColor(1, 1, 1, Math.max(0.1F, progress));
+        RenderSystem.enableBlend();
         RenderSystem.setShaderTexture(0, HUD_TEXTURE);
 
         boolean swap = client.options.keySneak.isPressed();
@@ -117,8 +120,6 @@ public class UHud extends DrawableHelper {
                     RenderSystem.applyModelViewMatrix();
                 });
         }
-
-
     }
 
     private void renderMessage(MatrixStack matrices, float tickDelta) {
