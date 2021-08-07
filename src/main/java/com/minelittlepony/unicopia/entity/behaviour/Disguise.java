@@ -63,6 +63,13 @@ public class Disguise implements NbtSerialisable {
 
     private Optional<EntityDimensions> dimensions = Optional.empty();
 
+    /**
+     * Tag that allows behaviours to store data between ticks.
+     * This is not serialized, so should only be used for server-side data.
+     */
+    @Nullable
+    private NbtCompound tag;
+
     @Nullable
     private NbtCompound entityNbt;
 
@@ -97,6 +104,17 @@ public class Disguise implements NbtSerialisable {
 
     public boolean isPresent() {
         return entity != null;
+    }
+
+    public NbtCompound getOrCreateTag() {
+        if (tag == null) {
+            tag = new NbtCompound();
+        }
+        return tag;
+    }
+
+    public boolean hasTag() {
+        return tag != null;
     }
 
     public void remove() {

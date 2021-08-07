@@ -193,7 +193,11 @@ public class EntityBehaviour<T extends Entity> {
             l.stuckStingerTimer = from.stuckStingerTimer;
             l.stuckArrowTimer = from.stuckArrowTimer;
 
+            // disguise uses our health
             l.setHealth((from.getHealth() / from.getMaxHealth()) * l.getMaxHealth());
+
+            // we use the disguise's air so changelings disguised as dolphin/axolotl/etc drown on land
+            from.setAir((l.getAir() / l.getMaxAir()) * from.getMaxAir());
 
             copyInventory(from, l);
         }
@@ -278,6 +282,7 @@ public class EntityBehaviour<T extends Entity> {
         register(CreeperBehaviour::new, EntityType.CREEPER);
         register(SilverfishBehaviour::new, EntityType.SILVERFISH);
         register(ChickenBehaviour::new, EntityType.CHICKEN);
+        register(BlazeBehaviour::new, EntityType.BLAZE);
         register(MinecartBehaviour::new, EntityType.CHEST_MINECART, EntityType.COMMAND_BLOCK_MINECART, EntityType.FURNACE_MINECART, EntityType.HOPPER_MINECART, EntityType.MINECART, EntityType.SPAWNER_MINECART, EntityType.TNT_MINECART);
     }
 }

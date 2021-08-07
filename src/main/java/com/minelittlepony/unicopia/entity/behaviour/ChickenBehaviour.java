@@ -61,7 +61,7 @@ public class ChickenBehaviour extends EntityBehaviour<ChickenEntity> {
         Vec3d vel = src.getVelocity();
 
         if (vel.y < 0) {
-            src.setVelocity(vel.multiply(1, 0.6, 1));
+            src.setVelocity(vel.multiply(1, 0.8, 1));
         }
 
     }
