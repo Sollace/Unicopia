@@ -21,6 +21,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
@@ -96,20 +97,24 @@ public class UHud extends DrawableHelper {
                 .map(Disguise::getAppearance)
                 .ifPresent(appearance -> {
 
-                    float baseHeight = 14;
-                    float entityHeight = appearance.getDimensions(appearance.getPose()).height;
+                    float baseHeight = 20;
+
+                    EntityDimensions dims = appearance.getDimensions(appearance.getPose());
+
+                    float entityHeight = Math.max(dims.height, dims.width);
                     int scale = (int)(baseHeight / entityHeight);
 
-                    int x = scaledWidth / 2 + 67;
-                    int y = scaledHeight - 25;
+                    int x = scaledWidth / 2 + xDirection * 67;
+                    int y = (int)(scaledHeight - 18 - dims.height/2F);
 
                     MatrixStack view = RenderSystem.getModelViewStack();
 
                     view.push();
                     view.translate(x, y, 0);
-                    view.multiply(new Quaternion(-9, 45, 0, true));
+                    view.multiply(new Quaternion(-9, xDirection * 45, 0, true));
                     InventoryScreen.drawEntity(0, 0, scale, 0, -20, client.player);
                     view.pop();
+                    RenderSystem.applyModelViewMatrix();
                 });
         }
 
