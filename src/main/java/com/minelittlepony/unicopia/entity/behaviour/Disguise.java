@@ -311,7 +311,7 @@ public class Disguise implements NbtSerialisable {
 
             entityNbt.put("playerNbt", tag);
         } else {
-            entity.writeNbt(entityNbt);
+            entity.saveSelfNbt(entityNbt);
         }
 
         return entityNbt;
