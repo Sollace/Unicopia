@@ -3,46 +3,11 @@ package com.minelittlepony.unicopia.client.particle;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vector4f;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3d;
 
 public class SphereModel {
-
-    protected Vec3d pos;
-
-    protected Quaternion rotX = Quaternion.IDENTITY;
-    protected Quaternion rotY = Quaternion.IDENTITY;
-    protected Quaternion rotZ = Quaternion.IDENTITY;
-
-    public void setPosition(double x, double y, double z) {
-        pos = new Vec3d(x, y, z);
-    }
-
-    public void setRotation(float x, float y, float z) {
-        rotX = Vec3f.POSITIVE_X.getDegreesQuaternion(x);
-        rotY = Vec3f.POSITIVE_Y.getDegreesQuaternion(y);
-        rotZ = Vec3f.POSITIVE_Z.getDegreesQuaternion(z);
-    }
-
-    public void render(MatrixStack matrices, float scale, VertexConsumer vertexWriter, int light, int overlay, float r, float g, float b, float a) {
-        if (scale == 0) {
-            return;
-        }
-
-        matrices.push();
-
-        matrices.translate(pos.x, pos.y, pos.z);
-        matrices.multiply(rotX);
-        matrices.multiply(rotY);
-        matrices.multiply(rotZ);
-
-        matrices.scale(scale, scale, scale);
-
+    public void render(MatrixStack matrices, VertexConsumer vertexWriter, int light, int overlay, float r, float g, float b, float a) {
         render(matrices.peek(), vertexWriter, light, overlay, r, g, b, a);
-
-        matrices.pop();
     }
 
     public void render(MatrixStack.Entry matrices, VertexConsumer vertexWriter, int light, int overlay, float r, float g, float b, float a) {

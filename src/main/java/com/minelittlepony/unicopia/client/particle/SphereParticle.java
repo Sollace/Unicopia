@@ -116,13 +116,6 @@ public class SphereParticle extends Particle implements Attachment {
             return;
         }
 
-        MODEL.setPosition(
-                MathHelper.lerp(tickDelta, prevPosX, x) - camera.getPos().x,
-                MathHelper.lerp(tickDelta, prevPosY, y) - camera.getPos().y,
-                MathHelper.lerp(tickDelta, prevPosZ, z) - camera.getPos().z
-        );
-        MODEL.setRotation(0, 0, 0);
-
         float lerpedRad = MathHelper.lerp(tickDelta, prevRadius, radius);
 
         float[] color = ColorHelper.changeSaturation(colorRed, colorGreen, colorBlue, 4);
@@ -136,8 +129,31 @@ public class SphereParticle extends Particle implements Attachment {
         int light = getBrightness(tickDelta);
 
         MatrixStack matrices = new MatrixStack();
-        MODEL.render(matrices, lerpedRad + thickness, buffer, light, 1, 1, 1, 1, 0.8F);
-        MODEL.render(matrices, lerpedRad - thickness, buffer, light, 1, 1, 1, 1, 1);
+
+        matrices.push();
+        matrices.translate(
+                MathHelper.lerp(tickDelta, prevPosX, x) - camera.getPos().x,
+                MathHelper.lerp(tickDelta, prevPosY, y) - camera.getPos().y,
+                MathHelper.lerp(tickDelta, prevPosZ, z) - camera.getPos().z
+        );
+
+        float scale = lerpedRad + thickness;
+
+        if (scale > 0) {
+            matrices.push();
+            matrices.scale(scale, scale, scale);
+            MODEL.render(matrices, buffer, light, 1, 1, 1, 1, 0.8F);
+            matrices.pop();
+        }
+
+        scale = lerpedRad - thickness;
+
+        if (scale > 0) {
+            matrices.scale(scale, scale, scale);
+
+            MODEL.render(matrices, buffer, light, 1, 1, 1, 1, 1);
+        }
+        matrices.pop();
 
         immediate.draw();
 

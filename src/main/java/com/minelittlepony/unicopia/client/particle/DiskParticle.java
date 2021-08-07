@@ -11,6 +11,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.math.Quaternion;
 
 public class DiskParticle extends SphereParticle {
 
@@ -30,12 +31,9 @@ public class DiskParticle extends SphereParticle {
 
     @Override
     public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
-        if (colorAlpha <= 0) {
+        if (colorAlpha <= 0 || radius <= 0) {
             return;
         }
-
-        MODEL.setPosition(x, y, z);
-        MODEL.setRotation(rotX, rotY, rotZ);
 
         float[] color = ColorHelper.changeSaturation(colorRed, colorGreen, colorBlue, 4);
         RenderSystem.setShaderColor(color[0], color[1], color[2], colorAlpha / 3F);
@@ -46,7 +44,13 @@ public class DiskParticle extends SphereParticle {
         int light = getBrightness(tickDelta);
 
         MatrixStack matrices = new MatrixStack();
-        MODEL.render(matrices, radius, buffer, 1, light, 1, 1, 1, 1);
+        matrices.push();
+        matrices.translate(x, y, z);
+        matrices.multiply(new Quaternion(rotX, rotY, rotZ, true));
+        matrices.scale(radius, radius, radius);
+        MODEL.render(matrices, buffer, 1, light, 1, 1, 1, 1);
+
+        matrices.pop();
 
         immediate.draw();
 
