@@ -50,9 +50,9 @@ class RacelistCommand {
             translationKey += ".failed";
         }
 
-        Text formattedName = new TranslatableText(race.name().toLowerCase()).styled(s -> s.withColor(Formatting.GOLD));
+        Text formattedName = new TranslatableText(race.name().toLowerCase()).formatted(Formatting.GOLD);
 
-        source.sendFeedback(new TranslatableText(translationKey, formattedName).styled(s -> s.withColor(Formatting.GREEN)), false);
+        source.sendFeedback(new TranslatableText(translationKey, formattedName).formatted(Formatting.GREEN), false);
         return 0;
     }
 }
