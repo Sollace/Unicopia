@@ -21,6 +21,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.GameRules;
 
 public class DisguiseCommand {
@@ -65,13 +66,14 @@ public class DisguiseCommand {
             .orElseGet(() -> SpellType.DISGUISE.apply(iplayer))
             .setDisguise(entity);
 
-        if (!isSelf) {
-            source.sendFeedback(new TranslatableText("commands.disguise.success.other", player.getName(), entity.getName()), true);
+        if (source.getEntity() == player) {
+            source.sendFeedback(new TranslatableText("commands.disguise.success.self", entity.getName()), true);
         } else {
             if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendMessage(new TranslatableText("commands.disguise.success.self", entity.getName()), false);
+                player.sendSystemMessage(new TranslatableText("commands.disguise.success", entity.getName()), Util.NIL_UUID);
             }
-            source.sendFeedback(new TranslatableText("commands.disguise.success.otherself", player.getName(), entity.getName()), true);
+
+            source.sendFeedback(new TranslatableText("commands.disguise.success.other", player.getName(), entity.getName()), true);
         }
 
         return 0;
@@ -81,8 +83,14 @@ public class DisguiseCommand {
         Pony iplayer = Pony.of(player);
         iplayer.getSpellSlot().get(SpellType.DISGUISE, true).ifPresent(Spell::setDead);
 
-        if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-            player.sendMessage(new TranslatableText("commands.disguise.removed"), false);
+        if (source.getEntity() == player) {
+            source.sendFeedback(new TranslatableText("commands.disguise.removed.self"), true);
+        } else {
+            if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
+                player.sendSystemMessage(new TranslatableText("commands.disguise.removed"), Util.NIL_UUID);
+            }
+
+            source.sendFeedback(new TranslatableText("commands.disguise.removed.other", player.getName()), true);
         }
 
         return 0;

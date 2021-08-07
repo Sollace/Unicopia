@@ -11,6 +11,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Util;
+import net.minecraft.world.GameRules;
 
 class GravityCommand {
 
@@ -41,10 +43,11 @@ class GravityCommand {
 
         float gravity = iplayer.getPhysics().getGravityModifier();
 
-        if (source.getPlayer() != player) {
-            translationKey += ".other";
+        if (source.getPlayer() == player) {
+            player.sendMessage(new TranslatableText(translationKey, gravity), false);
+        } else {
+            source.sendFeedback(new TranslatableText(translationKey + ".other", player.getName(), gravity), true);
         }
-        player.sendMessage(new TranslatableText(translationKey, player.getName(), gravity), false);
 
         return 0;
     }
@@ -57,11 +60,15 @@ class GravityCommand {
         iplayer.getPhysics().setBaseGravityModifier(gravity);
         iplayer.setDirty();
 
-        if (isSelf) {
-            player.sendMessage(new TranslatableText(translationKey, gravity), false);
-        }
+        if (source.getEntity() == player) {
+            source.sendFeedback(new TranslatableText("commands.gamemode.success.self", gravity), true);
+        } else {
+            if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
+                player.sendSystemMessage(new TranslatableText(translationKey, gravity), Util.NIL_UUID);
+            }
 
-        source.sendFeedback(new TranslatableText(translationKey + ".other", player.getName(), gravity), true);
+            source.sendFeedback(new TranslatableText(translationKey + ".other", player.getName(), gravity), true);
+        }
 
         return 0;
     }
