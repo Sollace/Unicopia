@@ -14,9 +14,11 @@ import com.minelittlepony.unicopia.client.particle.RunesParticle;
 import com.minelittlepony.unicopia.client.particle.SphereParticle;
 import com.minelittlepony.unicopia.client.render.AccessoryFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.AmuletFeatureRenderer;
+import com.minelittlepony.unicopia.client.render.BatWingsFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.CastSpellEntityRenderer;
 import com.minelittlepony.unicopia.client.render.FloatingArtefactEntityRenderer;
+import com.minelittlepony.unicopia.client.render.IcarusWingsFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.WingsFeatureRenderer;
 import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.GemstoneItem;
@@ -59,6 +61,8 @@ public interface URenderers {
         AccessoryFeatureRenderer.register(BraceletFeatureRenderer::new);
         AccessoryFeatureRenderer.register(AmuletFeatureRenderer::new);
         AccessoryFeatureRenderer.register(WingsFeatureRenderer::new);
+        AccessoryFeatureRenderer.register(IcarusWingsFeatureRenderer::new);
+        AccessoryFeatureRenderer.register(BatWingsFeatureRenderer::new);
 
         EntityRendererRegistry.INSTANCE.register(UEntities.THROWN_ITEM, FlyingItemEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(UEntities.FLOATING_ARTEFACT, FloatingArtefactEntityRenderer::new);

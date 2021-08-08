@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.client.render;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
@@ -26,7 +25,7 @@ public class AccessoryFeatureRenderer<
     @SuppressWarnings("unchecked")
     public AccessoryFeatureRenderer(FeatureRendererContext<T, M> context) {
         super(context);
-        features = REGISTRY.stream().map(f -> ((FeatureFactory<T>)f).create(context)).collect(Collectors.toList());
+        features = REGISTRY.stream().map(f -> ((FeatureFactory<T>)f).create(context)).toList();
     }
 
     @Override

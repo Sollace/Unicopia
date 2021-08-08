@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.UItems;
 
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.Model;
@@ -25,8 +24,8 @@ import net.minecraft.util.Identifier;
 
 public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
 
-    private static final Identifier ICARUS_WINGS = new Identifier("unicopia", "textures/models/wings/icarus.png");
-    private static final Identifier ICARUS_WINGS_CORRUPTED = new Identifier("unicopia", "textures/models/wings/icarus_corrupted.png");
+    protected static final int FEATHER_COUNT = 8;
+
     private static final Identifier PEGASUS_WINGS = new Identifier("unicopia", "textures/models/wings/pegasus.png");
 
     private final WingsModel model;
@@ -35,17 +34,13 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
 
     public WingsFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
         this.context = context;
-        this.model = new WingsModel(WingsModel.getData(Dilation.NONE).createModel());
+        this.model = new WingsModel(createModel(Dilation.NONE).createModel());
     }
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch) {
-
-        boolean pegasus = (entity instanceof PlayerEntity && Pony.of((PlayerEntity)entity).getSpecies().canInteractWithClouds());
-        boolean icarus = UItems.PEGASUS_AMULET.isApplicable(entity);
-
-        if (icarus || pegasus) {
-            Identifier texture = pegasus ? PEGASUS_WINGS : entity.world.getDimension().isUltrawarm() ? ICARUS_WINGS_CORRUPTED : ICARUS_WINGS;
+        if (canRender(entity)) {
+            Identifier texture = getTexture(entity);
             VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getEntityTranslucent(texture), false, false);
 
             model.setAngles(entity, context.getModel());
@@ -53,32 +48,54 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
         }
     }
 
-    static class WingsModel extends Model {
+    protected boolean canRender(E entity) {
+        return entity instanceof PlayerEntity && Pony.of((PlayerEntity)entity).getSpecies().canInteractWithClouds();
+    }
 
+    protected Identifier getTexture(E entity) {
+        return PEGASUS_WINGS;
+    }
+
+    private TexturedModelData createModel(Dilation dilation) {
+        ModelData data = new ModelData();
+        createWing("left_wing", data.getRoot(), dilation, -1);
+        createWing("right_wing", data.getRoot(), dilation, 1);
+        return TexturedModelData.of(data, 24, 23);
+    }
+
+    protected void createWing(String name, ModelPartData parent, Dilation dilation, int k) {
+        ModelPartData base = parent.addChild(name,
+                ModelPartBuilder.create().cuboid(0, 0, 0, 2, 10, 2, dilation),
+                ModelTransform.pivot(k * 2, 2, 2 + k * 0.5F));
+
+        for (int i = 0; i < FEATHER_COUNT; i++) {
+            int texX = (i % 2) * 8;
+            int featherLength = 21 - i * 2;
+            base.addChild("feather_" + i,
+                    ModelPartBuilder.create()
+                        .uv(8 + texX, 0)
+                        .cuboid(-k * (i % 2) / 90F, 0, 0, 2, featherLength, 2, dilation),
+                    ModelTransform.pivot(0, 9, 0));
+        }
+    }
+
+    private static class WingsModel extends Model {
         private final ModelPart root;
-        private final Wing[] wings;
+
+        private final Wing leftWing;
+        private final Wing rightWing;
 
         public WingsModel(ModelPart tree) {
             super(RenderLayer::getEntityTranslucent);
             root = tree;
-            wings = new Wing[] {
-                    new Wing(tree.getChild("left_wing"), -1),
-                    new Wing(tree.getChild("right_wing"), 1)
-            };
-        }
-
-        static TexturedModelData getData(Dilation dilation) {
-            ModelData data = new ModelData();
-            Wing.getData("left_wing", data.getRoot(), dilation, -1);
-            Wing.getData("right_wing", data.getRoot(), dilation, 1);
-            return TexturedModelData.of(data, 24, 23);
+            leftWing = new Wing(tree.getChild("left_wing"), -1);
+            rightWing = new Wing(tree.getChild("right_wing"), 1);
         }
 
         public void setAngles(LivingEntity entity, BipedEntityModel<?> biped) {
             root.copyTransform(biped.body);
-            for (Wing wing : wings) {
-                wing.setAngles(entity);
-            }
+            leftWing.setAngles(entity);
+            rightWing.setAngles(entity);
         }
 
         @Override
@@ -89,7 +106,7 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
         static class Wing {
             final ModelPart base;
 
-            final ModelPart[] feathers = new ModelPart[8];
+            final ModelPart[] feathers = new ModelPart[FEATHER_COUNT];
 
             final int k;
 
@@ -98,24 +115,6 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
                 base = tree;
                 for (int i = 0; i < feathers.length; i++) {
                     feathers[i] = base.getChild("feather_" + i);
-                }
-            }
-
-            static void getData(String name, ModelPartData parent, Dilation dilation, int k) {
-                ModelPartData base = parent.addChild(name,
-                        ModelPartBuilder.create().cuboid(0, 0, 0, 2, 10, 2, dilation),
-                        ModelTransform.pivot(k * 2, 2, 2 + k * 0.5F));
-
-                int featherCount = 8;
-
-                for (int i = 0; i < featherCount; i++) {
-                    int texX = (i % 2) * 8;
-                    int featherLength = 21 - i * 2;
-                    base.addChild("feather_" + i,
-                            ModelPartBuilder.create()
-                                .uv(8 + texX, 0)
-                                .cuboid(-k * (i % 2) / 90F, 0, 0, 2, featherLength, 2, dilation),
-                            ModelTransform.pivot(0, 9, 0));
                 }
             }
 
