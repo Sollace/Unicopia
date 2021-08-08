@@ -168,6 +168,7 @@ public class EntityBehaviour<T extends Entity> {
         to.horizontalSpeed = from.horizontalSpeed;
         to.prevHorizontalSpeed = from.prevHorizontalSpeed;
         to.setOnGround(from.isOnGround());
+        to.setInvulnerable(from.isInvulnerable() || (from instanceof PlayerEntity && ((PlayerEntity)from).getAbilities().creativeMode));
 
         to.distanceTraveled = from.distanceTraveled;
 
@@ -248,7 +249,7 @@ public class EntityBehaviour<T extends Entity> {
 
     protected boolean isSneakingOnGround(Caster<?> source) {
         Entity e = source.getEntity();
-        return e.isSneaking() && (e.isOnGround() || !(e instanceof PlayerEntity && ((PlayerEntity)e).getAbilities().flying));
+        return e.isSneaking() && (e.isOnGround() && !(e instanceof PlayerEntity && ((PlayerEntity)e).getAbilities().flying));
     }
 
     public static <T extends Entity> void register(Supplier<EntityBehaviour<T>> behaviour, EntityType<?>... types) {
