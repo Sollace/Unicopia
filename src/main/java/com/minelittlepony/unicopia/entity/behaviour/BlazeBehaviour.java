@@ -45,7 +45,8 @@ public class BlazeBehaviour extends EntityBehaviour<BlazeEntity> {
 
             if (sneaking) {
                 firing = true;
-                fireballCooldown = 60;
+                fireballCooldown = 0;
+                fireballsFired = 0;
             } else {
                 firing = false;
             }
