@@ -10,31 +10,31 @@
      ]
   },
   "item.magic.aura": {
-  	"category": "player",
-  	"sounds": [
-  		"unicopia:aura/aura0"
-  	]
+    "category": "player",
+    "sounds": [
+      "unicopia:aura/aura0"
+    ]
   },
   "entity.player.rebound": {
-  	"category": "player",
-  	"sounds": [
-  		"unicopia:boing/boing0",
-  		"unicopia:boing/boing1",
-  		"unicopia:boing/boing2",
-  		"unicopia:boing/boing3",
-  		"unicopia:boing/boing4",
-  		"unicopia:boing/boing5"
-  	]
+    "category": "player",
+    "sounds": [
+      "unicopia:boing/boing0",
+      "unicopia:boing/boing1",
+      "unicopia:boing/boing2",
+      "unicopia:boing/boing3",
+      "unicopia:boing/boing4",
+      "unicopia:boing/boing5"
+    ]
   },
   "entity.player.batpony.screech": {
-  	"category": "player",
-  	"subtitle": "unicopia.subtitle.batpony_eeee",
-  	"sounds": [
-  		"unicopia:batpony/reep",
-  		"unicopia:batpony/eeep",
-  		"unicopia:batpony/screep0",
-  		"unicopia:batpony/screep1"
-  	]
+    "category": "player",
+    "subtitle": "unicopia.subtitle.batpony_eeee",
+    "sounds": [
+      "unicopia:batpony/reep",
+      "unicopia:batpony/eeep",
+      "unicopia:batpony/screep0",
+      "unicopia:batpony/screep1"
+    ]
   },
   "entity.player.changeling.buzz": {
     "category": "player",
@@ -43,6 +43,13 @@
       "unicopia:cicada/cicada_4",
       "unicopia:cicada/cicada_5",
       "unicopia:cicada/cicada_6"
+    ]
+  },
+  "entity.player.ears_ring": {
+    "category": "ambient",
+    "subtitle": "unicopia.subtitle.ears_ringing",
+    "sounds": [
+      "unicopia:ears/ringing"
     ]
   },
   "ambient.wind.gust": {
@@ -54,28 +61,28 @@
      ]
   },
   "record.crusade": {
-  	"category": "blocks",
-  	"sounds": [
-  		{ "name": "unicopia:record/crusade", "stream": true}
-  	]
+    "category": "blocks",
+    "sounds": [
+      { "name": "unicopia:record/crusade", "stream": true}
+    ]
   },
   "record.popular": {
-  	"category": "blocks",
-  	"sounds": [
-  		{ "name": "unicopia:record/popular", "stream": true}
-  	]
+    "category": "blocks",
+    "sounds": [
+      { "name": "unicopia:record/popular", "stream": true}
+    ]
   },
   "record.pet": {
-  	"category": "blocks",
-	"stream": true,
-  	"sounds": [
-  		{ "name": "unicopia:record/pet", "stream": true}
-  	]
+    "category": "blocks",
+  "stream": true,
+    "sounds": [
+      { "name": "unicopia:record/pet", "stream": true}
+    ]
   },
   "record.funk": {
-  	"category": "blocks",
-  	"sounds": [
-  		{ "name": "unicopia:record/funk", "stream": true, "attenuation_distance": 21120}
-  	]
+    "category": "blocks",
+    "sounds": [
+      { "name": "unicopia:record/funk", "stream": true, "attenuation_distance": 21120}
+    ]
   }
 }

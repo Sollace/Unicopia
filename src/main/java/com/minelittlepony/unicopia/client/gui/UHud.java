@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
+import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -26,7 +27,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 public class UHud extends DrawableHelper {
 
@@ -54,25 +57,52 @@ public class UHud extends DrawableHelper {
 
     public void render(InGameHud hud, MatrixStack matrices, float tickDelta) {
 
-        if (client.currentScreen instanceof HidesHud) {
+        if (client.player == null) {
             return;
         }
-
-        if (client.player == null || client.player.isSpectator() || client.options.hudHidden) {
-            return;
-        }
-
-        font = client.textRenderer;
-
-        xDirection = client.player.getMainArm() == Arm.LEFT ? -1 : 1;
 
         int scaledWidth = client.getWindow().getScaledWidth();
         int scaledHeight = client.getWindow().getScaledHeight();
 
+        Pony pony = Pony.of(client.player);
+
+        boolean hasEffect = client.player.hasStatusEffect(SunBlindnessStatusEffect.INSTANCE);
+
+        if (hasEffect || (pony.getSpecies() == Race.BAT && SunBlindnessStatusEffect.hasSunExposure(client.player))) {
+            float i = hasEffect ? (client.player.getStatusEffect(SunBlindnessStatusEffect.INSTANCE).getDuration() - tickDelta) / SunBlindnessStatusEffect.MAX_DURATION : 0;
+
+            float pulse = (1 + (float)Math.sin(client.player.age / 108F)) * 0.25F;
+
+            float strength = MathHelper.clamp(pulse + i, 0.3F, 1F);
+
+            int alpha1 = (int)(strength * 205) << 24 & -16777216;
+            int alpha2 = (int)(alpha1 * 0.6F);
+
+            fillGradient(matrices, 0, 0, scaledWidth, scaledHeight / 2, 0xFFFFFF | alpha1, 0xFFFFFF | alpha2);
+            fillGradient(matrices, 0, scaledHeight / 2, scaledWidth, scaledHeight, 0xFFFFFF | alpha2, 0xFFFFFF | alpha1);
+
+            if (hasEffect) {
+                matrices.push();
+                matrices.translate(scaledWidth, 0, 0);
+                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90));
+
+                fillGradient(matrices, 0, 0, scaledHeight, scaledWidth / 2, 0xFFFFFF | 0, 0xFFFFFF | alpha2);
+                fillGradient(matrices, 0, scaledWidth / 2, scaledHeight, scaledWidth, 0xFFFFFF | alpha2, 0xFFFFFF | 0);
+
+                matrices.pop();
+            }
+        }
+
+        if (client.currentScreen instanceof HidesHud || client.player.isSpectator() || client.options.hudHidden) {
+            return;
+        }
+
+        font = client.textRenderer;
+        xDirection = client.player.getMainArm() == Arm.LEFT ? -1 : 1;
+
         matrices.push();
         matrices.translate(((scaledWidth - 50) / 2) + (104 * xDirection), scaledHeight - 50, 0);
 
-        Pony pony = Pony.of(client.player);
         AbilityDispatcher abilities = pony.getAbilities();
 
         if (message != null && messageTime > 0) {

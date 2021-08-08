@@ -9,8 +9,10 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
+import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.magic.Spell;
@@ -19,6 +21,7 @@ import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.Trap;
+import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.item.toxin.FoodType;
 import com.minelittlepony.unicopia.item.toxin.Toxicity;
 import com.minelittlepony.unicopia.item.toxin.Toxin;
@@ -36,12 +39,14 @@ import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -88,6 +93,8 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     private boolean invisible = false;
 
+    private int ticksInSun;
+
     public Pony(PlayerEntity player) {
         super(player, EFFECT);
         this.mana = new ManaContainer(this);
@@ -116,7 +123,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     public void setSpecies(Race race) {
         race = race.validate(entity);
         speciesSet = true;
-
+        ticksInSun = 0;
         entity.getDataTracker().set(RACE, race.ordinal());
 
         gravity.updateFlightState();
@@ -274,6 +281,24 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             }
         } else {
             ticksHanging = 0;
+        }
+
+        if (getSpecies() == Race.BAT) {
+            if (SunBlindnessStatusEffect.hasSunExposure(entity)) {
+                if (ticksInSun < 200) {
+                    ticksInSun++;
+                }
+
+                if (ticksInSun == 1) {
+                    entity.addStatusEffect(new StatusEffectInstance(SunBlindnessStatusEffect.INSTANCE, SunBlindnessStatusEffect.MAX_DURATION * 10, 1, true, false));
+
+                    if (isClient()) {
+                        MinecraftClient.getInstance().getSoundManager().play(new LoopingSoundInstance<>(entity, e -> e.hasStatusEffect(SunBlindnessStatusEffect.INSTANCE), USounds.ENTITY_PLAYER_EARS_RINGING, 1F, 1F));
+                    }
+                }
+            } else if (ticksInSun > 0) {
+                ticksInSun--;
+            }
         }
 
         tickers.forEach(Tickable::tick);

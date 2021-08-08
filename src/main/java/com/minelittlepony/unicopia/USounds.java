@@ -12,6 +12,8 @@ public interface USounds {
     SoundEvent ENTITY_PLAYER_PEGASUS_WINGSFLAP = register("entity.player.pegasus.wingsflap");
     SoundEvent ENTITY_PLAYER_CHANGELING_BUZZ = register("entity.player.changeling.buzz");
 
+    SoundEvent ENTITY_PLAYER_EARS_RINGING = register("entity.player.ears_ring");
+
     SoundEvent ITEM_MAGIC_AURA = register("item.magic.aura");
 
     SoundEvent RECORD_CRUSADE = register("record.crusade");
