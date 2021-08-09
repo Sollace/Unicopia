@@ -67,7 +67,7 @@
 
   "unicopia.effect.tribe.stage.initial": "It appears to have no effect.",
   "unicopia.effect.tribe.stage.crawling": "You feel the skin crawling on your back.",
-  "unicopia.effect.tribe.stage.determination": "As your bones realign you are filled determination.",
+  "unicopia.effect.tribe.stage.determination": "As your bones realign you are filled by determination.",
   "unicopia.effect.tribe.stage.resurection": "Knowing you will return to this world as a %s",
 
   "effect.food_poisoning": "Food Poisoning",
@@ -75,6 +75,8 @@
   "player.reachDistance": "Reach Distance",
   "player.miningSpeed": "Mining Speed",
   "player.gravityModifier": "Gravity",
+
+  "effect.unicopia.sun_blindness": "Sun Blindness",
 
   "effect.unicopia.change_race_earth": "Earth Pony Metamorphosis",
   "item.minecraft.potion.effect.unicopia.tribe_swap_earth": "Potion of Earth Pony Metamorphosis",

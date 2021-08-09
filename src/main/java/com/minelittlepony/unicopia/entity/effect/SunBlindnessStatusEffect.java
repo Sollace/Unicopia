@@ -2,12 +2,17 @@ package com.minelittlepony.unicopia.entity.effect;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.UTags;
+
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LightType;
@@ -51,6 +56,18 @@ public class SunBlindnessStatusEffect extends StatusEffect {
     }
 
     public static boolean hasSunExposure(LivingEntity entity) {
+        if (entity.hasStatusEffect(StatusEffects.BLINDNESS)) {
+            return false;
+        }
+
+        if (EquinePredicates.PLAYER_BAT.test(entity) && entity.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
+            return true;
+        }
+
+        if (entity.getEquippedStack(EquipmentSlot.HEAD).isIn(UTags.SHADES)) {
+            return false;
+        }
+
         if (entity.world.isClient) {
             entity.world.calculateAmbientDarkness();
         }
