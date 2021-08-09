@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.entity.effect.UPotions;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -40,6 +41,7 @@ public class Unicopia implements ModInitializer {
     public void onInitialize() {
         Channel.bootstrap();
         UTags.bootstrap();
+        UCriteria.bootstrap();
         Commands.bootstrap();
 
         ServerTickEvents.END_WORLD_TICK.register(w -> {

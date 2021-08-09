@@ -1,0 +1,31 @@
+{
+  "display": {
+    "icon": {
+      "item": "unicopia:pegasus_feather"
+    },
+    "title": {
+      "translate": "advancements.unicopia.root.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.root.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/stone.png"
+  },
+  "criteria": {
+    "crafting_table": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+        	{ "item": "minecraft:crafting_table" }
+        ]
+      }
+    }
+  },
+  "requirements": [
+  	[ "crafting_table" ]
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "parent": "unicopia:unicopia/root",
+  "display": {
+    "icon": {
+      "item": "minecraft:light"
+    },
+    "title": {
+      "translate": "advancements.unicopia.praise_the_sun.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.praise_the_sun.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "look_into_sun": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "look_into_sun"
+      }
+    }
+  },
+  "requirements": [
+  	[ "look_into_sun" ]
+  ]
+}

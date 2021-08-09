@@ -13,10 +13,12 @@ import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.Living;
@@ -41,6 +43,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -94,6 +97,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     private boolean invisible = false;
 
     private int ticksInSun;
+    private boolean hasShades;
 
     public Pony(PlayerEntity player) {
         super(player, EFFECT);
@@ -291,6 +295,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
                 if (ticksInSun == 1) {
                     entity.addStatusEffect(new StatusEffectInstance(SunBlindnessStatusEffect.INSTANCE, SunBlindnessStatusEffect.MAX_DURATION * 10, 1, true, false));
+                    UCriteria.LOOK_INTO_SUN.trigger(entity);
 
                     if (isClient()) {
                         MinecraftClient.getInstance().getSoundManager().play(new LoopingSoundInstance<>(entity, e -> e.hasStatusEffect(SunBlindnessStatusEffect.INSTANCE), USounds.ENTITY_PLAYER_EARS_RINGING, 1F, 1F));
@@ -299,6 +304,12 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             } else if (ticksInSun > 0) {
                 ticksInSun--;
             }
+
+            boolean hasShades = entity.getEquippedStack(EquipmentSlot.HEAD).isIn(UTags.SHADES);
+            if (!this.hasShades && hasShades) {
+                UCriteria.WEAR_SHADES.trigger(entity);
+            }
+            this.hasShades = hasShades;
         }
 
         tickers.forEach(Tickable::tick);

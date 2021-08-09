@@ -375,5 +375,12 @@
   "unicopia.subtitle.slime_advance": "Squealch",
   "unicopia.subtitle.slime_retract": "Sqonk",
   "unicopia.subtitle.changeling_buzz": "Drone Buzzing",
-  "unicopia.subtitle.batpony_eeee": "Batpony Screeches"
+  "unicopia.subtitle.batpony_eeee": "Batpony Screeches",
+
+  "advancements.unicopia.root.title": "Unicopia",
+  "advancements.unicopia.root.description": "A world of magic and adventure",
+  "advancements.unicopia.praise_the_sun.title": "Praise the Sun!",
+  "advancements.unicopia.praise_the_sun.description": "Experience Celestia's unbridled glory",
+  "advancements.unicopia.cool_potato.title": "Cool Potato",
+  "advancements.unicopia.cool_potato.description": "Protect your eyes from the sun"
 }
