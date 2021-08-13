@@ -9,10 +9,8 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
-import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
@@ -297,8 +295,8 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
                     entity.addStatusEffect(new StatusEffectInstance(SunBlindnessStatusEffect.INSTANCE, SunBlindnessStatusEffect.MAX_DURATION * 10, 1, true, false));
                     UCriteria.LOOK_INTO_SUN.trigger(entity);
 
-                    if (isClient()) {
-                        MinecraftClient.getInstance().getSoundManager().play(new LoopingSoundInstance<>(entity, e -> e.hasStatusEffect(SunBlindnessStatusEffect.INSTANCE), USounds.ENTITY_PLAYER_EARS_RINGING, 1F, 1F));
+                    if (isClientPlayer()) {
+                        InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING);
                     }
                 }
             } else if (ticksInSun > 0) {

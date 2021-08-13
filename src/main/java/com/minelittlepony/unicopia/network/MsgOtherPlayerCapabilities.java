@@ -13,7 +13,6 @@ public class MsgOtherPlayerCapabilities extends MsgPlayerCapabilities {
 
     MsgOtherPlayerCapabilities(PacketByteBuf buffer) {
         super(buffer);
-
     }
 
     public MsgOtherPlayerCapabilities(boolean full, Pony player) {

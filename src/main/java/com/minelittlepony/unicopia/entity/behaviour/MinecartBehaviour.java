@@ -1,10 +1,9 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.sound.MovingMinecartSoundInstance;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 
@@ -14,7 +13,7 @@ public class MinecartBehaviour extends EntityBehaviour<AbstractMinecartEntity> {
     public AbstractMinecartEntity onCreate(AbstractMinecartEntity entity, Disguise context, boolean replaceOld) {
         super.onCreate(entity, context, replaceOld);
         if (replaceOld && entity.world.isClient) {
-            MinecraftClient.getInstance().getSoundManager().play(new MovingMinecartSoundInstance(entity));
+            InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_MINECART);
         }
         return entity;
     }
