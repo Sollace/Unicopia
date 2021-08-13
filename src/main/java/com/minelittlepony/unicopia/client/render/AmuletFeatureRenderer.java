@@ -70,7 +70,7 @@ public class AmuletFeatureRenderer<E extends LivingEntity> implements AccessoryF
 
             root.addChild("amulet", ModelPartBuilder.create().cuboid(-4, 0, -2, 8, 12, 4, dilation), ModelTransform.NONE);
 
-            return TexturedModelData.of(data, 64, 64);
+            return TexturedModelData.of(data, 64, 32);
         }
 
         public void setAngles(LivingEntity entity, BipedEntityModel<?> biped) {
