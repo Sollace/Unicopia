@@ -1,6 +1,7 @@
 {
 
   "block.unicopia.bed.not_safe": "You may not rest here, there are enemies nearby",
+  "block.unicopia.bed.not_tired": "You do not feel tired right now",
 
   "ability.unicopia.empty_hooves": "I need to find a jar",
   "ability.unicopia.indoors": "I can't see the sky from here",
@@ -52,6 +53,9 @@
   "item.unicopia.pegasus_amulet": "Wings of Icarus",
   "item.unicopia.pegasus_amulet.lore": "Grants temporary flight to whoever wears it",
   "item.unicopia.amulet.energy": "Energy: %d / %d",
+
+  "item.unicopia.alicorn_amulet": "Alicorn Amulet",
+  "item.unicopia.alicorn_amulet.lore": "Time worn: %d",
 
   "item.unicopia.music_disc_pet": "Music Disc",
   "item.unicopia.music_disc_pet.desc": "Danial Ingram - pet",

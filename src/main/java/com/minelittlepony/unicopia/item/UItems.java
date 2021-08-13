@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.toxin.UFoodComponents;
@@ -72,13 +73,15 @@ public interface UItems {
     Item GOLDEN_WING = register("golden_wing", new Item(new Item.Settings().rarity(Rarity.UNCOMMON).group(ItemGroup.MATERIALS)));
 
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new AmuletItem(new FabricItemSettings()
+            .maxCount(1)
             .maxDamage(890)
             .rarity(Rarity.UNCOMMON)
             .group(ItemGroup.DECORATIONS), 900));
-    /*AmuletItem ALICORN_AMULET = register("alicorn_amulet", new AmuletItem(new AmuletItem.Settings("alicorn_amulet")
-            .toughness(900000000)
-            .resistance(90000000)
-            .group(ItemGroup.DECORATIONS), 0));*/
+    AlicornAmuletItem ALICORN_AMULET = register("alicorn_amulet", new AlicornAmuletItem(new FabricItemSettings()
+            .maxCount(1)
+            .maxDamage(1000)
+            .rarity(Rarity.RARE)
+            .group(ItemGroup.DECORATIONS)));
 
     static <T extends Item> T register(String name, T item) {
         ITEMS.add(item);

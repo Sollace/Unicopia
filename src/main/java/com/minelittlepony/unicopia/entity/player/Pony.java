@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
+import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
@@ -22,6 +23,7 @@ import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.Trap;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.toxin.FoodType;
 import com.minelittlepony.unicopia.item.toxin.Toxicity;
 import com.minelittlepony.unicopia.item.toxin.Toxin;
@@ -71,6 +73,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     private final AbilityDispatcher powers = new AbilityDispatcher(this);
     private final PlayerPhysics gravity = new PlayerPhysics(this);
+    private final PlayerCharmTracker charms = new PlayerCharmTracker(this);
     private final PlayerAttributes attributes = new PlayerAttributes(this);
     private final PlayerCamera camera = new PlayerCamera(this);
     private final ManaContainer mana;
@@ -100,7 +103,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         super(player, EFFECT);
         this.mana = new ManaContainer(this);
         this.levels = new PlayerLevelStore(this);
-        this.tickers = Lists.newArrayList(gravity, mana, attributes);
+        this.tickers = Lists.newArrayList(gravity, mana, attributes, charms);
 
         player.getDataTracker().startTracking(RACE, Race.HUMAN.ordinal());
     }
@@ -133,6 +136,10 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     public MagicReserves getMagicalReserves() {
         return mana;
+    }
+
+    public PlayerCharmTracker getCharms() {
+        return charms;
     }
 
     @Override
@@ -395,10 +402,20 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     }
 
     public Optional<Text> trySleep(BlockPos pos) {
+
+        if (UItems.ALICORN_AMULET.isApplicable(entity)) {
+            return Optional.of(new TranslatableText("block.unicopia.bed.not_tired"));
+        }
+
         return findAllSpellsInRange(10)
                 .filter(p -> p instanceof Pony && ((Pony)p).isEnemy(this))
                 .findFirst()
                 .map(p -> new TranslatableText("block.unicopia.bed.not_safe"));
+    }
+
+    @Override
+    public boolean isEnemy(Affine other) {
+        return getCharms().getArmour().contains(UItems.ALICORN_AMULET) || super.isEnemy(other);
     }
 
     public void onEat(ItemStack stack) {
@@ -416,6 +433,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
         compound.put("powers", powers.toNBT());
         compound.put("gravity", gravity.toNBT());
+        compound.put("charms", charms.toNBT());
 
         getSpellSlot().get(true).ifPresent(effect ->{
             compound.put("effect", SpellType.toNBT(effect));
@@ -430,6 +448,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
         powers.fromNBT(compound.getCompound("powers"));
         gravity.fromNBT(compound.getCompound("gravity"));
+        charms.fromNBT(compound.getCompound("charms"));
 
         magicExhaustion = compound.getFloat("magicExhaustion");
 

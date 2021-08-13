@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -35,13 +36,13 @@ public class AmuletItem extends WearableItem {
     private final ImmutableMultimap<EntityAttribute, EntityAttributeModifier> modifiers;
 
     public AmuletItem(FabricItemSettings settings, int maxEnergy) {
-        this(settings, maxEnergy, ImmutableMultimap.builder());
+        this(settings, maxEnergy, ImmutableMultimap.of());
     }
 
-    public AmuletItem(FabricItemSettings settings, int maxEnergy, ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> modifiers) {
+    public AmuletItem(FabricItemSettings settings, int maxEnergy, ImmutableMultimap<EntityAttribute, EntityAttributeModifier> modifiers) {
         super(settings);
         this.maxEnergy = maxEnergy;
-        this.modifiers = modifiers.build();
+        this.modifiers = modifiers;
     }
 
     @Override
@@ -89,7 +90,7 @@ public class AmuletItem extends WearableItem {
     }
 
     public boolean isApplicable(ItemStack stack) {
-        return stack.getItem() == this && getEnergy(stack) > 0;
+        return stack.getItem() == this && (!isChargable() || getEnergy(stack) > 0);
     }
 
     public boolean isApplicable(LivingEntity entity) {
@@ -121,6 +122,21 @@ public class AmuletItem extends WearableItem {
             stack.removeSubTag("energy");
         } else {
             stack.getOrCreateTag().putFloat("energy", energy);
+        }
+    }
+
+    public static class ModifiersBuilder {
+        private static final UUID SLOT_UUID = UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E");
+
+        private final ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> modifiers = new ImmutableMultimap.Builder<>();
+
+        public ModifiersBuilder add(EntityAttribute attribute, double amount) {
+            modifiers.put(attribute, new EntityAttributeModifier(SLOT_UUID, "Armor modifier", amount, EntityAttributeModifier.Operation.ADDITION));
+            return this;
+        }
+
+        public ImmutableMultimap<EntityAttribute, EntityAttributeModifier> build() {
+            return modifiers.build();
         }
     }
 }
