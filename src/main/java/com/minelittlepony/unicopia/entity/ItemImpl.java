@@ -82,7 +82,9 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
                     .sorted((a, b) -> (int)(a.getPos().distanceTo(position) - b.getPos().distanceTo(position)))
                     .findFirst()
                     .ifPresent(player -> {
-                        owner.move(MovementType.SELF, player.getPos().subtract(owner.getPos()).multiply(clingy.getFollowSpeed(i)));
+                        double distance = player.getPos().distanceTo(owner.getPos());
+
+                        owner.move(MovementType.SELF,  player.getPos().subtract(owner.getPos()).multiply(distance < 0.3 ? 1 : clingy.getFollowSpeed(i)));
                         if (owner.horizontalCollision) {
                             owner.move(MovementType.SELF, new Vec3d(0, owner.verticalCollision ? -0.3 : 0.3, 0));
                         }
