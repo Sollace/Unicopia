@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity.player;
 
 import com.minelittlepony.unicopia.FlightType;
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
@@ -50,6 +51,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     public boolean isFlyingEither = false;
     public boolean isFlyingSurvival = false;
 
+    private boolean soundPlaying;
+
     private int wallHitCooldown;
 
     private Vec3d lastPos = Vec3d.ZERO;
@@ -89,22 +92,26 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         float spreadAmount = -0.5F;
 
         if (isFlying()) {
-            //spreadAmount += Math.sin(pony.getEntity().age / 4F) * 8;
-            spreadAmount += isGliding() ? 3 : thrustScale * 60;
+            if (getFlightType() == FlightType.INSECTOID) {
+                spreadAmount += Math.sin(pony.getEntity().age * 4F) * 8;
+            } else {
+                spreadAmount += isGliding() ? 3 : thrustScale * 60;
+            }
+        } else {
+            spreadAmount += MathHelper.clamp(-entity.getVelocity().y, 0, 2);
+            spreadAmount += Math.sin(entity.age / 9F) / 9F;
         }
 
         if (entity.isSneaking()) {
             spreadAmount += 2;
         }
 
-        spreadAmount += MathHelper.clamp(-entity.getVelocity().y, 0, 2);
-        spreadAmount += Math.sin(entity.age / 9F) / 9F;
         spreadAmount = MathHelper.clamp(spreadAmount, -2, 5);
 
         return pony.getInterpolator().interpolate("wingSpreadAmount", spreadAmount, 10);
     }
 
-    private FlightType getFlightType() {
+    public FlightType getFlightType() {
 
         if (UItems.PEGASUS_AMULET.isApplicable(entity)) {
             return FlightType.ARTIFICIAL;
@@ -210,11 +217,14 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 tickFlight(type, velocity);
             } else {
                 ticksInAir = 0;
+                soundPlaying = false;
 
                 if (!creative && type.isAvian()) {
                     checkAvianTakeoffConditions(velocity);
                 }
             }
+        } else {
+            soundPlaying = false;
         }
 
         lastPos = new Vec3d(entity.getX(), 0, entity.getZ());
@@ -266,6 +276,11 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             velocity.y -= 0.02 * getGravitySignum();
             velocity.x *= 0.9896;
             velocity.z *= 0.9896;
+        } else if (type == FlightType.INSECTOID) {
+            if (entity.world.isClient && !soundPlaying) {
+                soundPlaying = true;
+                InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_CHANGELING_BUZZ);
+            }
         }
     }
 

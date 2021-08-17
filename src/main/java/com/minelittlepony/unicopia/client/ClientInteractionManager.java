@@ -3,10 +3,12 @@ package com.minelittlepony.unicopia.client;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
+import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyClientPlayerEntity;
 import com.minelittlepony.unicopia.network.handler.ClientNetworkHandler;
@@ -50,6 +52,11 @@ public class ClientInteractionManager extends InteractionManager {
             );
         } else if (type == SOUND_MINECART && source instanceof AbstractMinecartEntity) {
             soundManager.play(new MovingMinecartSoundInstance((AbstractMinecartEntity)source));
+        } else if (type == SOUND_CHANGELING_BUZZ && source instanceof PlayerEntity) {
+            soundManager.play(new LoopingSoundInstance<>((PlayerEntity)source, e -> {
+                PlayerPhysics physics = Pony.of(e).getPhysics();
+                return physics.isFlying() && physics.getFlightType() == FlightType.INSECTOID;
+            }, USounds.ENTITY_PLAYER_CHANGELING_BUZZ, 1F, 1F));
         }
     }
 

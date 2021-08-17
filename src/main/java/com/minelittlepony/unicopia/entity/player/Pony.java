@@ -18,7 +18,6 @@ import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
-import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.Trap;
@@ -184,7 +183,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     }
 
     @Override
-    public Physics getPhysics() {
+    public PlayerPhysics getPhysics() {
         return gravity;
     }
 

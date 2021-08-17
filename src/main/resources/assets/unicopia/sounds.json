@@ -40,9 +40,7 @@
     "category": "player",
     "subtitle": "unicopia.subtitle.changeling_buzz",
     "sounds": [
-      "unicopia:cicada/cicada_4",
-      "unicopia:cicada/cicada_5",
-      "unicopia:cicada/cicada_6"
+      "unicopia:changeling/buzz0"
     ]
   },
   "entity.player.ears_ring": {
