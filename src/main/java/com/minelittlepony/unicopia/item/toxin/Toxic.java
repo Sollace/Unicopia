@@ -1,7 +1,11 @@
 package com.minelittlepony.unicopia.item.toxin;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Optional;
 
+import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.LivingEntity;
@@ -18,22 +22,19 @@ import net.minecraft.world.World;
 public class Toxic {
     private final UseAction action;
 
-    private final Ailment lowerBound;
-    private final Ailment upperBound;
-
-    private final FoodType type;
-
     private final Optional<FoodComponent> component;
+
+    private final Ailment defaultAilment;
+    private final Map<Race, Ailment> ailments;
 
     private final Tag<Item> tag;
 
-    Toxic(UseAction action, FoodType type, Optional<FoodComponent> component, Tag<Item> tag, Ailment lowerBound, Ailment upperBound) {
+    Toxic(UseAction action, Optional<FoodComponent> component, Tag<Item> tag, Ailment defaultAilment, Map<Race, Ailment> ailments) {
         this.action = action;
-        this.type = type;
         this.component = component;
         this.tag = tag;
-        this.lowerBound = lowerBound;
-        this.upperBound = upperBound;
+        this.defaultAilment = defaultAilment;
+        this.ailments = ailments;
     }
 
     public boolean matches(Item item) {
@@ -49,16 +50,15 @@ public class Toxic {
     }
 
     public Ailment getAilmentFor(PlayerEntity player) {
-        Pony pony = Pony.of(player);
-        if (pony != null && !pony.getSpecies().canConsume(type)) {
-            return upperBound;
+        if (player == null) {
+            return defaultAilment;
         }
-        return lowerBound;
+        return ailments.getOrDefault(Pony.of(player).getSpecies(), defaultAilment);
     }
 
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
         if (entity instanceof PlayerEntity) {
-            getAilmentFor((PlayerEntity)entity).afflict((PlayerEntity)entity, type, stack);
+            getAilmentFor((PlayerEntity)entity).afflict((PlayerEntity)entity, stack);
         }
 
         return stack;
@@ -69,5 +69,35 @@ public class Toxic {
             return TypedActionResult.fail(player.getStackInHand(hand));
         }
         return null;
+    }
+
+    public static class Builder {
+        private final Ailment def;
+        private final Map<Race, Ailment> ailments = new EnumMap<>(Race.class);
+        private UseAction action = UseAction.EAT;
+        private Optional<FoodComponent> component = Optional.empty();
+
+        public Builder(Ailment def) {
+            this.def = def;
+        }
+
+        public Builder action(UseAction action) {
+            this.action = action;
+            return this;
+        }
+
+        public Builder food(FoodComponent food) {
+            component = Optional.ofNullable(food);
+            return this;
+        }
+
+        public Builder with(Race race, Ailment ailment) {
+            ailments.put(race, ailment);
+            return this;
+        }
+
+        public Toxic build(String name) {
+            return new Toxic(action, component, UTags.item(name), def, ailments);
+        }
     }
 }

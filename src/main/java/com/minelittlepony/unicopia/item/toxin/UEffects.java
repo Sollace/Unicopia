@@ -11,17 +11,20 @@ import net.minecraft.util.Identifier;
 
 public interface UEffects {
 
-    StatusEffect FOOD_POISONING = new CustomStatusEffect(new Identifier("unicopia", "food_poisoning"), StatusEffectType.BENEFICIAL, 3484199)
-            .setSilent()
-            .direct((p, e, i) -> {
-                StatusEffectInstance nausea = e.getStatusEffect(StatusEffects.NAUSEA);
-                if (nausea == null) {
-                    StatusEffectInstance foodEffect = e.getStatusEffect(p);
-                    nausea = new StatusEffectInstance(StatusEffects.NAUSEA, foodEffect.getDuration(), foodEffect.getAmplifier(), foodEffect.isAmbient(), foodEffect.shouldShowParticles());
+    StatusEffect FOOD_POISONING = new CustomStatusEffect.Builder(new Identifier("unicopia", "food_poisoning"), StatusEffectType.HARMFUL, 3484199).direct((p, e, i) -> {
+        StatusEffectInstance nausea = e.getStatusEffect(StatusEffects.NAUSEA);
+        if (nausea == null) {
+            StatusEffectInstance foodEffect = e.getStatusEffect(p);
+            nausea = new StatusEffectInstance(StatusEffects.NAUSEA, foodEffect.getDuration(),
+                    foodEffect.getAmplifier(),
+                    true,
+                    foodEffect.shouldShowParticles(),
+                    false
+            );
 
-                    e.addStatusEffect(nausea);
-                }
+            e.addStatusEffect(nausea);
+        }
 
-                e.damage(MagicalDamageSource.FOOD_POISONING, i);
-            });
+        e.damage(MagicalDamageSource.FOOD_POISONING, i);
+    }).build();
 }

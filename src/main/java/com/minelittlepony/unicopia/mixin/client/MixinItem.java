@@ -20,6 +20,6 @@ import net.minecraft.world.World;
 abstract class MixinItem implements ToxicHolder {
     @Inject(method = "appendTooltip", at = @At("RETURN"))
     private void onAppendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo into) {
-        getToxic().ifPresent(t -> tooltip.add(t.getAilmentFor(MinecraftClient.getInstance().player).getToxicity().getTooltip()));
+        getToxic().ifPresent(t -> t.getAilmentFor(MinecraftClient.getInstance().player).appendTooltip(tooltip, context));
     }
 }

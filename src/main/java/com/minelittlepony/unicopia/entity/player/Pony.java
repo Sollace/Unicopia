@@ -24,8 +24,6 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.Trap;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.item.toxin.FoodType;
-import com.minelittlepony.unicopia.item.toxin.Toxicity;
 import com.minelittlepony.unicopia.item.toxin.Toxin;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgOtherPlayerCapabilities;
@@ -420,7 +418,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     public void onEat(ItemStack stack) {
         if (getSpecies() == Race.CHANGELING) {
-            Toxin.POISON.afflict(getMaster(), FoodType.RAW_MEAT, Toxicity.SAFE, stack);
+            Toxin.LOVE_SICKNESS.afflict(getMaster(), stack);
         }
     }
 

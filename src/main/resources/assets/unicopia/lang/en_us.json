@@ -74,7 +74,7 @@
   "unicopia.effect.tribe.stage.determination": "As your bones realign you are filled by determination.",
   "unicopia.effect.tribe.stage.resurection": "Knowing you will return to this world as a %s",
 
-  "effect.food_poisoning": "Food Poisoning",
+  "effect.unicopia.food_poisoning": "Food Poisoning",
 
   "player.reachDistance": "Reach Distance",
   "player.miningSpeed": "Mining Speed",
@@ -111,6 +111,8 @@
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_bat": "Splash Potion of Bat Pony Metamorphosis",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_bat": "Lingering Potion of Bat Pony Metamorphosis",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_bat": "Arrow of Bat Pony Metamorphosis",
+
+  "potion.potency.6": "VII",
 
   "spell.unicopia.frost": "Frost",
   "spell.unicopia.frost.lore": "Ice I",

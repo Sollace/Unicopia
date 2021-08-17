@@ -15,10 +15,12 @@ public interface UFoodComponents {
     FoodComponent HAY_FRIES = builder(1, 5).build();
     FoodComponent SALAD = builder(4, 2).build();
     FoodComponent CIDER = builder(4, 2).alwaysEdible().build();
-    FoodComponent RANDOM_FOLIAGE = builder(2, 1).build();
+
     FoodComponent JUICE = builder(2, 2).alwaysEdible().build();
     FoodComponent BURNED_JUICE = builder(3, 1).build();
-    FoodComponent WORMS = builder(1, 0).alwaysEdible().build();
+
+    FoodComponent RANDOM_FOLIAGE = builder(2, 1).build();
+    FoodComponent INSECTS = builder(1, 0).alwaysEdible().build();
 
     FoodComponent CEREAL = builder(9, 0.8F).build();
     FoodComponent SUGAR = builder(20, -2).build();

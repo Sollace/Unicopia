@@ -1,29 +1,40 @@
 package com.minelittlepony.unicopia.item.toxin;
 
+import java.util.List;
+
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 
-public class Ailment {
-
-    public static final Ailment INNERT = new Ailment(Toxicity.SAFE, Toxin.INNERT);
+public class Ailment implements Affliction {
+    public static final Ailment INNERT = of(Toxicity.SAFE, Toxin.INNERT);
 
     private final Toxicity toxicity;
-    private final Toxin toxin;
+    private final Toxin effect;
 
-    public Ailment(Toxicity toxicity, Toxin toxin) {
+    Ailment(Toxicity toxicity, Toxin effect) {
         this.toxicity = toxicity;
-        this.toxin = toxin;
+        this.effect = effect;
     }
 
     public Toxicity getToxicity() {
         return toxicity;
     }
 
-    public void afflict(PlayerEntity player, FoodType type, ItemStack stack) {
-        this.toxin.afflict(player, type, toxicity, stack);
+    public void appendTooltip(List<Text> tooltip, TooltipContext context) {
+        tooltip.add(getToxicity().getTooltip());
+        if (context.isAdvanced()) {
+            effect.appendTooltip(tooltip);
+        }
     }
 
-    public static Ailment of(Toxicity toxicity) {
-        return new Ailment(toxicity, Toxin.FOOD);
+    @Override
+    public void afflict(PlayerEntity player, ItemStack stack) {
+        effect.afflict(player, stack);
+    }
+
+    public static Ailment of(Toxicity toxicity, Toxin effect) {
+        return new Ailment(toxicity, effect);
     }
 }

@@ -11,47 +11,17 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class CustomStatusEffect extends StatusEffect {
+    private final boolean instant;
+    private final int rate;
+    private final Direct direct;
+    private final Indirect indirect;
 
-    private int tickDelay = 40;
-
-    @NotNull
-    private DirectEffect direct = DirectEffect.NONE;
-
-    @NotNull
-    private IndirectEffect indirect = IndirectEffect.NONE;
-
-    public CustomStatusEffect(Identifier id, StatusEffectType type, int color) {
+    public CustomStatusEffect(StatusEffectType type, int color, int rate, boolean instant, Direct direct, Indirect indirect) {
         super(type, color);
-
-        Registry.register(Registry.STATUS_EFFECT, id, this);
-    }
-
-    public CustomStatusEffect setSilent() {
-        return this;
-    }
-
-    public CustomStatusEffect direct(@NotNull DirectEffect applicator) {
-        this.direct = applicator;
-
-        return this;
-    }
-
-    public CustomStatusEffect indirect(@NotNull IndirectEffect applicator) {
-        this.indirect = applicator;
-
-        return this;
-    }
-
-
-    public CustomStatusEffect setTickDelay(int delay) {
-        tickDelay = delay;
-
-        return this;
-    }
-
-    public CustomStatusEffect setEffectiveness(double effectiveness) {
-
-        return this;
+        this.direct = direct;
+        this.rate = rate;
+        this.indirect = indirect;
+        this.instant = instant;
     }
 
     @Override
@@ -66,32 +36,74 @@ public class CustomStatusEffect extends StatusEffect {
 
     @Override
     public boolean isInstant() {
-        return tickDelay > 0;
+        return instant;
     }
 
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {
-        if (!isInstant()) {
-            int i = tickDelay >> amplifier;
-
-            if (i > 0) {
-                return duration % i == 0;
-            }
+        if (isInstant()) {
+            return duration > 0;
         }
 
-        return duration > 0;
+        int i = rate >> amplifier;
+        return i <= 0 || duration % i == 0;
+    }
+
+    public static class Builder {
+        private final Identifier id;
+        private final StatusEffectType type;
+        private final int color;
+
+        private boolean instant;
+        private int rate = 40;
+
+        @NotNull
+        private Direct direct = Direct.NONE;
+
+        @NotNull
+        private Indirect indirect = Indirect.NONE;
+
+        public Builder(Identifier id, StatusEffectType type, int color) {
+            this.id = id;
+            this.type = type;
+            this.color = color;
+        }
+
+        public Builder instant() {
+            instant = true;
+            return this;
+        }
+
+        public Builder rate(int rate) {
+            this.rate = rate;
+            return this;
+        }
+
+        public Builder direct(@NotNull Direct applicator) {
+            this.direct = applicator;
+            return this;
+        }
+
+        public Builder indirect(@NotNull Indirect applicator) {
+            this.indirect = applicator;
+            return this;
+        }
+
+        public StatusEffect build() {
+            return Registry.register(Registry.STATUS_EFFECT, id, new CustomStatusEffect(type, color, rate, instant, direct, indirect));
+        }
     }
 
     @FunctionalInterface
-    public interface DirectEffect {
-        DirectEffect NONE = (p, e, i) -> {};
+    public interface Direct {
+        Direct NONE = (p, e, i) -> {};
 
         void perform(StatusEffect effect, LivingEntity target, int amplifier);
     }
 
     @FunctionalInterface
-    public interface IndirectEffect {
-        IndirectEffect NONE = (p, s, a, t, A, d) -> {};
+    public interface Indirect {
+        Indirect NONE = (p, s, a, t, A, d) -> {};
 
         void perform(StatusEffect effect, @Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double distance);
     }

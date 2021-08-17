@@ -62,7 +62,7 @@ public interface UItems {
     Item DAFFODIL_DAISY_SANDWICH = register("daffodil_daisy_sandwich", new Item(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.DAFODIL_DAISY_SANDWICH)));
     Item HAY_BURGER = register("hay_burger", new Item(new Item.Settings().group(ItemGroup.FOOD).maxCount(1).food(UFoodComponents.HAY_BURGER)));
     Item HAY_FRIES = register("hay_fries", new Item(new Item.Settings().group(ItemGroup.FOOD).maxCount(16).food(UFoodComponents.HAY_FRIES)));
-    Item WHEAT_WORMS = register("wheat_worms", new Item(new Item.Settings().group(ItemGroup.MISC).maxCount(16).food(UFoodComponents.WORMS)));
+    Item WHEAT_WORMS = register("wheat_worms", new Item(new Item.Settings().group(ItemGroup.MISC).maxCount(16).food(UFoodComponents.INSECTS)));
 
     Item MUG = register("mug", new Item(new Settings().group(ItemGroup.MATERIALS).maxCount(16)));
     Item CIDER = register("cider", new DrinkableItem(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.CIDER).maxCount(1).recipeRemainder(MUG)));
