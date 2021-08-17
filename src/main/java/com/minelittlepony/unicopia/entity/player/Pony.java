@@ -301,7 +301,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
                     entity.addStatusEffect(new StatusEffectInstance(SunBlindnessStatusEffect.INSTANCE, SunBlindnessStatusEffect.MAX_DURATION * 10, 1, true, false));
                     UCriteria.LOOK_INTO_SUN.trigger(entity);
 
-                    if (isClientPlayer()) {
+                    if (isClient() && isClientPlayer()) {
                         InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING);
                     }
                 }
