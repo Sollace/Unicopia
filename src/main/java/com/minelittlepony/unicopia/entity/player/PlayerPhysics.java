@@ -43,8 +43,14 @@ import net.minecraft.util.math.Vec3d;
 public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickable, Motion, NbtSerialisable {
 
     private int ticksInAir;
+    private int ticksToGlide;
 
     private float thrustScale = 0;
+
+    private boolean flapping;
+
+    private int prevStrafe;
+    private float strafe;
 
     private FlightType lastFlightType = FlightType.NONE;
 
@@ -79,7 +85,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
     @Override
     public boolean isGliding() {
-        return isFlying() && (entity.isSneaking() || ((Jumper)entity).isJumping()) && !pony.sneakingChanged();
+        return ticksToGlide <= 0 && isFlying() && !entity.isSneaking();
     }
 
     @Override
@@ -95,18 +101,23 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             if (getFlightType() == FlightType.INSECTOID) {
                 spreadAmount += Math.sin(pony.getEntity().age * 4F) * 8;
             } else {
-                spreadAmount += isGliding() ? 3 : thrustScale * 60;
+                if (isGliding()) {
+                    spreadAmount += 2.5F;
+                } else {
+                    spreadAmount += strafe * 10;
+                    spreadAmount += thrustScale * 24;
+                }
             }
         } else {
             spreadAmount += MathHelper.clamp(-entity.getVelocity().y, 0, 2);
             spreadAmount += Math.sin(entity.age / 9F) / 9F;
+
+            if (entity.isSneaking()) {
+                spreadAmount += 2;
+            }
         }
 
-        if (entity.isSneaking()) {
-            spreadAmount += 2;
-        }
-
-        spreadAmount = MathHelper.clamp(spreadAmount, -2, 5);
+        spreadAmount = MathHelper.clamp(spreadAmount, -2, 6);
 
         return pony.getInterpolator().interpolate("wingSpreadAmount", spreadAmount, 10);
     }
@@ -143,6 +154,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         if (wallHitCooldown > 0) {
             wallHitCooldown--;
+        }
+        if (ticksToGlide > 0) {
+            ticksToGlide--;
         }
 
         final MutableVector velocity = new MutableVector(entity.getVelocity());
@@ -215,7 +229,19 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
                 ticksInAir++;
                 tickFlight(type, velocity);
+
+                int strafing = (int)Math.signum(entity.sidewaysSpeed);
+                if (strafing != prevStrafe) {
+                    prevStrafe = strafing;
+                    strafe = 1;
+                    ticksToGlide = 20;
+                    entity.playSound(getFlightType().getWingFlapSound(), 0.25F, 1);
+                } else {
+                    strafe *= 0.28;
+                }
             } else {
+                prevStrafe = 0;
+                strafe = 0;
                 ticksInAir = 0;
                 soundPlaying = false;
 
@@ -237,10 +263,15 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         entity.setVelocity(velocity.toImmutable());
 
-        if (isFlying() && !entity.isInSwimmingPose()) {
+        if (isFlying() && !entity.isFallFlying()) {
+
             float pitch = ((Leaner)entity).getLeaningPitch();
             if (pitch < 1) {
-                ((Leaner)entity).setLeaningPitch(Math.max(0, pitch + 0.18F));
+                if (pitch < 0.9F) {
+                    pitch += 0.1F;
+                }
+                pitch += 0.09F;
+                ((Leaner)entity).setLeaningPitch(Math.max(0, pitch));
             }
         }
     }
@@ -270,8 +301,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         if (type.isAvian()) {
             if (entity.world.isClient && ticksInAir % 20 == 0 && entity.getVelocity().length() < 0.29) {
-                entity.playSound(getFlightType().getWingFlapSound(), 0.5F, 1);
-                thrustScale = 1;
+                flapping = true;
+                ticksToGlide = 20;
             }
             velocity.y -= 0.02 * getGravitySignum();
             velocity.x *= 0.9896;
@@ -420,10 +451,16 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
     private void applyThrust(MutableVector velocity) {
         if (pony.sneakingChanged() && entity.isSneaking()) {
-            thrustScale = 1;
+            flapping = true;
+            ticksToGlide = 20;
+        }
+
+        thrustScale *= 0.2889F;
+
+        if (thrustScale <= 0.000001F & flapping) {
+            flapping = false;
             entity.playSound(getFlightType().getWingFlapSound(), 0.5F, 1);
-        } else {
-            thrustScale *= 0.1889F;
+            thrustScale = 1;
         }
 
         float heavyness = EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) / 6F;
