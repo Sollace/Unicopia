@@ -76,6 +76,8 @@ class Slot {
     }
 
     void renderBackground(MatrixStack matrices, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.enableBlend();
         matrices.push();
         matrices.translate(getX(), getY(), 0);
 

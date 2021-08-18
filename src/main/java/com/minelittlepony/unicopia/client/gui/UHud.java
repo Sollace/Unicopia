@@ -86,10 +86,7 @@ public class UHud extends DrawableHelper {
             renderMessage(matrices, tickDelta);
         }
 
-
-        float progress = messageTime >= 20 ? 1 : (messageTime - tickDelta) / 20;
-
-        RenderSystem.setShaderColor(1, 1, 1, Math.max(0.1F, progress));
+        RenderSystem.setShaderColor(1, 1, 1,1);
         RenderSystem.enableBlend();
         RenderSystem.setShaderTexture(0, HUD_TEXTURE);
 
