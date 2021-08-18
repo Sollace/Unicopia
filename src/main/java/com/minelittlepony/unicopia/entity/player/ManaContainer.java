@@ -63,7 +63,7 @@ public class ManaContainer implements MagicReserves, Tickable {
             energy.add(-1);
         }
 
-        if (exhaustion.get() > 5) {
+        if (pony.getSpecies().canFly() && !pony.getPhysics().isFlying()) {
             exhaustion.multiply(0.8F);
         } else {
             exhaustion.add(-1);

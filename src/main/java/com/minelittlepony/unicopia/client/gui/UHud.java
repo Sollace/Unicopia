@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.client.gui;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +28,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
@@ -45,11 +44,11 @@ public class UHud extends DrawableHelper {
 
     final MinecraftClient client = MinecraftClient.getInstance();
 
-    private final List<Slot> slots = Util.make(new ArrayList<>(), slots -> {
-        slots.add(new ManaRingSlot(this, AbilitySlot.PRIMARY, AbilitySlot.PASSIVE, 0, 0));
-        slots.add(new Slot(this, AbilitySlot.SECONDARY, AbilitySlot.SECONDARY, 26, -5));
-        slots.add(new Slot(this, AbilitySlot.TERTIARY, AbilitySlot.TERTIARY, 36, 19));
-    });
+    private final List<Slot> slots = List.of(
+        new ManaRingSlot(this, AbilitySlot.PRIMARY, AbilitySlot.PASSIVE, 0, 0),
+        new Slot(this, AbilitySlot.SECONDARY, AbilitySlot.SECONDARY, 26, -5),
+        new Slot(this, AbilitySlot.TERTIARY, AbilitySlot.TERTIARY, 36, 19)
+    );
 
     @Nullable
     private Text message;
@@ -79,6 +78,13 @@ public class UHud extends DrawableHelper {
 
         matrices.push();
         matrices.translate(((scaledWidth - 50) / 2) + (104 * xDirection), scaledHeight - 50, 0);
+
+        float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();
+
+        if (exhaustion > 0.5F) {
+            Random rng = client.world.random;
+            matrices.translate(rng.nextFloat() - 0.5F, rng.nextFloat() - 0.5F, rng.nextFloat() - 0.5F);
+        }
 
         AbilityDispatcher abilities = pony.getAbilities();
 
@@ -174,16 +180,33 @@ public class UHud extends DrawableHelper {
 
         float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();
 
-        if (exhaustion > 0.5F) {
+        if (exhaustion > 0) {
             if (tickDelta == 0) {
                 client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_ANVIL_BREAK, 1));
             }
 
-            int alpha1 = 205 << 24 & -16777216;
-            int alpha2 = (int)(alpha1 * 0.6F);
+            int color = 0x880000;
 
-            fillGradient(matrices, 0, 0, scaledWidth, scaledHeight / 2, 0xFFFFFF | alpha1, 0x000000 | alpha2);
-            fillGradient(matrices, 0, scaledHeight / 2, scaledWidth, scaledHeight, 0xFFFFFF | alpha2, 0x000000 | alpha1);
+            float radius = (1 + (float)Math.sin(client.player.age / 7F)) / 2F;
+            radius = 0.14F + radius * 0.2F;
+
+            int alpha1 = (int)(MathHelper.clamp(exhaustion * radius * 2, 0, 1) * 205) << 24 & -16777216;
+            int alpha2 = 0;
+
+            int halfWidth = (int)(scaledWidth * radius);
+            int halfHeight = (int)(scaledHeight * radius);
+
+            fillGradient(matrices, 0, 0, scaledWidth, halfHeight, color | alpha1, color | alpha2);
+            fillGradient(matrices, 0, scaledHeight - halfHeight, scaledWidth, scaledHeight, color | alpha2, color | alpha1);
+
+            matrices.push();
+            matrices.translate(scaledWidth, 0, 0);
+            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90));
+
+            fillGradient(matrices, 0, 0, scaledHeight, halfWidth, color | alpha1, color | alpha2);
+            fillGradient(matrices, 0, scaledWidth - halfWidth, scaledHeight, scaledWidth, color | alpha2, color | alpha1);
+
+            matrices.pop();
         }
     }
 
