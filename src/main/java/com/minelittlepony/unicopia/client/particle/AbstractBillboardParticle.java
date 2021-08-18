@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.client.particle;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.render.BufferBuilder;
@@ -60,7 +59,7 @@ public abstract class AbstractBillboardParticle extends Particle {
     protected abstract void renderQuads(Tessellator te, BufferBuilder buffer, float x, float y, float z, float tickDelta);
 
     protected void bindTexture(Identifier texture) {
-        MinecraftClient.getInstance().getTextureManager().bindTexture(texture);
+        RenderSystem.setShaderTexture(0, texture);
     }
 
     protected void renderQuad(Tessellator te, BufferBuilder buffer, Vec3f[] corners, float alpha, float tickDelta) {
