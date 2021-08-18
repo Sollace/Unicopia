@@ -7,10 +7,12 @@ import com.minelittlepony.unicopia.entity.player.dummy.DummyPlayerEntity;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyServerPlayerEntity;
 import com.minelittlepony.unicopia.network.handler.ClientNetworkHandler;
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.MinecraftSessionService;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.World;
 
 public class InteractionManager {
     public static final int SOUND_EARS_RINGING = 0;
@@ -22,6 +24,14 @@ public class InteractionManager {
 
     public static InteractionManager instance() {
         return INSTANCE;
+    }
+
+    public MinecraftSessionService getSessionService(World world) {
+        if (world instanceof ServerWorld) {
+            return ((ServerWorld)world).getServer().getSessionService();
+        }
+
+        throw new NullPointerException("Cannot get session service");
     }
 
     /**
@@ -60,9 +70,19 @@ public class InteractionManager {
      */
     @NotNull
     public PlayerEntity createPlayer(Entity observer, GameProfile profile) {
-        if (observer.world instanceof ServerWorld) {
-            return new DummyServerPlayerEntity((ServerWorld)observer.world, profile);
+        return createPlayer(observer.world, profile);
+    }
+
+    /**
+     * Side-independent method to create a new player.
+     *
+     * Returns an implementation of PlayerEntity appropriate to the side being called on.
+     */
+    @NotNull
+    public PlayerEntity createPlayer(World world, GameProfile profile) {
+        if (world instanceof ServerWorld) {
+            return new DummyServerPlayerEntity((ServerWorld)world, profile);
         }
-        return new DummyPlayerEntity(observer.world, profile);
+        return new DummyPlayerEntity(world, profile);
     }
 }

@@ -40,6 +40,11 @@ public class EntityBehaviour<T extends Entity> {
     private static final EntityBehaviour<Entity> DEFAULT = new EntityBehaviour<>();
     private static final Registry<EntityBehaviour<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "entity_behaviour"));
 
+    /**
+     * Equivalent of the entity#tick method. Called every tick to update th logic for a disguise.
+     * <br>
+     * We use this to add entity-specific behaviours.
+     */
     public void update(Caster<?> source, T entity, DisguiseSpell spell) {
         if (source instanceof Pony) {
             update((Pony)source, entity, spell);
@@ -151,14 +156,6 @@ public class EntityBehaviour<T extends Entity> {
             to.lastRenderZ = positionOffset.z + from.lastRenderZ;
         }
 
-        if (to instanceof PlayerEntity) {
-            PlayerEntity l = (PlayerEntity)to;
-
-            l.capeX = positionOffset.x + l.getX();
-            l.capeY = positionOffset.y + l.getY();
-            l.capeZ = positionOffset.z + l.getZ();
-        }
-
         to.setVelocity(from.getVelocity());
 
         to.setPitch(from.getPitch());
@@ -267,6 +264,7 @@ public class EntityBehaviour<T extends Entity> {
     }
 
     static {
+        register(PlayerBehaviour::new, EntityType.PLAYER);
         register(FallingBlockBehaviour::new, EntityType.FALLING_BLOCK);
         register(MobBehaviour::new, EntityType.RAVAGER, EntityType.IRON_GOLEM);
         register(HoppingBehaviour::new, EntityType.RABBIT, EntityType.SLIME, EntityType.MAGMA_CUBE);

@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,6 +20,11 @@ public class DummyServerPlayerEntity extends ServerPlayerEntity implements Owned
 
     @Override
     protected void onEquipStack(ItemStack stack) {
+        /*noop*/
+    }
+
+    @Override
+    protected void onBlockCollision(BlockState state) {
         /*noop*/
     }
 

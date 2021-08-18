@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.entity.behaviour;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -144,16 +145,20 @@ public class Disguise implements NbtSerialisable {
     public Entity getOrCreate(Caster<?> source) {
         if (entity == null && entityNbt != null) {
             NbtCompound nbt = entityNbt;
+            entity = null;
             entityNbt = null;
             attachments.clear();
 
             if ("player".equals(entityId)) {
                 createPlayer(nbt, new GameProfile(
-                        nbt.getUuid("playerId"),
-                        nbt.getString("playerName")
-                    ), source);
+                        nbt.containsUuid("playerId") ? nbt.getUuid("playerId") : UUID.randomUUID(),
+                                nbt.getString("playerName")
+                            ), source);
 
-                SkullBlockEntity.loadProperties(new GameProfile(null, nbt.getString("playerName")), profile ->{ });
+                SkullBlockEntity.loadProperties(new GameProfile(
+                        nbt.containsUuid("playerId") ? nbt.getUuid("playerId") : null,
+                                nbt.getString("playerName")
+                            ), p -> createPlayer(nbt, p, source));
             } else {
                 if (source.isClient()) {
                     entity = EntityType.fromNbt(nbt).map(type -> type.create(source.getWorld())).orElse(null);
@@ -170,9 +175,9 @@ public class Disguise implements NbtSerialisable {
                         return EntityBehaviour.forEntity(e).onCreate(e, this, true);
                     });
                 }
-            }
 
-            onEntityLoaded(source);
+                onEntityLoaded(source);
+            }
         }
 
         return entity;
@@ -282,7 +287,14 @@ public class Disguise implements NbtSerialisable {
     public void fromNBT(NbtCompound compound) {
         String newId = compound.getString("entityId");
 
-        if (!newId.contentEquals(entityId)) {
+        String newPlayerName = null;
+        if (compound.contains("entity") && compound.getCompound("entity").contains("playerName")) {
+            newPlayerName = compound.getCompound("entity").getString("playerName");
+        }
+
+        String oldPlayerName = entity != null && entity instanceof PlayerEntity ? ((PlayerEntity)entity).getGameProfile().getName() : null;
+
+        if (!Objects.equals(newId, entityId) || !Objects.equals(newPlayerName, oldPlayerName)) {
             entityNbt = null;
             remove();
         }
@@ -320,7 +332,9 @@ public class Disguise implements NbtSerialisable {
             GameProfile profile = ((PlayerEntity)entity).getGameProfile();
 
             entityNbt.putString("id", "player");
-            entityNbt.putUuid("playerId", profile.getId());
+            if (profile.getId() != null) {
+                entityNbt.putUuid("playerId", profile.getId());
+            }
             entityNbt.putString("playerName", profile.getName());
 
             NbtCompound tag = new NbtCompound();

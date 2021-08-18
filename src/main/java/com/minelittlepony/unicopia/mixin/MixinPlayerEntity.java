@@ -1,11 +1,13 @@
 package com.minelittlepony.unicopia.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.PonyContainer;
+import com.minelittlepony.unicopia.entity.CapeHolder;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.datafixers.util.Either;
@@ -25,8 +27,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 @Mixin(PlayerEntity.class)
-abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<Pony> {
+abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<Pony>, CapeHolder {
     private MixinPlayerEntity() { super(null, null); }
+    @Override
+    @Invoker("updateCapeAngles")
+    public abstract void callUpdateCapeAngles();
 
     @Override
     public Equine<?> create() {

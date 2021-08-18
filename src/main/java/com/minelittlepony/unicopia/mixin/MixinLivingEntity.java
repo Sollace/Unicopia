@@ -75,6 +75,14 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
     @Accessor("leaningPitch")
     public abstract void setLeaningPitch(float pitch);
 
+    @Override
+    @Accessor("lastLeaningPitch")
+    public abstract float getLastLeaningPitch();
+
+    @Override
+    @Accessor("lastLeaningPitch")
+    public abstract void setLastLeaningPitch(float pitch);
+
     @Inject(method = "createLivingAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
     private static void onCreateAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {
         Creature.registerAttributes(info.getReturnValue());

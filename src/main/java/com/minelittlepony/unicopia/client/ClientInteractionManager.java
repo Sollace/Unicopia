@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.entity.player.dummy.DummyClientPlayerEntity;
 import com.minelittlepony.unicopia.network.handler.ClientNetworkHandler;
 import com.minelittlepony.unicopia.network.handler.ClientNetworkHandlerImpl;
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.MinecraftSessionService;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.AggressiveBeeSoundInstance;
@@ -26,11 +27,17 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.world.World;
 
 public class ClientInteractionManager extends InteractionManager {
 
     private final ClientNetworkHandler handler = new ClientNetworkHandlerImpl();
     private final MinecraftClient client = MinecraftClient.getInstance();
+
+    @Override
+    public MinecraftSessionService getSessionService(World world) {
+        return MinecraftClient.getInstance().getSessionService();
+    }
 
     @Override
     @Nullable
@@ -62,11 +69,11 @@ public class ClientInteractionManager extends InteractionManager {
 
     @Override
     @NotNull
-    public PlayerEntity createPlayer(Entity observer, GameProfile profile) {
-        if (observer.world instanceof ClientWorld) {
-            return new DummyClientPlayerEntity((ClientWorld)observer.world, profile);
+    public PlayerEntity createPlayer(World world, GameProfile profile) {
+        if (world instanceof ClientWorld) {
+            return new DummyClientPlayerEntity((ClientWorld)world, profile);
         }
-        return super.createPlayer(observer, profile);
+        return super.createPlayer(world, profile);
     }
 
     @Override
