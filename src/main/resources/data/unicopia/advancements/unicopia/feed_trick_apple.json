@@ -1,0 +1,29 @@
+{
+  "parent": "unicopia:unicopia/trick_apple",
+  "display": {
+    "icon": {
+      "item": "unicopia:zap_apple"
+    },
+    "title": {
+      "translate": "advancements.unicopia.feed_trick_apple.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.feed_trick_apple.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "eat_trick_apple": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "feed_trick_apple"
+      }
+    }
+  },
+  "requirements": [
+    [ "eat_trick_apple" ]
+  ]
+}

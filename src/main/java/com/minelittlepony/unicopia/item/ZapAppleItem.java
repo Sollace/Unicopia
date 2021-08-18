@@ -4,6 +4,7 @@ package com.minelittlepony.unicopia.item;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.item.toxin.Toxicity;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
@@ -18,6 +19,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -58,6 +60,9 @@ public class ZapAppleItem extends AppleItem implements ChameleonItem {
             lightning.refreshPositionAfterTeleport(player.getX(), player.getY(), player.getZ());
 
             w.spawnEntity(lightning);
+            if (player instanceof PlayerEntity) {
+                UCriteria.EAT_TRICK_APPLE.trigger((PlayerEntity)player);
+            }
         }
 
         return stack;
@@ -72,11 +77,17 @@ public class ZapAppleItem extends AppleItem implements ChameleonItem {
     public TypedActionResult<ItemStack> onFedTo(ItemStack stack, PlayerEntity player, Entity e) {
 
         LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(e.world);
-        lightning.refreshPositionAfterTeleport(player.getX(), player.getY(), player.getZ());
+        lightning.refreshPositionAfterTeleport(e.getX(), e.getY(), e.getZ());
+        lightning.setCosmetic(true);
+        if (player instanceof ServerPlayerEntity) {
+            lightning.setChanneler((ServerPlayerEntity)player);
+        }
 
         if (e.world instanceof ServerWorld) {
             e.onStruckByLightning((ServerWorld)e.world, lightning);
+            UCriteria.FEED_TRICK_APPLE.trigger(player);
         }
+        player.world.spawnEntity(lightning);
 
         if (!player.getAbilities().creativeMode) {
             stack.decrement(1);

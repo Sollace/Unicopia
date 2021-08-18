@@ -1,0 +1,29 @@
+{
+  "parent": "unicopia:unicopia/root",
+  "display": {
+    "icon": {
+      "item": "unicopia:pegasus_feather"
+    },
+    "title": {
+      "translate": "advancements.unicopia.mid_flight_interruption.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.mid_flight_interruption.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "lightning_strike": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player"
+      }
+    }
+  },
+  "requirements": [
+    [ "lightning_strike" ]
+  ]
+}

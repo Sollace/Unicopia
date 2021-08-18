@@ -1,0 +1,31 @@
+{
+  "parent": "unicopia:unicopia/apple_route",
+  "display": {
+    "icon": {
+      "item": "unicopia:juice"
+    },
+    "title": {
+      "translate": "advancements.unicopia.juice.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.juice.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_juice": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "item": "unicopia:juice" }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [ "has_juice" ]
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "parent": "unicopia:unicopia/mid_flight_interruption",
+  "display": {
+    "icon": {
+      "item": "unicopia:lightning_jar"
+    },
+    "title": {
+      "translate": "advancements.unicopia.lightning_bug.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.lightning_bug.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "one": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"]
+      }
+    },
+    "two": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"]
+      }
+    },
+    "three": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"]
+      }
+    },
+    "four": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"]
+      }
+    },
+    "five": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"]
+      }
+    },
+    "six": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"]
+      }
+    },
+    "seven": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"]
+      }
+    },
+    "eight": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"]
+      }
+    },
+    "nine": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"]
+      }
+    },
+    "ten": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"]
+      }
+    }
+  },
+  "requirements": [
+    [ "one" ],
+    [ "two" ],
+    [ "three" ],
+    [ "four" ],
+    [ "five" ],
+    [ "six" ],
+    [ "seven" ],
+    [ "eight" ],
+    [ "nine" ],
+    [ "ten" ]
+  ]
+}

@@ -9,6 +9,9 @@ public interface UCriteria {
 
     CustomEventCriterion.Trigger LOOK_INTO_SUN = CUSTOM_EVENT.createTrigger("look_into_sun");
     CustomEventCriterion.Trigger WEAR_SHADES = CUSTOM_EVENT.createTrigger("wear_shades");
+    CustomEventCriterion.Trigger LIGHTNING_STRUCK = CUSTOM_EVENT.createTrigger("lightning_struck_player");
+    CustomEventCriterion.Trigger EAT_TRICK_APPLE = CUSTOM_EVENT.createTrigger("eat_trick_apple");
+    CustomEventCriterion.Trigger FEED_TRICK_APPLE = CUSTOM_EVENT.createTrigger("feed_trick_apple");
 
     private static <T extends Criterion<?>> T register(T obj) {
         return MixinCriteria.register(obj);

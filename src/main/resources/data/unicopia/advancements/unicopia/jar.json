@@ -1,0 +1,31 @@
+{
+  "parent": "unicopia:unicopia/root",
+  "display": {
+    "icon": {
+      "item": "unicopia:empty_jar"
+    },
+    "title": {
+      "translate": "advancements.unicopia.jar.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.jar.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "has_the_jar": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "item": "unicopia:empty_jar" }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [ "has_the_jar" ]
+  ]
+}

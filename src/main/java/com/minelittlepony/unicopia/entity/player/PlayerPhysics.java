@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.Jumper;
@@ -525,6 +526,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             lightning.refreshPositionAfterTeleport(entity.getX(), entity.getY(), entity.getZ());
 
             entity.world.spawnEntity(lightning);
+            UCriteria.LIGHTNING_STRUCK.trigger(entity);
         }
     }
 

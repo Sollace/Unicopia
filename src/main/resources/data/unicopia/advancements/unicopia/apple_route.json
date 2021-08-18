@@ -1,0 +1,31 @@
+{
+  "parent": "unicopia:unicopia/root",
+  "display": {
+    "icon": {
+      "item": "unicopia:green_apple"
+    },
+    "title": {
+      "translate": "advancements.unicopia.apple_route.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.apple_route.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": true
+  },
+  "criteria": {
+    "has_apple": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "tag": "unicopia:apples" }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [ "has_apple" ]
+  ]
+}
