@@ -30,7 +30,7 @@ public class GemFindingEnchantment extends SimpleEnchantment {
 
         volume = Math.max(volume, 0.04F);
 
-        user.getEnchants().computeIfAbsent(this, Data::new).level = (float)volume * (1.3F + level * 0.3F);
+        user.getEnchants().computeIfAbsent(this, Data::new).level = (float)volume * (1.3F + level);
     }
 
     @Environment(EnvType.CLIENT)
