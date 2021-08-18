@@ -1,12 +1,13 @@
 package com.minelittlepony.unicopia.entity.player.dummy;
 
+import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.mojang.authlib.GameProfile;
 
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -75,7 +76,9 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
     }
 
     private final class Packet extends PlayerListS2CPacket {
-        public Packet() { super(PacketByteBufs.empty()); }
+        public Packet() {
+            super(PlayerListS2CPacket.Action.ADD_PLAYER, List.of());
+        }
 
         PlayerListS2CPacket.Entry entry() {
             return new PlayerListS2CPacket.Entry(
