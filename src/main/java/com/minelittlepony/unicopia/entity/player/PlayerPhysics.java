@@ -364,7 +364,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
             if (mana.getPercentFill() < 0.2) {
                 pony.getMagicalReserves().getExertion().add(2);
-                pony.getMagicalReserves().getEnergy().add(2 + (int)(getHorizontalMotion(entity) * 5));
+                pony.getMagicalReserves().getExhaustion().add(2 + (int)(getHorizontalMotion(entity) * 50));
 
                 if (mana.getPercentFill() < 0.1 && ticksInAir % 10 == 0) {
                     float exhaustion = (0.3F * ticksInAir) / 70;

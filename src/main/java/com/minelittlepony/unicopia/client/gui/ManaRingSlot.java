@@ -63,7 +63,7 @@ class ManaRingSlot extends Slot {
             }
         }
 
-        arcBegin = renderRing(matrices, 17, 13, arcBegin, mana.getEnergy(), 0xFF002299, tickDelta);
+        arcBegin = renderRing(matrices, 17, 13, arcBegin, mana.getExhaustion(), 0xFF002299, tickDelta);
 
         matrices.pop();
 

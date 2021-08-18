@@ -9,6 +9,7 @@ public class ManaContainer implements MagicReserves, Tickable {
     private final Pony pony;
 
     private final BarInst energy;
+    private final BarInst exhaustion;
     private final BarInst exertion;
     private final BarInst mana;
     private final BarInst xp;
@@ -16,6 +17,7 @@ public class ManaContainer implements MagicReserves, Tickable {
     public ManaContainer(Pony pony) {
         this.pony = pony;
         this.energy = new BarInst(Pony.ENERGY, 100F, 0);
+        this.exhaustion = new BarInst(Pony.EXHAUSTION, 100F, 0);
         this.exertion = new BarInst(Pony.EXERTION, 10F, 0);
         this.xp = new BarInst(Pony.XP, 1, 0);
         this.mana = new XpCollectingBar(Pony.MANA, 100F, 100F);
@@ -24,6 +26,11 @@ public class ManaContainer implements MagicReserves, Tickable {
     @Override
     public Bar getExertion() {
         return exertion;
+    }
+
+    @Override
+    public Bar getExhaustion() {
+        return exhaustion;
     }
 
     @Override
@@ -54,6 +61,12 @@ public class ManaContainer implements MagicReserves, Tickable {
             energy.multiply(0.8F);
         } else {
             energy.add(-1);
+        }
+
+        if (exhaustion.get() > 5) {
+            exhaustion.multiply(0.8F);
+        } else {
+            exhaustion.add(-1);
         }
 
         if (!pony.getSpecies().canFly() || !pony.getPhysics().isFlying()) {

@@ -21,8 +21,10 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityDimensions;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
@@ -66,32 +68,7 @@ public class UHud extends DrawableHelper {
 
         Pony pony = Pony.of(client.player);
 
-        boolean hasEffect = client.player.hasStatusEffect(SunBlindnessStatusEffect.INSTANCE);
-
-        if (hasEffect || (pony.getSpecies() == Race.BAT && SunBlindnessStatusEffect.hasSunExposure(client.player))) {
-            float i = hasEffect ? (client.player.getStatusEffect(SunBlindnessStatusEffect.INSTANCE).getDuration() - tickDelta) / SunBlindnessStatusEffect.MAX_DURATION : 0;
-
-            float pulse = (1 + (float)Math.sin(client.player.age / 108F)) * 0.25F;
-
-            float strength = MathHelper.clamp(pulse + i, 0.3F, 1F);
-
-            int alpha1 = (int)(strength * 205) << 24 & -16777216;
-            int alpha2 = (int)(alpha1 * 0.6F);
-
-            fillGradient(matrices, 0, 0, scaledWidth, scaledHeight / 2, 0xFFFFFF | alpha1, 0xFFFFFF | alpha2);
-            fillGradient(matrices, 0, scaledHeight / 2, scaledWidth, scaledHeight, 0xFFFFFF | alpha2, 0xFFFFFF | alpha1);
-
-            if (hasEffect) {
-                matrices.push();
-                matrices.translate(scaledWidth, 0, 0);
-                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90));
-
-                fillGradient(matrices, 0, 0, scaledHeight, scaledWidth / 2, 0xFFFFFF | 0, 0xFFFFFF | alpha2);
-                fillGradient(matrices, 0, scaledWidth / 2, scaledHeight, scaledWidth, 0xFFFFFF | alpha2, 0xFFFFFF | 0);
-
-                matrices.pop();
-            }
-        }
+        renderViewEffects(pony, matrices, scaledWidth, scaledHeight, tickDelta);
 
         if (client.currentScreen instanceof HidesHud || client.player.isSpectator() || client.options.hudHidden) {
             return;
@@ -166,6 +143,50 @@ public class UHud extends DrawableHelper {
             color |= alpha;
 
             drawCenteredText(matrices, client.textRenderer, message, 25, -15, color);
+        }
+    }
+
+    protected void renderViewEffects(Pony pony, MatrixStack matrices, int scaledWidth, int scaledHeight, float tickDelta) {
+
+        boolean hasEffect = client.player.hasStatusEffect(SunBlindnessStatusEffect.INSTANCE);
+
+        if (hasEffect || (pony.getSpecies() == Race.BAT && SunBlindnessStatusEffect.hasSunExposure(client.player))) {
+            float i = hasEffect ? (client.player.getStatusEffect(SunBlindnessStatusEffect.INSTANCE).getDuration() - tickDelta) / SunBlindnessStatusEffect.MAX_DURATION : 0;
+
+            float pulse = (1 + (float)Math.sin(client.player.age / 108F)) * 0.25F;
+
+            float strength = MathHelper.clamp(pulse + i, 0.3F, 1F);
+
+            int alpha1 = (int)(strength * 205) << 24 & -16777216;
+            int alpha2 = (int)(alpha1 * 0.6F);
+
+            fillGradient(matrices, 0, 0, scaledWidth, scaledHeight / 2, 0xFFFFFF | alpha1, 0xFFFFFF | alpha2);
+            fillGradient(matrices, 0, scaledHeight / 2, scaledWidth, scaledHeight, 0xFFFFFF | alpha2, 0xFFFFFF | alpha1);
+
+            if (hasEffect) {
+                matrices.push();
+                matrices.translate(scaledWidth, 0, 0);
+                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90));
+
+                fillGradient(matrices, 0, 0, scaledHeight, scaledWidth / 2, 0xFFFFFF | 0, 0xFFFFFF | alpha2);
+                fillGradient(matrices, 0, scaledWidth / 2, scaledHeight, scaledWidth, 0xFFFFFF | alpha2, 0xFFFFFF | 0);
+
+                matrices.pop();
+            }
+        }
+
+        float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();
+
+        if (exhaustion > 0.5F) {
+            if (tickDelta == 0) {
+                client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_ANVIL_BREAK, 1));
+            }
+
+            int alpha1 = 205 << 24 & -16777216;
+            int alpha2 = (int)(alpha1 * 0.6F);
+
+            fillGradient(matrices, 0, 0, scaledWidth, scaledHeight / 2, 0xFFFFFF | alpha1, 0x000000 | alpha2);
+            fillGradient(matrices, 0, scaledHeight / 2, scaledWidth, scaledHeight, 0xFFFFFF | alpha2, 0x000000 | alpha1);
         }
     }
 

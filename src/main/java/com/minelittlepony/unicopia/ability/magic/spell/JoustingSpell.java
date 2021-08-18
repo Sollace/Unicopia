@@ -69,7 +69,7 @@ public class JoustingSpell extends AbstractSpell implements Attached {
 
         source.getEntity().setVelocity(velocity);
         if (source instanceof Pony) {
-            ((Pony)source).getMagicalReserves().getEnergy().multiply(0.2F);
+            ((Pony)source).getMagicalReserves().getExhaustion().multiply(0.2F);
         }
 
         return !source.getEntity().isRemoved() && age++ < 90 + 7 * (source.getLevel().get() + 1);

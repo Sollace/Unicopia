@@ -15,6 +15,11 @@ public interface MagicReserves {
     Bar getEnergy();
 
     /**
+     * Gets the amount of fatigue induced by using magic.
+     */
+    Bar getExhaustion();
+
+    /**
      * Gets the amount of magical energy the player has.
      * This is increases slowly with time by performing certain actions.
      */

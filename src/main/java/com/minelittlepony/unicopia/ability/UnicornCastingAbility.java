@@ -145,7 +145,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
 
     @Override
     public void preApply(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().getEnergy().multiply(3.3F);
+        player.getMagicalReserves().getExhaustion().multiply(3.3F);
 
         if (getAmulet(player).getResult() == ActionResult.CONSUME) {
             Vec3d eyes = player.getMaster().getCameraPosVec(1);

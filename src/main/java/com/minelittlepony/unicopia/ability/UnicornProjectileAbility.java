@@ -87,7 +87,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
 
     @Override
     public void preApply(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().getEnergy().multiply(3.3F);
+        player.getMagicalReserves().getExhaustion().multiply(3.3F);
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 
