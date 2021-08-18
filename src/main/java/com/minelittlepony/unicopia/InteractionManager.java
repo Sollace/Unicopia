@@ -19,6 +19,7 @@ public class InteractionManager {
     public static final int SOUND_CHANGELING_BUZZ = 1;
     public static final int SOUND_BEE = 2;
     public static final int SOUND_MINECART = 3;
+    public static final int SOUND_GLIDING = 4;
 
     public static InteractionManager INSTANCE = new InteractionManager();
 

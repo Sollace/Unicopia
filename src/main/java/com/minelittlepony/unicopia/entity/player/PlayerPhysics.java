@@ -304,6 +304,11 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 flapping = true;
                 ticksToGlide = 20;
             }
+
+            if (ticksInAir % 200 == 1) {
+                InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_GLIDING);
+            }
+
             velocity.y -= 0.02 * getGravitySignum();
             velocity.x *= 0.9896;
             velocity.z *= 0.9896;

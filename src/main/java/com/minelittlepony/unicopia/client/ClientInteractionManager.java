@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
+import com.minelittlepony.unicopia.client.sound.MotionBasedSoundInstance;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -27,6 +28,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 public class ClientInteractionManager extends InteractionManager {
@@ -64,6 +66,8 @@ public class ClientInteractionManager extends InteractionManager {
                 PlayerPhysics physics = Pony.of(e).getPhysics();
                 return physics.isFlying() && physics.getFlightType() == FlightType.INSECTOID;
             }, USounds.ENTITY_PLAYER_CHANGELING_BUZZ, 1F, 1F));
+        } else if (type == SOUND_GLIDING && source instanceof PlayerEntity) {
+            soundManager.play(new MotionBasedSoundInstance(SoundEvents.ITEM_ELYTRA_FLYING, (PlayerEntity)source));
         }
     }
 
