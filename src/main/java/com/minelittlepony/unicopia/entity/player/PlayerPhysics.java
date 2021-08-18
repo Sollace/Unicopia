@@ -306,7 +306,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 ticksToGlide = 20;
             }
 
-            if (ticksInAir % 200 == 1) {
+            if (ticksInAir % 200 == 1 && pony.isClient()) {
                 InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_GLIDING);
             }
 
