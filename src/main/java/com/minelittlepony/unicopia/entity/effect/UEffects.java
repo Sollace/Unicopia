@@ -1,6 +1,5 @@
-package com.minelittlepony.unicopia.item.toxin;
+package com.minelittlepony.unicopia.entity.effect;
 
-import com.minelittlepony.unicopia.util.CustomStatusEffect;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
 import net.minecraft.entity.effect.StatusEffect;

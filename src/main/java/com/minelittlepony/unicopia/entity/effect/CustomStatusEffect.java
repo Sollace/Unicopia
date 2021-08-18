@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.util;
+package com.minelittlepony.unicopia.entity.effect;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

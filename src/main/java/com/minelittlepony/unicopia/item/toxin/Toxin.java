@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.item.toxin;
 
 import java.util.List;
 
+import com.minelittlepony.unicopia.entity.effect.UEffects;
+
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
