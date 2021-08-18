@@ -49,26 +49,28 @@ public class ClientInteractionManager extends InteractionManager {
 
     @Override
     public void playLoopingSound(Entity source, int type) {
-        SoundManager soundManager = client.getSoundManager();
+        client.execute(() -> {
+            SoundManager soundManager = client.getSoundManager();
 
-        if (type == SOUND_EARS_RINGING && source instanceof LivingEntity) {
-            soundManager.play(new LoopingSoundInstance<>((LivingEntity)source, e -> e.hasStatusEffect(SunBlindnessStatusEffect.INSTANCE), USounds.ENTITY_PLAYER_EARS_RINGING, 1F, 1F));
-        } else if (type == SOUND_BEE && source instanceof BeeEntity) {
-            soundManager.playNextTick(
-                    ((BeeEntity)source).hasAngerTime()
-                        ? new AggressiveBeeSoundInstance(((BeeEntity)source))
-                        : new PassiveBeeSoundInstance(((BeeEntity)source))
-            );
-        } else if (type == SOUND_MINECART && source instanceof AbstractMinecartEntity) {
-            soundManager.play(new MovingMinecartSoundInstance((AbstractMinecartEntity)source));
-        } else if (type == SOUND_CHANGELING_BUZZ && source instanceof PlayerEntity) {
-            soundManager.play(new LoopingSoundInstance<>((PlayerEntity)source, e -> {
-                PlayerPhysics physics = Pony.of(e).getPhysics();
-                return physics.isFlying() && physics.getFlightType() == FlightType.INSECTOID;
-            }, USounds.ENTITY_PLAYER_CHANGELING_BUZZ, 1F, 1F));
-        } else if (type == SOUND_GLIDING && source instanceof PlayerEntity) {
-            soundManager.play(new MotionBasedSoundInstance(SoundEvents.ITEM_ELYTRA_FLYING, (PlayerEntity)source));
-        }
+            if (type == SOUND_EARS_RINGING && source instanceof LivingEntity) {
+                soundManager.play(new LoopingSoundInstance<>((LivingEntity)source, e -> e.hasStatusEffect(SunBlindnessStatusEffect.INSTANCE), USounds.ENTITY_PLAYER_EARS_RINGING, 1F, 1F));
+            } else if (type == SOUND_BEE && source instanceof BeeEntity) {
+                soundManager.playNextTick(
+                        ((BeeEntity)source).hasAngerTime()
+                            ? new AggressiveBeeSoundInstance(((BeeEntity)source))
+                            : new PassiveBeeSoundInstance(((BeeEntity)source))
+                );
+            } else if (type == SOUND_MINECART && source instanceof AbstractMinecartEntity) {
+                soundManager.play(new MovingMinecartSoundInstance((AbstractMinecartEntity)source));
+            } else if (type == SOUND_CHANGELING_BUZZ && source instanceof PlayerEntity) {
+                soundManager.play(new LoopingSoundInstance<>((PlayerEntity)source, e -> {
+                    PlayerPhysics physics = Pony.of(e).getPhysics();
+                    return physics.isFlying() && physics.getFlightType() == FlightType.INSECTOID;
+                }, USounds.ENTITY_PLAYER_CHANGELING_BUZZ, 1F, 1F));
+            } else if (type == SOUND_GLIDING && source instanceof PlayerEntity) {
+                soundManager.play(new MotionBasedSoundInstance(SoundEvents.ITEM_ELYTRA_FLYING, (PlayerEntity)source));
+            }
+        });
     }
 
     @Override
