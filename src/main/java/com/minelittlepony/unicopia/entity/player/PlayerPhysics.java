@@ -274,6 +274,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 pitch += 0.09F;
                 ((Leaner)entity).setLeaningPitch(Math.max(0, pitch));
             }
+
+            entity.limbAngle = 20 + (float)Math.cos(entity.age / 7F) - 0.5F;
+            entity.limbDistance = this.thrustScale;
         }
     }
 
