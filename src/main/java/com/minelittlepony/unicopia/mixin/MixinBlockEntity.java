@@ -1,13 +1,23 @@
 package com.minelittlepony.unicopia.mixin;
 
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
+
+import com.minelittlepony.unicopia.entity.behaviour.FallingBlockBehaviour;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.util.math.BlockPos;
 
 @Mixin(BlockEntity.class)
-public interface MixinBlockEntity {
-    @Accessor("pos")
-    void setPos(BlockPos pos);
+abstract class MixinBlockEntity implements FallingBlockBehaviour.Positioned {
+    @Shadow
+    @Mutable
+    private @Final BlockPos pos;
+
+    @Override
+    public void setPos(BlockPos pos) {
+        this.pos = pos;
+    }
 }

@@ -8,8 +8,8 @@ import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
+import com.minelittlepony.unicopia.entity.behaviour.FallingBlockBehaviour;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -144,7 +144,7 @@ public class WorldRenderDelegate {
         if (blockEntity != null) {
             BlockEntityRenderer<BlockEntity> r = MinecraftClient.getInstance().getBlockEntityRenderDispatcher().get(blockEntity);
             if (r != null) {
-                ((MixinBlockEntity)blockEntity).setPos(e.getBlockPos());
+                ((FallingBlockBehaviour.Positioned)blockEntity).setPos(e.getBlockPos());
                 matrices.push();
 
                 BlockState state = blockEntity.getCachedState();
