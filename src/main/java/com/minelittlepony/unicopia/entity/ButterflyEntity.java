@@ -31,7 +31,10 @@ public class ButterflyEntity extends AmbientEntity {
     private static final TrackedData<Boolean> RESTING = DataTracker.registerData(ButterflyEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(ButterflyEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
+    @Nullable
     private BlockPos hoveringPosition;
+
+    private int ticksResting;
 
     public ButterflyEntity(EntityType<ButterflyEntity> type, World world) {
         super(type, world);
@@ -75,7 +78,13 @@ public class ButterflyEntity extends AmbientEntity {
     @Override
     public boolean collides() {
         return true;
-     }
+    }
+
+    @Override
+    protected void pushAway(Entity entity) { }
+
+    @Override
+    protected void tickCramming() { }
 
     @Override
     public void tick() {
@@ -97,8 +106,7 @@ public class ButterflyEntity extends AmbientEntity {
     }
 
     public Variant getVariant() {
-        Variant[] values = Variant.values();
-        return values[getDataTracker().get(VARIANT) % values.length];
+        return Variant.byId(getDataTracker().get(VARIANT));
     }
 
     public void setVariant(Variant variant) {
@@ -117,44 +125,45 @@ public class ButterflyEntity extends AmbientEntity {
                 return false;
             }
 
-            if (player.isSprinting() || player.handSwinging || player.forwardSpeed > 0 || player.sidewaysSpeed > 0) {
+            if (player.isSprinting() || player.forwardSpeed > 0 || player.sidewaysSpeed > 0) {
                 return true;
             }
         } else if (!EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(e)) {
             return false;
         }
 
-        return e.getVelocity().x != 0 || e.getVelocity().z != 0;
+        return e.getVelocity().horizontalLength() > 1.4F;
     }
 
     @Override
     public void tickMovement() {
         super.tickMovement();
 
-        BlockPos pos = getBlockPos();
         BlockPos below = new BlockPos(getPos().add(0, -0.5, 0));
 
         if (isResting()) {
-            if (world.getBlockState(below).isAir()) {
+            if (world.getBlockState(below).isAir()
+                || !world.getOtherEntities(this, getBoundingBox().expand(7), this::isAggressor).isEmpty()
+                || (ticksResting++ > 40 && world.random.nextInt(500) == 0)
+                || world.hasRain(below)) {
                 setResting(false);
-            } else {
-                if (!world.getOtherEntities(this, getBoundingBox().expand(7), this::isAggressor).isEmpty()) {
-                    setResting(false);
-                }
             }
         } else {
+            ticksResting = 0;
 
             // invalidate the hovering position
             if (hoveringPosition != null && (!world.isAir(hoveringPosition) || hoveringPosition.getY() < 1)) {
                 hoveringPosition = null;
             }
 
+            BlockPos pos = getBlockPos();
+
             // select a new hovering position
             if (hoveringPosition == null || random.nextInt(30) == 0 || hoveringPosition.getSquaredDistance(pos) < 4) {
-                hoveringPosition = new BlockPos(
-                        getX() + random.nextInt(7) - random.nextInt(7),
-                        getY() + random.nextInt(6) - 2,
-                        getZ() + random.nextInt(7) - random.nextInt(7)
+                hoveringPosition = pos.add(
+                        random.nextInt(7) - random.nextInt(7),
+                        random.nextInt(6) - 2,
+                        random.nextInt(7) - random.nextInt(7)
                 );
             }
 
@@ -176,7 +185,25 @@ public class ButterflyEntity extends AmbientEntity {
             if (random.nextInt(100) == 0 && world.getBlockState(below).isOpaque()) {
                 setResting(true);
             }
+
+            if (!world.isClient && age % 20 == 0 && world.random.nextInt(200) == 0) {
+                for (Entity i : world.getOtherEntities(this, getBoundingBox().expand(20))) {
+                    if (i.getType() == getType()) {
+                        return;
+                    }
+                }
+
+                ButterflyEntity copy = (ButterflyEntity)getType().create(world);
+                copy.copyPositionAndRotation(this);
+                world.spawnEntity(copy);
+            }
         }
+    }
+
+    @Override
+    public boolean shouldRender(double distance) {
+        double d = 64 * getRenderDistanceMultiplier();
+        return distance < d * d;
     }
 
     @Override
@@ -190,7 +217,7 @@ public class ButterflyEntity extends AmbientEntity {
 
     @Override
     public boolean canSpawn(WorldAccess world, SpawnReason reason) {
-        return reason != SpawnReason.NATURAL || (getY() < world.getSeaLevel() && world.getLightLevel(getBlockPos()) > 7);
+        return reason != SpawnReason.NATURAL || (getY() >= world.getSeaLevel() && world.getLightLevel(getBlockPos()) > 3);
     }
 
     @Override
@@ -215,10 +242,16 @@ public class ButterflyEntity extends AmbientEntity {
         WHITE_MONARCH,
         BRIMSTONE;
 
+        private static final Variant[] VALUES = Variant.values();
+
         private final Identifier skin = new Identifier("unicopia", "textures/entity/butterfly/" + name().toLowerCase() + ".png");
 
         public Identifier getSkin() {
             return skin;
+        }
+
+        static Variant byId(int index) {
+            return VALUES[Math.max(0, index) % VALUES.length];
         }
 
         static Variant random(Random rand) {
