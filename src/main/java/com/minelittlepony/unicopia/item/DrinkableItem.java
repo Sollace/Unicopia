@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
+import com.minelittlepony.unicopia.item.toxin.ToxicHolder;
+
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,6 +28,8 @@ public class DrinkableItem extends Item {
         if (user instanceof PlayerEntity && !((PlayerEntity)user).getAbilities().creativeMode) {
             stack.decrement(1);
         }
+
+        ((ToxicHolder)this).getToxic().ifPresent(t -> t.finishUsing(stack, world, user));
 
         return stack.isEmpty() ? new ItemStack(getRecipeRemainder()) : stack;
     }
