@@ -16,6 +16,7 @@ import com.minelittlepony.unicopia.client.render.AccessoryFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.AmuletFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.BatWingsFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer;
+import com.minelittlepony.unicopia.client.render.ButterflyEntityRenderer;
 import com.minelittlepony.unicopia.client.render.CastSpellEntityRenderer;
 import com.minelittlepony.unicopia.client.render.FloatingArtefactEntityRenderer;
 import com.minelittlepony.unicopia.client.render.IcarusWingsFeatureRenderer;
@@ -65,6 +66,7 @@ public interface URenderers {
         AccessoryFeatureRenderer.register(BatWingsFeatureRenderer::new);
 
         EntityRendererRegistry.INSTANCE.register(UEntities.THROWN_ITEM, FlyingItemEntityRenderer::new);
+        EntityRendererRegistry.INSTANCE.register(UEntities.BUTTERFLY, ButterflyEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(UEntities.FLOATING_ARTEFACT, FloatingArtefactEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(UEntities.CAST_SPELL, CastSpellEntityRenderer::new);
 

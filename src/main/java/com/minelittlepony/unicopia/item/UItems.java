@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.item;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.toxin.UFoodComponents;
@@ -15,6 +16,7 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponents;
 import net.minecraft.item.MusicDiscItem;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
@@ -71,6 +73,8 @@ public interface UItems {
 
     Item GOLDEN_FEATHER = register("golden_feather", new Item(new Item.Settings().rarity(Rarity.UNCOMMON).group(ItemGroup.MATERIALS)));
     Item GOLDEN_WING = register("golden_wing", new Item(new Item.Settings().rarity(Rarity.UNCOMMON).group(ItemGroup.MATERIALS)));
+
+    Item BUTTERFLY_SPAWN_EGG = register("butterfly_spawn_egg", new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xaaeeff, new Item.Settings().group(ItemGroup.MISC)));
 
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new AmuletItem(new FabricItemSettings()
             .maxCount(1)

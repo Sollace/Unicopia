@@ -66,6 +66,7 @@
   "item.unicopia.music_disc_funk": "Music Disc",
   "item.unicopia.music_disc_funk.desc": "funk, just funk",
 
+  "entity.unicopia.butterfly": "Butterfly",
   "entity.unicopia.cast_spell": "Cast Spell",
   "entity.unicopia.cast_spell.by": "a spell cast by %s",
 

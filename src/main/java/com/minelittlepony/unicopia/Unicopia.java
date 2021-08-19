@@ -42,6 +42,7 @@ public class Unicopia implements ModInitializer {
         Channel.bootstrap();
         UTags.bootstrap();
         UCriteria.bootstrap();
+        UEntities.bootstrap();
         Commands.bootstrap();
 
         ServerTickEvents.END_WORLD_TICK.register(w -> {
