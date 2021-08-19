@@ -91,6 +91,9 @@ public class ButterflyEntity extends AmbientEntity {
 
     public void setResting(boolean resting) {
         getDataTracker().set(RESTING, resting);
+        if (!resting) {
+            hoveringPosition = null;
+        }
     }
 
     public Variant getVariant() {
@@ -129,15 +132,15 @@ public class ButterflyEntity extends AmbientEntity {
         super.tickMovement();
 
         BlockPos pos = getBlockPos();
-        BlockPos below = pos.down();
+        BlockPos below = new BlockPos(getPos().add(0, -0.5, 0));
 
         if (isResting()) {
-            if (world.getBlockState(below).isOpaque()) {
+            if (world.getBlockState(below).isAir()) {
+                setResting(false);
+            } else {
                 if (!world.getOtherEntities(this, getBoundingBox().expand(7), this::isAggressor).isEmpty()) {
                     setResting(false);
                 }
-            } else {
-                setResting(false);
             }
         } else {
 
