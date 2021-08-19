@@ -13,19 +13,13 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectType;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LightType;
 
 public class SunBlindnessStatusEffect extends StatusEffect {
     public static final int MAX_DURATION = 50;
 
-    public static final SunBlindnessStatusEffect INSTANCE = new SunBlindnessStatusEffect(0x886F0F);
-
-    private SunBlindnessStatusEffect(int color) {
+    SunBlindnessStatusEffect(int color) {
         super(StatusEffectType.NEUTRAL, color);
-
-        Registry.register(Registry.STATUS_EFFECT, new Identifier("unicopia", "sun_blindness"), this);
     }
 
     @Override

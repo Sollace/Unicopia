@@ -22,6 +22,7 @@ import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.Trap;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
+import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.toxin.Toxin;
 import com.minelittlepony.unicopia.network.Channel;
@@ -298,7 +299,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
                 }
 
                 if (ticksInSun == 1) {
-                    entity.addStatusEffect(new StatusEffectInstance(SunBlindnessStatusEffect.INSTANCE, SunBlindnessStatusEffect.MAX_DURATION * 10, 1, true, false));
+                    entity.addStatusEffect(new StatusEffectInstance(UEffects.SUN_BLINDNESS, SunBlindnessStatusEffect.MAX_DURATION * 10, 1, true, false));
                     UCriteria.LOOK_INTO_SUN.trigger(entity);
 
                     if (isClient() && isClientPlayer()) {

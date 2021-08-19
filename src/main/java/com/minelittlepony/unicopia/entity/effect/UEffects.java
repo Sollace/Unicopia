@@ -1,29 +1,17 @@
 package com.minelittlepony.unicopia.entity.effect;
 
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
-
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectType;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public interface UEffects {
+    StatusEffect FOOD_POISONING = register("food_poisoning", new FoodPoisoningStatusEffect(3484199));
+    StatusEffect SUN_BLINDNESS = register("sun_blindness", new SunBlindnessStatusEffect(0x886F0F));
+    StatusEffect CORRUPT_INFLUENCE = register("corrupt_influence", new CorruptInfluenceStatusEffect(0x00FF00));
 
-    StatusEffect FOOD_POISONING = new CustomStatusEffect.Builder(new Identifier("unicopia", "food_poisoning"), StatusEffectType.HARMFUL, 3484199).direct((p, e, i) -> {
-        StatusEffectInstance nausea = e.getStatusEffect(StatusEffects.NAUSEA);
-        if (nausea == null) {
-            StatusEffectInstance foodEffect = e.getStatusEffect(p);
-            nausea = new StatusEffectInstance(StatusEffects.NAUSEA, foodEffect.getDuration(),
-                    foodEffect.getAmplifier(),
-                    true,
-                    foodEffect.shouldShowParticles(),
-                    false
-            );
+    private static StatusEffect register(String name, StatusEffect effect) {
+        return Registry.register(Registry.STATUS_EFFECT, new Identifier("unicopia", name), effect);
+    }
 
-            e.addStatusEffect(nausea);
-        }
-
-        e.damage(MagicalDamageSource.FOOD_POISONING, i);
-    }).build();
+    static void bootstrap() {}
 }

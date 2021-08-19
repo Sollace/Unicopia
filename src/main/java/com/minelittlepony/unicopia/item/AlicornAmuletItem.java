@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.ItemImpl.TickableItem;
+import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.PlayerCharmTracker;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -28,6 +29,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
@@ -200,6 +202,10 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
                 w.createExplosion(player, pos.x, pos.y, pos.z, 6, DestructionType.BREAK);
             }, 50);
         }
+
+        pony.findAllEntitiesInRange(10, e -> e instanceof MobEntity && !((MobEntity)e).hasStatusEffect(UEffects.CORRUPT_INFLUENCE)).forEach(e -> {
+            ((MobEntity)e).addStatusEffect(new StatusEffectInstance(UEffects.CORRUPT_INFLUENCE, 1300, 1));
+        });
     }
 
     @Override

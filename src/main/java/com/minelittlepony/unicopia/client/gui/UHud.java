@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
+import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -151,10 +152,10 @@ public class UHud extends DrawableHelper {
 
     protected void renderViewEffects(Pony pony, MatrixStack matrices, int scaledWidth, int scaledHeight, float tickDelta) {
 
-        boolean hasEffect = client.player.hasStatusEffect(SunBlindnessStatusEffect.INSTANCE);
+        boolean hasEffect = client.player.hasStatusEffect(UEffects.SUN_BLINDNESS);
 
         if (hasEffect || (pony.getSpecies() == Race.BAT && SunBlindnessStatusEffect.hasSunExposure(client.player))) {
-            float i = hasEffect ? (client.player.getStatusEffect(SunBlindnessStatusEffect.INSTANCE).getDuration() - tickDelta) / SunBlindnessStatusEffect.MAX_DURATION : 0;
+            float i = hasEffect ? (client.player.getStatusEffect(UEffects.SUN_BLINDNESS).getDuration() - tickDelta) / SunBlindnessStatusEffect.MAX_DURATION : 0;
 
             float pulse = (1 + (float)Math.sin(client.player.age / 108F)) * 0.25F;
 

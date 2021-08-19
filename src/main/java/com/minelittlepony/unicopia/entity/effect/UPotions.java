@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.entity.effect;
 
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.Identifier;
@@ -24,7 +23,6 @@ public interface UPotions {
     }
 
     static void bootstrap() {
-        @SuppressWarnings("unused")
-        StatusEffect e = SunBlindnessStatusEffect.INSTANCE;
+        UEffects.bootstrap();
     }
 }

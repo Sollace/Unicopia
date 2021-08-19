@@ -8,7 +8,7 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
 import com.minelittlepony.unicopia.client.sound.MotionBasedSoundInstance;
-import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
+import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyClientPlayerEntity;
@@ -53,7 +53,7 @@ public class ClientInteractionManager extends InteractionManager {
             SoundManager soundManager = client.getSoundManager();
 
             if (type == SOUND_EARS_RINGING && source instanceof LivingEntity) {
-                soundManager.play(new LoopingSoundInstance<>((LivingEntity)source, e -> e.hasStatusEffect(SunBlindnessStatusEffect.INSTANCE), USounds.ENTITY_PLAYER_EARS_RINGING, 1F, 1F));
+                soundManager.play(new LoopingSoundInstance<>((LivingEntity)source, e -> e.hasStatusEffect(UEffects.SUN_BLINDNESS), USounds.ENTITY_PLAYER_EARS_RINGING, 1F, 1F));
             } else if (type == SOUND_BEE && source instanceof BeeEntity) {
                 soundManager.playNextTick(
                         ((BeeEntity)source).hasAngerTime()
