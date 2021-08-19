@@ -99,7 +99,12 @@ public interface Toxin extends Affliction {
         text = new TranslatableText("potion.withDuration", text, ChatUtil.ticksToString(ticks));
 
         return of(text, (player, stack) -> {
-            player.addStatusEffect(new StatusEffectInstance(effect, ticks, amplifier, false, false, false));
+            StatusEffectInstance current = player.getStatusEffect(effect);
+            if (current != null) {
+                player.addStatusEffect(new StatusEffectInstance(effect, ticks + current.getDuration(), amplifier + current.getAmplifier(), false, false, false));
+            } else {
+                player.addStatusEffect(new StatusEffectInstance(effect, ticks, amplifier, false, false, false));
+            }
         });
     }
 
