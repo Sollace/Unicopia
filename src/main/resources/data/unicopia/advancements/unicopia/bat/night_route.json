@@ -5,10 +5,10 @@
       "item": "minecraft:black_candle"
     },
     "title": {
-      "translate": "advancements.unicopia.night_path.title"
+      "translate": "advancements.unicopia.night_route.title"
     },
     "description": {
-      "translate": "advancements.unicopia.night_path.description"
+      "translate": "advancements.unicopia.night_route.description"
     },
     "frame": "task",
     "show_toast": true,
