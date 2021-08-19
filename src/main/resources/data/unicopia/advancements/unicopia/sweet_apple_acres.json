@@ -15,6 +15,9 @@
     "announce_to_chat": true,
     "hidden": true
   },
+  "rewards": {
+    "experience": 120
+  },
   "criteria": {
     "red_apple": {
       "trigger": "minecraft:inventory_changed",

@@ -15,6 +15,9 @@
     "announce_to_chat": true,
     "hidden": false
   },
+  "rewards": {
+    "experience": 55
+  },
   "criteria": {
     "has_the_jar": {
       "trigger": "minecraft:inventory_changed",
