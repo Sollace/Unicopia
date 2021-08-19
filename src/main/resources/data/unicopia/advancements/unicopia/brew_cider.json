@@ -1,5 +1,5 @@
 {
-  "parent": "unicopia:unicopia/burned_juice",
+  "parent": "unicopia:unicopia/burn_juice",
   "display": {
     "icon": {
       "item": "unicopia:cider"
