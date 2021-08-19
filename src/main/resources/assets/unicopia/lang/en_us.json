@@ -403,6 +403,7 @@
   "advancements.unicopia.feed_trick_apple.description": "Feed a zap apple to a mob",
   "advancements.unicopia.eat_trick_apple.title": "Crunchy",
   "advancements.unicopia.eat_trick_apple.description": "Bite into a zap apple",
+
   "advancements.unicopia.burn_juice.title": "That doesn't seem right",
   "advancements.unicopia.burn_juice.description": "Burn the juice",
   "advancements.unicopia.apple_route.title": "Apple, Apple, Apple",
@@ -412,5 +413,12 @@
   "advancements.unicopia.sweet_apple_acres.title": "Sweet Apple Acres",
   "advancements.unicopia.sweet_apple_acres.description": "Obtain one of every apple",
   "advancements.unicopia.brew_cider.title": "Applejack's Finest",
-  "advancements.unicopia.brew_cider.description": "Brew some cider"
+  "advancements.unicopia.brew_cider.description": "Brew some cider",
+
+  "advancements.unicopia.night_route.title": "I Am The Night",
+  "advancements.unicopia.night_route.description": "Walth the path of night",
+  "advancements.unicopia.screech_twenty_mobs.title": "Terror From The Skies",
+  "advancements.unicopia.screech_twenty_mobs.description": "Rain down terror on at least 20 mobs at once",
+  "advancements.unicopia.screech_self.title": "Jeepers!",
+  "advancements.unicopia.screech_self.description": "Be so terrifying that you even scared your self a little"
 }

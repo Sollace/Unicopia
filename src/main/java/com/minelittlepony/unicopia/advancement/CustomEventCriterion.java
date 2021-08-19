@@ -40,7 +40,8 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
         return new Conditions(
                 playerPredicate,
                 JsonHelper.getString(json, "event"),
-                races
+                races,
+                json.has("flying") ? json.get("flying").getAsBoolean() : null
         );
     }
 
@@ -61,14 +62,19 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
 
         private final Set<Race> races;
 
-        public Conditions(Extended playerPredicate, String event, Set<Race> races) {
+        private final Boolean flying;
+
+        public Conditions(Extended playerPredicate, String event, Set<Race> races, Boolean flying) {
             super(ID, playerPredicate);
             this.event = event;
             this.races = races;
+            this.flying = flying;
         }
 
         public boolean test(String event, ServerPlayerEntity player) {
-            return this.event.equalsIgnoreCase(event) && (races.isEmpty() || races.contains(Pony.of(player).getSpecies()));
+            return this.event.equalsIgnoreCase(event)
+                    && (races.isEmpty() || races.contains(Pony.of(player).getSpecies()))
+                    && (flying == null || flying == Pony.of(player).getPhysics().isFlying());
         }
 
         @Override
@@ -79,6 +85,9 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
                 JsonArray arr = new JsonArray();
                 races.forEach(r -> arr.add(r.name().toLowerCase()));
                 json.add("race", arr);
+            }
+            if (flying != null) {
+                json.addProperty("flying", flying);
             }
             return json;
         }

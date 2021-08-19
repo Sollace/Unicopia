@@ -130,6 +130,8 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
         gravity.updateFlightState();
         entity.sendAbilitiesUpdate();
+
+        UCriteria.PLAYER_CHANGE_RACE.trigger(entity);
     }
 
     public MagicReserves getMagicalReserves() {

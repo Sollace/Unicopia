@@ -1,0 +1,29 @@
+{
+  "parent": "unicopia:unicopia/bat/night_route",
+  "display": {
+    "icon": {
+      "item": "minecraft:black_candle"
+    },
+    "title": {
+      "translate": "advancements.unicopia.screech_self.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.screech_self.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "screech_self": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "screech_self"
+      }
+    }
+  },
+  "requirements": [
+    [ "screech_self" ]
+  ]
+}

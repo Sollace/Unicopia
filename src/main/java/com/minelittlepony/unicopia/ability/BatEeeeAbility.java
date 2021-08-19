@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
@@ -79,9 +80,10 @@ public class BatEeeeAbility implements Ability<Hit> {
 
         if (rng.nextInt(20000) == 0) {
             player.getMaster().damage(MagicalDamageSource.create("eeee", player), 0.1F);
+            UCriteria.SCREECH_SELF.trigger(player.getMaster());
         }
 
-        player.findAllEntitiesInRange(5).forEach(e -> {
+        int total = player.findAllEntitiesInRange(5).mapToInt(e -> {
             if (e instanceof LivingEntity && !HAS_SHIELD.test(e)) {
                 boolean isEarthPony = EquinePredicates.PLAYER_EARTH.test(e);
                 e.damage(MagicalDamageSource.create("eeee", player), isEarthPony ? 0.1F : 0.3F);
@@ -92,7 +94,12 @@ public class BatEeeeAbility implements Ability<Hit> {
                     e.addVelocity(0, 0.1, 0);
                 }
             }
-        });
+            return 1;
+        }).sum();
+
+        if (total >= 20) {
+            UCriteria.SCREECH_TWENTY_MOBS.trigger(player.getMaster());
+        }
     }
 
     @Override

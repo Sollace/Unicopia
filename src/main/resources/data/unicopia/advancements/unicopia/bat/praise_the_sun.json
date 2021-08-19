@@ -1,14 +1,14 @@
 {
-  "parent": "unicopia:unicopia/praise_the_sun",
+  "parent": "unicopia:unicopia/bat/night_route",
   "display": {
     "icon": {
-      "item": "minecraft:potato"
+      "item": "minecraft:light"
     },
     "title": {
-      "translate": "advancements.unicopia.cool_potato.title"
+      "translate": "advancements.unicopia.praise_the_sun.title"
     },
     "description": {
-      "translate": "advancements.unicopia.cool_potato.description"
+      "translate": "advancements.unicopia.praise_the_sun.description"
     },
     "frame": "task",
     "show_toast": true,
@@ -16,14 +16,14 @@
     "hidden": false
   },
   "criteria": {
-    "wear_shades": {
+    "look_into_sun": {
       "trigger": "unicopia:custom",
       "conditions": {
-        "event": "wear_shades"
+        "event": "look_into_sun"
       }
     }
   },
   "requirements": [
-  	[ "wear_shades" ]
+  	[ "look_into_sun" ]
   ]
 }

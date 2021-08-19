@@ -2,13 +2,13 @@
   "parent": "unicopia:unicopia/root",
   "display": {
     "icon": {
-      "item": "minecraft:light"
+      "item": "minecraft:black_candle"
     },
     "title": {
-      "translate": "advancements.unicopia.praise_the_sun.title"
+      "translate": "advancements.unicopia.night_path.title"
     },
     "description": {
-      "translate": "advancements.unicopia.praise_the_sun.description"
+      "translate": "advancements.unicopia.night_path.description"
     },
     "frame": "task",
     "show_toast": true,
@@ -16,14 +16,14 @@
     "hidden": false
   },
   "criteria": {
-    "look_into_sun": {
-      "trigger": "unicopia:custom",
+    "be_bat": {
+      "trigger": "unicopia:player_change_race",
       "conditions": {
-        "event": "look_into_sun"
+        "race": "bat"
       }
     }
   },
   "requirements": [
-  	[ "look_into_sun" ]
+    [ "be_bat" ]
   ]
 }

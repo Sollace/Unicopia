@@ -1,0 +1,29 @@
+{
+  "parent": "unicopia:unicopia/bat/praise_the_sun",
+  "display": {
+    "icon": {
+      "item": "minecraft:carved_pumpkin"
+    },
+    "title": {
+      "translate": "advancements.unicopia.cool_potato.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.cool_potato.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "wear_shades": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "wear_shades"
+      }
+    }
+  },
+  "requirements": [
+  	[ "wear_shades" ]
+  ]
+}
