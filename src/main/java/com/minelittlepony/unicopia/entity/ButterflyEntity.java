@@ -255,8 +255,7 @@ public class ButterflyEntity extends AmbientEntity {
         }
 
         static Variant random(Random rand) {
-            Variant[] values = values();
-            return values[rand.nextInt(values.length)];
+            return VALUES[rand.nextInt(VALUES.length)];
         }
     }
 }
