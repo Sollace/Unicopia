@@ -20,7 +20,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "item": "unicopia:zap_apple" }
+          { "items": [ "unicopia:zap_apple" ] }
         ]
       }
     }

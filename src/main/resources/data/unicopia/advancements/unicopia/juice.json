@@ -20,7 +20,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "item": "unicopia:juice" }
+          { "items": [ "unicopia:juice" ] }
         ]
       }
     }

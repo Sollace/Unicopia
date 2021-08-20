@@ -23,8 +23,8 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "item": "unicopia:rain_cloud_jar" },
-          { "item": "unicopia:storm_cloud_jar" }
+          { "items": [ "unicopia:rain_cloud_jar" ] },
+          { "items": [ "unicopia:storm_cloud_jar" ] }
         ]
       }
     }

@@ -10,7 +10,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "item": "unicopia:golden_feather" }
+          { "items": [ "unicopia:golden_feather" ] }
         ]
       }
     },

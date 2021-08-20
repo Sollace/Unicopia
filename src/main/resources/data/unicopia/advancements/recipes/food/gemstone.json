@@ -10,7 +10,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "item": "unicopia:crystal_shard" }
+          { "items": [ "unicopia:crystal_shard" ] }
         ]
       }
     },

@@ -23,7 +23,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "item": "minecraft:apple" }
+          { "items": [ "minecraft:apple" ] }
         ]
       }
     },
@@ -31,7 +31,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "item": "unicopia:green_apple" }
+          { "items": [ "unicopia:green_apple" ] }
         ]
       }
     },
@@ -39,7 +39,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "item": "unicopia:sweet_apple" }
+          { "items": [ "unicopia:sweet_apple" ] }
         ]
       }
     },
@@ -47,7 +47,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "item": "unicopia:sour_apple" }
+          { "items": [ "unicopia:sour_apple" ] }
         ]
       }
     },
@@ -55,7 +55,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "item": "unicopia:rotten_apple" }
+          { "items": [ "unicopia:rotten_apple" ] }
         ]
       }
     },
@@ -63,7 +63,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "item": "unicopia:zap_apple" }
+          { "items": [ "unicopia:zap_apple" ] }
         ]
       }
     },
@@ -71,7 +71,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "item": "unicopia:cooked_zap_apple" }
+          { "items": [ "unicopia:cooked_zap_apple" ] }
         ]
       }
     },
@@ -79,7 +79,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "item": "unicopia:golden_apple" }
+          { "items": [ "unicopia:golden_apple" ] }
         ]
       }
     }
