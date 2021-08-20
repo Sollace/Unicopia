@@ -39,7 +39,6 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
     public void clear(AbilitySlot slot) {
         Stat stat = getStat(slot);
 
-
         if (stat.canSwitchStates()) {
             stat.setActiveAbility(null);
         }

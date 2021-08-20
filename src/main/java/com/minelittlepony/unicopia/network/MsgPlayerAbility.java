@@ -43,6 +43,10 @@ public class MsgPlayerAbility<T extends Hit> implements Packet<ServerPlayerEntit
             return;
         }
 
-        power.apply(player, data);
+        if (!power.canApply(player, data)) {
+            Channel.CANCEL_PLAYER_ABILITY.send(sender, new MsgCancelPlayerAbility());
+        } else {
+            power.apply(player, data);
+        }
     }
 }

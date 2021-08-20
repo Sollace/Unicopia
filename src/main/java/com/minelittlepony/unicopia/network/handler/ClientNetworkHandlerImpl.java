@@ -3,13 +3,16 @@ package com.minelittlepony.unicopia.network.handler;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
 import com.minelittlepony.unicopia.client.gui.TribeSelectionScreen;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.MsgBlockDestruction;
+import com.minelittlepony.unicopia.network.MsgCancelPlayerAbility;
 import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
 import com.minelittlepony.unicopia.network.MsgTribeSelect;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.sound.SoundEvents;
 
 public class ClientNetworkHandlerImpl implements ClientNetworkHandler {
 
@@ -48,6 +51,12 @@ public class ClientNetworkHandlerImpl implements ClientNetworkHandler {
         packet.getDestructions().forEach((i, d) -> {
             destr.setBlockDestruction(i, d);
         });
+    }
+
+    @Override
+    public void handleCancelAbility(MsgCancelPlayerAbility packet) {
+        client.player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
+        Pony.of(client.player).getAbilities().getStats().forEach(s -> s.setCooldown(0));
     }
 
 }

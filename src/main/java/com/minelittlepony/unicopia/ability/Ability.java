@@ -74,6 +74,15 @@ public interface Ability<T extends Hit> {
     }
 
     /**
+     * Server-side counterpart to canActivate.
+     *
+     * Called before applying to determine whether to cancel the command or not.
+     */
+    default boolean canApply(Pony player, T data) {
+        return true;
+    }
+
+    /**
      * Called to actually apply the ability.
      * Only called on the server side.
      *

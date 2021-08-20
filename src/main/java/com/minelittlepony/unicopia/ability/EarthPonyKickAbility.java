@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.ability;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -60,20 +59,17 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     @Nullable
     @Override
     public Pos tryActivate(Pony player) {
-        Optional<BlockPos> p = RayTraceHelper.doTrace(player.getMaster(), 6, 1).getBlockPos();
+        return RayTraceHelper.doTrace(player.getMaster(), 6, 1).getBlockPos().map(Pos::new).orElse(null);
+    }
 
-        if (p.isPresent()) {
-            BlockPos pos = p.get();
-            TreeType tree = TreeType.get(player.getWorld().getBlockState(pos));
+    @Override
+    public boolean canApply(Pony player, Pos data) {
+        BlockPos pos = data.pos();
+        TreeType tree = TreeType.get(player.getWorld().getBlockState(pos));
 
-            if (tree != TreeType.NONE) {
-                return tree.findBase(player.getWorld(), pos).map(base -> {
-                    return tree.countBlocks(player.getWorld(), pos) > 0 ? new Pos(base) : null;
-                }).orElse(null);
-            }
-        }
-
-        return null;
+        return tree != TreeType.NONE && tree.findBase(player.getWorld(), pos).map(base -> {
+            return tree.countBlocks(player.getWorld(), pos) > 0;
+        }).orElse(false);
     }
 
     @Override
@@ -93,7 +89,6 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         }
 
         BlockPos pos = data.pos();
-
 
         BlockDestructionManager destr = ((BlockDestructionManager.Source)player.world).getDestructionManager();
 

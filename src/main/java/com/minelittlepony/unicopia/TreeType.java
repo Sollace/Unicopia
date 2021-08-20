@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.Weighted;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -23,8 +22,8 @@ public final class TreeType {
             new Identifier("unicopia", "none"),
             false,
             new Weighted<Supplier<ItemStack>>(),
-            Collections.emptySet(),
-            Collections.emptySet()
+            Set.of(),
+            Set.of()
     );
     private static final Direction[] WIDE_DIRS = new Direction[] { Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST };
 
