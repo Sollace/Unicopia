@@ -1,0 +1,9 @@
+{
+	"logs": [ "minecraft:oak_log", "minecraft:oak_wood" ],
+	"leaves": [ "minecraft:azalea_leaves", "minecraft:flowering_azalea_leaves" ],
+	"drops": [
+		{ "weight": 1, "item": "unicopia:sour_apple" },
+		{ "weight": 2, "item": "unicopia:green_apple" },
+		{ "weight": 3, "item": "minecraft:apple" }
+	]
+}
