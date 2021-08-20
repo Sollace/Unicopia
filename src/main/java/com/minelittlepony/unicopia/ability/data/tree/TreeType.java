@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.ability.data.tree;
 
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.Weighted;

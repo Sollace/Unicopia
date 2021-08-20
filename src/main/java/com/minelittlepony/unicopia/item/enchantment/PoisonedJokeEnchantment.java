@@ -14,8 +14,8 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.reflect.TypeUtils;
 
 import com.google.gson.JsonParseException;
-import com.minelittlepony.unicopia.TreeTypeLoader;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.ability.data.tree.TreeTypeLoader;
 import com.minelittlepony.unicopia.entity.Living;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;

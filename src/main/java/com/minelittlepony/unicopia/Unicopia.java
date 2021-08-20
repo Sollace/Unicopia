@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.minelittlepony.unicopia.ability.data.tree.TreeTypeLoader;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.entity.effect.UPotions;

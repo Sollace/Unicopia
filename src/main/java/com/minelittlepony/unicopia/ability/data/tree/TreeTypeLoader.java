@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.ability.data.tree;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -29,7 +29,7 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
             .registerTypeAdapter(Identifier.class, new ToStringAdapter<>(Identifier::new))
             .create();
 
-    static final TreeTypeLoader INSTANCE = new TreeTypeLoader();
+    public static final TreeTypeLoader INSTANCE = new TreeTypeLoader();
 
     private final Set<TreeType> entries = new HashSet<>();
 
