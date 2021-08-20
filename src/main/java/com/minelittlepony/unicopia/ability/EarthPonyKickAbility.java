@@ -25,6 +25,7 @@ import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -65,7 +66,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     @Override
     public boolean canApply(Pony player, Pos data) {
         BlockPos pos = data.pos();
-        TreeType tree = TreeType.get(player.getWorld().getBlockState(pos));
+        TreeType tree = TreeType.at(pos, player.getWorld());
 
         return tree != TreeType.NONE && tree.findBase(player.getWorld(), pos).map(base -> {
             return tree.countBlocks(player.getWorld(), pos) > 0;
@@ -94,7 +95,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
         if (destr.getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
             if (!harmed || player.world.random.nextInt(30) == 0) {
-                TreeType.get(player.world.getBlockState(pos)).traverse(player.world, pos, (w, state, p, recurseLevel) -> {
+                TreeType.at(pos, player.world).traverse(player.world, pos, (w, state, p, recurseLevel) -> {
                     if (recurseLevel < 5) {
                         w.breakBlock(p, true);
                     } else {
@@ -150,10 +151,9 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     }
 
     private int dropApples(PlayerEntity player, BlockPos pos) {
-        TreeType tree = TreeType.get(player.world.getBlockState(pos));
+        TreeType tree = TreeType.at(pos, player.world);
 
         if (tree.countBlocks(player.world, pos) > 0) {
-
             List<ItemEntity> capturedDrops = Lists.newArrayList();
 
             tree.traverse(player.world, pos, (world, state, position, recurse) -> {
@@ -162,13 +162,17 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                 affectBlockChange(player, position);
 
                 if (world.getBlockState(position.down()).isAir()) {
-                    WorldEvent.play(WorldEvent.DESTROY_BLOCK, world, position, state);
-                    capturedDrops.add(new ItemEntity(world,
+                    ItemStack stack = tree.pickRandomStack(state);
+                    if (!stack.isEmpty()) {
+                        WorldEvent.play(WorldEvent.DESTROY_BLOCK, world, position, state);
+
+                        capturedDrops.add(new ItemEntity(world,
                             position.getX() + world.random.nextFloat(),
                             position.getY() - 0.5,
                             position.getZ() + world.random.nextFloat(),
-                            tree.pickRandomStack()
+                            stack
                         ));
+                    }
                 }
             });
 
