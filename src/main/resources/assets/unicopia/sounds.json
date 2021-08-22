@@ -11,12 +11,14 @@
   },
   "item.magic.aura": {
     "category": "player",
+    "subtitle": "unicopia.subtitle.magic_aura",
     "sounds": [
       "unicopia:aura/aura0"
     ]
   },
   "entity.player.rebound": {
     "category": "player",
+    "subtitle": "unicopia.subtitle.player.rebound",
     "sounds": [
       "unicopia:boing/boing0",
       "unicopia:boing/boing1",
@@ -50,6 +52,13 @@
       "unicopia:ears/ringing"
     ]
   },
+  "entity.player.heartbeat": {
+    "category": "ambient",
+    "subtitle": "unicopia.subtitle.heartbeat",
+    "sounds": [
+      "unicopia:heartbeat/heartbeat"
+    ]
+  },
   "ambient.wind.gust": {
     "category": "ambient",
     "subtitle": "unicopia.subtitle.wind_rush",
@@ -72,7 +81,7 @@
   },
   "record.pet": {
     "category": "blocks",
-  "stream": true,
+    "stream": true,
     "sounds": [
       { "name": "unicopia:record/pet", "stream": true}
     ]

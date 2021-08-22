@@ -6,11 +6,13 @@ import java.util.Random;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
+import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
@@ -22,10 +24,9 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityDimensions;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
@@ -56,6 +57,9 @@ public class UHud extends DrawableHelper {
     private int messageTime;
 
     int xDirection;
+
+    @Nullable
+    private LoopingSoundInstance<PlayerEntity> heartbeatSound;
 
     public void render(InGameHud hud, MatrixStack matrices, float tickDelta) {
 
@@ -182,14 +186,20 @@ public class UHud extends DrawableHelper {
         float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();
 
         if (exhaustion > 0) {
-            if (tickDelta == 0) {
-                client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.BLOCK_ANVIL_BREAK, 1));
+            if (exhaustion > 0.5F && (heartbeatSound == null || heartbeatSound.isDone())) {
+                client.getSoundManager().play(
+                        heartbeatSound = new LoopingSoundInstance<>(client.player, player -> {
+                            return Pony.of(player).getMagicalReserves().getExhaustion().getPercentFill() > 0.5F;
+                        }, USounds.ENTITY_PLAYER_HEARTBEAT, 1, 1)
+                );
             }
 
             int color = 0x880000;
 
-            float radius = (1 + (float)Math.sin(client.player.age / 7F)) / 2F;
-            radius = 0.14F + radius * 0.2F;
+            float rate = exhaustion > 0.5F ? 2.5F : 7F;
+
+            float radius = (1 + (float)Math.sin(client.player.age / rate)) / 2F;
+            radius = 0.1F + radius * 0.1F;
 
             int alpha1 = (int)(MathHelper.clamp(exhaustion * radius * 2, 0, 1) * 205) << 24 & -16777216;
             int alpha2 = 0;

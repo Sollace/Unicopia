@@ -13,6 +13,7 @@ public interface USounds {
     SoundEvent ENTITY_PLAYER_CHANGELING_BUZZ = register("entity.player.changeling.buzz");
 
     SoundEvent ENTITY_PLAYER_EARS_RINGING = register("entity.player.ears_ring");
+    SoundEvent ENTITY_PLAYER_HEARTBEAT = register("entity.player.heartbeat");
 
     SoundEvent ITEM_MAGIC_AURA = register("item.magic.aura");
 
