@@ -141,10 +141,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         isFlyingSurvival = false;
     }
 
-    private void playSound(SoundEvent event, float volume, float pitch) {
-        entity.world.playSoundFromEntity(null, entity, event, entity.getSoundCategory(), volume, pitch);
-    }
-
     private double getHorizontalMotion(Entity e) {
         return e.getPos().subtract(lastPos).horizontalLengthSquared();
     }
@@ -175,7 +171,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (type != lastFlightType && (lastFlightType.isArtifical() || type.isArtifical())) {
             ParticleUtils.spawnParticles(ParticleTypes.CLOUD, entity, 10);
 
-            entity.world.playSound(entity.getX(), entity.getY(), entity.getZ(), entity.world.getDimension().isUltrawarm() ? SoundEvents.BLOCK_BELL_USE : SoundEvents.BLOCK_BELL_RESONATE, SoundCategory.PLAYERS, 0.1125F, 1.5F, true);
+            entity.playSound(entity.world.getDimension().isUltrawarm() ? SoundEvents.BLOCK_BELL_USE : SoundEvents.BLOCK_BELL_RESONATE, 0.1125F, 1.5F);
         }
 
         entity.getAbilities().allowFlying = type.canFlyCreative(entity);
@@ -236,7 +232,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     prevStrafe = strafing;
                     strafe = 1;
                     ticksToGlide = 20;
-                    entity.playSound(getFlightType().getWingFlapSound(), 0.25F, 1);
+                    entity.playSound(type.getWingFlapSound(), 0.25F, 1);
                 } else {
                     strafe *= 0.28;
                 }
@@ -344,7 +340,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             AmuletItem.consumeEnergy(stack, energyConsumed);
 
             if (AmuletItem.getEnergy(stack) < 9) {
-                playSound(SoundEvents.BLOCK_CHAIN_STEP, 0.13F, 0.5F);
+                entity.playSound(SoundEvents.BLOCK_CHAIN_STEP, 0.13F, 0.5F);
             }
 
             if (entity.world.random.nextInt(damageInterval) == 0) {
@@ -352,7 +348,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             }
 
             if (!getFlightType().canFly()) {
-                playSound(SoundEvents.ITEM_SHIELD_BREAK, 1, 2);
+                entity.playSound(SoundEvents.ITEM_SHIELD_BREAK, 1, 2);
                 cancelFlight();
             }
         }
@@ -430,12 +426,12 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 wallHitCooldown = 30;
 
                 if (bouncyness > 0) {
-                    playSound(USounds.ENTITY_PLAYER_REBOUND, 1, 1);
+                    entity.playSound(USounds.ENTITY_PLAYER_REBOUND, 1, 1);
                     ProjectileUtil.ricochet(entity, Vec3d.of(pos), 0.4F + Math.min(2, bouncyness / 18F));
                     velocity.fromImmutable(entity.getVelocity());
                     distance /= bouncyness;
                 } else {
-                    playSound(distance > 4 ? SoundEvents.ENTITY_PLAYER_BIG_FALL : SoundEvents.ENTITY_PLAYER_SMALL_FALL, 1, 1);
+                    entity.playSound(distance > 4 ? SoundEvents.ENTITY_PLAYER_BIG_FALL : SoundEvents.ENTITY_PLAYER_SMALL_FALL, 1, 1);
                 }
                 entity.damage(DamageSource.FLY_INTO_WALL, distance);
             }

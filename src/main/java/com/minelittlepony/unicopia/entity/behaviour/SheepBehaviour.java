@@ -13,7 +13,6 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 
@@ -40,7 +39,7 @@ public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
                 } else if (!entity.isSheared()) {
                     ItemStack dropType = new ItemStack(MixinSheepEntity.getDrops().get(entity.getColor()).asItem());
 
-                    player.getMaster().playSound(SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.PLAYERS, 1, 1);
+                    player.getMaster().playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1, 1);
                     entity.setSheared(true);
 
                     Random rng = entity.world.random;
