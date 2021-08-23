@@ -75,6 +75,7 @@ public interface UItems {
     Item GOLDEN_WING = register("golden_wing", new Item(new Item.Settings().rarity(Rarity.UNCOMMON).group(ItemGroup.MATERIALS)));
 
     Item BUTTERFLY_SPAWN_EGG = register("butterfly_spawn_egg", new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xaaeeff, new Item.Settings().group(ItemGroup.MISC)));
+    Item BUTTERFLY = register("butterfly", new Item(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.INSECTS)));
 
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new AmuletItem(new FabricItemSettings()
             .maxCount(1)
