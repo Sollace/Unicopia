@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import com.minelittlepony.unicopia.entity.ButterflyEntity;
 import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.FloatingArtefactEntity;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -12,12 +13,17 @@ import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
+import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.village.TradeOffer;
+import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Category;
 
@@ -50,5 +56,16 @@ public interface UEntities {
 
         BiomeModifications.addSpawn(butterflySpawnable.and(BiomeSelectors.categories(Category.RIVER, Category.FOREST, Category.EXTREME_HILLS)), SpawnGroup.AMBIENT, BUTTERFLY, 3, 3, 12);
         BiomeModifications.addSpawn(butterflySpawnable.and(BiomeSelectors.categories(Category.PLAINS, Category.JUNGLE)), SpawnGroup.AMBIENT, BUTTERFLY, 7, 5, 19);
+
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.MASON, 1, factories -> {
+            factories.add((e, rng) -> new TradeOffer(UItems.GEMSTONE.getDefaultStack(), Items.EMERALD.getDefaultStack(), 30, 2, 0.05F));
+        });
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.LIBRARIAN, 1, factories -> {
+            factories.add((e, rng) -> new TradeOffer(new ItemStack(UItems.GEMSTONE, 2), Items.EMERALD.getDefaultStack(), 20, 1, 0.05F));
+            factories.add((e, rng) -> new TradeOffer(new ItemStack(UItems.GEMSTONE, 30), UItems.GOLDEN_FEATHER.getDefaultStack(), UItems.GOLDEN_WING.getDefaultStack(), 30, 2, 0.05F));
+        });
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.CARTOGRAPHER, 1, factories -> {
+            factories.add((e, rng) -> new TradeOffer(new ItemStack(UItems.GEMSTONE, 3), Items.EMERALD.getDefaultStack(), 20, 1, 0.05F));
+        });
     }
 }
