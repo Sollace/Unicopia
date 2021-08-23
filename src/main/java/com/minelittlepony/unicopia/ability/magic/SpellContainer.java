@@ -14,8 +14,7 @@ public interface SpellContainer {
         }
 
         @Override
-        public void put(Spell effect) {
-        }
+        public void put(Spell effect) { }
     };
 
     /**
