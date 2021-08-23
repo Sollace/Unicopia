@@ -2,20 +2,12 @@ package com.minelittlepony.unicopia.entity.player;
 
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
-
-import com.minelittlepony.unicopia.Unicopia;
-
 import net.minecraft.entity.EntityDimensions;
 
 public final class PlayerDimensions {
-
-    private float defaultEyeHeight;
-
-    @Nullable
-    private EntityDimensions defaultDimensions;
-    @Nullable
-    private EntityDimensions flyingDimensions;
+    private static final float FLYING_HEIGHT = 0.6F;
+    private static final Optional<EntityDimensions> FLYING_DIMENSIONS = Optional.of(EntityDimensions.changing(FLYING_HEIGHT, FLYING_HEIGHT));
+    private static final Optional<Float> FLYING_EYE_HEIGHT = Optional.of(FLYING_HEIGHT * 0.6F);
 
     private final PlayerPhysics physics;
 
@@ -26,48 +18,28 @@ public final class PlayerDimensions {
         this.physics = gravity;
     }
 
-    public float calculateActiveEyeHeight(EntityDimensions dimensions, float original) {
-        defaultEyeHeight = original;
+    public Optional<Float> calculateActiveEyeHeight(EntityDimensions dimensions) {
+        return getPredicate()
+                .flatMap(e -> e.getTargetEyeHeight(pony))
+                .filter(h -> h > 0)
+                .or(() -> physics.isFlyingSurvival ? FLYING_EYE_HEIGHT : Optional.empty())
+                .map(h -> {
+                    if (physics.isGravityNegative()) {
+                        if (pony.getMaster().isSneaking()) {
+                            h += 0.2F;
+                        }
 
-        float height = calculateTargetEyeHeight();
-
-        if (physics.isGravityNegative()) {
-            if (pony.getMaster().isSneaking()) {
-                height += 0.2F;
-            }
-
-            height = dimensions.height - height;
-        }
-
-        return height;
+                        return dimensions.height - h;
+                    }
+                    return h;
+                });
     }
 
-    public EntityDimensions calculateDimensions(EntityDimensions dimensions) {
-        if (defaultDimensions == null || dimensions.height != defaultDimensions.height || dimensions.width != defaultDimensions.width) {
-            defaultDimensions = dimensions;
-            flyingDimensions = dimensions;//EntityDimensions.changing(dimensions.width, dimensions.height / 2);
-        }
-
-        dimensions = getPredicate()
+    public Optional<EntityDimensions> calculateDimensions() {
+        return getPredicate()
                 .flatMap(e -> e.getTargetDimensions(pony))
-                .orElseGet(() -> physics.isFlyingSurvival ? flyingDimensions : defaultDimensions);
-
-        if (dimensions.height < 0 || dimensions.width < 0) {
-            Unicopia.LOGGER.warn("Dim out was negative! Restoring original");
-            return defaultDimensions;
-        }
-
-        return dimensions;
-    }
-
-    private float calculateTargetEyeHeight() {
-        float height = getPredicate().map(e -> e.getTargetEyeHeight(pony)).orElse(-1F);
-
-        if (height > 0) {
-            return height;
-        }
-
-        return defaultEyeHeight;
+                 .or(() -> physics.isFlyingSurvival ? FLYING_DIMENSIONS : Optional.empty())
+                .filter(d -> d.height > 0 && d.width > 0);
     }
 
     Optional<Provider> getPredicate() {
@@ -77,7 +49,7 @@ public final class PlayerDimensions {
     }
 
     public interface Provider {
-        float getTargetEyeHeight(Pony player);
+        Optional<Float> getTargetEyeHeight(Pony player);
 
         Optional<EntityDimensions> getTargetDimensions(Pony player);
     }

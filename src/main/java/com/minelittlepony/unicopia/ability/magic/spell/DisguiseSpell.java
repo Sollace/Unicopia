@@ -202,8 +202,8 @@ public class DisguiseSpell extends AbstractSpell implements Attached, Suppressab
     }
 
     @Override
-    public float getTargetEyeHeight(Pony player) {
-        return isSuppressed() ? -1 : disguise.getStandingEyeHeight();
+    public Optional<Float> getTargetEyeHeight(Pony player) {
+        return isSuppressed() ? Optional.empty() : disguise.getStandingEyeHeight();
     }
 
     @Override

@@ -50,6 +50,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.WorldAccess;
 
 public class Disguise implements NbtSerialisable {
+    private static final Optional<Float> BLOCK_HEIGHT = Optional.of(0.5F);
 
     @NotNull
     private String entityId = "";
@@ -230,14 +231,14 @@ public class Disguise implements NbtSerialisable {
         return FlightType.NONE;
     }
 
-    public float getStandingEyeHeight() {
+    public Optional<Float> getStandingEyeHeight() {
         if (entity != null) {
             if (entity instanceof FallingBlockEntity) {
-                return 0.5F;
+                return BLOCK_HEIGHT;
             }
-            return entity.getStandingEyeHeight();
+            return Optional.of(entity.getStandingEyeHeight());
         }
-        return -1;
+        return Optional.empty();
     }
 
     public float getHeight() {

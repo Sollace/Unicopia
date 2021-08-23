@@ -86,30 +86,18 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
         });
     }
 
-    /*
-     * TODO: Mojang plz.
-     * Moved to ClientPlayerInteractionManager#setGameMode, ClientPlayerInteractionManager#setGameModes, ClientPlayerInteractionManager#copyAbilities
-     *          ServerPlayerInteractionManager#setGameMode
-    @Inject(method = "setGameMode(Lnet/minecraft/world/GameMode;)V",
-            at = @At("RETURN"))
-    private void onSetGameMode(GameMode mode, CallbackInfo info) {
-        get().setSpecies(get().getSpecies());
-        get().setDirty();
-    }
-    */
-
     @Inject(method = "getActiveEyeHeight(Lnet/minecraft/entity/EntityPose;Lnet/minecraft/entity/EntityDimensions;)F",
             at = @At("RETURN"),
             cancellable = true)
     private void onGetActiveEyeHeight(EntityPose pose, EntityDimensions dimensions, CallbackInfoReturnable<Float> info) {
-        info.setReturnValue(get().getMotion().getDimensions().calculateActiveEyeHeight(dimensions, info.getReturnValue()));
+        get().getMotion().getDimensions().calculateActiveEyeHeight(dimensions).ifPresent(info::setReturnValue);
     }
 
     @Inject(method = "getDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;",
             at = @At("RETURN"),
             cancellable = true)
     private void onGetDimensions(EntityPose pose, CallbackInfoReturnable<EntityDimensions> info) {
-        info.setReturnValue(get().getMotion().getDimensions().calculateDimensions(info.getReturnValue()));
+        get().getMotion().getDimensions().calculateDimensions().ifPresent(info::setReturnValue);
     }
 
     @Inject(method = "getBlockBreakingSpeed(Lnet/minecraft/block/BlockState;)F",

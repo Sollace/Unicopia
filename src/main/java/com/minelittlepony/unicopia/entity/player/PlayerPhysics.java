@@ -134,13 +134,16 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     private void cancelFlight() {
+        boolean wasFlying = isFlyingEither;
         entity.getAbilities().flying = false;
         isFlyingEither = false;
         isFlyingSurvival = false;
         strafe = 0;
         thrustScale = 0;
-        entity.calculateDimensions();
-        pony.sendCapabilities(true);
+
+        if (wasFlying) {
+            entity.calculateDimensions();
+        }
     }
 
     private double getHorizontalMotion() {
@@ -184,6 +187,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         boolean creative = entity.getAbilities().creativeMode || entity.isSpectator();
 
+        boolean startedFlyingCreative = !creative && isFlyingEither != entity.getAbilities().flying;
+
         if (!creative) {
             if (entity.world.isClient && entity.isOnGround()) {
                 cancelFlight();
@@ -206,6 +211,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
                 cancelFlight();
             }
+
+
         }
 
         if (isGravityNegative()) {
@@ -221,6 +228,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         lastFlightType = type;
         isFlyingSurvival = entity.getAbilities().flying && !creative;
         isFlyingEither = isFlyingSurvival || (creative && entity.getAbilities().flying);
+
+        if (startedFlyingCreative) {
+            entity.calculateDimensions();
+        }
 
         if (type.canFly()) {
             if (isFlying()) {
@@ -242,7 +253,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     prevStrafe = strafing;
                     strafe = 1;
                     ticksToGlide = 20;
-                    entity.playSound(type.getWingFlapSound(), 0.25F, 1);
+                    if (!SpellType.DISGUISE.isOn(pony)) {
+                        entity.playSound(type.getWingFlapSound(), 0.25F, 1);
+                    }
                 } else {
                     strafe *= 0.28;
                 }
@@ -407,6 +420,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             entity.getAbilities().flying = true;
             isFlyingEither = true;
             isFlyingSurvival = true;
+            entity.calculateDimensions();
 
             if (!isGravityNegative()) {
                 velocity.y += horMotion + 0.3;
