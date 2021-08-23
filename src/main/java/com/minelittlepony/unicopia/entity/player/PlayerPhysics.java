@@ -23,7 +23,6 @@ import com.minelittlepony.unicopia.util.MutableVector;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -109,7 +108,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 }
             }
         } else {
-            spreadAmount += MathHelper.clamp(-entity.getVelocity().y, 0, 2);
+            spreadAmount += MathHelper.clamp(-getVerticalMotion(), 0, 2);
             spreadAmount += Math.sin(entity.age / 9F) / 9F;
 
             if (entity.isSneaking()) {
@@ -138,10 +137,18 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         entity.getAbilities().flying = false;
         isFlyingEither = false;
         isFlyingSurvival = false;
+        strafe = 0;
+        thrustScale = 0;
+        entity.calculateDimensions();
+        pony.sendCapabilities(true);
     }
 
-    private double getHorizontalMotion(Entity e) {
-        return e.getPos().subtract(lastPos).horizontalLengthSquared();
+    private double getHorizontalMotion() {
+        return entity.getPos().subtract(lastPos).horizontalLengthSquared();
+    }
+
+    private double getVerticalMotion() {
+        return entity.getPos().y - lastPos.y;
     }
 
     @Override
@@ -178,6 +185,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         boolean creative = entity.getAbilities().creativeMode || entity.isSpectator();
 
         if (!creative) {
+            if (entity.world.isClient && entity.isOnGround()) {
+                cancelFlight();
+            }
+
             entity.getAbilities().flying |= (type.canFly() || entity.getAbilities().allowFlying) && isFlyingEither;
             if (!type.canFly() && (type != lastFlightType)) {
                 entity.getAbilities().flying = false;
@@ -249,7 +260,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             soundPlaying = false;
         }
 
-        lastPos = new Vec3d(entity.getX(), 0, entity.getZ());
+        lastPos = entity.getPos();
 
         if (!entity.isOnGround()) {
             float heavyness = 1 - EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.015F;
@@ -326,7 +337,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             int damageInterval = 20;
             int minDamage = 1;
 
-            float energyConsumed = 2 + (float)getHorizontalMotion(entity) / 10F;
+            float energyConsumed = 2 + (float)getHorizontalMotion() / 10F;
             if (entity.world.hasRain(entity.getBlockPos())) {
                 energyConsumed *= 3;
             }
@@ -359,7 +370,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (ticksInAir > (level * 100)) {
             Bar mana = pony.getMagicalReserves().getMana();
 
-            float cost = (float)-getHorizontalMotion(entity) * 20F / level;
+            float cost = (float)-getHorizontalMotion() * 20F / level;
             if (entity.isSneaking()) {
                 cost /= 10;
             }
@@ -368,7 +379,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
             if (mana.getPercentFill() < 0.2) {
                 pony.getMagicalReserves().getExertion().add(2);
-                pony.getMagicalReserves().getExhaustion().add(2 + (int)(getHorizontalMotion(entity) * 50));
+                pony.getMagicalReserves().getExhaustion().add(2 + (int)(getHorizontalMotion() * 50));
 
                 if (mana.getPercentFill() < 0.1 && ticksInAir % 10 == 0) {
                     float exhaustion = (0.3F * ticksInAir) / 70;
@@ -383,7 +394,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     private void checkAvianTakeoffConditions(MutableVector velocity) {
-        double horMotion = getHorizontalMotion(entity);
+        double horMotion = getHorizontalMotion();
         double motion = entity.getPos().subtract(lastPos).lengthSquared();
 
         boolean takeOffCondition = velocity.y > 0
@@ -415,7 +426,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         BlockState state = entity.world.getBlockState(pos);
 
         if (!entity.world.isAir(pos) && Block.isFaceFullSquare(state.getCollisionShape(entity.world, pos), entity.getHorizontalFacing().getOpposite())) {
-            double motion = Math.sqrt(getHorizontalMotion(entity));
+            double motion = Math.sqrt(getHorizontalMotion());
 
             float distance = (float)(motion * 20 - 3);
 
@@ -441,7 +452,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     private void moveFlying(MutableVector velocity) {
-        double motion = getHorizontalMotion(entity);
+        double motion = getHorizontalMotion();
 
         float forward = 0.000015F * (1 + (pony.getLevel().get() / 10F)) * (float)Math.sqrt(motion);
 
