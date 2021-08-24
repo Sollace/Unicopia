@@ -1,9 +1,9 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
@@ -12,19 +12,21 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.registry.Registry;
 
 public final class SpellType<T extends Spell> implements Affine, SpellPredicate<T> {
 
     public static final Identifier EMPTY_ID = new Identifier("unicopia", "null");
     public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, t -> null);
 
-    private static final Map<Identifier, SpellType<?>> REGISTRY = new HashMap<>();
+    private static final Registry<SpellType<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "spells"));
     private static final Map<Affinity, Set<SpellType<?>>> BY_AFFINITY = new EnumMap<>(Affinity.class);
 
     public static final SpellType<IceSpell> FROST = register("frost", Affinity.GOOD, 0xBDBDF9, true, IceSpell::new);
@@ -145,7 +147,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static <T extends Spell> SpellType<T> register(Identifier id, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
         SpellType<T> type = new SpellType<>(id, affinity, color, obtainable, factory);
         byAffinity(affinity).add(type);
-        REGISTRY.put(id, type);
+        Registry.register(REGISTRY, id, type);
         return type;
     }
 
@@ -160,7 +162,11 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     @SuppressWarnings("unchecked")
     public static <T extends Spell> SpellType<T> getKey(Identifier id) {
-        return (SpellType<T>)(EMPTY_ID.equals(id) ? EMPTY_KEY : REGISTRY.getOrDefault(id, EMPTY_KEY));
+        return (SpellType<T>)(EMPTY_ID.equals(id) ? EMPTY_KEY : REGISTRY.getOrEmpty(id).orElse(EMPTY_KEY));
+    }
+
+    public static SpellType<?> random(Random random) {
+        return REGISTRY.getRandom(random);
     }
 
     public static Set<SpellType<?>> byAffinity(Affinity affinity) {

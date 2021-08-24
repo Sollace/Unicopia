@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity;
 
+import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.minecraft.item.ItemStack;
@@ -14,10 +16,15 @@ public interface UTradeOffers {
         });
         TradeOfferHelper.registerVillagerOffers(VillagerProfession.LIBRARIAN, 1, factories -> {
             factories.add((e, rng) -> new TradeOffer(new ItemStack(UItems.GEMSTONE, 2), Items.EMERALD.getDefaultStack(), 20, 1, 0.05F));
-            factories.add((e, rng) -> new TradeOffer(new ItemStack(UItems.GEMSTONE, 30), UItems.GOLDEN_FEATHER.getDefaultStack(), UItems.GOLDEN_WING.getDefaultStack(), 30, 2, 0.05F));
+
         });
         TradeOfferHelper.registerVillagerOffers(VillagerProfession.CARTOGRAPHER, 1, factories -> {
             factories.add((e, rng) -> new TradeOffer(new ItemStack(UItems.GEMSTONE, 3), Items.EMERALD.getDefaultStack(), 20, 1, 0.05F));
+        });
+
+        TradeOfferHelper.registerWanderingTraderOffers(1, factories -> {
+            factories.add((e, rng) -> new TradeOffer(new ItemStack(UItems.GEMSTONE, 30), UItems.GOLDEN_FEATHER.getDefaultStack(), UItems.GOLDEN_WING.getDefaultStack(), 30, 2, 0.05F));
+            factories.add((e, rng) -> new TradeOffer(new ItemStack(UItems.GEMSTONE, 3), GemstoneItem.enchanted(UItems.GEMSTONE.getDefaultStack(), SpellType.random(rng)), 20, 1, 0.05F));
         });
     }
 }
