@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 
 public interface UTags {
     Tag<Item> APPLES = item("apples");
-    Tag<Item> FESH_APPLES = item("fresh_apples");
+    Tag<Item> FRESH_APPLES = item("fresh_apples");
 
     Tag<Item> FALLS_SLOWLY = item("falls_slowly");
 

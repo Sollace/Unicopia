@@ -42,7 +42,7 @@ public interface UTradeOffers {
             factories.add(buy(ItemTags.SMALL_FLOWERS, 2, UItems.DAFFODIL_DAISY_SANDWICH, 1, 10, 6, 0.08F));
             factories.add(buy(UItems.ZAP_APPLE, 45, UItems.ZAP_APPLE_JAM_JAR, 5, 50, 3, 0.07F));
             factories.add(buy(UItems.CIDER, 1, UItems.FRIENDSHIP_BRACELET, 1, 6, 1, 0.05F));
-            factories.add(buy(UItems.GEMSTONE, 5, UTags.FESH_APPLES, 2, 12, 3, 0.05F));
+            factories.add(buy(UItems.GEMSTONE, 5, UTags.FRESH_APPLES, 2, 12, 3, 0.05F));
             factories.add(new JarredItemTradeOfferFactory());
         });
         TradeOfferHelper.registerWanderingTraderOffers(2, factories -> {
