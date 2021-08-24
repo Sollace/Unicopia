@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.item.toxin.Toxics;
 
 import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.block.Block;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
@@ -24,12 +25,18 @@ public interface UTags {
     Tag<Block> CRYSTAL_HEART_BASE = block("crystal_heart_base");
     Tag<Block> CRYSTAL_HEART_ORNAMENT = block("crystal_heart_ornament");
 
+    Tag<EntityType<?>> TRANSFORMABLE_ENTITIES = entity("transformable");
+
     static Tag<Item> item(String name) {
         return TagRegistry.item(new Identifier("unicopia", name));
     }
 
     static Tag<Block> block(String name) {
         return TagRegistry.block(new Identifier("unicopia", name));
+    }
+
+    static Tag<EntityType<?>> entity(String name) {
+        return TagRegistry.entityType(new Identifier("unicopia", name));
     }
 
     static void bootstrap() {

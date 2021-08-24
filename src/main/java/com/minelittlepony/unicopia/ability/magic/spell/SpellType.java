@@ -44,6 +44,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<RevealingSpell> REVEALING = register("reveal", Affinity.GOOD, 0x5CE81F, true, RevealingSpell::new);
     public static final SpellType<JoustingSpell> JOUSTING = register("joust", Affinity.GOOD, 0xBDBDF9, false, JoustingSpell::new);
     public static final SpellType<AwkwardSpell> AWKWARD = register("awkward", Affinity.GOOD, 0xE1239C, true, AwkwardSpell::new);
+    public static final SpellType<TransformationSpell> TRANSFORMATION = register("transformation", Affinity.NEUTRAL, 0x3A59AA, true, TransformationSpell::new);
 
     private final Identifier id;
     private final Affinity affinity;

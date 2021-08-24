@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.projectile;
 
+import java.util.function.Consumer;
+
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -145,7 +147,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     public void tick() {
         if (!world.isClient()) {
             if (Math.abs(getVelocity().x) < 0.01 && Math.abs(getVelocity().x) < 0.01 && Math.abs(getVelocity().y) < 0.01) {
-                remove(RemovalReason.DISCARDED);
+                discard();
             }
         }
 
@@ -161,7 +163,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
             }
 
             if (!getSpellSlot().get(SpellPredicate.IS_THROWN, true).filter(spell -> spell.onThrownTick(this)).isPresent()) {
-                remove(RemovalReason.DISCARDED);
+                discard();
             }
         }
 
@@ -229,25 +231,21 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     @Override
     protected void onCollision(HitResult result) {
         if (!isRemoved()) {
-            remove(RemovalReason.DISCARDED);
+            discard();
             super.onCollision(result);
 
             if (!world.isClient()) {
                 world.sendEntityStatus(this, (byte)3);
-                remove(RemovalReason.DISCARDED);
+                discard();
             }
         }
     }
 
     @Override
     protected void onBlockHit(BlockHitResult hit) {
-        getSpellSlot().get(SpellPredicate.IS_THROWN, true).ifPresent(effect -> {
-            effect.onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));
-        });
+        super.onBlockHit(hit);
 
-        if (getItem().getItem() instanceof ProjectileDelegate) {
-            ((ProjectileDelegate)getItem().getItem()).onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos()));
-        }
+        forEachDelegates(effect -> effect.onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos())));
     }
 
     @Override
@@ -259,11 +257,20 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
         }
 
         if (entity != null) {
-            entity.damage(DamageSource.thrownProjectile(this, getOwner()), getThrowDamage());
-        }
+            float damage = getThrowDamage();
 
+            if (damage > 0) {
+                entity.damage(DamageSource.thrownProjectile(this, getOwner()), getThrowDamage());
+            }
+
+            forEachDelegates(effect -> effect.onImpact(this, entity));
+        }
+    }
+
+    protected void forEachDelegates(Consumer<ProjectileDelegate> consumer) {
+        getSpellSlot().get(SpellPredicate.IS_THROWN, true).ifPresent(consumer);
         if (getItem().getItem() instanceof ProjectileDelegate) {
-            ((ProjectileDelegate)getItem().getItem()).onImpact(this, entity);
+            consumer.accept(((ProjectileDelegate)getItem().getItem()));
         }
     }
 
