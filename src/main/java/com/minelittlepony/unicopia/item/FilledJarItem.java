@@ -54,4 +54,8 @@ public class FilledJarItem extends JarItem implements ChameleonItem {
         projectile.dropStack(stack);
         WorldEvent.play(WorldEvent.DESTROY_BLOCK, projectile.world, projectile.getBlockPos(), Blocks.GLASS.getDefaultState());
     }
+
+    public ItemStack withContents(ItemStack contents) {
+        return setAppearance(getDefaultStack(), contents);
+    }
 }
