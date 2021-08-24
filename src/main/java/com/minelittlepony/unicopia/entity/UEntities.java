@@ -1,10 +1,7 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.entity;
 
 import java.util.function.Predicate;
 
-import com.minelittlepony.unicopia.entity.ButterflyEntity;
-import com.minelittlepony.unicopia.entity.CastSpellEntity;
-import com.minelittlepony.unicopia.entity.FloatingArtefactEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;

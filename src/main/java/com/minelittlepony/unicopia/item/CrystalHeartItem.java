@@ -3,9 +3,9 @@ package com.minelittlepony.unicopia.item;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.entity.FloatingArtefactEntity;
+import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.entity.FloatingArtefactEntity.State;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;

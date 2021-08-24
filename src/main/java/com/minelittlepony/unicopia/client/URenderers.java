@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.client;
 
-import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.client.particle.ChangelingMagicParticle;
 import com.minelittlepony.unicopia.client.particle.CloudsEscapingParticle;
 import com.minelittlepony.unicopia.client.particle.DiskParticle;
@@ -21,6 +20,7 @@ import com.minelittlepony.unicopia.client.render.CastSpellEntityRenderer;
 import com.minelittlepony.unicopia.client.render.FloatingArtefactEntityRenderer;
 import com.minelittlepony.unicopia.client.render.IcarusWingsFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.WingsFeatureRenderer;
+import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;

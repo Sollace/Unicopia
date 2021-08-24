@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.item;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.minelittlepony.unicopia.UEntities;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.toxin.UFoodComponents;
 

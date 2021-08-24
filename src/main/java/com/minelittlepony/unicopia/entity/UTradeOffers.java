@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.item.UItems;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
