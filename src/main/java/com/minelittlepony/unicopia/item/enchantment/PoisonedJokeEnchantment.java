@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.item.enchantment;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,14 +11,12 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.reflect.TypeUtils;
 
-import com.google.gson.JsonParseException;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.ability.data.tree.TreeTypeLoader;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.util.Resources;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -76,8 +72,8 @@ public class PoisonedJokeEnchantment extends SimpleEnchantment implements Identi
             clientProfiler.startTick();
             clientProfiler.push("Loading poisoned joke sound options");
 
-            sounds = getResources(manager, FILE)
-                .flatMap(this::loadFile)
+            sounds = Resources.getResources(manager, FILE)
+                .flatMap(r -> Resources.loadFile(r, TYPE, "Failed to load sounds file at "))
                 .distinct()
                 .flatMap(this::findSound)
                 .collect(Collectors.toList());
@@ -87,29 +83,10 @@ public class PoisonedJokeEnchantment extends SimpleEnchantment implements Identi
         }, clientExecutor);
     }
 
-    private Stream<Resource> getResources(ResourceManager manager, Identifier id) {
-        try {
-            return manager.getAllResources(id).stream();
-        } catch (IOException ignored) { }
-        return Stream.empty();
-    }
-
-    private Stream<Identifier> loadFile(Resource res) throws JsonParseException {
-        try (Resource resource = res) {
-            return (TreeTypeLoader.GSON.<List<Identifier>>fromJson(new InputStreamReader(resource.getInputStream()), TYPE)).stream();
-        } catch (JsonParseException e) {
-            Unicopia.LOGGER.warn("Failed to load sounds file at " + res.getResourcePackName(), e);
-        } catch (IOException ignored) {}
-
-        return Stream.empty();
-    }
-
     private Stream<SoundEvent> findSound(Identifier id) {
-        SoundEvent value = Registry.SOUND_EVENT.getOrEmpty(id).orElse(null);
-        if (value == null) {
+        return Registry.SOUND_EVENT.getOrEmpty(id).map(Stream::of).orElseGet(() -> {
             Unicopia.LOGGER.warn("Could not find sound with id {}", id);
             return Stream.empty();
-        }
-        return Stream.of(value);
+        });
     }
 }

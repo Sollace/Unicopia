@@ -6,12 +6,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import com.minelittlepony.common.util.settings.ToStringAdapter;
 import com.minelittlepony.unicopia.util.PosHelper;
+import com.minelittlepony.unicopia.util.Resources;
 import com.minelittlepony.unicopia.util.Weighted;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
@@ -30,9 +28,6 @@ import net.minecraft.world.World;
 
 public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
     private static final Identifier ID = new Identifier("unicopia", "data/tree_type");
-    public static final Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(Identifier.class, new ToStringAdapter<>(Identifier::new))
-            .create();
 
     public static final TreeTypeLoader INSTANCE = new TreeTypeLoader();
 
@@ -42,7 +37,7 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
     private final TreeType any2x = createDynamic(true);
 
     TreeTypeLoader() {
-        super(GSON, "tree_types");
+        super(Resources.GSON, "tree_types");
     }
 
     @Override
@@ -109,7 +104,7 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
 
         for (Map.Entry<Identifier, JsonElement> entry : resources.entrySet()) {
             try {
-                TreeTypeDef typeDef = GSON.fromJson(entry.getValue(), TreeTypeDef.class);
+                TreeTypeDef typeDef = Resources.GSON.fromJson(entry.getValue(), TreeTypeDef.class);
 
                 if (typeDef != null) {
                     entries.add(new TreeTypeImpl(
