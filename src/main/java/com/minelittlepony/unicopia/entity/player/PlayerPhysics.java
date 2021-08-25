@@ -61,6 +61,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private int wallHitCooldown;
 
     private Vec3d lastPos = Vec3d.ZERO;
+    private Vec3d lastVel = Vec3d.ZERO;
 
     private final PlayerDimensions dimensions;
 
@@ -108,7 +109,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 }
             }
         } else {
-            spreadAmount += MathHelper.clamp(-getVerticalMotion(), 0, 2);
+            spreadAmount += MathHelper.clamp(-lastVel.y, -0.3F, 2);
             spreadAmount += Math.sin(entity.age / 9F) / 9F;
 
             if (entity.isSneaking()) {
@@ -147,11 +148,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     private double getHorizontalMotion() {
-        return entity.getPos().subtract(lastPos).horizontalLengthSquared();
-    }
-
-    private double getVerticalMotion() {
-        return entity.getPos().y - lastPos.y;
+        return lastVel.horizontalLengthSquared();
     }
 
     @Override
@@ -164,6 +161,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (ticksToGlide > 0) {
             ticksToGlide--;
         }
+
+        lastVel = entity.getPos().subtract(lastPos);
+        lastPos = entity.getPos();
 
         final MutableVector velocity = new MutableVector(entity.getVelocity());
 
@@ -272,8 +272,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         } else {
             soundPlaying = false;
         }
-
-        lastPos = entity.getPos();
 
         if (!entity.isOnGround()) {
             float heavyness = 1 - EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.015F;
