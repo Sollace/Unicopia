@@ -6,7 +6,6 @@ import java.util.List;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.util.Weighted;
-import com.minelittlepony.unicopia.util.WorldEvent;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -19,6 +18,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.WorldEvents;
 
 public class NecromancySpell extends AbstractPlacedSpell {
 
@@ -106,7 +106,7 @@ public class NecromancySpell extends AbstractPlacedSpell {
         zombie.updatePositionAndAngles(pos.x, pos.y, pos.z, 0, 0);
         zombie.setVelocity(0, 0.3, 0);
 
-        source.getWorld().syncWorldEvent(WorldEvent.ZOMBIE_BREAK_WOODEN_DOOR, zombie.getBlockPos(), 0);
+        source.getWorld().syncWorldEvent(WorldEvents.ZOMBIE_BREAKS_WOODEN_DOOR, zombie.getBlockPos(), 0);
 
         source.getWorld().spawnEntity(zombie);
 

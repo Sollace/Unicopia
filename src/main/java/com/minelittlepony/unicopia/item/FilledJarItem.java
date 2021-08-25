@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
-import com.minelittlepony.unicopia.util.WorldEvent;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
+import net.minecraft.world.WorldEvents;
 
 public class FilledJarItem extends JarItem implements ChameleonItem {
 
@@ -52,7 +53,7 @@ public class FilledJarItem extends JarItem implements ChameleonItem {
         ItemStack stack = getAppearanceStack(projectile.getStack());
         stack.damage(1, projectile.world.random, null);
         projectile.dropStack(stack);
-        WorldEvent.play(WorldEvent.DESTROY_BLOCK, projectile.world, projectile.getBlockPos(), Blocks.GLASS.getDefaultState());
+        projectile.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, projectile.getBlockPos(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
     }
 
     public ItemStack withContents(ItemStack contents) {

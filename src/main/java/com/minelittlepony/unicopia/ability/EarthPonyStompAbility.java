@@ -11,7 +11,8 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
-import com.minelittlepony.unicopia.util.WorldEvent;
+
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
@@ -22,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 /**
  * Earth Pony stomping ability
@@ -162,7 +164,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
             if (destr.damageBlock(pos, damage) >= BlockDestructionManager.MAX_DAMAGE) {
                 w.breakBlock(pos, true);
             } else {
-                WorldEvent.play(WorldEvent.DESTROY_BLOCK, w, pos, state);
+                w.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
             }
         }
     }

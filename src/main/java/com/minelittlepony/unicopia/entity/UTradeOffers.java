@@ -68,6 +68,7 @@ public interface UTradeOffers {
         return (e, rng) -> new TradeOffer(new ItemStack(item.getRandom(rng), count), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
     }
 
+    @SuppressWarnings("unused")
     private static TradeOffers.Factory buy(Tag<Item> item, int count, Tag<Item> returnItem, int returnCount, int maxUses, int experience, float priceChange) {
         return (e, rng) -> new TradeOffer(new ItemStack(item.getRandom(rng), count), new ItemStack(returnItem.getRandom(rng), returnCount), maxUses, experience, priceChange);
     }

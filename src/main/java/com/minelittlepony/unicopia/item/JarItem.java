@@ -5,8 +5,8 @@ import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-import com.minelittlepony.unicopia.util.WorldEvent;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -26,6 +26,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.level.ServerWorldProperties;
 
 public class JarItem extends Item implements ProjectileDelegate, ItemImpl.TickableItem {
@@ -139,7 +140,7 @@ public class JarItem extends Item implements ProjectileDelegate, ItemImpl.Tickab
         }
 
         if (rain || thunder) {
-            projectile.world.syncWorldEvent(WorldEvent.PROJECTILE_HIT, projectile.getBlockPos(), thunder ? 0x888888 : 0xF8F8F8);
+            projectile.world.syncWorldEvent(WorldEvents.SPLASH_POTION_SPLASHED, projectile.getBlockPos(), thunder ? 0x888888 : 0xF8F8F8);
 
             for (int i = projectile.world.random.nextInt(3) + 1; i >= 0; i--) {
                 projectile.world.addParticle(UParticles.CLOUDS_ESCAPING, true,
@@ -151,6 +152,6 @@ public class JarItem extends Item implements ProjectileDelegate, ItemImpl.Tickab
             }
         }
 
-        WorldEvent.play(WorldEvent.DESTROY_BLOCK, projectile.world, projectile.getBlockPos(), Blocks.GLASS.getDefaultState());
+        projectile.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, projectile.getBlockPos(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
     }
 }

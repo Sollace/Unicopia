@@ -13,7 +13,6 @@ import com.minelittlepony.unicopia.ability.data.tree.TreeType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
-import com.minelittlepony.unicopia.util.WorldEvent;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -31,6 +30,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.WorldEvents;
 
 /**
  * Earth Pony kicking ability
@@ -164,7 +164,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                 if (world.getBlockState(position.down()).isAir()) {
                     ItemStack stack = tree.pickRandomStack(state);
                     if (!stack.isEmpty()) {
-                        WorldEvent.play(WorldEvent.DESTROY_BLOCK, world, position, state);
+                        world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, position, Block.getRawIdFromState(state));
 
                         capturedDrops.add(new ItemEntity(world,
                             position.getX() + world.random.nextFloat(),

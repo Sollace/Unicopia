@@ -5,8 +5,8 @@ import java.util.Random;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinSheepEntity;
-import com.minelittlepony.unicopia.util.WorldEvent;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.ItemEntity;
@@ -15,6 +15,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldEvents;
 
 public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
     @Override
@@ -32,7 +33,7 @@ public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
                 }
             } else {
                 if (entity.isSheared() && grass) {
-                    WorldEvent.play(WorldEvent.DESTROY_BLOCK, entity.world, pos, state);
+                    entity.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
                     entity.world.setBlockState(pos, Blocks.DIRT.getDefaultState(), 2);
 
                     entity.onEatingGrass();
