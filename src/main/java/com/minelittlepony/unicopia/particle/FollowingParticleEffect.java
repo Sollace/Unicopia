@@ -86,6 +86,7 @@ public class FollowingParticleEffect implements ParticleEffect {
         buf.writeDouble(fixedTarget.x);
         buf.writeDouble(fixedTarget.y);
         buf.writeDouble(fixedTarget.z);
+        buf.writeFloat(followSpeed);
     }
 
     @Override
