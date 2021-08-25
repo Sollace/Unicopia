@@ -52,7 +52,6 @@ public class PoisonedJokeEnchantment extends SimpleEnchantment implements Identi
         if (rng.nextInt(Math.max(1, (light * 9) + (int)data.level)) == 0) {
             data.level = rng.nextInt(5000);
 
-            Unicopia.LOGGER.info("Boo!");
             user.getWorld().playSoundFromEntity(
                     null,
                     user.getEntity(),
@@ -76,7 +75,6 @@ public class PoisonedJokeEnchantment extends SimpleEnchantment implements Identi
         return sync.whenPrepared(null).thenRunAsync(() -> {
             clientProfiler.startTick();
             clientProfiler.push("Loading poisoned joke sound options");
-
 
             sounds = getResources(manager, FILE)
                 .flatMap(this::loadFile)

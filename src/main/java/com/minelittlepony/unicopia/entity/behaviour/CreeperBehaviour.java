@@ -31,7 +31,6 @@ public class CreeperBehaviour extends EntityBehaviour<CreeperEntity> {
             entity.getVisibilityCache().clear();
         }
 
-        System.out.println(fuseCountDown);
         spell.getDisguise().getOrCreateTag().putInt("fuseCountdown", fuseCountDown);
     }
 }
