@@ -20,9 +20,9 @@ import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.entity.ItemWielder;
 import com.minelittlepony.unicopia.entity.Jumper;
 import com.minelittlepony.unicopia.entity.Leaner;
-import com.minelittlepony.unicopia.entity.ItemWielder;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;

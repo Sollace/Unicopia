@@ -23,6 +23,7 @@
     "MixinPlayerEntity",
     "MixinProjectileEntity",
     "MixinServerPlayerEntity",
+    "MixinServerPlayNetworkHandler",
     "MixinServerWorld",
     "MixinSheepEntity",
     "MixinShulkerEntity",
