@@ -332,7 +332,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
         boolean extraProtection = getSpellSlot().get(SpellType.SHIELD, false).isPresent();
 
-        if (g != 1 || extraProtection || getSpecies().canFly() && !entity.isCreative() && !entity.isSpectator()) {
+        if ((g != 1 || extraProtection) && !entity.isCreative() && !entity.isSpectator()) {
 
             if (extraProtection) {
                 distance /= (getLevel().get() + 1);
@@ -341,7 +341,11 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
                 }
             }
 
-            distance = Math.max(0, (distance * g) - 5);
+            distance *= g;
+            if (getSpecies().canFly() || (getSpecies().canUseEarth() && entity.isSneaking())) {
+                distance -= 5;
+            }
+            distance = Math.max(0, distance);
 
             handleFall(distance, damageMultiplier, cause);
             return Optional.of(distance);
