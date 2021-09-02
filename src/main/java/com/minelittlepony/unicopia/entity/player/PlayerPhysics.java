@@ -40,6 +40,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickable, Motion, NbtSerialisable {
+    private static final int MAX_WALL_HIT_CALLDOWN = 30;
+    private static final int MAX_TICKS_TO_GLIDE = 20;
+    private static final int IDLE_FLAP_INTERVAL = 20;
+    private static final int GLIDING_SOUND_INTERVAL = 200;
 
     private int ticksInAir;
     private int ticksToGlide;
@@ -252,7 +256,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 if (strafing != prevStrafe) {
                     prevStrafe = strafing;
                     strafe = 1;
-                    ticksToGlide = 20;
+                    ticksToGlide = MAX_TICKS_TO_GLIDE;
                     if (!SpellType.DISGUISE.isOn(pony)) {
                         entity.playSound(type.getWingFlapSound(), 0.25F, 1);
                     }
@@ -263,6 +267,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 prevStrafe = 0;
                 strafe = 0;
                 ticksInAir = 0;
+                wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
                 soundPlaying = false;
 
                 if (!creative && type.isAvian()) {
@@ -321,13 +326,13 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         }
 
         if (type.isAvian()) {
-            if (entity.world.isClient && ticksInAir % 20 == 0 && entity.getVelocity().length() < 0.29) {
+            if (entity.world.isClient && ticksInAir % IDLE_FLAP_INTERVAL == 0 && entity.getVelocity().length() < 0.29) {
                 flapping = true;
-                ticksToGlide = 20;
+                ticksToGlide = MAX_TICKS_TO_GLIDE;
             }
 
             if (!SpellType.DISGUISE.isOn(pony)) {
-                if (ticksInAir % 200 == 1 && pony.isClient()) {
+                if (ticksInAir % GLIDING_SOUND_INTERVAL == 1 && pony.isClient()) {
                     InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_GLIDING);
                 }
             }
@@ -447,7 +452,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             float bouncyness = EnchantmentHelper.getEquipmentLevel(UEnchantments.PADDED, entity) * 6;
 
             if (distance > 0) {
-                wallHitCooldown = 30;
+                wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
 
                 if (bouncyness > 0) {
                     entity.playSound(USounds.ENTITY_PLAYER_REBOUND, 1, 1);
@@ -481,7 +486,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private void applyThrust(MutableVector velocity) {
         if (pony.sneakingChanged() && entity.isSneaking()) {
             flapping = true;
-            ticksToGlide = 20;
+            ticksToGlide = MAX_TICKS_TO_GLIDE;
         }
 
         thrustScale *= 0.2889F;
