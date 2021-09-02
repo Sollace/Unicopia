@@ -70,6 +70,7 @@ public interface UItems {
 
     Item PEBBLES = register("pebbles", new RacePredicatedAliasedBlockItem(UBlocks.ROCKS, new Item.Settings().group(ItemGroup.MATERIALS), Race::canUseEarth));
     Item ROCK = register("rock", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+    Item WEIRD_ROCK = register("weird_rock", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     Item ROCK_STEW = register("rock_stew", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.MUSHROOM_STEW)));
 
     Item MUG = register("mug", new Item(new Settings().group(ItemGroup.MATERIALS).maxCount(16)));

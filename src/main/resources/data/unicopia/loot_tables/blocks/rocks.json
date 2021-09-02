@@ -17,6 +17,23 @@
                   "properties": {
                     "age": "7"
                   }
+                },
+	            {
+	              "condition": "minecraft:random_chance",
+	              "chance": 0.25
+	            }
+              ],
+              "name": "unicopia:weird_rock"
+            },
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "condition": "minecraft:block_state_property",
+                  "block": "unicopia:rocks",
+                  "properties": {
+                    "age": "7"
+                  }
                 }
               ],
               "name": "unicopia:rock"
