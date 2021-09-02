@@ -26,6 +26,7 @@ public interface EquinePredicates {
     Predicate<Entity> PLAYER_CHANGELING = IS_PLAYER.and(ofRace(Race.CHANGELING));
     Predicate<Entity> PLAYER_PEGASUS = IS_PLAYER.and(e -> ((PlayerEntity)e).getAbilities().creativeMode || RACE_INTERACT_WITH_CLOUDS.test(e));
 
+    Predicate<Entity> PLAYER_CAN_USE_EARTH = IS_PLAYER.and(raceMatches(Race::canUseEarth));
     Predicate<Entity> IS_CASTER = e -> !e.isRemoved() && (e instanceof Caster || PLAYER_UNICORN.test(e));
 
     Predicate<LivingEntity> HAS_WANT_IT_NEED_IT = e -> EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) > 0;

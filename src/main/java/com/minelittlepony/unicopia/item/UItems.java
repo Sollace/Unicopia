@@ -3,7 +3,9 @@ package com.minelittlepony.unicopia.item;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.toxin.UFoodComponents;
@@ -66,6 +68,10 @@ public interface UItems {
     Item HAY_FRIES = register("hay_fries", new Item(new Item.Settings().group(ItemGroup.FOOD).maxCount(16).food(UFoodComponents.HAY_FRIES)));
     Item WHEAT_WORMS = register("wheat_worms", new Item(new Item.Settings().group(ItemGroup.MISC).maxCount(16).food(UFoodComponents.INSECTS)));
 
+    Item PEBBLES = register("pebbles", new RacePredicatedAliasedBlockItem(UBlocks.ROCKS, new Item.Settings().group(ItemGroup.MATERIALS), Race::canUseEarth));
+    Item ROCK = register("rock", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+    Item ROCK_STEW = register("rock_stew", new Item(new Item.Settings().group(ItemGroup.FOOD)));
+
     Item MUG = register("mug", new Item(new Settings().group(ItemGroup.MATERIALS).maxCount(16)));
     Item CIDER = register("cider", new DrinkableItem(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.CIDER).maxCount(1).recipeRemainder(MUG)));
     Item JUICE = register("juice", new DrinkableItem(new Item.Settings().group(ItemGroup.FOOD).recipeRemainder(Items.GLASS_BOTTLE).maxCount(1).food(UFoodComponents.JUICE)));
@@ -93,7 +99,6 @@ public interface UItems {
         if (item instanceof BlockItem) {
             ((BlockItem)item).appendBlocks(Item.BLOCK_ITEMS, item);
         }
-        Items.MILK_BUCKET.appendStacks(null, null);
         return Registry.register(Registry.ITEM, new Identifier("unicopia", name), item);
     }
 

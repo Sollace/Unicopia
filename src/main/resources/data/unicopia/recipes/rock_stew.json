@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "unicopia:rock" },
+    { "item": "unicopia:rock" },
+    { "item": "unicopia:rock" },
+    { "item": "minecraft:bowl" }
+  ],
+  "result": { "item": "unicopia:rock_stew" }
+}

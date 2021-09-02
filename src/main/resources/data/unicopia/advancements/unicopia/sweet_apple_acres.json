@@ -79,7 +79,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "items": [ "unicopia:golden_apple" ] }
+          { "items": [ "minecraft:golden_apple" ] }
         ]
       }
     }

@@ -48,6 +48,10 @@
   "item.unicopia.juice": "Juice",
   "item.unicopia.burned_juice": "Burned Juice",
 
+  "item.unicopia.pebbles": "Pebbles",
+  "item.unicopia.rock": "Rock",
+  "item.unicopia.rock_stew": "Rock Stew",
+
   "item.unicopia.daffodil_daisy_sandwich": "Daffodil Daisy Sandwich",
   "item.unicopia.hay_burger": "Hay Burger",
   "item.unicopia.hay_fries": "Hay Fries",
@@ -68,6 +72,8 @@
   "item.unicopia.music_disc_crusade.desc": "Danial Ingram - crusade",
   "item.unicopia.music_disc_funk": "Music Disc",
   "item.unicopia.music_disc_funk.desc": "funk, just funk",
+
+  "block.unicopia.rocks": "Rocks",
 
   "entity.unicopia.butterfly": "Butterfly",
   "entity.unicopia.cast_spell": "Cast Spell",

@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.BlockDestructionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -14,11 +15,14 @@ import com.minelittlepony.unicopia.util.PosHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Material;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -163,6 +167,15 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
             if (destr.damageBlock(pos, damage) >= BlockDestructionManager.MAX_DAMAGE) {
                 w.breakBlock(pos, true);
+
+                if (w instanceof ServerWorld) {
+                    if (state.getMaterial() == Material.STONE && w.getRandom().nextInt(4) == 0) {
+                        ItemStack stack = UItems.PEBBLES.getDefaultStack();
+                        stack.setCount(1 + w.getRandom().nextInt(2));
+                        Block.dropStack(w, pos, stack);
+                        state.onStacksDropped((ServerWorld)w, pos, stack);
+                    }
+                }
             } else {
                 w.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
             }
