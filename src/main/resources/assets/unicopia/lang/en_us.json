@@ -438,5 +438,14 @@
   "advancements.unicopia.screech_twenty_mobs.title": "Terror From The Skies",
   "advancements.unicopia.screech_twenty_mobs.description": "Rain down terror on at least 20 mobs at once",
   "advancements.unicopia.screech_self.title": "Jeepers!",
-  "advancements.unicopia.screech_self.description": "Be so terrifying that you even scared your self a little"
+  "advancements.unicopia.screech_self.description": "Be so terrifying that you even scared your self a little",
+
+  "advancements.unicopia.molting_season_1.title": "Molting Season",
+  "advancements.unicopia.molting_season_1.description": "Drop a feather whilst flying",
+
+  "advancements.unicopia.molting_season_2.title": "Molting Season 2",
+  "advancements.unicopia.molting_season_2.description": "Drop 5 feathers whilst flying",
+
+  "advancements.unicopia.molting_season_3.title": "Molting Season 3",
+  "advancements.unicopia.molting_season_3.description": "Drop 15 feathers whilst flying",
 }

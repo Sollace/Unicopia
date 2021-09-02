@@ -1,0 +1,127 @@
+{
+  "parent": "unicopia:unicopia/pegasus/molting_season_1",
+  "display": {
+    "icon": {
+      "item": "unicopia:pegasus_feather"
+    },
+    "title": {
+      "translate": "advancements.unicopia.molting_season_3.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.molting_season_3.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "shed_feather_1": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_2": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_3": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_4": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_5": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_6": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_7": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_8": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_9": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_10": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_11": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_12": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_13": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_14": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_15": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    }
+  },
+  "requirements": [
+  	[ "shed_feather_1" ],
+  	[ "shed_feather_2" ],
+  	[ "shed_feather_3" ],
+  	[ "shed_feather_4" ],
+  	[ "shed_feather_5" ],
+  	[ "shed_feather_6" ],
+  	[ "shed_feather_7" ],
+  	[ "shed_feather_8" ],
+  	[ "shed_feather_9" ],
+  	[ "shed_feather_10" ],
+  	[ "shed_feather_11" ],
+  	[ "shed_feather_12" ],
+  	[ "shed_feather_13" ],
+  	[ "shed_feather_14" ],
+  	[ "shed_feather_15" ]
+  ]
+}

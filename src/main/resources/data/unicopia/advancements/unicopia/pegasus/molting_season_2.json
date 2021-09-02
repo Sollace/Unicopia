@@ -1,0 +1,57 @@
+{
+  "parent": "unicopia:unicopia/pegasus/molting_season_1",
+  "display": {
+    "icon": {
+      "item": "unicopia:pegasus_feather"
+    },
+    "title": {
+      "translate": "advancements.unicopia.molting_season_2.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.molting_season_2.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "shed_feather_1": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_2": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_3": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_4": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    },
+    "shed_feather_5": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "shed_feather"
+      }
+    }
+  },
+  "requirements": [
+  	[ "shed_feather_1" ],
+  	[ "shed_feather_2" ],
+  	[ "shed_feather_3" ],
+  	[ "shed_feather_4" ],
+  	[ "shed_feather_5" ]
+  ]
+}
