@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.block;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricMaterialBuilder;
+import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.MapColor;
 import net.minecraft.sound.BlockSoundGroup;
@@ -12,6 +13,8 @@ public interface UBlocks {
     Block ROCKS = register("rocks", new RockCropBlock(FabricBlockSettings.of(
                 new FabricMaterialBuilder(MapColor.STONE_GRAY).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().build()
             )
+            .breakByTool(FabricToolTags.PICKAXES)
+            .requiresTool()
             .ticksRandomly()
             .strength(2)
             .sounds(BlockSoundGroup.STONE)));
