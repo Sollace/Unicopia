@@ -316,6 +316,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
             if (entity.world.random.nextInt(9000) == 0) {
                 entity.dropItem(UItems.PEGASUS_FEATHER);
+                entity.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 0.3F, 1);
             }
         }
 
