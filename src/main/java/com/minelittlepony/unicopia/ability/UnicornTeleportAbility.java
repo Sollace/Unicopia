@@ -85,7 +85,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
         boolean airAbove = enterable(w, pos.up()) && enterable(w, pos.up(2));
 
-        if (exception(w, pos, player.getMaster())) {
+        if (exception(w, pos, player.getMaster()) && ray.getType() == HitResult.Type.BLOCK) {
             Direction sideHit = ((BlockHitResult)ray).getSide();
 
             if (player.getMaster().isSneaking()) {
