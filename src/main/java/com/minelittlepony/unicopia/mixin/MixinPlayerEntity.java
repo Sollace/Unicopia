@@ -43,8 +43,8 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
         get().onImpact(fallDistance, damageMultiplier, cause).ifPresent(newDistance -> {
             PlayerEntity self = (PlayerEntity)(Object)this;
 
-            if (newDistance >= 2) {
-                self.increaseStat(Stats.FALL_ONE_CM, Math.round(newDistance * 100));
+            if (distance >= 2) {
+                self.increaseStat(Stats.FALL_ONE_CM, Math.round(distance * 100));
             }
 
             info.setReturnValue(super.handleFallDamage(newDistance, damageMultiplier, cause));
