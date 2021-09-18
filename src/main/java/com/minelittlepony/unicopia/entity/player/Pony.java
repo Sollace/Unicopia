@@ -328,11 +328,13 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     public Optional<Float> onImpact(float distance, float damageMultiplier, DamageSource cause) {
 
-        float g = gravity.getGravityModifier();
+        float originalDistance = distance;
+
+        distance *= gravity.getGravityModifier();
 
         boolean extraProtection = getSpellSlot().get(SpellType.SHIELD, false).isPresent();
 
-        if ((g != 1 || extraProtection) && !entity.isCreative() && !entity.isSpectator()) {
+        if (!entity.isCreative() && !entity.isSpectator()) {
 
             if (extraProtection) {
                 distance /= (getLevel().get() + 1);
@@ -341,17 +343,16 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
                 }
             }
 
-            distance *= g;
             if (getSpecies().canFly() || (getSpecies().canUseEarth() && entity.isSneaking())) {
                 distance -= 5;
             }
             distance = Math.max(0, distance);
-
-            handleFall(distance, damageMultiplier, cause);
-            return Optional.of(distance);
         }
 
         handleFall(distance, damageMultiplier, cause);
+        if (distance != originalDistance) {
+            return Optional.of(distance);
+        }
         return Optional.empty();
     }
 
