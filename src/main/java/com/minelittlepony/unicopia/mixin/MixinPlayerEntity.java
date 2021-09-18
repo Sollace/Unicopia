@@ -4,6 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.PonyContainer;
@@ -36,6 +37,11 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
     @Override
     public Equine<?> create() {
         return new Pony((PlayerEntity)(Object)this);
+    }
+
+    @ModifyVariable(method = "applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)Z", at = @At("HEAD"), ordinal = 0)
+    protected float modifyDamageAmount(float amount, DamageSource source) {
+        return get().modifyDamage(source, amount).orElse(amount);
     }
 
     @Inject(method = "handleFallDamage(FFLnet/minecraft/entity/damage/DamageSource;)Z", at = @At("HEAD"), cancellable = true)

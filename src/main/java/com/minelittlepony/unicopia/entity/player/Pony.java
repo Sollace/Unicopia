@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
+import com.minelittlepony.unicopia.ability.EarthPonyStompAbility;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
@@ -43,6 +44,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -326,6 +328,21 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         }
     }
 
+    public Optional<Float> modifyDamage(DamageSource cause, float amount) {
+
+        if (!cause.isUnblockable() && !cause.isMagic() && !cause.isFire() && !cause.isOutOfWorld()
+                && !(cause instanceof EntityDamageSource && ((EntityDamageSource)cause).isThorns())
+                && cause != DamageSource.FREEZE) {
+
+            if (getSpecies().canUseEarth() && entity.isSneaking()) {
+                amount /= (cause.isProjectile() ? 3 : 2) * (entity.getHealth() < 5 ? 3 : 1);
+
+                return Optional.of(amount);
+            }
+        }
+        return Optional.empty();
+    }
+
     public Optional<Float> onImpact(float distance, float damageMultiplier, DamageSource cause) {
 
         float originalDistance = distance;
@@ -354,6 +371,18 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             return Optional.of(distance);
         }
         return Optional.empty();
+    }
+
+    @Override
+    protected void handleFall(float distance, float damageMultiplier, DamageSource cause) {
+        super.handleFall(distance, damageMultiplier, cause);
+
+        if (getSpecies().canUseEarth() && entity.isSneaking()) {
+            double radius = distance / 10;
+            if (radius > 0) {
+                EarthPonyStompAbility.spawnEffectAround(entity, entity.getLandingPos(), radius, radius);
+            }
+        }
     }
 
     @Override

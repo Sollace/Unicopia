@@ -17,6 +17,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -139,13 +140,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
             double radius = rad + heavyness * 0.3;
 
-            BlockPos.iterate(center.add(-radius, -radius, -radius), center.add(radius, radius, radius)).forEach(i -> {
-                double dist = Math.sqrt(i.getSquaredDistance(player.getX(), player.getY(), player.getZ(), true));
-
-                if (dist <= radius) {
-                    spawnEffect(player.world, i, dist);
-                }
-            });
+            spawnEffectAround(player, center, radius, rad);
 
             ParticleUtils.spawnParticle(player.world, UParticles.GROUND_POUND, player.getX(), player.getY() - 1, player.getZ(), 0, 0, 0);
 
@@ -153,7 +148,18 @@ public class EarthPonyStompAbility implements Ability<Hit> {
         });
     }
 
-    private void spawnEffect(World w, BlockPos pos, double dist) {
+    public static void spawnEffectAround(Entity source, BlockPos center, double radius, double range) {
+
+        BlockPos.iterate(center.add(-radius, -radius, -radius), center.add(radius, radius, radius)).forEach(i -> {
+            double dist = Math.sqrt(i.getSquaredDistance(source.getX(), source.getY(), source.getZ(), true));
+
+            if (dist <= radius) {
+                spawnEffect(source.world, i, dist, range);
+            }
+        });
+    }
+
+    public static void spawnEffect(World w, BlockPos pos, double dist, double rad) {
         BlockState state = w.getBlockState(pos);
         BlockDestructionManager destr = ((BlockDestructionManager.Source)w).getDestructionManager();
 
