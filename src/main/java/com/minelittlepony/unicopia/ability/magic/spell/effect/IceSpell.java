@@ -1,11 +1,11 @@
-package com.minelittlepony.unicopia.ability.magic.spell;
+package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Thrown;
+import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.ProjectileCapable;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
-import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -27,22 +27,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class IceSpell extends AbstractSpell implements Thrown, Attached {
+public class IceSpell extends AbstractSpell implements ProjectileCapable {
 
     private final int rad = 3;
     private final Shape effect_range = new Sphere(false, rad);
 
-    protected IceSpell(SpellType<?> type) {
-        super(type);
+    protected IceSpell(SpellType<?> type, SpellTraits traits) {
+        super(type, traits);
     }
 
     @Override
-    public boolean onThrownTick(MagicProjectileEntity projectile) {
-        return onBodyTick(projectile);
-    }
-
-    @Override
-    public boolean onBodyTick(Caster<?> source) {
+    public boolean tick(Caster<?> source, Situation situation) {
         LivingEntity owner = source.getMaster();
 
         PosHelper.getAllInRegionMutable(source.getOrigin(), effect_range)

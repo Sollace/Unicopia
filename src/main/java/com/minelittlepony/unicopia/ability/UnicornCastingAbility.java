@@ -7,8 +7,9 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.GemstoneItem;
@@ -114,7 +115,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
                 SpellType<?> spell = newSpell.getValue();
 
                 player.subtractEnergyCost(spell.isEmpty() ? 2 : 4);
-                spell.apply(player);
+                spell.apply(player, SpellTraits.EMPTY);
             }
         }
     }
@@ -138,7 +139,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
         final SpellType<?> current = player.getSpellSlot().get(true).map(Spell::getType).orElse(SpellType.empty());
         return Streams.stream(player.getMaster().getItemsHand())
                 .filter(GemstoneItem::isEnchanted)
-                .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), current, SpellType::mayAttach))
+                .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), current, null))
                 .findFirst()
                 .orElse(TypedActionResult.<SpellType<?>>pass(current == SpellType.EMPTY_KEY ? SpellType.SHIELD : SpellType.EMPTY_KEY));
     }

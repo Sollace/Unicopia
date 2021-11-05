@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic;
 
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+
 /**
  * Magic effects that can be suppressed by other nearby effects.
  */

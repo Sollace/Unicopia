@@ -6,10 +6,9 @@ import java.util.UUID;
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
-import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
-import com.minelittlepony.unicopia.ability.magic.spell.AbstractPlacedSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
 
@@ -31,8 +30,6 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
     private static final TrackedData<Float> GRAVITY = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
     private static final TrackedData<Optional<UUID>> SPELL = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
-
-    private static final SpellPredicate<AbstractPlacedSpell> SPELL_TYPE = s -> s instanceof AbstractPlacedSpell;
 
     private static final LevelStore LEVELS = Levelled.fixed(0);
 
@@ -96,7 +93,7 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
         if (!Caster.of(master).filter(c -> {
             UUID spellId = dataTracker.get(SPELL).orElse(null);
 
-            if (!c.getSpellSlot().get(SPELL_TYPE, true).filter(s -> s.getUuid().equals(spellId) && s.onGroundTick(this)).isPresent()) {
+            if (!c.getSpellSlot().get(true).filter(s -> s.getUuid().equals(spellId) && s.tick(this, Situation.GROUND_ENTITY)).isPresent()) {
                 c.setSpell(null);
 
                 return false;

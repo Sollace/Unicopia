@@ -1,10 +1,11 @@
-package com.minelittlepony.unicopia.ability.magic.spell;
+package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 
 import net.minecraft.nbt.NbtCompound;
 
@@ -15,11 +16,13 @@ public abstract class AbstractSpell implements Spell {
 
     private final SpellType<?> type;
 
-    private UUID uuid;
+    private SpellTraits traits;
 
-    protected AbstractSpell(SpellType<?> type) {
+    private UUID uuid = UUID.randomUUID();
+
+    protected AbstractSpell(SpellType<?> type, SpellTraits traits) {
         this.type = type;
-        uuid = UUID.randomUUID();
+        this.traits = traits;
     }
 
     @Override
@@ -30,6 +33,10 @@ public abstract class AbstractSpell implements Spell {
     @Override
     public SpellType<?> getType() {
         return type;
+    }
+
+    protected SpellTraits getTraits() {
+        return traits == null ? SpellTraits.EMPTY : traits;
     }
 
     @Override
@@ -59,7 +66,7 @@ public abstract class AbstractSpell implements Spell {
     }
 
     @Override
-    public boolean apply(Caster<?> caster) {
+    public final boolean apply(Caster<?> caster) {
         caster.setSpell(this);
         return true;
     }
@@ -72,6 +79,7 @@ public abstract class AbstractSpell implements Spell {
     public void toNBT(NbtCompound compound) {
         compound.putBoolean("dead", isDead);
         compound.putUuid("uuid", uuid);
+        compound.put("traits", getTraits().toNbt());
     }
 
     @Override
@@ -81,5 +89,8 @@ public abstract class AbstractSpell implements Spell {
             uuid = compound.getUuid("uuid");
         }
         isDead = compound.getBoolean("dead");
+        if (compound.contains("traits")) {
+            traits = SpellTraits.readNbt(compound.getCompound("traits")).orElse(SpellTraits.EMPTY);
+        }
     }
 }

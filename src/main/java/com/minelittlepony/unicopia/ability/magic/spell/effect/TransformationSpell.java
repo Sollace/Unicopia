@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.ability.magic.spell;
+package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -7,7 +7,10 @@ import java.util.Random;
 import java.util.Set;
 
 import com.minelittlepony.unicopia.UTags;
-import com.minelittlepony.unicopia.ability.magic.Thrown;
+import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.ProjectileCapable;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
@@ -19,15 +22,15 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Util;
 
-public class TransformationSpell extends AbstractSpell implements Thrown {
+public class TransformationSpell extends AbstractSpell implements ProjectileCapable {
 
-    protected TransformationSpell(SpellType<?> type) {
-        super(type);
+    protected TransformationSpell(SpellType<?> type, SpellTraits traits) {
+        super(type, traits);
     }
 
     @Override
-    public boolean onThrownTick(MagicProjectileEntity source) {
-        return true;
+    public boolean tick(Caster<?> caster, Situation situation) {
+        return situation == Situation.PROJECTILE;
     }
 
     @Override

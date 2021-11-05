@@ -1,7 +1,8 @@
-package com.minelittlepony.unicopia.ability.magic;
+package com.minelittlepony.unicopia.ability.magic.spell;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
@@ -20,20 +21,12 @@ import net.minecraft.world.World;
 /**
  * Magic effects that can be thrown.
  */
-public interface Thrown extends Spell, ProjectileDelegate {
-
-    /**
-     * Called every tick when attached to an entity.
-     * Called on both sides.
-     *
-     * @param source   The entity we are currently attached to.
-     */
-    boolean onThrownTick(MagicProjectileEntity projectile);
+public interface ProjectileCapable extends Spell, ProjectileDelegate {
 
     @Override
     default void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
         if (!projectile.isClient()) {
-            onThrownTick(projectile);
+            tick(projectile, Situation.PROJECTILE);
         }
     }
 

@@ -6,10 +6,11 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
-import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.UEntities;
@@ -162,7 +163,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
                 lastBlockPos = getBlockPos();
             }
 
-            if (!getSpellSlot().get(SpellPredicate.IS_THROWN, true).filter(spell -> spell.onThrownTick(this)).isPresent()) {
+            if (!getSpellSlot().get(true).filter(spell -> spell.tick(this, Situation.PROJECTILE)).isPresent()) {
                 discard();
             }
         }

@@ -6,10 +6,10 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.NbtCompound;

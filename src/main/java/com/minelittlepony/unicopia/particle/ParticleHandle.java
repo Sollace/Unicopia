@@ -5,7 +5,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

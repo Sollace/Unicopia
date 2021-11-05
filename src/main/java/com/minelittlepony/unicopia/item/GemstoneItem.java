@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -79,7 +79,7 @@ public class GemstoneItem extends Item {
         return super.getName();
     }
 
-    public static TypedActionResult<SpellType<?>> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable SpellType<?> exclude, Predicate<SpellType<?>> test) {
+    public static TypedActionResult<SpellType<?>> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable SpellType<?> exclude, @Nullable Predicate<SpellType<?>> test) {
 
         if (!isEnchanted(stack)) {
             return TypedActionResult.pass(null);
@@ -91,7 +91,7 @@ public class GemstoneItem extends Item {
             return TypedActionResult.fail(null);
         }
 
-        if (key == SpellType.EMPTY_KEY || !test.test(key)) {
+        if (key == SpellType.EMPTY_KEY || (test == null || !test.test(key))) {
             return TypedActionResult.fail(null);
         }
 

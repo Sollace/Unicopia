@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Owned;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.particle.ParticleSource;

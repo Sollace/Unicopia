@@ -4,7 +4,7 @@ import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
@@ -94,7 +94,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
     @Override
     public boolean isRainbooming() {
-        return pony.getSpellSlot().get(SpellType.JOUSTING, true).isPresent();
+        return pony.getSpellSlot().get(SpellType.RAINBOOM, true).isPresent();
     }
 
     @Override

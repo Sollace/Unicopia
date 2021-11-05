@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.ability.magic.spell;
+package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -11,7 +11,13 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Spell;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.CompoundSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.JoustingSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.nbt.NbtCompound;
@@ -24,10 +30,16 @@ import net.minecraft.util.registry.Registry;
 public final class SpellType<T extends Spell> implements Affine, SpellPredicate<T> {
 
     public static final Identifier EMPTY_ID = new Identifier("unicopia", "null");
-    public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, t -> null);
+    public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, (t, c) -> null);
 
     private static final Registry<SpellType<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "spells"));
     private static final Map<Affinity, Set<SpellType<?>>> BY_AFFINITY = new EnumMap<>(Affinity.class);
+
+    public static final SpellType<CompoundSpell> COMPOUND_SPELL = register("compound", Affinity.NEUTRAL, 0, false, CompoundSpell::new);
+    public static final SpellType<PlaceableSpell> PLACED_SPELL = register("placed", Affinity.NEUTRAL, 0, false, PlaceableSpell::new);
+
+    public static final SpellType<DisguiseSpell> DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, DisguiseSpell::new);
+    public static final SpellType<JoustingSpell> RAINBOOM = register("rainboom", Affinity.GOOD, 0xBDBDF9, false, JoustingSpell::new);
 
     public static final SpellType<IceSpell> FROST = register("frost", Affinity.GOOD, 0xBDBDF9, true, IceSpell::new);
     public static final SpellType<ScorchSpell> SCORCH = register("scorch", Affinity.BAD, 0, true, ScorchSpell::new);
@@ -40,9 +52,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<NecromancySpell> NECROMANCY = register("necromancy", Affinity.BAD, 0x8A3A3A, true, NecromancySpell::new);
     public static final SpellType<SiphoningSpell> SIPHONING = register("siphoning", Affinity.GOOD, 0xe308ab, true, SiphoningSpell::new);
     public static final SpellType<SiphoningSpell> DRAINING = register("draining", Affinity.BAD, 0xe308ab, true, SiphoningSpell::new);
-    public static final SpellType<DisguiseSpell> DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, DisguiseSpell::new);
     public static final SpellType<RevealingSpell> REVEALING = register("reveal", Affinity.GOOD, 0x5CE81F, true, RevealingSpell::new);
-    public static final SpellType<JoustingSpell> JOUSTING = register("joust", Affinity.GOOD, 0xBDBDF9, false, JoustingSpell::new);
     public static final SpellType<AwkwardSpell> AWKWARD = register("awkward", Affinity.GOOD, 0xE1239C, true, AwkwardSpell::new);
     public static final SpellType<TransformationSpell> TRANSFORMATION = register("transformation", Affinity.NEUTRAL, 0x3A59AA, true, TransformationSpell::new);
 
@@ -53,9 +63,6 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     private final Factory<T> factory;
 
-    private final boolean thrown;
-    private final boolean attached;
-
     @Nullable
     private String translationKey;
 
@@ -65,22 +72,10 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         this.color = color;
         this.obtainable = obtainable;
         this.factory = factory;
-
-        Spell inst = create();
-        thrown = SpellPredicate.IS_THROWN.test(inst);
-        attached = SpellPredicate.IS_ATTACHED.test(inst);
     }
 
     public boolean isObtainable() {
         return obtainable;
-    }
-
-    public boolean mayThrow() {
-        return thrown;
-    }
-
-    public boolean mayAttach() {
-        return attached;
     }
 
     public Identifier getId() {
@@ -111,9 +106,9 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     }
 
     @Nullable
-    public T create() {
+    public T create(SpellTraits traits) {
         try {
-            return factory.create(this);
+            return factory.create(this, traits);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -122,13 +117,13 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     }
 
     @Nullable
-    public T apply(Caster<?> caster) {
+    public T apply(Caster<?> caster, SpellTraits traits) {
         if (isEmpty()) {
             caster.setSpell(null);
             return null;
         }
 
-        T spell = create();
+        T spell = create(traits);
         if (spell.apply(caster)) {
             return spell;
         }
@@ -177,7 +172,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     @Nullable
     public static Spell fromNBT(@Nullable NbtCompound compound) {
         if (compound != null && compound.contains("effect_id")) {
-            Spell effect = getKey(new Identifier(compound.getString("effect_id"))).create();
+            Spell effect = getKey(new Identifier(compound.getString("effect_id"))).create(SpellTraits.EMPTY);
 
             if (effect != null) {
                 effect.fromNBT(compound);
@@ -198,6 +193,6 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     }
 
     public interface Factory<T extends Spell> {
-        T create(SpellType<T> type);
+        T create(SpellType<T> type, SpellTraits traits);
     }
 }

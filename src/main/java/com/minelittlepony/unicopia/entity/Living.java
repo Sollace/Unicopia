@@ -7,8 +7,8 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
@@ -85,8 +85,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public void tick() {
-        getSpellSlot().get(SpellPredicate.IS_ATTACHED, true).ifPresent(effect -> {
-            if (!effect.onBodyTick(this)) {
+        getSpellSlot().get(true).ifPresent(effect -> {
+            if (!effect.tick(this, Situation.BODY)) {
                 setSpell(null);
             }
         });

@@ -1,9 +1,11 @@
-package com.minelittlepony.unicopia.ability.magic.spell;
+package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.util.Weighted;
 import com.minelittlepony.unicopia.util.shape.Shape;
@@ -20,7 +22,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.WorldEvents;
 
-public class NecromancySpell extends AbstractPlacedSpell {
+public class NecromancySpell extends AbstractSpell {
 
     private final Weighted<EntityType<? extends LivingEntity>> spawnPool = new Weighted<EntityType<? extends LivingEntity>>()
             .put(7, EntityType.ZOMBIE)
@@ -31,14 +33,12 @@ public class NecromancySpell extends AbstractPlacedSpell {
 
     private final List<EntityReference<LivingEntity>> summonedEntities = new ArrayList<>();
 
-    protected NecromancySpell(SpellType<?> type) {
-        super(type);
+    protected NecromancySpell(SpellType<?> type, SpellTraits traits) {
+        super(type, traits);
     }
 
     @Override
-    public boolean onGroundTick(Caster<?> source) {
-        super.onGroundTick(source);
-
+    public boolean tick(Caster<?> source, Situation situation) {
         int radius = (source.getLevel().get() + 1) * 4;
 
         if (source.isClient()) {

@@ -5,8 +5,9 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.ability.magic.Thrown;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.ProjectileCapable;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
@@ -73,14 +74,14 @@ public class UnicornProjectileAbility implements Ability<Hit> {
             }
 
             player.subtractEnergyCost(getCostEstimate(player));
-            ((Thrown)spell.create()).toss(player);
+            ((ProjectileCapable)spell.create(SpellTraits.EMPTY)).toss(player);
         }
     }
 
     private TypedActionResult<SpellType<?>> getNewSpell(Pony player) {
         return Streams.stream(player.getMaster().getItemsHand())
                 .filter(GemstoneItem::isEnchanted)
-                .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), null, SpellType::mayThrow))
+                .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), null, null))
                 .findFirst()
                 .orElse(TypedActionResult.<SpellType<?>>pass(null));
     }

@@ -3,8 +3,9 @@ package com.minelittlepony.unicopia.command;
 import java.util.function.Function;
 
 import com.minelittlepony.unicopia.InteractionManager;
-import com.minelittlepony.unicopia.ability.magic.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
@@ -83,7 +84,7 @@ public class DisguiseCommand {
 
         Pony iplayer = Pony.of(player);
         iplayer.getSpellSlot().get(SpellType.DISGUISE, true)
-            .orElseGet(() -> SpellType.DISGUISE.apply(iplayer))
+            .orElseGet(() -> SpellType.DISGUISE.apply(iplayer, SpellTraits.EMPTY))
             .setDisguise(entity);
 
         if (source.getEntity() == player) {

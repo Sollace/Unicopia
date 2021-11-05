@@ -5,7 +5,7 @@ import java.util.Random;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.UTags;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;

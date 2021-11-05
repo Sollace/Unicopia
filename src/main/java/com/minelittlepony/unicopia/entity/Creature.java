@@ -4,7 +4,7 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.ai.BreakHeartGoal;
 import com.minelittlepony.unicopia.entity.ai.DynamicTargetGoal;
 import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;

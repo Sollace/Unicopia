@@ -1,8 +1,10 @@
-package com.minelittlepony.unicopia.ability.magic.spell;
+package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
@@ -15,13 +17,12 @@ import net.minecraft.util.math.Vec3d;
 
 public class ScorchSpell extends FireSpell {
 
-    protected ScorchSpell(SpellType<?> type) {
-        super(type);
+    protected ScorchSpell(SpellType<?> type, SpellTraits traits) {
+        super(type, traits);
     }
 
     @Override
-    public boolean onBodyTick(Caster<?> source) {
-
+    public boolean tick(Caster<?> source, Situation situation) {
         BlockPos pos = PosHelper.findSolidGroundAt(source.getWorld(), source.getOrigin(), source.getPhysics().getGravitySignum());
 
         if (StateMaps.FIRE_AFFECTED.convert(source.getWorld(), pos)) {

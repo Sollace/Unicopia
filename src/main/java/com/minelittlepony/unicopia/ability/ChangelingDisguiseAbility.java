@@ -5,7 +5,8 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -59,7 +60,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
         player.getEntityWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PARROT_IMITATE_RAVAGER, SoundCategory.PLAYERS, 1.4F, 0.4F);
 
         iplayer.getSpellSlot().get(SpellType.DISGUISE, true)
-            .orElseGet(() -> SpellType.DISGUISE.apply(iplayer))
+            .orElseGet(() -> SpellType.DISGUISE.apply(iplayer, SpellTraits.EMPTY))
             .setDisguise(looked);
 
         if (!player.isCreative()) {

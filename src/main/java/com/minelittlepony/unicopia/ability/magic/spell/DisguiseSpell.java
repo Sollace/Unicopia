@@ -6,10 +6,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Owned;
-import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Spell;
 import com.minelittlepony.unicopia.ability.magic.Suppressable;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.AbstractSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.behaviour.EntityBehaviour;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -27,14 +28,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
 
-public class DisguiseSpell extends AbstractSpell implements Attached, Suppressable, FlightType.Provider, PlayerDimensions.Provider, ProjectileImpactListener {
+public class DisguiseSpell extends AbstractSpell implements Suppressable, FlightType.Provider, PlayerDimensions.Provider, ProjectileImpactListener {
 
     private final Disguise disguise = new Disguise();
 
     private int suppressionCounter;
 
-    protected DisguiseSpell(SpellType<?> type) {
-        super(type);
+    public DisguiseSpell(SpellType<?> type, SpellTraits traits) {
+        super(type, traits);
     }
 
     @Override
@@ -83,8 +84,11 @@ public class DisguiseSpell extends AbstractSpell implements Attached, Suppressab
     }
 
     @Override
-    public boolean onBodyTick(Caster<?> source) {
-        return update(source, true);
+    public boolean tick(Caster<?> source, Situation situation) {
+        if (situation == Situation.BODY) {
+            return update(source, true);
+        }
+        return false;
     }
 
     @SuppressWarnings("unchecked")

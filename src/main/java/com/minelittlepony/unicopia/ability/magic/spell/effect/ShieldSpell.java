@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.ability.magic.spell;
+package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.List;
 import java.util.Map;
@@ -8,16 +8,16 @@ import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Thrown;
+import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.ProjectileCapable;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
-import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -35,14 +35,14 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
-public class ShieldSpell extends AbstractSpell implements Attached, Thrown {
+public class ShieldSpell extends AbstractSpell implements ProjectileCapable {
 
     private final ParticleHandle particlEffect = new ParticleHandle();
 
     private final Map<UUID, Target> targets = new TreeMap<>();
 
-    protected ShieldSpell(SpellType<?> type) {
-        super(type);
+    protected ShieldSpell(SpellType<?> type, SpellTraits traits) {
+        super(type, traits);
     }
 
     @Override
@@ -68,19 +68,14 @@ public class ShieldSpell extends AbstractSpell implements Attached, Thrown {
     }
 
     @Override
-    public boolean onThrownTick(MagicProjectileEntity source) {
+    public boolean tick(Caster<?> source, Situation situation) {
         if (source.isClient()) {
             generateParticles(source);
         }
 
-        applyEntities(source);
-        return true;
-    }
-
-    @Override
-    public boolean onBodyTick(Caster<?> source) {
-        if (source.isClient()) {
-            generateParticles(source);
+        if (situation == Situation.PROJECTILE) {
+            applyEntities(source);
+            return true;
         }
 
         long costMultiplier = applyEntities(source);
@@ -216,8 +211,7 @@ public class ShieldSpell extends AbstractSpell implements Attached, Thrown {
 
         int cooldown = 20;
 
-        Target(UUID id) {
-        }
+        Target(UUID id) { }
 
         boolean tick() {
             return --cooldown < 0;

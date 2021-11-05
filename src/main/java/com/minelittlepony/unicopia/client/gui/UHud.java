@@ -10,7 +10,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;

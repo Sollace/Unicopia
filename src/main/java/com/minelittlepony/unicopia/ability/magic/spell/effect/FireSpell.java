@@ -1,9 +1,10 @@
-package com.minelittlepony.unicopia.ability.magic.spell;
+package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.ability.magic.Attached;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Thrown;
+import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.ProjectileCapable;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
@@ -34,12 +35,12 @@ import net.minecraft.world.explosion.Explosion.DestructionType;
 /**
  * Simple fire spell that triggers an effect when used on a block.
  */
-public class FireSpell extends AbstractSpell implements Thrown, Attached {
+public class FireSpell extends AbstractSpell implements ProjectileCapable {
 
     private static final Shape EFFECT_RANGE = new Sphere(false, 4);
 
-    protected FireSpell(SpellType<?> type) {
-        super(type);
+    protected FireSpell(SpellType<?> type, SpellTraits traits) {
+        super(type, traits);
     }
 
     @Override
@@ -50,12 +51,7 @@ public class FireSpell extends AbstractSpell implements Thrown, Attached {
     }
 
     @Override
-    public boolean onThrownTick(MagicProjectileEntity projectile) {
-        return onBodyTick(projectile);
-    }
-
-    @Override
-    public boolean onBodyTick(Caster<?> source) {
+    public boolean tick(Caster<?> source, Situation situation) {
         if (source.isClient()) {
             generateParticles(source);
         }

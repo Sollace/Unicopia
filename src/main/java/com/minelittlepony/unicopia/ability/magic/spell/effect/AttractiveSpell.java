@@ -1,10 +1,10 @@
-package com.minelittlepony.unicopia.ability.magic.spell;
+package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Thrown;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
@@ -20,13 +20,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class AttractiveSpell extends ShieldSpell implements Thrown {
+public class AttractiveSpell extends ShieldSpell {
 
     @Nullable
     private BlockPos homingPos;
 
-    protected AttractiveSpell(SpellType<?> type) {
-        super(type);
+    protected AttractiveSpell(SpellType<?> type, SpellTraits traits) {
+        super(type, traits);
     }
 
     @Override

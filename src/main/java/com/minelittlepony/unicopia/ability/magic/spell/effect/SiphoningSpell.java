@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.ability.magic.spell;
+package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -6,6 +6,8 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
@@ -26,17 +28,16 @@ import net.minecraft.util.math.Vec3d;
 /**
  * A spell that pulls health from other entities and delivers it to the caster.
  */
-public class SiphoningSpell extends AbstractPlacedSpell {
+public class SiphoningSpell extends AbstractSpell {
 
     private int ticksUpset;
 
-    protected SiphoningSpell(SpellType<?> type) {
-        super(type);
+    protected SiphoningSpell(SpellType<?> type, SpellTraits traits) {
+        super(type, traits);
     }
 
     @Override
-    public boolean onGroundTick(Caster<?> source) {
-        super.onGroundTick(source);
+    public boolean tick(Caster<?> source, Situation situation) {
 
         if (ticksUpset > 0) {
             ticksUpset--;

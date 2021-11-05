@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.ability.magic.spell.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 
 public interface SpellContainer {
     SpellContainer EMPTY = new SpellContainer() {

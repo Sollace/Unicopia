@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.minelittlepony.unicopia.ability.data.tree.TreeTypeLoader;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitLoader;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.command.Commands;
@@ -54,6 +55,7 @@ public class Unicopia implements ModInitializer {
         });
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(TreeTypeLoader.INSTANCE);
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(UEnchantments.POISONED_JOKE);
+        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(TraitLoader.INSTANCE);
 
         UBlocks.bootstrap();
         UItems.bootstrap();

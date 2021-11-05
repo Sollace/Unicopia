@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.util.math.Vec3f;
 
