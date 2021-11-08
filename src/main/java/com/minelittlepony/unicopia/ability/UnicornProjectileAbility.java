@@ -5,9 +5,8 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.ability.magic.spell.ProjectileCapable;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
@@ -63,27 +62,27 @@ public class UnicornProjectileAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
-        TypedActionResult<SpellType<?>> thrown = getNewSpell(player);
+        TypedActionResult<CustomisedSpellType<?>> thrown = getNewSpell(player);
 
         if (thrown.getResult() != ActionResult.FAIL) {
             @Nullable
-            SpellType<?> spell = thrown.getValue();
+            CustomisedSpellType<?> spell = thrown.getValue();
 
             if (spell == null) {
-                spell = SpellType.VORTEX;
+                spell = SpellType.VORTEX.withTraits();
             }
 
             player.subtractEnergyCost(getCostEstimate(player));
-            ((ProjectileCapable)spell.create(SpellTraits.EMPTY)).toss(player);
+            spell.create().toThrowable().throwProjectile(player);
         }
     }
 
-    private TypedActionResult<SpellType<?>> getNewSpell(Pony player) {
+    private TypedActionResult<CustomisedSpellType<?>> getNewSpell(Pony player) {
         return Streams.stream(player.getMaster().getItemsHand())
                 .filter(GemstoneItem::isEnchanted)
                 .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), null, null))
                 .findFirst()
-                .orElse(TypedActionResult.<SpellType<?>>pass(null));
+                .orElse(TypedActionResult.<CustomisedSpellType<?>>pass(null));
     }
 
     @Override

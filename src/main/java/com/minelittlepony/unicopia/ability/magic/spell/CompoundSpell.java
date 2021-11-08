@@ -26,8 +26,8 @@ public class CompoundSpell extends AbstractDelegatingSpell {
 
     @Override
     public Spell combineWith(Spell other) {
-        if (other instanceof CompoundSpell) {
-            spells.addAll(((CompoundSpell)other).spells);
+        if (other instanceof AbstractDelegatingSpell) {
+            spells.addAll(((AbstractDelegatingSpell)other).getDelegates());
         } else {
             spells.add(other);
         }

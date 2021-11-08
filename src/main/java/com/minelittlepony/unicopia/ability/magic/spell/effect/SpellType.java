@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.JoustingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.ThrowableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.util.Registries;
 
@@ -37,6 +38,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     public static final SpellType<CompoundSpell> COMPOUND_SPELL = register("compound", Affinity.NEUTRAL, 0, false, CompoundSpell::new);
     public static final SpellType<PlaceableSpell> PLACED_SPELL = register("placed", Affinity.NEUTRAL, 0, false, PlaceableSpell::new);
+    public static final SpellType<ThrowableSpell> THROWN_SPELL = register("thrown", Affinity.NEUTRAL, 0, false, ThrowableSpell::new);
 
     public static final SpellType<DisguiseSpell> DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, DisguiseSpell::new);
     public static final SpellType<JoustingSpell> RAINBOOM = register("rainboom", Affinity.GOOD, 0xBDBDF9, false, JoustingSpell::new);
@@ -66,12 +68,15 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     @Nullable
     private String translationKey;
 
+    private final CustomisedSpellType<T> traited;
+
     private SpellType(Identifier id, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
         this.id = id;
         this.affinity = affinity;
         this.color = color;
         this.obtainable = obtainable;
         this.factory = factory;
+        traited = new CustomisedSpellType<>(this, SpellTraits.EMPTY);
     }
 
     public boolean isObtainable() {
@@ -103,6 +108,14 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     public Text getName() {
         return new TranslatableText(getTranslationKey());
+    }
+
+    public CustomisedSpellType<T> withTraits() {
+        return traited;
+    }
+
+    public CustomisedSpellType<T> withTraits(SpellTraits traits) {
+        return traits.isEmpty() ? withTraits() : new CustomisedSpellType<>(this, traits);
     }
 
     @Nullable

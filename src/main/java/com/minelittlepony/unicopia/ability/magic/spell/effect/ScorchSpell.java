@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -42,14 +40,7 @@ public class ScorchSpell extends FireSpell {
     }
 
     @Override
-    @Nullable
-    public MagicProjectileEntity toss(Caster<?> caster) {
-        MagicProjectileEntity projectile = super.toss(caster);
-
-        if (projectile != null) {
-            projectile.setNoGravity(true);
-        }
-
-        return projectile;
+    public void configureProjectile(MagicProjectileEntity projectile, Caster<?> caster) {
+        projectile.setNoGravity(true);
     }
 }

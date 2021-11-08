@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.ProjectileCapable;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.shape.Shape;
@@ -16,7 +15,7 @@ import net.minecraft.util.math.Vec3d;
 /**
  * A spell for revealing changelings.
  */
-public class RevealingSpell extends AbstractSpell implements ProjectileCapable {
+public class RevealingSpell extends AbstractSpell {
     private static final Shape AREA = new Sphere(false, 15);
 
     protected RevealingSpell(SpellType<?> type, SpellTraits traits) {

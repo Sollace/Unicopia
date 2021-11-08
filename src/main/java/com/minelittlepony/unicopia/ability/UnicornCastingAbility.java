@@ -8,8 +8,8 @@ import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.GemstoneItem;
@@ -109,13 +109,13 @@ public class UnicornCastingAbility implements Ability<Hit> {
                 }
             }
         } else {
-            TypedActionResult<SpellType<?>> newSpell = getNewSpell(player);
+            TypedActionResult<CustomisedSpellType<?>> newSpell = getNewSpell(player);
 
             if (newSpell.getResult() != ActionResult.FAIL) {
-                SpellType<?> spell = newSpell.getValue();
+                CustomisedSpellType<?> spell = newSpell.getValue();
 
                 player.subtractEnergyCost(spell.isEmpty() ? 2 : 4);
-                spell.apply(player, SpellTraits.EMPTY);
+                spell.apply(player);
             }
         }
     }
@@ -135,13 +135,13 @@ public class UnicornCastingAbility implements Ability<Hit> {
         return TypedActionResult.pass(stack);
     }
 
-    private TypedActionResult<SpellType<?>> getNewSpell(Pony player) {
+    private TypedActionResult<CustomisedSpellType<?>> getNewSpell(Pony player) {
         final SpellType<?> current = player.getSpellSlot().get(true).map(Spell::getType).orElse(SpellType.empty());
         return Streams.stream(player.getMaster().getItemsHand())
                 .filter(GemstoneItem::isEnchanted)
                 .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), current, null))
                 .findFirst()
-                .orElse(TypedActionResult.<SpellType<?>>pass(current == SpellType.EMPTY_KEY ? SpellType.SHIELD : SpellType.EMPTY_KEY));
+                .orElse(TypedActionResult.<CustomisedSpellType<?>>pass((current == SpellType.EMPTY_KEY ? SpellType.SHIELD : SpellType.EMPTY_KEY).withTraits()));
     }
 
     @Override

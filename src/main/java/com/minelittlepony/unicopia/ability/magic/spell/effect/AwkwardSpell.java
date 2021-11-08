@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.ProjectileCapable;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -17,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
-public class AwkwardSpell extends AbstractSpell implements ProjectileCapable {
+public class AwkwardSpell extends AbstractSpell {
 
     protected AwkwardSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);

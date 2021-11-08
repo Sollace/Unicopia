@@ -10,13 +10,14 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 
-public abstract class AbstractDelegatingSpell implements Spell, ProjectileCapable {
+public abstract class AbstractDelegatingSpell implements ProjectileSpell {
 
     private boolean isDirty;
 
@@ -77,26 +78,29 @@ public abstract class AbstractDelegatingSpell implements Spell, ProjectileCapabl
     }
 
     @Override
+    public boolean tick(Caster<?> source, Situation situation) {
+        return execute(getDelegates().stream(), spell -> spell.tick(source, situation));
+    }
+
+    @Override
     public void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
-        getDelegates().stream().filter(a -> a instanceof ProjectileCapable).forEach(a -> {
-            ((ProjectileCapable)a).onImpact(projectile, pos, state);
+        getDelegates().stream().filter(a -> a instanceof ProjectileDelegate).forEach(a -> {
+            ((ProjectileDelegate)a).onImpact(projectile, pos, state);
         });
     }
 
     @Override
     public void onImpact(MagicProjectileEntity projectile, Entity entity) {
-        getDelegates().stream().filter(a -> a instanceof ProjectileCapable).forEach(a -> {
-            ((ProjectileCapable)a).onImpact(projectile, entity);
+        getDelegates().stream().filter(a -> a instanceof ProjectileDelegate).forEach(a -> {
+            ((ProjectileDelegate)a).onImpact(projectile, entity);
         });
     }
 
     @Override
-    public boolean tick(Caster<?> source, Situation situation) {
-        return execute(getDelegates().stream(), spell -> spell.tick(source, situation));
-    }
-
-    private boolean execute(Stream<Spell> spells, Function<Spell, Boolean> action) {
-        return spells.reduce(false, (u, a) -> action.apply(a), (a, b) -> a || b);
+    public void configureProjectile(MagicProjectileEntity projectile, Caster<?> caster) {
+        getDelegates().stream().filter(a -> a instanceof ProjectileSpell).forEach(a -> {
+            ((ProjectileSpell)a).configureProjectile(projectile, caster);
+        });
     }
 
     @Override
@@ -110,5 +114,9 @@ public abstract class AbstractDelegatingSpell implements Spell, ProjectileCapabl
         if (compound.contains("uuid")) {
             uuid = compound.getUuid("uuid");
         }
+    }
+
+    private static boolean execute(Stream<Spell> spells, Function<Spell, Boolean> action) {
+        return spells.reduce(false, (u, a) -> action.apply(a), (a, b) -> a || b);
     }
 }

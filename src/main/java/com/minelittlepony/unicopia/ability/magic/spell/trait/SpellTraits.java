@@ -43,19 +43,19 @@ public final class SpellTraits {
         return nbt;
     }
 
-    public Optional<SpellTraits> of(Collection<ItemStack> stacks) {
+    public static Optional<SpellTraits> of(Collection<ItemStack> stacks) {
         return fromEntries(stacks.stream().flatMap(a -> of(a).entries().stream()));
     }
 
-    public SpellTraits of(ItemStack stack) {
+    public static SpellTraits of(ItemStack stack) {
         return getEmbeddedTraits(stack).orElseGet(() -> of(stack.getItem()));
     }
 
-    public SpellTraits of(Item item) {
+    public static SpellTraits of(Item item) {
         return TraitLoader.INSTANCE.values.getOrDefault(Registry.ITEM.getId(item), null);
     }
 
-    public SpellTraits of(Block block) {
+    public static SpellTraits of(Block block) {
         return of(block.asItem());
     }
 

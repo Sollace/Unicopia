@@ -9,7 +9,7 @@ import java.util.Set;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.ProjectileCapable;
+import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
@@ -22,7 +22,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Util;
 
-public class TransformationSpell extends AbstractSpell implements ProjectileCapable {
+public class TransformationSpell extends AbstractSpell implements ProjectileSpell {
 
     protected TransformationSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);

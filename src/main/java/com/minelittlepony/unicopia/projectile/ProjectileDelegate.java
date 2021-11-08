@@ -8,10 +8,10 @@ public interface ProjectileDelegate {
     /**
      * Called once the projectile lands either hitting the ground or an entity.
      */
-    void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state);
+    default void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {}
 
     /**
      * Called once the projectile lands either hitting the ground or an entity.
      */
-    void onImpact(MagicProjectileEntity projectile, Entity entity);
+    default void onImpact(MagicProjectileEntity projectile, Entity entity) {}
 }

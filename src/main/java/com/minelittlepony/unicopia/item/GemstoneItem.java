@@ -9,7 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -79,19 +81,20 @@ public class GemstoneItem extends Item {
         return super.getName();
     }
 
-    public static TypedActionResult<SpellType<?>> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable SpellType<?> exclude, @Nullable Predicate<SpellType<?>> test) {
+    public static TypedActionResult<CustomisedSpellType<?>> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable SpellType<?> exclude, @Nullable Predicate<SpellType<?>> test) {
 
         if (!isEnchanted(stack)) {
             return TypedActionResult.pass(null);
         }
 
         SpellType<Spell> key = getSpellKey(stack);
+        SpellTraits traits = SpellTraits.of(stack);
 
         if (Objects.equals(key, exclude)) {
             return TypedActionResult.fail(null);
         }
 
-        if (key == SpellType.EMPTY_KEY || (test == null || !test.test(key))) {
+        if (key.isEmpty() || (test == null || !test.test(key))) {
             return TypedActionResult.fail(null);
         }
 
@@ -105,7 +108,7 @@ public class GemstoneItem extends Item {
             }
         }
 
-        return TypedActionResult.consume(key);
+        return TypedActionResult.consume(key.withTraits(traits));
     }
 
     public static boolean isEnchanted(ItemStack stack) {

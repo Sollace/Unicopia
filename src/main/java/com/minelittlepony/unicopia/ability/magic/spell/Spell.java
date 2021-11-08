@@ -75,4 +75,12 @@ public interface Spell extends NbtSerialisable, Affine {
     default PlaceableSpell toPlaceable() {
         return SpellType.PLACED_SPELL.create(SpellTraits.EMPTY).setSpell(this);
     }
+
+    /**
+     * Converts this spell into a throwable spell.
+     * @return
+     */
+    default ThrowableSpell toThrowable() {
+        return SpellType.THROWN_SPELL.create(SpellTraits.EMPTY).setSpell(this);
+    }
 }
