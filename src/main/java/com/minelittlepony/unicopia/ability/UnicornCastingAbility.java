@@ -25,8 +25,11 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 
 /**
- * A magic casting ability for unicorns.
- * (only shields for now)
+ * Casts magic onto the user directly, or uses the item in the main hand slot.
+ * <p>
+ * 1. If the player is holding nothing, defaults to toggling their equipped spell (currently only shield).
+ * 2. If the player is holding a gem, consumes it and casts whatever spell is contained within onto the user.
+ * 3. If the player is holding a amulet, charges it.
  */
 public class UnicornCastingAbility implements Ability<Hit> {
 

@@ -16,14 +16,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 
 /**
- * A magic casting ability for unicorns.
- * (only shields for now)
+ * Fires a spell as a projectile.
+ *
+ * 1. If the player is holding nothing, casts their equipped offensive spell (currently only vortex - inverse of shield)
+ * 2. If the player is holding a gem, consumes it and casts whatever spell is contained within onto a projectile.
  */
 public class UnicornProjectileAbility implements Ability<Hit> {
 
-    /**
-     * The icon representing this ability on the UI and HUD.
-     */
     @Override
     public Identifier getIcon(Pony player, boolean swap) {
         Identifier id = Abilities.REGISTRY.getId(this);

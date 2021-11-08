@@ -34,7 +34,7 @@ public class RevealingSpell extends AbstractSpell {
         }
 
         source.findAllSpellsInRange(15).forEach(e -> {
-            e.getSpellSlot().get(SpellPredicate.IS_SUPPRESSABLE, false)
+            e.getSpellSlot().get(SpellPredicate.CAN_SUPPRESS, false)
                 .filter(spell -> spell.isVulnerable(source, this))
                 .ifPresent(spell -> {
                 spell.onSuppressed(source);

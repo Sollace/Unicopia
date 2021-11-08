@@ -22,6 +22,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 
+/**
+ * Internal.
+ * <p>
+ * Used by the Rainboom ability.
+ */
 public class JoustingSpell extends AbstractSpell {
 
     private final int rad = 5;

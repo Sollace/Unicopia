@@ -28,6 +28,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
 
+/**
+ * Shapeshifts the player.
+ * <p>
+ * Internal. Used by the changeling ability.
+ */
 public class DisguiseSpell extends AbstractSpell implements Suppressable, FlightType.Provider, PlayerDimensions.Provider, ProjectileImpactListener {
 
     private final Disguise disguise = new Disguise();

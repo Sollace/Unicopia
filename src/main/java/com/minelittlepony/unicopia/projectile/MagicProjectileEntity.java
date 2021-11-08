@@ -269,7 +269,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     }
 
     protected void forEachDelegates(Consumer<ProjectileDelegate> consumer) {
-        getSpellSlot().get(SpellPredicate.IS_THROWN, true).ifPresent(consumer);
+        getSpellSlot().get(SpellPredicate.HAS_PROJECTILE_EVENTS, true).ifPresent(consumer);
         if (getItem().getItem() instanceof ProjectileDelegate) {
             consumer.accept(((ProjectileDelegate)getItem().getItem()));
         }
