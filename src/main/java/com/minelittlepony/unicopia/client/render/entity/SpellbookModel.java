@@ -43,7 +43,7 @@ public class SpellbookModel extends EntityModel<SpellbookEntity> {
         if (first_page_rot > 1) first_page_rot = 1;
         if (second_page_rot > 1) second_page_rot = 1;
 
-        if (!entity.getIsOpen()) {
+        if (!entity.isOpen()) {
             first_page_rot = second_page_rot = open_angle = 0;
         }
 

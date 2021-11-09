@@ -1,9 +1,12 @@
 package com.minelittlepony.unicopia.entity;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.container.UScreenHandlers;
 import com.minelittlepony.unicopia.item.UItems;
 
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -15,7 +18,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
@@ -27,24 +29,27 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class SpellbookEntity extends MobEntity {
-    private static final TrackedData<Boolean> OPENED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> AWAKE = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> BORED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Byte> LOCKED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Boolean> ALTERED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Byte> OPENED_USER = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BYTE);
+
+    private static final int TICKS_TO_SLEEP = 2000;
+
+    private int activeTicks = TICKS_TO_SLEEP;
 
     public SpellbookEntity(EntityType<SpellbookEntity> type, World world) {
         super(type, world);
         setPersistent();
-
-        if (world.random.nextInt(3) == 0) {
-            setAltered();
-        }
+        setAltered(world.random.nextInt(3) == 0);
     }
 
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        dataTracker.startTracking(OPENED, true);
-        dataTracker.startTracking(OPENED_USER, (byte)1);
+        dataTracker.startTracking(AWAKE, true);
+        dataTracker.startTracking(BORED, false);
+        dataTracker.startTracking(LOCKED, (byte)1);
         dataTracker.startTracking(ALTERED, false);
     }
 
@@ -63,37 +68,55 @@ public class SpellbookEntity extends MobEntity {
         return false;
     }
 
-    public boolean getIsAltered() {
+    public boolean isAltered() {
         return dataTracker.get(ALTERED);
     }
 
-    public void setAltered() {
-        dataTracker.set(ALTERED, true);
+    public void setAltered(boolean altered) {
+        dataTracker.set(ALTERED, altered);
     }
 
-    public boolean getIsOpen() {
-        return dataTracker.get(OPENED);
+    protected void setLocked(TriState closed) {
+        dataTracker.set(LOCKED, (byte)closed.ordinal());
     }
 
-    public Boolean getUserSetState() {
-        byte state = dataTracker.get(OPENED_USER);
-        return state == 1 ? null : state == 2;
+    @Nullable
+    protected TriState isLocked() {
+        return TriState.values()[Math.abs(dataTracker.get(LOCKED)) % 3];
     }
 
-    public void setIsOpen(boolean val) {
-        dataTracker.set(OPENED, val);
+    public boolean isOpen() {
+        return isLocked().orElse(isAwake()) && !isBored();
     }
 
-    public void setUserSetState(Boolean val) {
-        dataTracker.set(OPENED_USER, val == null ? (byte)1 : val == true ? (byte)2 : (byte)0);
+    public boolean isAwake() {
+        return dataTracker.get(AWAKE);
+    }
+
+    public void setAwake(boolean awake) {
+        if (awake != isAwake()) {
+            dataTracker.set(AWAKE, awake);
+        }
+    }
+
+    public boolean isBored() {
+        return dataTracker.get(BORED);
+    }
+
+    public void setBored(boolean bored) {
+        activeTicks = TICKS_TO_SLEEP;
+        if (bored != isBored()) {
+            dataTracker.set(BORED, bored);
+        }
     }
 
     @Override
     public void tick() {
-        boolean open = getIsOpen();
-        jumping = open && isTouchingWater();
+        boolean awake = isAwake();
+        jumping = awake && isTouchingWater();
         super.tick();
-        if (open && world.isClient) {
+
+        if (world.isClient && isOpen()) {
             for (int offX = -2; offX <= 1; ++offX) {
                 for (int offZ = -2; offZ <= 1; ++offZ) {
                     if (offX > -1 && offX < 1 && offZ == -1) {
@@ -114,32 +137,36 @@ public class SpellbookEntity extends MobEntity {
             }
         }
 
-        if (open) {
-            world.getOtherEntities(this, getBoundingBox().expand(2), EntityPredicates.EXCEPT_SPECTATOR.and(e -> e instanceof PlayerEntity)).stream().findFirst().ifPresent(player -> {
-                Vec3d diff = player.getPos().subtract(getPos());
-                double yaw = Math.atan2(diff.z, diff.x) * 180D / Math.PI - 90;
+        if (awake) {
+            world.getOtherEntities(this, getBoundingBox().expand(2), EquinePredicates.PLAYER_UNICORN.and(e -> e instanceof PlayerEntity)).stream().findFirst().ifPresent(player -> {
+                setBored(false);
+                if (isOpen()) {
+                    Vec3d diff = player.getPos().subtract(getPos());
+                    double yaw = Math.atan2(diff.z, diff.x) * 180D / Math.PI - 90;
 
-                setHeadYaw((float)yaw);
-                setYaw((float)yaw);
+                    setHeadYaw((float)yaw);
+                    setBodyYaw((float)yaw);
+                }
             });
+
+            if (!world.isClient) {
+                System.out.println(activeTicks);
+
+                if (activeTicks > 0 && --activeTicks <= 0) {
+                    setBored(true);
+                }
+            }
         }
 
-        if (world.random.nextInt(30) == 0) {
-            float celest = world.getSkyAngleRadians(1) * 4;
+        if (!world.isClient && world.random.nextInt(30) == 0) {
+            float celest = world.getSkyAngle(1) * 4;
 
-            boolean isDay = celest > 3 || celest < 1;
+            boolean daytime = celest > 3 || celest < 1;
 
-            Boolean userState = getUserSetState();
+            setAwake(daytime);
 
-            boolean canToggle = (isDay != open) && (userState == null || userState == isDay);
-
-            if (canToggle) {
-                setUserSetState(null);
-                setIsOpen(isDay);
-            }
-
-            if (userState != null && (isDay == open) && (userState == open)) {
-                setUserSetState(null);
+            if (daytime != awake && daytime == isLocked().orElse(daytime)) {
+                setLocked(TriState.DEFAULT);
             }
         }
     }
@@ -163,15 +190,14 @@ public class SpellbookEntity extends MobEntity {
     @Override
     public ActionResult interactAt(PlayerEntity player, Vec3d vec, Hand hand) {
         if (player.isSneaking()) {
-            boolean open = !getIsOpen();
-
-            setIsOpen(open);
-            setUserSetState(open);
-
+            setBored(false);
+            setAwake(!isOpen());
+            setLocked(TriState.of(isAwake()));
             return ActionResult.SUCCESS;
         }
 
-        if (EquinePredicates.PLAYER_UNICORN.test(player)) {
+        if (isOpen() && EquinePredicates.PLAYER_UNICORN.test(player)) {
+            setBored(false);
             player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, ply) -> UScreenHandlers.SPELL_BOOK.create(syncId, inv), getDisplayName()));
             player.playSound(SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, 2, 1);
             return ActionResult.SUCCESS;
@@ -183,20 +209,22 @@ public class SpellbookEntity extends MobEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
-
-        setIsOpen(compound.getBoolean("open"));
-        setUserSetState(compound.contains("force_open") ? compound.getBoolean("force_open") : null);
+        setAwake(compound.getBoolean("awake"));
+        setBored(compound.getBoolean("bored"));
+        setAltered(compound.getBoolean("altered"));
+        setLocked(compound.contains("locked") ? TriState.of(compound.getBoolean("locked")) : TriState.DEFAULT);
     }
 
     @Override
     public void writeCustomDataToNbt(NbtCompound compound) {
         super.writeCustomDataToNbt(compound);
-        compound.putBoolean("open", getIsOpen());
+        compound.putBoolean("awake", isAwake());
+        compound.putBoolean("bored", isBored());
+        compound.putBoolean("altered", isAltered());
 
-        Boolean state = getUserSetState();
-
-        if (state != null) {
-            compound.putBoolean("force_open", state);
+        TriState locked = isLocked();
+        if (locked != TriState.DEFAULT) {
+            compound.putBoolean("locked", locked.get());
         }
     }
 }

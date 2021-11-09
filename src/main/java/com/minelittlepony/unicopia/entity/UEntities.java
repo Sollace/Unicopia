@@ -34,7 +34,7 @@ public interface UEntities {
             .dimensions(EntityDimensions.fixed(1, 1)));
     EntityType<SpellbookEntity> SPELLBOOK = register("spellbook", FabricEntityTypeBuilder.create(SpawnGroup.MISC, SpellbookEntity::new)
             .trackRangeBlocks(200)
-            .dimensions(EntityDimensions.fixed(1, 1)));
+            .dimensions(EntityDimensions.fixed(0.9F, 0.25F)));
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         EntityType<T> type = builder.build();

@@ -20,7 +20,7 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
 
     @Override
     public Identifier getTexture(SpellbookEntity entity) {
-        return entity.getIsAltered() ? BLUE : NORMAL;
+        return entity.isAltered() ? BLUE : NORMAL;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
     protected void setupTransforms(SpellbookEntity entity, MatrixStack matrices, float f, float g, float partialTicks) {
         super.setupTransforms(entity, matrices, f, g + 90, partialTicks);
 
-        if (entity.getIsOpen()) {
+        if (entity.isOpen()) {
             matrices.translate(-1.25F, -0.35F, 0);
 
             float floatPosition = MathHelper.sin((entity.age + partialTicks + entity.getId()) / 20) * 0.04F;
