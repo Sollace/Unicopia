@@ -20,7 +20,6 @@ import net.minecraft.world.biome.Biome.Category;
 
 @SuppressWarnings("deprecation")
 public interface UEntities {
-
     EntityType<ButterflyEntity> BUTTERFLY = register("butterfly", FabricEntityTypeBuilder.create(SpawnGroup.AMBIENT, ButterflyEntity::new)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));
     EntityType<MagicProjectileEntity> THROWN_ITEM = register("thrown_item", FabricEntityTypeBuilder.<MagicProjectileEntity>create(SpawnGroup.MISC, MagicProjectileEntity::new)
@@ -33,6 +32,9 @@ public interface UEntities {
     EntityType<CastSpellEntity> CAST_SPELL = register("cast_spell", FabricEntityTypeBuilder.create(SpawnGroup.MISC, CastSpellEntity::new)
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(1, 1)));
+    EntityType<SpellbookEntity> SPELLBOOK = register("spellbook", FabricEntityTypeBuilder.create(SpawnGroup.MISC, SpellbookEntity::new)
+            .trackRangeBlocks(200)
+            .dimensions(EntityDimensions.fixed(1, 1)));
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         EntityType<T> type = builder.build();
@@ -41,6 +43,7 @@ public interface UEntities {
 
     static void bootstrap() {
         FabricDefaultAttributeRegistry.register(BUTTERFLY, ButterflyEntity.createButterflyAttributes());
+        FabricDefaultAttributeRegistry.register(SPELLBOOK, SpellbookEntity.createMobAttributes());
 
         final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()
                 .and(ctx -> ctx.getBiome().getPrecipitation() == Biome.Precipitation.RAIN);

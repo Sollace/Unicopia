@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.client.render;
+package com.minelittlepony.unicopia.client.render.entity;
 
 import com.minelittlepony.unicopia.entity.CastSpellEntity;
 

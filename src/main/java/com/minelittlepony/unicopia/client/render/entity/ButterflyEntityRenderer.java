@@ -1,5 +1,6 @@
-package com.minelittlepony.unicopia.client.render;
+package com.minelittlepony.unicopia.client.render.entity;
 
+import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.entity.ButterflyEntity;
 
 import net.minecraft.client.model.ModelData;

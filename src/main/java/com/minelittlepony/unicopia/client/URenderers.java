@@ -15,11 +15,12 @@ import com.minelittlepony.unicopia.client.render.AccessoryFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.AmuletFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.BatWingsFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer;
-import com.minelittlepony.unicopia.client.render.ButterflyEntityRenderer;
-import com.minelittlepony.unicopia.client.render.CastSpellEntityRenderer;
 import com.minelittlepony.unicopia.client.render.FloatingArtefactEntityRenderer;
 import com.minelittlepony.unicopia.client.render.IcarusWingsFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.WingsFeatureRenderer;
+import com.minelittlepony.unicopia.client.render.entity.ButterflyEntityRenderer;
+import com.minelittlepony.unicopia.client.render.entity.CastSpellEntityRenderer;
+import com.minelittlepony.unicopia.client.render.entity.SpellbookEntityRenderer;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.GemstoneItem;
@@ -69,6 +70,7 @@ public interface URenderers {
         EntityRendererRegistry.INSTANCE.register(UEntities.BUTTERFLY, ButterflyEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(UEntities.FLOATING_ARTEFACT, FloatingArtefactEntityRenderer::new);
         EntityRendererRegistry.INSTANCE.register(UEntities.CAST_SPELL, CastSpellEntityRenderer::new);
+        EntityRendererRegistry.INSTANCE.register(UEntities.SPELLBOOK, SpellbookEntityRenderer::new);
 
         ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack), UItems.FRIENDSHIP_BRACELET);
         BuiltinItemRendererRegistry.INSTANCE.register(UItems.FILLED_JAR, (stack, mode, matrices, vertexConsumers, light, overlay) -> {

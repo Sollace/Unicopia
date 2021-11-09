@@ -14,6 +14,8 @@
   "item.unicopia.friendship_bracelet": "Bangle of Comradery",
   "item.unicopia.friendship_bracelet.issuer": "Signed by %s",
   "item.unicopia.friendship_bracelet.glowing": "Glowing",
+  
+  "item.unicopia.spellbook": "Spellbook",
 
   "item.unicopia.butterfly_spawn_egg": "Butterfly Spawn Egg",
   "item.unicopia.butterfly": "Butterfly",
@@ -79,6 +81,7 @@
   "entity.unicopia.butterfly": "Butterfly",
   "entity.unicopia.cast_spell": "Cast Spell",
   "entity.unicopia.cast_spell.by": "a spell cast by %s",
+  "entity.unicopia.spellbook": "Spellbook",
 
   "unicopia.effect.tribe.stage.initial": "It appears to have no effect.",
   "unicopia.effect.tribe.stage.crawling": "You feel the skin crawling on your back.",
