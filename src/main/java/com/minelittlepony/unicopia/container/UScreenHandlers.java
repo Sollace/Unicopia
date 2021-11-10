@@ -7,7 +7,7 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 
 public interface UScreenHandlers {
-    ScreenHandlerType<SpellBookScreenHandler> SPELL_BOOK = register("spell_book", SpellBookScreenHandler::new);
+    ScreenHandlerType<SpellbookScreenHandler> SPELL_BOOK = register("spell_book", SpellbookScreenHandler::new);
 
     static <T extends ScreenHandler> ScreenHandlerType<T> register(String name, SimpleClientHandlerFactory<T> factory) {
         return ScreenHandlerRegistry.registerSimple(new Identifier("unicopia", name), factory);

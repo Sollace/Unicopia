@@ -150,8 +150,6 @@ public class SpellbookEntity extends MobEntity {
             });
 
             if (!world.isClient) {
-                System.out.println(activeTicks);
-
                 if (activeTicks > 0 && --activeTicks <= 0) {
                     setBored(true);
                 }
@@ -193,13 +191,14 @@ public class SpellbookEntity extends MobEntity {
             setBored(false);
             setAwake(!isOpen());
             setLocked(TriState.of(isAwake()));
+            player.playSound(SoundEvents.ITEM_BOOK_PAGE_TURN, 2, 1);
             return ActionResult.SUCCESS;
         }
 
         if (isOpen() && EquinePredicates.PLAYER_UNICORN.test(player)) {
             setBored(false);
             player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, ply) -> UScreenHandlers.SPELL_BOOK.create(syncId, inv), getDisplayName()));
-            player.playSound(SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, 2, 1);
+            player.playSound(SoundEvents.ITEM_BOOK_PAGE_TURN, 2, 1);
             return ActionResult.SUCCESS;
         }
 

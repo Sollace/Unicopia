@@ -11,11 +11,14 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.LanSettingsScreen;
 import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
+import com.minelittlepony.unicopia.container.SpellbookScreen;
+import com.minelittlepony.unicopia.container.UScreenHandlers;
 import com.minelittlepony.unicopia.entity.player.PlayerCamera;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.OpenToLanScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -58,6 +61,8 @@ public class UnicopiaClient implements ClientModInitializer {
 
         KeyBindingsHandler.bootstrap();
         URenderers.bootstrap();
+
+        ScreenRegistry.register(UScreenHandlers.SPELL_BOOK, SpellbookScreen::new);
 
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
         ScreenInitCallback.EVENT.register(this::onScreenInit);
