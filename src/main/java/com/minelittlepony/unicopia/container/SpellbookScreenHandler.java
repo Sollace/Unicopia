@@ -71,7 +71,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
     @Override
     public void onContentChanged(Inventory inventory) {
         World world = this.inventory.player.world;
-        if (!world.isClient) {
+        if (!world.isClient && !gemSlot.getStack().isEmpty()) {
             world.getServer().getRecipeManager().getFirstMatch(RecipeType.CRAFTING, input, world)
                 .map(recipe -> recipe.craft(input))
                 .ifPresentOrElse(gemSlot::setCrafted, gemSlot::setUncrafted);
@@ -91,21 +91,23 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
         if (index >= HOTBAR_START) {
             if (!gemSlot.hasStack() && gemSlot.canInsert(stack)) {
-                if (!insertItem(transferredStack, GEM_SLOT_INDEX, GEM_SLOT_INDEX + 1, false)) {
+                if (insertItem(transferredStack, GEM_SLOT_INDEX, GEM_SLOT_INDEX + 1, false)) {
+                    onContentChanged(input);
                     return ItemStack.EMPTY;
                 }
             }
 
-            if (!insertItem(transferredStack, 0, GEM_SLOT_INDEX, false)) {
+            if (insertItem(transferredStack, 0, GEM_SLOT_INDEX, false)) {
+                sourceSlot.onQuickTransfer(transferredStack, stack);
+                onContentChanged(input);
                 return ItemStack.EMPTY;
             }
         } else {
-            if (!insertItem(transferredStack, HOTBAR_START, HOTBAR_END, false)) {
+            if (insertItem(transferredStack, HOTBAR_START, HOTBAR_END, true)) {
+                sourceSlot.onQuickTransfer(transferredStack, stack);
+                onContentChanged(input);
                 return ItemStack.EMPTY;
             }
-
-            sourceSlot.onQuickTransfer(transferredStack, stack);
-            onContentChanged(input);
         }
 
         if (transferredStack.getCount() == stack.getCount()) {
@@ -115,6 +117,62 @@ public class SpellbookScreenHandler extends ScreenHandler {
         sourceSlot.onTakeItem(player, transferredStack);
 
         return stack;
+    }
+
+    @Override
+    protected boolean insertItem(ItemStack stack, int startIndex, int endIndex, boolean fromLast) {
+        boolean success = false;
+
+        int i = fromLast ? endIndex - 1 : startIndex;
+
+        while (true) {
+            if (i < startIndex || i >= endIndex) {
+                break;
+            }
+
+            Slot slot = getSlot(i);
+            ItemStack current = slot.getStack();
+
+            if (!current.isEmpty() && ItemStack.canCombine(stack, current)) {
+                // abide by the slot's max item count when trying to insert stacks
+                int available = Math.min(Math.min(current.getMaxCount(), slot.getMaxItemCount()) - current.getCount(), stack.getCount());
+
+                if (available > 0) {
+                    current.increment(available);
+                    stack.decrement(available);
+                    slot.markDirty();
+                    success = true;
+                }
+            }
+
+            i += fromLast ? -1 : 1;
+        }
+
+        i = fromLast ? endIndex - 1 : startIndex;
+
+        while (true) {
+            if (i < startIndex || i >= endIndex) {
+                break;
+            }
+
+            Slot slot = getSlot(i);
+            ItemStack current = slot.getStack();
+
+            if (current.isEmpty() && slot.canInsert(stack)) {
+                if (stack.getCount() > slot.getMaxItemCount()) {
+                    slot.setStack(stack.split(slot.getMaxItemCount()));
+                } else {
+                    slot.setStack(stack.split(stack.getCount()));
+                }
+                slot.markDirty();
+                success = true;
+                break;
+            }
+
+            i += fromLast ? -1 : 1;
+        }
+
+        return success;
     }
 
     @Override
