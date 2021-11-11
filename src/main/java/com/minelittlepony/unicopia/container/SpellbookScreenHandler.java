@@ -16,10 +16,13 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
@@ -78,7 +81,10 @@ public class SpellbookScreenHandler extends ScreenHandler {
         if (!world.isClient && !gemSlot.getStack().isEmpty()) {
             world.getServer().getRecipeManager().getFirstMatch(URecipes.SPELLBOOK, input, world)
                 .filter(recipe -> result.shouldCraftRecipe(world, (ServerPlayerEntity)this.inventory.player, recipe))
-                .map(recipe -> recipe.craft(input))
+                .map(recipe -> {
+                    this.inventory.player.playSound(SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.MASTER, 1, 0.3F);
+                    return recipe.craft(input);
+                })
                 .ifPresentOrElse(gemSlot::setCrafted, gemSlot::setUncrafted);
         }
     }
