@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.ability.EarthPonyStompAbility;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.Living;
@@ -77,6 +78,8 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     private final PlayerCharmTracker charms = new PlayerCharmTracker(this);
     private final PlayerAttributes attributes = new PlayerAttributes(this);
     private final PlayerCamera camera = new PlayerCamera(this);
+    private final TraitDiscovery discoveries = new TraitDiscovery(this);
+
     private final ManaContainer mana;
     private final PlayerLevelStore levels;
 
@@ -135,6 +138,10 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         entity.sendAbilitiesUpdate();
 
         UCriteria.PLAYER_CHANGE_RACE.trigger(entity);
+    }
+
+    public TraitDiscovery getDiscoveries() {
+        return discoveries;
     }
 
     public MagicReserves getMagicalReserves() {
@@ -469,6 +476,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         compound.put("powers", powers.toNBT());
         compound.put("gravity", gravity.toNBT());
         compound.put("charms", charms.toNBT());
+        compound.put("discoveries", discoveries.toNBT());
 
         getSpellSlot().get(true).ifPresent(effect ->{
             compound.put("effect", SpellType.toNBT(effect));
@@ -484,6 +492,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         powers.fromNBT(compound.getCompound("powers"));
         gravity.fromNBT(compound.getCompound("gravity"));
         charms.fromNBT(compound.getCompound("charms"));
+        discoveries.fromNBT(compound.getCompound("discoveries"));
 
         magicExhaustion = compound.getFloat("magicExhaustion");
 
@@ -500,6 +509,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         }
         oldPlayer.setSpell(null);
         setSpecies(oldPlayer.getSpecies());
+        getDiscoveries().copyFrom(oldPlayer.getDiscoveries());
         setDirty();
     }
 

@@ -42,7 +42,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Map<Identifie
         for (String namespace : manager.getAllNamespaces()) {
             profiler.push(namespace);
             try {
-                for (Resource resource : manager.getAllResources(new Identifier(namespace, "items/traits"))) {
+                for (Resource resource : manager.getAllResources(new Identifier(namespace, "traits/items.json"))) {
                     profiler.push(resource.getResourcePackName());
 
                     try (InputStreamReader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {

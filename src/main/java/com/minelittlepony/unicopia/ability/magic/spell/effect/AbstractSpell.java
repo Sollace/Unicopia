@@ -90,7 +90,7 @@ public abstract class AbstractSpell implements Spell {
         }
         isDead = compound.getBoolean("dead");
         if (compound.contains("traits")) {
-            traits = SpellTraits.readNbt(compound.getCompound("traits")).orElse(SpellTraits.EMPTY);
+            traits = SpellTraits.fromNbt(compound.getCompound("traits")).orElse(SpellTraits.EMPTY);
         }
     }
 }

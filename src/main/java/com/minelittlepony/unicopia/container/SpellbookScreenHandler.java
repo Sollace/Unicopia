@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.util.InventoryUtil;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -13,11 +16,12 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeType;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Pair;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public class SpellbookScreenHandler extends ScreenHandler {
@@ -28,7 +32,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
     private final int HOTBAR_START;
     private final int HOTBAR_END;
 
-    private final CraftingInventory input;
+    private final SpellbookInventory input;
 
     private OutputSlot gemSlot;
     private final CraftingResultInventory result = new CraftingResultInventory();
@@ -47,7 +51,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
         HOTBAR_START = GEM_SLOT_INDEX + 1;
         HOTBAR_END = HOTBAR_START + 9;
 
-        input = new CraftingInventory(this, MAX_INGREDIENTS, 1);
+        input = new SpellbookInventory(this, MAX_INGREDIENTS, 1);
 
         for (int i = 0; i < MAX_INGREDIENTS; i++) {
             var pos = grid.get(i);
@@ -72,7 +76,8 @@ public class SpellbookScreenHandler extends ScreenHandler {
     public void onContentChanged(Inventory inventory) {
         World world = this.inventory.player.world;
         if (!world.isClient && !gemSlot.getStack().isEmpty()) {
-            world.getServer().getRecipeManager().getFirstMatch(RecipeType.CRAFTING, input, world)
+            world.getServer().getRecipeManager().getFirstMatch(URecipes.SPELLBOOK, input, world)
+                .filter(recipe -> result.shouldCraftRecipe(world, (ServerPlayerEntity)this.inventory.player, recipe))
                 .map(recipe -> recipe.craft(input))
                 .ifPresentOrElse(gemSlot::setCrafted, gemSlot::setUncrafted);
         }
@@ -202,6 +207,17 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
     public interface SpellbookSlot {}
 
+    public class SpellbookInventory extends CraftingInventory {
+
+        public SpellbookInventory(ScreenHandler handler, int width, int height) {
+            super(handler, width, height);
+        }
+
+        public ItemStack getItemToModify() {
+            return gemSlot.getStack();
+        }
+    }
+
     public class InputSlot extends Slot implements SpellbookSlot {
         public InputSlot(Inventory inventory, int index, int xPosition, int yPosition) {
             super(inventory, index, xPosition, yPosition);
@@ -217,8 +233,11 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
         private Optional<ItemStack> uncrafted = Optional.empty();
 
-        public OutputSlot(PlayerEntity player, CraftingInventory input, Inventory inventory, int index, int x, int y) {
+        private final SpellbookInventory input;
+
+        public OutputSlot(PlayerEntity player, SpellbookInventory input, Inventory inventory, int index, int x, int y) {
             super(player, input, inventory, index, x, y);
+            this.input = input;
         }
 
         public void setCrafted(ItemStack crafted) {
@@ -247,7 +266,34 @@ public class SpellbookScreenHandler extends ScreenHandler {
         public void onTakeItem(PlayerEntity player, ItemStack stack) {
             if (uncrafted.isPresent()) {
                 uncrafted = Optional.empty();
-                super.onTakeItem(player, stack);
+                onCrafted(stack);
+
+                Pony pony = Pony.of(player);
+                InventoryUtil.iterate(input).forEach(s -> {
+                    pony.getDiscoveries().unlock(s.getItem());
+                });
+
+                DefaultedList<ItemStack> defaultedList = player.world.getRecipeManager().getRemainingStacks(URecipes.SPELLBOOK, input, player.world);
+
+                for (int i = 0; i < defaultedList.size(); ++i) {
+                   ItemStack itemStack = input.getStack(i);
+                   ItemStack itemStack2 = defaultedList.get(i);
+                   if (!itemStack.isEmpty()) {
+                      input.removeStack(i, 1);
+                      itemStack = input.getStack(i);
+                   }
+
+                   if (!itemStack2.isEmpty()) {
+                      if (itemStack.isEmpty()) {
+                         input.setStack(i, itemStack2);
+                      } else if (ItemStack.areItemsEqualIgnoreDamage(itemStack, itemStack2) && ItemStack.areTagsEqual(itemStack, itemStack2)) {
+                         itemStack2.increment(itemStack.getCount());
+                         input.setStack(i, itemStack2);
+                      } else if (!player.getInventory().insertStack(itemStack2)) {
+                         player.dropItem(itemStack2, false);
+                      }
+                   }
+                }
             }
         }
     }

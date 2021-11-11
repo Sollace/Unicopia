@@ -1,39 +1,27 @@
 package com.minelittlepony.unicopia.item;
 
 import com.google.gson.JsonArray;
+import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
+import com.minelittlepony.unicopia.ability.magic.spell.crafting.TraitRequirementRecipe;
 
 import net.fabricmc.fabric.api.loot.v1.FabricLootSupplier;
 import net.fabricmc.fabric.api.loot.v1.event.LootTableLoadingCallback;
 import net.minecraft.loot.LootTable;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.ShapelessRecipe;
 import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.registry.Registry;
 
 public interface URecipes {
+    RecipeType<SpellbookRecipe> SPELLBOOK = RecipeType.register("unicopia:spellbook");
 
-    RecipeSerializer<ShapelessRecipe> ZAP_APPLE_SERIALIZER = register("crafting_zap_apple", new ZapAppleRecipe.Serializer());
-    RecipeSerializer<GlowingRecipe> GLOWING_SERIALIZER = register("crafting_glowing", new SpecialRecipeSerializer<>(GlowingRecipe::new));
-    RecipeSerializer<JarInsertRecipe> JAR_INSERT_SERIALIZER = register("jar_insert", new SpecialRecipeSerializer<>(JarInsertRecipe::new));
-
-    static <T extends Recipe<?>> RecipeType<T> register(final String id) {
-        return Registry.register(Registry.RECIPE_TYPE, new Identifier("unicopia", id), new RecipeType<T>() {
-            @Override
-            public String toString() {
-                return id;
-            }
-        });
-    }
-
-    static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String id, S serializer) {
-        return Registry.register(Registry.RECIPE_SERIALIZER, new Identifier("unicopia", id), serializer);
-    }
-
+    RecipeSerializer<ShapelessRecipe> ZAP_APPLE_SERIALIZER = RecipeSerializer.register("unicopia:crafting_zap_apple", new ZapAppleRecipe.Serializer());
+    RecipeSerializer<GlowingRecipe> GLOWING_SERIALIZER = RecipeSerializer.register("unicopia:crafting_glowing", new SpecialRecipeSerializer<>(GlowingRecipe::new));
+    RecipeSerializer<JarInsertRecipe> JAR_INSERT_SERIALIZER = RecipeSerializer.register("unicopia:jar_insert", new SpecialRecipeSerializer<>(JarInsertRecipe::new));
+    RecipeSerializer<TraitRequirementRecipe> TRAIT_REQUIREMENT = RecipeSerializer.register("unicopia:spellbook/crafting", new TraitRequirementRecipe.Serializer());
 
     static DefaultedList<Ingredient> getIngredients(JsonArray json) {
         DefaultedList<Ingredient> defaultedList = DefaultedList.of();

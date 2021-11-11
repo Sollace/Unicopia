@@ -7,6 +7,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.toxin.ToxicHolder;
 
 import net.minecraft.client.MinecraftClient;
@@ -21,5 +23,8 @@ abstract class MixinItem implements ToxicHolder {
     @Inject(method = "appendTooltip", at = @At("RETURN"))
     private void onAppendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context, CallbackInfo into) {
         getToxic().ifPresent(t -> t.getAilmentFor(MinecraftClient.getInstance().player).appendTooltip(tooltip, context));
+        if (MinecraftClient.getInstance().player != null) {
+            Pony.of(MinecraftClient.getInstance().player).getDiscoveries().appendTooltip(stack, world, tooltip);
+        }
     }
 }
