@@ -5,7 +5,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+
 import com.google.gson.reflect.TypeToken;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Resources;
@@ -39,10 +41,10 @@ public class TraitLoader extends SinglePreparationResourceReloader<Map<Identifie
 
         Map<Identifier, SpellTraits> prepared = new HashMap<>();
 
-        for (String namespace : manager.getAllNamespaces()) {
-            profiler.push(namespace);
+        for (Identifier path : new HashSet<>(manager.findResources("traits", p -> p.endsWith(".json")))) {
+            profiler.push(path.toString());
             try {
-                for (Resource resource : manager.getAllResources(new Identifier(namespace, "traits/items.json"))) {
+                for (Resource resource : manager.getAllResources(path)) {
                     profiler.push(resource.getResourcePackName());
 
                     try (InputStreamReader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {

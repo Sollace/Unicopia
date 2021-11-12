@@ -8,20 +8,30 @@ import java.util.stream.Collectors;
 import net.minecraft.util.Identifier;
 
 public enum Trait {
-    LIFE(TraitGroup.NATURE),
-    ENERGY(TraitGroup.NATURE),
-    REBIRTH(TraitGroup.NATURE),
-    GROWTH(TraitGroup.NATURE),
+    STRENGTH(TraitGroup.NATURAL),
+    FOCUS(TraitGroup.NATURAL),
+    KNOWLEDGE(TraitGroup.NATURAL),
+    LIFE(TraitGroup.NATURAL),
 
-    WATER(TraitGroup.ELEMENTAL),
+    POWER(TraitGroup.ELEMENTAL),
     EARTH(TraitGroup.ELEMENTAL),
     FIRE(TraitGroup.ELEMENTAL),
+    ICE(TraitGroup.ELEMENTAL),
+    WATER(TraitGroup.ELEMENTAL),
     AIR(TraitGroup.ELEMENTAL),
 
-    CORRUPTION(TraitGroup.DARKNESS),
-    DEATH(TraitGroup.DARKNESS),
+    ORDER(TraitGroup.MAGICAL),
+    CHAOS(TraitGroup.MAGICAL),
+
+    KINDNESS(TraitGroup.MAGICAL),
+    HAPPINESS(TraitGroup.MAGICAL),
+    GENEROSITY(TraitGroup.MAGICAL),
+
+    DARKNESS(TraitGroup.DARKNESS),
+    ROT(TraitGroup.DARKNESS),
     FAMINE(TraitGroup.DARKNESS),
-    PESTILENCE(TraitGroup.DARKNESS);
+    POISON(TraitGroup.DARKNESS),
+    BLOOD(TraitGroup.DARKNESS);
 
     public static final Map<String, Trait> REGISTRY = Arrays.stream(values()).collect(Collectors.toMap(Trait::name, Function.identity()));
 

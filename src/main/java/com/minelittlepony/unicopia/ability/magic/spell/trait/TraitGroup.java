@@ -1,9 +1,10 @@
 package com.minelittlepony.unicopia.ability.magic.spell.trait;
 
 public enum TraitGroup {
-    NATURE(-0.2F),
+    NATURAL(-0.2F),
     DARKNESS(0.4F),
-    ELEMENTAL(-0.02F);
+    ELEMENTAL(-0.02F),
+    MAGICAL(-0.1F);
 
     private final float corruption;
 
