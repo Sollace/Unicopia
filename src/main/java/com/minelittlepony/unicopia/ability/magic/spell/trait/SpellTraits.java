@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,7 +29,7 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
 
-public final class SpellTraits {
+public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     public static final SpellTraits EMPTY = new SpellTraits(Map.of());
 
     private final Map<Trait, Float> traits;
@@ -35,18 +38,45 @@ public final class SpellTraits {
         this.traits = traits;
     }
 
+    SpellTraits(SpellTraits from) {
+        this(new EnumMap<>(from.traits));
+    }
+
+    public SpellTraits multiply(float factor) {
+        return factor == 0 ? EMPTY : map(v -> v * factor);
+    }
+
+    public SpellTraits map(Function<Float, Float> function) {
+        if (isEmpty()) {
+            return this;
+        }
+
+        Map<Trait, Float> newMap = new EnumMap<>(traits);
+        newMap.entrySet().forEach(entry -> entry.setValue(function.apply(entry.getValue())));
+        return fromEntries(newMap.entrySet().stream()).orElse(EMPTY);
+    }
+
     public boolean isEmpty() {
         return traits.isEmpty();
     }
 
     public boolean includes(SpellTraits other) {
-        return other.entries().stream().allMatch(pair -> {
+        return other.stream().allMatch(pair -> {
             return getAmount(pair.getKey()) >= pair.getValue();
         });
     }
 
+    @Override
+    public Iterator<Entry<Trait, Float>> iterator() {
+        return entries().iterator();
+    }
+
     public Set<Map.Entry<Trait, Float>> entries() {
         return traits.entrySet();
+    }
+
+    public Stream<Map.Entry<Trait, Float>> stream() {
+        return entries().stream();
     }
 
     public float getAmount(Trait trait) {
@@ -179,12 +209,15 @@ public final class SpellTraits {
 
     static void combine(Map<Trait, Float> to, Map<Trait, Float> from) {
         from.forEach((trait, value) -> {
-            to.compute(trait, (k, v) -> v == null ? value : (v + value));
+            if (value != 0) {
+                to.compute(trait, (k, v) -> v == null ? value : (v + value));
+            }
         });
     }
 
     static Map<Trait, Float> collect(Stream<Map.Entry<Trait, Float>> entries) {
         return entries.filter(Objects::nonNull)
+                .filter(e -> e.getValue() != 0)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a + b, () -> new EnumMap<>(Trait.class)));
     }
 }

@@ -49,6 +49,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
         for (Slot slot : handler.slots) {
             if (slot.isEnabled() && slot instanceof SpellbookSlot) {
                 drawTexture(matrices, slot.x - 1, slot.y - 1, 74, 223, 18, 18, 512, 256);
+              //  drawStringWithShadow(matrices, this.textRenderer, ((SpellbookSlot)slot).getRing() + "", slot.x, slot.y, 0x000000FF);
             }
         }
         RenderSystem.disableBlend();

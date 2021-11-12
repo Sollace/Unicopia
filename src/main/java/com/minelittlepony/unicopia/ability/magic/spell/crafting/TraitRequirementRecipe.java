@@ -9,7 +9,6 @@ import com.minelittlepony.unicopia.item.URecipes;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.util.Identifier;
@@ -17,13 +16,12 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.world.World;
 
 public class TraitRequirementRecipe implements SpellbookRecipe {
-
     private final Identifier id;
-    private final Ingredient requirement;
-    private final SpellTraits requiredTraits;
+    private final IngredientWithSpell requirement;
+    private final TraitIngredient requiredTraits;
     private final ItemStack output;
 
-    private TraitRequirementRecipe(Identifier id, Ingredient requirement, SpellTraits requiredTraits, ItemStack output) {
+    private TraitRequirementRecipe(Identifier id, IngredientWithSpell requirement, TraitIngredient requiredTraits, ItemStack output) {
         this.id = id;
         this.requirement = requirement;
         this.requiredTraits = requiredTraits;
@@ -33,14 +31,18 @@ public class TraitRequirementRecipe implements SpellbookRecipe {
     @Override
     public boolean matches(SpellbookInventory inventory, World world) {
         return requirement.test(inventory.getItemToModify())
-            && SpellTraits.of(inventory).includes(requiredTraits);
+            && requiredTraits.test(SpellTraits.union(
+                    SpellTraits.of(inventory.getItemToModify()),
+                    inventory.getTraits(),
+                    SpellTraits.of(output)
+            ));
     }
 
     @Override
     public ItemStack craft(SpellbookInventory inventory) {
         return SpellTraits.union(
                 SpellTraits.of(inventory.getItemToModify()),
-                SpellTraits.of(inventory),
+                inventory.getTraits(),
                 SpellTraits.of(output)
         ).applyTo(output);
     }
@@ -81,16 +83,16 @@ public class TraitRequirementRecipe implements SpellbookRecipe {
         @Override
         public TraitRequirementRecipe read(Identifier id, JsonObject json) {
             return new TraitRequirementRecipe(id,
-                    Ingredient.fromJson(JsonHelper.getObject(json, "material")),
-                    SpellTraits.fromJson(JsonHelper.getObject(json, "traits")).get(),
+                    IngredientWithSpell.fromJson(JsonHelper.getObject(json, "material")),
+                    TraitIngredient.fromJson(JsonHelper.getObject(json, "traits")),
                     outputFromJson(JsonHelper.getObject(json, "result")));
         }
 
         @Override
         public TraitRequirementRecipe read(Identifier id, PacketByteBuf buf) {
             return new TraitRequirementRecipe(id,
-                    Ingredient.fromPacket(buf),
-                    SpellTraits.fromPacket(buf).get(),
+                    IngredientWithSpell.fromPacket(buf),
+                    TraitIngredient.fromPacket(buf),
                     buf.readItemStack()
             );
         }

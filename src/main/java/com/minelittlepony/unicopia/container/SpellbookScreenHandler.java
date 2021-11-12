@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.URecipes;
@@ -18,14 +19,13 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.World;
 
 public class SpellbookScreenHandler extends ScreenHandler {
 
@@ -42,12 +42,19 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
     private final PlayerInventory inventory;
 
+    private final ScreenHandlerContext context;
+
     protected SpellbookScreenHandler(int syncId, PlayerInventory inv) {
+        this(syncId, inv, ScreenHandlerContext.EMPTY);
+    }
+
+    public SpellbookScreenHandler(int syncId, PlayerInventory inv, ScreenHandlerContext context) {
         super(UScreenHandlers.SPELL_BOOK, syncId);
         inventory = inv;
+        this.context = context;
 
-        List<Pair<Integer, Integer>> grid = new ArrayList<>();
-        List<Pair<Integer, Integer>> gemPos = new ArrayList<>();
+        List<int[]> grid = new ArrayList<>();
+        List<int[]> gemPos = new ArrayList<>();
         createGrid(grid, gemPos);
 
         GEM_SLOT_INDEX = MAX_INGREDIENTS = grid.size();
@@ -58,10 +65,10 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
         for (int i = 0; i < MAX_INGREDIENTS; i++) {
             var pos = grid.get(i);
-            addSlot(new InputSlot(input, i, pos.getLeft(), pos.getRight()));
+            addSlot(new InputSlot(input, i, pos));
         }
 
-        addSlot(gemSlot = new OutputSlot(inventory.player, input, result, 0, gemPos.get(0).getLeft(), gemPos.get(0).getRight()));
+        addSlot(gemSlot = new OutputSlot(inventory.player, input, result, 0, gemPos.get(0)));
 
         for (int i = 0; i < 9; ++i) {
             addSlot(new Slot(inventory, i, 121 + i * 18, 195));
@@ -77,16 +84,16 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
     @Override
     public void onContentChanged(Inventory inventory) {
-        World world = this.inventory.player.world;
-        if (!world.isClient && !gemSlot.getStack().isEmpty()) {
-            world.getServer().getRecipeManager().getFirstMatch(URecipes.SPELLBOOK, input, world)
-                .filter(recipe -> result.shouldCraftRecipe(world, (ServerPlayerEntity)this.inventory.player, recipe))
-                .map(recipe -> {
-                    this.inventory.player.playSound(SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.MASTER, 1, 0.3F);
-                    return recipe.craft(input);
-                })
-                .ifPresentOrElse(gemSlot::setCrafted, gemSlot::setUncrafted);
-        }
+        context.run((world, pos) -> {
+            if (!world.isClient && !gemSlot.getStack().isEmpty()) {
+                world.getServer().getRecipeManager().getFirstMatch(URecipes.SPELLBOOK, input, world)
+                    .filter(recipe -> result.shouldCraftRecipe(world, (ServerPlayerEntity)this.inventory.player, recipe))
+                    .map(recipe -> recipe.craft(input))
+                    .ifPresentOrElse(gemSlot::setCrafted, gemSlot::setUncrafted);
+
+                ((ServerPlayerEntity)this.inventory.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, GEM_SLOT_INDEX, gemSlot.getStack()));
+            }
+        });
     }
 
     @Override
@@ -190,11 +197,18 @@ public class SpellbookScreenHandler extends ScreenHandler {
     public void close(PlayerEntity playerEntity) {
         gemSlot.setUncrafted();
         super.close(playerEntity);
-        dropInventory(playerEntity, input);
-        dropInventory(playerEntity, result);
+        context.run((world, pos) -> {
+            dropInventory(playerEntity, input);
+            dropInventory(playerEntity, result);
+        });
     }
 
-    private static void createGrid(List<Pair<Integer, Integer>> grid, List<Pair<Integer, Integer>> gemPos) {
+    /**
+     * Creates a hexagonal crafting grid.
+     * @param grid   Output for normal slot positions.
+     * @param gemPos Output for the gem slot position.
+     */
+    private static void createGrid(List<int[]> grid, List<int[]> gemPos) {
         int cols = 4;
         int spacing = 23;
 
@@ -203,7 +217,25 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
         for (int row = 0; row < 7; row++) {
             for (int i = 0; i < cols; i++) {
-                (row == 3 && i == 3 ? gemPos : grid).add(new Pair<>(left + (i * spacing), top));
+
+                int ring = 3;
+                if (row == 0 || row == 6) {
+                    ring = 1;
+                } else if ((row == 1 || row == 5) && i > 0 && i < cols - 1) {
+                    ring = 2;
+                } else {
+                    if (i == 0 || i == cols - 1) {
+                        ring = 1;
+                    } else if (i == 1 || i == cols - 2) {
+                        ring = 2;
+                    }
+                }
+
+                (row == 3 && i == 3 ? gemPos : grid).add(new int[] {
+                        left + (i * spacing),
+                        top,
+                        row == 3 && i == 3 ? 4 : ring
+                });
             }
             top += spacing * 0.9;
             left -= (spacing / 2) * (row > 2 ? -1 : 1);
@@ -211,7 +243,9 @@ public class SpellbookScreenHandler extends ScreenHandler {
         }
     }
 
-    public interface SpellbookSlot {}
+    public interface SpellbookSlot {
+        int getRing();
+    }
 
     public class SpellbookInventory extends CraftingInventory {
 
@@ -220,18 +254,47 @@ public class SpellbookScreenHandler extends ScreenHandler {
         }
 
         public ItemStack getItemToModify() {
-            return gemSlot.getStack();
+            return gemSlot.uncrafted.orElse(gemSlot.getStack());
+        }
+
+        public int getRing(int slot) {
+            Slot s = slots.get(slot);
+            return s instanceof SpellbookSlot ? ((SpellbookSlot)s).getRing() : 0;
+        }
+
+        public SpellTraits getTraits() {
+            return SpellTraits.union(InventoryUtil.slots(this)
+                    .map(slot -> SpellTraits.of(getStack(slot)).multiply(getRingFactor(getRing(slot))))
+                    .toArray(SpellTraits[]::new)
+            );
+        }
+
+        public static float getRingFactor(int ring) {
+            switch (ring) {
+                case 1: return 1;
+                case 2: return 0.6F;
+                case 3: return 0.3F;
+                default: return 0;
+            }
         }
     }
 
     public class InputSlot extends Slot implements SpellbookSlot {
-        public InputSlot(Inventory inventory, int index, int xPosition, int yPosition) {
-            super(inventory, index, xPosition, yPosition);
+        private final int ring;
+
+        public InputSlot(Inventory inventory, int index, int[] params) {
+            super(inventory, index, params[0], params[1]);
+            ring = params[2];
         }
 
         @Override
         public int getMaxItemCount() {
             return 1;
+        }
+
+        @Override
+        public int getRing() {
+            return ring;
         }
     }
 
@@ -239,19 +302,26 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
         private Optional<ItemStack> uncrafted = Optional.empty();
 
+        private final PlayerEntity player;
         private final SpellbookInventory input;
 
-        public OutputSlot(PlayerEntity player, SpellbookInventory input, Inventory inventory, int index, int x, int y) {
-            super(player, input, inventory, index, x, y);
+        private final int ring;
+
+        public OutputSlot(PlayerEntity player, SpellbookInventory input, Inventory inventory, int index, int[] params) {
+            super(player, input, inventory, index, params[0], params[1]);
+            this.player = player;
             this.input = input;
+            this.ring = params[2];
         }
 
         public void setCrafted(ItemStack crafted) {
             uncrafted = uncrafted.or(() -> Optional.of(getStack()));
             setStack(crafted);
+            player.playSound(SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.MASTER, 1, 0.3F);
         }
 
         public void setUncrafted() {
+            player.playSound(SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.MASTER, 0.2F, 0.2F);
             uncrafted = uncrafted.filter(stack -> {
                 setStack(stack);
                 return false;
@@ -266,6 +336,11 @@ public class SpellbookScreenHandler extends ScreenHandler {
         @Override
         public int getMaxItemCount() {
             return 1;
+        }
+
+        @Override
+        public int getRing() {
+            return ring;
         }
 
         @Override

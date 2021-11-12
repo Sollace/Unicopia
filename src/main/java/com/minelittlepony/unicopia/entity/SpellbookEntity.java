@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.entity;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.container.UScreenHandlers;
+import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.item.UItems;
 
 import net.fabricmc.fabric.api.util.TriState;
@@ -18,6 +18,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
@@ -197,7 +198,7 @@ public class SpellbookEntity extends MobEntity {
 
         if (isOpen() && EquinePredicates.PLAYER_UNICORN.test(player)) {
             setBored(false);
-            player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, ply) -> UScreenHandlers.SPELL_BOOK.create(syncId, inv), getDisplayName()));
+            player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, ply) -> new SpellbookScreenHandler(syncId, inv, ScreenHandlerContext.create(world, getBlockPos())), getDisplayName()));
             player.playSound(SoundEvents.ITEM_BOOK_PAGE_TURN, 2, 1);
             return ActionResult.SUCCESS;
         }

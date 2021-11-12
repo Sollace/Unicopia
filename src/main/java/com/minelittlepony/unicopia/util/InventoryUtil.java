@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.util;
 
+import java.util.stream.Stream;
+
 import com.google.common.collect.AbstractIterator;
 
 import net.minecraft.inventory.Inventory;
@@ -18,5 +20,9 @@ public interface InventoryUtil {
                 return inventory.getStack(slot++);
             }
         };
+    }
+
+    static Stream<Integer> slots(Inventory inventory) {
+        return Stream.iterate(0, i -> i < inventory.size(), i -> i + 1);
     }
 }
