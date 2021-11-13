@@ -12,6 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -66,6 +68,7 @@ public class TraitDiscovery implements NbtSerialisable {
         return items.getOrDefault(Registry.ITEM.getId(item), SpellTraits.EMPTY);
     }
 
+    @Environment(EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip) {
         getKnownTraits(stack.getItem()).appendTooltip(tooltip);
     }

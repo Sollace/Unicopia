@@ -16,8 +16,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.gson.JsonObject;
+import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
@@ -25,7 +28,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
@@ -93,14 +95,12 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return MathHelper.clamp(get(trait), min, max);
     }
 
+    @Environment(EnvType.CLIENT)
     public void appendTooltip(List<Text> tooltip) {
         if (isEmpty()) {
             return;
         }
-        tooltip.add(new LiteralText("Traits:"));
-        traits.forEach((trait, amount) -> {
-            tooltip.add(new LiteralText(trait.name().toLowerCase() + ": " + amount));
-        });
+        tooltip.add(1, new ItemTraitsTooltipRenderer(this));
     }
 
     public NbtCompound toNbt() {

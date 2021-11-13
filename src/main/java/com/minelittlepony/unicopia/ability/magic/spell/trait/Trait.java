@@ -36,10 +36,12 @@ public enum Trait {
     public static final Map<String, Trait> REGISTRY = Arrays.stream(values()).collect(Collectors.toMap(Trait::name, Function.identity()));
 
     private final Identifier id;
+    private final Identifier sprite;
     private final TraitGroup group;
 
     Trait(TraitGroup group) {
         this.id = new Identifier("unicopia", "spell/trait/" + name().toLowerCase());
+        this.sprite = new Identifier("unicopia", "textures/gui/trait/" + name().toLowerCase() + ".png");
         this.group = group;
     }
 
@@ -49,5 +51,9 @@ public enum Trait {
 
     public TraitGroup getGroup() {
         return group;
+    }
+
+    public Identifier getSprite() {
+        return sprite;
     }
 }
