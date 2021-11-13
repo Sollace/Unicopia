@@ -5,13 +5,13 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
-import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.Block;
@@ -36,9 +36,6 @@ import net.minecraft.world.explosion.Explosion.DestructionType;
  * Simple fire spell that triggers an effect when used on a block.
  */
 public class FireSpell extends AbstractSpell implements ProjectileSpell {
-
-    private static final Shape EFFECT_RANGE = new Sphere(false, 4);
-
     protected FireSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
     }
@@ -56,14 +53,14 @@ public class FireSpell extends AbstractSpell implements ProjectileSpell {
             generateParticles(source);
         }
 
-        return PosHelper.getAllInRegionMutable(source.getOrigin(), EFFECT_RANGE).reduce(false,
+        return PosHelper.getAllInRegionMutable(source.getOrigin(), new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER)))).reduce(false,
                 (r, i) -> applyBlocks(source.getWorld(), i),
                 (a, b) -> a || b)
                 || applyEntities(null, source.getWorld(), source.getOriginVector());
     }
 
     protected void generateParticles(Caster<?> source) {
-        source.spawnParticles(EFFECT_RANGE, (1 + source.getLevel().get()) * 6, pos -> {
+        source.spawnParticles(new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER))), (1 + source.getLevel().get()) * 6, pos -> {
             source.addParticle(ParticleTypes.LARGE_SMOKE, pos, Vec3d.ZERO);
         });
     }
@@ -111,7 +108,7 @@ public class FireSpell extends AbstractSpell implements ProjectileSpell {
     }
 
     protected boolean applyEntities(Entity owner, World world, Vec3d pos) {
-        return !VecHelper.findInRange(owner, world, pos, 3, i -> applyEntitySingle(owner, world, i)).isEmpty();
+        return !VecHelper.findInRange(owner, world, pos, Math.max(0, 3 + getTraits().get(Trait.POWER)), i -> applyEntitySingle(owner, world, i)).isEmpty();
     }
 
     protected boolean applyEntitySingle(Entity owner, World world, Entity e) {

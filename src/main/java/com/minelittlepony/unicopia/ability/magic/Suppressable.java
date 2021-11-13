@@ -20,5 +20,5 @@ public interface Suppressable extends Spell {
     /**
      * Event triggered when this effect is suppressed.
      */
-    void onSuppressed(Caster<?> otherSource);
+    void onSuppressed(Caster<?> otherSource, float suppressTime);
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.util.Weighted;
 import com.minelittlepony.unicopia.util.shape.Shape;
@@ -39,7 +40,11 @@ public class NecromancySpell extends AbstractSpell {
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        int radius = (source.getLevel().get() + 1) * 4;
+        float radius = (source.getLevel().get() + 1) * 4 + getTraits().get(Trait.POWER);
+
+        if (radius <= 0) {
+            return false;
+        }
 
         if (source.isClient()) {
             source.spawnParticles(new Sphere(false, radius), 5, pos -> {
@@ -56,7 +61,7 @@ public class NecromancySpell extends AbstractSpell {
 
         summonedEntities.removeIf(ref -> !ref.isPresent(source.getWorld()));
 
-        float additional = source.getWorld().getLocalDifficulty(source.getOrigin()).getLocalDifficulty();
+        float additional = source.getWorld().getLocalDifficulty(source.getOrigin()).getLocalDifficulty() + getTraits().get(Trait.CHAOS, 0, 10);
 
         Shape affectRegion = new Sphere(false, radius);
 

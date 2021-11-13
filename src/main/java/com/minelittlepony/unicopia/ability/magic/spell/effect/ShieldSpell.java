@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
@@ -78,12 +79,18 @@ public class ShieldSpell extends AbstractSpell implements ProjectileSpell {
             return true;
         }
 
+        float knowledge = getTraits().get(Trait.KNOWLEDGE, -6, 6);
+        if (knowledge == 0) {
+            knowledge = 1;
+        }
+
         long costMultiplier = applyEntities(source);
         if (costMultiplier > 0) {
             double cost = 2 + source.getLevel().get();
 
             cost *= costMultiplier / ((1 + source.getLevel().get()) * 3F);
             cost /= 2.725D;
+            cost /= knowledge;
 
             if (!source.subtractEnergyCost(cost)) {
                 setDead();
@@ -98,7 +105,8 @@ public class ShieldSpell extends AbstractSpell implements ProjectileSpell {
      */
     public double getDrawDropOffRange(Caster<?> source) {
         float multiplier = source.getMaster().isSneaking() ? 1 : 2;
-        return (4 + (source.getLevel().get() * 2)) / multiplier;
+        float min = 4 + getTraits().get(Trait.POWER);
+        return (min + (source.getLevel().get() * 2)) / multiplier;
     }
 
     protected List<Entity> getTargets(Caster<?> source, double radius) {

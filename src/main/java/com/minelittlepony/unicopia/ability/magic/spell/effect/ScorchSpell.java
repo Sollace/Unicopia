@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
@@ -24,7 +25,7 @@ public class ScorchSpell extends FireSpell {
         BlockPos pos = PosHelper.findSolidGroundAt(source.getWorld(), source.getOrigin(), source.getPhysics().getGravitySignum());
 
         if (StateMaps.FIRE_AFFECTED.convert(source.getWorld(), pos)) {
-            source.spawnParticles(new Sphere(false, 1), 5, p -> {
+            source.spawnParticles(new Sphere(false, Math.max(1, getTraits().get(Trait.POWER))), 5, p -> {
                 source.addParticle(ParticleTypes.SMOKE, PosHelper.offset(p, pos), Vec3d.ZERO);
             });
         }

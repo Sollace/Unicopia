@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.ability.magic.Suppressable;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.AbstractSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.behaviour.EntityBehaviour;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -59,8 +60,9 @@ public class DisguiseSpell extends AbstractSpell implements Suppressable, Flight
     }
 
     @Override
-    public void onSuppressed(Caster<?> otherSource) {
-        suppressionCounter = 100;
+    public void onSuppressed(Caster<?> otherSource, float time) {
+        time /= getTraits().getOrDefault(Trait.STRENGTH, 1);
+        suppressionCounter = (int)(100 * time);
         setDirty();
     }
 

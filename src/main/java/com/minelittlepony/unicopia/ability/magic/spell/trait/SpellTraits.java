@@ -27,6 +27,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 
 public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
@@ -62,7 +63,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
 
     public boolean includes(SpellTraits other) {
         return other.stream().allMatch(pair -> {
-            return getAmount(pair.getKey()) >= pair.getValue();
+            return get(pair.getKey()) >= pair.getValue();
         });
     }
 
@@ -79,8 +80,17 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return entries().stream();
     }
 
-    public float getAmount(Trait trait) {
-        return traits.getOrDefault(trait, 0F);
+    public float getOrDefault(Trait trait, float def) {
+        float i = traits.getOrDefault(trait, def);
+        return i == 0 ? def : i;
+    }
+
+    public float get(Trait trait) {
+        return getOrDefault(trait, 0F);
+    }
+
+    public float get(Trait trait, float min, float max) {
+        return MathHelper.clamp(get(trait), min, max);
     }
 
     public void appendTooltip(List<Text> tooltip) {
