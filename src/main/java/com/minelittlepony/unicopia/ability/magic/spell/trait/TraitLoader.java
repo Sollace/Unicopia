@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Resources;
@@ -75,7 +76,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Map<Identifie
                     }
 
                 }
-            } catch (IOException e) {
+            } catch (IOException | JsonParseException e) {
             } finally {
                 profiler.pop();
             }
