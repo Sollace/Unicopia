@@ -129,6 +129,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
 
     private void initPageContent() {
         container.getContentPadding().setVertical(10);
+        container.getContentPadding().bottom = 30;
         addDrawable(container);
         ((IViewRoot)this).getChildElements().add(container);
 
