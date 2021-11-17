@@ -398,13 +398,16 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
         public void setCrafted(ItemStack crafted) {
             uncrafted = uncrafted.or(() -> Optional.of(getStack()));
+            ItemStack old = getStack();
             setStack(crafted);
-            player.playSound(SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.MASTER, 1, 0.3F);
+            if (!ItemStack.areEqual(old, crafted)) {
+                player.playSound(SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.MASTER, 1, 0.3F);
+            }
         }
 
         public void setUncrafted() {
-            player.playSound(SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.MASTER, 0.2F, 0.2F);
             uncrafted = uncrafted.filter(stack -> {
+                player.playSound(SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.MASTER, 0.2F, 0.2F);
                 setStack(stack);
                 return false;
             });
