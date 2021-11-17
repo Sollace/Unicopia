@@ -257,6 +257,10 @@
   "gui.unicopia.tribe_selection.confirm.bads.2.changeling": " - Require love, collected from ponies or other hostile mobs to subsidise their diet",
   "gui.unicopia.tribe_selection.confirm.bads.3.changeling": " - Becomes sick from eating regular food and must eat love hasten a cure",
 
+  "gui.unicopia.spellbook.page.inventory": "Inventory",
+  "gui.unicopia.spellbook.page.discoveries": "Discoveries",
+  "gui.unicopia.spellbook.page.recipes": "Recipes",
+
   "unicopia.category.name": "Pony Abilities",
 
   "key.unicopia.primary": "Primary Ability",

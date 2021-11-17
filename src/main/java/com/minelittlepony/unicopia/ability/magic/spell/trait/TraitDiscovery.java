@@ -27,9 +27,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class TraitDiscovery implements NbtSerialisable {
-    private final Set<Identifier> unreadTraits = new HashSet<>();
+    private final Set<Trait> unreadTraits = new HashSet<>();
 
-    private final Set<Identifier> traits = new HashSet<>();
+    private final Set<Trait> traits = new HashSet<>();
     private final Map<Identifier, SpellTraits> items = new HashMap<>();
 
     private final Pony pony;
@@ -57,8 +57,8 @@ public class TraitDiscovery implements NbtSerialisable {
         SpellTraits traits = SpellTraits.of(item);
         items.put(Registry.ITEM.getId(item), traits);
         traits.entries().forEach(e -> {
-            if (this.traits.add(e.getKey().getId())) {
-                unreadTraits.add(e.getKey().getId());
+            if (this.traits.add(e.getKey())) {
+                unreadTraits.add(e.getKey());
             }
         });
         pony.setDirty();
@@ -66,6 +66,14 @@ public class TraitDiscovery implements NbtSerialisable {
 
     public SpellTraits getKnownTraits(Item item) {
         return items.getOrDefault(Registry.ITEM.getId(item), SpellTraits.EMPTY);
+    }
+
+    public boolean isUnread(Trait trait) {
+        return unreadTraits.contains(trait);
+    }
+
+    public boolean isKnown(Trait trait) {
+        return traits.contains(trait);
     }
 
     @Environment(EnvType.CLIENT)
@@ -82,11 +90,11 @@ public class TraitDiscovery implements NbtSerialisable {
         compound.put("items", disco);
 
         NbtList a = new NbtList();
-        this.traits.forEach(id -> a.add(NbtString.of(id.toString())));
+        this.traits.forEach(id -> a.add(NbtString.of(id.getId().toString())));
         compound.put("traits", a);
 
         NbtList b = new NbtList();
-        unreadTraits.forEach(id -> b.add(NbtString.of(id.toString())));
+        unreadTraits.forEach(id -> b.add(NbtString.of(id.getId().toString())));
         compound.put("unreadTraits", b);
     }
 
@@ -101,12 +109,18 @@ public class TraitDiscovery implements NbtSerialisable {
                 });
             });
         });
-        compound.getList("traits", NbtElement.STRING_TYPE).forEach(el -> {
-            Optional.ofNullable(Identifier.tryParse(el.asString())).ifPresent(this.traits::add);
-        });
-        compound.getList("unreadTraits", NbtElement.STRING_TYPE).forEach(el -> {
-            Optional.ofNullable(Identifier.tryParse(el.asString())).ifPresent(this.unreadTraits::add);
-        });
+        compound.getList("traits", NbtElement.STRING_TYPE).stream()
+            .map(NbtElement::asString)
+            .map(Trait::fromId)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .forEach(this.traits::add);
+        compound.getList("unreadTraits", NbtElement.STRING_TYPE).stream()
+            .map(NbtElement::asString)
+            .map(Trait::fromId)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .forEach(this.unreadTraits::add);
     }
 
     public void copyFrom(TraitDiscovery old) {

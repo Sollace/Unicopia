@@ -1,0 +1,14 @@
+{
+  "type": "unicopia:spellbook/crafting",
+  "material": {
+    "item": {
+      "item": "unicopia:gemstone"
+    }
+  },
+  "traits": {
+    "pestilence": 1
+  },
+  "result": {
+    "item": "unicopia:burned_juice"
+  }
+}

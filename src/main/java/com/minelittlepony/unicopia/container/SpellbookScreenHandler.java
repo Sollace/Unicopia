@@ -10,7 +10,11 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
+import com.mojang.datafixers.util.Pair;
 
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingInventory;
@@ -18,6 +22,7 @@ import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.CraftingResultSlot;
@@ -25,9 +30,17 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
 public class SpellbookScreenHandler extends ScreenHandler {
+
+    private static final Identifier[] EMPTY_ARMOR_SLOT_TEXTURES = new Identifier[]{
+            PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE,
+            PlayerScreenHandler.EMPTY_LEGGINGS_SLOT_TEXTURE,
+            PlayerScreenHandler.EMPTY_CHESTPLATE_SLOT_TEXTURE,
+            PlayerScreenHandler.EMPTY_HELMET_SLOT_TEXTURE
+    };
 
     private final int MAX_INGREDIENTS;
 
@@ -73,6 +86,47 @@ public class SpellbookScreenHandler extends ScreenHandler {
         for (int i = 0; i < 9; ++i) {
             addSlot(new Slot(inventory, i, 121 + i * 18, 195));
         }
+        for (int i = 0; i < PlayerInventory.MAIN_SIZE - 9; ++i) {
+            int x = i % 5;
+            int y = i / 5;
+            addSlot(new InventorySlot(inventory, i + 9, 225 + x * 20, 50 + y * 20));
+        }
+
+        for (int i = 0; i < 4; i++) {
+            final EquipmentSlot eq = EquipmentSlot.values()[5 - i];
+            addSlot(new InventorySlot(inventory, PlayerInventory.OFF_HAND_SLOT - i - 1, 340, 50 + (i * 20)) {
+                @Override
+                public int getMaxItemCount() {
+                    return 1;
+                }
+
+                @Override
+                public boolean canInsert(ItemStack stack) {
+                    return eq == MobEntity.getPreferredEquipmentSlot(stack);
+                }
+
+                @Override
+                public boolean canTakeItems(PlayerEntity playerEntity) {
+                    ItemStack stack = getStack();
+                    if (!stack.isEmpty() && !playerEntity.isCreative() && EnchantmentHelper.hasBindingCurse(stack)) {
+                        return false;
+                    }
+                    return super.canTakeItems(playerEntity);
+                }
+
+                @Override
+                public Pair<Identifier, Identifier> getBackgroundSprite() {
+                    return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, EMPTY_ARMOR_SLOT_TEXTURES[eq.getEntitySlotId()]);
+                }
+            });
+        }
+
+        addSlot(new InventorySlot(inventory, PlayerInventory.OFF_HAND_SLOT, 340, 150) {
+            @Override
+            public Pair<Identifier, Identifier> getBackgroundSprite() {
+                return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT);
+            }
+        });
 
         onContentChanged(input);
     }
@@ -122,6 +176,18 @@ public class SpellbookScreenHandler extends ScreenHandler {
             }
         } else {
             if (insertItem(transferredStack, HOTBAR_START, HOTBAR_END, true)) {
+                sourceSlot.onQuickTransfer(transferredStack, stack);
+                onContentChanged(input);
+                return ItemStack.EMPTY;
+            }
+
+            if (insertItem(transferredStack, HOTBAR_END + 27, HOTBAR_END + 27 + 4, false)) {
+                sourceSlot.onQuickTransfer(transferredStack, stack);
+                onContentChanged(input);
+                return ItemStack.EMPTY;
+            }
+
+            if (insertItem(transferredStack, HOTBAR_END, HOTBAR_END + 27, false)) {
                 sourceSlot.onQuickTransfer(transferredStack, stack);
                 onContentChanged(input);
                 return ItemStack.EMPTY;
@@ -276,6 +342,22 @@ public class SpellbookScreenHandler extends ScreenHandler {
                 case 3: return 0.3F;
                 default: return 0;
             }
+        }
+    }
+
+    public class InventorySlot extends Slot implements SpellbookSlot {
+        public InventorySlot(Inventory inventory, int index, int x, int y) {
+            super(inventory, index, x, y);
+        }
+
+        @Override
+        public int getRing() {
+            return 0;
+        }
+
+        @Override
+        public boolean isEnabled() {
+           return SpellbookPage.getCurrent() == SpellbookPage.INVENTORY;
         }
     }
 

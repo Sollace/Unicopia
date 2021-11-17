@@ -55,7 +55,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Map<Identifie
                             try {
                                 Identifier id = new Identifier(name);
                                 SpellTraits.fromEntries(Arrays.stream(set.split(" ")).map(a -> a.split(":")).map(pair -> {
-                                    Trait key = Trait.REGISTRY.get(pair[0].toUpperCase());
+                                    Trait key = Trait.fromName(pair[0]).orElse(null);
                                     if (key == null) {
                                         Unicopia.LOGGER.warn("Failed to load trait entry for item {} in {}. {} is not a valid trait", id, resource.getResourcePackName(), pair[0]);
                                         return null;

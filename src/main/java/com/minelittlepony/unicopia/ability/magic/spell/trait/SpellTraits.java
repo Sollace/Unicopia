@@ -29,6 +29,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 
@@ -105,7 +106,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
 
     public NbtCompound toNbt() {
         NbtCompound nbt = new NbtCompound();
-        traits.forEach((key, value) -> nbt.putFloat(key.name(), value));
+        traits.forEach((key, value) -> nbt.putFloat(key.getId().toString(), value));
         return nbt;
     }
 
@@ -176,11 +177,15 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         }
 
         for (int i = 0; i < count; i++) {
-            Trait trait = Trait.REGISTRY.getOrDefault(buf.readIdentifier(), null);
+            Identifier id = buf.readIdentifier();
             float value = buf.readFloat();
-            if (trait != null) {
-                entries.compute(trait, (k, v) -> v == null ? value : (v + value));
+            if (value == 0) {
+                continue;
             }
+
+            Trait.fromId(id).ifPresent(trait -> {
+                entries.compute(trait, (k, v) -> v == null ? value : (v + value));
+            });
         }
         if (entries.isEmpty()) {
             return Optional.empty();
@@ -190,8 +195,8 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
 
     public static Stream<Map.Entry<Trait, Float>> streamFromNbt(NbtCompound traits) {
         return traits.getKeys().stream().map(key -> {
-            Trait trait = Trait.REGISTRY.get(key.toUpperCase());
-            if (trait == null && !traits.contains(key, NbtElement.NUMBER_TYPE)) {
+            Trait trait = Trait.fromId(key).orElse(null);
+            if (trait == null || !traits.contains(key, NbtElement.NUMBER_TYPE)) {
                 return null;
             }
             return Map.entry(trait, traits.getFloat(key));
@@ -200,7 +205,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
 
     public static Stream<Map.Entry<Trait, Float>> streamFromJson(JsonObject traits) {
         return traits.entrySet().stream().map(entry -> {
-            Trait trait = Trait.REGISTRY.get(entry.getKey().toUpperCase());
+            Trait trait = Trait.fromName(entry.getKey()).orElse(null);
             if (trait == null || !entry.getValue().isJsonPrimitive() && !entry.getValue().getAsJsonPrimitive().isNumber()) {
                 return null;
             }
