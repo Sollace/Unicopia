@@ -88,9 +88,9 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
     @Override
     public void init() {
         super.init();
-        container.init(this::initPageContent);
         addDrawableChild(new PageButton(x + 350, y + 187, 1));
         addDrawableChild(new PageButton(x + 300, y + 187, -1));
+        container.init(this::initPageContent);
     }
 
     @Override
