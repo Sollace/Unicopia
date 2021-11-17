@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.ScrollContainer;
+import com.minelittlepony.common.client.gui.Tooltip;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -17,10 +18,12 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
@@ -209,14 +212,23 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
                     .setTextureSize(16, 16)
                     .setSize(16, 16)
                     .setTexture(trait.getSprite()));
-            getStyle().setTooltip(List.of(
-                new TranslatableText("trait." + trait.getId().getNamespace() + "." + trait.getId().getPath() + ".name"),
-                new TranslatableText("trait." + trait.getId().getNamespace() + "." + trait.getId().getPath() + ".description")
-            ));
-            getStyle().setTooltip(List.of(
-                new LiteralText(trait.name()),
-                new LiteralText("Test description")
-            ));
+
+            Formatting corruptionColor = trait.getGroup().getCorruption() < -0.01F
+                    ? Formatting.GREEN
+                    : trait.getGroup().getCorruption() > 0.25F
+                        ? Formatting.RED
+                        : Formatting.WHITE;
+
+            getStyle().setTooltip(Tooltip.of(
+                    new TranslatableText("gui.unicopia.trait.label",
+                            new TranslatableText("trait." + trait.getId().getNamespace() + "." + trait.getId().getPath() + ".name")
+                    ).formatted(Formatting.YELLOW)
+                    .append(new TranslatableText("gui.unicopia.trait.group", trait.getGroup().name().toLowerCase()).formatted(Formatting.ITALIC, Formatting.GRAY))
+                    .append(new LiteralText("\n\n").formatted(Formatting.WHITE)
+                    .append(new TranslatableText("trait." + trait.getId().getNamespace() + "." + trait.getId().getPath() + ".description").formatted(Formatting.GRAY))
+                    .append("\n")
+                    .append(new TranslatableText("gui.unicopia.trait.corruption", ItemStack.MODIFIER_FORMAT.format(trait.getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor)))
+                    , 200));
         }
 
         @Override
