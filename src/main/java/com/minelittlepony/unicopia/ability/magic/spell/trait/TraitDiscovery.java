@@ -78,7 +78,10 @@ public class TraitDiscovery implements NbtSerialisable {
 
     @Environment(EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip) {
-        getKnownTraits(stack.getItem()).appendTooltip(tooltip);
+        SpellTraits.getEmbeddedTraits(stack)
+            .flatMap(embedded -> SpellTraits.fromEntries(embedded.entries().stream().filter(e -> isKnown(e.getKey()))))
+            .orElseGet(() -> getKnownTraits(stack.getItem()))
+            .appendTooltip(tooltip);
     }
 
     @Override

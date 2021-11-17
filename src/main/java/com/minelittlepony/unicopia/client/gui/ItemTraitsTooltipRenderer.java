@@ -52,14 +52,14 @@ public class ItemTraitsTooltipRenderer extends BaseText implements OrderedText, 
         var entries = traits.stream().toList();
 
         for (int i = 0; i < entries.size(); i++) {
-            int xx = x + (i % columns);
-            int yy = y + (i / columns);
+            int xx = x + (i % columns) * 10;
+            int yy = y + (i / columns) * 10;
             Entry<Trait, Float> entry = entries.get(i);
 
             RenderSystem.setShaderTexture(0, entry.getKey().getSprite());
             DrawableHelper.drawTexture(matrices, xx, yy, 1, 0, 0, 8, 8, 8, 8);
 
-            String string = String.valueOf(entry.getValue());
+            String string = String.format("%.2f", entry.getValue());
             matrices.push();
 
             xx += 19 - 2 - textRenderer.getWidth(string);

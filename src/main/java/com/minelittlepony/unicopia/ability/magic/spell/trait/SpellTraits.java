@@ -148,7 +148,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return of(block.asItem());
     }
 
-    private static Optional<SpellTraits> getEmbeddedTraits(ItemStack stack) {
+    public static Optional<SpellTraits> getEmbeddedTraits(ItemStack stack) {
         if (!(stack.hasTag() && stack.getTag().contains("spell_traits", NbtElement.COMPOUND_TYPE))) {
             return Optional.empty();
         }
