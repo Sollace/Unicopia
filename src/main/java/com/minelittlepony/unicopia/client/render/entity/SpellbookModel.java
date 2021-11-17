@@ -36,17 +36,17 @@ public class SpellbookModel extends EntityModel<SpellbookEntity> {
     public void setAngles(SpellbookEntity entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
         float breath = MathHelper.sin((entity.age + customAngle) / 20) * 0.01F + 0.1F;
 
-        float first_page_rot = limbDistance + (breath * 10);
-        float second_page_rot = 1 - first_page_rot;
+        float leftPageRot = Math.min(limbDistance + (breath * 10), 1);
+        float rightPageRot = Math.min(1 - leftPageRot, 1);
         float open_angle = 0.9f - limbDistance;
 
-        if (first_page_rot > 1) first_page_rot = 1;
-        if (second_page_rot > 1) second_page_rot = 1;
+        leftPageRot = entity.age % 250 < 5 ? (entity.age % 5) / 5F : leftPageRot;
+        rightPageRot = entity.age % 250 > 105 && entity.age % 250 < 110  ? 1-(entity.age % 5) / 5F : rightPageRot;
 
         if (!entity.isOpen()) {
-            first_page_rot = second_page_rot = open_angle = 0;
+            leftPageRot = rightPageRot = open_angle = 0;
         }
 
-        book.setPageAngles(breath, first_page_rot, second_page_rot, open_angle);
+        book.setPageAngles(breath, leftPageRot, rightPageRot, open_angle);
     }
 }
