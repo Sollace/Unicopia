@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgMarkTraitRead;
 import com.minelittlepony.unicopia.network.MsgUnlockTraits;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
@@ -48,9 +49,15 @@ public class TraitDiscovery implements NbtSerialisable {
         pony.setDirty();
     }
 
-    public void markRead() {
-        unreadTraits.clear();
-        pony.setDirty();
+    @Environment(EnvType.CLIENT)
+    public void markRead(Trait trait) {
+        Channel.MARK_TRAIT_READ.send(new MsgMarkTraitRead(Set.of(trait)));
+    }
+
+    public void markRead(Set<Trait> traits) {
+        if (unreadTraits.removeAll(traits)) {
+            pony.setDirty();
+        }
     }
 
     public void unlock(Item item) {

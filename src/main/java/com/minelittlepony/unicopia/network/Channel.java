@@ -12,6 +12,7 @@ import net.minecraft.util.Identifier;
 public interface Channel {
     C2SPacketType<MsgPlayerAbility<?>> CLIENT_PLAYER_ABILITY = SimpleNetworking.clientToServer(new Identifier("unicopia", "player_ability"), MsgPlayerAbility::new);
     C2SPacketType<MsgRequestSpeciesChange> CLIENT_REQUEST_SPECIES_CHANGE = SimpleNetworking.clientToServer(new Identifier("unicopia", "request_capabilities"), MsgRequestSpeciesChange::new);
+    C2SPacketType<MsgMarkTraitRead> MARK_TRAIT_READ = SimpleNetworking.clientToServer(new Identifier("unicopia", "mark_trait_read"), MsgMarkTraitRead::new);
 
     S2CPacketType<MsgPlayerCapabilities> SERVER_PLAYER_CAPABILITIES = SimpleNetworking.serverToClient(new Identifier("unicopia", "player_capabilities"), MsgPlayerCapabilities::new);
     S2CPacketType<MsgSpawnProjectile> SERVER_SPAWN_PROJECTILE = SimpleNetworking.serverToClient(new Identifier("unicopia", "projectile_entity"), MsgSpawnProjectile::new);

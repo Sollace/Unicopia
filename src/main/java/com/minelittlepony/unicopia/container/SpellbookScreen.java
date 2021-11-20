@@ -238,6 +238,8 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
                     .append("\n")
                     .append(new TranslatableText("gui.unicopia.trait.corruption", ItemStack.MODIFIER_FORMAT.format(trait.getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor)))
                     , 200));
+
+            onClick(sender -> Pony.of(client.player).getDiscoveries().markRead(trait));
         }
 
         @Override
@@ -249,7 +251,14 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
             RenderSystem.setShaderTexture(0, TEXTURE);
             RenderSystem.enableBlend();
             drawTexture(matrices, x - 2, y - 8, 204, 219, 22, 32, 512, 256);
-            drawTexture(matrices, x - 2, y - 1, 74, 223, 18, 18, 512, 256);
+
+            if (!active) {
+                drawTexture(matrices, x - 2, y - 1, 74, 223, 18, 18, 512, 256);
+            }
+
+            if (discoveries.isUnread(trait)) {
+                drawTexture(matrices, x - 8, y - 8, 225, 219, 35, 32, 512, 256);
+            }
 
             super.renderButton(matrices, mouseX, mouseY, partialTicks);
             hovered &= active;
