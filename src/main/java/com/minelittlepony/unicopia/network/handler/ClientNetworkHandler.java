@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.network.MsgBlockDestruction;
 import com.minelittlepony.unicopia.network.MsgCancelPlayerAbility;
 import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
 import com.minelittlepony.unicopia.network.MsgTribeSelect;
+import com.minelittlepony.unicopia.network.MsgUnlockTraits;
 
 public interface ClientNetworkHandler {
 
@@ -14,4 +15,6 @@ public interface ClientNetworkHandler {
     void handleBlockDestruction(MsgBlockDestruction packet);
 
     void handleCancelAbility(MsgCancelPlayerAbility packet);
+
+    void handleUnlockTraits(MsgUnlockTraits packet);
 }

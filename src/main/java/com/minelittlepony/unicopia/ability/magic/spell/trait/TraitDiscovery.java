@@ -10,6 +10,8 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgUnlockTraits;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.fabricmc.api.EnvType;
@@ -21,6 +23,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -56,12 +59,17 @@ public class TraitDiscovery implements NbtSerialisable {
         }
         SpellTraits traits = SpellTraits.of(item);
         items.put(Registry.ITEM.getId(item), traits);
+        Set<Trait> newTraits = new HashSet<>();
         traits.entries().forEach(e -> {
             if (this.traits.add(e.getKey())) {
-                unreadTraits.add(e.getKey());
+                newTraits.add(e.getKey());
             }
         });
+        unreadTraits.addAll(newTraits);
         pony.setDirty();
+        if (!newTraits.isEmpty() && !pony.getWorld().isClient) {
+            Channel.UNLOCK_TRAITS.send((ServerPlayerEntity)pony.getMaster(), new MsgUnlockTraits(newTraits));
+        }
     }
 
     public SpellTraits getKnownTraits(Item item) {

@@ -17,6 +17,7 @@ public interface Channel {
     S2CPacketType<MsgSpawnProjectile> SERVER_SPAWN_PROJECTILE = SimpleNetworking.serverToClient(new Identifier("unicopia", "projectile_entity"), MsgSpawnProjectile::new);
     S2CPacketType<MsgBlockDestruction> SERVER_BLOCK_DESTRUCTION = SimpleNetworking.serverToClient(new Identifier("unicopia", "block_destruction"), MsgBlockDestruction::new);
     S2CPacketType<MsgCancelPlayerAbility> CANCEL_PLAYER_ABILITY = SimpleNetworking.serverToClient(new Identifier("unicopia", "player_ability_cancel"), MsgCancelPlayerAbility::new);
+    S2CPacketType<MsgUnlockTraits> UNLOCK_TRAITS = SimpleNetworking.serverToClient(new Identifier("unicopia", "unlock_traits"), MsgUnlockTraits::new);
 
     Identifier SERVER_SELECT_TRIBE_ID = new Identifier("unicopia", "select_tribe");
     S2CPacketType<MsgTribeSelect> SERVER_SELECT_TRIBE = SimpleNetworking.serverToClient(SERVER_SELECT_TRIBE_ID, MsgTribeSelect::new);
