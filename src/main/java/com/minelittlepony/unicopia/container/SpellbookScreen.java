@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.container;
 
-import java.util.List;
-
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.Tooltip;
@@ -9,6 +7,7 @@ import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
+import com.minelittlepony.unicopia.container.SpellbookScreenHandler.OutputSlot;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler.SpellbookSlot;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -116,12 +115,21 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShaderTexture(0, SLOT);
         RenderSystem.enableBlend();
+
         for (Slot slot : handler.slots) {
             if (slot.isEnabled() && slot instanceof SpellbookSlot) {
                 drawTexture(matrices, slot.x - 8, slot.y - 8, 0, 0, 32, 32, 32, 32);
+                if (slot instanceof OutputSlot) {
+                    RenderSystem.setShaderColor(1, 1, 1, 0.3F);
+                    RenderSystem.setShaderTexture(0, new Identifier("unicopia", "textures/item/gemstone.png"));
+                    drawTexture(matrices, slot.x, slot.y, 0, 0, 16, 16, 16, 16);
+                    RenderSystem.setShaderColor(1, 1, 1, 1);
+                    RenderSystem.setShaderTexture(0, SLOT);
+                }
             }
         }
         RenderSystem.disableBlend();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
 
         textRenderer.draw(matrices, title, titleX, titleY, 4210752);
         textRenderer.draw(matrices, SpellbookPage.getCurrent().getLabel(), 220, this.titleY, 4210752);
