@@ -90,6 +90,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
         addDrawableChild(new PageButton(x + 350, y + 187, 1));
         addDrawableChild(new PageButton(x + 300, y + 187, -1));
         container.init(this::initPageContent);
+        addDrawable(this::drawSlots);
     }
 
     @Override
@@ -110,8 +111,9 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
         drawTexture(matrices, left, top, 0, 0, backgroundWidth, backgroundHeight, 512, 256);
     }
 
-    @Override
-    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+    protected void drawSlots(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        matrices.push();
+        matrices.translate(x, y, 0);
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShaderTexture(0, SLOT);
         RenderSystem.enableBlend();
@@ -119,6 +121,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
         for (Slot slot : handler.slots) {
             if (slot.isEnabled() && slot instanceof SpellbookSlot) {
                 drawTexture(matrices, slot.x - 8, slot.y - 8, 0, 0, 32, 32, 32, 32);
+
                 if (slot instanceof OutputSlot) {
                     RenderSystem.setShaderColor(1, 1, 1, 0.3F);
                     RenderSystem.setShaderTexture(0, new Identifier("unicopia", "textures/item/gemstone.png"));
@@ -130,7 +133,11 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
         }
         RenderSystem.disableBlend();
         RenderSystem.setShaderColor(1, 1, 1, 1);
+        matrices.pop();
+    }
 
+    @Override
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         textRenderer.draw(matrices, title, titleX, titleY, 4210752);
         textRenderer.draw(matrices, SpellbookPage.getCurrent().getLabel(), 220, this.titleY, 4210752);
     }
