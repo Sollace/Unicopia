@@ -56,8 +56,9 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<SiphoningSpell> DRAINING = register("draining", Affinity.BAD, 0xe308ab, true, SiphoningSpell::new);
     public static final SpellType<RevealingSpell> REVEALING = register("reveal", Affinity.GOOD, 0x5CE81F, true, RevealingSpell::new);
     public static final SpellType<AwkwardSpell> AWKWARD = register("awkward", Affinity.GOOD, 0xE1239C, true, AwkwardSpell::new);
-    public static final SpellType<TransformationSpell> TRANSFORMATION = register("transformation", Affinity.NEUTRAL, 0x3A59AA, true, TransformationSpell::new);
+    public static final SpellType<TransformationSpell> TRANSFORMATION = register("transformation", Affinity.GOOD, 0x3A59AA, true, TransformationSpell::new);
     public static final SpellType<FeatherFallSpell> FEATHER_FALL = register("feather_fall", Affinity.GOOD, 0x00EEFF, true, FeatherFallSpell.DEFAULT_TRAITS, FeatherFallSpell::new);
+    public static final SpellType<CatapultSpell> CATAPULT = register("catapult", Affinity.GOOD, 0x33FF00, true, CatapultSpell.DEFAULT_TRAITS, CatapultSpell::new);
 
     private final Identifier id;
     private final Affinity affinity;

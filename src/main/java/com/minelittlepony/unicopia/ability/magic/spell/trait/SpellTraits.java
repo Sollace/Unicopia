@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,13 +51,21 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return factor == 0 ? EMPTY : map(v -> v * factor);
     }
 
+    public SpellTraits add(float amount) {
+        return amount == 0 ? this : map(v -> v + amount);
+    }
+
     public SpellTraits map(Function<Float, Float> function) {
+        return map((k, v) -> function.apply(v));
+    }
+
+    public SpellTraits map(BiFunction<Trait, Float, Float> function) {
         if (isEmpty()) {
             return this;
         }
 
         Map<Trait, Float> newMap = new EnumMap<>(traits);
-        newMap.entrySet().forEach(entry -> entry.setValue(function.apply(entry.getValue())));
+        newMap.entrySet().forEach(entry -> entry.setValue(function.apply(entry.getKey(), entry.getValue())));
         return fromEntries(newMap.entrySet().stream()).orElse(EMPTY);
     }
 

@@ -16,6 +16,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+/**
+ * Converts surrounding blocks and entities into their nether equivalent
+ */
 public class InfernoSpell extends FireSpell {
 
     protected InfernoSpell(SpellType<?> type, SpellTraits traits) {
