@@ -100,17 +100,19 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
             compound.putString("dimension", dimension.toString());
         }
         compound.put("castEntity", castEntity.toNBT());
+        compound.put("spell", SpellType.toNBT(spell));
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
-        super.toNBT();
+        super.fromNBT(compound);
         if (compound.contains("dimension")) {
             dimension = new Identifier(compound.getString("dimension"));
         }
         if (compound.contains("castEntity")) {
             castEntity.fromNBT(compound.getCompound("castEntity"));
         }
+        spell = SpellType.fromNBT(compound.getCompound("spell"));
     }
 
     @Override

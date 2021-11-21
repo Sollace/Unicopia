@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
@@ -60,6 +61,18 @@ public class ThrowableSpell extends AbstractDelegatingSpell {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public void toNBT(NbtCompound compound) {
+        super.toNBT(compound);
+        compound.put("spell", SpellType.toNBT(spell));
+    }
+
+    @Override
+    public void fromNBT(NbtCompound compound) {
+        super.fromNBT(compound);
+        spell = SpellType.fromNBT(compound.getCompound("spell"));
     }
 
     @Override

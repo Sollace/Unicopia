@@ -38,9 +38,8 @@ public class CompoundSpell extends AbstractDelegatingSpell {
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
         NbtList spells = new NbtList();
-        this.spells.forEach(spell -> {
-            spells.add(spell.toNBT());
-        });
+        this.spells.stream().map(SpellType::toNBT).forEach(spells::add);
+        compound.put("spells", spells);
     }
 
     @Override
