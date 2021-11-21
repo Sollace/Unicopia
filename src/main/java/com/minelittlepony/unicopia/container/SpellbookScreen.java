@@ -71,7 +71,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
                 drawTexture(matrices, right, i, 425, 67, tileSize, tileSize, 512, 256);
             }
             matrices.pop();
-
+            drawSlots(matrices, mouseX, mouseY, partialTicks);
             super.drawOverlays(matrices, mouseX, mouseY, partialTicks);
         }
     };
@@ -90,7 +90,6 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
         addDrawableChild(new PageButton(x + 350, y + 187, 1));
         addDrawableChild(new PageButton(x + 300, y + 187, -1));
         container.init(this::initPageContent);
-        addDrawable(this::drawSlots);
     }
 
     @Override
