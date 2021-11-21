@@ -31,7 +31,7 @@ import net.minecraft.util.registry.Registry;
 public final class SpellType<T extends Spell> implements Affine, SpellPredicate<T> {
 
     public static final Identifier EMPTY_ID = new Identifier("unicopia", "null");
-    public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, (t, c) -> null);
+    public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, SpellTraits.EMPTY, (t, c) -> null);
 
     private static final Registry<SpellType<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "spells"));
     private static final Map<Affinity, Set<SpellType<?>>> BY_AFFINITY = new EnumMap<>(Affinity.class);
@@ -57,6 +57,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<RevealingSpell> REVEALING = register("reveal", Affinity.GOOD, 0x5CE81F, true, RevealingSpell::new);
     public static final SpellType<AwkwardSpell> AWKWARD = register("awkward", Affinity.GOOD, 0xE1239C, true, AwkwardSpell::new);
     public static final SpellType<TransformationSpell> TRANSFORMATION = register("transformation", Affinity.NEUTRAL, 0x3A59AA, true, TransformationSpell::new);
+    public static final SpellType<FeatherFallSpell> FEATHER_FALL = register("feather_fall", Affinity.GOOD, 0x00EEFF, true, FeatherFallSpell.DEFAULT_TRAITS, FeatherFallSpell::new);
 
     private final Identifier id;
     private final Affinity affinity;
@@ -69,14 +70,16 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     private String translationKey;
 
     private final CustomisedSpellType<T> traited;
+    private final SpellTraits traits;
 
-    private SpellType(Identifier id, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
+    private SpellType(Identifier id, Affinity affinity, int color, boolean obtainable, SpellTraits traits, Factory<T> factory) {
         this.id = id;
         this.affinity = affinity;
         this.color = color;
         this.obtainable = obtainable;
         this.factory = factory;
-        traited = new CustomisedSpellType<>(this, SpellTraits.EMPTY);
+        this.traits = traits;
+        traited = new CustomisedSpellType<>(this, traits);
     }
 
     public boolean isObtainable() {
@@ -97,6 +100,10 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     @Override
     public Affinity getAffinity() {
         return affinity;
+    }
+
+    public SpellTraits getTraits() {
+        return traits;
     }
 
     public String getTranslationKey() {
@@ -153,15 +160,19 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         return this == EMPTY_KEY;
     }
 
-    public static <T extends Spell> SpellType<T> register(Identifier id, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
-        SpellType<T> type = new SpellType<>(id, affinity, color, obtainable, factory);
+    public static <T extends Spell> SpellType<T> register(Identifier id, Affinity affinity, int color, boolean obtainable, SpellTraits traits, Factory<T> factory) {
+        SpellType<T> type = new SpellType<>(id, affinity, color, obtainable, traits, factory);
         byAffinity(affinity).add(type);
         Registry.register(REGISTRY, id, type);
         return type;
     }
 
     public static <T extends Spell> SpellType<T> register(String name, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
-        return register(new Identifier("unicopia", name), affinity, color, obtainable, factory);
+        return register(name, affinity, color, obtainable, SpellTraits.EMPTY, factory);
+    }
+
+    public static <T extends Spell> SpellType<T> register(String name, Affinity affinity, int color, boolean obtainable, SpellTraits traits, Factory<T> factory) {
+        return register(new Identifier("unicopia", name), affinity, color, obtainable, traits, factory);
     }
 
     @SuppressWarnings("unchecked")

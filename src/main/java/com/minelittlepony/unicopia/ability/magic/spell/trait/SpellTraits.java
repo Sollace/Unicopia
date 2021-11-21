@@ -157,6 +157,10 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
 
     public ItemStack applyTo(ItemStack stack) {
         stack = stack.copy();
+        if (isEmpty()) {
+            stack.removeSubTag("spell_traits");
+            return stack;
+        }
         stack.getOrCreateTag().put("spell_traits", toNbt());
         return stack;
     }
@@ -234,5 +238,18 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return entries.filter(Objects::nonNull)
                 .filter(e -> e.getValue() != 0)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a + b, () -> new EnumMap<>(Trait.class)));
+    }
+
+    public static final class Builder {
+        private final Map<Trait, Float> traits = new EnumMap<>(Trait.class);
+
+        public Builder with(Trait trait, float amount) {
+            traits.put(trait, amount);
+            return this;
+        }
+
+        public SpellTraits build() {
+            return fromEntries(traits.entrySet().stream()).orElse(SpellTraits.EMPTY);
+        }
     }
 }

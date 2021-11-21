@@ -28,16 +28,16 @@ public class ItemTraitsTooltipRenderer extends BaseText implements OrderedText, 
 
     @Override
     public int getHeight() {
-        return getRows() * 8 + 2 + 4;
+        return getRows() * 8 + 4;
     }
 
     @Override
     public int getWidth(TextRenderer textRenderer) {
-        return getColumns() * 8 + 2;
+        return getColumns() * 17 + 2;
     }
 
     private int getColumns() {
-       return Math.max(2, (int)Math.ceil(Math.sqrt(traits.entries().size() + 1)));
+       return Math.max(4, (int)Math.ceil(Math.sqrt(traits.entries().size() + 1)));
     }
 
     private int getRows() {
@@ -52,20 +52,17 @@ public class ItemTraitsTooltipRenderer extends BaseText implements OrderedText, 
         var entries = traits.stream().toList();
 
         for (int i = 0; i < entries.size(); i++) {
-            int xx = x + (i % columns) * 10;
+            int xx = x + (i % columns) * 17;
             int yy = y + (i / columns) * 10;
             Entry<Trait, Float> entry = entries.get(i);
 
             RenderSystem.setShaderTexture(0, entry.getKey().getSprite());
             DrawableHelper.drawTexture(matrices, xx, yy, 1, 0, 0, 8, 8, 8, 8);
 
-            String string = String.format("%.2f", entry.getValue());
+            String string = entry.getValue() > 99 ? "99+" : Math.round(entry.getValue()) + "";
             matrices.push();
 
-            xx += 19 - 2 - textRenderer.getWidth(string);
-            yy += 6 + 3;
-
-            matrices.translate(xx, yy, itemRenderer.zOffset + 200.0F);
+            matrices.translate(xx + 9, yy + 3, itemRenderer.zOffset + 200.0F);
             matrices.scale(0.5F, 0.5F, 1);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
             textRenderer.draw(string, 0, 0, 16777215, true, matrices.peek().getModel(), immediate, false, 0, 15728880);

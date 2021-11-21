@@ -10,7 +10,15 @@ import java.util.stream.Collectors;
 import net.minecraft.util.Identifier;
 
 public enum Trait {
+    /**
+     * Imparts physical strength or enhances endurance.
+     * Spells with more of the strength trait hit harder and last longer.
+     */
     STRENGTH(TraitGroup.NATURAL),
+    /**
+     * Narrows a spell to focus its energy more effectively.
+     * Adding the focus trait to spells will decrease the cost of its effects whilst extending its range to more targets in cases of multi-target spells.
+     */
     FOCUS(TraitGroup.NATURAL),
     KNOWLEDGE(TraitGroup.NATURAL),
     LIFE(TraitGroup.NATURAL),
@@ -27,6 +35,13 @@ public enum Trait {
 
     KINDNESS(TraitGroup.MAGICAL),
     HAPPINESS(TraitGroup.MAGICAL),
+    /**
+     * Causes a spell to favor others over the caster.
+     * Can be used to increase range and power, but to the detriment to the caster.
+     *
+     * Complemented by the Element of Harmony and the Element of Kindness.
+     * Spells with this trait are better suited to lending aid to those in need.
+     */
     GENEROSITY(TraitGroup.MAGICAL),
 
     DARKNESS(TraitGroup.DARKNESS),

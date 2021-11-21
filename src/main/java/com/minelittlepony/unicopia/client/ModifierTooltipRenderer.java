@@ -72,6 +72,10 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
                 }
             });
         }
+
+        if (MinecraftClient.getInstance().player != null) {
+            Pony.of(MinecraftClient.getInstance().player).getDiscoveries().appendTooltip(stack, MinecraftClient.getInstance().world, lines);
+        }
     }
 
     private int getInsertPosition(ItemStack stack, Text category, int flags, List<Text> lines, boolean advanced) {

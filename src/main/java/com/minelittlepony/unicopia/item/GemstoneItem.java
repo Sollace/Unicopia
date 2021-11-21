@@ -36,6 +36,7 @@ public class GemstoneItem extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> lines, TooltipContext tooltipContext) {
+        super.appendTooltip(stack, world, lines, tooltipContext);
 
         if (isEnchanted(stack)) {
             SpellType<?> key = getSpellKey(stack);
@@ -94,7 +95,7 @@ public class GemstoneItem extends Item {
             return TypedActionResult.fail(null);
         }
 
-        if (key.isEmpty() || (test == null || !test.test(key))) {
+        if (key.isEmpty() || (test != null && !test.test(key))) {
             return TypedActionResult.fail(null);
         }
 
@@ -121,7 +122,7 @@ public class GemstoneItem extends Item {
 
     public static ItemStack enchanted(ItemStack stack, SpellType<?> type, Affinity affinity) {
         stack.getOrCreateTag().putString("spell", type.getId().toString());
-        return stack;
+        return type.getTraits().applyTo(stack);
     }
 
     public static ItemStack unenchanted(ItemStack stack) {
