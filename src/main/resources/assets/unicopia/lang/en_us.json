@@ -130,49 +130,37 @@
   "potion.potency.6": "VII",
 
   "spell.unicopia.frost": "Frost",
-  "spell.unicopia.frost.lore": "Ice I",
-
+  "spell.unicopia.frost.lore": "Chilling to the touch, this gem will freeze whatever it is used on",
   "curse.unicopia.scorch": "Scorching",
-  "curse.unicopia.scorch.lore": "Fire I",
-
+  "curse.unicopia.scorch.lore": "Warm to the touch, this gem will burn organic matter",
   "spell.unicopia.flame": "Flaming",
-  "spell.unicopia.flame.lore": "Fire II",
-
+  "spell.unicopia.flame.lore": "This gem burns hot with a magical flame",
   "curse.unicopia.infernal": "Infernal",
-  "curse.unicopia.infernal.lore": "Fire III",
-
+  "curse.unicopia.infernal.lore": "Conjuring the forces of the nether, will lay waste to everything it touches",
   "spell.unicopia.shield": "Protective",
-  "spell.unicopia.shield.lore": "Protection I",
-
+  "spell.unicopia.shield.lore": "Casts a protective shield around the user",
   "curse.unicopia.repulse": "Repulsive",
-  "curse.unicopia.repulse.lore": "Hostility I",
-
+  "curse.unicopia.repulse.lore": "Casts a protective shield around the user",
   "spell.unicopia.vortex": "Attractive",
-  "spell.unicopia.vortex.lore": "Containment I",
-
+  "spell.unicopia.vortex.lore": "Creates a vortex that draws targets in",
   "curse.unicopia.suffer": "Suffering",
-  "curse.unicopia.suffer.lore": "Torture I",
-
+  "curse.unicopia.suffer.lore": "Creates a vortex that traps and harms targets",
   "curse.unicopia.necromancy": "Resurrection",
-  "curse.unicopia.necromancy.lore": "Resurrection I",
-
+  "curse.unicopia.necromancy.lore": "Summons the undead from the afterlife",
   "spell.unicopia.siphoning": "Siphoning",
-  "spell.unicopia.siphoning.lore": "Energy II",
-
+  "spell.unicopia.siphoning.lore": "Channels other creature's life force into the user",
   "curse.unicopia.draining": "Siphoning",
-  "curse.unicopia.draining.lore": "Energy III",
-
+  "curse.unicopia.draining.lore": "Channels other creature's life force into the user",
   "spell.unicopia.reveal": "Revealing",
-  "spell.unicopia.reveal.lore": "Discovery II",
-
-  "spell.unicopia.awkward": "Unstable",
-  "spell.unicopia.awkward.lore": "Chaos I",
-  
-  "spell.unicopia.transformation": "Transformation",
-  "spell.unicopia.transformation.lore": "Chaos II",
-
+  "spell.unicopia.reveal.lore": "Negates shapeshifting magic",
+  "spell.unicopia.awkward": "Botched",
+  "spell.unicopia.awkward.lore": "Unstable magics",
+  "spell.unicopia.transformation": "Transmutation",
+  "spell.unicopia.transformation.lore": "Transforms the target into something else",
   "spell.unicopia.feather_fall": "Feather Fall",
-  "spell.unicopia.feather_fall.lore": "Air I",
+  "spell.unicopia.feather_fall.lore": "Slowls the descent of the caster and surrounding allies",
+  "spell.unicopia.catapult": "Catapult",
+  "spell.unicopia.catapult.lore": "Grabs a nearby block or entity and throws it into the air",
 
   "gui.unicopia.trait.label": "Element of %s",
   "gui.unicopia.trait.group": "\n %s",
