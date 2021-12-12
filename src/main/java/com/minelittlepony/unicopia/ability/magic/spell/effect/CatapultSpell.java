@@ -22,6 +22,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+/**
+ * Picks up and throws an entity or block.
+ */
 public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
             .with(Trait.FOCUS, 50)
@@ -63,12 +66,15 @@ public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
 
     protected void apply(Caster<?> caster, Entity e) {
         Vec3d vel = caster.getEntity().getVelocity();
-        e.addVelocity(
+        if (Math.abs(e.getVelocity().y) > 0.5) {
+            e.setVelocity(caster.getEntity().getVelocity());
+        } else {
+            e.addVelocity(
                 ((caster.getWorld().random.nextFloat() * HORIZONTAL_VARIANCE) - HORIZONTAL_VARIANCE + vel.x * 0.8F) * 0.1F,
                 0.1F + (getTraits().get(Trait.STRENGTH, -MAX_STRENGTH, MAX_STRENGTH) - 50) / 16D,
                 ((caster.getWorld().random.nextFloat() * HORIZONTAL_VARIANCE) - HORIZONTAL_VARIANCE + vel.z * 0.8F) * 0.1F
-        );
-        e.world.spawnEntity(e);
+            );
+        }
     }
 
     protected void getTarget(Caster<?> caster, Consumer<Entity> apply) {
@@ -94,6 +100,7 @@ public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
         world.removeBlock(bpos, true);
         e.setOnGround(false);
         e.timeFalling = Integer.MIN_VALUE;
+        e.setHurtEntities(1 + (world.random.nextFloat() * 10), 100);
 
         apply.accept(e);
         world.spawnEntity(e);
