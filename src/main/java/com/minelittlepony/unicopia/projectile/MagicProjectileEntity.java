@@ -128,6 +128,10 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
         return Caster.of(getMaster()).filter(c -> c.subtractEnergyCost(amount)).isPresent();
     }
 
+    public void addThrowDamage(float damage) {
+        setThrowDamage(getThrowDamage() + damage);
+    }
+
     public void setThrowDamage(float damage) {
         getDataTracker().set(DAMAGE, Math.max(0, damage));
     }

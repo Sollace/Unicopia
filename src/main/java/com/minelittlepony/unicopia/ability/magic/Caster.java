@@ -16,6 +16,7 @@ import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -60,6 +61,10 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
      */
     default BlockPos getOrigin() {
         return getEntity().getBlockPos();
+    }
+
+    default void playSound(SoundEvent sound, float volume, float pitch) {
+        getWorld().playSound(null, getEntity().getX(), getEntity().getY(), getEntity().getZ(), sound, getEntity().getSoundCategory(),volume, pitch);
     }
 
     /**

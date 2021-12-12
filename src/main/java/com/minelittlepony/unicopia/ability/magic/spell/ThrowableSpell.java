@@ -13,11 +13,10 @@ import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
-public class ThrowableSpell extends AbstractDelegatingSpell {
+public final class ThrowableSpell extends AbstractDelegatingSpell {
 
     private Spell spell;
 
@@ -45,7 +44,7 @@ public class ThrowableSpell extends AbstractDelegatingSpell {
 
         LivingEntity entity = caster.getMaster();
 
-        world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.NEUTRAL, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
+        caster.playSound(SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
         if (!caster.isClient()) {
             MagicProjectileEntity projectile = new MagicProjectileEntity(world, entity);
