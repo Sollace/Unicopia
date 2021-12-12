@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
+import com.minelittlepony.unicopia.entity.player.PlayerDimensions;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
@@ -49,7 +50,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.WorldAccess;
 
-public class Disguise implements NbtSerialisable {
+public class Disguise implements NbtSerialisable, PlayerDimensions.Provider, FlightType.Provider {
     private static final Optional<Float> BLOCK_HEIGHT = Optional.of(0.5F);
 
     @NotNull
@@ -206,7 +207,12 @@ public class Disguise implements NbtSerialisable {
         }
     }
 
+    @Override
     public FlightType getFlightType() {
+        if (!isPresent()) {
+            return FlightType.UNSET;
+        }
+
         if (entity == null) {
             return FlightType.NONE;
         }
@@ -231,7 +237,8 @@ public class Disguise implements NbtSerialisable {
         return FlightType.NONE;
     }
 
-    public Optional<Float> getStandingEyeHeight() {
+    @Override
+    public Optional<Float> getTargetEyeHeight(Pony player) {
         if (entity != null) {
             if (entity instanceof FallingBlockEntity) {
                 return BLOCK_HEIGHT;
@@ -255,7 +262,8 @@ public class Disguise implements NbtSerialisable {
         return EntityBehaviour.forEntity(entity).getCameraDistance(entity, player);
     }
 
-    public Optional<EntityDimensions> getDimensions() {
+    @Override
+    public Optional<EntityDimensions> getTargetDimensions(Pony player) {
         return dimensions = EntityBehaviour.forEntity(entity).getDimensions(entity, dimensions);
     }
 

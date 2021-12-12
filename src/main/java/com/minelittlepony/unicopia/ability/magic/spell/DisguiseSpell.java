@@ -205,21 +205,22 @@ public class DisguiseSpell extends AbstractSpell implements Suppressable, Flight
     }
 
     @Override
-    public FlightType getFlightType(Pony player) {
-        if (isSuppressed() || !disguise.isPresent()) {
-            return player.getSpecies().getFlightType();
-        }
-        return disguise.getFlightType();
+    public FlightType getFlightType() {
+        return getAppearance().map(Disguise::getFlightType).orElse(FlightType.UNSET);
+    }
+
+    public Optional<Disguise> getAppearance() {
+        return isSuppressed() ? Optional.empty() : Optional.ofNullable(disguise);
     }
 
     @Override
     public Optional<Float> getTargetEyeHeight(Pony player) {
-        return isSuppressed() ? Optional.empty() : disguise.getStandingEyeHeight();
+        return getAppearance().flatMap(d -> d.getTargetEyeHeight(player));
     }
 
     @Override
     public Optional<EntityDimensions> getTargetDimensions(Pony player) {
-        return isSuppressed() ? Optional.empty() : disguise.getDimensions();
+        return getAppearance().flatMap(d -> d.getTargetDimensions(player));
     }
 
     static abstract class PlayerAccess extends PlayerEntity {

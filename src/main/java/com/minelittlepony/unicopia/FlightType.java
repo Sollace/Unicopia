@@ -1,11 +1,10 @@
 package com.minelittlepony.unicopia;
 
-import com.minelittlepony.unicopia.entity.player.Pony;
-
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 
 public enum FlightType {
+    UNSET,
     NONE,
     AVIAN,
     INSECTOID,
@@ -21,6 +20,10 @@ public enum FlightType {
 
     public boolean isArtifical() {
         return this == ARTIFICIAL;
+    }
+
+    public boolean isPresent() {
+        return this != UNSET;
     }
 
     public boolean canFly() {
@@ -41,6 +44,6 @@ public enum FlightType {
      * This overrides what the race specifies.
      */
     public interface Provider {
-        FlightType getFlightType(Pony player);
+        FlightType getFlightType();
     }
 }
