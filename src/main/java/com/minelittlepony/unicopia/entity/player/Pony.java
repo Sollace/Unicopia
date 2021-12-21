@@ -30,7 +30,8 @@ import com.minelittlepony.unicopia.item.toxin.Toxin;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgOtherPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgRequestSpeciesChange;
-import com.minelittlepony.unicopia.network.Transmittable;
+import com.minelittlepony.unicopia.network.datasync.Transmittable;
+import com.minelittlepony.unicopia.network.datasync.EffectSync.UpdateCallback;
 import com.minelittlepony.unicopia.util.Copieable;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.Tickable;
@@ -61,7 +62,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-public class Pony extends Living<PlayerEntity> implements Transmittable, Copieable<Pony> {
+public class Pony extends Living<PlayerEntity> implements Transmittable, Copieable<Pony>, UpdateCallback {
 
     private static final TrackedData<Integer> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
@@ -505,17 +506,16 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     public void copyFrom(Pony oldPlayer) {
         speciesPersisted = oldPlayer.speciesPersisted;
         if (!oldPlayer.getEntity().isRemoved()) {
-            setSpell(oldPlayer.getSpellSlot().get(true).orElse(null));
+            getSpellSlot().put(oldPlayer.getSpellSlot().get(true).orElse(null));
         }
-        oldPlayer.setSpell(null);
+        oldPlayer.getSpellSlot().put(null);
         setSpecies(oldPlayer.getSpecies());
         getDiscoveries().copyFrom(oldPlayer.getDiscoveries());
         setDirty();
     }
 
     @Override
-    public void setSpell(@Nullable Spell effect) {
-        super.setSpell(effect);
+    public void onSpellSet(@Nullable Spell spell) {
         setDirty();
     }
 

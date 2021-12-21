@@ -106,7 +106,7 @@ public class Creature extends Living<LivingEntity> {
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         if (compound.contains("effect")) {
-            setSpell(SpellType.fromNBT(compound.getCompound("effect")));
+            getSpellSlot().put(SpellType.fromNBT(compound.getCompound("effect")));
         }
         physics.fromNBT(compound);
     }

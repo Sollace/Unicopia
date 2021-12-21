@@ -16,8 +16,8 @@ import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.Channel;
-import com.minelittlepony.unicopia.network.EffectSync;
 import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
+import com.minelittlepony.unicopia.network.datasync.EffectSync;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -220,7 +220,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
         super.readCustomDataFromNbt(compound);
         physics.fromNBT(compound);
         if (compound.contains("effect")) {
-            setSpell(SpellType.fromNBT(compound.getCompound("effect")));
+            getSpellSlot().put(SpellType.fromNBT(compound.getCompound("effect")));
         }
     }
 

@@ -71,7 +71,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
                     CastSpellEntity entity = UEntities.CAST_SPELL.create(source.getWorld());
                     Vec3d pos = castEntity.getPosition().orElse(source.getOriginVector());
                     entity.updatePositionAndAngles(pos.x, pos.y, pos.z, 0, 0);
-                    entity.setSpell(this);
+                    entity.getSpellSlot().put(this);
                     entity.setMaster(source.getMaster());
                     entity.world.spawnEntity(entity);
 

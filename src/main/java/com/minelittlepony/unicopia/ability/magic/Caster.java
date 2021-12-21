@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Owned;
-import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.particle.ParticleSource;
@@ -28,10 +27,6 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     Physics getPhysics();
 
     SpellContainer getSpellSlot();
-
-    default void setSpell(@Nullable Spell spell) {
-        getSpellSlot().put(spell);
-    }
 
     /**
      * Gets the entity directly responsible for casting.

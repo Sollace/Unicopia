@@ -37,6 +37,19 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
 
     private final EntityReference<LivingEntity> owner = new EntityReference<>();
 
+    private final SpellContainer spell = new SpellContainer.Delegate() {
+        @Override
+        public SpellContainer delegate() {
+            return Caster.of(getMaster()).map(Caster::getSpellSlot).orElse(SpellContainer.EMPTY);
+        }
+
+        @Override
+        public void put(Spell spell) {
+            getDataTracker().set(SPELL, Optional.ofNullable(spell).map(Spell::getUuid));
+            SpellContainer.Delegate.super.put(spell);
+        }
+    };
+
     private BlockPos lastPos;
 
     private int orphanedTicks;
@@ -94,7 +107,7 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
             UUID spellId = dataTracker.get(SPELL).orElse(null);
 
             if (!c.getSpellSlot().get(true).filter(s -> s.getUuid().equals(spellId) && s.tick(this, Situation.GROUND_ENTITY)).isPresent()) {
-                c.setSpell(null);
+                c.getSpellSlot().clear();
 
                 return false;
             }
@@ -116,11 +129,6 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
     @Override
     public void setMaster(LivingEntity owner) {
         this.owner.set(owner);
-    }
-
-    @Override
-    public void setSpell(Spell spell) {
-        getDataTracker().set(SPELL, Optional.ofNullable(spell).map(Spell::getUuid));
     }
 
     @Override
@@ -150,7 +158,7 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
 
     @Override
     public SpellContainer getSpellSlot() {
-        return Caster.of(getMaster()).map(Caster::getSpellSlot).orElse(SpellContainer.EMPTY);
+        return spell;
     }
 
     @Override

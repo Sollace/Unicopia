@@ -196,7 +196,7 @@ public class Disguise implements NbtSerialisable, PlayerDimensions.Provider, Fli
             return;
         }
 
-        Caster.of(entity).ifPresent(c -> c.setSpell(null));
+        Caster.of(entity).ifPresent(c -> c.getSpellSlot().clear());
 
         if (entity instanceof LivingEntity) {
             ((LivingEntity) entity).getAttributeInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER).clearModifiers();

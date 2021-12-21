@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +16,12 @@ public interface SpellContainer {
 
         @Override
         public void put(Spell effect) { }
+
+        @Override
+        public void clear() { }
+
+        @Override
+        public void removeIf(Predicate<Spell> effect, boolean update) { }
     };
 
     /**
@@ -40,4 +47,39 @@ public interface SpellContainer {
      * Sets the active effect.
      */
     void put(@Nullable Spell effect);
+
+    /**
+     * Removes all matching active effects.
+     */
+    void removeIf(Predicate<Spell> effect, boolean update);
+
+    /**
+     * Removes all effects currently active in this slot.
+     */
+    void clear();
+
+    interface Delegate extends SpellContainer {
+
+        SpellContainer delegate();
+
+        @Override
+        default <T extends Spell> Optional<T> get(@Nullable SpellPredicate<T> type, boolean update) {
+            return delegate().get(type, update);
+        }
+
+        @Override
+        default void put(@Nullable Spell effect) {
+            delegate().put(effect);
+        }
+
+        @Override
+        default void removeIf(Predicate<Spell> effect, boolean update) {
+            delegate().removeIf(effect, update);
+        }
+
+        @Override
+        default void clear() {
+            delegate().clear();
+        }
+    }
 }

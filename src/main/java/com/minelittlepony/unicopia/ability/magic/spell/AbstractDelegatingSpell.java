@@ -63,7 +63,7 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
 
     @Override
     public boolean apply(Caster<?> caster) {
-        caster.setSpell(this);
+        caster.getSpellSlot().put(this);
         return true;
     }
 

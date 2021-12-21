@@ -141,7 +141,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     @Nullable
     public T apply(Caster<?> caster, SpellTraits traits) {
         if (isEmpty()) {
-            caster.setSpell(null);
+            caster.getSpellSlot().clear();
             return null;
         }
 

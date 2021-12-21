@@ -104,7 +104,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
 
             eq.setSpecies(species);
             if (eq instanceof Caster) {
-                ((Caster<?>)eq).setSpell(null);
+                ((Caster<?>)eq).getSpellSlot().clear();
             }
 
             if (eq instanceof Pony) {

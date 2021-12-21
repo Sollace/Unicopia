@@ -18,6 +18,6 @@ abstract class MixinMilkBucketItem extends Item {
 
     @Inject(method = "finishUsing", at = @At("HEAD"), cancellable = true)
     private void finishUsing(ItemStack stack, World world, LivingEntity entity, CallbackInfoReturnable<ItemStack> info) {
-        Caster.of(entity).ifPresent(c -> c.setSpell(null));
+        Caster.of(entity).ifPresent(c -> c.getSpellSlot().clear());
     }
 }
