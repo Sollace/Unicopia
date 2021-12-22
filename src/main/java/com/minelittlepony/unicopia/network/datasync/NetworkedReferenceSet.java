@@ -27,6 +27,7 @@ public class NetworkedReferenceSet<T> {
     private final Supplier<NetworkedReference<T>> factory;
 
     private boolean dirty;
+    private boolean reading;
 
     public NetworkedReferenceSet(Function<T, UUID> uuidConverter, Supplier<NetworkedReference<T>> factory) {
         this.uuidConverter = uuidConverter;
@@ -78,24 +79,31 @@ public class NetworkedReferenceSet<T> {
     }
 
     public boolean fromNbt(NbtCompound comp) {
+        if (reading) {
+            return false;
+        }
+        reading = true;
+        try {
+            List<UUID> incoming = new ArrayList<>();
+            comp.getList("keys", NbtElement.STRING_TYPE).forEach(key -> {
+                incoming.add(UUID.fromString(key.asString()));
+            });
 
-        List<UUID> incoming = new ArrayList<>();
-        comp.getList("keys", NbtElement.STRING_TYPE).forEach(key -> {
-            incoming.add(UUID.fromString(key.asString()));
-        });
+            ids.stream().filter(id -> !incoming.contains(id)).toList().forEach(this::removeReference);
 
-        ids.stream().filter(id -> !incoming.contains(id)).toList().forEach(this::removeReference);
-
-        boolean[] send = new boolean[1];
-        incoming.forEach(kept -> {
-            NetworkedReference<T> i = addReference(kept);
-            send[0] |= i.fromNbt(comp.getCompound(kept.toString()));
-            if (i.getReference().isEmpty()) {
-                removeReference(kept);
-            }
-        });
-        dirty = false;
-        return send[0];
+            boolean[] send = new boolean[1];
+            incoming.forEach(key -> {
+                NetworkedReference<T> i = addReference(key);
+                send[0] |= i.fromNbt(comp.getCompound(key.toString()));
+                if (i.getReference().isEmpty()) {
+                    removeReference(key);
+                }
+            });
+            dirty = send[0];
+            return send[0];
+        } finally {
+            reading = false;
+        }
     }
 
     public NbtCompound toNbt() {

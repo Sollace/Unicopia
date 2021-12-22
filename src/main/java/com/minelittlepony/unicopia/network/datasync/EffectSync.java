@@ -97,7 +97,7 @@ public class EffectSync implements SpellContainer {
 
     private Stream<Spell> read(boolean synchronize, boolean sendUpdate) {
         if (synchronize && spells.fromNbt(owner.getEntity().getDataTracker().get(param)) && sendUpdate) {
-            write();
+            owner.getEntity().getDataTracker().set(param, spells.toNbt());
         }
 
         return spells.getReferences();

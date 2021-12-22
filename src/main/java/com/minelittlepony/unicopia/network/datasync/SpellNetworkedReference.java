@@ -31,7 +31,7 @@ public class SpellNetworkedReference<T extends Spell> implements NetworkedRefere
     }
 
     private boolean mustDelete(@Nullable NbtCompound comp) {
-        return (comp == null || !comp.contains("effect_id") || !comp.contains("uuid")) && currentValue.isPresent();
+        return comp == null || !comp.contains("effect_id") || !comp.contains("uuid");
     }
 
     private boolean mustReplace(NbtCompound comp) {
@@ -51,7 +51,7 @@ public class SpellNetworkedReference<T extends Spell> implements NetworkedRefere
     }
 
     @Override
-    public Optional<T> updateReference(@Nullable T newValue) {
+    public void updateReference(@Nullable T newValue) {
         newValue = newValue == null || newValue.isDead() ? null : newValue;
 
         @Nullable
@@ -65,8 +65,6 @@ public class SpellNetworkedReference<T extends Spell> implements NetworkedRefere
                 oldValue.onDestroyed(owner);
             }
         }
-
-        return currentValue;
     }
 
     @Override
