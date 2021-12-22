@@ -61,7 +61,7 @@ public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
         }
 
         getTarget(caster, e -> apply(caster, e));
-        return situation == Situation.PROJECTILE;
+        return false;
     }
 
     protected void apply(Caster<?> caster, Entity e) {
