@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.network.datasync;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -61,28 +60,27 @@ public class EffectSync implements SpellContainer {
     }
 
     @Override
-    public void removeIf(Predicate<Spell> test, boolean update) {
-        forEach(effect -> {
-            if (test.test(effect)) {
-                spells.removeReference(effect);
+    public boolean removeIf(Predicate<Spell> test, boolean update) {
+        return reduce((initial, effect) -> {
+            if (!test.test(effect)) {
+                return initial;
             }
+            spells.removeReference(effect);
+            return true;
         });
     }
 
     @Override
     public boolean forEach(Function<Spell, Operation> test, boolean update) {
-        boolean[] matched = new boolean[1];
-
-        forEach(effect -> {
+        return reduce((initial, effect) -> {
             Operation op = test.apply(effect);
             if (op == Operation.REMOVE) {
                 spells.removeReference(effect);
             } else {
-                matched[0] |= op != Operation.SKIP;
+                initial |= op != Operation.SKIP;
             }
+            return initial;
         });
-
-        return matched[0];
     }
 
     @Override
@@ -103,10 +101,16 @@ public class EffectSync implements SpellContainer {
         return spells.getReferences();
     }
 
-    public void forEach(Consumer<Spell> consumer) {
+    public boolean reduce(Alteration alteration) {
         spells.fromNbt(owner.getEntity().getDataTracker().get(param));
-        spells.getReferences().toList().forEach(consumer);
+
+        boolean initial = false;
+        for (Spell i : spells.getReferences().toList()) {
+            initial = alteration.apply(initial, i);
+        }
+
         write();
+        return initial;
     }
 
     private void write() {
@@ -117,5 +121,9 @@ public class EffectSync implements SpellContainer {
 
     public interface UpdateCallback {
         void onSpellSet(@Nullable Spell spell);
+    }
+
+    private interface Alteration {
+        boolean apply(boolean initial, Spell item);
     }
 }

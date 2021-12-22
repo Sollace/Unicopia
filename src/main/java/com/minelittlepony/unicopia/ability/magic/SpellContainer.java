@@ -22,7 +22,9 @@ public interface SpellContainer {
         public void clear() { }
 
         @Override
-        public void removeIf(Predicate<Spell> effect, boolean update) { }
+        public boolean removeIf(Predicate<Spell> effect, boolean update) {
+            return false;
+        }
 
         @Override
         public boolean forEach(Function<Spell, Operation> action, boolean update) {
@@ -56,8 +58,10 @@ public interface SpellContainer {
 
     /**
      * Removes all matching active effects.
+     *
+     * @return True if the collection was changed
      */
-    void removeIf(Predicate<Spell> test, boolean update);
+    boolean removeIf(Predicate<Spell> test, boolean update);
 
     /**
      * Iterates active spells and optionally removes matching ones.
@@ -86,8 +90,8 @@ public interface SpellContainer {
         }
 
         @Override
-        default void removeIf(Predicate<Spell> effect, boolean update) {
-            delegate().removeIf(effect, update);
+        default boolean removeIf(Predicate<Spell> effect, boolean update) {
+            return delegate().removeIf(effect, update);
         }
 
         @Override
