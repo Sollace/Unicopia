@@ -6,69 +6,47 @@ import com.minelittlepony.common.util.Color;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import net.minecraft.particle.AbstractDustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 
 public class MagicParticleEffect implements ParticleEffect {
-
-    public static final MagicParticleEffect UNICORN = new MagicParticleEffect(false, 0, 0, 0);
-    public static final ParticleEffect.Factory<MagicParticleEffect> FACTORY = new ParticleEffect.Factory<MagicParticleEffect>() {
-        @Override
-        public MagicParticleEffect read(ParticleType<MagicParticleEffect> particleType, StringReader reader) throws CommandSyntaxException {
-            reader.expect(' ');
-            boolean f = reader.readBoolean();
-            reader.expect(' ');
-            float g = (float)reader.readDouble();
-            reader.expect(' ');
-            float h = (float)reader.readDouble();
-            reader.expect(' ');
-            float i = (float)reader.readDouble();
-            return new MagicParticleEffect(f, g, h, i);
-        }
-
-        @Override
-        public MagicParticleEffect read(ParticleType<MagicParticleEffect> particleType, PacketByteBuf buf) {
-            return new MagicParticleEffect(buf.readBoolean(), buf.readFloat(), buf.readFloat(), buf.readFloat());
-        }
-    };
+    public static final MagicParticleEffect UNICORN = new MagicParticleEffect(false, Vec3f.ZERO);
+    public static final ParticleEffect.Factory<MagicParticleEffect> FACTORY = ParticleFactoryHelper.of(MagicParticleEffect::new, MagicParticleEffect::new);
 
     private final boolean tinted;
-    private final float red;
-    private final float green;
-    private final float blue;
+    private final Vec3f color;
+
+    protected MagicParticleEffect(ParticleType<MagicParticleEffect> particleType, StringReader reader) throws CommandSyntaxException {
+        this(ParticleFactoryHelper.readBoolean(reader), AbstractDustParticleEffect.readColor(reader));
+    }
+
+    protected MagicParticleEffect(ParticleType<MagicParticleEffect> particleType, PacketByteBuf buf) {
+        this(buf.readBoolean(), AbstractDustParticleEffect.readColor(buf));
+    }
 
     public MagicParticleEffect(int tint) {
-        this(true, Color.r(tint), Color.g(tint), Color.b(tint));
+        this(true, new Vec3f(Color.r(tint), Color.g(tint), Color.b(tint)));
     }
 
-    public MagicParticleEffect(float r, float g, float b) {
-        this(true, r, g, b);
+    public MagicParticleEffect(Vec3f color) {
+        this(true, color);
     }
 
-    protected MagicParticleEffect(boolean tint, float r, float g, float b) {
+    protected MagicParticleEffect(boolean tint, Vec3f color) {
         tinted = tint;
-        red = r;
-        green = g;
-        blue = b;
+        this.color = color;
     }
-
 
     public boolean hasTint() {
         return tinted;
     }
 
-    public float getRed() {
-        return red;
-    }
-
-    public float getGreen() {
-        return green;
-    }
-
-    public float getBlue() {
-        return blue;
+    public Vec3f getColor() {
+        return color;
     }
 
     @Override
@@ -79,14 +57,14 @@ public class MagicParticleEffect implements ParticleEffect {
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeBoolean(tinted);
-        buf.writeFloat(red);
-        buf.writeFloat(green);
-        buf.writeFloat(blue);
+        buf.writeFloat(color.getX());
+        buf.writeFloat(color.getY());
+        buf.writeFloat(color.getZ());
     }
 
     @Override
     public String asString() {
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f", Registry.PARTICLE_TYPE.getId(getType()), red, green, blue);
+        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f", Registry.PARTICLE_TYPE.getId(getType()), color.getX(), color.getY(), color.getZ());
     }
 
 }

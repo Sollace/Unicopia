@@ -12,29 +12,21 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
 public class OrientedBillboardParticleEffect implements ParticleEffect {
-    public static final ParticleEffect.Factory<OrientedBillboardParticleEffect> FACTORY = new ParticleEffect.Factory<OrientedBillboardParticleEffect>() {
-        @Override
-        public OrientedBillboardParticleEffect read(ParticleType<OrientedBillboardParticleEffect> type, StringReader reader) throws CommandSyntaxException {
-            reader.expect(' ');
-            boolean fixed = reader.readBoolean();
-            reader.expect(' ');
-            float yaw = (float)reader.readDouble();
-            reader.expect(' ');
-            float pitch = (float)reader.readDouble();
-            return new OrientedBillboardParticleEffect(type, fixed, yaw, pitch);
-        }
-
-        @Override
-        public OrientedBillboardParticleEffect read(ParticleType<OrientedBillboardParticleEffect> particleType, PacketByteBuf buf) {
-            return new OrientedBillboardParticleEffect(particleType, buf.readBoolean(), buf.readFloat(), buf.readFloat());
-        }
-    };
+    public static final ParticleEffect.Factory<OrientedBillboardParticleEffect> FACTORY = ParticleFactoryHelper.of(OrientedBillboardParticleEffect::new, OrientedBillboardParticleEffect::new);
 
     private final boolean fixed;
     private final float yaw;
     private final float pitch;
 
     private final ParticleType<OrientedBillboardParticleEffect> type;
+
+    protected OrientedBillboardParticleEffect(ParticleType<OrientedBillboardParticleEffect> type, StringReader reader) throws CommandSyntaxException {
+        this(type, ParticleFactoryHelper.readBoolean(reader), ParticleFactoryHelper.readFloat(reader), ParticleFactoryHelper.readFloat(reader));
+    }
+
+    protected OrientedBillboardParticleEffect(ParticleType<OrientedBillboardParticleEffect> particleType, PacketByteBuf buf) {
+        this(particleType, buf.readBoolean(), buf.readFloat(), buf.readFloat());
+    }
 
     public OrientedBillboardParticleEffect(ParticleType<OrientedBillboardParticleEffect> type, Vec3d orientation) {
         this(type, (float)orientation.getX(), (float)orientation.getY());

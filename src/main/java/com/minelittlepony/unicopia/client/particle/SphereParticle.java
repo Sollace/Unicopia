@@ -44,9 +44,9 @@ public class SphereParticle extends Particle implements Attachment {
         super(w, x, y, z);
 
         this.radius = effect.getRadius();
-        this.colorRed = effect.getRed() / 255F;
-        this.colorGreen = effect.getGreen() / 255F;
-        this.colorBlue = effect.getBlue() / 255F;
+        this.colorRed = effect.getColor().getX() / 255F;
+        this.colorGreen = effect.getColor().getY() / 255F;
+        this.colorBlue = effect.getColor().getZ() / 255F;
         this.colorAlpha = effect.getAlpha();
 
         setMaxAge(10);

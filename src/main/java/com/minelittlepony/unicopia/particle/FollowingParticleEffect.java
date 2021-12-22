@@ -13,25 +13,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class FollowingParticleEffect implements ParticleEffect {
-    public static final ParticleEffect.Factory<FollowingParticleEffect> FACTORY = new ParticleEffect.Factory<>() {
-        @Override
-        public FollowingParticleEffect read(ParticleType<FollowingParticleEffect> type, StringReader reader) throws CommandSyntaxException {
-            reader.expect(' ');
-            double x = reader.readDouble();
-            reader.expect(' ');
-            double y = reader.readDouble();
-            reader.expect(' ');
-            double z = reader.readDouble();
-            reader.expect(' ');
-            float speed = reader.readFloat();
-            return new FollowingParticleEffect(type, -1, new Vec3d(x, y, z), speed);
-        }
-
-        @Override
-        public FollowingParticleEffect read(ParticleType<FollowingParticleEffect> particleType, PacketByteBuf buf) {
-            return new FollowingParticleEffect(particleType, buf.readInt(), new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble()), buf.readFloat());
-        }
-    };
+    public static final Factory<FollowingParticleEffect> FACTORY = ParticleFactoryHelper.of(FollowingParticleEffect::new, FollowingParticleEffect::new);
 
     private final ParticleType<FollowingParticleEffect> type;
 
@@ -40,6 +22,14 @@ public class FollowingParticleEffect implements ParticleEffect {
     private int movingTarget;
 
     private final float followSpeed;
+
+    protected FollowingParticleEffect(ParticleType<FollowingParticleEffect> type, StringReader reader) throws CommandSyntaxException {
+        this(type, -1, ParticleFactoryHelper.readVector(reader), ParticleFactoryHelper.readFloat(reader));
+    }
+
+    protected FollowingParticleEffect(ParticleType<FollowingParticleEffect> particleType, PacketByteBuf buf) {
+        this(particleType, buf.readInt(), new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble()), buf.readFloat());
+    }
 
     public FollowingParticleEffect(ParticleType<FollowingParticleEffect> type, Vec3d target, float followSpeed) {
         this.type = type;
