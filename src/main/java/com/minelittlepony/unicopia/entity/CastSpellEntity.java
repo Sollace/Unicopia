@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
+import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.network.Channel;
@@ -97,24 +98,21 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
             if (orphanedTicks-- > 0) {
                 return;
             }
-            remove(RemovalReason.DISCARDED);
+            discard();
             return;
         }
 
         orphanedTicks = 0;
 
-        if (!Caster.of(master).filter(c -> {
-            UUID spellId = dataTracker.get(SPELL).orElse(null);
-
-            if (!c.getSpellSlot().get(true).filter(s -> s.getUuid().equals(spellId) && s.tick(this, Situation.GROUND_ENTITY)).isPresent()) {
-                c.getSpellSlot().clear();
-
-                return false;
-            }
-
-            return true;
+        if (!dataTracker.get(SPELL).filter(spellId -> {
+            return getSpellSlot().forEach(spell -> {
+                if (!spell.getUuid().equals(spellId)) {
+                    return Operation.SKIP;
+                }
+                return spell.tick(this, Situation.GROUND_ENTITY) ? Operation.KEEP: Operation.REMOVE;
+            }, true);
         }).isPresent()) {
-            remove(RemovalReason.DISCARDED);
+            discard();
         }
     }
 

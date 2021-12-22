@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.network.datasync;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -61,7 +62,7 @@ public class EffectSync implements SpellContainer {
 
     @Override
     public void removeIf(Predicate<Spell> test, boolean update) {
-        read(effect -> {
+        forEach(effect -> {
             if (test.test(effect)) {
                 spells.removeReference(effect);
             }
@@ -69,8 +70,29 @@ public class EffectSync implements SpellContainer {
     }
 
     @Override
+    public boolean forEach(Function<Spell, Operation> test, boolean update) {
+        boolean[] matched = new boolean[1];
+
+        forEach(effect -> {
+            Operation op = test.apply(effect);
+            if (op == Operation.REMOVE) {
+                spells.removeReference(effect);
+            } else {
+                matched[0] |= op != Operation.SKIP;
+            }
+        });
+
+        return matched[0];
+    }
+
+    @Override
     public void clear() {
-        put(null);
+        if (spells.clear()) {
+            write();
+            if (owner instanceof UpdateCallback) {
+                ((UpdateCallback)owner).onSpellSet(null);
+            }
+        }
     }
 
     private Stream<Spell> read(boolean synchronize, boolean sendUpdate) {
@@ -81,7 +103,7 @@ public class EffectSync implements SpellContainer {
         return spells.getReferences();
     }
 
-    private void read(Consumer<Spell> consumer) {
+    public void forEach(Consumer<Spell> consumer) {
         spells.fromNbt(owner.getEntity().getDataTracker().get(param));
         spells.getReferences().toList().forEach(consumer);
         write();

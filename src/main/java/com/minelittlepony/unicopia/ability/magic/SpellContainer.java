@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic;
 
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +23,11 @@ public interface SpellContainer {
 
         @Override
         public void removeIf(Predicate<Spell> effect, boolean update) { }
+
+        @Override
+        public boolean forEach(Function<Spell, Operation> action, boolean update) {
+            return false;
+        }
     };
 
     /**
@@ -51,7 +57,14 @@ public interface SpellContainer {
     /**
      * Removes all matching active effects.
      */
-    void removeIf(Predicate<Spell> effect, boolean update);
+    void removeIf(Predicate<Spell> test, boolean update);
+
+    /**
+     * Iterates active spells and optionally removes matching ones.
+     *
+     * @return True if any matching spells remain active
+     */
+    boolean forEach(Function<Spell, Operation> action, boolean update);
 
     /**
      * Removes all effects currently active in this slot.
@@ -78,8 +91,19 @@ public interface SpellContainer {
         }
 
         @Override
+        default boolean forEach(Function<Spell, Operation> action, boolean update) {
+            return delegate().forEach(action, update);
+        }
+
+        @Override
         default void clear() {
             delegate().clear();
         }
+    }
+
+    public enum Operation {
+        SKIP,
+        KEEP,
+        REMOVE
     }
 }

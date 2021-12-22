@@ -40,9 +40,16 @@ public class NetworkedReferenceSet<T> {
                 .map(Optional::get);
     }
 
+    public boolean clear() {
+        dirty |= !ids.isEmpty() || !values.isEmpty();
+        ids.clear();
+        values.clear();
+        return dirty;
+    }
+
     public void addReference(@Nullable T newValue) {
         if (newValue != null) {
-            addReference(uuidConverter.apply(newValue));
+            addReference(uuidConverter.apply(newValue)).updateReference(newValue);
         }
     }
 
@@ -77,7 +84,7 @@ public class NetworkedReferenceSet<T> {
             incoming.add(UUID.fromString(key.asString()));
         });
 
-        ids.stream().filter(id -> !incoming.contains(id)).forEach(this::removeReference);
+        ids.stream().filter(id -> !incoming.contains(id)).toList().forEach(this::removeReference);
 
         boolean[] send = new boolean[1];
         incoming.forEach(kept -> {
@@ -99,7 +106,7 @@ public class NetworkedReferenceSet<T> {
             ids.add(NbtString.of(sid));
             tag.put(sid, values.get(id).toNbt());
         });
-        tag.put("key", ids);
+        tag.put("keys", ids);
         dirty = false;
         return tag;
     }
