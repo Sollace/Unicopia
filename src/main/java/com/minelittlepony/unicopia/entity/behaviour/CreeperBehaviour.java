@@ -1,14 +1,13 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.util.math.MathHelper;
 
 public class CreeperBehaviour extends EntityBehaviour<CreeperEntity> {
     @Override
-    public void update(Caster<?> source, CreeperEntity entity, DisguiseSpell spell) {
+    public void update(Caster<?> source, CreeperEntity entity, Disguise spell) {
         int fuseCountDown = spell.getDisguise().getOrCreateTag().getInt("fuseCountdown");
 
         boolean trigger = isSneakingOnGround(source);

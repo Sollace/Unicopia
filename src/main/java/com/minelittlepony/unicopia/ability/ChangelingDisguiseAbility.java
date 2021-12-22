@@ -4,10 +4,11 @@ package com.minelittlepony.unicopia.ability;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
-import com.minelittlepony.unicopia.entity.behaviour.Disguise;
+import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
@@ -46,9 +47,9 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
         Entity looked = trace.getEntity().map(e -> {
             return e instanceof PlayerEntity ? Pony.of((PlayerEntity)e)
                     .getSpellSlot()
-                    .get(SpellType.DISGUISE, true)
-                    .map(DisguiseSpell::getDisguise)
-                    .map(Disguise::getAppearance)
+                    .get(SpellPredicate.IS_DISGUISE, true)
+                    .map(AbstractDisguiseSpell::getDisguise)
+                    .map(EntityAppearance::getAppearance)
                     .orElse(e) : e;
         }).orElseGet(() -> trace.getBlockPos().map(pos -> {
             if (!iplayer.getWorld().isAir(pos)) {
@@ -59,8 +60,8 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
 
         player.getEntityWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PARROT_IMITATE_RAVAGER, SoundCategory.PLAYERS, 1.4F, 0.4F);
 
-        iplayer.getSpellSlot().get(SpellType.DISGUISE, true)
-            .orElseGet(() -> SpellType.DISGUISE.apply(iplayer, SpellTraits.EMPTY))
+        iplayer.getSpellSlot().get(SpellType.CHANGELING_DISGUISE, true)
+            .orElseGet(() -> SpellType.CHANGELING_DISGUISE.apply(iplayer, SpellTraits.EMPTY))
             .setDisguise(looked);
 
         if (!player.isCreative()) {

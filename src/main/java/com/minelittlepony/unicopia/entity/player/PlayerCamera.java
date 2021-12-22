@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.entity.player;
 import java.util.Optional;
 
 import com.minelittlepony.common.util.animation.MotionCompositor;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 
 import net.minecraft.util.math.Vec3d;
 
@@ -48,8 +48,8 @@ public class PlayerCamera extends MotionCompositor {
 
     public Optional<Double> calculateDistance(double distance) {
         return player.getSpellSlot()
-            .get(SpellType.DISGUISE, false)
-            .map(DisguiseSpell::getDisguise)
+            .get(SpellPredicate.IS_DISGUISE, false)
+            .map(AbstractDisguiseSpell::getDisguise)
             .flatMap(d -> d.getDistance(player))
             .map(d -> distance * d);
     }

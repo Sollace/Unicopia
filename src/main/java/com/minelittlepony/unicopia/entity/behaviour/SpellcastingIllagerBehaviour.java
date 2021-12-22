@@ -1,13 +1,12 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.mob.SpellcastingIllagerEntity;
 
 public class SpellcastingIllagerBehaviour extends EntityBehaviour<SpellcastingIllagerEntity> {
     @Override
-    public void update(Pony player, SpellcastingIllagerEntity entity, DisguiseSpell s) {
+    public void update(Pony player, SpellcastingIllagerEntity entity, Disguise s) {
         if (player.sneakingChanged()) {
             SpellCastAccess.setSpell(player, entity, s);
         }
@@ -16,7 +15,7 @@ public class SpellcastingIllagerBehaviour extends EntityBehaviour<SpellcastingIl
     private static abstract class SpellCastAccess extends SpellcastingIllagerEntity {
         SpellCastAccess() {super(null, null);}
 
-        static void setSpell(Pony player, SpellcastingIllagerEntity entity, DisguiseSpell s) {
+        static void setSpell(Pony player, SpellcastingIllagerEntity entity, Disguise s) {
             if (player.getMaster().isSneaking()) {
                 SpellcastingIllagerEntity.Spell[] spells = SpellcastingIllagerEntity.Spell.values();
                 SpellcastingIllagerEntity.Spell spell = spells[entity.world.random.nextInt(spells.length - 1) + 1];

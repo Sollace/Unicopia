@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.entity.behaviour;
 
 import java.util.function.BiFunction;
 
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.Entity;
@@ -24,7 +23,7 @@ public class RangedAttackBehaviour<T extends Entity & RangedAttackMob> extends E
     }
 
     @Override
-    public void update(Pony player, T entity, DisguiseSpell spell) {
+    public void update(Pony player, T entity, Disguise spell) {
 
         if (player.sneakingChanged() && isSneakingOnGround(player)) {
 

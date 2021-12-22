@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.CapeHolder;
 import com.minelittlepony.unicopia.entity.Leaner;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -10,7 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 
 public class PlayerBehaviour extends EntityBehaviour<PlayerEntity> {
     @Override
-    public void update(Caster<?> source, PlayerEntity entity, DisguiseSpell spell) {
+    public void update(Caster<?> source, PlayerEntity entity, Disguise spell) {
         if (source instanceof Pony) {
             PlayerEntity pFrom = ((Pony)source).getMaster();
 

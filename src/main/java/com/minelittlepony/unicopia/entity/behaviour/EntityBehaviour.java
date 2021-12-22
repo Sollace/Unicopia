@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.ItemWielder;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinEntity;
@@ -45,13 +44,13 @@ public class EntityBehaviour<T extends Entity> {
      * <br>
      * We use this to add entity-specific behaviours.
      */
-    public void update(Caster<?> source, T entity, DisguiseSpell spell) {
+    public void update(Caster<?> source, T entity, Disguise spell) {
         if (source instanceof Pony) {
             update((Pony)source, entity, spell);
         }
     }
 
-    protected void update(Pony pony, T entity, DisguiseSpell spell) {
+    protected void update(Pony pony, T entity, Disguise spell) {
 
     }
 
@@ -59,7 +58,7 @@ public class EntityBehaviour<T extends Entity> {
 
     }
 
-    public T onCreate(T entity, Disguise context, boolean wasNew) {
+    public T onCreate(T entity, EntityAppearance context, boolean wasNew) {
         entity.extinguish();
         return entity;
     }
@@ -120,7 +119,7 @@ public class EntityBehaviour<T extends Entity> {
             to.horizontalCollision = from.horizontalCollision;
         }
 
-        if (Disguise.isAxisAligned(to)) {
+        if (EntityAppearance.isAxisAligned(to)) {
             double x = positionOffset.x + Math.floor(from.getX()) + 0.5;
             double y = positionOffset.y + Math.floor(from.getY());
             double z = positionOffset.z + Math.floor(from.getZ()) + 0.5;

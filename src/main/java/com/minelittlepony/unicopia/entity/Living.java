@@ -7,8 +7,8 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
@@ -161,7 +161,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     protected void handleFall(float distance, float damageMultiplier, DamageSource cause) {
-        getSpellSlot().get(SpellType.DISGUISE, false).ifPresent(spell -> {
+        getSpellSlot().get(SpellPredicate.IS_DISGUISE, false).ifPresent(spell -> {
             spell.getDisguise().onImpact(this, distance, damageMultiplier, cause);
         });
     }

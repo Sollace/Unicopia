@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.mob.GhastEntity;
@@ -10,7 +9,7 @@ import net.minecraft.util.math.Vec3d;
 public class GhastBehaviour extends MobBehaviour<GhastEntity> {
 
     @Override
-    public void update(Pony player, GhastEntity entity, DisguiseSpell spell) {
+    public void update(Pony player, GhastEntity entity, Disguise spell) {
 
         if (player.sneakingChanged()) {
             boolean sneaking = player.getMaster().isSneaking();

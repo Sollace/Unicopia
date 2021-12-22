@@ -13,11 +13,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.PonyContainer;
-import com.minelittlepony.unicopia.entity.behaviour.Disguise;
+import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.ItemWielder;
@@ -91,9 +91,9 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
     @Inject(method = "isClimbing()Z", at = @At("HEAD"), cancellable = true)
     public void onIsClimbing(CallbackInfoReturnable<Boolean> info) {
         if (get() instanceof Pony && horizontalCollision) {
-            ((Pony)get()).getSpellSlot().get(SpellType.DISGUISE, false)
-            .map(DisguiseSpell::getDisguise)
-            .filter(Disguise::canClimbWalls)
+            ((Pony)get()).getSpellSlot().get(SpellPredicate.IS_DISGUISE, false)
+            .map(AbstractDisguiseSpell::getDisguise)
+            .filter(EntityAppearance::canClimbWalls)
             .ifPresent(v -> {
                 climbingPos = Optional.of(getBlockPos());
                 info.setReturnValue(true);
@@ -104,9 +104,9 @@ abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<
     @Inject(method = "isPushable()Z", at = @At("HEAD"), cancellable = true)
     private void onIsPushable(CallbackInfoReturnable<Boolean> info) {
         Caster.of(this)
-            .flatMap(c -> c.getSpellSlot().get(SpellType.DISGUISE, false))
-            .map(DisguiseSpell::getDisguise)
-            .map(Disguise::getAppearance)
+            .flatMap(c -> c.getSpellSlot().get(SpellPredicate.IS_DISGUISE, false))
+            .map(AbstractDisguiseSpell::getDisguise)
+            .map(EntityAppearance::getAppearance)
             .filter(Entity::isPushable)
             .ifPresent(v -> {
                 info.setReturnValue(false);

@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinShulkerEntity;
 
@@ -15,7 +14,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class ShulkerBehaviour extends EntityBehaviour<ShulkerEntity> {
     @Override
-    public void update(Caster<?> source, ShulkerEntity shulker, DisguiseSpell spell) {
+    public void update(Caster<?> source, ShulkerEntity shulker, Disguise spell) {
         shulker.setYaw(0);
         shulker.prevBodyYaw = 0;
         shulker.bodyYaw = 0;
@@ -38,7 +37,7 @@ public class ShulkerBehaviour extends EntityBehaviour<ShulkerEntity> {
     }
 
     @Override
-    protected void update(Pony player, ShulkerEntity shulker, DisguiseSpell spell) {
+    protected void update(Pony player, ShulkerEntity shulker, Disguise spell) {
         float peekAmount = 30;
 
         double speed = !player.getEntity().isSneaking() ? 0.29 : 0;

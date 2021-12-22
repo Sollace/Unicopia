@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.util.math.Vec3f;
@@ -9,7 +8,7 @@ import net.minecraft.util.math.Vec3f;
 public class AxolotlBehaviour extends EntityBehaviour<AxolotlEntity> {
     private static final float toRad = 0.017453292F;
     @Override
-    public void update(Caster<?> source, AxolotlEntity entity, DisguiseSpell spell) {
+    public void update(Caster<?> source, AxolotlEntity entity, Disguise spell) {
         if (entity.getModelAngles().isEmpty()) {
             return;
         }

@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.Creature;
@@ -258,7 +259,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     prevStrafe = strafing;
                     strafe = 1;
                     ticksToGlide = MAX_TICKS_TO_GLIDE;
-                    if (!SpellType.DISGUISE.isOn(pony)) {
+                    if (!SpellPredicate.IS_DISGUISE.isOn(pony)) {
                         entity.playSound(type.getWingFlapSound(), 0.25F, 1);
                     }
                 } else {
@@ -334,7 +335,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 ticksToGlide = MAX_TICKS_TO_GLIDE;
             }
 
-            if (!SpellType.DISGUISE.isOn(pony)) {
+            if (!SpellPredicate.IS_DISGUISE.isOn(pony)) {
                 if (ticksInAir % GLIDING_SOUND_INTERVAL == 1 && pony.isClient()) {
                     InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_GLIDING);
                 }
@@ -343,7 +344,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             velocity.y -= 0.02 * getGravitySignum();
             velocity.x *= 0.9896;
             velocity.z *= 0.9896;
-        } else if (type == FlightType.INSECTOID && !SpellType.DISGUISE.isOn(pony)) {
+        } else if (type == FlightType.INSECTOID && !SpellPredicate.IS_DISGUISE.isOn(pony)) {
             if (entity.world.isClient && !soundPlaying) {
                 soundPlaying = true;
                 InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_CHANGELING_BUZZ);
@@ -496,7 +497,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         if (thrustScale <= 0.000001F & flapping) {
             flapping = false;
-            if (!SpellType.DISGUISE.isOn(pony)) {
+            if (!SpellPredicate.IS_DISGUISE.isOn(pony)) {
                 entity.playSound(getFlightType().getWingFlapSound(), 0.5F, 1);
             }
             thrustScale = 1;

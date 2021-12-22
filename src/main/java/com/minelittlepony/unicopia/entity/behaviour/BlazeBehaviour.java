@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinBlazeEntity;
 
@@ -15,7 +14,7 @@ import net.minecraft.world.WorldEvents;
 
 public class BlazeBehaviour extends EntityBehaviour<BlazeEntity> {
     @Override
-    public void update(Caster<?> source, BlazeEntity entity, DisguiseSpell spell) {
+    public void update(Caster<?> source, BlazeEntity entity, Disguise spell) {
         super.update(source, entity, spell);
 
         Entity src = source.getEntity();
@@ -32,7 +31,7 @@ public class BlazeBehaviour extends EntityBehaviour<BlazeEntity> {
     }
 
     @Override
-    public void update(Pony player, BlazeEntity entity, DisguiseSpell spell) {
+    public void update(Pony player, BlazeEntity entity, Disguise spell) {
 
         NbtCompound tag = spell.getDisguise().getOrCreateTag();
 

@@ -9,11 +9,11 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
-import com.minelittlepony.unicopia.entity.behaviour.Disguise;
+import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -111,8 +111,8 @@ public class UHud extends DrawableHelper {
         matrices.pop();
 
         if (pony.getSpecies() == Race.CHANGELING && !client.player.isSneaking()) {
-            pony.getSpellSlot().get(SpellType.DISGUISE, false).map(DisguiseSpell::getDisguise)
-                .map(Disguise::getAppearance)
+            pony.getSpellSlot().get(SpellType.CHANGELING_DISGUISE, false).map(AbstractDisguiseSpell::getDisguise)
+                .map(EntityAppearance::getAppearance)
                 .ifPresent(appearance -> {
 
                     float baseHeight = 20;

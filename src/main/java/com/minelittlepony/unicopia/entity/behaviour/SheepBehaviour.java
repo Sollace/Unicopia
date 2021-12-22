@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.entity.behaviour;
 
 import java.util.Random;
 
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinSheepEntity;
 
@@ -19,7 +18,7 @@ import net.minecraft.world.WorldEvents;
 
 public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
     @Override
-    public void update(Pony player, SheepEntity entity, DisguiseSpell spell) {
+    public void update(Pony player, SheepEntity entity, Disguise spell) {
 
         if (player.sneakingChanged()) {
 

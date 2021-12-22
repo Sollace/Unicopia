@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -10,7 +9,7 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 public class MinecartBehaviour extends EntityBehaviour<AbstractMinecartEntity> {
 
     @Override
-    public AbstractMinecartEntity onCreate(AbstractMinecartEntity entity, Disguise context, boolean replaceOld) {
+    public AbstractMinecartEntity onCreate(AbstractMinecartEntity entity, EntityAppearance context, boolean replaceOld) {
         super.onCreate(entity, context, replaceOld);
         if (replaceOld && entity.world.isClient) {
             InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_MINECART);
@@ -19,7 +18,7 @@ public class MinecartBehaviour extends EntityBehaviour<AbstractMinecartEntity> {
     }
 
     @Override
-    public void update(Caster<?> source, AbstractMinecartEntity entity, DisguiseSpell spell) {
+    public void update(Caster<?> source, AbstractMinecartEntity entity, Disguise spell) {
         entity.setYaw(entity.getYaw() - 90);
         entity.prevYaw -= 90;
 

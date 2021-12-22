@@ -3,11 +3,11 @@ package com.minelittlepony.unicopia.client.render;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.Living;
-import com.minelittlepony.unicopia.entity.behaviour.Disguise;
+import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.behaviour.FallingBlockBehaviour;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -93,10 +93,10 @@ public class WorldRenderDelegate {
 
             int fireTicks = pony.getMaster().doesRenderOnFire() ? 1 : 0;
 
-            return ((Caster<?>)pony).getSpellSlot().get(SpellType.DISGUISE, true).map(effect -> {
+            return ((Caster<?>)pony).getSpellSlot().get(SpellPredicate.IS_DISGUISE, true).map(effect -> {
                 effect.update(pony, false);
 
-                Disguise ve = effect.getDisguise();
+                EntityAppearance ve = effect.getDisguise();
                 Entity e = ve.getAppearance();
 
                 if (e != null) {
@@ -127,7 +127,7 @@ public class WorldRenderDelegate {
         }
     }
 
-    public void renderDisguise(EntityRenderDispatcher dispatcher, Disguise ve, Entity e,
+    public void renderDisguise(EntityRenderDispatcher dispatcher, EntityAppearance ve, Entity e,
             double x, double y, double z,
             int fireTicks, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 

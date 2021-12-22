@@ -1,14 +1,13 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 
 public class WaterCreatureBehaviour extends EntityBehaviour<WaterCreatureEntity> {
     @Override
-    public void update(Caster<?> source, WaterCreatureEntity entity, DisguiseSpell spell) {
+    public void update(Caster<?> source, WaterCreatureEntity entity, Disguise spell) {
 
         if (source.getEntity().isInsideWaterOrBubbleColumn()) {
             source.getEntity().setAir(source.getEntity().getAir() - 1);

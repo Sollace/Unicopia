@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.JumpingMount;
@@ -10,7 +9,7 @@ import net.minecraft.entity.passive.HorseBaseEntity;
 public class SteedBehaviour<T extends LivingEntity & JumpingMount> extends EntityBehaviour<T> {
 
     @Override
-    public void update(Pony player, T entity, DisguiseSpell spell) {
+    public void update(Pony player, T entity, Disguise spell) {
 
         HorseBaseEntity horse = ((HorseBaseEntity)entity);
 

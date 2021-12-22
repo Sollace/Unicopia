@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.command;
 import java.util.function.Function;
 
 import com.minelittlepony.unicopia.InteractionManager;
-import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -83,8 +83,8 @@ public class DisguiseCommand {
         }
 
         Pony iplayer = Pony.of(player);
-        iplayer.getSpellSlot().get(SpellType.DISGUISE, true)
-            .orElseGet(() -> SpellType.DISGUISE.apply(iplayer, SpellTraits.EMPTY))
+        iplayer.getSpellSlot().get(SpellType.CHANGELING_DISGUISE, true)
+            .orElseGet(() -> SpellType.CHANGELING_DISGUISE.apply(iplayer, SpellTraits.EMPTY))
             .setDisguise(entity);
 
         if (source.getEntity() == player) {
@@ -112,7 +112,7 @@ public class DisguiseCommand {
 
     static int reveal(ServerCommandSource source, PlayerEntity player) {
         Pony iplayer = Pony.of(player);
-        iplayer.getSpellSlot().get(SpellType.DISGUISE, true).ifPresent(Spell::setDead);
+        iplayer.getSpellSlot().removeIf(SpellPredicate.IS_DISGUISE, true);
 
         if (source.getEntity() == player) {
             source.sendFeedback(new TranslatableText("commands.disguise.removed.self"), true);

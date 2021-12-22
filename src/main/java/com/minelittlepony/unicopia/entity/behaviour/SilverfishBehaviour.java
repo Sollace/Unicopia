@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -12,7 +11,7 @@ import net.minecraft.world.WorldEvents;
 
 public class SilverfishBehaviour extends EntityBehaviour<SilverfishEntity> {
     @Override
-    public void update(Pony player, SilverfishEntity entity, DisguiseSpell spell) {
+    public void update(Pony player, SilverfishEntity entity, Disguise spell) {
         if (!player.isClient() && player.sneakingChanged() && player.getMaster().isSneaking()) {
             BlockPos pos = entity.getBlockPos().down();
             BlockState state = entity.world.getBlockState(pos);

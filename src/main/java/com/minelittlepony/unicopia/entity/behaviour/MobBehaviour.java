@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
 
@@ -18,7 +17,7 @@ public class MobBehaviour<T extends MobEntity> extends EntityBehaviour<T> {
     }
 
     @Override
-    public void update(Pony player, T entity, DisguiseSpell spell) {
+    public void update(Pony player, T entity, Disguise spell) {
         if (player.sneakingChanged() && isSneakingOnGround(player)) {
             LivingEntity target = findTarget(player, entity);
             entity.tryAttack(target);

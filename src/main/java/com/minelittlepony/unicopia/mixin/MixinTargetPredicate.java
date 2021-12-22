@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -20,7 +20,7 @@ abstract class MixinTargetPredicate {
     public void onTest(@Nullable LivingEntity baseEntity, LivingEntity targetEntity, CallbackInfoReturnable<Boolean> info) {
         Equine<?> eq = Equine.of(targetEntity).orElse(null);
         if (eq instanceof Pony) {
-            ((Pony)eq).getSpellSlot().get(SpellType.DISGUISE, true).ifPresent(spell -> {
+            ((Pony)eq).getSpellSlot().get(SpellPredicate.IS_DISGUISE, true).ifPresent(spell -> {
                 if (spell.getDisguise().getAppearance() == baseEntity) {
                     info.setReturnValue(false);
                 }

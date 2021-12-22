@@ -13,7 +13,8 @@ import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.CompoundSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.DisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.ChangelingDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.JoustingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -40,7 +41,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<PlaceableSpell> PLACED_SPELL = register("placed", Affinity.NEUTRAL, 0, false, PlaceableSpell::new);
     public static final SpellType<ThrowableSpell> THROWN_SPELL = register("thrown", Affinity.NEUTRAL, 0, false, ThrowableSpell::new);
 
-    public static final SpellType<DisguiseSpell> DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, DisguiseSpell::new);
+    public static final SpellType<AbstractDisguiseSpell> CHANGELING_DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, ChangelingDisguiseSpell::new);
     public static final SpellType<JoustingSpell> RAINBOOM = register("rainboom", Affinity.GOOD, 0xBDBDF9, false, JoustingSpell::new);
 
     public static final SpellType<IceSpell> FROST = register("frost", Affinity.GOOD, 0xBDBDF9, true, IceSpell::new);
