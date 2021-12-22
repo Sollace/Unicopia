@@ -11,14 +11,14 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.WorldEvents;
 
 public class CorruptInfluenceStatusEffect extends StatusEffect {
     CorruptInfluenceStatusEffect(int color) {
-        super(StatusEffectType.NEUTRAL, color);
+        super(StatusEffectCategory.NEUTRAL, color);
         addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, "6D706448-6A60-4F59-BE8A-C23A6DD2C7A9", 15, EntityAttributeModifier.Operation.ADDITION);
         addAttributeModifier(EntityAttributes.GENERIC_ATTACK_SPEED, "6D706448-6A60-4F59-BE8A-C23A6DD2C7A9", 10, EntityAttributeModifier.Operation.ADDITION);
     }

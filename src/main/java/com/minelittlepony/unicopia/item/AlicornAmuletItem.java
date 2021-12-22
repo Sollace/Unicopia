@@ -39,8 +39,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Hand;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
@@ -72,7 +72,7 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
         if (iplayer != null) {
             int attachedTime = iplayer.getCharms().getArmour().getTicks(this);
             if (attachedTime > 0) {
-                tooltip.add(new TranslatableText(getTranslationKey() + ".lore", ChatUtil.ticksToString(attachedTime)));
+                tooltip.add(new TranslatableText(getTranslationKey() + ".lore", StringHelper.formatTicks(attachedTime)));
             }
         }
     }
@@ -230,7 +230,7 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
         });
         public static final Trick POKE = new Trick(13000, 300, player -> player.damage(MagicalDamageSource.ALICORN_AMULET, 1F));
         public static final Trick SPIN = new Trick(6000, 300, player -> player.setYaw(player.getYaw() + 180));
-        public static final Trick BUTTER_FINGERS = new Trick(1000, 300, player -> player.dropSelectedItem(false));
+        public static final Trick BUTTER_FINGERS = new Trick(1000, 300, player -> player.getInventory().dropSelectedItem(false));
         public static final Trick MOVE = new Trick(3000, 300, player -> {
             float amount = player.world.random.nextFloat() - 0.5F;
             boolean sideways = player.world.random.nextBoolean();

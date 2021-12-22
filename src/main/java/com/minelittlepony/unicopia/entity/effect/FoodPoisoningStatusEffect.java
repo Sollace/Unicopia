@@ -8,13 +8,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffects;
 
 public class FoodPoisoningStatusEffect extends StatusEffect {
 
     FoodPoisoningStatusEffect(int color) {
-        super(StatusEffectType.HARMFUL, color);
+        super(StatusEffectCategory.HARMFUL, color);
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgBlockDestruction;
@@ -10,7 +9,6 @@ import com.minelittlepony.unicopia.network.MsgBlockDestruction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
@@ -107,7 +105,7 @@ public class BlockDestructionManager {
 
             ThreadedAnvilChunkStorage storage = world.getChunkManager().threadedAnvilChunkStorage;
 
-            List<PlayerEntity> players = storage.getPlayersWatchingChunk(new ChunkPos(pos), false).collect(Collectors.toList());
+            List<ServerPlayerEntity> players = storage.getPlayersWatchingChunk(new ChunkPos(pos), false);
 
             if (!players.isEmpty()) {
                 Long2ObjectOpenHashMap<Integer> values = new Long2ObjectOpenHashMap<>();
@@ -129,7 +127,7 @@ public class BlockDestructionManager {
 
                 players.forEach(player -> {
                     if (player instanceof ServerPlayerEntity) {
-                        Channel.SERVER_BLOCK_DESTRUCTION.send((ServerPlayerEntity)player, msg);
+                        Channel.SERVER_BLOCK_DESTRUCTION.send(player, msg);
                     }
                 });
             }

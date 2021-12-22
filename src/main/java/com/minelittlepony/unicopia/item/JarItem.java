@@ -55,7 +55,7 @@ public class JarItem extends Item implements ProjectileDelegate, ItemImpl.Tickab
             MagicProjectileEntity projectile = new MagicProjectileEntity(world, player);
             projectile.setItem(stack);
             projectile.setThrowDamage(getProjectileDamage(stack));
-            projectile.setProperties(player, player.getPitch(), player.getYaw(), 0, 1.5F, 1);
+            projectile.setVelocity(player, player.getPitch(), player.getYaw(), 0, 1.5F, 1);
 
             world.spawnEntity(projectile);
         }

@@ -74,14 +74,14 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
     private void addOption(Race race, int x, int top) {
         addDrawableChild(new TribeButton(x, top, width, race)).onClick(b -> {
             finished = true;
-            client.openScreen(new TribeConfirmationScreen(result -> {
+            client.setScreen(new TribeConfirmationScreen(result -> {
                 finished = false;
 
                 if (result) {
                     Channel.CLIENT_REQUEST_SPECIES_CHANGE.send(new MsgRequestSpeciesChange(race, true));
                     finish();
                 } else {
-                    client.openScreen(this);
+                    client.setScreen(this);
                 }
             }, race));
         }).setEnabled(allowedRaces.contains(race));
@@ -109,7 +109,7 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
         if (!finished && client != null) {
             client.execute(() -> {
                 finished = true;
-                client.openScreen(this);
+                client.setScreen(this);
                 finished = false;
             });
         }

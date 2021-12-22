@@ -158,19 +158,19 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static Optional<SpellTraits> getEmbeddedTraits(ItemStack stack) {
-        if (!(stack.hasTag() && stack.getTag().contains("spell_traits", NbtElement.COMPOUND_TYPE))) {
+        if (!stack.hasNbt() || !stack.getNbt().contains("spell_traits", NbtElement.COMPOUND_TYPE)) {
             return Optional.empty();
         }
-        return fromNbt(stack.getTag().getCompound("spell_traits"));
+        return fromNbt(stack.getNbt().getCompound("spell_traits"));
     }
 
     public ItemStack applyTo(ItemStack stack) {
         stack = stack.copy();
         if (isEmpty()) {
-            stack.removeSubTag("spell_traits");
+            stack.removeSubNbt("spell_traits");
             return stack;
         }
-        stack.getOrCreateTag().put("spell_traits", toNbt());
+        stack.getOrCreateNbt().put("spell_traits", toNbt());
         return stack;
     }
 

@@ -11,7 +11,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectType;
+import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.world.LightType;
 
@@ -19,7 +19,7 @@ public class SunBlindnessStatusEffect extends StatusEffect {
     public static final int MAX_DURATION = 50;
 
     SunBlindnessStatusEffect(int color) {
-        super(StatusEffectType.NEUTRAL, color);
+        super(StatusEffectCategory.NEUTRAL, color);
     }
 
     @Override

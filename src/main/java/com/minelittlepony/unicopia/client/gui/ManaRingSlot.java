@@ -113,7 +113,7 @@ class ManaRingSlot extends Slot {
 
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
-        Matrix4f model = matrices.peek().getModel();
+        Matrix4f model = matrices.peek().getPositionMatrix();
 
         if (!mirrorHorizontally) {
             startAngle = -startAngle;

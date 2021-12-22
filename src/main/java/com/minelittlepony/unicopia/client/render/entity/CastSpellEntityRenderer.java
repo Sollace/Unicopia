@@ -4,7 +4,7 @@ import com.minelittlepony.unicopia.entity.CastSpellEntity;
 
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 
 public class CastSpellEntityRenderer extends EntityRenderer<CastSpellEntity> {
@@ -15,6 +15,6 @@ public class CastSpellEntityRenderer extends EntityRenderer<CastSpellEntity> {
 
     @Override
     public Identifier getTexture(CastSpellEntity entity) {
-        return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
+        return PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
     }
 }

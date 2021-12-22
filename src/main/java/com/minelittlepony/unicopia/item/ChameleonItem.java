@@ -22,11 +22,11 @@ public interface ChameleonItem {
 
     default ItemStack createAppearanceStack(ItemStack stack, Item appearance) {
         ItemStack newAppearance = appearance.getDefaultStack();
-        if (stack.hasTag()) {
-            newAppearance.setTag(stack.getTag().copy());
+        if (stack.hasNbt()) {
+            newAppearance.setNbt(stack.getNbt().copy());
         }
         newAppearance.setCount(stack.getCount());
-        newAppearance.removeSubTag("appearance");
+        newAppearance.removeSubNbt("appearance");
         return newAppearance;
     }
 
@@ -35,8 +35,8 @@ public interface ChameleonItem {
     }
 
     default Item getAppearance(ItemStack stack) {
-        if (stack.hasTag() && stack.getTag().contains("appearance")) {
-            return Registry.ITEM.get(new Identifier(stack.getTag().getString("appearance")));
+        if (stack.hasNbt() && stack.getNbt().contains("appearance")) {
+            return Registry.ITEM.get(new Identifier(stack.getNbt().getString("appearance")));
         }
 
         return Items.AIR;
@@ -45,13 +45,13 @@ public interface ChameleonItem {
     default ItemStack setAppearance(ItemStack stack, ItemStack appearance) {
         ItemStack result = stack.copy();
 
-        if (appearance.hasTag()) {
-            result.setTag(appearance.getTag().copy());
+        if (appearance.hasNbt()) {
+            result.setNbt(appearance.getNbt().copy());
             result.removeCustomName();
             result.setDamage(stack.getDamage());
             result.setCount(stack.getCount());
         }
-        result.getOrCreateTag().putString("appearance", Registry.ITEM.getId(appearance.getItem()).toString());
+        result.getOrCreateNbt().putString("appearance", Registry.ITEM.getId(appearance.getItem()).toString());
 
         return result;
     }

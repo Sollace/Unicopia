@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.ChatUtil;
+import net.minecraft.util.StringHelper;
 import net.minecraft.world.Difficulty;
 
 public interface Toxin extends Affliction {
@@ -96,7 +96,7 @@ public interface Toxin extends Affliction {
             text = new TranslatableText("potion.withAmplifier", text, new TranslatableText("potion.potency." + amplifier));
         }
 
-        text = new TranslatableText("potion.withDuration", text, ChatUtil.ticksToString(ticks));
+        text = new TranslatableText("potion.withDuration", text, StringHelper.formatTicks(ticks));
 
         return of(text, (player, stack) -> {
             StatusEffectInstance current = player.getStatusEffect(effect);

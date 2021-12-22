@@ -114,14 +114,14 @@ public class AmuletItem extends WearableItem {
     }
 
     public static float getEnergy(ItemStack stack) {
-        return stack.hasTag() && stack.getTag().contains("energy") ? stack.getTag().getFloat("energy") : 0;
+        return stack.hasNbt() && stack.getNbt().contains("energy") ? stack.getNbt().getFloat("energy") : 0;
     }
 
     public static void setEnergy(ItemStack stack, float energy) {
         if (energy <= 0) {
-            stack.removeSubTag("energy");
+            stack.removeSubNbt("energy");
         } else {
-            stack.getOrCreateTag().putFloat("energy", energy);
+            stack.getOrCreateNbt().putFloat("energy", energy);
         }
     }
 

@@ -21,7 +21,7 @@ public abstract class FadeOutSoundInstance extends MovingSoundInstance {
 
     public FadeOutSoundInstance(SoundEvent sound, SoundCategory category, float volume) {
         super(sound, category);
-        this.looping = true;
+        this.relative = true;
         this.repeat = true;
         this.volume = volume;
         setTargetVolume(volume);

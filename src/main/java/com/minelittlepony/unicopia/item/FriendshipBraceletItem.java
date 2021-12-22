@@ -40,7 +40,7 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
 
             ItemStack result = stack.copy();
             result.setCount(1);
-            result.getOrCreateTag().putString("issuer", player.getName().asString());
+            result.getOrCreateNbt().putString("issuer", player.getName().asString());
 
             if (!player.getAbilities().creativeMode) {
                 stack.decrement(1);
@@ -83,11 +83,11 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
 
     @Nullable
     public static String getSignature(ItemStack stack) {
-        return isSigned(stack) ? stack.getTag().getString("issuer") : null;
+        return isSigned(stack) ? stack.getNbt().getString("issuer") : null;
     }
 
     public static boolean isSigned(ItemStack stack) {
-        return stack.hasTag() && stack.getTag().contains("issuer");
+        return stack.hasNbt() && stack.getNbt().contains("issuer");
     }
 
     public static boolean isSignedBy(ItemStack stack, PlayerEntity player) {

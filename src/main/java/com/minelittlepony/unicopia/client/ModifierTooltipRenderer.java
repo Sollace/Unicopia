@@ -39,7 +39,7 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
     @Override
     public void getTooltip(ItemStack stack, TooltipContext context, List<Text> lines) {
 
-        int flags = stack.hasTag() && stack.getTag().contains("HideFlags", 99) ? stack.getTag().getInt("HideFlags") : 0;
+        int flags = stack.hasNbt() && stack.getNbt().contains("HideFlags", 99) ? stack.getNbt().getInt("HideFlags") : 0;
 
         if (isShowing(flags, ItemStack.TooltipSection.MODIFIERS)) {
 
@@ -85,16 +85,16 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
             return insertPosition + 1;
         }
 
-        if (insertPosition == -1 && stack.hasTag()) {
-            if (isShowing(flags, ItemStack.TooltipSection.MODIFIERS) && stack.getTag().getBoolean("Unbreakable")) {
+        if (insertPosition == -1 && stack.hasNbt()) {
+            if (isShowing(flags, ItemStack.TooltipSection.MODIFIERS) && stack.getNbt().getBoolean("Unbreakable")) {
                 insertPosition = checkFor(lines, new TranslatableText("item.unbreakable").formatted(Formatting.BLUE));
             }
 
-            if (insertPosition == -1 && isShowing(flags, ItemStack.TooltipSection.CAN_DESTROY) && stack.getTag().contains("CanDestroy", 9)) {
+            if (insertPosition == -1 && isShowing(flags, ItemStack.TooltipSection.CAN_DESTROY) && stack.getNbt().contains("CanDestroy", 9)) {
                 insertPosition = checkFor(lines, new TranslatableText("item.canBreak").formatted(Formatting.GRAY));
             }
 
-            if (insertPosition == -1 && isShowing(flags, ItemStack.TooltipSection.CAN_PLACE) && stack.getTag().contains("CanPlaceOn", 9)) {
+            if (insertPosition == -1 && isShowing(flags, ItemStack.TooltipSection.CAN_PLACE) && stack.getNbt().contains("CanPlaceOn", 9)) {
                 insertPosition = checkFor(lines, new TranslatableText("item.canPlace").formatted(Formatting.GRAY));
             }
         }

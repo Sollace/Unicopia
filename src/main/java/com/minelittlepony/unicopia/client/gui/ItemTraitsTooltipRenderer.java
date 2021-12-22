@@ -12,7 +12,6 @@ import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.BaseText;
 import net.minecraft.text.CharacterVisitor;
@@ -45,7 +44,7 @@ public class ItemTraitsTooltipRenderer extends BaseText implements OrderedText, 
     }
 
     @Override
-    public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack matrices, ItemRenderer itemRenderer, int z, TextureManager textureManager) {
+    public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack matrices, ItemRenderer itemRenderer, int z) {
 
         int columns = getColumns();
 
@@ -65,7 +64,7 @@ public class ItemTraitsTooltipRenderer extends BaseText implements OrderedText, 
             matrices.translate(xx + 9, yy + 3, itemRenderer.zOffset + 200.0F);
             matrices.scale(0.5F, 0.5F, 1);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            textRenderer.draw(string, 0, 0, 16777215, true, matrices.peek().getModel(), immediate, false, 0, 15728880);
+            textRenderer.draw(string, 0, 0, 16777215, true, matrices.peek().getPositionMatrix(), immediate, false, 0, 15728880);
             immediate.draw();
             matrices.pop();
         }

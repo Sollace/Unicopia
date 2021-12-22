@@ -6,7 +6,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -379,12 +378,12 @@ public class Disguise implements NbtSerialisable, PlayerDimensions.Provider, Fli
         }
     }
 
-    public static List<VoxelShape> getColissonShapes(@Nullable Entity entity, WorldAccess world, Box box, Predicate<Entity> predicate) {
+    public static List<VoxelShape> getColissonShapes(@Nullable Entity entity, WorldAccess world, Box box) {
         List<VoxelShape> shapes = new ArrayList<>();
         ShapeContext ctx = entity == null ? ShapeContext.absent() : ShapeContext.of(entity);
         VoxelShape entityShape = VoxelShapes.cuboid(box.expand(1.0E-6D));
 
-        world.getOtherEntities(entity, box.expand(0.5), predicate.and(e -> {
+        world.getOtherEntities(entity, box.expand(0.5), e -> {
             Caster.of(e).flatMap(c -> c.getSpellSlot().get(SpellType.DISGUISE, false)).ifPresent(p -> {
                 p.getDisguise().getCollissionShapes(ctx, shape -> {
                     if (!shape.isEmpty() && VoxelShapes.matchesAnywhere(shape, entityShape, BooleanBiFunction.AND)) {
@@ -393,7 +392,7 @@ public class Disguise implements NbtSerialisable, PlayerDimensions.Provider, Fli
                 });
             });
             return false;
-        }));
+        });
 
         return shapes;
     }

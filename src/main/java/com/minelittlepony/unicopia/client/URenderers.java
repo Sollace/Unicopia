@@ -28,7 +28,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.particle.UParticles;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry.PendingParticleFactory;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.client.model.FabricModelPredicateProviderRegistry;
@@ -66,11 +66,11 @@ public interface URenderers {
         AccessoryFeatureRenderer.register(IcarusWingsFeatureRenderer::new);
         AccessoryFeatureRenderer.register(BatWingsFeatureRenderer::new);
 
-        EntityRendererRegistry.INSTANCE.register(UEntities.THROWN_ITEM, FlyingItemEntityRenderer::new);
-        EntityRendererRegistry.INSTANCE.register(UEntities.BUTTERFLY, ButterflyEntityRenderer::new);
-        EntityRendererRegistry.INSTANCE.register(UEntities.FLOATING_ARTEFACT, FloatingArtefactEntityRenderer::new);
-        EntityRendererRegistry.INSTANCE.register(UEntities.CAST_SPELL, CastSpellEntityRenderer::new);
-        EntityRendererRegistry.INSTANCE.register(UEntities.SPELLBOOK, SpellbookEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.THROWN_ITEM, FlyingItemEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.BUTTERFLY, ButterflyEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.FLOATING_ARTEFACT, FloatingArtefactEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.CAST_SPELL, CastSpellEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.SPELLBOOK, SpellbookEntityRenderer::new);
 
         ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack), UItems.FRIENDSHIP_BRACELET);
         BuiltinItemRendererRegistry.INSTANCE.register(UItems.FILLED_JAR, (stack, mode, matrices, vertexConsumers, light, overlay) -> {

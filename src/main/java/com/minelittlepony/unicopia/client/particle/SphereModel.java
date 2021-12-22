@@ -12,7 +12,7 @@ public class SphereModel {
 
     public void render(MatrixStack.Entry matrices, VertexConsumer vertexWriter, int light, int overlay, float r, float g, float b, float a) {
 
-        Matrix4f model = matrices.getModel();
+        Matrix4f model = matrices.getPositionMatrix();
 
         final double num_rings = 40;
         final double num_sectors = 40;

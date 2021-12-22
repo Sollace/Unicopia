@@ -48,7 +48,7 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
     public CustomEventCriterion.Trigger createTrigger(String name) {
         return player -> {
             if (player instanceof ServerPlayerEntity) {
-                test((ServerPlayerEntity)player, c -> c.test(name, (ServerPlayerEntity)player));
+                trigger((ServerPlayerEntity)player, c -> c.test(name, (ServerPlayerEntity)player));
             }
         };
     }

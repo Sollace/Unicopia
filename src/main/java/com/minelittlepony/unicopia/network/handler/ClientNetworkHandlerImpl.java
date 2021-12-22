@@ -23,7 +23,7 @@ public class ClientNetworkHandlerImpl implements ClientNetworkHandler {
 
     @Override
     public void handleTribeScreen(MsgTribeSelect packet) {
-        client.openScreen(new TribeSelectionScreen(packet.getRaces()));
+        client.setScreen(new TribeSelectionScreen(packet.getRaces()));
     }
 
     @SuppressWarnings("unchecked")

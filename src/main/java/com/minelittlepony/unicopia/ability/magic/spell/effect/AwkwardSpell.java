@@ -44,7 +44,7 @@ public class AwkwardSpell extends AbstractSpell {
     }
 
     protected boolean shouldSpawnParticle(ParticleType<?> type) {
-        return type != ParticleTypes.BARRIER
+        return type != ParticleTypes.BLOCK_MARKER
             && type != ParticleTypes.SMOKE
             && type != ParticleTypes.EXPLOSION
             && type != ParticleTypes.EXPLOSION_EMITTER

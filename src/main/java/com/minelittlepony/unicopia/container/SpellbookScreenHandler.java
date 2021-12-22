@@ -145,7 +145,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
                     .map(recipe -> recipe.craft(input))
                     .ifPresentOrElse(gemSlot::setCrafted, gemSlot::setUncrafted);
 
-                ((ServerPlayerEntity)this.inventory.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, GEM_SLOT_INDEX, gemSlot.getStack()));
+                ((ServerPlayerEntity)this.inventory.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, nextRevision(), GEM_SLOT_INDEX, gemSlot.getStack()));
             }
         });
     }
@@ -452,7 +452,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
                    if (!itemStack2.isEmpty()) {
                       if (itemStack.isEmpty()) {
                          input.setStack(i, itemStack2);
-                      } else if (ItemStack.areItemsEqualIgnoreDamage(itemStack, itemStack2) && ItemStack.areTagsEqual(itemStack, itemStack2)) {
+                      } else if (ItemStack.areItemsEqualIgnoreDamage(itemStack, itemStack2) && ItemStack.areNbtEqual(itemStack, itemStack2)) {
                          itemStack2.increment(itemStack.getCount());
                          input.setStack(i, itemStack2);
                       } else if (!player.getInventory().insertStack(itemStack2)) {

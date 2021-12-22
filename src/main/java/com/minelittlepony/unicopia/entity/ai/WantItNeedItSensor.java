@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.entity.ai;
 
-import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableSet;
@@ -22,12 +21,8 @@ public class WantItNeedItSensor extends Sensor<LivingEntity> {
     @Override
     protected void sense(ServerWorld world, LivingEntity entity) {
         entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).ifPresent(targets -> {
-
-            Optional<LivingEntity> target = targets.stream()
-                    .filter(e -> (EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) * 10) >= entity.distanceTo(e))
-                    .findFirst();
-
-            entity.getBrain().remember(MemoryModuleType.ATTACK_TARGET, target);
+            entity.getBrain().remember(MemoryModuleType.ATTACK_TARGET, targets
+                    .findFirst(e -> (EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) * 10) >= entity.distanceTo(e)));
         });
     }
 

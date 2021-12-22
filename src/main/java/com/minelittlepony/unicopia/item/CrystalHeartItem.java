@@ -15,7 +15,6 @@ import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.EndRodBlock;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SpawnGroup;
@@ -52,14 +51,13 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
 
         Box placementArea = UEntities.FLOATING_ARTEFACT.getDimensions().getBoxAt(Vec3d.ofBottomCenter(blockPos));
 
-        if (!world.isSpaceEmpty(null, placementArea, (entity) -> !(entity instanceof ItemEntity))
-            || !world.getOtherEntities(null, placementArea).stream().noneMatch(e -> !(e instanceof ItemEntity))) {
+        if (!world.isSpaceEmpty(null, placementArea)) {
             return ActionResult.FAIL;
         }
 
         if (world instanceof ServerWorld) {
 
-            FloatingArtefactEntity entity = UEntities.FLOATING_ARTEFACT.create((ServerWorld)world, context.getStack().getTag(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, false, true);
+            FloatingArtefactEntity entity = UEntities.FLOATING_ARTEFACT.create((ServerWorld)world, context.getStack().getNbt(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, false, true);
 
             if (entity == null) {
                 return ActionResult.FAIL;

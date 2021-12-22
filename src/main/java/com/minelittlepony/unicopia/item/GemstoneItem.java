@@ -113,7 +113,7 @@ public class GemstoneItem extends Item {
     }
 
     public static boolean isEnchanted(ItemStack stack) {
-        return !stack.isEmpty() && stack.hasTag() && stack.getTag().contains("spell");
+        return !stack.isEmpty() && stack.hasNbt() && stack.getNbt().contains("spell");
     }
 
     public static ItemStack enchanted(ItemStack stack, SpellType<?> type) {
@@ -121,16 +121,16 @@ public class GemstoneItem extends Item {
     }
 
     public static ItemStack enchanted(ItemStack stack, SpellType<?> type, Affinity affinity) {
-        stack.getOrCreateTag().putString("spell", type.getId().toString());
+        stack.getOrCreateNbt().putString("spell", type.getId().toString());
         return type.getTraits().applyTo(stack);
     }
 
     public static ItemStack unenchanted(ItemStack stack) {
-        stack.removeSubTag("spell");
+        stack.removeSubNbt("spell");
         return stack;
     }
 
     public static <T extends Spell> SpellType<T> getSpellKey(ItemStack stack) {
-        return SpellType.getKey(isEnchanted(stack) ? new Identifier(stack.getTag().getString("spell")) : SpellType.EMPTY_ID);
+        return SpellType.getKey(isEnchanted(stack) ? new Identifier(stack.getNbt().getString("spell")) : SpellType.EMPTY_ID);
     }
 }

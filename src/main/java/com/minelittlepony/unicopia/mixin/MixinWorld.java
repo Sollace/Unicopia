@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.mixin;
 
 import java.util.List;
 import java.util.Stack;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
@@ -49,15 +48,15 @@ abstract class MixinWorld implements WorldAccess, BlockDestructionManager.Source
     }
 
     @Override
-    public Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
+    public List<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box) {
         if (box.getAverageSideLength() >= 1.0E-7D) {
-            List<VoxelShape> shapes = Disguise.getColissonShapes(entity, this, box, predicate);
+            List<VoxelShape> shapes = Disguise.getColissonShapes(entity, this, box);
             if (!shapes.isEmpty()) {
-                return Stream.concat(shapes.stream(), WorldAccess.super.getEntityCollisions(entity, box, predicate));
+                return Stream.concat(shapes.stream(), WorldAccess.super.getEntityCollisions(entity, box).stream()).toList();
             }
          }
 
-        return WorldAccess.super.getEntityCollisions(entity, box, predicate);
+        return WorldAccess.super.getEntityCollisions(entity, box);
     }
 
     @ModifyVariable(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;II)Z", at = @At("HEAD"))

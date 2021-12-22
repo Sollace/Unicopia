@@ -103,7 +103,7 @@ public class ZapAppleItem extends AppleItem implements ChameleonItem {
             UTags.APPLES.values().forEach(item -> {
                 if (item != this) {
                     ItemStack stack = new ItemStack(this);
-                    stack.getOrCreateTag().putString("appearance", Registry.ITEM.getId(item).toString());
+                    stack.getOrCreateNbt().putString("appearance", Registry.ITEM.getId(item).toString());
                     items.add(stack);
                 }
             });

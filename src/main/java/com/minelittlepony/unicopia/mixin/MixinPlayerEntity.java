@@ -39,7 +39,7 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
         return new Pony((PlayerEntity)(Object)this);
     }
 
-    @ModifyVariable(method = "applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)Z", at = @At("HEAD"), ordinal = 0)
+    @ModifyVariable(method = "applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V", at = @At("HEAD"), ordinal = 0)
     protected float modifyDamageAmount(float amount, DamageSource source) {
         return get().modifyDamage(source, amount).orElse(amount);
     }

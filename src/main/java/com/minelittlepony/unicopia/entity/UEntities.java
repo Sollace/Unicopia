@@ -18,7 +18,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biome.Category;
 
-@SuppressWarnings("deprecation")
 public interface UEntities {
     EntityType<ButterflyEntity> BUTTERFLY = register("butterfly", FabricEntityTypeBuilder.create(SpawnGroup.AMBIENT, ButterflyEntity::new)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));

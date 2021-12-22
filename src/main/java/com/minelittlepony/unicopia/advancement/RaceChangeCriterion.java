@@ -30,7 +30,7 @@ public class RaceChangeCriterion extends AbstractCriterion<RaceChangeCriterion.C
 
     public void trigger(PlayerEntity player) {
         if (player instanceof ServerPlayerEntity) {
-            test((ServerPlayerEntity)player, c -> c.test((ServerPlayerEntity)player));
+            trigger((ServerPlayerEntity)player, c -> c.test((ServerPlayerEntity)player));
         }
     }
 

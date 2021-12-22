@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia;
 
 import com.minelittlepony.unicopia.item.toxin.Toxics;
 
-import net.fabricmc.fabric.api.tag.TagRegistry;
+import net.fabricmc.fabric.api.tag.TagFactory;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
@@ -28,15 +28,15 @@ public interface UTags {
     Tag<EntityType<?>> TRANSFORMABLE_ENTITIES = entity("transformable");
 
     static Tag<Item> item(String name) {
-        return TagRegistry.item(new Identifier("unicopia", name));
+        return TagFactory.ITEM.create(new Identifier("unicopia", name));
     }
 
     static Tag<Block> block(String name) {
-        return TagRegistry.block(new Identifier("unicopia", name));
+        return TagFactory.BLOCK.create(new Identifier("unicopia", name));
     }
 
     static Tag<EntityType<?>> entity(String name) {
-        return TagRegistry.entityType(new Identifier("unicopia", name));
+        return TagFactory.ENTITY_TYPE.create(new Identifier("unicopia", name));
     }
 
     static void bootstrap() {

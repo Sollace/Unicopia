@@ -27,7 +27,7 @@ abstract class MixinServerPlayNetworkHandler implements EntityTrackingListener, 
     @Inject(method = "onPlayerMove(Lnet/minecraft/network/packet/c2s/play/PlayerMoveC2SPacket;)V", at = @At("HEAD"))
     private void beforePlayerMove(PlayerMoveC2SPacket packet, CallbackInfo info) {
         ServerPlayerEntity player = ((ServerPlayNetworkHandler)(Object)this).player;
-        NetworkThreadUtils.forceMainThread(packet, this, player.getServerWorld());
+        NetworkThreadUtils.forceMainThread(packet, this, player.getWorld());
         flyingSurvival = Pony.of(player).getPhysics().isFlyingSurvival;
 
         if (flyingSurvival) {

@@ -1,12 +1,12 @@
 plugins {
     id 'java-library'
-    id 'fabric-loom' version '0.8-SNAPSHOT'
+    id 'fabric-loom' version '0.10-SNAPSHOT'
     id 'org.ajoberstar.reckon' version '0.13.0'
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(16)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
@@ -14,9 +14,9 @@ group = project.group
 description = project.displayname
 archivesBaseName = project.name
 
-minecraft {
-    refmapName = 'unicopia.mixin.refmap.json'
-    accessWidener 'src/main/resources/unicopia.aw'
+loom {
+    mixin.defaultRefmapName = 'unicopia.mixin.refmap.json'
+    accessWidenerPath = file('src/main/resources/unicopia.aw')
 }
 
 reckon {

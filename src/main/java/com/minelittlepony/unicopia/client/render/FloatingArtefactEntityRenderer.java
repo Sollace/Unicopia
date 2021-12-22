@@ -10,9 +10,9 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3f;
 
@@ -34,7 +34,7 @@ public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtef
             stack = UItems.EMPTY_JAR.getDefaultStack();
         }
 
-        final BakedModel model = this.itemRenderer.getHeldItemModel(stack, entity.world, null, 0);
+        final BakedModel model = itemRenderer.getModel(stack, entity.world, null, 0);
 
         final float variance = 0.25F;
         final float verticalOffset = entity.getVerticalOffset(timeDelta);
@@ -56,7 +56,7 @@ public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtef
 
     @Override
     public Identifier getTexture(FloatingArtefactEntity entity) {
-        return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
+        return PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
     }
 
 }

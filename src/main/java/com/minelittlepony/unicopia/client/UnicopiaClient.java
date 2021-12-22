@@ -82,7 +82,7 @@ public class UnicopiaClient implements ClientModInitializer {
         }
         if (screen instanceof OpenToLanScreen) {
             buttons.addButton(new Button(screen.width / 2 - 155, 130, 150, 20))
-                    .onClick(b -> MinecraftClient.getInstance().openScreen(new LanSettingsScreen(screen)))
+                    .onClick(b -> MinecraftClient.getInstance().setScreen(new LanSettingsScreen(screen)))
                     .getStyle().setText(new TranslatableText("unicopia.options.title"));
         }
     }

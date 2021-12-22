@@ -41,8 +41,8 @@ public class DiscoveryToast implements Toast {
         RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.setShaderColor(1.0F, 1, 1, 1);
         manager.drawTexture(matrices, 0, 0, 0, 32, getWidth(), getHeight());
-        manager.getGame().textRenderer.draw(matrices, TITLE, 30, 7, -11534256);
-        manager.getGame().textRenderer.draw(matrices, DESCRIPTION, 30, 18, -16777216);
+        manager.getClient().textRenderer.draw(matrices, TITLE, 30, 7, -11534256);
+        manager.getClient().textRenderer.draw(matrices, DESCRIPTION, 30, 18, -16777216);
 
         Identifier icon = discoveries.get((int)(startTime / Math.max(1L, MAX_AGE / discoveries.size()) % discoveries.size()));
 
@@ -50,14 +50,14 @@ public class DiscoveryToast implements Toast {
         matrixStack.push();
         matrixStack.scale(0.6F, 0.6F, 1);
         RenderSystem.applyModelViewMatrix();
-        manager.getGame().getItemRenderer().renderInGui(UItems.SPELLBOOK.getDefaultStack(), 3, 3);
+        manager.getClient().getItemRenderer().renderInGui(UItems.SPELLBOOK.getDefaultStack(), 3, 3);
         matrixStack.pop();
         RenderSystem.applyModelViewMatrix();
 
         RenderSystem.setShaderTexture(0, icon);
         DrawableHelper.drawTexture(matrices, 8, 8, 1, 0, 0, 16, 16, 16, 16);
 
-        // manager.getGame().getItemRenderer().renderInGui(recipe.getOutput(), 8, 8);
+        // manager.getClient().getItemRenderer().renderInGui(recipe.getOutput(), 8, 8);
 
         return startTime - this.startTime >= MAX_AGE ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
     }
