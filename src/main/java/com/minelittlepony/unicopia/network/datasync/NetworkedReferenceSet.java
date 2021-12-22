@@ -79,7 +79,7 @@ public class NetworkedReferenceSet<T> {
 
         ids.stream().filter(id -> !incoming.contains(id)).forEach(this::removeReference);
 
-        boolean[] send = new boolean[0];
+        boolean[] send = new boolean[1];
         incoming.forEach(kept -> {
             NetworkedReference<T> i = addReference(kept);
             send[0] |= i.fromNbt(comp.getCompound(kept.toString()));
