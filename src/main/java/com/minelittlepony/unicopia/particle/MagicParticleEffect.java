@@ -15,6 +15,7 @@ import net.minecraft.util.registry.Registry;
 
 public class MagicParticleEffect implements ParticleEffect {
     public static final MagicParticleEffect UNICORN = new MagicParticleEffect(false, Vec3f.ZERO);
+    @SuppressWarnings("deprecation")
     public static final ParticleEffect.Factory<MagicParticleEffect> FACTORY = ParticleFactoryHelper.of(MagicParticleEffect::new, MagicParticleEffect::new);
 
     private final boolean tinted;

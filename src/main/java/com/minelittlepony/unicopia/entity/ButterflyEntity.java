@@ -302,6 +302,7 @@ public class ButterflyEntity extends AmbientEntity {
     protected void fall(double y, boolean onGroundIn, BlockState state, BlockPos pos) {
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean canSpawn(WorldAccess world, SpawnReason reason) {
         return reason != SpawnReason.NATURAL || (getY() >= world.getSeaLevel() && world.getLightLevel(getBlockPos()) > 3);

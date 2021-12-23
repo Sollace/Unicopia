@@ -12,6 +12,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 
 public class OrientedBillboardParticleEffect implements ParticleEffect {
+    @SuppressWarnings("deprecation")
     public static final ParticleEffect.Factory<OrientedBillboardParticleEffect> FACTORY = ParticleFactoryHelper.of(OrientedBillboardParticleEffect::new, OrientedBillboardParticleEffect::new);
 
     private final boolean fixed;

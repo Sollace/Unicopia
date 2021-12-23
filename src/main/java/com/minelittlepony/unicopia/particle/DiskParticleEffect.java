@@ -8,6 +8,7 @@ import net.minecraft.particle.ParticleType;
 import net.minecraft.util.math.Vec3f;
 
 public class DiskParticleEffect extends SphereParticleEffect {
+    @SuppressWarnings("deprecation")
     public static final Factory<DiskParticleEffect> FACTORY = ParticleFactoryHelper.of(DiskParticleEffect::new, DiskParticleEffect::new);
 
     protected DiskParticleEffect(ParticleType<DiskParticleEffect> type, StringReader reader) throws CommandSyntaxException {

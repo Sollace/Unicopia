@@ -13,6 +13,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class FollowingParticleEffect implements ParticleEffect {
+    @SuppressWarnings("deprecation")
     public static final Factory<FollowingParticleEffect> FACTORY = ParticleFactoryHelper.of(FollowingParticleEffect::new, FollowingParticleEffect::new);
 
     private final ParticleType<FollowingParticleEffect> type;

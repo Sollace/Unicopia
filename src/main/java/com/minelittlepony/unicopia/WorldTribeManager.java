@@ -29,6 +29,7 @@ public class WorldTribeManager extends PersistentState {
         return tag;
     }
 
+    @SuppressWarnings("deprecation")
     public static String nameFor(DimensionType dimension) {
         return "unicopia:tribes" + dimension.getSuffix();
     }

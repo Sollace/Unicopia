@@ -28,6 +28,7 @@ public interface ParticleFactoryHelper {
         return reader.readFloat();
     }
 
+    @SuppressWarnings("deprecation")
     static <T extends ParticleEffect> ParticleEffect.Factory<T> of(CommandReader<T> commandReader, PacketReader<T> packetReader) {
         return new ParticleEffect.Factory<>() {
             @Override

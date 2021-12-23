@@ -14,6 +14,7 @@ import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 
 public class SphereParticleEffect implements ParticleEffect {
+    @SuppressWarnings("deprecation")
     public static final Factory<SphereParticleEffect> FACTORY = ParticleFactoryHelper.of(SphereParticleEffect::new, SphereParticleEffect::new);
 
     private final Vec3f color;

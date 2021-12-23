@@ -39,7 +39,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -59,8 +58,6 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
 
     private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this, GRAVITY, false);
-
-    private BlockPos lastBlockPos;
 
     public MagicProjectileEntity(EntityType<MagicProjectileEntity> type, World world) {
         super(type, world);
@@ -162,14 +159,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
             setNoGravity(false);
         }
 
-        if (getSpellSlot().isPresent()) {
-            if (lastBlockPos == null || !lastBlockPos.equals(getBlockPos())) {
-                lastBlockPos = getBlockPos();
-            }
-
-            if (!getSpellSlot().get(true).filter(spell -> spell.tick(this, Situation.PROJECTILE)).isPresent()) {
-                discard();
-            }
+        if (!getSpellSlot().get(true).filter(spell -> spell.tick(this, Situation.PROJECTILE)).isPresent()) {
+            discard();
         }
 
         if (getHydrophobic()) {
