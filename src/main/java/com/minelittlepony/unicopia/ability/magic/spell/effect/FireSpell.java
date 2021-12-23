@@ -37,6 +37,10 @@ import net.minecraft.world.explosion.Explosion.DestructionType;
  * Simple fire spell that triggers an effect when used on a block.
  */
 public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpell {
+    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+            .with(Trait.FIRE, 15)
+            .build();
+
     protected FireSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
     }

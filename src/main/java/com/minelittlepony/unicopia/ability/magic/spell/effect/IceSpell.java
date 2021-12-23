@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
@@ -27,6 +28,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class IceSpell extends AbstractSpell {
+    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+            .with(Trait.ICE, 15)
+            .build();
 
     private final int rad = 3;
     private final Shape effect_range = new Sphere(false, rad);

@@ -11,7 +11,6 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -37,7 +36,13 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
-public class ShieldSpell extends AbstractSpell implements ProjectileSpell {
+public class ShieldSpell extends AbstractSpell {
+    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+            .with(Trait.FOCUS, 5)
+            .with(Trait.KNOWLEDGE, 1)
+            .with(Trait.STRENGTH, 50)
+            .with(Trait.AIR, 9)
+            .build();
 
     protected final ParticleHandle particlEffect = new ParticleHandle();
 

@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 import java.util.List;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -17,14 +18,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class AttractiveSpell extends ShieldSpell {
-    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
-            .with(Trait.FOCUS, 5)
-            .with(Trait.KNOWLEDGE, 1)
-            .with(Trait.STRENGTH, 50)
-            .with(Trait.AIR, 9)
-            .build();
-
+public class AttractiveSpell extends ShieldSpell implements ProjectileSpell {
     protected AttractiveSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
     }

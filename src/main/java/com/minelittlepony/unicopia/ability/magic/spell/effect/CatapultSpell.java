@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
@@ -94,7 +96,7 @@ public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
         }
     }
 
-    static void createBlockEntity(World world, BlockPos bpos, Consumer<Entity> apply) {
+    static void createBlockEntity(World world, BlockPos bpos, @Nullable Consumer<Entity> apply) {
         Vec3d pos = Vec3d.ofBottomCenter(bpos);
         FallingBlockEntity e = new FallingBlockEntity(world, pos.x, pos.y, pos.z, world.getBlockState(bpos));
         world.removeBlock(bpos, true);
@@ -102,7 +104,9 @@ public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
         e.timeFalling = Integer.MIN_VALUE;
         e.setHurtEntities(1 + (world.random.nextFloat() * 10), 100);
 
-        apply.accept(e);
+        if (apply != null) {
+            apply.accept(e);
+        }
         world.spawnEntity(e);
     }
 }
