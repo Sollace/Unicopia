@@ -44,6 +44,13 @@ public interface SpellContainer {
     boolean contains(UUID id);
 
     /**
+     * Checks if any matching spells are active.
+     */
+    default boolean contains(@Nullable SpellPredicate<?> type) {
+        return get(type, true).isPresent();
+    }
+
+    /**
      * Gets the active effect for this caster updating it if needed.
      */
     default <T extends Spell> Optional<T> get(boolean update) {
@@ -52,9 +59,12 @@ public interface SpellContainer {
 
     /**
      * Returns true if this caster has an active effect attached to it.
+     *
+     * @deprecated To be removed
      */
+    @Deprecated
     default boolean isPresent() {
-        return get(true).isPresent();
+        return contains((SpellPredicate<?>)null);
     }
 
     /**
@@ -93,6 +103,11 @@ public interface SpellContainer {
         @Override
         default boolean contains(UUID id) {
             return delegate().contains(id);
+        }
+
+        @Override
+        default boolean contains(@Nullable SpellPredicate<?> type) {
+            return delegate().contains(type);
         }
 
         @Override

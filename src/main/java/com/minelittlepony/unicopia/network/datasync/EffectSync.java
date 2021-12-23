@@ -46,14 +46,14 @@ public class EffectSync implements SpellContainer {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T extends Spell> Optional<T> get(@Nullable SpellPredicate<T> type, boolean update) {
-        return (Optional<T>)(type == null ? read(update, true).findFirst() : read(update, true).filter(type).findFirst());
+    public boolean contains(@Nullable SpellPredicate<?> type) {
+        return read(type, true, false).findFirst().isPresent();
     }
 
     @Override
-    public boolean isPresent() {
-        return read(true, false).findFirst().isPresent();
+    @SuppressWarnings("unchecked")
+    public <T extends Spell> Optional<T> get(@Nullable SpellPredicate<T> type, boolean update) {
+        return (Optional<T>)(read(type, update, true).findFirst());
     }
 
     @Override
@@ -99,12 +99,15 @@ public class EffectSync implements SpellContainer {
         }
     }
 
-    private Stream<Spell> read(boolean synchronize, boolean sendUpdate) {
+    private Stream<Spell> read(@Nullable SpellPredicate<?> type, boolean synchronize, boolean sendUpdate) {
         if (synchronize && spells.fromNbt(owner.getEntity().getDataTracker().get(param)) && sendUpdate) {
             owner.getEntity().getDataTracker().set(param, spells.toNbt());
         }
 
-        return spells.getReferences();
+        if (type == null) {
+            return spells.getReferences();
+        }
+        return spells.getReferences().filter(type);
     }
 
     public boolean reduce(Alteration alteration) {

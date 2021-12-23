@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
@@ -41,7 +40,7 @@ public class PegasusRainboomAbility implements Ability<Hit> {
             return null;
         }
 
-        if (player.getPhysics().isFlying() && !player.getSpellSlot().isPresent()) {
+        if (player.getPhysics().isFlying() && !SpellType.RAINBOOM.isOn(player)) {
             return Hit.INSTANCE;
         }
 
@@ -65,7 +64,7 @@ public class PegasusRainboomAbility implements Ability<Hit> {
             return;
         }
 
-        if (player.getPhysics().isFlying() && !player.getSpellSlot().isPresent()) {
+        if (player.getPhysics().isFlying() && !SpellType.RAINBOOM.isOn(player)) {
             player.getMagicalReserves().getMana().multiply(0.1F);
             player.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, player.getPhysics().getMotionAngle()), player.getOriginVector(), Vec3d.ZERO);
             SpellType.RAINBOOM.withTraits().apply(player);

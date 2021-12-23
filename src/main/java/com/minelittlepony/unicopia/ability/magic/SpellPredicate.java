@@ -14,6 +14,6 @@ public interface SpellPredicate<T extends Spell> extends Predicate<Spell> {
     SpellPredicate<AbstractDisguiseSpell> IS_DISGUISE = s -> s instanceof AbstractDisguiseSpell;
 
     default boolean isOn(Caster<?> caster) {
-        return caster.getSpellSlot().get(this, false).isPresent();
+        return caster.getSpellSlot().contains(this);
     }
 }

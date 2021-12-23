@@ -16,6 +16,7 @@ import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.EarthPonyStompAbility;
 import com.minelittlepony.unicopia.ability.magic.Affine;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
@@ -161,7 +162,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     @Override
     public boolean isInvisible() {
-        return invisible && getSpellSlot().isPresent();
+        return invisible && SpellPredicate.IS_DISGUISE.isOn(this);
     }
 
     public boolean isSpeciesPersisted() {
