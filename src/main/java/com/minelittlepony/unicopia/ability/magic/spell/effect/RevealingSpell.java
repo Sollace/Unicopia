@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -13,9 +14,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
 /**
- * A spell for revealing changelings.
+ * An area-effect spell that suppresses other forms of magic
  */
-public class RevealingSpell extends AbstractSpell {
+public class RevealingSpell extends AbstractAreaEffectSpell {
     protected RevealingSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
     }

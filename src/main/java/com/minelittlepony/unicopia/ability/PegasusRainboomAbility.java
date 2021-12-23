@@ -68,7 +68,7 @@ public class PegasusRainboomAbility implements Ability<Hit> {
         if (player.getPhysics().isFlying() && !player.getSpellSlot().isPresent()) {
             player.getMagicalReserves().getMana().multiply(0.1F);
             player.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, player.getPhysics().getMotionAngle()), player.getOriginVector(), Vec3d.ZERO);
-            player.getSpellSlot().put(SpellType.RAINBOOM.create(SpellTraits.EMPTY));
+            SpellType.RAINBOOM.withTraits().apply(player);
         }
     }
 

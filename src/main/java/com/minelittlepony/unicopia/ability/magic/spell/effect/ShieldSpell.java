@@ -6,6 +6,7 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -38,7 +39,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class ShieldSpell extends AbstractSpell implements ProjectileSpell {
 
-    private final ParticleHandle particlEffect = new ParticleHandle();
+    protected final ParticleHandle particlEffect = new ParticleHandle();
 
     private final Map<UUID, Target> targets = new TreeMap<>();
 
@@ -50,6 +51,11 @@ public class ShieldSpell extends AbstractSpell implements ProjectileSpell {
     public void setDead() {
         super.setDead();
         particlEffect.destroy();
+    }
+
+    @Override
+    public Affinity getAffinity() {
+        return getTraits().get(Trait.DARKNESS) > 0 ? Affinity.BAD : Affinity.GOOD;
     }
 
     protected void generateParticles(Caster<?> source) {

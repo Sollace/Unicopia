@@ -14,7 +14,7 @@ import net.minecraft.util.TypedActionResult;
 public record CustomisedSpellType<T extends Spell> (
         SpellType<T> type,
         SpellTraits traits
-        ) implements SpellPredicate<T> {
+    ) implements SpellPredicate<T> {
 
     public boolean isEmpty() {
         return type.isEmpty();

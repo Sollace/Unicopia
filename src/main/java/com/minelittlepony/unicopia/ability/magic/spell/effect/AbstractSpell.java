@@ -66,12 +66,6 @@ public abstract class AbstractSpell implements Spell {
     }
 
     @Override
-    public final boolean apply(Caster<?> caster) {
-        caster.getSpellSlot().put(this);
-        return true;
-    }
-
-    @Override
     public void onDestroyed(Caster<?> caster) {
     }
 

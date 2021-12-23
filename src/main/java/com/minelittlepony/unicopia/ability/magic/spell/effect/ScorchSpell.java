@@ -21,6 +21,11 @@ public class ScorchSpell extends FireSpell {
     }
 
     @Override
+    public boolean apply(Caster<?> source) {
+        return toPlaceable().apply(source);
+    }
+
+    @Override
     public boolean tick(Caster<?> source, Situation situation) {
         BlockPos pos = PosHelper.findSolidGroundAt(source.getWorld(), source.getOrigin(), source.getPhysics().getGravitySignum());
 

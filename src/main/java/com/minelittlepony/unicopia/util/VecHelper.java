@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.util;
 
 import java.util.List;
+import java.util.function.DoubleSupplier;
 import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,6 +11,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public interface VecHelper {
+
+    static Vec3d supply(DoubleSupplier rng) {
+        return new Vec3d(rng.getAsDouble(), rng.getAsDouble(), rng.getAsDouble());
+    }
 
     static Predicate<Entity> inRange(Vec3d center, double range) {
         double rad = Math.pow(range, 2);

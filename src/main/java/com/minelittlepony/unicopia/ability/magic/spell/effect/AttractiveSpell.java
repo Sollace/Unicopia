@@ -1,10 +1,10 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.List;
-import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
@@ -14,16 +14,16 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class AttractiveSpell extends ShieldSpell {
-
-    @Nullable
-    private BlockPos homingPos;
+    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+            .with(Trait.FOCUS, 5)
+            .with(Trait.KNOWLEDGE, 1)
+            .with(Trait.STRENGTH, 50)
+            .with(Trait.AIR, 9)
+            .build();
 
     protected AttractiveSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
@@ -47,7 +47,7 @@ public class AttractiveSpell extends ShieldSpell {
     @Override
     protected List<Entity> getTargets(Caster<?> source, double radius) {
 
-        if (homingPos != null) {
+        if (getTraits().get(Trait.FOCUS) > 10) {
             return VecHelper.findInRange(source.getEntity(), source.getWorld(), source.getOriginVector(), radius, i -> i instanceof ItemEntity);
         }
 
@@ -56,7 +56,6 @@ public class AttractiveSpell extends ShieldSpell {
 
     @Override
     protected void applyRadialEffect(Caster<?> source, Entity target, double distance, double radius) {
-        Vec3d pos = homingPos == null ? source.getOriginVector() : Vec3d.of(homingPos);
 
         double force = 2.5F * distance;
 
@@ -70,7 +69,7 @@ public class AttractiveSpell extends ShieldSpell {
             source.getEntity().damage(MagicalDamageSource.create("vortex"), 4);
         }
 
-        applyForce(pos, target, -force, 0);
+        applyForce(source.getOriginVector(), target, -force, 0);
 
         float maxVel = !isFriendlyTogether(source) ? 1 : 1.6f;
 
@@ -86,21 +85,4 @@ public class AttractiveSpell extends ShieldSpell {
 
         target.setVelocity(x, y, z);
     }
-
-    @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        if (homingPos != null) {
-            compound.put("homingPos", NbtHelper.fromBlockPos(homingPos));
-        }
-    }
-
-    @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        if (compound.contains("homingPos")) {
-            homingPos = NbtHelper.toBlockPos(compound.getCompound("homingPos"));
-        }
-    }
-
 }

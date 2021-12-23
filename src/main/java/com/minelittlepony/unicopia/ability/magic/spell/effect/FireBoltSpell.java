@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
 import net.minecraft.entity.Entity;
@@ -11,6 +12,10 @@ import net.minecraft.item.Items;
 import net.minecraft.sound.SoundEvents;
 
 public class FireBoltSpell extends AbstractSpell implements ProjectileSpell {
+    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+            .with(Trait.FIRE, 90)
+            .with(Trait.AIR, 60)
+            .build();
 
     protected FireBoltSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
@@ -37,12 +42,12 @@ public class FireBoltSpell extends AbstractSpell implements ProjectileSpell {
     @Override
     public void configureProjectile(MagicProjectileEntity projectile, Caster<?> caster) {
         projectile.setItem(Items.FIRE_CHARGE.getDefaultStack());
-        projectile.addThrowDamage(9);
+        projectile.addThrowDamage(getTraits().get(Trait.FIRE) / 10F);
         projectile.setFireTicks(900000);
-        projectile.setVelocity(projectile.getVelocity().multiply(1.3));
+        projectile.setVelocity(projectile.getVelocity().multiply(1.3 + getTraits().get(Trait.STRENGTH)));
     }
 
     protected int getNumberOfBalls(Caster<?> caster) {
-        return 1 + caster.getWorld().random.nextInt(3);
+        return 1 + caster.getWorld().random.nextInt(3) + (int)getTraits().get(Trait.POWER) * 3;
     }
 }

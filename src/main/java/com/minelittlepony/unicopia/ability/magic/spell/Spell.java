@@ -41,7 +41,10 @@ public interface Spell extends NbtSerialisable, Affine {
     /**
      * Applies this spell to the supplied caster.
      */
-    boolean apply(Caster<?> caster);
+    default boolean apply(Caster<?> caster) {
+        caster.getSpellSlot().put(this);
+        return true;
+    }
 
     /**
      * Called to generate this spell's effects.

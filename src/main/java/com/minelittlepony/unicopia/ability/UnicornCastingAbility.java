@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellTyp
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
+import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
@@ -116,7 +117,10 @@ public class UnicornCastingAbility implements Ability<Hit> {
                 boolean remove = player.getSpellSlot().removeIf(spell, true);
                 player.subtractEnergyCost(remove ? 2 : 4);
                 if (!remove) {
-                    spell.apply(player);
+                    if (spell.apply(player) != null) {
+                        player.spawnParticles(ParticleTypes.LARGE_SMOKE, 6);
+                        player.playSound(SoundEvents.ENTITY_ITEM_BREAK, 1, 0.5F);
+                    }
                 }
             }
         }
@@ -147,13 +151,8 @@ public class UnicornCastingAbility implements Ability<Hit> {
             float i = player.getAbilities().getStat(slot).getFillProgress();
 
             Random rng = player.getWorld().random;
-
-            player.getWorld().addParticle(i > 0.5F ? ParticleTypes.LARGE_SMOKE : ParticleTypes.CLOUD, eyes.x, eyes.y, eyes.z,
-                    (rng.nextGaussian() - 0.5) / 10,
-                    (rng.nextGaussian() - 0.5) / 10,
-                    (rng.nextGaussian() - 0.5) / 10
-            );
-            player.getWorld().playSound(player.getEntity().getX(), player.getEntity().getY(), player.getEntity().getZ(), SoundEvents.ENTITY_GUARDIAN_ATTACK, SoundCategory.PLAYERS, 1, i / 20, true);
+            player.addParticle(i > 0.5F ? ParticleTypes.LARGE_SMOKE : ParticleTypes.CLOUD, eyes, VecHelper.supply(() -> (rng.nextGaussian() - 0.5) / 10));
+            player.playSound(SoundEvents.ENTITY_GUARDIAN_ATTACK, 1, i / 20);
         } else {
             player.spawnParticles(MagicParticleEffect.UNICORN, 5);
         }

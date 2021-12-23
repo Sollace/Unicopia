@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -35,7 +36,7 @@ import net.minecraft.world.explosion.Explosion.DestructionType;
 /**
  * Simple fire spell that triggers an effect when used on a block.
  */
-public class FireSpell extends AbstractSpell implements ProjectileSpell {
+public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpell {
     protected FireSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
     }

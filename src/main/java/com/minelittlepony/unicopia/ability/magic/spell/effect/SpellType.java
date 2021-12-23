@@ -33,7 +33,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public final class SpellType<T extends Spell> implements Affine, SpellPredicate<T> {
-
     public static final Identifier EMPTY_ID = new Identifier("unicopia", "null");
     public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, SpellTraits.EMPTY, (t, c) -> null);
 
@@ -51,19 +50,16 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<ScorchSpell> SCORCH = register("scorch", Affinity.BAD, 0, true, ScorchSpell::new);
     public static final SpellType<FireSpell> FLAME = register("flame", Affinity.GOOD, 0xFF5D00, true, FireSpell::new);
     public static final SpellType<InfernoSpell> INFERNAL = register("infernal", Affinity.BAD, 0xF00F00, true, InfernoSpell::new);
-    public static final SpellType<ShieldSpell> SHIELD = register("shield", Affinity.GOOD, 0x66CDAA, true, ShieldSpell::new);
-    public static final SpellType<ShieldSpell> REPULSE = register("repulse", Affinity.BAD, 0x66CDAA, true, ShieldSpell::new);
-    public static final SpellType<AttractiveSpell> VORTEX = register("vortex", Affinity.GOOD, 0x4CDEE7, true, AttractiveSpell::new);
-    public static final SpellType<AttractiveSpell> SUFFER = register("suffer", Affinity.BAD, 0x4CDEE7, true, AttractiveSpell::new);
+    public static final SpellType<ShieldSpell> SHIELD = register("shield", Affinity.NEUTRAL, 0x66CDAA, true, ShieldSpell::new);
+    public static final SpellType<AttractiveSpell> VORTEX = register("vortex", Affinity.NEUTRAL, 0x4CDEE7, true, AttractiveSpell.DEFAULT_TRAITS, AttractiveSpell::new);
     public static final SpellType<NecromancySpell> NECROMANCY = register("necromancy", Affinity.BAD, 0x8A3A3A, true, NecromancySpell::new);
-    public static final SpellType<SiphoningSpell> SIPHONING = register("siphoning", Affinity.GOOD, 0xe308ab, true, SiphoningSpell::new);
-    public static final SpellType<SiphoningSpell> DRAINING = register("draining", Affinity.BAD, 0xe308ab, true, SiphoningSpell::new);
+    public static final SpellType<SiphoningSpell> SIPHONING = register("siphoning", Affinity.NEUTRAL, 0xe308ab, true, SiphoningSpell::new);
     public static final SpellType<RevealingSpell> REVEALING = register("reveal", Affinity.GOOD, 0x5CE81F, true, RevealingSpell::new);
     public static final SpellType<AwkwardSpell> AWKWARD = register("awkward", Affinity.GOOD, 0xE1239C, true, AwkwardSpell::new);
     public static final SpellType<TransformationSpell> TRANSFORMATION = register("transformation", Affinity.GOOD, 0x3A59AA, true, TransformationSpell::new);
     public static final SpellType<FeatherFallSpell> FEATHER_FALL = register("feather_fall", Affinity.GOOD, 0x00EEFF, true, FeatherFallSpell.DEFAULT_TRAITS, FeatherFallSpell::new);
     public static final SpellType<CatapultSpell> CATAPULT = register("catapult", Affinity.GOOD, 0x33FF00, true, CatapultSpell.DEFAULT_TRAITS, CatapultSpell::new);
-    public static final SpellType<FireBoltSpell> FIRE_BOLT = register("fire_bolt", Affinity.GOOD, 0x888800, true, FireBoltSpell::new);
+    public static final SpellType<FireBoltSpell> FIRE_BOLT = register("fire_bolt", Affinity.GOOD, 0x888800, true, FireBoltSpell.DEFAULT_TRAITS, FireBoltSpell::new);
 
     private final Identifier id;
     private final Affinity affinity;
@@ -121,7 +117,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     public String getTranslationKey() {
         if (translationKey == null) {
-            translationKey = Util.createTranslationKey(getAffinity().getTranslationKey(), getId());
+            translationKey = Util.createTranslationKey("spell", getId());
         }
         return translationKey;
     }

@@ -22,8 +22,10 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Util;
 
+/**
+ * Transforms whatever entity it strikes into a random other entity.
+ */
 public class TransformationSpell extends AbstractSpell implements ProjectileSpell {
-
     protected TransformationSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
     }

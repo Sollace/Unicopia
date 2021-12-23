@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -23,7 +24,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.WorldEvents;
 
-public class NecromancySpell extends AbstractSpell {
+/**
+ * An area-effect spell that summons the undead.
+ */
+public class NecromancySpell extends AbstractAreaEffectSpell {
 
     private final Weighted<EntityType<? extends LivingEntity>> spawnPool = new Weighted<EntityType<? extends LivingEntity>>()
             .put(7, EntityType.ZOMBIE)

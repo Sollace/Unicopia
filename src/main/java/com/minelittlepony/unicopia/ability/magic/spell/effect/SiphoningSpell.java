@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
@@ -28,12 +31,17 @@ import net.minecraft.util.math.Vec3d;
 /**
  * A spell that pulls health from other entities and delivers it to the caster.
  */
-public class SiphoningSpell extends AbstractSpell {
+public class SiphoningSpell extends AbstractAreaEffectSpell {
 
     private int ticksUpset;
 
     protected SiphoningSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
+    }
+
+    @Override
+    public Affinity getAffinity() {
+        return getTraits().get(Trait.DARKNESS) > 0 ? Affinity.BAD : Affinity.GOOD;
     }
 
     @Override
@@ -57,7 +65,6 @@ public class SiphoningSpell extends AbstractSpell {
                 }
             });
         } else {
-
             if (source.getWorld().getTime() % 10 != 0) {
                 return true;
             }

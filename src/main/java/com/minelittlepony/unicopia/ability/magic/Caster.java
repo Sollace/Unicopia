@@ -59,7 +59,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     }
 
     default void playSound(SoundEvent sound, float volume, float pitch) {
-        getWorld().playSound(null, getEntity().getX(), getEntity().getY(), getEntity().getZ(), sound, getEntity().getSoundCategory(),volume, pitch);
+        getWorld().playSound(null, getEntity().getX(), getEntity().getY(), getEntity().getZ(), sound, getEntity().getSoundCategory(), volume, pitch);
     }
 
     /**
