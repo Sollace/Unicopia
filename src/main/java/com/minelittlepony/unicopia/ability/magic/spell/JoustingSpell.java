@@ -54,10 +54,10 @@ public class JoustingSpell extends AbstractSpell {
         }
 
         if (source.isClient()) {
-            particlEffect.ifAbsent(source, spawner -> {
+            particlEffect.ifAbsent(getUuid(), source, spawner -> {
                 spawner.addParticle(UParticles.RAINBOOM_TRAIL, source.getOriginVector(), Vec3d.ZERO);
                 spawner.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, source.getPhysics().getMotionAngle()), source.getOriginVector(), Vec3d.ZERO);
-            }).ifPresent(p -> p.attach(source));
+            });
         }
 
         LivingEntity owner = source.getMaster();

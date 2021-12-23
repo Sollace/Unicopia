@@ -34,6 +34,10 @@ public class NetworkedReferenceSet<T> {
         this.factory = factory;
     }
 
+    public boolean containsReference(UUID id) {
+        return ids.contains(id);
+    }
+
     public Stream<T> getReferences() {
         return ids.stream().map(id -> values.get(id))
                 .map(a -> a.getReference())

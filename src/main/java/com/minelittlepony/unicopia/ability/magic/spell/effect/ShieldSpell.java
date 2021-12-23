@@ -70,10 +70,9 @@ public class ShieldSpell extends AbstractSpell {
             source.addParticle(new MagicParticleEffect(getType().getColor()), pos, Vec3d.ZERO);
         });
 
-        particlEffect.ifAbsent(source, spawner -> {
+        particlEffect.ifAbsent(getUuid(), source, spawner -> {
             spawner.addParticle(new SphereParticleEffect(getType().getColor(), 0.3F, radius), source.getOriginVector(), Vec3d.ZERO);
         }).ifPresent(p -> {
-            p.attach(source);
             p.setAttribute(0, radius);
             p.setAttribute(1, getType().getColor());
         });

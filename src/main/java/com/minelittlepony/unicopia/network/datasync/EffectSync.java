@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.network.datasync;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -37,6 +38,11 @@ public class EffectSync implements SpellContainer {
         spells = new NetworkedReferenceSet<>(Spell::getUuid, () -> new SpellNetworkedReference<>(owner));
         this.owner = owner;
         this.param = param;
+    }
+
+    @Override
+    public boolean contains(UUID id) {
+        return spells.containsReference(id);
     }
 
     @Override

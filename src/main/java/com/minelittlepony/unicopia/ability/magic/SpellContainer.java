@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -30,7 +31,17 @@ public interface SpellContainer {
         public boolean forEach(Function<Spell, Operation> action, boolean update) {
             return false;
         }
+
+        @Override
+        public boolean contains(UUID id) {
+            return false;
+        }
     };
+
+    /**
+     * Checks if a spell with the given uuid is present.
+     */
+    boolean contains(UUID id);
 
     /**
      * Gets the active effect for this caster updating it if needed.
@@ -78,6 +89,11 @@ public interface SpellContainer {
     interface Delegate extends SpellContainer {
 
         SpellContainer delegate();
+
+        @Override
+        default boolean contains(UUID id) {
+            return delegate().contains(id);
+        }
 
         @Override
         default <T extends Spell> Optional<T> get(@Nullable SpellPredicate<T> type, boolean update) {

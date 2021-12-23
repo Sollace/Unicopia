@@ -17,6 +17,9 @@ import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Link;
 import com.minelittlepony.unicopia.util.ColorHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
+
+import java.util.Optional;
+
 import com.minelittlepony.common.util.Color;
 
 public class SphereParticle extends Particle implements Attachment {
@@ -28,7 +31,7 @@ public class SphereParticle extends Particle implements Attachment {
     protected float lerpIncrement;
     protected float toRadius;
 
-    private final Link link = new Link();
+    private Optional<Link> link = Optional.empty();
 
     private static final SphereModel MODEL = new SphereModel();
 
@@ -58,9 +61,9 @@ public class SphereParticle extends Particle implements Attachment {
     }
 
     @Override
-    public void attach(Caster<?> caster) {
+    public void attach(Link link) {
         setMaxAge(50000);
-        link.attach(caster);
+        this.link = Optional.of(link);
     }
 
     @Override
@@ -92,14 +95,14 @@ public class SphereParticle extends Particle implements Attachment {
     public void tick() {
         super.tick();
 
-        if (link.linked()) {
-            link.ifAbsent(this::markDead).map(Caster::getEntity).ifPresent(e -> {
+        if (link.isPresent()) {
+            link.flatMap(Link::get).map(Caster::getEntity).ifPresentOrElse(e -> {
                 setPos(e.getX(), e.getY() + 0.5, e.getZ());
 
                 prevPosX = e.lastRenderX;
                 prevPosY = e.lastRenderY + 0.5;
                 prevPosZ = e.lastRenderZ;
-            });
+            }, this::detach);
 
             if (steps-- > 0) {
                 radius += lerpIncrement;

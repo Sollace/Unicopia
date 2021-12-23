@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.particle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -22,7 +23,7 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
 
     private final List<Segment> segments = new ArrayList<>();
 
-    private final Link link = new Link();
+    private Optional<Link> link = Optional.empty();
 
     public RainbowTrailParticle(DefaultParticleType effect, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
@@ -41,13 +42,13 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
     }
 
     @Override
-    public void attach(Caster<?> caster) {
-        link.attach(caster);
+    public void attach(Link link) {
+        this.link = Optional.of(link);
     }
 
     @Override
     public void detach() {
-        link.detach();
+        link = Optional.empty();
     }
 
     @Override
@@ -90,9 +91,9 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
     public void tick() {
         super.tick();
 
-        if (link.linked()) {
+        if (link.isPresent()) {
             age = 0;
-            link.ifAbsent(() -> {}).ifPresent(this::follow);
+            link.flatMap(Link::get).ifPresent(this::follow);
         } else if (!dead) {
             follow(Pony.of(MinecraftClient.getInstance().player));
         }

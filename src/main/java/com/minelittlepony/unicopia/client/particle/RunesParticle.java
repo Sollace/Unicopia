@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client.particle;
 
+import java.util.Optional;
+
 import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
@@ -33,7 +35,7 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
     private float prevRotationAngle;
     private float rotationAngle;
 
-    private final Link link = new Link();
+    private Optional<Link> link = Optional.empty();
 
     private int stasisAge = -1;
 
@@ -52,18 +54,18 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
     }
 
     @Override
-    public void attach(Caster<?> caster) {
-        link.attach(caster);
+    public void attach(Link link) {
+        this.link = Optional.of(link);
         velocityX = 0;
         velocityY = 0;
         velocityZ = 0;
-        Vec3d pos = caster.getOriginVector();
+        Vec3d pos = link.get().map(Caster::getOriginVector).orElse(Vec3d.ZERO);
         setPos(pos.x, pos.y, pos.z);
     }
 
     @Override
     public void detach() {
-        link.detach();
+        link = Optional.empty();
     }
 
     @Override
@@ -135,16 +137,14 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
     public void tick() {
         super.tick();
 
-        if (link.linked()) {
-            link.ifAbsent(this::detach).map(Caster::getEntity).ifPresent(e -> {
-                if (getAlphaScale() >= 0.9F) {
-                    if (stasisAge < 0) {
-                        stasisAge = age;
-                    }
-                    age = stasisAge;
+        link.flatMap(Link::get).map(Caster::getEntity).ifPresentOrElse(e -> {
+            if (getAlphaScale() >= 0.9F) {
+                if (stasisAge < 0) {
+                    stasisAge = age;
                 }
-            });
-        }
+                age = stasisAge;
+            }
+        }, this::detach);
 
         prevBaseSize = baseSize;
         if (baseSize < 3) {

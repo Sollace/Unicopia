@@ -55,10 +55,9 @@ public class DarkVortexSpell extends AttractiveSpell {
 
         float radius = (float)getDrawDropOffRange(source) / 2;
 
-        particlEffect.ifAbsent(source, spawner -> {
+        particlEffect.ifAbsent(getUuid(), source, spawner -> {
             spawner.addParticle(new SphereParticleEffect(getType().getColor(), 0.99F, radius), source.getOriginVector(), Vec3d.ZERO);
         }).ifPresent(p -> {
-            p.attach(source);
             p.setAttribute(0, radius);
         });
     }

@@ -1,17 +1,18 @@
 package com.minelittlepony.unicopia.particle;
 
+import java.lang.ref.WeakReference;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.WeakHashMap;
 import java.util.function.Consumer;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.math.Vec3d;
 
@@ -19,30 +20,41 @@ import net.minecraft.util.math.Vec3d;
  * A connection class for updating and persisting an attached particle effect.
  */
 public class ParticleHandle {
+    private Optional<WeakReference<Attachment>> particleEffect = Optional.empty();
 
-    private Optional<Attachment> particleEffect = Optional.empty();
-
-    public Optional<Attachment> ifAbsent(ParticleSource source, Consumer<ParticleSpawner> constructor) {
-        particleEffect.filter(Attachment::isStillAlive).orElseGet(() -> {
+    public Optional<Attachment> ifAbsent(UUID id, ParticleSource source, Consumer<ParticleSpawner> constructor) {
+        return get().or(() -> {
             if (source.getWorld().isClient) {
-                constructor.accept(this::addParticle);
+                constructor.accept((effect, pos, vel) -> new ClientHandle().addParticle(id, source, effect, pos, vel));
             }
-            return null;
+            return get();
         });
-
-        return particleEffect;
     }
 
     public void destroy() {
-        particleEffect.ifPresent(Attachment::detach);
+        get().ifPresent(Attachment::detach);
     }
 
-    @Environment(EnvType.CLIENT)
-    private void addParticle(ParticleEffect effect, Vec3d pos, Vec3d vel) {
-        Particle p = MinecraftClient.getInstance().particleManager.addParticle(effect, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
+    private Optional<Attachment> get() {
+        return particleEffect.map(WeakReference::get).filter(Attachment::isStillAlive);
+    }
 
-        if (p instanceof Attachment) {
-            particleEffect = Optional.of((Attachment)p);
+    private final class ClientHandle {
+        private static final Map<UUID, Particle> SPAWNED_PARTICLES = new WeakHashMap<>();
+
+        @Environment(EnvType.CLIENT)
+        private void addParticle(UUID id, ParticleSource source, ParticleEffect effect, Vec3d pos, Vec3d vel) {
+            Particle p = SPAWNED_PARTICLES.computeIfAbsent(id, i -> {
+                Particle pp = MinecraftClient.getInstance().particleManager.addParticle(effect, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
+                if (pp instanceof Attachment && source instanceof Caster<?>) {
+                    ((Attachment) pp).attach(new Link(id, (Caster<?>)source));
+                }
+                return pp;
+            });
+
+            if (p instanceof Attachment) {
+                particleEffect = Optional.of(new WeakReference<>((Attachment)p));
+            }
         }
     }
 
@@ -50,7 +62,7 @@ public class ParticleHandle {
 
         boolean isStillAlive();
 
-        void attach(Caster<?> caster);
+        void attach(Link link);
 
         void detach();
 
@@ -58,41 +70,17 @@ public class ParticleHandle {
     }
 
     public static final class Link {
-
-        private Optional<Caster<?>> caster = Optional.empty();
+        private Optional<WeakReference<Caster<?>>> caster = Optional.empty();
         private UUID effect;
-        private boolean linked;
 
-        public void attach(Caster<?> caster) {
-            this.linked = true;
-            this.caster = Optional.of(caster);
-            this.effect = caster.getSpellSlot().get(false).map(Spell::getUuid).orElse(null);
+        private Link(UUID effect, Caster<?> caster) {
+            this.caster = Optional.of(new WeakReference<>(caster));
+            this.effect = effect;
         }
 
-        public void detach() {
-            caster = Optional.empty();
-        }
-
-        public boolean linked() {
-            return linked;
-        }
-
-        public Optional<Caster<?>> ifAbsent(Runnable action) {
-            caster = caster.filter(c -> {
-                Entity e = c.getEntity();
-
-                return Caster.of(e).orElse(null) == c
-                        && c.getSpellSlot().get(false)
-                            .filter(s -> s.getUuid().equals(effect))
-                            .isPresent()
-                        && e != null
-                        && c.getWorld().getEntityById(e.getId()) != null;
-            });
-            if (!caster.isPresent()) {
-                action.run();
-            }
-
-            return caster;
+        public Optional<Caster<?>> get() {
+            caster = caster.filter(r -> r.get() != null && r.get().getSpellSlot().contains(effect));
+            return caster.map(WeakReference::get);
         }
     }
 }
