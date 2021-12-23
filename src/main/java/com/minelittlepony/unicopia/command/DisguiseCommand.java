@@ -84,7 +84,7 @@ public class DisguiseCommand {
 
         Pony iplayer = Pony.of(player);
         iplayer.getSpellSlot().get(SpellType.CHANGELING_DISGUISE, true)
-            .orElseGet(() -> SpellType.CHANGELING_DISGUISE.apply(iplayer, SpellTraits.EMPTY))
+            .orElseGet(() -> SpellType.CHANGELING_DISGUISE.withTraits().apply(iplayer))
             .setDisguise(entity);
 
         if (source.getEntity() == player) {

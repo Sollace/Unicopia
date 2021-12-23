@@ -15,18 +15,14 @@ public interface NbtSerialisable {
      *
      * @param compound  Compound tag to write to.
      */
-    default void toNBT(NbtCompound compound) {
-
-    }
+    void toNBT(NbtCompound compound);
 
     /**
      * Called to load this state from nbt
      *
      * @param compound  Compound tag to read from.
      */
-    default void fromNBT(NbtCompound compound) {
-
-    }
+    void fromNBT(NbtCompound compound);
 
     default NbtCompound toNBT() {
         NbtCompound compound = new NbtCompound();

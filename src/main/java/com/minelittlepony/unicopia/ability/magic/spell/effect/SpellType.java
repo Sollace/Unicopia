@@ -20,8 +20,11 @@ import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.ThrowableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.item.GemstoneItem;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.Registries;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -75,6 +78,8 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     private final CustomisedSpellType<T> traited;
     private final SpellTraits traits;
 
+    private final ItemStack defaultStack;
+
     private SpellType(Identifier id, Affinity affinity, int color, boolean obtainable, SpellTraits traits, Factory<T> factory) {
         this.id = id;
         this.affinity = affinity;
@@ -83,6 +88,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         this.factory = factory;
         this.traits = traits;
         traited = new CustomisedSpellType<>(this, traits);
+        defaultStack = GemstoneItem.enchant(UItems.GEMSTONE.getDefaultStack(), this);
     }
 
     public boolean isObtainable() {
@@ -91,6 +97,10 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     public Identifier getId() {
         return id;
+    }
+
+    public ItemStack getDefualtStack() {
+        return defaultStack;
     }
 
     /**
@@ -182,9 +192,13 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         return (SpellType<T>)EMPTY_KEY;
     }
 
+    public static <T extends Spell> SpellType<T> getKey(NbtCompound tag) {
+        return getKey(Identifier.tryParse(tag.getString("effect_id")));
+    }
+
     @SuppressWarnings("unchecked")
-    public static <T extends Spell> SpellType<T> getKey(Identifier id) {
-        return (SpellType<T>)(EMPTY_ID.equals(id) ? EMPTY_KEY : REGISTRY.getOrEmpty(id).orElse(EMPTY_KEY));
+    public static <T extends Spell> SpellType<T> getKey(@Nullable Identifier id) {
+        return (SpellType<T>)(id == null || EMPTY_ID.equals(id) ? EMPTY_KEY : REGISTRY.getOrEmpty(id).orElse(EMPTY_KEY));
     }
 
     public static SpellType<?> random(Random random) {
@@ -198,7 +212,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     @Nullable
     public static Spell fromNBT(@Nullable NbtCompound compound) {
         if (compound != null && compound.contains("effect_id")) {
-            Spell effect = getKey(new Identifier(compound.getString("effect_id"))).create(SpellTraits.EMPTY);
+            Spell effect = getKey(compound).create(SpellTraits.EMPTY);
 
             if (effect != null) {
                 effect.fromNBT(compound);
@@ -212,10 +226,12 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     public static NbtCompound toNBT(Spell effect) {
         NbtCompound compound = effect.toNBT();
-
-        compound.putString("effect_id", effect.getType().getId().toString());
-
+        effect.getType().writeId(compound);
         return compound;
+    }
+
+    public void writeId(NbtCompound tag) {
+        tag.putString("effect_id", getId().toString());
     }
 
     public interface Factory<T extends Spell> {

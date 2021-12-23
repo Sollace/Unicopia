@@ -59,6 +59,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -511,6 +512,8 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         oldPlayer.getSpellSlot().put(null);
         setSpecies(oldPlayer.getSpecies());
         getDiscoveries().copyFrom(oldPlayer.getDiscoveries());
+        getCharms().equipSpell(Hand.MAIN_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.MAIN_HAND));
+        getCharms().equipSpell(Hand.OFF_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.OFF_HAND));
         setDirty();
     }
 

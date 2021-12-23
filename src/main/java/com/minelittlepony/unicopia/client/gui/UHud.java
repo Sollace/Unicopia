@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
@@ -29,6 +30,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
@@ -41,6 +43,8 @@ public class UHud extends DrawableHelper {
     public static final Identifier HUD_TEXTURE = new Identifier("unicopia", "textures/gui/hud.png");
 
     public static final int PRIMARY_SLOT_SIZE = 49;
+
+    private static final float EQUIPPED_GEMSTONE_SCALE = 0.7F;
 
     public TextRenderer font;
 
@@ -82,14 +86,22 @@ public class UHud extends DrawableHelper {
         xDirection = client.player.getMainArm() == Arm.LEFT ? -1 : 1;
 
         matrices.push();
-        matrices.translate(((scaledWidth - 50) / 2) + (104 * xDirection), scaledHeight - 50, 0);
+
+        int hudX = ((scaledWidth - 50) / 2) + (104 * xDirection);
+        int hudY = scaledHeight - 50;
+        int hudZ = 0;
+
 
         float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();
 
         if (exhaustion > 0.5F) {
             Random rng = client.world.random;
-            matrices.translate(rng.nextFloat() - 0.5F, rng.nextFloat() - 0.5F, rng.nextFloat() - 0.5F);
+            hudX += rng.nextFloat() - 0.5F;
+            hudY += rng.nextFloat() - 0.5F;
+            hudZ += rng.nextFloat() - 0.5F;
         }
+
+        matrices.translate(hudX, hudY, hudZ);
 
         AbilityDispatcher abilities = pony.getAbilities();
 
@@ -106,9 +118,14 @@ public class UHud extends DrawableHelper {
         slots.forEach(slot -> slot.renderBackground(matrices, abilities, swap, tickDelta));
         slots.forEach(slot -> slot.renderLabel(matrices, abilities, tickDelta));
 
-        RenderSystem.disableBlend();
-
         matrices.pop();
+
+        if (pony.getSpecies().canCast()) {
+            renderSpell(pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 15 - xDirection * 8, hudY + 2);
+            renderSpell(pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 15 - xDirection * 0, hudY - 3);
+        }
+
+        RenderSystem.disableBlend();
 
         if (pony.getSpecies() == Race.CHANGELING && !client.player.isSneaking()) {
             pony.getSpellSlot().get(SpellType.CHANGELING_DISGUISE, false).map(AbstractDisguiseSpell::getDisguise)
@@ -137,15 +154,25 @@ public class UHud extends DrawableHelper {
         }
     }
 
-    private void renderMessage(MatrixStack matrices, float tickDelta) {
+    private void renderSpell(CustomisedSpellType<?> spell, int x, int y) {
+        if (!spell.isEmpty()) {
+            MatrixStack modelStack = RenderSystem.getModelViewStack();
+            modelStack.push();
+            modelStack.translate(x, y, 0);
+            modelStack.scale(EQUIPPED_GEMSTONE_SCALE, EQUIPPED_GEMSTONE_SCALE, EQUIPPED_GEMSTONE_SCALE);
+            RenderSystem.applyModelViewMatrix();
+            client.getItemRenderer().renderGuiItemIcon(spell.getDefaultStack(), 0, 0);
+            modelStack.pop();
+            RenderSystem.applyModelViewMatrix();
+        }
+    }
 
+    private void renderMessage(MatrixStack matrices, float tickDelta) {
         float time = messageTime - tickDelta;
         int progress = Math.min(255, (int)(time * 255F / 20F));
 
         if (progress > 8) {
-
             int color = 0xFFFFFF;
-
             int alpha = progress << 24 & -16777216;
 
             color |= alpha;
@@ -239,5 +266,4 @@ public class UHud extends DrawableHelper {
             RenderSystem.setShaderTexture(0, HUD_TEXTURE);
         });
     }
-
 }

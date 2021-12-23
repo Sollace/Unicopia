@@ -74,7 +74,7 @@ public class TraitRequirementRecipe implements SpellbookRecipe {
 
         SpellType<?> spell = SpellType.getKey(Identifier.tryParse(JsonHelper.getString(json, "spell", "")));
         if (spell != SpellType.EMPTY_KEY) {
-            return GemstoneItem.enchanted(stack, spell);
+            return GemstoneItem.enchant(stack, spell);
         }
         return stack;
     }

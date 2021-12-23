@@ -4,14 +4,11 @@ import java.util.Random;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
-import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 
 import net.minecraft.item.ItemStack;
@@ -58,7 +55,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
             return Hit.of(manaLevel > 0 && ((AmuletItem)amulet.getValue().getItem()).canCharge(amulet.getValue()));
         }
 
-        ActionResult spell = getNewSpell(player).getResult();
+        ActionResult spell = player.getCharms().getSpellInHand(Hand.MAIN_HAND).getResult();
 
         if (spell != ActionResult.PASS) {
             return Hit.of(spell != ActionResult.FAIL && manaLevel > 4F);
@@ -82,7 +79,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
             return Math.min(manaLevel, ((AmuletItem)amulet.getValue().getItem()).getChargeRemainder(amulet.getValue()));
         }
 
-        if (getNewSpell(player).getResult() == ActionResult.CONSUME) {
+        if (player.getCharms().getSpellInHand(Hand.MAIN_HAND).getResult() == ActionResult.CONSUME) {
             return 4F;
         }
 
@@ -111,7 +108,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
                 }
             }
         } else {
-            TypedActionResult<CustomisedSpellType<?>> newSpell = getNewSpell(player);
+            TypedActionResult<CustomisedSpellType<?>> newSpell = player.getCharms().getSpellInHand(Hand.MAIN_HAND);
 
             if (newSpell.getResult() != ActionResult.FAIL) {
                 CustomisedSpellType<?> spell = newSpell.getValue();
@@ -138,14 +135,6 @@ public class UnicornCastingAbility implements Ability<Hit> {
         }
 
         return TypedActionResult.pass(stack);
-    }
-
-    private TypedActionResult<CustomisedSpellType<?>> getNewSpell(Pony player) {
-        return Streams.stream(player.getMaster().getItemsHand())
-                .filter(GemstoneItem::isEnchanted)
-                .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), null, null))
-                .findFirst()
-                .orElse(TypedActionResult.<CustomisedSpellType<?>>pass(SpellType.SHIELD.withTraits()));
     }
 
     @Override

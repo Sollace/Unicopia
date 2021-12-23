@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +11,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.entity.player.PlayerCharmTracker;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,6 +33,24 @@ public class GemstoneItem extends Item {
 
     public GemstoneItem(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        TypedActionResult<ItemStack> result = super.use(world, user, hand);
+
+        if (!result.getResult().isAccepted()) {
+            ItemStack stack = user.getStackInHand(hand);
+            PlayerCharmTracker charms = Pony.of(user).getCharms();
+
+            TypedActionResult<CustomisedSpellType<?>> spell = consumeSpell(stack, user, ((Predicate<CustomisedSpellType<?>>)charms.getEquippedSpell(hand)::equals).negate());
+            if (spell.getResult().isAccepted()) {
+                charms.equipSpell(hand, spell.getValue());
+                return TypedActionResult.success(stack, true);
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -58,7 +77,7 @@ public class GemstoneItem extends Item {
             for (Affinity i : Affinity.VALUES) {
                 SpellType.byAffinity(i).forEach(type -> {
                     if (type.isObtainable()) {
-                        items.add(enchanted(getDefaultStack(), type, i));
+                        items.add(enchant(getDefaultStack(), type, i));
                     }
                 });
             }
@@ -82,20 +101,21 @@ public class GemstoneItem extends Item {
         return super.getName();
     }
 
-    public static TypedActionResult<CustomisedSpellType<?>> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable SpellType<?> exclude, @Nullable Predicate<SpellType<?>> test) {
+    public static TypedActionResult<CustomisedSpellType<?>> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable Predicate<CustomisedSpellType<?>> filter) {
 
         if (!isEnchanted(stack)) {
             return TypedActionResult.pass(null);
         }
 
         SpellType<Spell> key = getSpellKey(stack);
-        SpellTraits traits = SpellTraits.of(stack);
 
-        if (Objects.equals(key, exclude)) {
+        if (key.isEmpty()) {
             return TypedActionResult.fail(null);
         }
 
-        if (key.isEmpty() || (test != null && !test.test(key))) {
+        CustomisedSpellType<?> result = key.withTraits(SpellTraits.of(stack));
+
+        if (filter != null && !filter.test(result)) {
             return TypedActionResult.fail(null);
         }
 
@@ -103,29 +123,29 @@ public class GemstoneItem extends Item {
             player.swingHand(player.getStackInHand(Hand.OFF_HAND) == stack ? Hand.OFF_HAND : Hand.MAIN_HAND);
 
             if (stack.getCount() == 1) {
-                unenchanted(stack);
+                unenchant(stack);
             } else {
-                player.giveItemStack(unenchanted(stack.split(1)));
+                player.giveItemStack(unenchant(stack.split(1)));
             }
         }
 
-        return TypedActionResult.consume(key.withTraits(traits));
+        return TypedActionResult.consume(result);
     }
 
     public static boolean isEnchanted(ItemStack stack) {
         return !stack.isEmpty() && stack.hasNbt() && stack.getNbt().contains("spell");
     }
 
-    public static ItemStack enchanted(ItemStack stack, SpellType<?> type) {
-        return enchanted(stack, type, type.getAffinity());
+    public static ItemStack enchant(ItemStack stack, SpellType<?> type) {
+        return enchant(stack, type, type.getAffinity());
     }
 
-    public static ItemStack enchanted(ItemStack stack, SpellType<?> type, Affinity affinity) {
+    public static ItemStack enchant(ItemStack stack, SpellType<?> type, Affinity affinity) {
         stack.getOrCreateNbt().putString("spell", type.getId().toString());
         return type.getTraits().applyTo(stack);
     }
 
-    public static ItemStack unenchanted(ItemStack stack) {
+    public static ItemStack unenchant(ItemStack stack) {
         stack.removeSubNbt("spell");
         return stack;
     }

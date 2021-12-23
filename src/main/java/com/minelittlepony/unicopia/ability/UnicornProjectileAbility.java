@@ -1,17 +1,13 @@
 package com.minelittlepony.unicopia.ability;
 
-import org.jetbrains.annotations.Nullable;
-
-import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 
@@ -46,7 +42,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
 
     @Override
     public Hit tryActivate(Pony player) {
-        return Hit.of(getNewSpell(player).getResult() != ActionResult.FAIL);
+        return Hit.of(player.getCharms().getSpellInHand(Hand.OFF_HAND).getResult() != ActionResult.FAIL);
     }
 
     @Override
@@ -61,27 +57,12 @@ public class UnicornProjectileAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
-        TypedActionResult<CustomisedSpellType<?>> thrown = getNewSpell(player);
+        TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(Hand.OFF_HAND);
 
         if (thrown.getResult() != ActionResult.FAIL) {
-            @Nullable
-            CustomisedSpellType<?> spell = thrown.getValue();
-
-            if (spell == null) {
-                spell = SpellType.VORTEX.withTraits();
-            }
-
             player.subtractEnergyCost(getCostEstimate(player));
-            spell.create().toThrowable().throwProjectile(player);
+            thrown.getValue().create().toThrowable().throwProjectile(player);
         }
-    }
-
-    private TypedActionResult<CustomisedSpellType<?>> getNewSpell(Pony player) {
-        return Streams.stream(player.getMaster().getItemsHand())
-                .filter(GemstoneItem::isEnchanted)
-                .map(stack -> GemstoneItem.consumeSpell(stack, player.getMaster(), null, null))
-                .findFirst()
-                .orElse(TypedActionResult.<CustomisedSpellType<?>>pass(null));
     }
 
     @Override

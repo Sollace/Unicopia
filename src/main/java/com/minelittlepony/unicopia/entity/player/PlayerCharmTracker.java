@@ -7,14 +7,23 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.ability.magic.Affine;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
 
 public class PlayerCharmTracker implements Tickable, NbtSerialisable {
@@ -22,6 +31,11 @@ public class PlayerCharmTracker implements Tickable, NbtSerialisable {
     private final Pony pony;
 
     private final ItemTracker armour = new ItemTracker();
+
+    private CustomisedSpellType<?>[] handSpells = new CustomisedSpellType<?>[] {
+        SpellType.SHIELD.withTraits(),
+        SpellType.CATAPULT.withTraits()
+    };
 
     PlayerCharmTracker(Pony pony) {
         this.pony = pony;
@@ -36,14 +50,47 @@ public class PlayerCharmTracker implements Tickable, NbtSerialisable {
         return armour;
     }
 
+    public CustomisedSpellType<?>[] getHandSpells() {
+        return handSpells;
+    }
+
+    public CustomisedSpellType<?> getEquippedSpell(Hand hand) {
+        return handSpells[hand.ordinal()];
+    }
+
+    public TypedActionResult<CustomisedSpellType<?>> getSpellInHand(Hand hand) {
+        return Streams.stream(pony.getMaster().getItemsHand())
+                .filter(GemstoneItem::isEnchanted)
+                .map(stack -> GemstoneItem.consumeSpell(stack, pony.getMaster(), null))
+                .findFirst()
+                .orElse(getEquippedSpell(hand).toAction());
+    }
+
+    public void equipSpell(Hand hand, CustomisedSpellType<?> spell) {
+        handSpells[hand.ordinal()] = spell;
+        pony.getMaster().playSound(SoundEvents.UI_BUTTON_CLICK, 0.25F, 1.75F);
+        pony.setDirty();
+    }
+
     @Override
     public void toNBT(NbtCompound compound) {
         compound.put("armour", armour.toNBT());
+        NbtList equippedSpells = new NbtList();
+        for (CustomisedSpellType<?> spell : handSpells) {
+            equippedSpells.add(spell.toNBT());
+        }
+        compound.put("handSpells", equippedSpells);
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         armour.fromNBT(compound.getCompound("armour"));
+        if (compound.contains("handSpells", NbtElement.LIST_TYPE)) {
+            NbtList list = compound.getList("handSpells", NbtElement.COMPOUND_TYPE);
+            for (int i = 0; i < handSpells.length && i < list.size(); i++) {
+                handSpells[i] = CustomisedSpellType.fromNBT(list.getCompound(i));
+            }
+        }
     }
 
     public class ItemTracker implements NbtSerialisable {

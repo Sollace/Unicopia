@@ -61,7 +61,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
         player.getEntityWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PARROT_IMITATE_RAVAGER, SoundCategory.PLAYERS, 1.4F, 0.4F);
 
         iplayer.getSpellSlot().get(SpellType.CHANGELING_DISGUISE, true)
-            .orElseGet(() -> SpellType.CHANGELING_DISGUISE.apply(iplayer, SpellTraits.EMPTY))
+            .orElseGet(() -> SpellType.CHANGELING_DISGUISE.withTraits().apply(iplayer))
             .setDisguise(looked);
 
         if (!player.isCreative()) {

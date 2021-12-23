@@ -127,6 +127,16 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         });
     }
 
+    @Override
+    public int hashCode() {
+        return traits.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return this == other || other instanceof SpellTraits && Objects.equals(traits, ((SpellTraits) other).traits);
+    }
+
     public static SpellTraits union(SpellTraits...many) {
         Map<Trait, Float> traits = new HashMap<>();
         for (SpellTraits i : many) {

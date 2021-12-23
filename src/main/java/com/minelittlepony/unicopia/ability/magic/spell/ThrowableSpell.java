@@ -49,7 +49,7 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
         if (!caster.isClient()) {
             MagicProjectileEntity projectile = new MagicProjectileEntity(world, entity);
 
-            projectile.setItem(GemstoneItem.enchanted(UItems.GEMSTONE.getDefaultStack(), spell.getType()));
+            projectile.setItem(GemstoneItem.enchant(UItems.GEMSTONE.getDefaultStack(), spell.getType()));
             projectile.getSpellSlot().put(this);
             projectile.setVelocity(entity, entity.getPitch(), entity.getYaw(), 0, 1.5F, 1);
             projectile.setHydrophobic();
