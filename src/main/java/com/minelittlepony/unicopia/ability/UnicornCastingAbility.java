@@ -97,9 +97,11 @@ public class UnicornCastingAbility implements Ability<Hit> {
                 boolean remove = player.getSpellSlot().removeIf(spell, true);
                 player.subtractEnergyCost(remove ? 2 : 4);
                 if (!remove) {
-                    if (spell.apply(player) != null) {
+                    if (spell.apply(player) == null) {
                         player.spawnParticles(ParticleTypes.LARGE_SMOKE, 6);
                         player.playSound(SoundEvents.ENTITY_ITEM_BREAK, 1, 0.5F);
+                    } else {
+                        player.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 0.05F, 2.2F);
                     }
                 }
             }
