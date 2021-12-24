@@ -58,16 +58,6 @@ public interface SpellContainer {
     }
 
     /**
-     * Returns true if this caster has an active effect attached to it.
-     *
-     * @deprecated To be removed
-     */
-    @Deprecated
-    default boolean isPresent() {
-        return contains((SpellPredicate<?>)null);
-    }
-
-    /**
      * Gets the active effect for this caster updating it if needed.
      */
     <T extends Spell> Optional<T> get(@Nullable SpellPredicate<T> type, boolean update);

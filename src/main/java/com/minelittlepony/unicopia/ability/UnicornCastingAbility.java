@@ -48,21 +48,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
     @Override
     @Nullable
     public Hit tryActivate(Pony player) {
-        float manaLevel = player.getMagicalReserves().getMana().get();
-
-        TypedActionResult<ItemStack> amulet = getAmulet(player);
-
-        if (amulet.getResult().isAccepted()) {
-            return Hit.of(manaLevel > 0 && ((AmuletItem)amulet.getValue().getItem()).canCharge(amulet.getValue()));
-        }
-
-        ActionResult spell = player.getCharms().getSpellInHand(Hand.MAIN_HAND).getResult();
-
-        if (spell != ActionResult.PASS) {
-            return Hit.of(spell != ActionResult.FAIL && manaLevel > 4F);
-        }
-
-        return Hit.of(manaLevel > (player.getSpellSlot().isPresent() ? 2F : 4F));
+        return Hit.of(player.getMagicalReserves().getMana().get() >= getCostEstimate(player));
     }
 
     @Override
@@ -80,15 +66,9 @@ public class UnicornCastingAbility implements Ability<Hit> {
             return Math.min(manaLevel, ((AmuletItem)amulet.getValue().getItem()).getChargeRemainder(amulet.getValue()));
         }
 
-        if (player.getCharms().getSpellInHand(Hand.MAIN_HAND).getResult() == ActionResult.CONSUME) {
-            return 4F;
-        }
+        TypedActionResult<CustomisedSpellType<?>> spell = player.getCharms().getSpellInHand(Hand.MAIN_HAND);
 
-        if (player.getSpellSlot().isPresent()) {
-            return 2F;
-        }
-
-        return 4F;
+        return !spell.getResult().isAccepted() || spell.getValue().isOn(player) ? 2 : 4;
     }
 
     @Override
