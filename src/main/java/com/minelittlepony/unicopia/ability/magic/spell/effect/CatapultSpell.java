@@ -97,6 +97,11 @@ public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
     }
 
     static void createBlockEntity(World world, BlockPos bpos, @Nullable Consumer<Entity> apply) {
+
+        if (world.isAir(bpos)) {
+            return;
+        }
+
         Vec3d pos = Vec3d.ofBottomCenter(bpos);
         FallingBlockEntity e = new FallingBlockEntity(world, pos.x, pos.y, pos.z, world.getBlockState(bpos));
         world.removeBlock(bpos, true);

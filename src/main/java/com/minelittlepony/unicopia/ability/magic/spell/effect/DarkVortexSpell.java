@@ -23,22 +23,34 @@ public class DarkVortexSpell extends AttractiveSpell {
             .with(Trait.DARKNESS, 100)
             .build();
 
-    private int accumulatedMass = 10;
+    private int accumulatedMass = 0;
 
     protected DarkVortexSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
     }
 
     @Override
+    public boolean apply(Caster<?> source) {
+        return toPlaceable().apply(source);
+    }
+
+    @Override
     public boolean tick(Caster<?> source, Situation situation) {
+
+        if (situation == Situation.BODY) {
+            return true;
+        }
+
         if (accumulatedMass > 20) {
-            Vec3d pos = source.getOriginVector();
-            source.getWorld().createExplosion(
-                    source.getMaster(),
-                    MagicalDamageSource.create("super_nova"),
-                    null,
-                    pos.getX(), pos.getY(), pos.getZ(), 17, true, Explosion.DestructionType.DESTROY
-            );
+            if (!source.isClient()) {
+                Vec3d pos = source.getOriginVector();
+                source.getWorld().createExplosion(
+                        source.getMaster(),
+                        MagicalDamageSource.create("super_nova"),
+                        null,
+                        pos.getX(), pos.getY(), pos.getZ(), 17, true, Explosion.DestructionType.DESTROY
+                );
+            }
             return false;
         }
         return super.tick(source, situation);
@@ -53,7 +65,7 @@ public class DarkVortexSpell extends AttractiveSpell {
             source.addParticle(new MagicParticleEffect(getType().getColor()), p, p.subtract(pos));
         });
 
-        float radius = (float)getDrawDropOffRange(source) / 2;
+        float radius = 1 + (float)getDrawDropOffRange(source) / 2;
 
         particlEffect.ifAbsent(getUuid(), source, spawner -> {
             spawner.addParticle(new SphereParticleEffect(getType().getColor(), 0.99F, radius), source.getOriginVector(), Vec3d.ZERO);
@@ -69,9 +81,18 @@ public class DarkVortexSpell extends AttractiveSpell {
 
     @Override
     protected long applyEntities(Caster<?> source) {
-        PosHelper.getAllInRegionMutable(source.getOrigin(), new Sphere(false, ((int)getDrawDropOffRange(source) / 2F))).forEach(i -> {
-            CatapultSpell.createBlockEntity(source.getWorld(), i, null);
-        });
+        if (!source.isClient()) {
+            PosHelper.getAllInRegionMutable(source.getOrigin(), new Sphere(false, 1 + ((int)getDrawDropOffRange(source) / 2F))).forEach(i -> {
+                if (!source.getWorld().isAir(i)) {
+                    source.getWorld().breakBlock(i, false);
+                    if (source.getWorld().random.nextInt(accumulatedMass + 1) == 0) {
+                        accumulatedMass++;
+                        setDirty();
+                    }
+
+                }
+            });
+        }
 
         return super.applyEntities(source);
     }

@@ -127,19 +127,22 @@ public class ShieldSpell extends AbstractSpell {
 
         return source.findAllEntitiesInRange(radius)
             .filter(entity -> {
-                return
-                        !FriendshipBraceletItem.isComrade(source, entity)
-                        && (entity instanceof LivingEntity
-                        || entity instanceof TntEntity
-                        || entity instanceof FallingBlockEntity
-                        || entity instanceof EyeOfEnderEntity
-                        || entity instanceof BoatEntity
-                        || ProjectileUtil.isFlyingProjectile(entity)
-                        || entity instanceof AbstractMinecartEntity)
-                        && !(entity instanceof ArmorStandEntity)
+                return !FriendshipBraceletItem.isComrade(source, entity)
+                        && isValidTarget(entity)
                         && !(ownerIsValid && (Pony.equal(entity, owner) || owner.isConnectedThroughVehicle(entity)));
             })
             .collect(Collectors.toList());
+    }
+
+    protected boolean isValidTarget(Entity entity) {
+        return (entity instanceof LivingEntity
+                || entity instanceof TntEntity
+                || entity instanceof FallingBlockEntity
+                || entity instanceof EyeOfEnderEntity
+                || entity instanceof BoatEntity
+                || ProjectileUtil.isFlyingProjectile(entity)
+                || entity instanceof AbstractMinecartEntity)
+            && !(entity instanceof ArmorStandEntity);
     }
 
     protected long applyEntities(Caster<?> source) {
