@@ -1,21 +1,12 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import com.minelittlepony.unicopia.Affinity;
-import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
@@ -47,7 +38,7 @@ public class ShieldSpell extends AbstractSpell {
 
     protected final ParticleHandle particlEffect = new ParticleHandle();
 
-    private final Map<UUID, Target> targets = new TreeMap<>();
+    private final TargetSelecter targetSelecter = new TargetSelecter(this);
 
     protected ShieldSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
@@ -120,22 +111,6 @@ public class ShieldSpell extends AbstractSpell {
         return (min + (source.getLevel().get() * 2)) / multiplier;
     }
 
-    protected List<Entity> getTargets(Caster<?> source, double radius) {
-
-        Entity owner = source.getMaster();
-
-        boolean ownerIsValid = isFriendlyTogether(source) && (EquinePredicates.PLAYER_UNICORN.test(owner) && owner.isSneaking());
-
-        return source.findAllEntitiesInRange(radius)
-            .filter(entity -> {
-                return !FriendshipBraceletItem.isComrade(source, entity)
-                        && !SpellPredicate.IS_SHIELD_LIKE.isOn(entity)
-                        && isValidTarget(entity)
-                        && !(ownerIsValid && (Pony.equal(entity, owner) || owner.isConnectedThroughVehicle(entity)));
-            })
-            .collect(Collectors.toList());
-    }
-
     protected boolean isValidTarget(Entity entity) {
         return (entity instanceof LivingEntity
                 || entity instanceof TntEntity
@@ -152,21 +127,15 @@ public class ShieldSpell extends AbstractSpell {
 
         Vec3d origin = source.getOriginVector();
 
-        this.targets.values().removeIf(Target::tick);
-
-        List<Entity> targets = getTargets(source, radius);
-        targets.forEach(i -> {
+        targetSelecter.getEntities(source, radius, this::isValidTarget).forEach(i -> {
             try {
-                this.targets.computeIfAbsent(i.getUuid(), Target::new);
-                double dist = i.getPos().distanceTo(origin);
-
-                applyRadialEffect(source, i, dist, radius);
+                applyRadialEffect(source, i, i.getPos().distanceTo(origin), radius);
             } catch (Throwable e) {
                 Unicopia.LOGGER.error("Error updating shield effect", e);
             }
         });
 
-        return this.targets.values().stream().filter(Target::canHurt).count();
+        return targetSelecter.getTotalDamaged();
     }
 
     protected void applyRadialEffect(Caster<?> source, Entity target, double distance, double radius) {
@@ -230,18 +199,4 @@ public class ShieldSpell extends AbstractSpell {
         return force;
     }
 
-    class Target {
-
-        int cooldown = 20;
-
-        Target(UUID id) { }
-
-        boolean tick() {
-            return --cooldown < 0;
-        }
-
-        boolean canHurt() {
-            return cooldown == 20;
-        }
-    }
 }

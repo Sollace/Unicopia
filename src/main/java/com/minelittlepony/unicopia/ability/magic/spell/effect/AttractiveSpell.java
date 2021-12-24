@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import java.util.List;
-
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -9,7 +7,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
@@ -39,13 +36,8 @@ public class AttractiveSpell extends ShieldSpell implements ProjectileSpell {
     }
 
     @Override
-    protected List<Entity> getTargets(Caster<?> source, double radius) {
-
-        if (getTraits().get(Trait.FOCUS) > 10) {
-            return VecHelper.findInRange(source.getEntity(), source.getWorld(), source.getOriginVector(), radius, i -> i instanceof ItemEntity);
-        }
-
-        return super.getTargets(source, radius);
+    protected boolean isValidTarget(Entity entity) {
+        return getTraits().get(Trait.FOCUS) > 10 ? entity instanceof ItemEntity : super.isValidTarget(entity);
     }
 
     @Override
