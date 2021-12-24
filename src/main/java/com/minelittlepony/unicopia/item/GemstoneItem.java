@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.client.FlowingText;
 import com.minelittlepony.unicopia.entity.player.PlayerCharmTracker;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -66,7 +67,7 @@ public class GemstoneItem extends Item {
                 line = line.formatted(Formatting.OBFUSCATED);
             }
 
-            lines.add(line);
+            lines.addAll(FlowingText.wrap(line, 180).toList());
         }
     }
 
