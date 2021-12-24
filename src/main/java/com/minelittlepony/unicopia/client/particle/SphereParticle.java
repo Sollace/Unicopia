@@ -35,22 +35,21 @@ public class SphereParticle extends Particle implements Attachment {
 
     private static final SphereModel MODEL = new SphereModel();
 
-    public SphereParticle(SphereParticleEffect effect, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
-        this(effect, w, x, y, z);
+    public SphereParticle(SphereParticleEffect parameters, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
+        this(parameters, w, x, y, z);
 
         this.velocityX = vX;
         this.velocityY = vY;
         this.velocityZ = vZ;
     }
 
-    public SphereParticle(SphereParticleEffect effect, ClientWorld w, double x, double y, double z) {
+    public SphereParticle(SphereParticleEffect parameters, ClientWorld w, double x, double y, double z) {
         super(w, x, y, z);
-
-        this.radius = effect.getRadius();
-        this.colorRed = effect.getColor().getX() / 255F;
-        this.colorGreen = effect.getColor().getY() / 255F;
-        this.colorBlue = effect.getColor().getZ() / 255F;
-        this.colorAlpha = effect.getAlpha();
+        this.radius = parameters.getRadius();
+        this.colorRed = parameters.getColor().getX() / 255F;
+        this.colorGreen = parameters.getColor().getY() / 255F;
+        this.colorBlue = parameters.getColor().getZ() / 255F;
+        this.colorAlpha = parameters.getAlpha();
 
         setMaxAge(10);
     }

@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.particle;
 
 import java.util.Locale;
+
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -84,5 +85,4 @@ public class FollowingParticleEffect implements ParticleEffect {
     public String asString() {
         return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f", Registry.PARTICLE_TYPE.getId(getType()), fixedTarget.x, fixedTarget.y, fixedTarget.z, followSpeed);
     }
-
 }
