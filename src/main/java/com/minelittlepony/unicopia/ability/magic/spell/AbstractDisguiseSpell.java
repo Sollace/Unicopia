@@ -15,8 +15,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
 
 /**
- * Shapeshifts the player.
- * <p>
+ * Base implementation for a spell that changes the player's appearance.
  */
 public abstract class AbstractDisguiseSpell extends AbstractSpell implements Disguise, ProjectileImpactListener {
 

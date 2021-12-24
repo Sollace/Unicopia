@@ -27,7 +27,7 @@ import net.minecraft.world.GameRules;
  * <p>
  * Used by the Rainboom ability.
  */
-public class JoustingSpell extends AbstractSpell {
+public class RainboomAbilitySpell extends AbstractSpell {
 
     private final int rad = 5;
     private final Shape effect_range = new Sphere(false, rad);
@@ -36,7 +36,7 @@ public class JoustingSpell extends AbstractSpell {
 
     private int age;
 
-    public JoustingSpell(SpellType<?> type, SpellTraits traits) {
+    public RainboomAbilitySpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
     }
 

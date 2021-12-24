@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -128,6 +129,7 @@ public class ShieldSpell extends AbstractSpell {
         return source.findAllEntitiesInRange(radius)
             .filter(entity -> {
                 return !FriendshipBraceletItem.isComrade(source, entity)
+                        && !SpellPredicate.IS_SHIELD_LIKE.isOn(entity)
                         && isValidTarget(entity)
                         && !(ownerIsValid && (Pony.equal(entity, owner) || owner.isConnectedThroughVehicle(entity)));
             })

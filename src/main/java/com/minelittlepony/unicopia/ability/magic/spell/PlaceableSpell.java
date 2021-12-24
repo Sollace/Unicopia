@@ -19,12 +19,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
-// TODO: We'll need a recipe to make a spell placeable
 /**
  * A spell that can be attached to a specific location in the world.
  * <p>
  * The spell's effects are still powered by the casting player, so if the player dies or leaves the area, their
- * spell loses effect until they return.
+ * spell loses affect until they return.
  */
 public class PlaceableSpell extends AbstractDelegatingSpell {
     @Nullable

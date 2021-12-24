@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Suppressable;
+import com.minelittlepony.unicopia.ability.magic.IllusionarySpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -20,11 +20,11 @@ import net.minecraft.nbt.NbtCompound;
  * <p>
  * Internal. Used by the changeling ability.
  */
-public class ChangelingDisguiseSpell extends AbstractDisguiseSpell implements Suppressable {
+public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements IllusionarySpell {
 
     private int suppressionCounter;
 
-    public ChangelingDisguiseSpell(SpellType<?> type, SpellTraits traits) {
+    public DispersableDisguiseSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
     }
 

@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -23,7 +24,7 @@ public class DarkVortexSpell extends AttractiveSpell {
             .with(Trait.DARKNESS, 100)
             .build();
 
-    private int accumulatedMass = 0;
+    private float accumulatedMass = 0;
 
     protected DarkVortexSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
@@ -41,7 +42,11 @@ public class DarkVortexSpell extends AttractiveSpell {
             return true;
         }
 
-        if (accumulatedMass > 20) {
+        if (!source.isClient()) {
+            accumulatedMass += 0.001F * (1 + getTraits().get(Trait.STRENGTH, 70, 120) - 70);
+        }
+
+        if (accumulatedMass > 20 * getTraits().get(Trait.POWER, 1, 60) / 10F) {
             if (!source.isClient()) {
                 Vec3d pos = source.getOriginVector();
                 source.getWorld().createExplosion(
@@ -72,6 +77,10 @@ public class DarkVortexSpell extends AttractiveSpell {
         }).ifPresent(p -> {
             p.setAttribute(0, radius);
         });
+
+        if (source.getEntity().age % 20 == 0) {
+            source.playSound(USounds.AMBIENT_WIND_GUST, 1, 1);
+        }
     }
 
     @Override
@@ -83,13 +92,10 @@ public class DarkVortexSpell extends AttractiveSpell {
     protected long applyEntities(Caster<?> source) {
         if (!source.isClient()) {
             PosHelper.getAllInRegionMutable(source.getOrigin(), new Sphere(false, 1 + ((int)getDrawDropOffRange(source) / 2F))).forEach(i -> {
-                if (!source.getWorld().isAir(i)) {
+                if (!source.getWorld().isAir(i) && source.getWorld().random.nextInt(120) == 0) {
                     source.getWorld().breakBlock(i, false);
-                    if (source.getWorld().random.nextInt(accumulatedMass + 1) == 0) {
-                        accumulatedMass++;
-                        setDirty();
-                    }
-
+                    accumulatedMass++;
+                    setDirty();
                 }
             });
         }
@@ -112,12 +118,12 @@ public class DarkVortexSpell extends AttractiveSpell {
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
-        compound.putInt("accumulatedMass", accumulatedMass);
+        compound.putFloat("accumulatedMass", accumulatedMass);
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
-        accumulatedMass = compound.getInt("accumulatedMass");
+        accumulatedMass = compound.getFloat("accumulatedMass");
     }
 }

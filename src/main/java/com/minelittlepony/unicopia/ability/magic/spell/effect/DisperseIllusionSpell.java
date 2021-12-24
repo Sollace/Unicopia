@@ -14,10 +14,10 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
 /**
- * An area-effect spell that suppresses other forms of magic
+ * An area-effect spell that disperses illussions.
  */
-public class RevealingSpell extends AbstractAreaEffectSpell {
-    protected RevealingSpell(SpellType<?> type, SpellTraits traits) {
+public class DisperseIllusionSpell extends AbstractAreaEffectSpell {
+    protected DisperseIllusionSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
     }
 

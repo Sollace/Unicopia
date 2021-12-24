@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.ability;
 
 import java.util.Random;
-import java.util.function.Predicate;
 
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.EquinePredicates;
@@ -13,7 +12,6 @@ import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.Vec3d;
@@ -23,8 +21,6 @@ import net.minecraft.util.math.Vec3d;
  * (only shields for now)
  */
 public class BatEeeeAbility implements Ability<Hit> {
-
-    private static final Predicate<Entity> HAS_SHIELD = EquinePredicates.carryingSpell(SpellType.SHIELD);
 
     @Override
     public int getWarmupTime(Pony player) {
@@ -84,7 +80,7 @@ public class BatEeeeAbility implements Ability<Hit> {
         }
 
         int total = player.findAllEntitiesInRange(5).mapToInt(e -> {
-            if (e instanceof LivingEntity && !HAS_SHIELD.test(e)) {
+            if (e instanceof LivingEntity && !SpellType.SHIELD.isOn(e)) {
                 boolean isEarthPony = EquinePredicates.PLAYER_EARTH.test(e);
                 e.damage(MagicalDamageSource.create("eeee", player), isEarthPony ? 0.1F : 0.3F);
 

@@ -12,10 +12,10 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
-import com.minelittlepony.unicopia.ability.magic.spell.CompoundSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.ChangelingDisguiseSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.JoustingSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.CompoundSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.DispersableDisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.RainboomAbilitySpell;
 import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.ThrowableSpell;
@@ -43,8 +43,8 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<PlaceableSpell> PLACED_SPELL = register("placed", Affinity.NEUTRAL, 0, false, PlaceableSpell::new);
     public static final SpellType<ThrowableSpell> THROWN_SPELL = register("thrown", Affinity.NEUTRAL, 0, false, ThrowableSpell::new);
 
-    public static final SpellType<AbstractDisguiseSpell> CHANGELING_DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, ChangelingDisguiseSpell::new);
-    public static final SpellType<JoustingSpell> RAINBOOM = register("rainboom", Affinity.GOOD, 0xBDBDF9, false, JoustingSpell::new);
+    public static final SpellType<AbstractDisguiseSpell> CHANGELING_DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, DispersableDisguiseSpell::new);
+    public static final SpellType<RainboomAbilitySpell> RAINBOOM = register("rainboom", Affinity.GOOD, 0xBDBDF9, false, RainboomAbilitySpell::new);
 
     public static final SpellType<IceSpell> FROST = register("frost", Affinity.GOOD, 0xBDBDF9, true, IceSpell.DEFAULT_TRAITS, IceSpell::new);
     public static final SpellType<ScorchSpell> SCORCH = register("scorch", Affinity.BAD, 0, true, ScorchSpell.DEFAULT_TRAITS, ScorchSpell::new);
@@ -55,7 +55,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<DarkVortexSpell> DARK_VORTEX = register("dark_vortex", Affinity.BAD, 0, true, DarkVortexSpell.DEFAULT_TRAITS, DarkVortexSpell::new);
     public static final SpellType<NecromancySpell> NECROMANCY = register("necromancy", Affinity.BAD, 0x8A3A3A, true, NecromancySpell::new);
     public static final SpellType<SiphoningSpell> SIPHONING = register("siphoning", Affinity.NEUTRAL, 0xe308ab, true, SiphoningSpell::new);
-    public static final SpellType<RevealingSpell> REVEALING = register("reveal", Affinity.GOOD, 0x5CE81F, true, RevealingSpell::new);
+    public static final SpellType<DisperseIllusionSpell> REVEALING = register("reveal", Affinity.GOOD, 0x5CE81F, true, DisperseIllusionSpell::new);
     public static final SpellType<AwkwardSpell> AWKWARD = register("awkward", Affinity.GOOD, 0xE1239C, true, AwkwardSpell::new);
     public static final SpellType<TransformationSpell> TRANSFORMATION = register("transformation", Affinity.GOOD, 0x3A59AA, true, TransformationSpell::new);
     public static final SpellType<FeatherFallSpell> FEATHER_FALL = register("feather_fall", Affinity.GOOD, 0x00EEFF, true, FeatherFallSpell.DEFAULT_TRAITS, FeatherFallSpell::new);
