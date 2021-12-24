@@ -15,7 +15,6 @@ import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
-import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
@@ -183,8 +182,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         FlightType type = getFlightType();
 
-        if (type != lastFlightType && (lastFlightType.isArtifical() || type.isArtifical())) {
-            ParticleUtils.spawnParticles(ParticleTypes.CLOUD, entity, 10);
+        boolean typeChanged = type != lastFlightType && (lastFlightType.isArtifical() || type.isArtifical());
+
+        if (typeChanged) {
+            pony.spawnParticles(ParticleTypes.CLOUD, 10);
 
             entity.playSound(entity.world.getDimension().isUltrawarm() ? SoundEvents.BLOCK_BELL_USE : SoundEvents.BLOCK_BELL_RESONATE, 0.1125F, 1.5F);
         }
@@ -235,7 +236,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         isFlyingSurvival = entity.getAbilities().flying && !creative;
         isFlyingEither = isFlyingSurvival || (creative && entity.getAbilities().flying);
 
-        if (startedFlyingCreative) {
+        if (typeChanged || startedFlyingCreative) {
             entity.calculateDimensions();
         }
 
