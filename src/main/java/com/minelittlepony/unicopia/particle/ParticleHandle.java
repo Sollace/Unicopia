@@ -98,7 +98,7 @@ public class ParticleHandle {
         }
 
         public Optional<Caster<?>> get() {
-            caster = caster.filter(r -> r.get() != null && r.get().getSpellSlot().contains(effect));
+            caster = caster.filter(r -> r.get() != null && r.get().getSpellSlot().contains(effect) && r.get().getEntity().isAlive());
             return caster.map(WeakReference::get);
         }
     }
