@@ -159,9 +159,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
             setNoGravity(false);
         }
 
-        if (!getSpellSlot().get(true).filter(spell -> spell.tick(this, Situation.PROJECTILE)).isPresent()) {
-            discard();
-        }
+        getSpellSlot().get(true).filter(spell -> spell.tick(this, Situation.PROJECTILE));
 
         if (getHydrophobic()) {
             if (world.getBlockState(getBlockPos()).getMaterial().isLiquid()) {

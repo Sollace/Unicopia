@@ -26,27 +26,30 @@ public class SphereParticleEffect implements ParticleEffect {
 
     private Vec3d offset = Vec3d.ZERO;
 
+    private final ParticleType<? extends SphereParticleEffect> type;
+
     protected SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, StringReader reader) throws CommandSyntaxException {
-        this(AbstractDustParticleEffect.readColor(reader), ParticleFactoryHelper.readFloat(reader), ParticleFactoryHelper.readFloat(reader), ParticleFactoryHelper.readVector(reader));
+        this(type, AbstractDustParticleEffect.readColor(reader), ParticleFactoryHelper.readFloat(reader), ParticleFactoryHelper.readFloat(reader), ParticleFactoryHelper.readVector(reader));
     }
 
     protected SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, PacketByteBuf buf) {
-        this(AbstractDustParticleEffect.readColor(buf), buf.readFloat(), buf.readFloat());
+        this(type, AbstractDustParticleEffect.readColor(buf), buf.readFloat(), buf.readFloat());
     }
 
-    public SphereParticleEffect(int tint, float alpha, float rad) {
-        this(tint, alpha, rad, DEFAULT_OFFSET);
+    public SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, int tint, float alpha, float rad) {
+        this(type, tint, alpha, rad, DEFAULT_OFFSET);
     }
 
-    public SphereParticleEffect(Vec3f color, float alpha, float rad) {
-        this(color, alpha, rad, DEFAULT_OFFSET);
+    public SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, Vec3f color, float alpha, float rad) {
+        this(type, color, alpha, rad, DEFAULT_OFFSET);
     }
 
-    public SphereParticleEffect(int tint, float alpha, float rad, Vec3d offset) {
-        this(new Vec3f(Color.r(tint), Color.g(tint), Color.b(tint)), alpha, rad, offset);
+    public SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, int tint, float alpha, float rad, Vec3d offset) {
+        this(type, new Vec3f(Color.r(tint), Color.g(tint), Color.b(tint)), alpha, rad, offset);
     }
 
-    public SphereParticleEffect(Vec3f color, float alpha, float rad, Vec3d offset) {
+    public SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, Vec3f color, float alpha, float rad, Vec3d offset) {
+        this.type = type;
         this.color = color;
         this.offset = offset;
         this.alpha = alpha;
@@ -71,7 +74,7 @@ public class SphereParticleEffect implements ParticleEffect {
 
     @Override
     public ParticleType<?> getType() {
-        return UParticles.SPHERE;
+        return type;
     }
 
     @Override

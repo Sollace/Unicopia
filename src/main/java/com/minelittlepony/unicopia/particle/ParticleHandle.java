@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.particle;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,53 +14,71 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 /**
  * A connection class for updating and persisting an attached particle effect.
  */
 public class ParticleHandle {
-    private Optional<WeakReference<Attachment>> particleEffect = Optional.empty();
+    private final Map<String, Attachment> loadedEffects = new WeakHashMap<>();
 
-    public Optional<Attachment> ifAbsent(UUID id, ParticleSource source, Consumer<ParticleSpawner> constructor) {
-        return get().or(() -> {
+    public Optional<Attachment> update(UUID id, ParticleSource source, Consumer<ParticleSpawner> constructor) {
+        return update(id, "prime", source, constructor);
+    }
+
+    public Optional<Attachment> update(UUID id, String partName, ParticleSource source, Consumer<ParticleSpawner> constructor) {
+        return get(partName).or(() -> {
             if (source.getWorld().isClient) {
-                constructor.accept((effect, pos, vel) -> new ClientHandle().addParticle(id, source, effect, pos, vel));
+                new ClientHandle().addParticle(id, partName, source, constructor);
             }
-            return get();
+            return get(partName);
         });
     }
 
     public void destroy() {
-        get().ifPresent(Attachment::detach);
+        loadedEffects.values().forEach(Attachment::detach);
+        loadedEffects.clear();
     }
 
-    private Optional<Attachment> get() {
-        return particleEffect.map(WeakReference::get).filter(Attachment::isStillAlive);
+    private Optional<Attachment> get(String partName) {
+        return Optional.ofNullable(loadedEffects.get(partName)).filter(Attachment::isStillAlive);
     }
 
     private final class ClientHandle {
-        private static final Map<UUID, Particle> SPAWNED_PARTICLES = new WeakHashMap<>();
+        private static final Map<UUID, Map<String, Entry>> SPAWNED_PARTICLES = new HashMap<>();
+
+        private Particle pp;
 
         @Environment(EnvType.CLIENT)
-        private void addParticle(UUID id, ParticleSource source, ParticleEffect effect, Vec3d pos, Vec3d vel) {
-            Particle p = SPAWNED_PARTICLES.computeIfAbsent(id, i -> {
-                Particle pp = MinecraftClient.getInstance().particleManager.addParticle(effect, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
-                if (pp instanceof Attachment && source instanceof Caster<?>) {
-                    ((Attachment) pp).attach(new Link(id, (Caster<?>)source));
-                }
-                return pp;
+        private void addParticle(UUID id, String partName, ParticleSource source, Consumer<ParticleSpawner> constructor) {
+            SPAWNED_PARTICLES.values().removeIf(set -> {
+                set.values().removeIf(particle -> particle.get() == null);
+                return set.isEmpty();
             });
 
-            if (p instanceof Attachment) {
-                particleEffect = Optional.of(new WeakReference<>((Attachment)p));
+            Entry p = SPAWNED_PARTICLES.computeIfAbsent(id, i -> new HashMap<>()).computeIfAbsent(partName, i -> {
+                constructor.accept((effect, pos, vel) -> {
+                    pp = MinecraftClient.getInstance().particleManager.addParticle(effect, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
+                    if (pp instanceof Attachment && source instanceof Caster<?>) {
+                        ((Attachment) pp).attach(new Link(id, (Caster<?>)source));
+                    }
+                });
+                return new Entry(new WeakReference<>(MinecraftClient.getInstance().world), new WeakReference<>(pp));
+            });
+
+            if (p.get() instanceof Attachment) {
+                loadedEffects.put(partName, (Attachment)p.get());
+            }
+        }
+
+        record Entry (WeakReference<World> world, WeakReference<Particle> particle) {
+            public Particle get() {
+                return world.get() == null || world.get() != MinecraftClient.getInstance().world ? null : particle.get();
             }
         }
     }
 
     public interface Attachment {
-
         boolean isStillAlive();
 
         void attach(Link link);

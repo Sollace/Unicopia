@@ -29,14 +29,19 @@ public class TargetSelecter {
 
         Entity owner = source.getMaster();
 
-        boolean ownerIsValid = spell.isFriendlyTogether(source) && (EquinePredicates.PLAYER_UNICORN.test(owner) && owner.isSneaking());
+        boolean ownerIsValid = spell.isFriendlyTogether(source) && (EquinePredicates.PLAYER_UNICORN.test(owner));
 
         return source.findAllEntitiesInRange(radius)
             .filter(entity -> !entity.isRemoved())
             .filter(entity -> {
-                return !FriendshipBraceletItem.isComrade(source, entity)
-                        && !SpellPredicate.IS_SHIELD_LIKE.isOn(entity)
-                        && !(ownerIsValid && (Pony.equal(entity, owner) || owner.isConnectedThroughVehicle(entity)));
+                boolean hasShield = SpellPredicate.IS_SHIELD_LIKE.isOn(entity);
+                boolean isOwnerOrFriend = Pony.equal(entity, owner) || owner.isConnectedThroughVehicle(entity) || FriendshipBraceletItem.isComrade(source, entity);
+
+                if (!ownerIsValid && isOwnerOrFriend) {
+                    return true;
+                }
+
+                return !hasShield && (!ownerIsValid || !isOwnerOrFriend);
             })
             .filter(e -> filter.test(source, e))
             .map(i -> {

@@ -83,7 +83,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
         }
 
         if (situation == Situation.GROUND_ENTITY) {
-            particlEffect.ifAbsent(getUuid(), source, spawner -> {
+            particlEffect.update(getUuid(), source, spawner -> {
                 spawner.addParticle(new OrientedBillboardParticleEffect(UParticles.MAGIC_RUNES, 90, 0), source.getOriginVector(), Vec3d.ZERO);
             }).ifPresent(p -> {
                 p.setAttribute(1, spell.getType().getColor());

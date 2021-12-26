@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -63,8 +64,8 @@ public class ShieldSpell extends AbstractSpell {
             source.addParticle(new MagicParticleEffect(getType().getColor()), pos, Vec3d.ZERO);
         });
 
-        particlEffect.ifAbsent(getUuid(), source, spawner -> {
-            spawner.addParticle(new SphereParticleEffect(getType().getColor(), 0.3F, radius), origin, Vec3d.ZERO);
+        particlEffect.update(getUuid(), source, spawner -> {
+            spawner.addParticle(new SphereParticleEffect(UParticles.SPHERE, getType().getColor(), 0.3F, radius), origin, Vec3d.ZERO);
         }).ifPresent(p -> {
             p.setAttribute(0, radius);
             p.setAttribute(1, getType().getColor());

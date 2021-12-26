@@ -54,10 +54,10 @@ public class RainboomAbilitySpell extends AbstractSpell {
         }
 
         if (source.isClient()) {
-            particlEffect.ifAbsent(getUuid(), source, spawner -> {
+            particlEffect.update(getUuid(), source, spawner -> {
                 spawner.addParticle(UParticles.RAINBOOM_TRAIL, source.getOriginVector(), Vec3d.ZERO);
-                spawner.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, source.getPhysics().getMotionAngle()), source.getOriginVector(), Vec3d.ZERO);
             });
+            source.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, source.getPhysics().getMotionAngle()), source.getOriginVector(), Vec3d.ZERO);
         }
 
         LivingEntity owner = source.getMaster();

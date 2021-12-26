@@ -19,7 +19,7 @@ public interface UParticles {
     DefaultParticleType RAIN_DROPS = register("rain_drops", FabricParticleTypes.simple());
 
     ParticleType<SphereParticleEffect> SPHERE = register("sphere", FabricParticleTypes.complex(true, SphereParticleEffect.FACTORY));
-    ParticleType<DiskParticleEffect> DISK = register("disk", FabricParticleTypes.complex(true, DiskParticleEffect.FACTORY));
+    ParticleType<SphereParticleEffect> DISK = register("disk", FabricParticleTypes.complex(true, SphereParticleEffect.FACTORY));
 
     ParticleType<FollowingParticleEffect> HEALTH_DRAIN = register("health_drain", FabricParticleTypes.complex(true, FollowingParticleEffect.FACTORY));
 

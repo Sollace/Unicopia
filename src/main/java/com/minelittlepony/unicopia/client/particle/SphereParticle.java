@@ -85,6 +85,9 @@ public class SphereParticle extends Particle implements Attachment {
             colorGreen = Color.g(tint);
             colorBlue = Color.b(tint);
         }
+        if (key == 2) {
+            colorAlpha = (float)value;
+        }
     }
 
     @Override

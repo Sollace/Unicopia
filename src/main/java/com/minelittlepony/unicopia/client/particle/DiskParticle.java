@@ -19,7 +19,7 @@ public class DiskParticle extends SphereParticle {
     @Override
     protected void renderModel(MatrixStack matrices, VertexConsumer buffer, float scale, float tickDelta, int light) {
         matrices.multiply(rotation);
-        SphereModel.DISK.render(matrices, buffer, 1, light, scale, 1, 1, 1, 1);
+        SphereModel.DISK.render(matrices, buffer, light, 1, scale, 1, 1, 1, 1);
     }
 }
 
