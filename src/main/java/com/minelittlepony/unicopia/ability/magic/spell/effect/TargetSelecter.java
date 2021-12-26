@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.EquinePredicates;
@@ -24,7 +24,7 @@ public class TargetSelecter {
         this.spell = spell;
     }
 
-    public Stream<Entity> getEntities(Caster<?> source, double radius, Predicate<Entity> filter) {
+    public Stream<Entity> getEntities(Caster<?> source, double radius, BiPredicate<Caster<?>, Entity> filter) {
         targets.values().removeIf(Target::tick);
 
         Entity owner = source.getMaster();
@@ -32,12 +32,13 @@ public class TargetSelecter {
         boolean ownerIsValid = spell.isFriendlyTogether(source) && (EquinePredicates.PLAYER_UNICORN.test(owner) && owner.isSneaking());
 
         return source.findAllEntitiesInRange(radius)
+            .filter(entity -> !entity.isRemoved())
             .filter(entity -> {
                 return !FriendshipBraceletItem.isComrade(source, entity)
                         && !SpellPredicate.IS_SHIELD_LIKE.isOn(entity)
                         && !(ownerIsValid && (Pony.equal(entity, owner) || owner.isConnectedThroughVehicle(entity)));
             })
-            .filter(filter)
+            .filter(e -> filter.test(source, e))
             .map(i -> {
                 targets.computeIfAbsent(i.getUuid(), Target::new);
                 return i;

@@ -9,6 +9,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
@@ -33,7 +34,7 @@ public class SphereParticle extends Particle implements Attachment {
 
     private Optional<Link> link = Optional.empty();
 
-    private static final SphereModel MODEL = new SphereModel();
+    private final SphereParticleEffect parameters;
 
     public SphereParticle(SphereParticleEffect parameters, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
         this(parameters, w, x, y, z);
@@ -45,6 +46,7 @@ public class SphereParticle extends Particle implements Attachment {
 
     public SphereParticle(SphereParticleEffect parameters, ClientWorld w, double x, double y, double z) {
         super(w, x, y, z);
+        this.parameters = parameters;
         this.radius = parameters.getRadius();
         this.colorRed = parameters.getColor().getX() / 255F;
         this.colorGreen = parameters.getColor().getY() / 255F;
@@ -96,11 +98,12 @@ public class SphereParticle extends Particle implements Attachment {
 
         if (link.isPresent()) {
             link.flatMap(Link::get).map(Caster::getEntity).ifPresentOrElse(e -> {
-                setPos(e.getX(), e.getY() + 0.5, e.getZ());
+                Vec3d offset = parameters.getOffset();
+                setPos(e.getX() + offset.getX(), e.getY() + offset.getY(), e.getZ() + offset.getZ());
 
-                prevPosX = e.lastRenderX;
-                prevPosY = e.lastRenderY + 0.5;
-                prevPosZ = e.lastRenderZ;
+                prevPosX = e.lastRenderX + offset.getX();
+                prevPosY = e.lastRenderY + offset.getY();
+                prevPosZ = e.lastRenderZ + offset.getZ();
             }, this::detach);
 
             if (steps-- > 0) {
@@ -118,17 +121,11 @@ public class SphereParticle extends Particle implements Attachment {
             return;
         }
 
-        float lerpedRad = MathHelper.lerp(tickDelta, prevRadius, radius);
-
         float[] color = ColorHelper.changeSaturation(colorRed, colorGreen, colorBlue, 4);
         RenderSystem.setShaderColor(color[0], color[1], color[2], colorAlpha / 3F);
 
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         VertexConsumer buffer = immediate.getBuffer(RenderLayers.getMagicGlow());
-
-        float thickness = 0.05F;
-
-        int light = getBrightness(tickDelta);
 
         MatrixStack matrices = new MatrixStack();
 
@@ -139,22 +136,10 @@ public class SphereParticle extends Particle implements Attachment {
                 MathHelper.lerp(tickDelta, prevPosZ, z) - camera.getPos().z
         );
 
-        float scale = lerpedRad + thickness;
+        float scale = MathHelper.lerp(tickDelta, prevRadius, radius);
 
-        if (scale > 0) {
-            matrices.push();
-            matrices.scale(scale, scale, scale);
-            MODEL.render(matrices, buffer, light, 1, 1, 1, 1, 0.8F);
-            matrices.pop();
-        }
+        renderModel(matrices, buffer, scale, tickDelta, getBrightness(tickDelta));
 
-        scale = lerpedRad - thickness;
-
-        if (scale > 0) {
-            matrices.scale(scale, scale, scale);
-
-            MODEL.render(matrices, buffer, light, 1, 1, 1, 1, 1);
-        }
         matrices.pop();
 
         immediate.draw();
@@ -162,6 +147,15 @@ public class SphereParticle extends Particle implements Attachment {
         prevRadius = radius;
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
+    }
+
+    protected void renderModel(MatrixStack matrices, VertexConsumer buffer, float lerpedRad, float tickDelta, int light) {
+        float thickness = 0.05F;
+
+        matrices.push();
+        SphereModel.SPHERE.render(matrices, buffer, light, 1, lerpedRad + thickness, 1, 1, 1, 0.8F);
+        matrices.pop();
+        SphereModel.SPHERE.render(matrices, buffer, light, 1, lerpedRad - thickness, 1, 1, 1, 1);
     }
 }
 

@@ -6,54 +6,58 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vector4f;
 
 public class SphereModel {
-    public void render(MatrixStack matrices, VertexConsumer vertexWriter, int light, int overlay, float r, float g, float b, float a) {
-        render(matrices.peek(), vertexWriter, light, overlay, r, g, b, a);
+    protected static final double pi = Math.PI;
+    protected static final double two_pi = pi * 2F;
+
+    public static final SphereModel SPHERE = new SphereModel(40, 40, two_pi);
+    public static final SphereModel DISK = new SphereModel(40, 2, pi);
+
+    private final double num_rings;
+    private final double num_sectors;
+
+    private final double azimuthRange;
+
+    final double zenithIncrement;
+    final double azimuthIncrement;
+
+    public SphereModel(double rings, double sectors, double azimuthRange) {
+        this.num_rings = rings;
+        this.num_sectors = sectors;
+        this.azimuthRange = azimuthRange;
+
+        zenithIncrement = pi / num_rings;
+        azimuthIncrement = two_pi / num_sectors;
     }
 
-    public void render(MatrixStack.Entry matrices, VertexConsumer vertexWriter, int light, int overlay, float r, float g, float b, float a) {
+    public final void render(MatrixStack matrices, VertexConsumer vertexWriter, int light, int overlay, float radius, float r, float g, float b, float a) {
+        if (radius <= 0) {
+            return;
+        }
 
-        Matrix4f model = matrices.getPositionMatrix();
-
-        final double num_rings = 40;
-        final double num_sectors = 40;
-        final double pi = Math.PI;
-        final double two_pi = Math.PI * 2F;
-        final double zenithIncrement = Math.PI / num_rings;
-        final double azimuthIncrement = two_pi / num_sectors;
-
-        double radius = 1;
+        Matrix4f position = matrices.peek().getPositionMatrix();
 
         for (double zenith = -pi; zenith < pi; zenith += zenithIncrement) {
-            for (double azimuth = -two_pi; azimuth < two_pi; azimuth += azimuthIncrement) {
-                drawQuad(model, vertexWriter, radius, zenith, azimuth, zenithIncrement, azimuthIncrement, light, overlay, r, g, b, a);
+            for (double azimuth = -azimuthRange; azimuth < azimuthRange; azimuth += azimuthIncrement) {
+                drawQuad(position, vertexWriter, radius, zenith, azimuth, light, overlay, r, g, b, a);
             }
         }
     }
 
-    protected void drawQuad(Matrix4f model, VertexConsumer vertexWriter,
+    private void drawQuad(Matrix4f model, VertexConsumer vertexWriter,
             double radius, double zenith, double azimuth,
-            double zenithIncrement, double azimuthIncrement,
             int light, int overlay, float r, float g, float b, float a) {
-
-        drawVertex(model, vertexWriter, radius, zenith, azimuth, light, overlay, r, g, b, a);
-
-        drawVertex(model, vertexWriter, radius, zenith + zenithIncrement, azimuth, light, overlay, r, g, b, a);
-
-        drawVertex(model, vertexWriter, radius, zenith + zenithIncrement, azimuth + azimuthIncrement, light, overlay, r, g, b, a);
-
-        drawVertex(model, vertexWriter, radius, zenith, azimuth + azimuthIncrement, light, overlay, r, g, b, a);
+        drawVertex(model, vertexWriter, convertToCartesianCoord(radius, zenith, azimuth), light, overlay, r, g, b, a);
+        drawVertex(model, vertexWriter, convertToCartesianCoord(radius, zenith + zenithIncrement, azimuth), light, overlay, r, g, b, a);
+        drawVertex(model, vertexWriter, convertToCartesianCoord(radius, zenith + zenithIncrement, azimuth + azimuthIncrement), light, overlay, r, g, b, a);
+        drawVertex(model, vertexWriter, convertToCartesianCoord(radius, zenith, azimuth + azimuthIncrement), light, overlay, r, g, b, a);
     }
 
-    public static void drawVertex(Matrix4f model, VertexConsumer vertexWriter,
-            double radius, double zenith, double azimuth,
-            int light, int overlay, float r, float g, float b, float a) {
-        Vector4f position = convertToCartesianCoord(radius, zenith, azimuth);
+    private static void drawVertex(Matrix4f model, VertexConsumer vertexWriter, Vector4f position, int light, int overlay, float r, float g, float b, float a) {
         position.transform(model);
         vertexWriter.vertex(position.getX(), position.getY(), position.getZ(), r, g, b, a, 0, 0, overlay, light, 0, 0, 0);
     }
 
-    public static Vector4f convertToCartesianCoord(double r, double theta, double phi) {
-
+    private static Vector4f convertToCartesianCoord(double r, double theta, double phi) {
         double x = r * Math.sin(theta) * Math.cos(phi);
         double y = r * Math.sin(theta) * Math.sin(phi);
         double z = r * Math.cos(theta);

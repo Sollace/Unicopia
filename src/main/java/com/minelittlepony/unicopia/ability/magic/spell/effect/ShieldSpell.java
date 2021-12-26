@@ -57,13 +57,14 @@ public class ShieldSpell extends AbstractSpell {
 
     protected void generateParticles(Caster<?> source) {
         float radius = (float)getDrawDropOffRange(source);
+        Vec3d origin = getOrigin(source);
 
-        source.spawnParticles(new Sphere(true, radius), (int)(radius * 6), pos -> {
+        source.spawnParticles(origin, new Sphere(true, radius), (int)(radius * 6), pos -> {
             source.addParticle(new MagicParticleEffect(getType().getColor()), pos, Vec3d.ZERO);
         });
 
         particlEffect.ifAbsent(getUuid(), source, spawner -> {
-            spawner.addParticle(new SphereParticleEffect(getType().getColor(), 0.3F, radius), source.getOriginVector(), Vec3d.ZERO);
+            spawner.addParticle(new SphereParticleEffect(getType().getColor(), 0.3F, radius), origin, Vec3d.ZERO);
         }).ifPresent(p -> {
             p.setAttribute(0, radius);
             p.setAttribute(1, getType().getColor());
@@ -111,7 +112,7 @@ public class ShieldSpell extends AbstractSpell {
         return (min + (source.getLevel().get() * 2)) / multiplier;
     }
 
-    protected boolean isValidTarget(Entity entity) {
+    protected boolean isValidTarget(Caster<?> source, Entity entity) {
         return (entity instanceof LivingEntity
                 || entity instanceof TntEntity
                 || entity instanceof FallingBlockEntity
@@ -125,21 +126,25 @@ public class ShieldSpell extends AbstractSpell {
     protected long applyEntities(Caster<?> source) {
         double radius = getDrawDropOffRange(source);
 
-        Vec3d origin = source.getOriginVector();
+        Vec3d origin = getOrigin(source);
 
         targetSelecter.getEntities(source, radius, this::isValidTarget).forEach(i -> {
             try {
                 applyRadialEffect(source, i, i.getPos().distanceTo(origin), radius);
             } catch (Throwable e) {
-                Unicopia.LOGGER.error("Error updating shield effect", e);
+                Unicopia.LOGGER.error("Error updating radial effect", e);
             }
         });
 
         return targetSelecter.getTotalDamaged();
     }
 
+    protected Vec3d getOrigin(Caster<?> source) {
+        return source.getOriginVector();
+    }
+
     protected void applyRadialEffect(Caster<?> source, Entity target, double distance, double radius) {
-        Vec3d pos = source.getOriginVector();
+        Vec3d pos = getOrigin(source);
 
         if (ProjectileUtil.isFlyingProjectile(target)) {
             if (!ProjectileUtil.isProjectileThrownBy(target, source.getMaster())) {

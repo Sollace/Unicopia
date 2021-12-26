@@ -5,7 +5,9 @@ import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -22,11 +24,15 @@ public class AttractiveSpell extends ShieldSpell implements ProjectileSpell {
 
     @Override
     public void generateParticles(Caster<?> source) {
-        int range = 4 + (source.getLevel().get() * 2);
-        Vec3d pos = source.getOriginVector();
+        double range = getDrawDropOffRange(source) + 10;
 
-        source.spawnParticles(new Sphere(false, range), range * 9, p -> {
-            source.addParticle(new MagicParticleEffect(getType().getColor()), p, p.subtract(pos));
+        source.spawnParticles(getOrigin(source), new Sphere(false, range), 7, p -> {
+            source.addParticle(
+                    new FollowingParticleEffect(UParticles.HEALTH_DRAIN, source.getEntity(), 0.4F)
+                        .withChild(new MagicParticleEffect(getType().getColor())),
+                    p,
+                    Vec3d.ZERO
+            );
         });
     }
 
@@ -36,8 +42,8 @@ public class AttractiveSpell extends ShieldSpell implements ProjectileSpell {
     }
 
     @Override
-    protected boolean isValidTarget(Entity entity) {
-        return getTraits().get(Trait.FOCUS) > 10 ? entity instanceof ItemEntity : super.isValidTarget(entity);
+    protected boolean isValidTarget(Caster<?> source, Entity entity) {
+        return getTraits().get(Trait.FOCUS) > 10 ? entity instanceof ItemEntity : super.isValidTarget(source, entity);
     }
 
     @Override
@@ -55,7 +61,7 @@ public class AttractiveSpell extends ShieldSpell implements ProjectileSpell {
             source.getEntity().damage(MagicalDamageSource.create("vortex"), 4);
         }
 
-        applyForce(source.getOriginVector(), target, -force, 0);
+        applyForce(getOrigin(source), target, -force, 0);
 
         float maxVel = !isFriendlyTogether(source) ? 1 : 1.6f;
 

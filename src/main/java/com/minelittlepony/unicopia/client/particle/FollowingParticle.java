@@ -31,9 +31,6 @@ public class FollowingParticle extends NoRenderParticle {
     public Particle scale(float scale) {
         this.scale *= scale;
         super.scale(scale);
-        if (particle != null) {
-            particle.scale(scale);
-        }
         return this;
     }
 
