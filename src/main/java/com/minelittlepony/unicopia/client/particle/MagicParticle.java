@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client.particle;
 
+import com.minelittlepony.unicopia.particle.MagicParticleEffect;
+
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
@@ -35,20 +37,29 @@ public class MagicParticle extends SpriteBillboardParticle {
         colorAlpha = 0.7F;
         colorGreen *= 0.3F;
 
-        if (random.nextBoolean()) {
-            colorBlue *= 0.4F;
-        }
-        if (random.nextBoolean()) {
-            colorRed *= 0.9F;
-        }
-        if (random.nextBoolean()) {
-            colorGreen += 0.5F;
-        }
+        if (effect instanceof MagicParticleEffect) {
+            MagicParticleEffect parameters = (MagicParticleEffect)effect;
 
-        if (random.nextBoolean()) {
-            colorGreen *= 2F;
-        } else if (random.nextBoolean()) {
-            colorRed *= 3.9F;
+            colorRed = parameters.getColor().getX();
+            colorGreen = parameters.getColor().getY();
+            colorBlue = parameters.getColor().getZ();
+        } else {
+
+            if (random.nextBoolean()) {
+                colorBlue *= 0.4F;
+            }
+            if (random.nextBoolean()) {
+                colorRed *= 0.9F;
+            }
+            if (random.nextBoolean()) {
+                colorGreen += 0.5F;
+            }
+
+            if (random.nextBoolean()) {
+                colorGreen *= 2F;
+            } else if (random.nextBoolean()) {
+                colorRed *= 3.9F;
+            }
         }
     }
 
