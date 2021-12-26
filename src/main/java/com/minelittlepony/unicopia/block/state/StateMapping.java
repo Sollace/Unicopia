@@ -34,7 +34,7 @@ interface StateMapping extends Predicate<BlockState>, BiFunction<World, BlockSta
     }
 
     static StateMapping replaceMaterial(Material mat, Block block) {
-        return build(isOf(Material.WATER), Blocks.ICE);
+        return build(isOf(mat), block);
     }
     static Predicate<BlockState> isOf(Material mat) {
         return s -> s.getMaterial() == mat;
