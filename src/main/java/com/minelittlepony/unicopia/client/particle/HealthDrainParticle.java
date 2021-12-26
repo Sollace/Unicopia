@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.particle;
 
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 
+import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
@@ -12,7 +13,14 @@ public class HealthDrainParticle extends SpriteBillboardParticle {
 
     private final FollowingParticleEffect effect;
 
-    public HealthDrainParticle(FollowingParticleEffect effect, SpriteProvider provider, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+    public static Particle create(FollowingParticleEffect effect, SpriteProvider provider, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+        if (effect.getChildEffect().isPresent()) {
+            return new FollowingParticle(effect, provider, world, x, y, z, velocityX, velocityY, velocityZ);
+        }
+        return new HealthDrainParticle(effect, provider, world, x, y, z, velocityX, velocityY, velocityZ);
+    }
+
+    protected HealthDrainParticle(FollowingParticleEffect effect, SpriteProvider provider, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
         setSprite(provider);
         setMaxAge(3);

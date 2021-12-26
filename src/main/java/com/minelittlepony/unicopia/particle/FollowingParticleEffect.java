@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.particle;
 
 import java.util.Locale;
+import java.util.Optional;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -25,12 +26,23 @@ public class FollowingParticleEffect implements ParticleEffect {
 
     private final float followSpeed;
 
+    private Optional<ParticleEffect> childEffect = Optional.empty();
+
     protected FollowingParticleEffect(ParticleType<FollowingParticleEffect> type, StringReader reader) throws CommandSyntaxException {
         this(type, -1, ParticleFactoryHelper.readVector(reader), ParticleFactoryHelper.readFloat(reader));
+
+        if (reader.canRead()) {
+            reader.expect(' ');
+            childEffect = ParticleFactoryHelper.read(reader);
+        }
     }
 
-    protected FollowingParticleEffect(ParticleType<FollowingParticleEffect> particleType, PacketByteBuf buf) {
-        this(particleType, buf.readInt(), new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble()), buf.readFloat());
+    protected FollowingParticleEffect(ParticleType<FollowingParticleEffect> type, PacketByteBuf buf) {
+        this(type, buf.readInt(), new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble()), buf.readFloat());
+
+        if (buf.readBoolean()) {
+            childEffect = ParticleFactoryHelper.read(Registry.PARTICLE_TYPE.get(buf.readInt()), buf);
+        }
     }
 
     public FollowingParticleEffect(ParticleType<FollowingParticleEffect> type, Vec3d target, float followSpeed) {
@@ -49,6 +61,22 @@ public class FollowingParticleEffect implements ParticleEffect {
         this.movingTarget = movingTarget;
         this.fixedTarget = fixedTarget;
         this.followSpeed = followSpeed;
+    }
+
+    public ParticleEffect withChild(ParticleEffect child) {
+        childEffect = Optional.of(child);
+        return this;
+    }
+
+    public Optional<ParticleEffect> getChildEffect() {
+        return childEffect;
+    }
+
+    public String getTargetDescriptor() {
+        if (movingTarget > -1) {
+            return "Moving(" + movingTarget + ")";
+        }
+        return fixedTarget.toString();
     }
 
     public Vec3d getTarget(World world) {
@@ -79,10 +107,26 @@ public class FollowingParticleEffect implements ParticleEffect {
         buf.writeDouble(fixedTarget.y);
         buf.writeDouble(fixedTarget.z);
         buf.writeFloat(followSpeed);
+        getChildEffect().ifPresentOrElse(child -> {
+            buf.writeBoolean(true);
+            buf.writeInt(Registry.PARTICLE_TYPE.getRawId(child.getType()));
+            child.write(buf);
+        }, () -> buf.writeBoolean(false));
     }
 
     @Override
     public String asString() {
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f", Registry.PARTICLE_TYPE.getId(getType()), fixedTarget.x, fixedTarget.y, fixedTarget.z, followSpeed);
+        return getChildEffect().map(child -> {
+            return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %s",
+                    Registry.PARTICLE_TYPE.getId(getType()),
+                    fixedTarget.x, fixedTarget.y, fixedTarget.z,
+                    followSpeed, child.asString());
+        }).orElseGet(() -> {
+            return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f",
+                    Registry.PARTICLE_TYPE.getId(getType()),
+                    fixedTarget.x, fixedTarget.y, fixedTarget.z,
+                    followSpeed);
+        });
+
     }
 }
