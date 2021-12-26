@@ -74,6 +74,7 @@ public class ShieldSpell extends AbstractSpell {
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
+
         if (source.isClient()) {
             generateParticles(source);
         }

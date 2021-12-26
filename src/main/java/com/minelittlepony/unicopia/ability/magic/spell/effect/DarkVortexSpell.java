@@ -56,6 +56,10 @@ public class DarkVortexSpell extends AttractiveSpell {
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
 
+        if (situation == Situation.PROJECTILE) {
+            return false;
+        }
+
         if (situation == Situation.BODY) {
             return true;
         }
