@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.UUID;
 
+import org.spongepowered.include.com.google.common.base.Objects;
+
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -22,6 +24,13 @@ public interface Spell extends NbtSerialisable, Affine {
      * The unique id of this particular spell instance.
      */
     UUID getUuid();
+
+    /**
+     * Determines whether this spell is a valid surrogate for the given spell's id.
+     */
+    default boolean equalsOrContains(UUID id) {
+        return Objects.equal(getUuid(), id);
+    }
 
     /**
      * Sets this effect as dead.

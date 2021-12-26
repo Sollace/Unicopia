@@ -42,7 +42,7 @@ public class EffectSync implements SpellContainer {
 
     @Override
     public boolean contains(UUID id) {
-        return spells.containsReference(id);
+        return spells.containsReference(id) || spells.getReferences().anyMatch(s -> s.equalsOrContains(id));
     }
 
     @Override

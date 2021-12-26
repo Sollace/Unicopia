@@ -32,6 +32,11 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
     protected abstract Collection<Spell> getDelegates();
 
     @Override
+    public boolean equalsOrContains(UUID id) {
+        return ProjectileSpell.super.equalsOrContains(id) || getDelegates().stream().anyMatch(s -> s.equalsOrContains(id));
+    }
+
+    @Override
     public Affinity getAffinity() {
         return Affinity.NEUTRAL;
     }

@@ -42,7 +42,7 @@ public class DarkVortexSpell extends AttractiveSpell {
             return true;
         }
 
-        if (!source.isClient()) {
+        if (!source.isClient() && source.getWorld().random.nextInt(200) == 0) {
             accumulatedMass += 0.001F * (1 + getTraits().get(Trait.STRENGTH, 70, 120) - 70);
         }
 
