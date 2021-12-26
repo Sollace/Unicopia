@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
@@ -84,13 +85,19 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
         if (world.isClient) {
             BlockPos currentPos = getBlockPos();
 
-            world.getLightingProvider().addLightSource(currentPos, 11);
+            if (world.isChunkLoaded(currentPos)) {
+                try {
+                    world.getLightingProvider().addLightSource(currentPos, 11);
 
-            if (lastPos != null && !currentPos.equals(lastPos)) {
-                world.getLightingProvider().checkBlock(lastPos);
+                    if (lastPos != null && !currentPos.equals(lastPos)) {
+                        world.getLightingProvider().checkBlock(lastPos);
+                    }
+                } catch (Exception e) {
+                    Unicopia.LOGGER.error("Error updating lighting", e);
+                }
+
+                lastPos = currentPos;
             }
-
-            lastPos = currentPos;
         }
         LivingEntity master = getMaster();
 
@@ -170,7 +177,6 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
         dataTracker.get(SPELL).ifPresent(spellId -> {
             tag.putUuid("spellId", spellId);
         });
-
     }
 
     @Override
