@@ -68,7 +68,7 @@ public class EffectSync implements SpellContainer {
     @Override
     public boolean removeIf(Predicate<Spell> test, boolean update) {
         return reduce((initial, effect) -> {
-            if (!test.test(effect)) {
+            if (!effect.findMatches(test).findFirst().isPresent()) {
                 return initial;
             }
             spells.removeReference(effect);
@@ -107,7 +107,7 @@ public class EffectSync implements SpellContainer {
         if (type == null) {
             return spells.getReferences();
         }
-        return spells.getReferences().filter(type);
+        return spells.getReferences().flatMap(s -> s.findMatches(type));
     }
 
     public boolean reduce(Alteration alteration) {

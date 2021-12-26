@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
@@ -85,7 +86,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public void tick() {
-        getSpellSlot().removeIf(effect -> !effect.tick(this, Situation.BODY), true);
+        getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.BODY)), true);
 
         if (invinsibilityTicks > 0) {
             invinsibilityTicks--;

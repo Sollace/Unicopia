@@ -74,6 +74,7 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
         return super.getName();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void tick() {
         super.tick();
@@ -113,10 +114,7 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
 
         if (!dataTracker.get(SPELL).filter(spellId -> {
             return getSpellSlot().forEach(spell -> {
-                if (!spell.getUuid().equals(spellId)) {
-                    return Operation.SKIP;
-                }
-                return spell.tick(this, Situation.GROUND_ENTITY) ? Operation.KEEP: Operation.REMOVE;
+                return spell.getUuid().equals(spellId) ? Operation.ofBoolean(spell.tick(this, Situation.GROUND_ENTITY)) : Operation.SKIP;
             }, true);
         }).isPresent()) {
             discard();

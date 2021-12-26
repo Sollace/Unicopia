@@ -129,6 +129,10 @@ public interface SpellContainer {
     public enum Operation {
         SKIP,
         KEEP,
-        REMOVE
+        REMOVE;
+
+        public static Operation ofBoolean(boolean result) {
+            return result ? KEEP : REMOVE;
+        }
     }
 }

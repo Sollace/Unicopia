@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.Affinity;
@@ -34,6 +35,11 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
     @Override
     public boolean equalsOrContains(UUID id) {
         return ProjectileSpell.super.equalsOrContains(id) || getDelegates().stream().anyMatch(s -> s.equalsOrContains(id));
+    }
+
+    @Override
+    public Stream<Spell> findMatches(Predicate<Spell> predicate) {
+        return Stream.concat(ProjectileSpell.super.findMatches(predicate), getDelegates().stream().flatMap(s -> s.findMatches(predicate)));
     }
 
     @Override

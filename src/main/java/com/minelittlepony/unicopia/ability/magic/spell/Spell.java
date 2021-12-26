@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.spongepowered.include.com.google.common.base.Objects;
 
@@ -30,6 +32,13 @@ public interface Spell extends NbtSerialisable, Affine {
      */
     default boolean equalsOrContains(UUID id) {
         return Objects.equal(getUuid(), id);
+    }
+
+    /**
+     * Returns an optional containing the spell that matched the given predicate.
+     */
+    default Stream<Spell> findMatches(Predicate<Spell> predicate) {
+        return predicate.test(this) ? Stream.of(this) : Stream.empty();
     }
 
     /**
