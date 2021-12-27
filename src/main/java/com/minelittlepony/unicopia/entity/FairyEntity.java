@@ -19,6 +19,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -128,7 +129,7 @@ public class FairyEntity extends PathAwareEntity implements LightEmittingEntity,
 
     @Override
     public void tick() {
-        this.onGround = true;
+        onGround = true;
         super.tick();
         emitter.tick();
 
@@ -261,13 +262,40 @@ public class FairyEntity extends PathAwareEntity implements LightEmittingEntity,
 
             getLookControl().lookAt(target, 10, getMaxLookPitchChange());
 
+            Path currentPath = getNavigation().getCurrentPath();
+            if (currentPath != null && target.getEyeY() < getY() - 0.5 && world.getBlockState(getBlockPos().down(3)).isAir()) {
+                addVelocity(0, -speed, 0);
+            }
+
+            double distance = getPos().squaredDistanceTo(target.getPos());
+
+            double speed = this.speed;
+
+            if (distance > 100) {
+                teleport(
+                    target.getX() + world.random.nextFloat() / 2F - 0.5F,
+                    target.getEyeY(),
+                    target.getZ() + world.random.nextFloat() / 2F - 0.5F
+                );
+                setVelocity(target.getVelocity());
+                return;
+            } else if (distance > 40) {
+                speed *= 10;
+            } else if (distance > 25) {
+                speed *= 4;
+            } else if (distance > 8) {
+                speed *= 2;
+            }
+
+            getNavigation().setSpeed(speed);
+
             if (--updateCountdownTicks > 0) {
                 return;
             }
 
             updateCountdownTicks = getTickCount(10);
 
-            if (getPos().squaredDistanceTo(target.getPos()) <= minDistance * minDistance) {
+            if (distance <= minDistance * minDistance) {
 
                 BlockPos pos = FuzzyPositions.localFuzz(FairyEntity.this.world.random, 5, 5);
                 if (pos != null) {
@@ -310,7 +338,7 @@ public class FairyEntity extends PathAwareEntity implements LightEmittingEntity,
 
         @Override
         public void tick() {
-            if (--updateCountdownTicks > 0) {
+            if (--updateCountdownTicks > 0 || !isStaying()) {
                 return;
             }
 
