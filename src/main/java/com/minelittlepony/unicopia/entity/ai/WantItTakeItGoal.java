@@ -67,9 +67,7 @@ public class WantItTakeItGoal extends BreakHeartGoal {
                             ItemStack stack = ((LivingEntity)target).getEquippedStack(slot);
                             if (EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, stack) > 0) {
                                 target.equipStack(slot, ItemStack.EMPTY);
-                                AwaitTickQueue.scheduleTask(mob.world, w -> {
-                                    mob.tryEquip(stack);
-                                }, 0);
+                                AwaitTickQueue.scheduleTask(mob.world, w -> mob.tryEquip(stack));
                             }
                         }
                     }
@@ -85,7 +83,7 @@ public class WantItTakeItGoal extends BreakHeartGoal {
                         mob.sendPickup(item, stack.getCount());
                         item.remove(RemovalReason.DISCARDED);
                     }
-                }, 0);
+                });
             }
         }
     }

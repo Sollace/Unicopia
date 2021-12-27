@@ -50,7 +50,6 @@ public class Unicopia implements ModInitializer {
         Commands.bootstrap();
 
         ServerTickEvents.END_WORLD_TICK.register(w -> {
-            AwaitTickQueue.tick(w);
             ((BlockDestructionManager.Source)w).getDestructionManager().tick();
         });
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(TreeTypeLoader.INSTANCE);
