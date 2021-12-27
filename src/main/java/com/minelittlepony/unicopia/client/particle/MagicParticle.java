@@ -37,7 +37,7 @@ public class MagicParticle extends SpriteBillboardParticle {
         colorAlpha = 0.7F;
         colorGreen *= 0.3F;
 
-        if (effect instanceof MagicParticleEffect) {
+        if (effect instanceof MagicParticleEffect && ((MagicParticleEffect)effect).hasTint()) {
             MagicParticleEffect parameters = (MagicParticleEffect)effect;
 
             colorRed = parameters.getColor().getX();
