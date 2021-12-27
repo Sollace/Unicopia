@@ -48,7 +48,6 @@ import net.minecraft.world.World;
  * Can also carry a spell if needed.
  */
 public class MagicProjectileEntity extends ThrownItemEntity implements Caster<LivingEntity> {
-
     private static final TrackedData<Float> DAMAGE = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Float> GRAVITY = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -155,8 +154,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
 
         super.tick();
 
-        if (age % 1000 == 0) {
-            setNoGravity(false);
+        if (getOwner() == null) {
+            return;
         }
 
         getSpellSlot().get(true).filter(spell -> spell.tick(this, Situation.PROJECTILE));
