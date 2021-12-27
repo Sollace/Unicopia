@@ -61,6 +61,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<FeatherFallSpell> FEATHER_FALL = register("feather_fall", Affinity.GOOD, 0x00EEFF, true, FeatherFallSpell.DEFAULT_TRAITS, FeatherFallSpell::new);
     public static final SpellType<CatapultSpell> CATAPULT = register("catapult", Affinity.GOOD, 0x33FF00, true, CatapultSpell.DEFAULT_TRAITS, CatapultSpell::new);
     public static final SpellType<FireBoltSpell> FIRE_BOLT = register("fire_bolt", Affinity.GOOD, 0x888800, true, FireBoltSpell.DEFAULT_TRAITS, FireBoltSpell::new);
+    public static final SpellType<LightSpell> LIGHT = register("light", Affinity.GOOD, 0x00AA88, true, LightSpell.DEFAULT_TRAITS, LightSpell::new);
 
     private final Identifier id;
     private final Affinity affinity;
