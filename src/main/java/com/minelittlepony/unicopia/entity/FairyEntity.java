@@ -28,6 +28,8 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -73,6 +75,18 @@ public class FairyEntity extends PathAwareEntity implements LightEmittingEntity,
         goalSelector.add(5, new StayGoal());
         goalSelector.add(6, new FollowEntityGoal(2, 2, 30));
         goalSelector.add(7, new WanderAroundGoal(this, 1));
+    }
+
+    @Override
+    @Nullable
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return SoundEvents.ENTITY_BAT_HURT;
+    }
+
+    @Override
+    @Nullable
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.ENTITY_BAT_DEATH;
     }
 
     @Override
