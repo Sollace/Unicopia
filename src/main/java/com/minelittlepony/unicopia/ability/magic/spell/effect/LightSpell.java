@@ -24,36 +24,42 @@ public class LightSpell extends AbstractSpell {
             .with(Trait.ORDER, 25)
             .build();
 
+    private int age;
     private int duration;
 
-    private List<EntityReference<FairyEntity>> lights;
+    private final List<EntityReference<FairyEntity>> lights = new ArrayList<>();
 
     protected LightSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
-        duration = (int)(traits.get(Trait.FOCUS, 0, 160) * 19);
+        duration = 120 + (int)(traits.get(Trait.FOCUS, 0, 160) * 19);
     }
 
     @Override
     public boolean tick(Caster<?> caster, Situation situation) {
 
-        if (duration-- <= 0) {
+        age++;
+
+        if (age % 20 == 0) {
+            duration--;
+        }
+
+        if (duration <= 0) {
             return false;
         }
 
-        if (lights == null) {
-            int size = 2 + caster.getWorld().random.nextInt(2) + (int)(getTraits().get(Trait.LIFE, 10, 20) - 10)/10;
-            lights = new ArrayList<>(size);
-            for (int i = 0; i < size; i++) {
-                lights.set(i, new EntityReference<FairyEntity>());
-            }
-        }
-
         if (!caster.isClient()) {
+            if (lights.isEmpty()) {
+                int size = 2 + caster.getWorld().random.nextInt(2) + (int)(getTraits().get(Trait.LIFE, 10, 20) - 10)/10;
+                while (lights.size() < size) {
+                    lights.add(new EntityReference<FairyEntity>());
+                }
+            }
+
             lights.forEach(ref -> {
                 if (!ref.isPresent(caster.getWorld())) {
                     FairyEntity entity = UEntities.TWITTERMITE.create(caster.getWorld());
                     entity.setPosition(ref.getPosition().orElseGet(() -> {
-                        return caster.getMaster().getPos().add(VecHelper.supply(() -> caster.getWorld().random.nextInt(2) - 1));
+                        return caster.getMaster().getPos().add(VecHelper.supply(() -> caster.getWorld().random.nextInt(3) - 1));
                     }));
                     entity.setMaster(caster.getMaster());
                     entity.world.spawnEntity(entity);
@@ -70,7 +76,9 @@ public class LightSpell extends AbstractSpell {
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
-        if (lights != null) {
+        compound.putInt("age", age);
+        compound.putInt("duration", duration);
+        if (!lights.isEmpty()) {
             NbtList list = new NbtList();
             lights.forEach(light -> {
                 list.add(light.toNBT());
@@ -82,15 +90,15 @@ public class LightSpell extends AbstractSpell {
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
+        age = compound.getInt("age");
+        duration = compound.getInt("duration");
+        lights.clear();
         if (compound.contains("lights", NbtElement.LIST_TYPE)) {
-            lights = new ArrayList<>();
             compound.getList("lights", NbtElement.COMPOUND_TYPE).forEach(nbt -> {
                 EntityReference<FairyEntity> light = new EntityReference<>();
                 light.fromNBT((NbtCompound)nbt);
                 lights.add(light);
             });
-        } else {
-            lights = null;
         }
     }
 }

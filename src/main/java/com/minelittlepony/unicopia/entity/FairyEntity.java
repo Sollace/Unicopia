@@ -119,6 +119,11 @@ public class FairyEntity extends PathAwareEntity implements LightEmittingEntity,
         return false;
     }
 
+    @Override
+    public boolean isPushedByFluids() {
+        return false;
+    }
+
     public boolean isStaying() {
         return stayingPos.isPresent();
     }
@@ -172,12 +177,31 @@ public class FairyEntity extends PathAwareEntity implements LightEmittingEntity,
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 
-        if (hand == Hand.MAIN_HAND && isStaying() && player == getMaster()) {
-            stayingPos = Optional.empty();
+        if (hand == Hand.MAIN_HAND) {
+
+            if (isStaying()) {
+                stayingPos = Optional.empty();
+                if (player != getMaster()) {
+                    assignment.set(player);
+                }
+            } else {
+                assignment.set(null);
+                setStaying(getBlockPos());
+            }
+
+            playSound(SoundEvents.ENTITY_BAT_AMBIENT, getSoundVolume() / 3, getSoundPitch() * 3);
+
             return ActionResult.SUCCESS;
         }
 
         return ActionResult.PASS;
+    }
+
+    @Override
+    public boolean handleAttack(Entity attacker) {
+        attacker.damage(DamageSource.LIGHTNING_BOLT, (float)getAttackDistanceScalingFactor(attacker) * 3);
+
+        return false;
     }
 
     @Override

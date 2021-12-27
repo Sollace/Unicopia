@@ -26,7 +26,7 @@ public final class RenderLayers extends RenderLayer {
             .shader(COLOR_SHADER)
             .transparency(TRANSLUCENT_TRANSPARENCY)
             .target(TRANSLUCENT_TARGET)
-            .texturing(solid(120, 120, 0, 0.6F))
+            .texturing(solid(0.8F, 0.9F, 1, 0.6F))
         .build(false));
 
     public static RenderLayer getMagicGlow() {

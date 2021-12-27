@@ -27,6 +27,10 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
             uuid = entity.getUuid();
             clientId = entity.getId();
             pos = Optional.of(entity.getPos());
+        } else {
+            uuid = null;
+            clientId = 0;
+            pos = Optional.empty();
         }
     }
 
