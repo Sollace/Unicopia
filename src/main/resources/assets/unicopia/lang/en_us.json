@@ -79,6 +79,7 @@
   "block.unicopia.rocks": "Rocks",
 
   "entity.unicopia.butterfly": "Butterfly",
+  "entity.unicopia.twittermite": "Twittermite",
   "entity.unicopia.cast_spell": "Cast Spell",
   "entity.unicopia.cast_spell.by": "a spell cast by %s",
   "entity.unicopia.spellbook": "Spellbook",

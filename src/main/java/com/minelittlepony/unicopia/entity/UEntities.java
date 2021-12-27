@@ -31,7 +31,7 @@ public interface UEntities {
     EntityType<CastSpellEntity> CAST_SPELL = register("cast_spell", FabricEntityTypeBuilder.create(SpawnGroup.MISC, CastSpellEntity::new)
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(1, 0.4F)));
-    EntityType<FairyEntity> FAIRY = register("fairy", FabricEntityTypeBuilder.create(SpawnGroup.MISC, FairyEntity::new)
+    EntityType<FairyEntity> TWITTERMITE = register("twittermite", FabricEntityTypeBuilder.create(SpawnGroup.MISC, FairyEntity::new)
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(0.1F, 0.1F)));
     EntityType<SpellbookEntity> SPELLBOOK = register("spellbook", FabricEntityTypeBuilder.create(SpawnGroup.MISC, SpellbookEntity::new)
@@ -46,7 +46,7 @@ public interface UEntities {
     static void bootstrap() {
         FabricDefaultAttributeRegistry.register(BUTTERFLY, ButterflyEntity.createButterflyAttributes());
         FabricDefaultAttributeRegistry.register(SPELLBOOK, SpellbookEntity.createMobAttributes());
-        FabricDefaultAttributeRegistry.register(FAIRY, FairyEntity.createMobAttributes());
+        FabricDefaultAttributeRegistry.register(TWITTERMITE, FairyEntity.createMobAttributes());
 
         final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()
                 .and(ctx -> ctx.getBiome().getPrecipitation() == Biome.Precipitation.RAIN);

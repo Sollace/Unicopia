@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -29,33 +30,42 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
         }
     }
 
+    /**
+     * Gets the position the last known position of the assigned entity.
+     */
     public Optional<Vec3d> getPosition() {
         return pos;
     }
 
     public boolean isPresent(World world) {
-        T entity = get(world);
-        return entity != null && !entity.isRemoved();
+        return getOrEmpty(world).isPresent();
     }
 
     public void ifPresent(World world, Consumer<T> consumer) {
-        if (isPresent(world)) {
-            consumer.accept(get(world));
-        }
+        getOrEmpty(world).ifPresent(consumer);
+    }
+
+    @Nullable
+    public T get(World world) {
+        return getOrEmpty(world).orElse(null);
     }
 
     @SuppressWarnings("unchecked")
-    @Nullable
-    public T get(World world) {
+    public Optional<T> getOrEmpty(World world) {
         if (uuid != null && world instanceof ServerWorld) {
-            return (T)((ServerWorld)world).getEntity(uuid);
+            return Optional.ofNullable((T)((ServerWorld)world).getEntity(uuid)).filter(this::checkReference);
         }
 
         if (clientId != 0) {
-            return (T)world.getEntityById(clientId);
+            return Optional.ofNullable((T)world.getEntityById(clientId)).filter(this::checkReference);
         }
 
-        return null;
+        return Optional.empty();
+    }
+
+    private boolean checkReference(Entity e) {
+        pos = Optional.of(e.getPos());
+        return !e.isRemoved();
     }
 
     @Override
@@ -72,7 +82,7 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
     @Override
     public void fromNBT(NbtCompound tag) {
         uuid = tag.containsUuid("uuid") ? tag.getUuid("uuid") : null;
-        pos = tag.contains("pos") ? Optional.ofNullable(NbtSerialisable.readVector(tag.getList("pos", 6))) : Optional.empty();
+        pos = tag.contains("pos") ? Optional.ofNullable(NbtSerialisable.readVector(tag.getList("pos", NbtElement.DOUBLE_TYPE))) : Optional.empty();
         clientId = tag.getInt("clientId");
     }
 }

@@ -71,7 +71,7 @@ public interface URenderers {
         EntityRendererRegistry.register(UEntities.BUTTERFLY, ButterflyEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.FLOATING_ARTEFACT, FloatingArtefactEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.CAST_SPELL, CastSpellEntityRenderer::new);
-        EntityRendererRegistry.register(UEntities.FAIRY, FairyEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.TWITTERMITE, FairyEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.SPELLBOOK, SpellbookEntityRenderer::new);
 
         ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack), UItems.FRIENDSHIP_BRACELET);
