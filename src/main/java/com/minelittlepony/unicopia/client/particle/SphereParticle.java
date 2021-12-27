@@ -154,10 +154,7 @@ public class SphereParticle extends Particle implements Attachment {
 
     protected void renderModel(MatrixStack matrices, VertexConsumer buffer, float lerpedRad, float tickDelta, int light) {
         float thickness = 0.05F;
-
-        matrices.push();
         SphereModel.SPHERE.render(matrices, buffer, light, 1, lerpedRad + thickness, 1, 1, 1, 0.8F);
-        matrices.pop();
         SphereModel.SPHERE.render(matrices, buffer, light, 1, lerpedRad - thickness, 1, 1, 1, 1);
     }
 }

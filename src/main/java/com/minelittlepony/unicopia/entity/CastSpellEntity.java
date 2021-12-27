@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.Affinity;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
@@ -24,20 +23,15 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
-
+public class CastSpellEntity extends Entity implements Caster<LivingEntity>, LightEmittingEntity {
     private static final TrackedData<Float> GRAVITY = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.FLOAT);
-
     private static final TrackedData<Optional<UUID>> SPELL = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 
     private static final LevelStore LEVELS = Levelled.fixed(0);
 
     private final EntityPhysics<CastSpellEntity> physics = new EntityPhysics<>(this, GRAVITY);
-
-    private final EntityReference<LivingEntity> owner = new EntityReference<>();
 
     private final SpellContainer spell = new SpellContainer.Delegate() {
         @Override
@@ -52,7 +46,8 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
         }
     };
 
-    private BlockPos lastPos;
+    private final EntityReference<LivingEntity> owner = new EntityReference<>();
+    private final LightEmitter<?> emitter = new LightEmitter<>(this);
 
     private int orphanedTicks;
 
@@ -66,6 +61,11 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
     }
 
     @Override
+    public int getLightLevel() {
+        return 11;
+    }
+
+    @Override
     public Text getName() {
         Entity master = getMaster();
         if (master != null) {
@@ -74,7 +74,6 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
         return super.getName();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void tick() {
         super.tick();
@@ -83,23 +82,6 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
             return;
         }
 
-        if (world.isClient) {
-            BlockPos currentPos = getBlockPos();
-
-            if (world.isChunkLoaded(currentPos)) {
-                try {
-                    world.getLightingProvider().addLightSource(currentPos, 11);
-
-                    if (lastPos != null && !currentPos.equals(lastPos)) {
-                        world.getLightingProvider().checkBlock(lastPos);
-                    }
-                } catch (Exception e) {
-                    Unicopia.LOGGER.error("Error updating lighting", e);
-                }
-
-                lastPos = currentPos;
-            }
-        }
         LivingEntity master = getMaster();
 
         if (master == null || master.isRemoved()) {
@@ -112,6 +94,8 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
 
         orphanedTicks = 0;
 
+        emitter.tick();
+
         if (!dataTracker.get(SPELL).filter(spellId -> {
             return getSpellSlot().forEach(spell -> {
                 return spell.getUuid().equals(spellId) ? Operation.ofBoolean(spell.tick(this, Situation.GROUND_ENTITY)) : Operation.SKIP;
@@ -122,26 +106,18 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
     }
 
     @Override
-    public void remove(RemovalReason reason) {
-        super.remove(reason);
-        if (world.isClient) {
-            world.getLightingProvider().checkBlock(getBlockPos());
-        }
-    }
-
-    @Override
     public void setMaster(LivingEntity owner) {
         this.owner.set(owner);
     }
 
     @Override
-    public Entity getEntity() {
-        return this;
+    public LivingEntity getMaster() {
+        return owner.get(((Entity)this).world);
     }
 
     @Override
-    public LivingEntity getMaster() {
-        return owner.get(world);
+    public Entity getEntity() {
+        return this;
     }
 
     @Override
@@ -182,15 +158,14 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity> {
         if (tag.contains("owner")) {
             owner.fromNBT(tag.getCompound("owner"));
         }
+        orphanedTicks = 60;
         if (tag.contains("spellId")) {
             dataTracker.set(SPELL, Optional.ofNullable(tag.getUuid("spellId")));
         }
-        orphanedTicks = 60;
     }
 
     @Override
     public Packet<?> createSpawnPacket() {
         return Channel.SERVER_SPAWN_PROJECTILE.toPacket(new MsgSpawnProjectile(this));
     }
-
 }
