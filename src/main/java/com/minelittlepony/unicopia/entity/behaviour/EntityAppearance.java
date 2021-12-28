@@ -269,7 +269,8 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     public boolean skipsUpdate() {
         return entity instanceof FallingBlockEntity
             || entity instanceof AbstractDecorationEntity
-            || entity instanceof PlayerEntity;
+            || entity instanceof PlayerEntity
+            || entity instanceof AbstractDecorationEntity;
     }
 
     public boolean isAxisAligned() {

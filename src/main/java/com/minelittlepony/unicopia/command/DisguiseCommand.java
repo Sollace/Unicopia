@@ -20,6 +20,7 @@ import net.minecraft.command.argument.NbtCompoundArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.CommandManager;
@@ -77,7 +78,7 @@ public class DisguiseCommand {
     }
 
     static int disguise(ServerCommandSource source, PlayerEntity player, Entity entity) throws CommandSyntaxException {
-        if (entity == null) {
+        if (entity == null || entity instanceof AbstractDecorationEntity) {
             throw FAILED_EXCEPTION.create();
         }
 

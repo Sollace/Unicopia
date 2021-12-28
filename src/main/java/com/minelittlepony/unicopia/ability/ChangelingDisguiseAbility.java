@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.util.RayTraceHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
@@ -43,7 +44,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
 
         RayTraceHelper.Trace trace = RayTraceHelper.doTrace(player, 10, 1, EntityPredicates.EXCEPT_SPECTATOR.and(e -> !(e instanceof LightningEntity)));
 
-        Entity looked = trace.getEntity().map(e -> {
+        Entity looked = trace.getEntity().filter(e -> !(e instanceof AbstractDecorationEntity)).map(e -> {
             return e instanceof PlayerEntity ? Pony.of((PlayerEntity)e)
                     .getSpellSlot()
                     .get(SpellPredicate.IS_DISGUISE, true)

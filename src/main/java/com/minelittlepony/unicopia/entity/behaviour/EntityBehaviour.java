@@ -20,6 +20,7 @@ import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
@@ -112,7 +113,12 @@ public class EntityBehaviour<T extends Entity> {
             boolean clip = to.noClip;
             to.noClip = false;
             Vec3d vel = from.getRotationVec(1);
-            to.move(MovementType.SELF, vel);
+
+            if (!(to instanceof AbstractDecorationEntity)) {
+                to.move(MovementType.SELF, vel);
+            } else {
+                to.setVelocity(Vec3d.ZERO);
+            }
             to.noClip = clip;
         } else {
             to.verticalCollision = from.verticalCollision;
