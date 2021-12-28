@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemImpl;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
@@ -25,6 +26,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.level.ServerWorldProperties;
@@ -137,6 +139,10 @@ public class JarItem extends Item implements ProjectileDelegate, ItemImpl.Tickab
 
                 world.spawnEntity(lightning);
             }
+        }
+
+        if (lightning) {
+            ParticleUtils.spawnParticle(projectile.world, UParticles.LIGHTNING_BOLT, projectile.getPos(), Vec3d.ZERO);
         }
 
         if (rain || thunder) {

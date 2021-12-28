@@ -56,7 +56,7 @@ public class GroundPoundParticle extends Particle {
                 }
             }
 
-            ParticleUtils.spawnParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), world, point, vel);
+            ParticleUtils.spawnParticle(world, new BlockStateParticleEffect(ParticleTypes.BLOCK, state), point, vel);
         });
     }
 }

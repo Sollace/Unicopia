@@ -14,14 +14,14 @@ import net.minecraft.world.World;
  */
 public final class ParticleUtils {
 
-    public static void spawnParticles(ParticleEffect particleId, Entity entity, int count) {
+    public static void spawnParticles(ParticleEffect effect, Entity entity, int count) {
         double halfDist = Math.abs(entity.getStandingEyeHeight() / 1.5);
         double middle = entity.getBoundingBox().minY + halfDist;
 
         Shape shape = new Sphere(false, Math.abs((float)halfDist + entity.getWidth()));
 
         shape.randomPoints(count, entity.world.random).forEach(point -> {
-            spawnParticle(entity.world, particleId,
+            spawnParticle(entity.world, effect,
                     entity.getX() + point.x,
                     middle + point.y,
                     entity.getZ() + point.z,
@@ -29,8 +29,8 @@ public final class ParticleUtils {
         });
     }
 
-    public static void spawnParticle(ParticleEffect particleId, World world, Vec3d pos, Vec3d vel) {
-        spawnParticle(world, particleId, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
+    public static void spawnParticle(World world, ParticleEffect effect, Vec3d pos, Vec3d vel) {
+        spawnParticle(world, effect, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
     }
 
     public static void spawnParticle(World world, ParticleEffect effect, double x, double y, double z, double vX, double vY, double vZ) {

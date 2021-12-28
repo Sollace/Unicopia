@@ -162,7 +162,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpel
         world.playSound(null, pos, SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, SoundCategory.AMBIENT, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
 
         for (int i = 0; i < 8; ++i) {
-            ParticleUtils.spawnParticle(ParticleTypes.LARGE_SMOKE, world, new Vec3d(
+            ParticleUtils.spawnParticle(world, ParticleTypes.LARGE_SMOKE, new Vec3d(
                     x + Math.random(),
                     y + Math.random(),
                     z + Math.random()

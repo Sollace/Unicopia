@@ -8,10 +8,13 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.particle.UParticles;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.ai.FuzzyPositions;
@@ -29,6 +32,7 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -36,6 +40,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class FairyEntity extends PathAwareEntity implements LightEmittingEntity, Owned<LivingEntity> {
     private final EntityReference<LivingEntity> owner = new EntityReference<>();
@@ -199,7 +204,13 @@ public class FairyEntity extends PathAwareEntity implements LightEmittingEntity,
 
     @Override
     public boolean handleAttack(Entity attacker) {
-        attacker.damage(DamageSource.LIGHTNING_BOLT, (float)getAttackDistanceScalingFactor(attacker) * 3);
+        if (world instanceof ServerWorld) {
+            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world);
+            lightning.refreshPositionAfterTeleport(getX(), getY(), getZ());
+            attacker.onStruckByLightning((ServerWorld)world, lightning);
+        }
+        emitGameEvent(GameEvent.LIGHTNING_STRIKE);
+        ParticleUtils.spawnParticle(world, UParticles.LIGHTNING_BOLT, getPos(), Vec3d.ZERO);
 
         return false;
     }

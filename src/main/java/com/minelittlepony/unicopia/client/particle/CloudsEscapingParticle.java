@@ -34,7 +34,7 @@ public class CloudsEscapingParticle extends GroundPoundParticle {
             .offset(center)
             .randomPoints(random)
             .forEach(point -> {
-                ParticleUtils.spawnParticle(ParticleTypes.CLOUD, world, point, vel);
+                ParticleUtils.spawnParticle(world, ParticleTypes.CLOUD, point, vel);
         });
     }
 }

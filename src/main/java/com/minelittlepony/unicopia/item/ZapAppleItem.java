@@ -1,11 +1,12 @@
 package com.minelittlepony.unicopia.item;
 
-
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.item.toxin.Toxicity;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
 import net.minecraft.entity.Entity;
@@ -24,11 +25,13 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class ZapAppleItem extends AppleItem implements ChameleonItem {
 
@@ -59,11 +62,15 @@ public class ZapAppleItem extends AppleItem implements ChameleonItem {
             LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(w);
             lightning.refreshPositionAfterTeleport(player.getX(), player.getY(), player.getZ());
 
-            w.spawnEntity(lightning);
+            player.onStruckByLightning((ServerWorld)w, lightning);
+
             if (player instanceof PlayerEntity) {
                 UCriteria.EAT_TRICK_APPLE.trigger((PlayerEntity)player);
             }
         }
+
+        player.emitGameEvent(GameEvent.LIGHTNING_STRIKE);
+        ParticleUtils.spawnParticle(w, UParticles.LIGHTNING_BOLT, player.getPos(), Vec3d.ZERO);
 
         return stack;
     }
