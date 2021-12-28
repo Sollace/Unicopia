@@ -26,6 +26,8 @@ public interface UParticles {
     DefaultParticleType GROUND_POUND = register("ground_pound", FabricParticleTypes.simple());
     DefaultParticleType CLOUDS_ESCAPING = register("clouds_escaping", FabricParticleTypes.simple(true));
 
+    DefaultParticleType LIGHTNING_BOLT = register("lightning_bolt", FabricParticleTypes.simple(true));
+
     static <T extends ParticleType<?>> T register(String name, T type) {
         return Registry.register(Registry.PARTICLE_TYPE, new Identifier("unicopia", name), type);
     }

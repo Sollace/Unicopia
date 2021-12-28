@@ -142,9 +142,9 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
 
             return new Vec3f[]{
                     new Vec3f(fromX, fromBottomY, fromZ), // bottom left
-                    new Vec3f(fromX, fromTopY, fromZ), // top left
-                    new Vec3f(toX, toTopY, toZ), // top right
-                    new Vec3f(toX, toBottomY, toZ)  // bottom right
+                    new Vec3f(fromX, fromTopY, fromZ),    // top    left
+                    new Vec3f(toX, toTopY, toZ),          // top    right
+                    new Vec3f(toX, toBottomY, toZ)        // bottom right
             };
         }
     }

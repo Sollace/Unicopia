@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.client.particle.CloudsEscapingParticle;
 import com.minelittlepony.unicopia.client.particle.DiskParticle;
 import com.minelittlepony.unicopia.client.particle.GroundPoundParticle;
 import com.minelittlepony.unicopia.client.particle.HealthDrainParticle;
+import com.minelittlepony.unicopia.client.particle.LightningBoltParticle;
 import com.minelittlepony.unicopia.client.particle.MagicParticle;
 import com.minelittlepony.unicopia.client.particle.RainboomParticle;
 import com.minelittlepony.unicopia.client.particle.RainbowTrailParticle;
@@ -60,6 +61,7 @@ public interface URenderers {
         ParticleFactoryRegistry.getInstance().register(UParticles.DISK, DiskParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.GROUND_POUND, GroundPoundParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.CLOUDS_ESCAPING, CloudsEscapingParticle::new);
+        ParticleFactoryRegistry.getInstance().register(UParticles.LIGHTNING_BOLT, LightningBoltParticle::new);
 
         AccessoryFeatureRenderer.register(BraceletFeatureRenderer::new);
         AccessoryFeatureRenderer.register(AmuletFeatureRenderer::new);

@@ -105,8 +105,7 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
         float angle = MathHelper.lerp(tickDelta, prevRotationAngle, rotationAngle);
 
         for (int i = 0; i < TEXTURES.length; i++) {
-            bindTexture(TEXTURES[i]);
-
+            RenderSystem.setShaderTexture(0, TEXTURES[i]);
             RenderSystem.setShaderColor(colorRed, colorGreen, colorBlue, alpha);
 
             Vec3f[] corners = new Vec3f[]{
