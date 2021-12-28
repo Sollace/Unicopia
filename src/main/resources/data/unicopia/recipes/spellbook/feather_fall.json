@@ -1,0 +1,17 @@
+{
+  "type": "unicopia:spellbook/crafting",
+  "material": {
+    "item": {
+      "item": "unicopia:gemstone",
+      "spell": "unicopia:shield"
+    }
+  },
+  "traits": {
+    "knowledge": 20, "life": 10, "chaos": 4,
+    "generosity": 10
+  },
+  "result": {
+    "item": "unicopia:gemstone",
+    "spell": "unicopia:feather_fall"
+  }
+}

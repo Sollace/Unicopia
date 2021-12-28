@@ -6,9 +6,10 @@
     }
   },
   "traits": {
-    "pestilence": 1
+    "knowledge": 18, "life": 10, "chaos": 4
   },
   "result": {
-    "item": "unicopia:burned_juice"
+    "item": "unicopia:gemstone",
+    "spell": "unicopia:transformation"
   }
 }

@@ -52,6 +52,10 @@ public class TraitLoader extends SinglePreparationResourceReloader<Map<Identifie
                         Map<String, String> data = JsonHelper.deserialize(Resources.GSON, reader, TYPE);
 
                         data.forEach((name, set) -> {
+                            if (set.isEmpty()) {
+                                return;
+                            }
+
                             try {
                                 Identifier id = new Identifier(name);
                                 SpellTraits.fromEntries(Arrays.stream(set.split(" ")).map(a -> a.split(":")).map(pair -> {
