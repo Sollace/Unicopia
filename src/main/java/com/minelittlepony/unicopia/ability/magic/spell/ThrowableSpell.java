@@ -40,6 +40,15 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
      * Returns the resulting projectile entity for customization (or null if on the client).
      */
     public Optional<MagicProjectileEntity> throwProjectile(Caster<?> caster) {
+        return throwProjectile(caster, 1);
+    }
+
+    /**
+     * Projects this spell.
+     *
+     * Returns the resulting projectile entity for customization (or null if on the client).
+     */
+    public Optional<MagicProjectileEntity> throwProjectile(Caster<?> caster, float divergance) {
         World world = caster.getWorld();
 
         LivingEntity entity = caster.getMaster();
@@ -51,7 +60,7 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
 
             projectile.setItem(GemstoneItem.enchant(UItems.GEMSTONE.getDefaultStack(), spell.getType()));
             projectile.getSpellSlot().put(this);
-            projectile.setVelocity(entity, entity.getPitch(), entity.getYaw(), 0, 1.5F, 1);
+            projectile.setVelocity(entity, entity.getPitch(), entity.getYaw(), 0, 1.5F, divergance);
             projectile.setHydrophobic();
             configureProjectile(projectile, caster);
             world.spawnEntity(projectile);

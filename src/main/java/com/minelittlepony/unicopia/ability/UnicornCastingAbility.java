@@ -6,14 +6,18 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
+import com.minelittlepony.unicopia.util.RayTraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -97,10 +101,14 @@ public class UnicornCastingAbility implements Ability<Hit> {
                 boolean remove = player.getSpellSlot().removeIf(spell, true);
                 player.subtractEnergyCost(remove ? 2 : 4);
                 if (!remove) {
-                    if (spell.apply(player) == null) {
+                    Spell s = spell.apply(player);
+                    if (s == null) {
                         player.spawnParticles(ParticleTypes.LARGE_SMOKE, 6);
                         player.playSound(SoundEvents.ENTITY_ITEM_BREAK, 1, 0.5F);
                     } else {
+                        if (s instanceof HomingSpell) {
+                            RayTraceHelper.doTrace(player.getMaster(), 600, 1, EntityPredicates.EXCEPT_SPECTATOR).getEntity().ifPresent(((HomingSpell)s)::setTarget);
+                        }
                         player.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 0.05F, 2.2F);
                     }
                 }

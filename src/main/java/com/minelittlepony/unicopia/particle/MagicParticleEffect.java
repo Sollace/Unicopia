@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.particle;
 
 import java.util.Locale;
+import java.util.Random;
 
 import com.minelittlepony.common.util.Color;
 import com.mojang.brigadier.StringReader;
@@ -46,8 +47,22 @@ public class MagicParticleEffect implements ParticleEffect {
         return tinted;
     }
 
-    public Vec3f getColor() {
-        return color;
+    public Vec3f getColor(Random random) {
+        if (hasTint()) {
+            return color;
+        }
+
+        float r = random.nextBoolean() ? 0.9F : 1;
+        float g = 0.3F;
+        float b = random.nextBoolean() ? 0.4F : 1;
+
+        if (random.nextBoolean()) {
+            g *= 2F;
+        } else if (random.nextBoolean()) {
+            r *= 3.9F;
+        }
+
+        return new Vec3f(r, g, b);
     }
 
     @Override

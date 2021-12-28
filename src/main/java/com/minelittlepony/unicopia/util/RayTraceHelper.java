@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -49,58 +50,18 @@ public class RayTraceHelper {
      * @return A Trace describing what was found.
      */
     public static Trace doTrace(Entity e, double distance, float tickDelta, Predicate<Entity> predicate) {
-        HitResult tracedBlock = e.raycast(distance, tickDelta, false);
-
+        final Vec3d ray = e.getRotationVec(tickDelta).multiply(distance);
         final Vec3d start = e.getCameraPosVec(tickDelta);
 
-        final double totalTraceDistance = tracedBlock == null ? distance : tracedBlock.getPos().distanceTo(start);
+        final Box box = e.getBoundingBox().stretch(ray).expand(1);
 
-        final Vec3d ray = e.getRotationVec(tickDelta).multiply(distance);
-        final Vec3d end = start.add(ray);
+        EntityHitResult pointedEntity = ProjectileUtil.raycast(e, start, start.add(ray), box, predicate.and(Entity::collides), distance);
 
-        Vec3d hit = null;
-        Entity pointedEntity = null;
-
-        double traceDistance = totalTraceDistance;
-
-        for (Entity entity : e.world.getOtherEntities(e,
-                e.getBoundingBox().expand(ray.x + 1, ray.y + 1, ray.z + 1),
-                predicate.and(Entity::collides)
-        )) {
-            Box entityAABB = entity.getBoundingBox().expand(entity.getTargetingMargin());
-
-            Optional<Vec3d> intercept = entityAABB.raycast(start, end);
-
-            if (entityAABB.contains(start)) {
-                if (traceDistance <= 0) {
-                    pointedEntity = entity;
-                    hit = intercept.orElse(null);
-                    traceDistance = 0;
-                }
-            } else if (intercept.isPresent()) {
-                Vec3d inter = intercept.get();
-                double distanceToHit = start.distanceTo(inter);
-
-                if (distanceToHit < traceDistance || traceDistance == 0) {
-                    if (entity.getRootVehicle() == e.getRootVehicle()) {
-                        if (traceDistance == 0) {
-                            pointedEntity = entity;
-                            hit = inter;
-                        }
-                    } else {
-                        pointedEntity = entity;
-                        hit = inter;
-                        traceDistance = distanceToHit;
-                    }
-                }
-            }
+        if (pointedEntity != null) {
+            return new Trace(pointedEntity);
         }
 
-        if (pointedEntity != null && (traceDistance < totalTraceDistance || tracedBlock == null)) {
-            return new Trace(new EntityHitResult(pointedEntity, hit));
-        }
-
-        return new Trace(tracedBlock);
+        return new Trace(e.raycast(distance, tickDelta, false));
     }
 
     public static class Trace {

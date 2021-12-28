@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.projectile;
 
 import java.util.function.Consumer;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -12,6 +14,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
+import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
@@ -58,6 +61,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
 
     private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this, GRAVITY, false);
 
+    private final EntityReference<Entity> homingTarget = new EntityReference<>();
+
     public MagicProjectileEntity(EntityType<MagicProjectileEntity> type, World world) {
         super(type, world);
     }
@@ -92,6 +97,10 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     @Override
     public void setMaster(LivingEntity owner) {
         setOwner(owner);
+    }
+
+    public void setHomingTarget(@Nullable Entity target) {
+        homingTarget.set(target);
     }
 
     @Override
@@ -146,8 +155,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
 
     @Override
     public void tick() {
-        if (!world.isClient()) {
-            if (Math.abs(getVelocity().x) < 0.01 && Math.abs(getVelocity().x) < 0.01 && Math.abs(getVelocity().y) < 0.01) {
+        if (!world.isClient() && !homingTarget.isPresent(world)) {
+            if (getVelocity().length() < 0.01) {
                 discard();
             }
         }
@@ -175,6 +184,12 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
                 setVelocity(new Vec3d(vel.x, velY, vel.z));
             }
         }
+
+        homingTarget.ifPresent(world, e -> {
+            setNoGravity(true);
+            noClip = true;
+            setVelocity(getVelocity().add(e.getPos().subtract(getPos()).normalize().multiply(0.2)).multiply(0.6, 0.6, 0.6));
+        });
     }
 
     private ParticleEffect getParticleParameters() {
@@ -200,13 +215,13 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
              world.addParticle(effect, getX(), getY(), getZ(), 0, 0, 0);
           }
        }
-
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
         physics.fromNBT(compound);
+        homingTarget.fromNBT(compound.getCompound("homingTarget"));
         if (compound.contains("effect")) {
             getSpellSlot().put(SpellType.fromNBT(compound.getCompound("effect")));
         }
@@ -216,6 +231,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     public void writeCustomDataToNbt(NbtCompound compound) {
         super.writeCustomDataToNbt(compound);
         physics.toNBT(compound);
+        compound.put("homingTarget", homingTarget.toNBT());
         getSpellSlot().get(true).ifPresent(effect -> {
             compound.put("effect", SpellType.toNBT(effect));
         });

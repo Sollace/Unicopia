@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.EquinePredicates;
@@ -52,6 +53,20 @@ public class TargetSelecter {
 
     public long getTotalDamaged() {
         return targets.values().stream().filter(Target::canHurt).count();
+    }
+
+    public static Predicate<Entity> notOwnerOrFriend(Spell spell, Caster<?> source) {
+        Entity owner = source.getMaster();
+
+        boolean ownerIsValid = spell.isFriendlyTogether(source) && (EquinePredicates.PLAYER_UNICORN.test(owner));
+
+        if (!ownerIsValid) {
+            return e -> true;
+        }
+
+        return entity -> {
+            return !ownerIsValid || !(Pony.equal(entity, owner) || owner.isConnectedThroughVehicle(entity) || FriendshipBraceletItem.isComrade(source, entity));
+        };
     }
 
     static final class Target {

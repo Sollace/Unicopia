@@ -7,13 +7,14 @@ import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.util.math.Vec3f;
 
 public class MagicParticle extends SpriteBillboardParticle {
-    private double startX;
-    private double startY;
-    private double startZ;
+    private final double startX;
+    private final double startY;
+    private final double startZ;
 
-    MagicParticle(ParticleEffect effect, SpriteProvider provider, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ, float r, float g, float b) {
+    MagicParticle(ParticleEffect effect, SpriteProvider provider, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ, Vec3f color, float alpha) {
         super(w, x, y, z);
         setSprite(provider);
 
@@ -26,41 +27,14 @@ public class MagicParticle extends SpriteBillboardParticle {
         scale = random.nextFloat() * 0.12F;
         maxAge = (int)(Math.random() * 10) + 20;
 
-        colorRed = r;
-        colorGreen = g;
-        colorBlue = b;
+        colorRed = color.getX();
+        colorGreen = color.getY();
+        colorBlue = color.getZ();
+        colorAlpha = alpha;
     }
 
-    public MagicParticle(ParticleEffect effect, SpriteProvider provider, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
-        this(effect, provider, w, x, y, z, vX, vY, vZ, 1, 1, 1);
-
-        colorAlpha = 0.7F;
-        colorGreen *= 0.3F;
-
-        if (effect instanceof MagicParticleEffect && ((MagicParticleEffect)effect).hasTint()) {
-            MagicParticleEffect parameters = (MagicParticleEffect)effect;
-
-            colorRed = parameters.getColor().getX();
-            colorGreen = parameters.getColor().getY();
-            colorBlue = parameters.getColor().getZ();
-        } else {
-
-            if (random.nextBoolean()) {
-                colorBlue *= 0.4F;
-            }
-            if (random.nextBoolean()) {
-                colorRed *= 0.9F;
-            }
-            if (random.nextBoolean()) {
-                colorGreen += 0.5F;
-            }
-
-            if (random.nextBoolean()) {
-                colorGreen *= 2F;
-            } else if (random.nextBoolean()) {
-                colorRed *= 3.9F;
-            }
-        }
+    public MagicParticle(MagicParticleEffect effect, SpriteProvider provider, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
+        this(effect, provider, w, x, y, z, vX, vY, vZ, effect.getColor(w.random), 0.7F);
     }
 
     @Override
@@ -80,7 +54,7 @@ public class MagicParticle extends SpriteBillboardParticle {
         float timer = (float)age / (float)maxAge;
 
         int v = light >> 16 & 255;
-        v = (int)Math.min(v + Math.pow(timer, 4) * 240, 240);
+        v = (int)Math.min(v + (timer * timer * timer * timer) * 240, 240);
 
         return (light & 255) | v << 16;
     }
@@ -95,7 +69,8 @@ public class MagicParticle extends SpriteBillboardParticle {
             markDead();
         } else {
             float timer = (float)age / (float)maxAge;
-            timer = 1 + timer - timer * timer * 2;
+
+            timer += 1 - (timer * timer) * 2;
 
             x = startX + velocityX * timer;
             y = startY + velocityY;
