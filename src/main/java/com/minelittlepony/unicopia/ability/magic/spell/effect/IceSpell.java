@@ -45,7 +45,7 @@ public class IceSpell extends AbstractSpell {
 
         PosHelper.getAllInRegionMutable(source.getOrigin(), effect_range)
             .forEach(i -> {
-                if (applyBlockSingle(owner, source.getWorld(), i)) {
+                if (source.canModifyAt(i) && applyBlockSingle(owner, source.getWorld(), i)) {
                     ParticleUtils.spawnParticle(source.getWorld(), ParticleTypes.SPLASH, new Vec3d(
                             i.getX() + source.getWorld().random.nextFloat(),
                             i.getY() + 1,

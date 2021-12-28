@@ -22,6 +22,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -135,7 +136,7 @@ public class DarkVortexSpell extends AttractiveSpell {
             if (radius > 5) {
                 Vec3d origin = getOrigin(source);
                 PosHelper.getAllInRegionMutable(source.getOrigin(), new Sphere(false, radius)).forEach(i -> {
-                    if (!source.getWorld().getFluidState(i).isEmpty()) {
+                    if (!canAffect(source, i)) {
                         return;
                     }
                     if (source.getOrigin().isWithinDistance(i, getEventHorizonRadius())) {
@@ -151,6 +152,12 @@ public class DarkVortexSpell extends AttractiveSpell {
         }
 
         return super.applyEntities(source);
+    }
+
+    protected boolean canAffect(Caster<?> source, BlockPos pos) {
+        return source.canModifyAt(pos)
+            && source.getWorld().getFluidState(pos).isEmpty()
+            && source.getWorld().getBlockState(pos).getHardness(source.getWorld(), pos) >= 0;
     }
 
     // 1. force decreases with distance: distance scale 1 -> 0
@@ -226,9 +233,3 @@ public class DarkVortexSpell extends AttractiveSpell {
         accumulatedMass = compound.getFloat("accumulatedMass");
     }
 }
-
-
-
-
-
-

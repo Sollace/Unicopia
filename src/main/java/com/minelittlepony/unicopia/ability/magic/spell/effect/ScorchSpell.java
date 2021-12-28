@@ -29,7 +29,7 @@ public class ScorchSpell extends FireSpell {
     public boolean tick(Caster<?> source, Situation situation) {
         BlockPos pos = PosHelper.findSolidGroundAt(source.getWorld(), source.getOrigin(), source.getPhysics().getGravitySignum());
 
-        if (StateMaps.FIRE_AFFECTED.convert(source.getWorld(), pos)) {
+        if (source.canModifyAt(pos) && StateMaps.FIRE_AFFECTED.convert(source.getWorld(), pos)) {
             source.spawnParticles(new Sphere(false, Math.max(1, getTraits().get(Trait.POWER))), 5, p -> {
                 source.addParticle(ParticleTypes.SMOKE, PosHelper.offset(p, pos), Vec3d.ZERO);
             });

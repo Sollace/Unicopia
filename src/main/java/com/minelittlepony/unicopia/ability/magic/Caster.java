@@ -15,8 +15,10 @@ import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 /**
@@ -56,6 +58,13 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
      */
     default BlockPos getOrigin() {
         return getEntity().getBlockPos();
+    }
+
+    default boolean canModifyAt(BlockPos pos) {
+        if (getMaster() instanceof PlayerEntity) {
+            return !getWorld().canPlayerModifyAt((PlayerEntity)getMaster(), pos);
+        }
+        return getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
     }
 
     default void playSound(SoundEvent sound, float volume, float pitch) {

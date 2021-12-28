@@ -59,7 +59,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpel
         }
 
         return PosHelper.getAllInRegionMutable(source.getOrigin(), new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER)))).reduce(false,
-                (r, i) -> applyBlocks(source.getWorld(), i),
+                (r, i) -> source.canModifyAt(i) && applyBlocks(source.getWorld(), i),
                 (a, b) -> a || b)
                 || applyEntities(null, source.getWorld(), source.getOriginVector());
     }

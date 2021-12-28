@@ -44,7 +44,7 @@ public class InfernoSpell extends FireSpell {
             for (int i = 0; i < radius; i++) {
                 BlockPos pos = new BlockPos(shape.computePoint(w.random).add(origin));
 
-                if (converter.convert(w, pos)) {
+                if (source.canModifyAt(pos) && converter.convert(w, pos)) {
                     playEffect(w, pos);
                 }
             }

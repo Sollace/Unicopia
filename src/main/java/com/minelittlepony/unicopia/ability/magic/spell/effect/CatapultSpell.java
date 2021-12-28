@@ -44,7 +44,7 @@ public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
 
     @Override
     public void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
-        if (!projectile.isClient()) {
+        if (!projectile.isClient() && projectile.canModifyAt(pos)) {
             createBlockEntity(projectile.world, pos, e -> apply(projectile, e));
         }
     }
@@ -92,7 +92,9 @@ public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
             EntityHitResult result = (EntityHitResult)ray;
             Optional.ofNullable(result.getEntity()).ifPresent(apply);
         } else if (ray.getType() == HitResult.Type.BLOCK) {
-            createBlockEntity(caster.getWorld(), ((BlockHitResult)ray).getBlockPos(), apply);
+            if (caster.canModifyAt(((BlockHitResult)ray).getBlockPos())) {
+                createBlockEntity(caster.getWorld(), ((BlockHitResult)ray).getBlockPos(), apply);
+            }
         }
     }
 
