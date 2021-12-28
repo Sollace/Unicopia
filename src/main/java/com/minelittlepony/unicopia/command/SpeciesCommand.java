@@ -20,6 +20,8 @@ class SpeciesCommand {
     static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("race");
 
+        EnumArgumentType<Race> raceArgument = EnumArgumentType.of(Race.class, Race::isUsable, Race.EARTH);
+
         builder.then(CommandManager.literal("get")
                       .executes(context -> get(context.getSource(), context.getSource().getPlayer(), true))
                .then(CommandManager.argument("target", EntityArgumentType.player())
@@ -27,14 +29,14 @@ class SpeciesCommand {
                ));
 
         builder.then(CommandManager.literal("set")
-               .then(CommandManager.argument("race", new RaceArgument())
+               .then(CommandManager.argument("race", raceArgument)
                        .executes(context -> set(context.getSource(), context.getSource().getPlayer(), context.getArgument("race", Race.class), true))
                .then(CommandManager.argument("target", EntityArgumentType.player())
                        .executes(context -> set(context.getSource(), EntityArgumentType.getPlayer(context, "target"), context.getArgument("race", Race.class), false))
                )));
 
         builder.then(CommandManager.literal("describe")
-               .then(CommandManager.argument("race", new RaceArgument())
+               .then(CommandManager.argument("race", raceArgument)
                        .executes(context -> describe(context.getSource().getPlayer(), context.getArgument("race", Race.class))
                )));
 

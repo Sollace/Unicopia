@@ -19,8 +19,10 @@ class RacelistCommand {
     static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("racelist").requires(s -> s.hasPermissionLevel(4));
 
+        EnumArgumentType<Race> raceArgument = EnumArgumentType.of(Race.class, Race::isUsable, Race.EARTH);
+
         builder.then(CommandManager.literal("allow")
-                .then(CommandManager.argument("race", new RaceArgument())
+                .then(CommandManager.argument("race", raceArgument)
                 .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), context.getArgument("race", Race.class), "allowed", race -> {
                     boolean result = Unicopia.getConfig().speciesWhiteList.get().add(race);
 
@@ -30,7 +32,7 @@ class RacelistCommand {
                 }))
         ));
         builder.then(CommandManager.literal("disallow")
-                .then(CommandManager.argument("race", new RaceArgument())
+                .then(CommandManager.argument("race", raceArgument)
                 .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), context.getArgument("race", Race.class), "disallowed", race -> {
                     boolean result = Unicopia.getConfig().speciesWhiteList.get().remove(race);
 
