@@ -95,9 +95,7 @@ public class LightSpell extends AbstractSpell {
         lights.clear();
         if (compound.contains("lights", NbtElement.LIST_TYPE)) {
             compound.getList("lights", NbtElement.COMPOUND_TYPE).forEach(nbt -> {
-                EntityReference<FairyEntity> light = new EntityReference<>();
-                light.fromNBT((NbtCompound)nbt);
-                lights.add(light);
+                lights.add(new EntityReference<>((NbtCompound)nbt));
             });
         }
     }

@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -55,7 +56,7 @@ public class TargetSelecter {
         return targets.values().stream().filter(Target::canHurt).count();
     }
 
-    public static Predicate<Entity> notOwnerOrFriend(Spell spell, Caster<?> source) {
+    public static <T extends Entity> Predicate<T> notOwnerOrFriend(Affine spell, Caster<?> source) {
         Entity owner = source.getMaster();
 
         boolean ownerIsValid = spell.isFriendlyTogether(source) && (EquinePredicates.PLAYER_UNICORN.test(owner));

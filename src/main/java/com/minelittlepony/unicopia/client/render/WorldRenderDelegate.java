@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.behaviour.FallingBlockBehaviour;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -62,7 +63,12 @@ public class WorldRenderDelegate {
 
         matrices.push();
 
-        Entity owner = pony.getMaster();
+        Entity owner = pony.getEntity();
+        Entity master = pony.getMaster();
+
+        if (master != owner) {
+            RenderSystem.setShaderColor(0, 0, 1, 1);
+        }
 
         boolean negative = pony.getPhysics().isGravityNegative();
 
@@ -77,7 +83,6 @@ public class WorldRenderDelegate {
         if (pony instanceof Pony) {
             roll = ((Pony)pony).getCamera().calculateRoll();
 
-
             matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(yaw));
             matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(roll));
             matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(yaw));
@@ -91,7 +96,7 @@ public class WorldRenderDelegate {
 
         if (pony instanceof Caster<?>) {
 
-            int fireTicks = pony.getMaster().doesRenderOnFire() ? 1 : 0;
+            int fireTicks = owner.doesRenderOnFire() ? 1 : 0;
 
             return ((Caster<?>)pony).getSpellSlot().get(SpellPredicate.IS_DISGUISE, true).map(effect -> {
                 effect.update(pony, false);

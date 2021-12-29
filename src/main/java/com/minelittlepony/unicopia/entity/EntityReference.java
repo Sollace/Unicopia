@@ -22,6 +22,16 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
 
     private Optional<Vec3d> pos = Optional.empty();
 
+    public EntityReference() {}
+
+    public EntityReference(T entity) {
+        set(entity);
+    }
+
+    public EntityReference(NbtCompound nbt) {
+        fromNBT(nbt);
+    }
+
     public void set(@Nullable T entity) {
         if (entity != null) {
             uuid = entity.getUuid();
