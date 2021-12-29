@@ -21,7 +21,7 @@ public class DynamicTargetGoal extends Goal {
 
     private int interval;
 
-    private Optional<Entity> target;
+    private Optional<Entity> target = Optional.empty();
 
     @Nullable
     private Predicate<Entity> test;
@@ -37,6 +37,9 @@ public class DynamicTargetGoal extends Goal {
     }
 
     public Optional<Entity> getTarget() {
+        if (test == null) {
+            return target.filter(Entity::isAlive);
+        }
         return target.filter(test).filter(Entity::isAlive);
     }
 
