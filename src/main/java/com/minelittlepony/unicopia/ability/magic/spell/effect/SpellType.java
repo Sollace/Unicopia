@@ -33,7 +33,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public final class SpellType<T extends Spell> implements Affine, SpellPredicate<T> {
-    public static final Identifier EMPTY_ID = new Identifier("unicopia", "null");
+    public static final Identifier EMPTY_ID = new Identifier("unicopia", "none");
     public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, SpellTraits.EMPTY, (t, c) -> null);
 
     private static final Registry<SpellType<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "spells"));

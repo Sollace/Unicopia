@@ -15,6 +15,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.World;
 
+/**
+ * Recipe that requires an item and a certain number of traits to produce a result.
+ */
 public class TraitRequirementRecipe implements SpellbookRecipe {
     private final Identifier id;
     private final IngredientWithSpell requirement;
