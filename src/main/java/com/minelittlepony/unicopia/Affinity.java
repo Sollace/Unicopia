@@ -4,7 +4,7 @@ import net.minecraft.util.Formatting;
 
 public enum Affinity {
     GOOD(Formatting.BLUE, -1),
-    NEUTRAL(Formatting.WHITE, 0),
+    NEUTRAL(Formatting.LIGHT_PURPLE, 0),
     BAD(Formatting.RED, 1);
 
     private final Formatting color;
