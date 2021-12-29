@@ -1,9 +1,8 @@
 {
   "type": "unicopia:spellbook/crafting",
   "material": {
-    "item": {
-      "item": "unicopia:gemstone"
-    }
+    "item": { "item": "unicopia:gemstone" },
+    "spell": "unicopia:none"
   },
   "traits": {
     "fire": 10
