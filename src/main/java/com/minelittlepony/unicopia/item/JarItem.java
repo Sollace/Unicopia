@@ -149,7 +149,7 @@ public class JarItem extends Item implements ProjectileDelegate, ItemImpl.Tickab
             projectile.world.syncWorldEvent(WorldEvents.SPLASH_POTION_SPLASHED, projectile.getBlockPos(), thunder ? 0x888888 : 0xF8F8F8);
 
             for (int i = projectile.world.random.nextInt(3) + 1; i >= 0; i--) {
-                projectile.world.addParticle(UParticles.CLOUDS_ESCAPING, true,
+                ParticleUtils.spawnParticle(projectile.world, UParticles.CLOUDS_ESCAPING,
                         projectile.getX(), projectile.getY(), projectile.getZ(),
                         projectile.world.random.nextFloat() - 0.5,
                         0,
