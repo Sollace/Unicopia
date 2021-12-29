@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
+import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
@@ -26,10 +27,11 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.level.ServerWorldProperties;
 
 public class JarItem extends Item implements ProjectileDelegate, ItemImpl.TickableItem {
 
@@ -127,10 +129,38 @@ public class JarItem extends Item implements ProjectileDelegate, ItemImpl.Tickab
             ServerWorld world = (ServerWorld)projectile.world;
 
             if (rain || thunder) {
-                ServerWorldProperties props = ((ServerWorldProperties)world.getLevelProperties());
+                // clear weather time = number of ticks for which the weather is clear
+                // rain time = ticks until rain gets toggled (reset the tick after toggling)
+                // thunder time = ticks until thundering gets toggled (reset the tick after toggling)
 
-                int time = Math.max(Math.max(props.getRainTime(), props.getThunderTime()), 40);
-                world.setWeather(0, time, rain, thunder);
+                // clear weather time
+                //   Number of ticks weather must stay clear.
+                //   Raining and thundering, and raining/thundering times are kept to false and 0
+                // when clear weather time is <= 0
+                //   - wait for thunder time to reach zero then toggle thundering
+                //   - wait for rain time to reach zero then toggle raining
+                // when thunder time is <= 0
+                //   - randomly pick a new value for thunder time
+                // when rain time is <= 0
+                //   - randomly pick a new value for rain time
+
+                world.setWeather(0, 0, rain, thunder);
+
+                if (thunder) {
+                    for (int i = world.random.nextInt(7); i > 0; i--) {
+                        AwaitTickQueue.scheduleTask(world, w -> {
+                            LightningEntity bolt = EntityType.LIGHTNING_BOLT.create(world);
+                            bolt.setCosmetic(true);
+                            bolt.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, world.getRandomPosInChunk(
+                                    ChunkSectionPos.getBlockCoord(ChunkSectionPos.getSectionCoord(projectile.getX())),
+                                    0,
+                                    ChunkSectionPos.getBlockCoord(ChunkSectionPos.getSectionCoord(projectile.getZ())),
+                                    15
+                            )).up(32)));
+                            world.spawnEntity(bolt);
+                        }, 15 + world.random.nextInt(12));
+                    }
+                }
             }
 
             if (lightning) {
