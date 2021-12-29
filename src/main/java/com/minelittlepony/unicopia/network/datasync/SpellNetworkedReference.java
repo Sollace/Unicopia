@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 
 import net.minecraft.nbt.NbtCompound;
 
@@ -78,7 +77,7 @@ public class SpellNetworkedReference<T extends Spell> implements NetworkedRefere
         }
 
         if (mustReplace(comp)) {
-            updateReference((T)SpellType.fromNBT(comp));
+            updateReference((T)Spell.readNbt(comp));
             return false;
         }
 
@@ -98,7 +97,7 @@ public class SpellNetworkedReference<T extends Spell> implements NetworkedRefere
     @Override
     public NbtCompound toNbt() {
         dirty = false;
-        return getReference().map(SpellType::toNBT).orElseGet(NbtCompound::new);
+        return getReference().map(Spell::writeNbt).orElseGet(NbtCompound::new);
     }
 
     @Override

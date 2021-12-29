@@ -44,7 +44,7 @@ public record CustomisedSpellType<T extends Spell> (
 
     public NbtCompound toNBT() {
         NbtCompound tag = new NbtCompound();
-        type.writeId(tag);
+        type.toNbt(tag);
         tag.put("traits", traits.toNbt());
         return tag;
     }

@@ -102,7 +102,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
             compound.putString("dimension", dimension.toString());
         }
         compound.put("castEntity", castEntity.toNBT());
-        compound.put("spell", SpellType.toNBT(spell));
+        compound.put("spell", Spell.writeNbt(spell));
     }
 
     @Override
@@ -114,7 +114,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
         if (compound.contains("castEntity")) {
             castEntity.fromNBT(compound.getCompound("castEntity"));
         }
-        spell = SpellType.fromNBT(compound.getCompound("spell"));
+        spell = Spell.readNbt(compound.getCompound("spell"));
     }
 
     @Override

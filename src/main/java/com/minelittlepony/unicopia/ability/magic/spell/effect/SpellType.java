@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
@@ -36,15 +35,15 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final Identifier EMPTY_ID = new Identifier("unicopia", "none");
     public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, SpellTraits.EMPTY, (t, c) -> null);
 
-    private static final Registry<SpellType<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "spells"));
+    public static final Registry<SpellType<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "spells"));
     private static final Map<Affinity, Set<SpellType<?>>> BY_AFFINITY = new EnumMap<>(Affinity.class);
 
-    public static final SpellType<CompoundSpell> COMPOUND_SPELL = register("compound", Affinity.NEUTRAL, 0, false, CompoundSpell::new);
-    public static final SpellType<PlaceableSpell> PLACED_SPELL = register("placed", Affinity.NEUTRAL, 0, false, PlaceableSpell::new);
-    public static final SpellType<ThrowableSpell> THROWN_SPELL = register("thrown", Affinity.NEUTRAL, 0, false, ThrowableSpell::new);
+    public static final SpellType<CompoundSpell> COMPOUND_SPELL = register("compound", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, CompoundSpell::new);
+    public static final SpellType<PlaceableSpell> PLACED_SPELL = register("placed", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, PlaceableSpell::new);
+    public static final SpellType<ThrowableSpell> THROWN_SPELL = register("thrown", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, ThrowableSpell::new);
 
-    public static final SpellType<AbstractDisguiseSpell> CHANGELING_DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, DispersableDisguiseSpell::new);
-    public static final SpellType<RainboomAbilitySpell> RAINBOOM = register("rainboom", Affinity.GOOD, 0xBDBDF9, false, RainboomAbilitySpell::new);
+    public static final SpellType<AbstractDisguiseSpell> CHANGELING_DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, SpellTraits.EMPTY, DispersableDisguiseSpell::new);
+    public static final SpellType<RainboomAbilitySpell> RAINBOOM = register("rainboom", Affinity.GOOD, 0xBDBDF9, false, SpellTraits.EMPTY, RainboomAbilitySpell::new);
 
     public static final SpellType<IceSpell> FROST = register("frost", Affinity.GOOD, 0xBDBDF9, true, IceSpell.DEFAULT_TRAITS, IceSpell::new);
     public static final SpellType<ScorchSpell> SCORCH = register("scorch", Affinity.BAD, 0, true, ScorchSpell.DEFAULT_TRAITS, ScorchSpell::new);
@@ -166,8 +165,21 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         return spell != null && spell.getType() == this;
     }
 
+    public void toNbt(NbtCompound tag) {
+        tag.putString("effect_id", getId().toString());
+    }
+
     public boolean isEmpty() {
         return this == EMPTY_KEY;
+    }
+
+    @Deprecated(forRemoval = true)
+    public static <T extends Spell> SpellType<T> register(String name, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
+        return register(name, affinity, color, obtainable, SpellTraits.EMPTY, factory);
+    }
+
+    public static <T extends Spell> SpellType<T> register(String name, Affinity affinity, int color, boolean obtainable, SpellTraits traits, Factory<T> factory) {
+        return register(new Identifier("unicopia", name), affinity, color, obtainable, traits, factory);
     }
 
     public static <T extends Spell> SpellType<T> register(Identifier id, Affinity affinity, int color, boolean obtainable, SpellTraits traits, Factory<T> factory) {
@@ -175,14 +187,6 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         byAffinity(affinity).add(type);
         Registry.register(REGISTRY, id, type);
         return type;
-    }
-
-    public static <T extends Spell> SpellType<T> register(String name, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
-        return register(name, affinity, color, obtainable, SpellTraits.EMPTY, factory);
-    }
-
-    public static <T extends Spell> SpellType<T> register(String name, Affinity affinity, int color, boolean obtainable, SpellTraits traits, Factory<T> factory) {
-        return register(new Identifier("unicopia", name), affinity, color, obtainable, traits, factory);
     }
 
     @SuppressWarnings("unchecked")
@@ -196,40 +200,11 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     @SuppressWarnings("unchecked")
     public static <T extends Spell> SpellType<T> getKey(@Nullable Identifier id) {
-        return (SpellType<T>)(id == null || EMPTY_ID.equals(id) ? EMPTY_KEY : REGISTRY.getOrEmpty(id).orElse(EMPTY_KEY));
-    }
-
-    public static SpellType<?> random(Random random) {
-        return REGISTRY.getRandom(random);
+        return (SpellType<T>)REGISTRY.get(id);
     }
 
     public static Set<SpellType<?>> byAffinity(Affinity affinity) {
         return BY_AFFINITY.computeIfAbsent(affinity, a -> new HashSet<>());
-    }
-
-    @Nullable
-    public static Spell fromNBT(@Nullable NbtCompound compound) {
-        if (compound != null && compound.contains("effect_id")) {
-            Spell effect = getKey(compound).create(SpellTraits.EMPTY);
-
-            if (effect != null) {
-                effect.fromNBT(compound);
-            }
-
-            return effect;
-        }
-
-        return null;
-    }
-
-    public static NbtCompound toNBT(Spell effect) {
-        NbtCompound compound = effect.toNBT();
-        effect.getType().writeId(compound);
-        return compound;
-    }
-
-    public void writeId(NbtCompound tag) {
-        tag.putString("effect_id", getId().toString());
     }
 
     public interface Factory<T extends Spell> {

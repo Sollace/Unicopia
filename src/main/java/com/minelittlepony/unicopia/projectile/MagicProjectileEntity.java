@@ -12,7 +12,6 @@ import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.Physics;
@@ -223,7 +222,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
         physics.fromNBT(compound);
         homingTarget.fromNBT(compound.getCompound("homingTarget"));
         if (compound.contains("effect")) {
-            getSpellSlot().put(SpellType.fromNBT(compound.getCompound("effect")));
+            getSpellSlot().put(Spell.readNbt(compound.getCompound("effect")));
         }
     }
 
@@ -233,7 +232,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
         physics.toNBT(compound);
         compound.put("homingTarget", homingTarget.toNBT());
         getSpellSlot().get(true).ifPresent(effect -> {
-            compound.put("effect", SpellType.toNBT(effect));
+            compound.put("effect", Spell.writeNbt(effect));
         });
     }
 

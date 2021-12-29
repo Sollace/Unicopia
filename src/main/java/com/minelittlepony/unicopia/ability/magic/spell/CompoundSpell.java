@@ -38,7 +38,7 @@ public class CompoundSpell extends AbstractDelegatingSpell {
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
         NbtList spells = new NbtList();
-        this.spells.stream().map(SpellType::toNBT).forEach(spells::add);
+        this.spells.stream().map(Spell::writeNbt).forEach(spells::add);
         compound.put("spells", spells);
     }
 
@@ -48,7 +48,7 @@ public class CompoundSpell extends AbstractDelegatingSpell {
         spells.clear();
         if (compound.contains("spells", NbtElement.LIST_TYPE)) {
             spells.addAll(compound.getList("spells", NbtElement.COMPOUND_TYPE).stream()
-                .map(el -> SpellType.fromNBT((NbtCompound)el))
+                .map(el -> Spell.readNbt((NbtCompound)el))
                 .filter(Objects::nonNull)
                 .toList());
         }

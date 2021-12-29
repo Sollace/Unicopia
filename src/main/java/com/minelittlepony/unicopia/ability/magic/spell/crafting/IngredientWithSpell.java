@@ -61,7 +61,7 @@ public class IngredientWithSpell implements Predicate<ItemStack> {
             ingredient.stack = Optional.ofNullable(Ingredient.fromPacket(buf));
         }
         if (buf.readBoolean()) {
-            ingredient.spell = Optional.of(SpellType.getKey(buf.readIdentifier()));
+            ingredient.spell = SpellType.REGISTRY.getOrEmpty(buf.readIdentifier());
         }
 
         return ingredient;
@@ -76,7 +76,7 @@ public class IngredientWithSpell implements Predicate<ItemStack> {
                 ingredient.stack = Optional.ofNullable(Ingredient.fromJson(JsonHelper.getObject(json, "item")));
             }
             if (json.has("spell")) {
-                ingredient.spell = Optional.ofNullable(Identifier.tryParse(JsonHelper.getString(json, "spell"))).map(SpellType::getKey);
+                ingredient.spell = SpellType.REGISTRY.getOrEmpty(Identifier.tryParse(JsonHelper.getString(json, "spell")));
             }
         } else {
             ingredient.stack = Optional.ofNullable(Ingredient.fromJson(json));

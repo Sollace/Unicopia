@@ -482,7 +482,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         compound.put("discoveries", discoveries.toNBT());
 
         getSpellSlot().get(true).ifPresent(effect ->{
-            compound.put("effect", SpellType.toNBT(effect));
+            compound.put("effect", Spell.writeNbt(effect));
         });
     }
 
@@ -500,7 +500,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         magicExhaustion = compound.getFloat("magicExhaustion");
 
         if (compound.contains("effect")) {
-            getSpellSlot().put(SpellType.fromNBT(compound.getCompound("effect")));
+            getSpellSlot().put(Spell.readNbt(compound.getCompound("effect")));
         }
     }
 
