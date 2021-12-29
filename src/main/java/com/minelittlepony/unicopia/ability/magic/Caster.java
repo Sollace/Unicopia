@@ -62,7 +62,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
 
     default boolean canModifyAt(BlockPos pos) {
         if (getMaster() instanceof PlayerEntity) {
-            return !getWorld().canPlayerModifyAt((PlayerEntity)getMaster(), pos);
+            return getWorld().canPlayerModifyAt((PlayerEntity)getMaster(), pos);
         }
         return getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
     }
