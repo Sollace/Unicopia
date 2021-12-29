@@ -24,7 +24,7 @@ public class StateMaps {
             .add(StateMapping.cycleProperty(Blocks.SNOW, SnowBlock.LAYERS, 7)));
 
     public static final BlockStateConverter ICE_AFFECTED = register("ice", new BlockStateMap.Builder()
-            .replaceMaterial(Material.WATER, Blocks.ICE)
+            .replaceMaterial(Material.WATER, Blocks.FROSTED_ICE)
             .replaceMaterial(Material.LAVA, Blocks.OBSIDIAN)
             .add(StateMapping.cycleProperty(Blocks.SNOW, SnowBlock.LAYERS, 7))
             .replaceBlock(Blocks.FIRE, Blocks.AIR)
