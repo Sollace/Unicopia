@@ -2,14 +2,15 @@ package com.minelittlepony.unicopia.container;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.ScrollContainer;
-import com.minelittlepony.common.client.gui.Tooltip;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
+import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler.OutputSlot;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler.SpellbookSlot;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.URecipes;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -17,12 +18,9 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
@@ -44,7 +42,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
         }
 
         @Override
-        public void drawOverlays(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
+        public void drawOverlays(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
             matrices.push();
             matrices.translate(margin.left, margin.top, 0);
             matrices.translate(-2, -2, 0);
@@ -71,8 +69,9 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
                 drawTexture(matrices, right, i, 425, 67, tileSize, tileSize, 512, 256);
             }
             matrices.pop();
-            drawSlots(matrices, mouseX, mouseY, partialTicks);
-            super.drawOverlays(matrices, mouseX, mouseY, partialTicks);
+            drawSlots(matrices, mouseX, mouseY, tickDelta);
+
+            super.drawOverlays(matrices, mouseX, mouseY, tickDelta);
         }
     };
 
@@ -139,6 +138,10 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         textRenderer.draw(matrices, title, titleX, titleY, 4210752);
         textRenderer.draw(matrices, SpellbookPage.getCurrent().getLabel(), 220, this.titleY, 4210752);
+
+        Text pageText = new TranslatableText("%s/%s", SpellbookPage.getCurrent().ordinal() + 1, SpellbookPage.VALUES.length);
+        textRenderer.draw(matrices, pageText,
+                x + 325 - textRenderer.getWidth(pageText) / 2F, y + 188 - textRenderer.fontHeight, 4210752);
     }
 
     private void initPageContent() {
@@ -149,11 +152,11 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
 
         switch (SpellbookPage.getCurrent()) {
             case DISCOVERIES: {
-                int top = 10;
-                int left = 25;
-
                 int i = 0;
                 int cols = 4;
+
+                int top = 10;
+                int left = 25;
 
                 for (Trait trait : Trait.all()) {
                     int x = i % cols;
@@ -165,7 +168,17 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
                 break;
             }
             case INVENTORY:
+                // handled elsewhere
+                break;
             case RECIPES:
+                int top = 0;
+                for (SpellbookRecipe recipe : this.client.world.getRecipeManager().listAllOfType(URecipes.SPELLBOOK)) {
+                    IngredientTree tree = new IngredientTree(0, top,
+                            container.width - container.scrollbar.getBounds().width + 2,
+                            20);
+                    recipe.buildCraftingTree(tree);
+                    top += tree.build(container);
+                }
         }
     }
 
@@ -187,7 +200,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
         private final int increment;
         private final TextureSprite sprite = new TextureSprite()
                 .setSize(25, 13)
-                .setTextureSize(256, 512)
+                .setTextureSize(512, 256)
                 .setTextureOffset(0, 479)
                 .setTexture(TEXTURE);
 
@@ -202,7 +215,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
         }
 
         @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
+        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
 
             setEnabled(increment < 0 ? !SpellbookPage.getCurrent().isFirst() : !SpellbookPage.getCurrent().isLast());
 
@@ -213,7 +226,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
             int state = hovered ? 1 : 0;
 
             sprite.setTextureOffset(23 * state, (int)(479 + 6.5F - (increment * 6.5F)));
-            super.renderButton(matrices, mouseX, mouseY, partialTicks);
+            super.renderButton(matrices, mouseX, mouseY, tickDelta);
         }
     }
 
@@ -227,29 +240,13 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
                     .setTextureSize(16, 16)
                     .setSize(16, 16)
                     .setTexture(trait.getSprite()));
-
-            Formatting corruptionColor = trait.getGroup().getCorruption() < -0.01F
-                    ? Formatting.GREEN
-                    : trait.getGroup().getCorruption() > 0.25F
-                        ? Formatting.RED
-                        : Formatting.WHITE;
-
-            getStyle().setTooltip(Tooltip.of(
-                    new TranslatableText("gui.unicopia.trait.label",
-                            new TranslatableText("trait." + trait.getId().getNamespace() + "." + trait.getId().getPath() + ".name")
-                    ).formatted(Formatting.YELLOW)
-                    .append(new TranslatableText("gui.unicopia.trait.group", trait.getGroup().name().toLowerCase()).formatted(Formatting.ITALIC, Formatting.GRAY))
-                    .append(new LiteralText("\n\n").formatted(Formatting.WHITE)
-                    .append(new TranslatableText("trait." + trait.getId().getNamespace() + "." + trait.getId().getPath() + ".description").formatted(Formatting.GRAY))
-                    .append("\n")
-                    .append(new TranslatableText("gui.unicopia.trait.corruption", ItemStack.MODIFIER_FORMAT.format(trait.getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor)))
-                    , 200));
+            getStyle().setTooltip(trait.getTooltip());
 
             onClick(sender -> Pony.of(client.player).getDiscoveries().markRead(trait));
         }
 
         @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
+        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
             TraitDiscovery discoveries = Pony.of(client.player).getDiscoveries();
             setEnabled(discoveries.isKnown(trait));
 
@@ -266,7 +263,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
                 drawTexture(matrices, x - 8, y - 8, 225, 219, 35, 32, 512, 256);
             }
 
-            super.renderButton(matrices, mouseX, mouseY, partialTicks);
+            super.renderButton(matrices, mouseX, mouseY, tickDelta);
             hovered &= active;
         }
 
@@ -288,7 +285,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
         }
 
         @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
+        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
             RenderSystem.setShaderColor(1, 1, 1, alpha);
@@ -298,7 +295,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
                     GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
             if (getStyle().hasIcon()) {
-                getStyle().getIcon().render(matrices, x, y, mouseX, mouseY, partialTicks);
+                getStyle().getIcon().render(matrices, x, y, mouseX, mouseY, tickDelta);
             }
 
             RenderSystem.setShaderColor(1, 1, 1, 1);

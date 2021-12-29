@@ -1,11 +1,10 @@
 package com.minelittlepony.unicopia.client.gui;
 
-import java.util.Map.Entry;
-
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
@@ -27,7 +26,7 @@ public class ItemTraitsTooltipRenderer extends BaseText implements OrderedText, 
 
     @Override
     public int getHeight() {
-        return getRows() * 8 + 4;
+        return getRows() * 16 + 4;
     }
 
     @Override
@@ -36,37 +35,24 @@ public class ItemTraitsTooltipRenderer extends BaseText implements OrderedText, 
     }
 
     private int getColumns() {
-       return Math.max(4, (int)Math.ceil(Math.sqrt(traits.entries().size() + 1)));
+        return Math.max(4, (int)Math.ceil(Math.sqrt(traits.entries().size() + 1)));
     }
 
     private int getRows() {
-       return (int)Math.ceil((traits.entries().size() + 1) / getColumns());
+        return Math.max(1, (int)Math.ceil((traits.entries().size() + 1) / getColumns()));
     }
 
     @Override
     public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack matrices, ItemRenderer itemRenderer, int z) {
-
         int columns = getColumns();
+        int i = 0;
 
-        var entries = traits.stream().toList();
-
-        for (int i = 0; i < entries.size(); i++) {
-            int xx = x + (i % columns) * 17;
-            int yy = y + (i / columns) * 10;
-            Entry<Trait, Float> entry = entries.get(i);
-
-            RenderSystem.setShaderTexture(0, entry.getKey().getSprite());
-            DrawableHelper.drawTexture(matrices, xx, yy, 1, 0, 0, 8, 8, 8, 8);
-
-            String string = entry.getValue() > 99 ? "99+" : Math.round(entry.getValue()) + "";
-            matrices.push();
-
-            matrices.translate(xx + 9, yy + 3, itemRenderer.zOffset + 200.0F);
-            matrices.scale(0.5F, 0.5F, 1);
-            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            textRenderer.draw(string, 0, 0, 16777215, true, matrices.peek().getPositionMatrix(), immediate, false, 0, 15728880);
-            immediate.draw();
-            matrices.pop();
+        for (var entry : traits) {
+            renderTraitIcon(entry.getKey(), entry.getValue(), matrices,
+                    x + (i % columns) * 17,
+                    y + (i / columns) * 16
+            );
+            i++;
         }
     }
 
@@ -83,5 +69,23 @@ public class ItemTraitsTooltipRenderer extends BaseText implements OrderedText, 
     @Override
     public BaseText copy() {
         return new ItemTraitsTooltipRenderer(traits);
+    }
+
+    public static void renderTraitIcon(Trait trait, float value, MatrixStack matrices, int xx, int yy) {
+        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+        ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
+
+        int size = 12;
+
+        RenderSystem.setShaderTexture(0, trait.getSprite());
+        DrawableHelper.drawTexture(matrices, xx + 2, yy + 1, 0, 0, 0, size, size, size, size);
+
+        matrices.push();
+        matrices.translate(xx + 9, yy + 3 + size / 2, itemRenderer.zOffset + 200.0F);
+        matrices.scale(0.5F, 0.5F, 1);
+        VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+        textRenderer.draw(value > 99 ? "99+" : Math.round(value) + "", 0, 0, 16777215, true, matrices.peek().getPositionMatrix(), immediate, false, 0, 15728880);
+        immediate.draw();
+        matrices.pop();
     }
 }

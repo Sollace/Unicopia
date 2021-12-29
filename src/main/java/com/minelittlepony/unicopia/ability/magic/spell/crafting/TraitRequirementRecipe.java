@@ -29,10 +29,18 @@ public class TraitRequirementRecipe implements SpellbookRecipe {
     }
 
     @Override
+    public void buildCraftingTree(CraftingTreeBuilder builder) {
+        builder.input(requirement.getMatchingStacks());
+        requiredTraits.min().ifPresent(min -> {
+            min.forEach(e -> builder.input(e.getKey(), e.getValue()));
+        });
+        builder.result(output);
+    }
+
+    @Override
     public boolean matches(SpellbookInventory inventory, World world) {
         return requirement.test(inventory.getItemToModify())
             && requiredTraits.test(SpellTraits.union(
-                    SpellTraits.of(inventory.getItemToModify()),
                     inventory.getTraits(),
                     SpellTraits.of(output)
             ));

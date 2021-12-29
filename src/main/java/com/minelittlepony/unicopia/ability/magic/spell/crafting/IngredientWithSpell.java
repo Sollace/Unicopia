@@ -1,7 +1,10 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Predicate;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -14,9 +17,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class IngredientWithSpell implements Predicate<ItemStack> {
-
     private Optional<Ingredient> stack = Optional.empty();
     private Optional<SpellType<?>> spell = Optional.empty();
+
+    @Nullable
+    private ItemStack[] stacks;
 
     private IngredientWithSpell() {}
 
@@ -25,6 +30,17 @@ public class IngredientWithSpell implements Predicate<ItemStack> {
         boolean stackMatch = stack.map(m -> m.test(t)).orElse(true);
         boolean spellMatch = spell.map(m -> GemstoneItem.getSpellKey(t).equals(m)).orElse(true);
         return stackMatch && spellMatch;
+    }
+
+    public ItemStack[] getMatchingStacks() {
+        if (stacks == null) {
+            stacks = stack.stream()
+                    .map(Ingredient::getMatchingStacks)
+                    .flatMap(Arrays::stream)
+                    .map(stack -> spell.map(spell -> GemstoneItem.enchant(stack, spell)).orElse(stack))
+                    .toArray(ItemStack[]::new);
+        }
+        return stacks;
     }
 
     public void write(PacketByteBuf buf) {

@@ -246,6 +246,9 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     static void combine(Map<Trait, Float> to, Map<Trait, Float> from) {
+        if (from.isEmpty()) {
+            return;
+        }
         from.forEach((trait, value) -> {
             if (value != 0) {
                 to.compute(trait, (k, v) -> v == null ? value : (v + value));

@@ -142,6 +142,9 @@ public class GemstoneItem extends Item {
     }
 
     public static ItemStack enchant(ItemStack stack, SpellType<?> type, Affinity affinity) {
+        if (type.isEmpty()) {
+            return unenchant(stack);
+        }
         stack.getOrCreateNbt().putString("spell", type.getId().toString());
         return type.getTraits().applyTo(stack);
     }
