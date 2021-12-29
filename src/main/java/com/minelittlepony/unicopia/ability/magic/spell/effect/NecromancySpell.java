@@ -100,9 +100,8 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
                 if (master != null) {
                     master.applyDamageEffects(master, e);
                 }
-                if (caster.getWorld().random.nextInt(2000) != 0) {
-                    e.setHealth(0);
-                }
+                e.world.sendEntityStatus(e, (byte)60);
+                e.discard();
             });
         });
     }
