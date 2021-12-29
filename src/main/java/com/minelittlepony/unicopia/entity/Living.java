@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
@@ -86,7 +87,12 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public void tick() {
-        getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.BODY)), true);
+
+        try {
+            getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.BODY)), true);
+        } catch (Exception e) {
+            Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", getEntity(), e);
+        }
 
         if (invinsibilityTicks > 0) {
             invinsibilityTicks--;
