@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.EnumMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -204,7 +204,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     }
 
     public static Set<SpellType<?>> byAffinity(Affinity affinity) {
-        return BY_AFFINITY.computeIfAbsent(affinity, a -> new HashSet<>());
+        return BY_AFFINITY.computeIfAbsent(affinity, a -> new LinkedHashSet<>());
     }
 
     public interface Factory<T extends Spell> {
