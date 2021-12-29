@@ -12,6 +12,7 @@ import net.minecraft.block.Material;
 import net.minecraft.block.OreBlock;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.block.RedstoneWireBlock;
+import net.minecraft.block.SnowBlock;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -19,23 +20,15 @@ import net.minecraft.util.registry.Registry;
 public class StateMaps {
     private static final Registry<BlockStateConverter> REGISTRY = Registries.createSimple(new Identifier("unicopia", "state_map"));
 
+    public static final BlockStateConverter SNOW_PILED = register("snow_piled", new BlockStateMap.Builder()
+            .add(StateMapping.cycleProperty(Blocks.SNOW, SnowBlock.LAYERS, 7)));
+
     public static final BlockStateConverter ICE_AFFECTED = register("ice", new BlockStateMap.Builder()
             .replaceMaterial(Material.WATER, Blocks.ICE)
             .replaceMaterial(Material.LAVA, Blocks.OBSIDIAN)
-            .add(StateMapping.incrementSnow())
+            .add(StateMapping.cycleProperty(Blocks.SNOW, SnowBlock.LAYERS, 7))
             .replaceBlock(Blocks.FIRE, Blocks.AIR)
             .setProperty(Blocks.REDSTONE_WIRE, RedstoneWireBlock.POWER, 0));
-
-    public static final ReversableBlockStateConverter MOSS_AFFECTED = register("moss", new ReversableBlockStateMap.Builder()
-            .replaceBlock(Blocks.MOSSY_COBBLESTONE, Blocks.COBBLESTONE)
-            .replaceBlock(Blocks.MOSSY_COBBLESTONE_SLAB, Blocks.COBBLESTONE_SLAB)
-            .replaceBlock(Blocks.MOSSY_COBBLESTONE_STAIRS, Blocks.COBBLESTONE_STAIRS)
-            .replaceBlock(Blocks.MOSSY_COBBLESTONE_WALL, Blocks.COBBLESTONE_WALL)
-            .replaceBlock(Blocks.MOSSY_STONE_BRICK_SLAB, Blocks.STONE_BRICK_SLAB)
-            .replaceBlock(Blocks.MOSSY_STONE_BRICK_STAIRS, Blocks.STONE_BRICK_STAIRS)
-            .replaceBlock(Blocks.MOSSY_STONE_BRICK_WALL, Blocks.MOSSY_STONE_BRICK_WALL)
-            .replaceBlock(Blocks.MOSSY_STONE_BRICKS, Blocks.STONE_BRICKS)
-            .replaceBlock(Blocks.INFESTED_MOSSY_STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS));
 
     public static final BlockStateConverter SILVERFISH_AFFECTED = register("infestation", new BlockStateMap.Builder()
             .replaceBlock(Blocks.CHISELED_STONE_BRICKS, Blocks.INFESTED_CHISELED_STONE_BRICKS)

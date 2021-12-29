@@ -10,34 +10,37 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
-import net.minecraft.block.SnowBlock;
+import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.Tag;
 import net.minecraft.world.World;
 
 interface StateMapping extends Predicate<BlockState>, BiFunction<World, BlockState, BlockState> {
 
-    static StateMapping incrementSnow() {
-        return build(
-                isOf(Blocks.SNOW),
-                (w, s) -> {
-                    s = s.cycle(SnowBlock.LAYERS);
-                    if (s.get(SnowBlock.LAYERS) >= 7) {
-                        return Blocks.SNOW_BLOCK.getDefaultState();
-                    }
-
-                    return s;
-                });
-    }
     static Predicate<BlockState> isOf(Block block) {
         return s -> s.isOf(block);
     }
 
-    static StateMapping replaceMaterial(Material mat, Block block) {
-        return build(isOf(mat), block);
-    }
     static Predicate<BlockState> isOf(Material mat) {
         return s -> s.getMaterial() == mat;
+    }
+
+    static StateMapping cycleProperty(Block block, IntProperty property, int stopAt) {
+        if (stopAt < 0) {
+            return build(
+                    isOf(block),
+                    (w, s) -> s.cycle(property)
+                );
+        }
+
+        return build(
+            isOf(block).and(state -> state.get(property) < stopAt),
+            (w, s) -> s.get(property) >= stopAt ? s : s.cycle(property)
+        );
+    }
+
+    static StateMapping replaceMaterial(Material mat, Block block) {
+        return build(isOf(mat), block);
     }
 
     static StateMapping removeBlock(Predicate<BlockState> mapper) {
@@ -133,8 +136,8 @@ interface StateMapping extends Predicate<BlockState>, BiFunction<World, BlockSta
      *
      * @return    The converted state
      */
-    @NotNull
     @Override
+    @NotNull
     BlockState apply(World world, @NotNull BlockState state);
 
     /**

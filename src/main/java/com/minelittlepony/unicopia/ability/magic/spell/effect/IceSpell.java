@@ -22,7 +22,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -33,7 +35,7 @@ public class IceSpell extends AbstractSpell {
             .build();
 
     private final int rad = 3;
-    private final Shape effect_range = new Sphere(false, rad);
+    private final Shape outerRange = new Sphere(false, rad);
 
     protected IceSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
@@ -43,17 +45,34 @@ public class IceSpell extends AbstractSpell {
     public boolean tick(Caster<?> source, Situation situation) {
         LivingEntity owner = source.getMaster();
 
-        PosHelper.getAllInRegionMutable(source.getOrigin(), effect_range)
-            .forEach(i -> {
-                if (source.canModifyAt(i) && applyBlockSingle(owner, source.getWorld(), i)) {
-                    ParticleUtils.spawnParticle(source.getWorld(), ParticleTypes.SPLASH, new Vec3d(
-                            i.getX() + source.getWorld().random.nextFloat(),
-                            i.getY() + 1,
-                            i.getZ() + source.getWorld().random.nextFloat()), Vec3d.ZERO);
-                }
-            });
+        boolean submerged = source.getEntity().isSubmergedInWater() || source.getEntity().isSubmergedIn(FluidTags.LAVA);
 
-        return applyEntities(source.getMaster(), source.getWorld(), source.getOriginVector());
+        long blocksAffected = PosHelper.getAllInRegionMutable(source.getOrigin(), outerRange).filter(i -> {
+            if (source.canModifyAt(i) && applyBlockSingle(owner, source.getWorld(), i, situation)) {
+
+                if (submerged & source.getOrigin().isWithinDistance(i, rad - 1)) {
+                    BlockState state = source.getWorld().getBlockState(i);
+                    if (state.isIn(BlockTags.ICE) || state.isOf(Blocks.OBSIDIAN)) {
+                        source.getWorld().setBlockState(i, Blocks.AIR.getDefaultState(), Block.NOTIFY_NEIGHBORS);
+                    } else if (!state.getFluidState().isEmpty()) {
+                        source.getWorld().setBlockState(i, state.with(Properties.WATERLOGGED, false), Block.NOTIFY_NEIGHBORS);
+                    }
+                }
+
+                ParticleUtils.spawnParticle(source.getWorld(), ParticleTypes.SPLASH, new Vec3d(
+                        i.getX() + source.getWorld().random.nextFloat(),
+                        i.getY() + 1,
+                        i.getZ() + source.getWorld().random.nextFloat()), Vec3d.ZERO);
+
+                return true;
+            }
+
+            return false;
+        }).count();
+
+        source.subtractEnergyCost(Math.min(10, blocksAffected));
+
+        return applyEntities(source.getMaster(), source.getWorld(), source.getOriginVector()) && situation == Situation.PROJECTILE;
     }
 
     protected boolean applyEntities(LivingEntity owner, World world, Vec3d pos) {
@@ -73,17 +92,19 @@ public class IceSpell extends AbstractSpell {
         return true;
     }
 
-    private boolean applyBlockSingle(Entity owner, World world, BlockPos pos) {
+    private boolean applyBlockSingle(Entity owner, World world, BlockPos pos, Situation situation) {
         BlockState state = world.getBlockState(pos);
 
-        if (StateMaps.ICE_AFFECTED.convert(world, pos)) {
+        if ((situation == Situation.PROJECTILE
+                && StateMaps.SNOW_PILED.convert(world, pos))
+                || StateMaps.ICE_AFFECTED.convert(world, pos)) {
             return true;
         }
 
         if (world.isTopSolid(pos, owner)
                 || state.isOf(Blocks.SNOW)
                 || state.isIn(BlockTags.LEAVES)) {
-            incrementIce(world, pos.up());
+            addSnowLayer(world, pos.up());
             return true;
         }
 
@@ -103,7 +124,7 @@ public class IceSpell extends AbstractSpell {
         );
     }
 
-    private static void incrementIce(World world, BlockPos pos) {
+    private static void addSnowLayer(World world, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
         Block id = state.getBlock();
 
