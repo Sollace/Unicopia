@@ -84,10 +84,11 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
 
         float additional = source.getWorld().getLocalDifficulty(source.getOrigin()).getLocalDifficulty() + getTraits().get(Trait.CHAOS, 0, 10);
 
-        if (--spawnCountdown > 0) {
+        setDirty();
+        if (--spawnCountdown > 0 && !summonedEntities.isEmpty()) {
             return true;
         }
-        spawnCountdown = source.getWorld().random.nextInt(rainy ? 2000 : 100);
+        spawnCountdown = 1200 + source.getWorld().random.nextInt(rainy ? 2000 : 1000);
 
         if (summonedEntities.size() > 10 + additional) {
             return true;
@@ -149,7 +150,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
-        spawnCountdown = compound.getInt("spawnCountdown");
+        compound.putInt("spawnCountdown", spawnCountdown);
         if (summonedEntities.size() > 0) {
             NbtList list = new NbtList();
             summonedEntities.forEach(ref -> list.add(ref.toNBT()));
@@ -160,7 +161,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
-        compound.putInt("spawnCountdown", spawnCountdown);
+        spawnCountdown = compound.getInt("spawnCountdown");
         summonedEntities.clear();
         if (compound.contains("summonedEntities")) {
             compound.getList("summonedEntities", NbtElement.COMPOUND_TYPE).forEach(tag -> {
