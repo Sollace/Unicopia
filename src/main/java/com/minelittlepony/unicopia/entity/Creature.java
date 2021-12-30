@@ -36,6 +36,7 @@ import net.minecraft.nbt.NbtElement;
 
 public class Creature extends Living<LivingEntity> {
     private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+    private static final TrackedData<NbtCompound> MASTER = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
     public static final TrackedData<Float> GRAVITY = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
     private static final LevelStore LEVELS = Levelled.fixed(0);
@@ -54,18 +55,27 @@ public class Creature extends Living<LivingEntity> {
     public Creature(LivingEntity entity) {
         super(entity, EFFECT);
         physics = new EntityPhysics<>(entity, GRAVITY);
+        entity.getDataTracker().startTracking(MASTER, master.toNBT());
     }
 
     @Override
     public void setMaster(LivingEntity owner) {
         master.set(owner);
+        entity.getDataTracker().set(MASTER, master.toNBT());
         if (targets != null && owner != null) {
             initMinionAi();
         }
     }
 
+    public boolean isMinion() {
+        Entity master = getMaster();
+        return master != null && master != getEntity();
+    }
+
     @Override
     public LivingEntity getMaster() {
+        NbtCompound data = entity.getDataTracker().get(MASTER);
+        master.fromNBT(data);
         return master.getOrEmpty(getWorld()).orElse(entity);
     }
 

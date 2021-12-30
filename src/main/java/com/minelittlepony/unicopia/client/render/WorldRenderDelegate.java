@@ -4,13 +4,13 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.behaviour.FallingBlockBehaviour;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -36,9 +36,25 @@ import net.minecraft.util.math.Vec3d;
 public class WorldRenderDelegate {
     public static final WorldRenderDelegate INSTANCE = new WorldRenderDelegate();
 
+    private static final PassThroughVertexConsumer.Parameters MINION_OVERLAY = new PassThroughVertexConsumer.Parameters()
+            .color((parent, r, g, b, a) -> parent.color((float)Math.random(), 0.6F, 1, a / 255F));
+
+    private boolean recurse;
+
     public boolean onEntityRender(EntityRenderDispatcher dispatcher, Equine<?> pony,
             double x, double y, double z, float yaw,
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+
+        if (!recurse && pony instanceof Creature && ((Creature)pony).isMinion()) {
+            recurse = true;
+
+            dispatcher.render(((Creature)pony).getEntity(), x, y, z, yaw, tickDelta, matrices, layer -> {
+                return PassThroughVertexConsumer.of(vertices.getBuffer(layer), MINION_OVERLAY);
+            }, light);
+            recurse = false;
+
+            return true;
+        }
 
         if (pony instanceof ItemImpl) {
             matrices.push();
@@ -64,11 +80,6 @@ public class WorldRenderDelegate {
         matrices.push();
 
         Entity owner = pony.getEntity();
-        Entity master = pony.getMaster();
-
-        if (master != owner) {
-            RenderSystem.setShaderColor(0, 0, 1, 1);
-        }
 
         boolean negative = pony.getPhysics().isGravityNegative();
 
@@ -95,7 +106,6 @@ public class WorldRenderDelegate {
         }
 
         if (pony instanceof Caster<?>) {
-
             int fireTicks = owner.doesRenderOnFire() ? 1 : 0;
 
             return ((Caster<?>)pony).getSpellSlot().get(SpellPredicate.IS_DISGUISE, true).map(effect -> {
@@ -122,7 +132,6 @@ public class WorldRenderDelegate {
     }
 
     public void afterEntityRender(Equine<?> pony, MatrixStack matrices) {
-
         if (pony instanceof ItemImpl || pony instanceof Living) {
             matrices.pop();
 
