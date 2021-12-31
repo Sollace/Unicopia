@@ -46,10 +46,10 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity>, Lig
         }
 
         @Override
-        public void clear() {
-            getDataTracker().get(SPELL).ifPresent(id -> {
-                delegate().removeIf(spell -> spell.getUuid().equals(id), true);
-            });
+        public boolean clear() {
+            return getDataTracker().get(SPELL).map(id -> {
+                return delegate().removeIf(spell -> spell.getUuid().equals(id), true);
+            }).orElse(false);
         }
     };
 

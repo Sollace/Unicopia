@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
+import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -20,7 +20,9 @@ public interface SpellContainer {
         public void put(Spell effect) { }
 
         @Override
-        public void clear() { }
+        public boolean clear() {
+            return false;
+        }
 
         @Override
         public boolean removeIf(Predicate<Spell> effect, boolean update) {
@@ -35,6 +37,11 @@ public interface SpellContainer {
         @Override
         public boolean contains(UUID id) {
             return false;
+        }
+
+        @Override
+        public Stream<Spell> stream(boolean update) {
+            return Stream.empty();
         }
     };
 
@@ -81,10 +88,12 @@ public interface SpellContainer {
      */
     boolean forEach(Function<Spell, Operation> action, boolean update);
 
+    Stream<Spell> stream(boolean update);
+
     /**
      * Removes all effects currently active in this slot.
      */
-    void clear();
+    boolean clear();
 
     interface Delegate extends SpellContainer {
 
@@ -121,8 +130,13 @@ public interface SpellContainer {
         }
 
         @Override
-        default void clear() {
-            delegate().clear();
+        default boolean clear() {
+            return delegate().clear();
+        }
+
+        @Override
+        default Stream<Spell> stream(boolean update) {
+            return delegate().stream(update);
         }
     }
 

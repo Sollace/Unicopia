@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -10,6 +11,8 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
+
+import net.minecraft.text.TranslatableText;
 
 /**
  * Dispells an active spell
@@ -40,11 +43,17 @@ public class UnicornDispellAbility implements Ability<Pos> {
     public boolean onQuickAction(Pony player, ActivationType type) {
 
         if (type.getTapCount() > 1) {
-            player.getSpellSlot().clear();
+            if (player.getSpellSlot().clear()) {
+                player.getMaster().sendMessage(new TranslatableText("gui.unicopia.action.spells_cleared"), true);
+            } else {
+                player.getMaster().sendMessage(new TranslatableText("gui.unicopia.action.no_spells_cleared"), true);
+            }
             return true;
         }
-        if (type == ActivationType.TAP) {
-            // TODO: gui to remove spells
+
+        if (type == ActivationType.TAP && player.isClient()) {
+            InteractionManager.instance().openScreen(InteractionManager.SCREEN_DISPELL_ABILITY);
+            return true;
         }
 
         return false;

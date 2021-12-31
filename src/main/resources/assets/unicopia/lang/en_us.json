@@ -214,8 +214,9 @@
   "toxicity.severe.name": "Toxic",
   "toxicity.lethal.name": "Lethal",
 
-  "ability.unicopia.shoot": "Magic Missle",
-  "ability.unicopia.cast": "Counterspell",
+  "ability.unicopia.shoot": "Throw Magic",
+  "ability.unicopia.cast": "Cast Spell",
+  "ability.unicopia.dispell": "Dispell Magic",
   "ability.unicopia.teleport": "Teleport",
   "ability.unicopia.teleport_group": "Teleport (Group)",
   "ability.unicopia.grow": "Earthly Nourishment",
@@ -297,6 +298,9 @@
   "gui.unicopia.spellbook.page.inventory": "Inventory",
   "gui.unicopia.spellbook.page.discoveries": "Discoveries",
   "gui.unicopia.spellbook.page.recipes": "Recipes",
+
+  "gui.unicopia.action.spells_cleared": "Removed all spells",
+  "gui.unicopia.action.no_spells_cleared": "You have no active spells",
 
   "unicopia.category.name": "Pony Abilities",
 

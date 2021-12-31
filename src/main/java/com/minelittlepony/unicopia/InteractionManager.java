@@ -21,6 +21,8 @@ public class InteractionManager {
     public static final int SOUND_MINECART = 3;
     public static final int SOUND_GLIDING = 4;
 
+    public static final int SCREEN_DISPELL_ABILITY = 0;
+
     public static InteractionManager INSTANCE = new InteractionManager();
 
     public static InteractionManager instance() {
@@ -62,6 +64,9 @@ public class InteractionManager {
      */
     public int getViewMode() {
         return 0;
+    }
+
+    public void openScreen(int type) {
     }
 
     /**

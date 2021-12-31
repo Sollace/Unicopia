@@ -90,13 +90,20 @@ public class EffectSync implements SpellContainer {
     }
 
     @Override
-    public void clear() {
+    public Stream<Spell> stream(boolean update) {
+        return read(null, update, true);
+    }
+
+    @Override
+    public boolean clear() {
         if (spells.clear()) {
             write();
             if (owner instanceof UpdateCallback) {
                 ((UpdateCallback)owner).onSpellSet(null);
             }
+            return true;
         }
+        return false;
     }
 
     private Stream<Spell> read(@Nullable SpellPredicate<?> type, boolean synchronize, boolean sendUpdate) {

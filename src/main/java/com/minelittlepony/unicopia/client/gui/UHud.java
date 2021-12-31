@@ -154,7 +154,7 @@ public class UHud extends DrawableHelper {
         }
     }
 
-    private void renderSpell(CustomisedSpellType<?> spell, int x, int y) {
+    public void renderSpell(CustomisedSpellType<?> spell, double x, double y) {
         if (!spell.isEmpty()) {
             MatrixStack modelStack = RenderSystem.getModelViewStack();
 
@@ -171,9 +171,8 @@ public class UHud extends DrawableHelper {
             Pony pony = Pony.of(client.player);
 
             if (spell.isOn(pony)) {
-                ManaRingSlot.renderArc(modelStack, 5, 7, 0, Math.PI * 2,
-                    (spell.type().getColor() | 0x000000FF) & 0xFFFFFFAF, false);
-                ManaRingSlot.renderArc(modelStack, 7, 8, 0, Math.PI * 2, 0xAAAAFFFF, false);
+                DrawableUtil.drawArc(modelStack, 5, 7, 0, Math.PI * 2, (spell.type().getColor() | 0x000000FF) & 0xFFFFFFAF, false);
+                DrawableUtil.drawArc(modelStack, 7, 8, 0, Math.PI * 2, 0xAAAAFFFF, false);
             }
             modelStack.pop();
             RenderSystem.applyModelViewMatrix();

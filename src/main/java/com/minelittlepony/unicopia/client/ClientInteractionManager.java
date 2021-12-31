@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.client.gui.DismissSpellScreen;
 import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
 import com.minelittlepony.unicopia.client.sound.MotionBasedSoundInstance;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
@@ -69,6 +70,15 @@ public class ClientInteractionManager extends InteractionManager {
                 }, USounds.ENTITY_PLAYER_CHANGELING_BUZZ, 1F, 1F));
             } else if (type == SOUND_GLIDING && source instanceof PlayerEntity) {
                 soundManager.play(new MotionBasedSoundInstance(SoundEvents.ITEM_ELYTRA_FLYING, (PlayerEntity)source));
+            }
+        });
+    }
+
+    @Override
+    public void openScreen(int type) {
+        client.execute(() -> {
+            if (type == SCREEN_DISPELL_ABILITY) {
+                client.setScreen(new DismissSpellScreen());
             }
         });
     }

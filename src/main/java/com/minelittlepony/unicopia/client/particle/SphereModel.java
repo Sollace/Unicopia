@@ -6,27 +6,22 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vector4f;
 
 public class SphereModel {
-    protected static final double pi = Math.PI;
-    protected static final double two_pi = pi * 2F;
+    protected static final double PI = Math.PI;
+    protected static final double TWO_PI = PI * 2F;
 
-    public static final SphereModel SPHERE = new SphereModel(40, 40, two_pi);
-    public static final SphereModel DISK = new SphereModel(40, 2, pi);
-
-    private final double num_rings;
-    private final double num_sectors;
+    public static final SphereModel SPHERE = new SphereModel(40, 40, TWO_PI);
+    public static final SphereModel DISK = new SphereModel(40, 2, PI);
 
     private final double azimuthRange;
 
-    final double zenithIncrement;
-    final double azimuthIncrement;
+    private final double zenithIncrement;
+    private final double azimuthIncrement;
 
     public SphereModel(double rings, double sectors, double azimuthRange) {
-        this.num_rings = rings;
-        this.num_sectors = sectors;
         this.azimuthRange = azimuthRange;
 
-        zenithIncrement = pi / num_rings;
-        azimuthIncrement = two_pi / num_sectors;
+        zenithIncrement = PI / rings;
+        azimuthIncrement = TWO_PI / sectors;
     }
 
     public final void render(MatrixStack matrices, VertexConsumer vertexWriter, int light, int overlay, float radius, float r, float g, float b, float a) {
@@ -36,7 +31,7 @@ public class SphereModel {
 
         Matrix4f position = matrices.peek().getPositionMatrix();
 
-        for (double zenith = -pi; zenith < pi; zenith += zenithIncrement) {
+        for (double zenith = -PI; zenith < PI; zenith += zenithIncrement) {
             for (double azimuth = -azimuthRange; azimuth < azimuthRange; azimuth += azimuthIncrement) {
                 drawQuad(position, vertexWriter, radius, zenith, azimuth, light, overlay, r, g, b, a);
             }
@@ -57,7 +52,7 @@ public class SphereModel {
         vertexWriter.vertex(position.getX(), position.getY(), position.getZ(), r, g, b, a, 0, 0, overlay, light, 0, 0, 0);
     }
 
-    private static Vector4f convertToCartesianCoord(double r, double theta, double phi) {
+    public static Vector4f convertToCartesianCoord(double r, double theta, double phi) {
         double x = r * Math.sin(theta) * Math.cos(phi);
         double y = r * Math.sin(theta) * Math.sin(phi);
         double z = r * Math.cos(theta);
