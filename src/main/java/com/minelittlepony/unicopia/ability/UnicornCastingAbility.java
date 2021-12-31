@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -107,7 +108,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
                         player.playSound(SoundEvents.ENTITY_ITEM_BREAK, 1, 0.5F);
                     } else {
                         if (s instanceof HomingSpell) {
-                            RayTraceHelper.doTrace(player.getMaster(), 600, 1, EntityPredicates.EXCEPT_SPECTATOR).getEntity().ifPresent(((HomingSpell)s)::setTarget);
+                            RayTraceHelper.doTrace(player.getMaster(), 600, 1, EntityPredicates.CAN_COLLIDE).getEntity().ifPresent(((HomingSpell)s)::setTarget);
                         }
                         player.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 0.05F, 2.2F);
                     }

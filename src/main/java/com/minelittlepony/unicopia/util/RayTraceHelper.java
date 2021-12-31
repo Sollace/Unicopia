@@ -18,7 +18,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class RayTraceHelper {
     public static <T extends Entity> Optional<T> findEntity(Entity e, double distance, float tickDelta, Predicate<Entity> predicate) {
-        return doTrace(e, distance, tickDelta, EntityPredicates.EXCEPT_SPECTATOR.and(predicate)).getEntity();
+        return doTrace(e, distance, tickDelta, EntityPredicates.CAN_COLLIDE.and(predicate)).getEntity();
     }
 
     /**
@@ -33,7 +33,7 @@ public class RayTraceHelper {
      * @return A Trace describing what was found.
      */
     public static Trace doTrace(Entity e, double distance, float tickDelta) {
-        return doTrace(e, distance, tickDelta, EntityPredicates.EXCEPT_SPECTATOR);
+        return doTrace(e, distance, tickDelta, EntityPredicates.CAN_COLLIDE);
     }
 
     /**
@@ -55,7 +55,7 @@ public class RayTraceHelper {
 
         final Box box = e.getBoundingBox().stretch(ray).expand(1);
 
-        EntityHitResult pointedEntity = ProjectileUtil.raycast(e, start, start.add(ray), box, predicate.and(Entity::collides), distance);
+        EntityHitResult pointedEntity = ProjectileUtil.raycast(e, start, start.add(ray), box, predicate, distance);
 
         if (pointedEntity != null) {
             return new Trace(pointedEntity);

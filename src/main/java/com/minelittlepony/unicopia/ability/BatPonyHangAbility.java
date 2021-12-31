@@ -44,7 +44,7 @@ public class BatPonyHangAbility implements Ability<Multi> {
             return new Multi(BlockPos.ZERO, 0);
         }
 
-        BlockPos poss = RayTraceHelper.doTrace(player.getMaster(), 3, 1, EntityPredicates.EXCEPT_SPECTATOR).getBlockPos().orElse(null);
+        BlockPos poss = RayTraceHelper.doTrace(player.getMaster(), 3, 1, EntityPredicates.CAN_COLLIDE).getBlockPos().orElse(null);
         if (poss != null) {
             boolean air = player.getWorld().isAir(poss.down()) && player.getWorld().isAir(poss.down(2));
 
