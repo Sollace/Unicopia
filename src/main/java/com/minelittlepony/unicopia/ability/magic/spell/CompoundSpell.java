@@ -20,7 +20,7 @@ public class CompoundSpell extends AbstractDelegatingSpell {
     }
 
     @Override
-    protected Collection<Spell> getDelegates() {
+    public Collection<Spell> getDelegates() {
         return spells;
     }
 

@@ -45,7 +45,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
     }
 
     @Override
-    protected Collection<Spell> getDelegates() {
+    public Collection<Spell> getDelegates() {
         return List.of(spell);
     }
 

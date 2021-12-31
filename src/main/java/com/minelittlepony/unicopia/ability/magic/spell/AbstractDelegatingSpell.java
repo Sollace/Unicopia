@@ -30,7 +30,7 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
         this.type = type;
     }
 
-    protected abstract Collection<Spell> getDelegates();
+    public abstract Collection<Spell> getDelegates();
 
     @Override
     public boolean equalsOrContains(UUID id) {

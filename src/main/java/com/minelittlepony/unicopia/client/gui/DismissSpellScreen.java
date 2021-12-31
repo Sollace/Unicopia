@@ -4,14 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.minelittlepony.common.client.gui.GameGui;
-import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractDelegatingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.client.FlowingText;
 import com.minelittlepony.unicopia.client.particle.SphereModel;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgRemoveSpell;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
@@ -26,11 +32,6 @@ public class DismissSpellScreen extends GameGui {
 
     private final List<Spell> spells;
 
-    private final List<Entry> entries = new ArrayList<>();
-
-    private double lastMouseX;
-    private double lastMouseY;
-
     public DismissSpellScreen() {
         super(new TranslatableText("gui.unicopia.dismiss_spell"));
 
@@ -39,8 +40,6 @@ public class DismissSpellScreen extends GameGui {
 
     @Override
     protected void init() {
-        entries.clear();
-
         double azimuth = 0;
         int ring = 1;
 
@@ -59,7 +58,7 @@ public class DismissSpellScreen extends GameGui {
             Vector4f pos = SphereModel.convertToCartesianCoord(radius, azimuth, azimuth);
             pos.add(0,  -(float)radius / 2F, 0, 0);
 
-            entries.add(new Entry(spell, pos));
+            addDrawableChild(new Entry(spell, pos));
         }
     }
 
@@ -67,8 +66,6 @@ public class DismissSpellScreen extends GameGui {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         fillGradient(matrices, 0, 0, width, height / 2, 0xF0101010, 0x80101010);
         fillGradient(matrices, 0, height / 2, width, height, 0x80101010, 0xF0101010);
-
-        super.render(matrices, mouseX, mouseY, delta);
 
         matrices.push();
         matrices.translate(width - mouseX, height - mouseY, 0);
@@ -80,9 +77,7 @@ public class DismissSpellScreen extends GameGui {
         DrawableUtil.drawArc(matrices, 40, 80, 0, Math.PI * 2, 0x00000010, false);
         DrawableUtil.drawArc(matrices, 160, 1600, 0, Math.PI * 2, 0x00000020, false);
 
-        for (Entry entry : entries) {
-            entry.render(this, matrices, mouseX, mouseY);
-        }
+        super.render(matrices, mouseX, mouseY, delta);
 
         matrices.push();
         DrawableUtil.drawCircle(matrices, 2, 0, Math.PI * 2, 0xFFAAFF99, false);
@@ -110,11 +105,12 @@ public class DismissSpellScreen extends GameGui {
         return true;
     }
 
-    class Entry {
+    class Entry implements Element, Drawable, Selectable {
 
         private final List<Text> tooltip = new ArrayList<>();
 
         private final Spell spell;
+        private final Spell actualSpell;
         private final Vector4f pos;
 
         private boolean lastMouseOver;
@@ -122,25 +118,45 @@ public class DismissSpellScreen extends GameGui {
         public Entry(Spell spell, Vector4f pos) {
             this.spell = spell;
             this.pos = pos;
+            this.actualSpell = getActualSpell();
 
-            MutableText name = spell.getType().getName().shallowCopy();
-            name.setStyle(name.getStyle().withColor(spell.getType().getColor()));
+            MutableText name = actualSpell.getType().getName().shallowCopy();
+            int color = actualSpell.getType().getColor();
+            name.setStyle(name.getStyle().withColor(color == 0 ? 0xFFAAAAAA : color));
 
             tooltip.add(new TranslatableText("Spell Type: %s", name));
-            spell.getType().getTraits().appendTooltip(tooltip);
+            actualSpell.getType().getTraits().appendTooltip(tooltip);
             tooltip.add(LiteralText.EMPTY);
-            tooltip.add(new TranslatableText("Affinity: %s", spell.getAffinity().name()).formatted(spell.getAffinity().getColor()));
+            tooltip.add(new TranslatableText("Affinity: %s", actualSpell.getAffinity().name()).formatted(actualSpell.getAffinity().getColor()));
             tooltip.add(LiteralText.EMPTY);
-            tooltip.addAll(FlowingText.wrap(new TranslatableText(spell.getType().getTranslationKey() + ".lore").formatted(spell.getAffinity().getColor()), 180).toList());
+            tooltip.addAll(FlowingText.wrap(new TranslatableText(actualSpell.getType().getTranslationKey() + ".lore").formatted(actualSpell.getAffinity().getColor()), 180).toList());
             tooltip.add(LiteralText.EMPTY);
             tooltip.add(new TranslatableText("[Click to Discard]"));
         }
 
-        public boolean isMouseOver(int mouseX, int mouseY) {
+        private Spell getActualSpell() {
+            if (spell instanceof AbstractDelegatingSpell) {
+                return ((AbstractDelegatingSpell)spell).getDelegates().stream().findFirst().orElse(spell);
+            }
+            return spell;
+        }
+
+        @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            remove(this);
+            pony.getSpellSlot().removeIf(spell -> spell == this.spell, true);
+            Channel.REMOVE_SPELL.send(new MsgRemoveSpell(spell));
+            playClickEffect();
+            return true;
+        }
+
+        @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
             return squareDistance(mouseX, mouseY, pos.getX(), pos.getY()) < 75;
         }
 
-        public void render(DismissSpellScreen screen, MatrixStack matrices, int mouseX, int mouseY) {
+        @Override
+        public void render(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
             Vector4f copy = new Vector4f(pos.getX(), pos.getY(), pos.getZ(), pos.getW());
             copy.transform(matrices.peek().getPositionMatrix());
 
@@ -153,7 +169,7 @@ public class DismissSpellScreen extends GameGui {
             modelStack.scale(scale, scale, 1);
             RenderSystem.applyModelViewMatrix();
 
-            screen.client.getItemRenderer().renderGuiItemIcon(spell.getType().getDefualtStack(), (int)copy.getX() - 8, (int)copy.getY() - 8);
+            client.getItemRenderer().renderGuiItemIcon(actualSpell.getType().getDefualtStack(), (int)copy.getX() - 8, (int)copy.getY() - 8);
 
             modelStack.pop();
             RenderSystem.applyModelViewMatrix();
@@ -161,13 +177,13 @@ public class DismissSpellScreen extends GameGui {
             matrices.push();
             matrices.translate(pos.getX(), pos.getY(), 0);
 
-            int color = spell.getType().getColor() << 2;
+            int color = actualSpell.getType().getColor() << 2;
 
             DrawableUtil.drawArc(matrices, 7, 8, 0, Math.PI * 2, color | 0x00000088, false);
 
             if (hovered) {
                 DrawableUtil.drawArc(matrices, 0, 8, 0, Math.PI * 2, color | 0x000000FF, false);
-                screen.renderTooltip(matrices, tooltip, 0, 0);
+                renderTooltip(matrices, tooltip, 0, 0);
 
                 if (!lastMouseOver) {
                     lastMouseOver = true;
@@ -178,6 +194,15 @@ public class DismissSpellScreen extends GameGui {
             }
 
             matrices.pop();
+        }
+
+        @Override
+        public void appendNarrations(NarrationMessageBuilder var1) {
+        }
+
+        @Override
+        public SelectionType getType() {
+            return SelectionType.HOVERED;
         }
     }
 
