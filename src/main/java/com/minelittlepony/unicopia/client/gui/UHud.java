@@ -121,8 +121,8 @@ public class UHud extends DrawableHelper {
         matrices.pop();
 
         if (pony.getSpecies().canCast()) {
-            renderSpell(pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 15 - xDirection * 8, hudY + 2);
-            renderSpell(pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 15 - xDirection * 0, hudY - 3);
+            renderSpell(pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 15 - xDirection * 13, hudY + 3);
+            renderSpell(pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 15 - xDirection * 2, hudY - 3);
         }
 
         RenderSystem.disableBlend();
@@ -157,11 +157,24 @@ public class UHud extends DrawableHelper {
     private void renderSpell(CustomisedSpellType<?> spell, int x, int y) {
         if (!spell.isEmpty()) {
             MatrixStack modelStack = RenderSystem.getModelViewStack();
+
             modelStack.push();
             modelStack.translate(x, y, 0);
-            modelStack.scale(EQUIPPED_GEMSTONE_SCALE, EQUIPPED_GEMSTONE_SCALE, EQUIPPED_GEMSTONE_SCALE);
+            modelStack.scale(EQUIPPED_GEMSTONE_SCALE, EQUIPPED_GEMSTONE_SCALE, 1);
+
             RenderSystem.applyModelViewMatrix();
             client.getItemRenderer().renderGuiItemIcon(spell.getDefaultStack(), 0, 0);
+
+            modelStack.loadIdentity();
+            modelStack.translate(7.5, 8.5, 0);
+
+            Pony pony = Pony.of(client.player);
+
+            if (spell.isOn(pony)) {
+                ManaRingSlot.renderArc(modelStack, 5, 7, 0, Math.PI * 2,
+                    (spell.type().getColor() | 0x000000FF) & 0xFFFFFFAF, false);
+                ManaRingSlot.renderArc(modelStack, 7, 8, 0, Math.PI * 2, 0xAAAAFFFF, false);
+            }
             modelStack.pop();
             RenderSystem.applyModelViewMatrix();
         }

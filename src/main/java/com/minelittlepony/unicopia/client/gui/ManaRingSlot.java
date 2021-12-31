@@ -10,6 +10,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -106,10 +107,13 @@ class ManaRingSlot extends Slot {
 
         final double maxAngle = MathHelper.clamp(startAngle + arcAngle, 0, TWO_PI - increment);
 
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
+
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 

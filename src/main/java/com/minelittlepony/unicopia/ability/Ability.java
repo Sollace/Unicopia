@@ -12,7 +12,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public interface Ability<T extends Hit> {
-
     /**
      * The amount of energy this ability is expected to cost if the player were to cast it.
      */
@@ -27,6 +26,17 @@ public interface Ability<T extends Hit> {
      * Returns the number of ticks allowed for cooldown
      */
     int getCooldownTime(Pony player);
+
+    /**
+     * Called on the client when an ability is about to be triggered.
+     * <p>
+     * Use this method to respond to quick-time events, like short taps or double-taps.
+     * <p>
+     * @return True if the event has been handled.
+     */
+    default boolean onQuickAction(Pony player, ActivationType type) {
+        return false;
+    }
 
     /**
      * Called to check preconditions for activating the ability.

@@ -10,6 +10,7 @@ import org.lwjgl.glfw.GLFW;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
+import com.minelittlepony.unicopia.ability.ActivationType;
 import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -18,6 +19,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
@@ -28,11 +30,11 @@ public class KeyBindingsHandler {
 
     static void bootstrap() {}
 
-    private final Map<KeyBinding, AbilitySlot> keys = new HashMap<>();
-    private final Map<AbilitySlot, KeyBinding> reverse = new HashMap<>();
+    private final Map<Binding, AbilitySlot> keys = new HashMap<>();
+    private final Map<AbilitySlot, Binding> reverse = new HashMap<>();
 
-    private final KeyBinding pageDown = register(GLFW.GLFW_KEY_PAGE_DOWN, "hud_page_dn");
-    private final KeyBinding pageUp = register(GLFW.GLFW_KEY_PAGE_UP, "hud_page_up");
+    private final Binding pageDown = register(GLFW.GLFW_KEY_PAGE_DOWN, "hud_page_dn");
+    private final Binding pageUp = register(GLFW.GLFW_KEY_PAGE_UP, "hud_page_up");
 
     public long page = 0;
 
@@ -44,18 +46,18 @@ public class KeyBindingsHandler {
         addKeybind(GLFW.GLFW_KEY_V, AbilitySlot.TERTIARY);
     }
 
-    public KeyBinding getBinding(AbilitySlot slot) {
+    public Binding getBinding(AbilitySlot slot) {
         return reverse.get(slot);
     }
 
     public void addKeybind(int code, AbilitySlot slot) {
-        KeyBinding binding = register(code, slot.name().toLowerCase());
+        Binding binding = register(code, slot.name().toLowerCase());
         reverse.put(slot, binding);
         keys.put(binding, slot);
     }
 
-    static KeyBinding register(int code, String name) {
-        return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.unicopia." + name, code, KEY_CATEGORY));
+    Binding register(int code, String name) {
+        return new Binding(KeyBindingHelper.registerKeyBinding(new KeyBinding("key.unicopia." + name, code, KEY_CATEGORY)));
     }
 
     public void tick(MinecraftClient client) {
@@ -69,23 +71,29 @@ public class KeyBindingsHandler {
 
         page = MathHelper.clamp(page, 0, maxPage);
 
-        if (page > 0 && checkPressed(pageDown) == PressedState.PRESSED) {
+        if (page > 0 && pageDown.getState() == PressedState.PRESSED) {
             changePage(client, maxPage, -1);
-        } else if (page < maxPage && checkPressed(pageUp) == PressedState.PRESSED) {
+        } else if (page < maxPage && pageUp.getState() == PressedState.PRESSED) {
             changePage(client, maxPage, 1);
         } else {
-            for (KeyBinding i : keys.keySet()) {
+            for (Binding i : keys.keySet()) {
                 AbilitySlot slot = keys.get(i);
                 if (slot == AbilitySlot.PRIMARY && client.options.keySneak.isPressed()) {
                     slot = AbilitySlot.PASSIVE;
                 }
 
-                PressedState state = checkPressed(i);
+                PressedState state = i.getState();
+
                 if (state != PressedState.UNCHANGED) {
                     if (state == PressedState.PRESSED) {
                         abilities.activate(slot, page).map(Ability::getName).ifPresent(UHud.INSTANCE::setMessage);
                     } else {
-                        abilities.clear(slot);
+                        abilities.clear(slot, ActivationType.NONE, page);
+                    }
+                } else {
+                    ActivationType type = i.getType();
+                    if (type != ActivationType.NONE) {
+                        abilities.clear(slot, type, page);
                     }
                 }
             }
@@ -98,19 +106,62 @@ public class KeyBindingsHandler {
         UHud.INSTANCE.setMessage(new TranslatableText("gui.unicopia.page_num", page + 1, max + 1));
     }
 
-    private PressedState checkPressed(KeyBinding binding) {
-        if (binding.isPressed()) {
-            return pressed.add(binding) ? PressedState.PRESSED : PressedState.UNCHANGED;
-        } else if (pressed.remove(binding)) {
-            return PressedState.UNPRESSED;
+    public class Binding {
+        private final KeyBinding binding;
+
+        private long nextPhaseTime;
+
+        private ActivationType type = ActivationType.NONE;
+
+        Binding(KeyBinding binding) {
+            this.binding = binding;
         }
 
-        return PressedState.UNCHANGED;
+        public Text getLabel() {
+            return binding.getBoundKeyLocalizedText();
+        }
+
+        public PressedState getState() {
+            PressedState state = getNewState();
+
+            long now = System.currentTimeMillis();
+
+            if (state == PressedState.PRESSED) {
+                nextPhaseTime = now + 200;
+            }
+
+            if (state == PressedState.RELEASED && now < nextPhaseTime + 10) {
+                nextPhaseTime = now + 200;
+                type = type.getNext();
+            }
+
+            return state;
+        }
+
+        public ActivationType getType() {
+            long now = System.currentTimeMillis();
+            if (type != ActivationType.NONE && now > nextPhaseTime - 70) {
+                ActivationType t = type;
+                type = ActivationType.NONE;
+                return t;
+            }
+            return ActivationType.NONE;
+        }
+
+        private PressedState getNewState() {
+            if (binding.isPressed()) {
+                return pressed.add(binding) ? PressedState.PRESSED : PressedState.UNCHANGED;
+            } else if (pressed.remove(binding)) {
+                return PressedState.RELEASED;
+            }
+
+            return PressedState.UNCHANGED;
+        }
     }
 
     enum PressedState {
         UNCHANGED,
         PRESSED,
-        UNPRESSED
+        RELEASED
     }
 }

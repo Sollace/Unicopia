@@ -5,7 +5,6 @@ import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -102,8 +101,6 @@ class Slot {
             UHud.fill(matrices, slotPadding, progressTop, size - slotPadding, progressBottom, 0xCFFFFFFF);
         }
 
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
         renderContents(matrices, abilities, bSwap, tickDelta);
         matrices.pop();
     }
@@ -114,7 +111,7 @@ class Slot {
     }
 
     void renderLabel(MatrixStack matrices, AbilityDispatcher abilities, float tickDelta) {
-        Text label = KeyBindingsHandler.INSTANCE.getBinding(aSlot).getBoundKeyLocalizedText();
+        Text label = KeyBindingsHandler.INSTANCE.getBinding(aSlot).getLabel();
 
         matrices.push();
 

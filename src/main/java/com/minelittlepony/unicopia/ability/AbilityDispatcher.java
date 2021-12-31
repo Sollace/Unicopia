@@ -36,11 +36,13 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         this.player = player;
     }
 
-    public void clear(AbilitySlot slot) {
+    public void clear(AbilitySlot slot, ActivationType pressType, long page) {
         Stat stat = getStat(slot);
 
         if (stat.canSwitchStates()) {
-            stat.setActiveAbility(null);
+            if (pressType == ActivationType.NONE || stat.getAbility(page).filter(ability -> ability.onQuickAction(player, pressType)).isEmpty()) {
+                stat.setActiveAbility(null);
+            }
         }
     }
 
