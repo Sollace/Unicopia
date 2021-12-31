@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
@@ -73,6 +74,10 @@ public class DarkVortexSpell extends AttractiveSpell {
         }
 
         source.subtractEnergyCost(-accumulatedMass);
+
+        if (!source.isClient() && source.getWorld().random.nextInt(300) == 0) {
+            ParticleUtils.spawnParticle(source.getWorld(), UParticles.LIGHTNING_BOLT, getOrigin(source), Vec3d.ZERO);
+        }
 
         return super.tick(source, situation);
     }
