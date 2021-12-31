@@ -74,6 +74,16 @@ public class LightSpell extends AbstractSpell {
     }
 
     @Override
+    public void onDestroyed(Caster<?> caster) {
+        lights.forEach(ref -> {
+            ref.ifPresent(caster.getWorld(), e -> {
+                e.world.sendEntityStatus(e, (byte)60);
+                e.discard();
+            });
+        });
+    }
+
+    @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
         compound.putInt("age", age);
