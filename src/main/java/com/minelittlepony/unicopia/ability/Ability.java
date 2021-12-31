@@ -28,7 +28,7 @@ public interface Ability<T extends Hit> {
     int getCooldownTime(Pony player);
 
     /**
-     * Called on the client when an ability is about to be triggered.
+     * Called when an ability is about to be triggered. This event occurs on both the client and server so check {@code Pony#isClient} if you need to know which one you're on.
      * <p>
      * Use this method to respond to quick-time events, like short taps or double-taps.
      * <p>

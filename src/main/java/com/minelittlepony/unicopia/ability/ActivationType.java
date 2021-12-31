@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
+import net.minecraft.util.math.MathHelper;
+
 public enum ActivationType {
     NONE,
     TAP,
@@ -14,5 +16,9 @@ public enum ActivationType {
 
     public int getTapCount() {
         return ordinal();
+    }
+
+    public static ActivationType of(int id) {
+        return VALUES[MathHelper.clamp(id, 0, VALUES.length)];
     }
 }

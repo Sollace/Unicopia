@@ -40,10 +40,18 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         Stat stat = getStat(slot);
 
         if (stat.canSwitchStates()) {
-            if (pressType == ActivationType.NONE || stat.getAbility(page).filter(ability -> ability.onQuickAction(player, pressType)).isEmpty()) {
+            if (pressType == ActivationType.NONE || stat.getAbility(page).filter(ability -> !triggerQuickAction(ability, pressType)).isEmpty()) {
                 stat.setActiveAbility(null);
             }
         }
+    }
+
+    private boolean triggerQuickAction(Ability<?> ability, ActivationType pressType) {
+        if (ability.onQuickAction(player, pressType)) {
+            Channel.CLIENT_PLAYER_ABILITY.send(new MsgPlayerAbility<>(ability, null, pressType));
+            return true;
+        }
+        return false;
     }
 
     public Optional<Ability<?>> activate(AbilitySlot slot, long page) {
@@ -199,7 +207,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
                     T data = ability.tryActivate(player);
 
                     if (data != null) {
-                        Channel.CLIENT_PLAYER_ABILITY.send(new MsgPlayerAbility<>(ability, data));
+                        Channel.CLIENT_PLAYER_ABILITY.send(new MsgPlayerAbility<>(ability, data, ActivationType.NONE));
                     } else {
                         player.getEntity().playSound(SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
                         setCooldown(0);
