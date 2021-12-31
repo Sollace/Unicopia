@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public class Pos extends Hit {
 
@@ -40,6 +41,10 @@ public class Pos extends Hit {
 
     public BlockPos pos() {
         return new BlockPos(x, y, z);
+    }
+
+    public Vec3d vec() {
+        return new Vec3d(x, y, z);
     }
 
     public double distanceTo(Caster<?> caster) {

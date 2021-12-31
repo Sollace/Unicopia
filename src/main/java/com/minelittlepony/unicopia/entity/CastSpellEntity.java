@@ -44,6 +44,13 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity>, Lig
             getDataTracker().set(SPELL, Optional.ofNullable(spell).map(Spell::getUuid));
             SpellContainer.Delegate.super.put(spell);
         }
+
+        @Override
+        public void clear() {
+            getDataTracker().get(SPELL).ifPresent(id -> {
+                delegate().removeIf(spell -> spell.getUuid().equals(id), true);
+            });
+        }
     };
 
     private final EntityReference<LivingEntity> owner = new EntityReference<>();
@@ -96,11 +103,11 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity>, Lig
 
         emitter.tick();
 
-        if (!dataTracker.get(SPELL).filter(spellId -> {
+        if (dataTracker.get(SPELL).filter(spellId -> {
             return getSpellSlot().forEach(spell -> {
                 return spell.getUuid().equals(spellId) ? Operation.ofBoolean(spell.tick(this, Situation.GROUND_ENTITY)) : Operation.SKIP;
             }, true);
-        }).isPresent()) {
+        }).isEmpty()) {
             discard();
         }
     }

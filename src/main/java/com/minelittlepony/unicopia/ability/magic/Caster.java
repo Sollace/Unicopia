@@ -93,10 +93,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     }
 
     static Stream<Caster<?>> stream(Stream<Entity> entities) {
-        return entities
-                .map(Caster::of)
-                .filter(Optional::isPresent)
-                .map(Optional::get);
+        return entities.map(Caster::of).flatMap(Optional::stream);
     }
 
     /**

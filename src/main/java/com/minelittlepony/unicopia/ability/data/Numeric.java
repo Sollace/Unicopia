@@ -1,13 +1,10 @@
 package com.minelittlepony.unicopia.ability.data;
 
-import com.google.gson.annotations.Expose;
-
 import net.minecraft.network.PacketByteBuf;
 
 public class Numeric extends Hit {
     public static final Serializer<Numeric> SERIALIZER = Numeric::new;
 
-    @Expose
     public int type;
 
     Numeric(PacketByteBuf buf) {

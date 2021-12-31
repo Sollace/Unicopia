@@ -15,7 +15,6 @@ import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
