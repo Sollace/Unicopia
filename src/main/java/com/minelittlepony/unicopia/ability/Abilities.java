@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
 import java.util.EnumMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import com.minelittlepony.unicopia.util.Registries;
@@ -42,7 +42,7 @@ public interface Abilities {
 
     static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {
         Identifier id = new Identifier("unicopia", name);
-        BY_SLOT.computeIfAbsent(slot, s -> new HashSet<>()).add(power);
+        BY_SLOT.computeIfAbsent(slot, s -> new LinkedHashSet<>()).add(power);
         return Registry.register(REGISTRY, id, power);
     }
 }
