@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.block.state;
 
 import java.util.function.Predicate;
 
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.block.Block;
@@ -25,7 +26,7 @@ public class StateMaps {
 
     public static final BlockStateConverter ICE_AFFECTED = register("ice", new BlockStateMap.Builder()
             .replaceMaterial(Material.WATER, Blocks.FROSTED_ICE)
-            .replaceMaterial(Material.LAVA, Blocks.OBSIDIAN)
+            .replaceMaterial(Material.LAVA, UBlocks.FROSTED_OBSIDIAN)
             .add(StateMapping.cycleProperty(Blocks.SNOW, SnowBlock.LAYERS, 7))
             .replaceBlock(Blocks.FIRE, Blocks.AIR)
             .setProperty(Blocks.REDSTONE_WIRE, RedstoneWireBlock.POWER, 0));
@@ -42,10 +43,10 @@ public class StateMaps {
             .removeBlock(Blocks.SNOW)
             .removeBlock(Blocks.SNOW_BLOCK)
             .removeBlock(StateMaps::isPlant)
-            .replaceBlock(Blocks.ICE, Blocks.WATER)
-            .replaceBlock(Blocks.PACKED_ICE, Blocks.WATER)
+            .replaceBlock(BlockTags.ICE, Blocks.WATER)
             .replaceBlock(Blocks.CLAY, Blocks.BROWN_CONCRETE)
             .replaceBlock(Blocks.OBSIDIAN, Blocks.LAVA)
+            .replaceBlock(UBlocks.FROSTED_OBSIDIAN, Blocks.LAVA)
             .replaceBlock(Blocks.GRASS_BLOCK, Blocks.DIRT)
             .replaceBlock(Blocks.MOSSY_COBBLESTONE, Blocks.COBBLESTONE)
             .replaceBlock(Blocks.MOSSY_COBBLESTONE_WALL, Blocks.COBBLESTONE_WALL)
