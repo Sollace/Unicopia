@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -150,6 +151,7 @@ public class SphereParticle extends Particle implements Attachment {
         prevRadius = radius;
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
+        RenderSystem.setShader(GameRenderer::getParticleShader);
     }
 
     protected void renderModel(MatrixStack matrices, VertexConsumer buffer, float lerpedRad, float tickDelta, int light) {
