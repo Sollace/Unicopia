@@ -31,7 +31,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
 
     @Override
     public int getWarmupTime(Pony player) {
-        return 4;
+        return 1;
     }
 
     @Override
