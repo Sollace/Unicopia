@@ -1,59 +1,31 @@
 package com.minelittlepony.unicopia.entity;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.entity.EntityType;
+import net.minecraft.world.World;
 
-public interface LightEmittingEntity {
+public abstract class LightEmittingEntity extends Entity implements DynamicLightSource {
+    private final LightEmitter<?> emitter = new LightEmitter<>(this);
 
-    int getLightLevel();
+    public LightEmittingEntity(EntityType<?> type, World world) {
+        super(type, world);
+    }
 
-    static class LightEmitter<T extends Entity & LightEmittingEntity> {
-        private BlockPos lastPos;
+    @Override
+    public void tick() {
+        super.tick();
+        emitter.tick();
+    }
 
-        private final T entity;
+    @Override
+    public void setRemoved(RemovalReason reason) {
+        super.setRemoved(reason);
+        emitter.remove();
+    }
 
-        public LightEmitter(T entity) {
-            this.entity = entity;
-        }
-
-        @SuppressWarnings("deprecation")
-        public void tick() {
-
-            if (entity.isRemoved()) {
-                remove();
-                return;
-            }
-
-            if (entity.world.isClient) {
-                int light = entity.getLightLevel();
-
-                if (light <= 0) {
-                    return;
-                }
-
-                BlockPos currentPos = entity.getBlockPos();
-
-                if (entity.world.isChunkLoaded(currentPos)) {
-                    try {
-                        if (lastPos != null && !currentPos.equals(lastPos)) {
-                            entity.world.getLightingProvider().checkBlock(lastPos);
-                        }
-
-                        entity.world.getLightingProvider().addLightSource(currentPos, light);
-                    } catch (Exception ignored) {
-                    }
-
-                    lastPos = currentPos;
-                }
-            }
-        }
-
-        void remove() {
-            if (entity.world.isClient) {
-                try {
-                    entity.world.getLightingProvider().checkBlock(entity.getBlockPos());
-                } catch (Exception ignored) {}
-            }
-        }
+    @Override
+    public void onRemoved() {
+        super.onRemoved();
+        emitter.remove();
     }
 }

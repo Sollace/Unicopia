@@ -25,7 +25,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.World;
 
-public class CastSpellEntity extends Entity implements Caster<LivingEntity>, LightEmittingEntity {
+public class CastSpellEntity extends LightEmittingEntity implements Caster<LivingEntity> {
     private static final TrackedData<Float> GRAVITY = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Optional<UUID>> SPELL = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 
@@ -54,7 +54,6 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity>, Lig
     };
 
     private final EntityReference<LivingEntity> owner = new EntityReference<>();
-    private final LightEmitter<?> emitter = new LightEmitter<>(this);
 
     private int orphanedTicks;
 
@@ -100,8 +99,6 @@ public class CastSpellEntity extends Entity implements Caster<LivingEntity>, Lig
         }
 
         orphanedTicks = 0;
-
-        emitter.tick();
 
         if (dataTracker.get(SPELL).filter(spellId -> {
             return getSpellSlot().forEach(spell -> {

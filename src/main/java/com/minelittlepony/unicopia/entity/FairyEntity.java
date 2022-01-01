@@ -42,7 +42,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class FairyEntity extends PathAwareEntity implements LightEmittingEntity, Owned<LivingEntity> {
+public class FairyEntity extends PathAwareEntity implements DynamicLightSource, Owned<LivingEntity> {
     private final EntityReference<LivingEntity> owner = new EntityReference<>();
 
     private final EntityReference<LivingEntity> assignment = new EntityReference<>();
@@ -213,6 +213,12 @@ public class FairyEntity extends PathAwareEntity implements LightEmittingEntity,
         ParticleUtils.spawnParticle(world, UParticles.LIGHTNING_BOLT, getPos(), Vec3d.ZERO);
 
         return false;
+    }
+
+    @Override
+    public void setRemoved(RemovalReason reason) {
+        super.setRemoved(reason);
+        emitter.remove();
     }
 
     @Override
