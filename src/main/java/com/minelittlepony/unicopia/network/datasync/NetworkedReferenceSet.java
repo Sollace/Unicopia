@@ -48,6 +48,9 @@ public class NetworkedReferenceSet<T> {
     public boolean clear() {
         dirty |= !ids.isEmpty() || !values.isEmpty();
         ids.clear();
+        for (NetworkedReference<T> reference : values.values()) {
+            reference.updateReference(null);
+        }
         values.clear();
         return dirty;
     }

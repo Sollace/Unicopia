@@ -104,7 +104,13 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
 
     @Override
     public boolean subtractEnergyCost(double amount) {
-        return Caster.of(getMaster()).filter(c -> c.subtractEnergyCost(amount)).isPresent();
+        if (getMaster() == null) {
+            return true;
+        }
+
+        return Caster.of(getMaster())
+                .filter(c -> c.subtractEnergyCost(amount))
+                .isPresent();
     }
 
     @Override

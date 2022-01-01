@@ -73,6 +73,8 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
 
     /**
      * Removes the desired amount of mana or health from this caster in exchange for a spell's benefits.
+     * <p>
+     * @return False if the transaction has depleted the caster's reserves.
      */
     boolean subtractEnergyCost(double amount);
 

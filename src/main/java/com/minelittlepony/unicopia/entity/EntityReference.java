@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
@@ -89,7 +90,7 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
 
     private boolean checkReference(Entity e) {
         pos = Optional.of(e.getPos());
-        return !e.isRemoved();
+        return e instanceof PlayerEntity || !e.isRemoved();
     }
 
     @Override

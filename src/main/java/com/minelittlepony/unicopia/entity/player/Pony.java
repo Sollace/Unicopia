@@ -508,7 +508,9 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     public void copyFrom(Pony oldPlayer) {
         speciesPersisted = oldPlayer.speciesPersisted;
         if (!oldPlayer.getEntity().isRemoved()) {
-            getSpellSlot().put(oldPlayer.getSpellSlot().get(true).orElse(null));
+            oldPlayer.getSpellSlot().stream(true).forEach(getSpellSlot()::put);
+        } else {
+            oldPlayer.getSpellSlot().stream(true).filter(SpellPredicate.IS_PLACED).forEach(getSpellSlot()::put);
         }
         oldPlayer.getSpellSlot().put(null);
         setSpecies(oldPlayer.getSpecies());
