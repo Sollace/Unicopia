@@ -113,6 +113,9 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
 
     @Override
     public void onDestroyed(Caster<?> caster) {
+        if (caster.isClient()) {
+            return;
+        }
         LivingEntity master = caster.getMaster();
         summonedEntities.forEach(ref -> {
             ref.ifPresent(caster.getWorld(), e -> {

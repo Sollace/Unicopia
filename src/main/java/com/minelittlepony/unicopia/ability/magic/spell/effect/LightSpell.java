@@ -75,6 +75,9 @@ public class LightSpell extends AbstractSpell {
 
     @Override
     public void onDestroyed(Caster<?> caster) {
+        if (caster.isClient()) {
+            return;
+        }
         lights.forEach(ref -> {
             ref.ifPresent(caster.getWorld(), e -> {
                 e.world.sendEntityStatus(e, (byte)60);
