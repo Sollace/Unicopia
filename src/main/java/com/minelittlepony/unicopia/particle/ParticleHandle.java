@@ -56,7 +56,7 @@ public class ParticleHandle {
                 return set.isEmpty();
             });
 
-            Entry p = SPAWNED_PARTICLES.computeIfAbsent(id, i -> new HashMap<>()).computeIfAbsent(partName, i -> {
+            Entry p = SPAWNED_PARTICLES.computeIfAbsent(id, i -> new WeakHashMap<>()).computeIfAbsent(partName, i -> {
                 constructor.accept((effect, pos, vel) -> {
                     pp = MinecraftClient.getInstance().particleManager.addParticle(effect, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
                     if (pp instanceof Attachment && source instanceof Caster<?>) {
@@ -73,7 +73,13 @@ public class ParticleHandle {
 
         record Entry (WeakReference<World> world, WeakReference<Particle> particle) {
             public Particle get() {
-                return world.get() == null || world.get() != MinecraftClient.getInstance().world ? null : particle.get();
+                if (world.get() == null || world.get() != MinecraftClient.getInstance().world) {
+                    return null;
+                }
+
+                Particle particle = this.particle.get();
+
+                return particle == null || !particle.isAlive() ? null : particle;
             }
         }
     }
