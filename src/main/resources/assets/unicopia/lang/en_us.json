@@ -427,7 +427,7 @@
   "death.attack.drain": "%1$s was drained of all life",
   "death.attack.drain.self": "%1$s was killed by their own spell",
   "death.attack.drain.attacker": "%1$s was killed by a spell cast by %2$s",
-  "death.attack.eeee": "%1$s was firghtened to death",
+  "death.attack.eeee": "%1$s was frightened to death",
   "death.attack.eeee.attacker": "%2$s scared %1$s",
   "death.attack.eeee.attacker.item": "%1$s was frightened to death by %2$s using %3$s",
   "death.attack.eeee.self": "%1$s scared themselves to death",
