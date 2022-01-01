@@ -101,7 +101,7 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
             player.setInvisible(true);
 
             if (entity instanceof Owned) {
-                ((Owned<LivingEntity>)entity).setMaster(player.getMaster());
+                ((Owned<LivingEntity>)entity).setMaster(player);
             }
 
             if (entity instanceof PlayerEntity) {

@@ -31,7 +31,7 @@ public class MagicalDamageSource extends EntityDamageSource {
         return new MagicalDamageSource(type, null, null, false, false);
     }
 
-    public static DamageSource create(String type, LivingEntity source) {
+    public static DamageSource create(String type, @Nullable LivingEntity source) {
         return new MagicalDamageSource(type, source, null, false, false);
     }
 

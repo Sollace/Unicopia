@@ -129,11 +129,16 @@ public class UnicornTeleportAbility implements Ability<Pos> {
     }
 
     protected void teleport(Pony teleporter, Caster<?> teleportee, Pos destination) {
+
+        LivingEntity player = teleportee.getMaster();
+
+        if (player == null) {
+            return;
+        }
+
         teleportee.getWorld().playSound(null, teleportee.getOrigin(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
 
         double distance = destination.distanceTo(teleportee) / 10;
-
-        LivingEntity player = teleportee.getMaster();
 
         if (player.hasVehicle()) {
             Entity mount = player.getVehicle();

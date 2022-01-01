@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
@@ -198,13 +200,18 @@ public class DarkVortexSpell extends AttractiveSpell {
         if (distance <= getEventHorizonRadius()) {
             target.setVelocity(target.getVelocity().multiply(distance / (2 * radius)));
 
+            @Nullable
+            Entity master = source.getMaster();
+
             if (target instanceof MagicProjectileEntity) {
                 Item item = ((MagicProjectileEntity)target).getStack().getItem();
-                if (item instanceof ProjectileDelegate) {
-                    ((ProjectileDelegate) item).onImpact(((MagicProjectileEntity)target), source.getMaster());
+                if (item instanceof ProjectileDelegate && master != null) {
+                    ((ProjectileDelegate) item).onImpact(((MagicProjectileEntity)target), master);
                 }
             } else if (target instanceof PersistentProjectileEntity) {
-                source.getMaster().damage(DamageSource.thrownProjectile(target, ((PersistentProjectileEntity)target).getOwner()), 4);
+                if (master != null) {
+                    master.damage(DamageSource.thrownProjectile(target, ((PersistentProjectileEntity)target).getOwner()), 4);
+                }
                 target.discard();
                 return;
             }

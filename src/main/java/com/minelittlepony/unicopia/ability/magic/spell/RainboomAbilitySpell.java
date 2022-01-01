@@ -62,6 +62,10 @@ public class RainboomAbilitySpell extends AbstractSpell {
 
         LivingEntity owner = source.getMaster();
 
+        if (owner == null) {
+            return false;
+        }
+
         source.findAllEntitiesInRange(rad).forEach(e -> {
             e.damage(MagicalDamageSource.create("rainboom", source), 6);
         });

@@ -3,10 +3,12 @@ package com.minelittlepony.unicopia.entity;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.WeaklyOwned;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -33,8 +35,9 @@ import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.world.World;
 
-public class Creature extends Living<LivingEntity> {
+public class Creature extends Living<LivingEntity> implements WeaklyOwned<LivingEntity> {
     private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
     private static final TrackedData<NbtCompound> MASTER = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
     public static final TrackedData<Float> GRAVITY = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -68,15 +71,25 @@ public class Creature extends Living<LivingEntity> {
     }
 
     public boolean isMinion() {
-        Entity master = getMaster();
-        return master != null && master != getEntity();
+        return master.getId().isPresent();
     }
 
     @Override
+    public World getWorld() {
+        return super.getWorld();
+    }
+
+    @Override
+    @NotNull
     public LivingEntity getMaster() {
         NbtCompound data = entity.getDataTracker().get(MASTER);
         master.fromNBT(data);
         return master.getOrEmpty(getWorld()).orElse(entity);
+    }
+
+    @Override
+    public EntityReference<LivingEntity> getMasterReference() {
+        return master;
     }
 
     @Override
@@ -112,7 +125,7 @@ public class Creature extends Living<LivingEntity> {
         Predicate<LivingEntity> filter = TargetSelecter.<LivingEntity>notOwnerOrFriend(this, this).and(e -> {
             return Equine.of(e)
                     .filter(eq -> eq instanceof Creature)
-                    .filter(eq -> ((Creature)eq).getMaster() == getMaster())
+                    .filter(eq -> ((Creature)eq).hasCommonOwner(this))
                     .isEmpty();
         });
 

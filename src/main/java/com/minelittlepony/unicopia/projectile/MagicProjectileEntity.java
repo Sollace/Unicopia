@@ -66,7 +66,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
         super(type, world);
     }
 
-    public MagicProjectileEntity(World world, LivingEntity thrower) {
+    public MagicProjectileEntity(World world, @Nullable LivingEntity thrower) {
         super(UEntities.THROWN_ITEM, thrower, world);
     }
 
@@ -103,6 +103,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     }
 
     @Override
+    @Nullable
     public LivingEntity getMaster() {
         return (LivingEntity)getOwner();
     }

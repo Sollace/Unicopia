@@ -139,7 +139,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
         minion.equipStack(EquipmentSlot.HEAD, Items.IRON_HELMET.getDefaultStack());
 
         Equine.of(minion).filter(eq -> eq instanceof Creature).ifPresent(eq -> {
-            ((Creature)eq).setMaster(source.getMaster());
+            ((Creature)eq).setMaster(source);
         });
 
         source.getWorld().spawnEntity(minion);

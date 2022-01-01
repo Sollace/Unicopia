@@ -53,6 +53,10 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
 
         LivingEntity entity = caster.getMaster();
 
+        if (entity == null) {
+            return Optional.empty();
+        }
+
         caster.playSound(SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
         if (!caster.isClient()) {

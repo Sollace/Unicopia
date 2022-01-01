@@ -62,7 +62,7 @@ public class UnicornDispellAbility implements Ability<Pos> {
     @Override
     public double getCostEstimate(Pony player) {
         return getTarget(player)
-                .filter(caster -> caster.getMaster() != player.getMaster())
+                .filter(caster -> !caster.hasCommonOwner(player))
                 .isPresent() ? 10 : 0;
     }
 

@@ -58,13 +58,12 @@ public class FeatherFallSpell extends AbstractSpell {
         final float strength = 1F / (getTraits().get(Trait.STRENGTH, 2, 9) / targets.size());
         final float generosity = getTraits().get(Trait.GENEROSITY, 1, MAX_GENEROSITY_FACTOR) / MAX_GENEROSITY_FACTOR;
 
-        Entity master = caster.getMaster();
         Entity entity = caster.getEntity();
         Vec3d masterVelocity = caster.getEntity().getVelocity().multiply(0.1);
         targets.forEach(target -> {
             if (target.getVelocity().y < 0) {
 
-                boolean isSelf = target == master || target == entity;
+                boolean isSelf = caster.isOwnedBy(target) || target == entity;
                 float delta = strength * (isSelf ? (1F - generosity) : generosity);
 
                 if (!isSelf || generosity < 0.5F) {

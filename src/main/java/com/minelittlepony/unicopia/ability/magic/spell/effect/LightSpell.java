@@ -59,9 +59,9 @@ public class LightSpell extends AbstractSpell {
                 if (!ref.isPresent(caster.getWorld())) {
                     FairyEntity entity = UEntities.TWITTERMITE.create(caster.getWorld());
                     entity.setPosition(ref.getPosition().orElseGet(() -> {
-                        return caster.getMaster().getPos().add(VecHelper.supply(() -> caster.getWorld().random.nextInt(3) - 1));
+                        return caster.getOriginVector().add(VecHelper.supply(() -> caster.getWorld().random.nextInt(3) - 1));
                     }));
-                    entity.setMaster(caster.getMaster());
+                    entity.setMaster(caster);
                     entity.world.spawnEntity(entity);
 
                     ref.set(entity);

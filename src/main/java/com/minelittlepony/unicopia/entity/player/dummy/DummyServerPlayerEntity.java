@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity.player.dummy;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.mojang.authlib.GameProfile;
@@ -29,6 +31,7 @@ public class DummyServerPlayerEntity extends ServerPlayerEntity implements Owned
     }
 
     @Override
+    @Nullable
     public PlayerEntity getMaster() {
         return owner;
     }

@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 
 public class EntityReference<T extends Entity> implements NbtSerialisable {
 
-    private UUID uuid;
+    private Optional<UUID> uuid = Optional.empty();
     private int clientId;
 
     private Optional<Vec3d> pos = Optional.empty();
@@ -32,16 +32,26 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
         fromNBT(nbt);
     }
 
+    public void copyFrom(EntityReference<T> other) {
+        uuid = other.uuid;
+        clientId = other.clientId;
+        pos = other.pos;
+    }
+
     public void set(@Nullable T entity) {
         if (entity != null) {
-            uuid = entity.getUuid();
+            uuid = Optional.of(entity.getUuid());
             clientId = entity.getId();
             pos = Optional.of(entity.getPos());
         } else {
-            uuid = null;
+            uuid = Optional.empty();
             clientId = 0;
             pos = Optional.empty();
         }
+    }
+
+    public Optional<UUID> getId() {
+        return uuid;
     }
 
     /**
@@ -66,8 +76,8 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
 
     @SuppressWarnings("unchecked")
     public Optional<T> getOrEmpty(World world) {
-        if (uuid != null && world instanceof ServerWorld) {
-            return Optional.ofNullable((T)((ServerWorld)world).getEntity(uuid)).filter(this::checkReference);
+        if (uuid.isPresent() && world instanceof ServerWorld) {
+            return uuid.map(((ServerWorld)world)::getEntity).map(e -> (T)e).filter(this::checkReference);
         }
 
         if (clientId != 0) {
@@ -84,18 +94,14 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
 
     @Override
     public void toNBT(NbtCompound tag) {
-        if (uuid != null) {
-            tag.putUuid("uuid", uuid);
-        }
-        pos.ifPresent(p -> {
-            tag.put("pos", NbtSerialisable.writeVector(p));
-        });
+        uuid.ifPresent(uuid -> tag.putUuid("uuid", uuid));
+        pos.ifPresent(p -> tag.put("pos", NbtSerialisable.writeVector(p)));
         tag.putInt("clientId", clientId);
     }
 
     @Override
     public void fromNBT(NbtCompound tag) {
-        uuid = tag.containsUuid("uuid") ? tag.getUuid("uuid") : null;
+        uuid = tag.containsUuid("uuid") ? Optional.of(tag.getUuid("uuid")) : Optional.empty();
         pos = tag.contains("pos") ? Optional.ofNullable(NbtSerialisable.readVector(tag.getList("pos", NbtElement.DOUBLE_TYPE))) : Optional.empty();
         clientId = tag.getInt("clientId");
     }

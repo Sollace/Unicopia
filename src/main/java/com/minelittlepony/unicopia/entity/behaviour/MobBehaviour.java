@@ -27,7 +27,7 @@ public class MobBehaviour<T extends MobEntity> extends EntityBehaviour<T> {
 
     protected LivingEntity findTarget(Pony player, T entity) {
         return RayTraceHelper.<LivingEntity>findEntity(player.getEntity(), 6, 1,
-                e -> e instanceof LivingEntity && e != entity && e != player.getMaster())
+                e -> e instanceof LivingEntity && e != entity && !player.isOwnedBy(e))
                 .orElseGet(() -> getDummy(entity));
     }
 

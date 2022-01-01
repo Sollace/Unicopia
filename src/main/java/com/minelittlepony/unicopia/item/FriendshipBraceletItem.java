@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -41,6 +42,7 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
             ItemStack result = stack.copy();
             result.setCount(1);
             result.getOrCreateNbt().putString("issuer", player.getName().asString());
+            result.getOrCreateNbt().putUuid("issuer_id", player.getUuid());
 
             if (!player.getAbilities().creativeMode) {
                 stack.decrement(1);
@@ -65,7 +67,7 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
     @Environment(EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
         if (isSigned(stack)) {
-            list.add(new TranslatableText("item.unicopia.friendship_bracelet.issuer", getSignature(stack)));
+            list.add(new TranslatableText("item.unicopia.friendship_bracelet.issuer", getSignatorName(stack)));
         }
         if (isGlowing(stack)) {
             list.add(new TranslatableText("item.unicopia.friendship_bracelet.glowing").formatted(Formatting.ITALIC, Formatting.GRAY));
@@ -78,16 +80,25 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
     }
 
     private boolean checkSignature(ItemStack stack, PlayerEntity player) {
-        return player.getName().asString().contentEquals(getSignature(stack));
+        return checkSignature(stack, player.getUuid());
+    }
+
+    private boolean checkSignature(ItemStack stack, UUID player) {
+        return player.equals(getSignatorId(stack));
     }
 
     @Nullable
-    public static String getSignature(ItemStack stack) {
+    public static String getSignatorName(ItemStack stack) {
         return isSigned(stack) ? stack.getNbt().getString("issuer") : null;
     }
 
+    @Nullable
+    public static UUID getSignatorId(ItemStack stack) {
+        return isSigned(stack) ? stack.getNbt().getUuid("issuer_id") : null;
+    }
+
     public static boolean isSigned(ItemStack stack) {
-        return stack.hasNbt() && stack.getNbt().contains("issuer");
+        return stack.hasNbt() && stack.getNbt().contains("issuer_id");
     }
 
     public static boolean isSignedBy(ItemStack stack, PlayerEntity player) {
@@ -95,13 +106,18 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
                 && ((FriendshipBraceletItem)stack.getItem()).checkSignature(stack, player);
     }
 
-    public static boolean isComrade(Caster<?> caster, Entity entity) {
-        Entity master = caster.getMaster();
-        if (master instanceof PlayerEntity && entity instanceof LivingEntity) {
-            return isSignedBy(((LivingEntity)entity).getOffHandStack(), (PlayerEntity)master)
-                    || isSignedBy(((LivingEntity)entity).getEquippedStack(EquipmentSlot.CHEST), (PlayerEntity)master);
-        }
+    public static boolean isSignedBy(ItemStack stack, UUID player) {
+        return stack.getItem() instanceof FriendshipBraceletItem
+                && ((FriendshipBraceletItem)stack.getItem()).checkSignature(stack, player);
+    }
 
+    public static boolean isComrade(Caster<?> caster, Entity entity) {
+        if (entity instanceof LivingEntity) {
+            return caster.getMasterId().filter(id -> {
+                return isSignedBy(((LivingEntity)entity).getOffHandStack(), id)
+                        || isSignedBy(((LivingEntity)entity).getEquippedStack(EquipmentSlot.CHEST), id);
+            }).isPresent();
+        }
         return false;
     }
 }

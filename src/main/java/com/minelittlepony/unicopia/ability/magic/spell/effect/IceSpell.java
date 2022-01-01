@@ -43,12 +43,10 @@ public class IceSpell extends AbstractSpell {
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        LivingEntity owner = source.getMaster();
-
         boolean submerged = source.getEntity().isSubmergedInWater() || source.getEntity().isSubmergedIn(FluidTags.LAVA);
 
         long blocksAffected = PosHelper.getAllInRegionMutable(source.getOrigin(), outerRange).filter(i -> {
-            if (source.canModifyAt(i) && applyBlockSingle(owner, source.getWorld(), i, situation)) {
+            if (source.canModifyAt(i) && applyBlockSingle(source.getEntity(), source.getWorld(), i, situation)) {
 
                 if (submerged & source.getOrigin().isWithinDistance(i, rad - 1)) {
                     BlockState state = source.getWorld().getBlockState(i);

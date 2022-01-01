@@ -109,7 +109,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
 
     private void collectHealth(Caster<?> source) {
         LivingEntity owner = source.getMaster();
-        float maxHealthGain = owner.getMaxHealth() - owner.getHealth();
+        float maxHealthGain = owner == null ? 0 : owner.getMaxHealth() - owner.getHealth();
 
         if (maxHealthGain == 0) {
             return;

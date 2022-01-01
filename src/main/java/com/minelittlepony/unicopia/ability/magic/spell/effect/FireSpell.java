@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
@@ -48,7 +50,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpel
     @Override
     public void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
         if (!projectile.isClient()) {
-            projectile.getWorld().createExplosion(projectile.getMaster(), pos.getX(), pos.getY(), pos.getZ(), 2, DestructionType.DESTROY);
+            projectile.getWorld().createExplosion(projectile.getEntity(), pos.getX(), pos.getY(), pos.getZ(), 2, DestructionType.DESTROY);
         }
     }
 
@@ -112,11 +114,11 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpel
         return false;
     }
 
-    protected boolean applyEntities(Entity owner, World world, Vec3d pos) {
+    protected boolean applyEntities(@Nullable Entity owner, World world, Vec3d pos) {
         return !VecHelper.findInRange(owner, world, pos, Math.max(0, 3 + getTraits().get(Trait.POWER)), i -> applyEntitySingle(owner, world, i)).isEmpty();
     }
 
-    protected boolean applyEntitySingle(Entity owner, World world, Entity e) {
+    protected boolean applyEntitySingle(@Nullable Entity owner, World world, Entity e) {
         if ((!e.equals(owner) ||
                 (owner instanceof PlayerEntity && !EquinePredicates.PLAYER_UNICORN.test(owner))) && !(e instanceof ItemEntity)
         && !(e instanceof Caster<?>)) {
@@ -129,7 +131,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpel
         return false;
     }
 
-    protected DamageSource getDamageCause(Entity target, LivingEntity attacker) {
+    protected DamageSource getDamageCause(Entity target, @Nullable LivingEntity attacker) {
         return MagicalDamageSource.create("fire", attacker);
     }
 

@@ -109,7 +109,7 @@ public class ShieldSpell extends AbstractSpell {
      * Calculates the maximum radius of the shield. aka The area of effect.
      */
     public double getDrawDropOffRange(Caster<?> source) {
-        float multiplier = source.getMaster().isSneaking() ? 1 : 2;
+        float multiplier = source.getMaster() != null && source.getMaster().isSneaking() ? 1 : 2;
         float min = 4 + getTraits().get(Trait.POWER);
         return (min + (source.getLevel().get() * 2)) / multiplier;
     }

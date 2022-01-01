@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.entity.player.dummy;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
@@ -66,6 +67,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
     }
 
     @Override
+    @Nullable
     public PlayerEntity getMaster() {
         return owner;
     }

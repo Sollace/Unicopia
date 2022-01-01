@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.entity;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Unicopia;
@@ -81,13 +82,13 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     @Override
+    @NotNull
     public T getMaster() {
         return entity;
     }
 
     @Override
     public void tick() {
-
         try {
             getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.BODY)), true);
         } catch (Exception e) {

@@ -29,22 +29,10 @@ public class TargetSelecter {
     public Stream<Entity> getEntities(Caster<?> source, double radius, BiPredicate<Caster<?>, Entity> filter) {
         targets.values().removeIf(Target::tick);
 
-        Entity owner = source.getMaster();
-
-        boolean ownerIsValid = spell.isFriendlyTogether(source) && (EquinePredicates.PLAYER_UNICORN.test(owner));
+        Predicate<Entity> ownerCheck = isOwnerOrFriend(spell, source);
 
         return source.findAllEntitiesInRange(radius)
-            .filter(entity -> entity.isAlive() && !entity.isRemoved())
-            .filter(entity -> {
-                boolean hasShield = SpellPredicate.IS_SHIELD_LIKE.isOn(entity);
-                boolean isOwnerOrFriend = Pony.equal(entity, owner) || owner.isConnectedThroughVehicle(entity) || FriendshipBraceletItem.isComrade(source, entity);
-
-                if (!ownerIsValid && isOwnerOrFriend) {
-                    return true;
-                }
-
-                return !hasShield && (!ownerIsValid || !isOwnerOrFriend);
-            })
+            .filter(entity -> entity.isAlive() && !entity.isRemoved() && !ownerCheck.test(entity) && !SpellPredicate.IS_SHIELD_LIKE.isOn(entity))
             .filter(e -> filter.test(source, e))
             .map(i -> {
                 targets.computeIfAbsent(i.getUuid(), Target::new);
@@ -57,16 +45,18 @@ public class TargetSelecter {
     }
 
     public static <T extends Entity> Predicate<T> notOwnerOrFriend(Affine spell, Caster<?> source) {
+        return TargetSelecter.<T>isOwnerOrFriend(spell, source).negate();
+    }
+
+    public static <T extends Entity> Predicate<T> isOwnerOrFriend(Affine spell, Caster<?> source) {
         Entity owner = source.getMaster();
 
-        boolean ownerIsValid = spell.isFriendlyTogether(source) && (EquinePredicates.PLAYER_UNICORN.test(owner));
-
-        if (!ownerIsValid) {
-            return e -> true;
+        if (!(spell.isFriendlyTogether(source) && EquinePredicates.PLAYER_UNICORN.test(owner))) {
+            return e -> FriendshipBraceletItem.isComrade(source, e);
         }
 
         return entity -> {
-            return !ownerIsValid || !(Pony.equal(entity, owner) || owner.isConnectedThroughVehicle(entity) || FriendshipBraceletItem.isComrade(source, entity));
+            return FriendshipBraceletItem.isComrade(source, entity) || (owner != null && (Pony.equal(entity, owner) || owner.isConnectedThroughVehicle(entity)));
         };
     }
 

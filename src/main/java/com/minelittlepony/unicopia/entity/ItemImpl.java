@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.entity;
 
 import java.util.Random;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UTags;
@@ -132,12 +134,12 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
 
     @Override
     public Race getSpecies() {
-        return Race.fromId(getMaster().getDataTracker().get(ITEM_RACE));
+        return Race.fromId(owner.getDataTracker().get(ITEM_RACE));
     }
 
     @Override
     public void setSpecies(Race race) {
-        getMaster().getDataTracker().set(ITEM_RACE, race.ordinal());
+        owner.getDataTracker().set(ITEM_RACE, race.ordinal());
     }
 
     @Override
@@ -158,6 +160,7 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
     }
 
     @Override
+    @NotNull
     public ItemEntity getMaster() {
         return owner;
     }

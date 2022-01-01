@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -18,6 +19,9 @@ import com.minelittlepony.unicopia.particle.UParticles;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 
 /**
  * A spell that can be attached to a specific location in the world.
@@ -26,13 +30,25 @@ import net.minecraft.util.math.Vec3d;
  * spell loses affect until they return.
  */
 public class PlaceableSpell extends AbstractDelegatingSpell {
+    /**
+     * Dimension the spell was originally cast in
+     */
     @Nullable
-    private Identifier dimension;
+    private RegistryKey<World> dimension;
 
+    /**
+     * The visual effect
+     */
     private final ParticleHandle particlEffect = new ParticleHandle();
 
+    /**
+     * The cast spell entity
+     */
     private final EntityReference<CastSpellEntity> castEntity = new EntityReference<>();
 
+    /**
+     * The spell being cast
+     */
     private Spell spell;
 
     public PlaceableSpell(SpellType<?> type, SpellTraits traits) {
@@ -59,19 +75,18 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
     public boolean tick(Caster<?> source, Situation situation) {
         if (situation == Situation.BODY) {
             if (!source.isClient()) {
+
                 if (dimension == null) {
-                    dimension = source.getWorld().getRegistryKey().getValue();
+                    dimension = source.getWorld().getRegistryKey();
                     setDirty();
-                } else if (!source.getWorld().getRegistryKey().getValue().equals(dimension)) {
-                    return false;
                 }
 
-                if (!castEntity.isPresent(source.getWorld())) {
+                if (getSpellEntity(source).isEmpty()) {
                     CastSpellEntity entity = UEntities.CAST_SPELL.create(source.getWorld());
                     Vec3d pos = castEntity.getPosition().orElse(source.getOriginVector());
                     entity.updatePositionAndAngles(pos.x, pos.y, pos.z, 0, 0);
                     entity.getSpellSlot().put(this);
-                    entity.setMaster(source.getMaster());
+                    entity.setMaster(source);
                     entity.world.spawnEntity(entity);
 
                     castEntity.set(entity);
@@ -92,14 +107,33 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
             return super.tick(source, Situation.GROUND);
         }
 
+        this.onDestroyed(source);
+
         return !isDead();
+    }
+
+    @Override
+    public void onDestroyed(Caster<?> source) {
+        if (!source.isClient()) {
+            getSpellEntity(source).ifPresent(e -> {
+                e.getSpellSlot().clear();
+                castEntity.set(null);
+            });
+        }
+        super.onDestroyed(source);
+    }
+
+    protected Optional<CastSpellEntity> getSpellEntity(Caster<?> source) {
+        return Optional.ofNullable(dimension)
+                .map(dim -> source.getWorld().getServer().getWorld(dimension))
+                .map(castEntity::get);
     }
 
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
         if (dimension != null) {
-            compound.putString("dimension", dimension.toString());
+            compound.putString("dimension", dimension.getValue().toString());
         }
         compound.put("castEntity", castEntity.toNBT());
         compound.put("spell", Spell.writeNbt(spell));
@@ -109,7 +143,10 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         if (compound.contains("dimension")) {
-            dimension = new Identifier(compound.getString("dimension"));
+            Identifier id = Identifier.tryParse(compound.getString("dimension"));
+            if (id != null) {
+                dimension = RegistryKey.of(Registry.WORLD_KEY, id);
+            }
         }
         if (compound.contains("castEntity")) {
             castEntity.fromNBT(compound.getCompound("castEntity"));

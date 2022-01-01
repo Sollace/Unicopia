@@ -1,9 +1,7 @@
 package com.minelittlepony.unicopia.entity;
 
-import java.util.Optional;
-import java.util.UUID;
-
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.WeaklyOwned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
@@ -12,6 +10,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
+import com.minelittlepony.unicopia.network.datasync.EffectSync;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -25,37 +24,17 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.World;
 
-public class CastSpellEntity extends LightEmittingEntity implements Caster<LivingEntity> {
+public class CastSpellEntity extends LightEmittingEntity implements Caster<LivingEntity>, WeaklyOwned<LivingEntity> {
     private static final TrackedData<Float> GRAVITY = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Optional<UUID>> SPELL = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+    private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
 
     private static final LevelStore LEVELS = Levelled.fixed(0);
 
     private final EntityPhysics<CastSpellEntity> physics = new EntityPhysics<>(this, GRAVITY);
 
-    private final SpellContainer spell = new SpellContainer.Delegate() {
-        @Override
-        public SpellContainer delegate() {
-            return Caster.of(getMaster()).map(Caster::getSpellSlot).orElse(SpellContainer.EMPTY);
-        }
-
-        @Override
-        public void put(Spell spell) {
-            getDataTracker().set(SPELL, Optional.ofNullable(spell).map(Spell::getUuid));
-            SpellContainer.Delegate.super.put(spell);
-        }
-
-        @Override
-        public boolean clear() {
-            return getDataTracker().get(SPELL).map(id -> {
-                return delegate().removeIf(spell -> spell.getUuid().equals(id), true);
-            }).orElse(false);
-        }
-    };
+    private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
 
     private final EntityReference<LivingEntity> owner = new EntityReference<>();
-
-    private int orphanedTicks;
 
     public CastSpellEntity(EntityType<?> type, World world) {
         super(type, world);
@@ -63,7 +42,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
 
     @Override
     protected void initDataTracker() {
-        getDataTracker().startTracking(SPELL, Optional.empty());
+        getDataTracker().startTracking(EFFECT, new NbtCompound());
     }
 
     @Override
@@ -88,35 +67,14 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
             return;
         }
 
-        LivingEntity master = getMaster();
-
-        if (master == null || master.isRemoved()) {
-            if (orphanedTicks-- > 0) {
-                return;
-            }
-            discard();
-            return;
-        }
-
-        orphanedTicks = 0;
-
-        if (dataTracker.get(SPELL).filter(spellId -> {
-            return getSpellSlot().forEach(spell -> {
-                return spell.getUuid().equals(spellId) ? Operation.ofBoolean(spell.tick(this, Situation.GROUND_ENTITY)) : Operation.SKIP;
-            }, true);
-        }).isEmpty()) {
+        if (!getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.GROUND_ENTITY)), true)) {
             discard();
         }
     }
 
     @Override
-    public void setMaster(LivingEntity owner) {
-        this.owner.set(owner);
-    }
-
-    @Override
-    public LivingEntity getMaster() {
-        return owner.get(((Entity)this).world);
+    public EntityReference<LivingEntity> getMasterReference() {
+        return owner;
     }
 
     @Override
@@ -141,7 +99,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
 
     @Override
     public SpellContainer getSpellSlot() {
-        return spell;
+        return effectDelegate;
     }
 
     @Override
@@ -152,8 +110,8 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
     @Override
     protected void writeCustomDataToNbt(NbtCompound tag) {
         tag.put("owner", owner.toNBT());
-        dataTracker.get(SPELL).ifPresent(spellId -> {
-            tag.putUuid("spellId", spellId);
+        getSpellSlot().get(true).ifPresent(effect -> {
+            tag.put("effect", Spell.writeNbt(effect));
         });
     }
 
@@ -162,9 +120,8 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
         if (tag.contains("owner")) {
             owner.fromNBT(tag.getCompound("owner"));
         }
-        orphanedTicks = 60;
-        if (tag.contains("spellId")) {
-            dataTracker.set(SPELL, Optional.ofNullable(tag.getUuid("spellId")));
+        if (tag.contains("effect")) {
+            getSpellSlot().put(Spell.readNbt(tag.getCompound("effect")));
         }
     }
 

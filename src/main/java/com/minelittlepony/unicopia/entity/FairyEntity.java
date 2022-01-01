@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.WeaklyOwned;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -42,7 +42,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class FairyEntity extends PathAwareEntity implements DynamicLightSource, Owned<LivingEntity> {
+public class FairyEntity extends PathAwareEntity implements DynamicLightSource, WeaklyOwned<LivingEntity> {
     private final EntityReference<LivingEntity> owner = new EntityReference<>();
 
     private final EntityReference<LivingEntity> assignment = new EntityReference<>();
@@ -101,13 +101,8 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
     }
 
     @Override
-    public void setMaster(LivingEntity owner) {
-        this.owner.set(owner);
-    }
-
-    @Override
-    public LivingEntity getMaster() {
-        return owner.get(((Entity)this).world);
+    public EntityReference<LivingEntity> getMasterReference() {
+        return owner;
     }
 
     @Override
