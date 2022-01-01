@@ -34,7 +34,7 @@ public class TargetSelecter {
         boolean ownerIsValid = spell.isFriendlyTogether(source) && (EquinePredicates.PLAYER_UNICORN.test(owner));
 
         return source.findAllEntitiesInRange(radius)
-            .filter(entity -> !entity.isRemoved())
+            .filter(entity -> entity.isAlive() && !entity.isRemoved())
             .filter(entity -> {
                 boolean hasShield = SpellPredicate.IS_SHIELD_LIKE.isOn(entity);
                 boolean isOwnerOrFriend = Pony.equal(entity, owner) || owner.isConnectedThroughVehicle(entity) || FriendshipBraceletItem.isComrade(source, entity);

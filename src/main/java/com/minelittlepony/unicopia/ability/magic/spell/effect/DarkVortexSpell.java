@@ -17,10 +17,12 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -89,7 +91,7 @@ public class DarkVortexSpell extends AttractiveSpell {
 
     @Override
     protected boolean isValidTarget(Caster<?> source, Entity entity) {
-        return getAttractiveForce(source, entity) > 0;
+        return EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity) && getAttractiveForce(source, entity) > 0;
     }
 
     @Override
@@ -138,13 +140,13 @@ public class DarkVortexSpell extends AttractiveSpell {
 
             double radius = getEventHorizonRadius();
 
-            if (radius > 5) {
+            if (radius > 2) {
                 Vec3d origin = getOrigin(source);
                 PosHelper.getAllInRegionMutable(source.getOrigin(), new Sphere(false, radius)).forEach(i -> {
                     if (!canAffect(source, i)) {
                         return;
                     }
-                    if (source.getOrigin().isWithinDistance(i, getEventHorizonRadius())) {
+                    if (source.getOrigin().isWithinDistance(i, getEventHorizonRadius() / 2)) {
                         source.getWorld().breakBlock(i, false);
                     } else {
                         CatapultSpell.createBlockEntity(source.getWorld(), i, e -> {
@@ -194,6 +196,7 @@ public class DarkVortexSpell extends AttractiveSpell {
         }
 
         if (distance <= getEventHorizonRadius()) {
+            target.setVelocity(target.getVelocity().multiply(distance / (2 * radius)));
 
             if (target instanceof MagicProjectileEntity) {
                 Item item = ((MagicProjectileEntity)target).getStack().getItem();
@@ -209,6 +212,9 @@ public class DarkVortexSpell extends AttractiveSpell {
             accumulatedMass += getMass(target);
             setDirty();
             target.damage(MagicalDamageSource.create("black_hole"), Integer.MAX_VALUE);
+            if (!(target instanceof PlayerEntity)) {
+                target.discard();
+            }
 
             source.subtractEnergyCost(-getMass(target) * 10);
 
