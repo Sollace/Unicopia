@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.GameRenderer;
@@ -9,6 +10,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 
@@ -16,6 +18,22 @@ public class DrawableUtil {
     public static final double TWO_PI = Math.PI * 2;
     private static final double NUM_RINGS = 300;
     private static final double INCREMENT = TWO_PI / NUM_RINGS;
+
+
+    public static void renderItemIcon(ItemStack stack, double x, double y, float scale) {
+        MatrixStack modelStack = RenderSystem.getModelViewStack();
+        modelStack.push();
+        modelStack.translate(x, y, 0);
+        if (scale != 1) {
+            modelStack.scale(scale, scale, 1);
+        }
+        RenderSystem.applyModelViewMatrix();
+
+        MinecraftClient.getInstance().getItemRenderer().renderGuiItemIcon(stack, 0, 0);
+
+        modelStack.pop();
+        RenderSystem.applyModelViewMatrix();
+    }
 
     public static void drawLine(MatrixStack matrices, int x1, int y1, int x2, int y2, int color) {
         RenderSystem.enableBlend();

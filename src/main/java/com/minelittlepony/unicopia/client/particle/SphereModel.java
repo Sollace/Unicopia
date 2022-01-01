@@ -30,21 +30,22 @@ public class SphereModel {
         }
 
         Matrix4f position = matrices.peek().getPositionMatrix();
+        Vector4f vec = new Vector4f();
 
         for (double zenith = -PI; zenith < PI; zenith += zenithIncrement) {
             for (double azimuth = -azimuthRange; azimuth < azimuthRange; azimuth += azimuthIncrement) {
-                drawQuad(position, vertexWriter, radius, zenith, azimuth, light, overlay, r, g, b, a);
+                drawQuad(position, vec, vertexWriter, radius, zenith, azimuth, light, overlay, r, g, b, a);
             }
         }
     }
 
-    private void drawQuad(Matrix4f model, VertexConsumer vertexWriter,
+    private void drawQuad(Matrix4f model, Vector4f vec, VertexConsumer vertexWriter,
             double radius, double zenith, double azimuth,
             int light, int overlay, float r, float g, float b, float a) {
-        drawVertex(model, vertexWriter, convertToCartesianCoord(radius, zenith, azimuth), light, overlay, r, g, b, a);
-        drawVertex(model, vertexWriter, convertToCartesianCoord(radius, zenith + zenithIncrement, azimuth), light, overlay, r, g, b, a);
-        drawVertex(model, vertexWriter, convertToCartesianCoord(radius, zenith + zenithIncrement, azimuth + azimuthIncrement), light, overlay, r, g, b, a);
-        drawVertex(model, vertexWriter, convertToCartesianCoord(radius, zenith, azimuth + azimuthIncrement), light, overlay, r, g, b, a);
+        drawVertex(model, vertexWriter, convertToCartesianCoord(vec, radius, zenith, azimuth), light, overlay, r, g, b, a);
+        drawVertex(model, vertexWriter, convertToCartesianCoord(vec, radius, zenith + zenithIncrement, azimuth), light, overlay, r, g, b, a);
+        drawVertex(model, vertexWriter, convertToCartesianCoord(vec, radius, zenith + zenithIncrement, azimuth + azimuthIncrement), light, overlay, r, g, b, a);
+        drawVertex(model, vertexWriter, convertToCartesianCoord(vec, radius, zenith, azimuth + azimuthIncrement), light, overlay, r, g, b, a);
     }
 
     private static void drawVertex(Matrix4f model, VertexConsumer vertexWriter, Vector4f position, int light, int overlay, float r, float g, float b, float a) {
@@ -52,11 +53,14 @@ public class SphereModel {
         vertexWriter.vertex(position.getX(), position.getY(), position.getZ(), r, g, b, a, 0, 0, overlay, light, 0, 0, 0);
     }
 
-    public static Vector4f convertToCartesianCoord(double r, double theta, double phi) {
-        double x = r * Math.sin(theta) * Math.cos(phi);
-        double y = r * Math.sin(theta) * Math.sin(phi);
-        double z = r * Math.cos(theta);
-
-        return new Vector4f((float)x, (float)y, (float)z, 1);
+    public static Vector4f convertToCartesianCoord(Vector4f output, double r, double theta, double phi) {
+        double st = Math.sin(theta);
+        output.set(
+            (float)(r * st * Math.cos(phi)),
+            (float)(r * st * Math.sin(phi)),
+            (float)(r * Math.cos(theta)),
+            1
+        );
+        return output;
     }
 }

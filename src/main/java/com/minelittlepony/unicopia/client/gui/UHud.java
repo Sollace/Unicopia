@@ -156,26 +156,24 @@ public class UHud extends DrawableHelper {
 
     public void renderSpell(CustomisedSpellType<?> spell, double x, double y) {
         if (!spell.isEmpty()) {
-            MatrixStack modelStack = RenderSystem.getModelViewStack();
-
-            modelStack.push();
-            modelStack.translate(x, y, 0);
-            modelStack.scale(EQUIPPED_GEMSTONE_SCALE, EQUIPPED_GEMSTONE_SCALE, 1);
-
-            RenderSystem.applyModelViewMatrix();
-            client.getItemRenderer().renderGuiItemIcon(spell.getDefaultStack(), 0, 0);
-
-            modelStack.loadIdentity();
-            modelStack.translate(7.5, 8.5, 0);
-
             Pony pony = Pony.of(client.player);
 
             if (spell.isOn(pony)) {
-                DrawableUtil.drawArc(modelStack, 5, 7, 0, Math.PI * 2, (spell.type().getColor() | 0x000000FF) & 0xFFFFFFAF, false);
-                DrawableUtil.drawArc(modelStack, 7, 8, 0, Math.PI * 2, 0xAAAAFFFF, false);
+                MatrixStack modelStack = new MatrixStack();
+
+                modelStack.push();
+                modelStack.translate(x + 5.5, y + 5.5, 0);
+
+                int color = spell.type().getColor() | 0x000000FF;
+                double radius = 2 + Math.sin(client.player.age / 9D) / 4;
+
+                DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TWO_PI, color & 0xFFFFFF2F, false);
+                DrawableUtil.drawArc(modelStack, radius + 3, radius + 4, 0, DrawableUtil.TWO_PI, color & 0xFFFFFFAF, false);
+
+                modelStack.pop();
             }
-            modelStack.pop();
-            RenderSystem.applyModelViewMatrix();
+
+            DrawableUtil.renderItemIcon(spell.getDefaultStack(), x, y, EQUIPPED_GEMSTONE_SCALE);
         }
     }
 
