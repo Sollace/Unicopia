@@ -18,8 +18,10 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
@@ -72,6 +74,11 @@ public class AmuletItem extends WearableItem {
         if (isChargable()) {
             list.add(new TranslatableText("item.unicopia.amulet.energy", (int)Math.floor(getEnergy(stack)), maxEnergy));
         }
+    }
+
+    @Override
+    public SoundEvent getEquipSound() {
+        return ArmorMaterials.IRON.getEquipSound();
     }
 
     @Override
