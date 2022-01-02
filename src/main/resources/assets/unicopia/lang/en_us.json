@@ -484,12 +484,15 @@
   "advancements.unicopia.brew_cider.title": "Applejack's Finest",
   "advancements.unicopia.brew_cider.description": "Brew some cider",
 
-  "advancements.unicopia.night_route.title": "I Am The Night",
-  "advancements.unicopia.night_route.description": "Walth the path of night",
+  "advancements.unicopia.night_route.title": "Children of The Night",
+  "advancements.unicopia.night_route.description": "Walk the path of the night",
   "advancements.unicopia.screech_twenty_mobs.title": "Terror From The Skies",
   "advancements.unicopia.screech_twenty_mobs.description": "Rain down terror on at least 20 mobs at once",
   "advancements.unicopia.screech_self.title": "Jeepers!",
   "advancements.unicopia.screech_self.description": "Be so terrifying that you even scared your self a little",
+
+  "advancements.unicopia.sky_route.title": "Path of the Pegasus",
+  "advancements.unicopia.sky_route.description": "Join the Clousdale Pegasi",
 
   "advancements.unicopia.molting_season_1.title": "Molting Season",
   "advancements.unicopia.molting_season_1.description": "Drop a feather whilst flying",
