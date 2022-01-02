@@ -3,12 +3,14 @@ package com.minelittlepony.unicopia.client.render;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.Arm;
 
 public class AccessoryFeatureRenderer<
         T extends LivingEntity,
@@ -30,9 +32,11 @@ public class AccessoryFeatureRenderer<
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
-        features.forEach(feature -> {
-            feature.render(matrices, vertexConsumers, light, entity, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
-        });
+        features.forEach(feature -> feature.render(matrices, vertexConsumers, light, entity, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch));
+    }
+
+    public void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, ModelPart arm, Arm side) {
+        features.forEach(feature -> feature.renderArm(matrices, vertexConsumers, light, entity, arm, side));
     }
 
     public interface FeatureFactory<T extends LivingEntity> {
@@ -41,5 +45,15 @@ public class AccessoryFeatureRenderer<
 
     public interface Feature<T extends LivingEntity> {
         void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch);
+
+        default void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, ModelPart arm, Arm side) {
+
+        }
+    }
+
+    public interface FeatureRoot<
+            T extends LivingEntity,
+            M extends BipedEntityModel<T>> {
+        AccessoryFeatureRenderer<T, M> getAccessories();
     }
 }

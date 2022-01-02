@@ -16,11 +16,20 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 
 @Mixin(ArmorFeatureRenderer.class)
-abstract class MixinArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
+abstract class MixinArmorFeatureRenderer<
+        T extends LivingEntity,
+        M extends BipedEntityModel<T>,
+        A extends BipedEntityModel<T>>
+            extends FeatureRenderer<T, M> implements AccessoryFeatureRenderer.FeatureRoot<T, M> {
 
     private AccessoryFeatureRenderer<T, M> accessories;
 
     MixinArmorFeatureRenderer() { super(null); }
+
+    @Override
+    public AccessoryFeatureRenderer<T, M> getAccessories() {
+        return accessories;
+    }
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onInit(FeatureRendererContext<T, M> context, A inner, A outer, CallbackInfo info) {
@@ -29,6 +38,6 @@ abstract class MixinArmorFeatureRenderer<T extends LivingEntity, M extends Biped
 
     @Inject(method = "render", at = @At("RETURN"))
     private void onRender(MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, T entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch, CallbackInfo info) {
-        accessories.render(stack, renderContext, lightUv, entity, limbDistance, limbAngle, tickDelta, age, headYaw, headPitch);
+        getAccessories().render(stack, renderContext, lightUv, entity, limbDistance, limbAngle, tickDelta, age, headYaw, headPitch);
     }
 }

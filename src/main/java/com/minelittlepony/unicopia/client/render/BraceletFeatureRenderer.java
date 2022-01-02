@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.common.util.Color;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.GlowableItem;
 
@@ -52,8 +53,6 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
         ItemStack item = entity.getEquippedStack(EquipmentSlot.CHEST);
 
         if (item.getItem() instanceof FriendshipBraceletItem) {
-
-
             int j = ((DyeableItem)item.getItem()).getColor(item);
 
             boolean alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getModel().startsWith("slim");
@@ -73,6 +72,34 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
 
             model.setAngles(context.getModel());
             model.setVisible(entity.getMainArm());
+            model.render(stack, consumer, glowing ? 0x0F00F0 : lightUv, OverlayTexture.DEFAULT_UV, Color.r(j), Color.g(j), Color.b(j), 1);
+        }
+    }
+
+    @Override
+    public void renderArm(MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, E entity, ModelPart armModel, Arm side) {
+        ItemStack item = entity.getEquippedStack(EquipmentSlot.CHEST);
+
+        if (item.getItem() instanceof FriendshipBraceletItem) {
+            int j = ((DyeableItem)item.getItem()).getColor(item);
+
+            boolean alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getModel().startsWith("slim");
+
+            BraceletModel model = alex ? alexModel : steveModel;
+
+            boolean glowing = ((GlowableItem)item.getItem()).isGlowing(item);
+
+
+            if (!MineLPConnector.getPlayerPonyRace().isDefault()) {
+                stack.translate(side == Arm.LEFT ? 0.06 : -0.06, 0.3, 0);
+            } else {
+                stack.translate(0, -0.1, 0);
+            }
+
+            VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(TEXTURE), false, false);
+
+            model.setAngles(context.getModel());
+            model.setVisible(side);
             model.render(stack, consumer, glowing ? 0x0F00F0 : lightUv, OverlayTexture.DEFAULT_UV, Color.r(j), Color.g(j), Color.b(j), 1);
         }
     }

@@ -43,6 +43,7 @@
     "client.MixinKeyboardInput",
     "client.MixinLightmapTextureManager",
     "client.MixinMouse",
+    "client.MixinPlayerEntityRenderer",
     "client.MixinTooltipComponent",
     "client.MixinWorldRenderer"
   ],
