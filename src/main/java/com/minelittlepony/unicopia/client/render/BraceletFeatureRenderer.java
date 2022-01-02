@@ -98,7 +98,7 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
             root.addChild(EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create().uv(0, alex ? 6 : 0).cuboid(-3, 7, -2, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
             root.addChild(EntityModelPartNames.LEFT_ARM,  ModelPartBuilder.create().mirrored().uv(0, alex ? 6 : 0).cuboid(-1, 7, -2, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
 
-            return TexturedModelData.of(data, 64, 64);
+            return TexturedModelData.of(data, 64, 32);
         }
 
         public void setAngles(BipedEntityModel<?> biped) {
