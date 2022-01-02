@@ -1,12 +1,10 @@
 package com.minelittlepony.unicopia.ability;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -68,6 +66,10 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
     public Stat getStat(AbilitySlot slot) {
         return stats.computeIfAbsent(slot, Stat::new);
+    }
+
+    public boolean isFilled(AbilitySlot slot) {
+        return getStat(slot).getMaxPage() > 0;
     }
 
     public long getMaxPage() {
@@ -221,25 +223,16 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         }
 
         public Optional<Ability<?>> getAbility(long page) {
-            Race race = player.getSpecies();
-            List<Ability<?>> found = Abilities.BY_SLOT.computeIfAbsent(slot, c -> Collections.emptySet())
-                    .stream()
-                    .filter(a -> a.canUse(race))
-                    .collect(Collectors.toList());
+            List<Ability<?>> found = Abilities.BY_SLOT_AND_RACE.apply(slot, player.getSpecies());
             if (found.isEmpty()) {
                 return Optional.empty();
             }
-            page = Math.min(found.size() - 1, page);
 
-            return Optional.ofNullable(found.get((int)page));
+            return Optional.ofNullable(found.get((int)Math.min(found.size() - 1, page)));
         }
 
         public long getMaxPage() {
-            Race race = player.getSpecies();
-            return Abilities.BY_SLOT.computeIfAbsent(slot, c -> Collections.emptySet())
-                    .stream()
-                    .filter(a -> a.canUse(race))
-                    .count();
+            return Abilities.BY_SLOT_AND_RACE.apply(slot, player.getSpecies()).size();
         }
 
         protected synchronized Optional<Ability<?>> setActiveAbility(@Nullable Ability<?> power) {

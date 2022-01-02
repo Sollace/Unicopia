@@ -75,18 +75,27 @@ class Slot {
     }
 
     void renderBackground(MatrixStack matrices, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
+
+        if (aSlot != bSlot) {
+            bSwap |= !abilities.isFilled(aSlot);
+            bSwap &= abilities.isFilled(bSlot);
+        }
+
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.enableBlend();
         matrices.push();
         matrices.translate(getX(), getY(), 0);
 
-        float cooldown = abilities.getStat(bSwap ? bSlot : aSlot).getFillProgress();
-
         // background
         UHud.drawTexture(matrices, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
 
+        AbilityDispatcher.Stat stat = abilities.getStat(bSwap ? bSlot : aSlot);
+
+
         int sz = iconSize - slotPadding;
-        uHud.renderAbilityIcon(matrices, abilities.getStat(bSwap ? bSlot : aSlot), slotPadding, slotPadding, sz, sz, sz, sz);
+        uHud.renderAbilityIcon(matrices, stat, slotPadding, slotPadding, sz, sz, sz, sz);
+
+        float cooldown = stat.getFillProgress();
 
         if (cooldown > 0 && cooldown <= 1) {
             float lerpCooldown = MathHelper.lerp(tickDelta, cooldown, lastCooldown);

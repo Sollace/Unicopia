@@ -2,16 +2,27 @@ package com.minelittlepony.unicopia.ability;
 
 import java.util.EnumMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
+
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public interface Abilities {
-    Map<AbilitySlot, Set<Ability<?>>> BY_SLOT = new EnumMap<>(AbilitySlot.class);
     Registry<Ability<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "abilities"));
+    Map<AbilitySlot, Set<Ability<?>>> BY_SLOT = new EnumMap<>(AbilitySlot.class);
+    BiFunction<AbilitySlot, Race, List<Ability<?>>> BY_SLOT_AND_RACE = Util.memoize((slot, race) -> {
+        return BY_SLOT.computeIfAbsent(slot, s -> new LinkedHashSet<>())
+                .stream()
+                .filter(a -> a.canUse(race))
+                .toList();
+    });
 
     // unicorn / alicorn
     Ability<?> CAST = register(new UnicornCastingAbility(), "cast", AbilitySlot.PRIMARY);
@@ -45,4 +56,5 @@ public interface Abilities {
         BY_SLOT.computeIfAbsent(slot, s -> new LinkedHashSet<>()).add(power);
         return Registry.register(REGISTRY, id, power);
     }
+
 }
