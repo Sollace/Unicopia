@@ -32,7 +32,7 @@ import net.minecraft.util.Identifier;
 
 public class BraceletFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
 
-    private static final Identifier TEXTURE = new Identifier("unicopia", "textures/models/armor/bracelet.png");
+    public static final Identifier TEXTURE = new Identifier("unicopia", "textures/models/armor/bracelet.png");
 
     private final BraceletModel steveModel;
     private final BraceletModel alexModel;
@@ -42,8 +42,8 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
     public BraceletFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
         this.context = context;
         Dilation dilation = new Dilation(0.3F);
-        steveModel = new BraceletModel(BraceletModel.getData(dilation, false).createModel(), false);
-        alexModel = new BraceletModel(BraceletModel.getData(dilation, true).createModel(), true);
+        steveModel = new BraceletModel(BraceletModel.getData(dilation, false, 0, 0, 0).createModel(), false);
+        alexModel = new BraceletModel(BraceletModel.getData(dilation, true, 0, 0, 0).createModel(), true);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
         }
     }
 
-    static class BraceletModel extends Model {
+    public static class BraceletModel extends Model {
 
         private final ModelPart leftArm;
         private final ModelPart rightArm;
@@ -91,12 +91,12 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
             this.rightArm = tree.getChild(EntityModelPartNames.RIGHT_ARM);
         }
 
-        public static TexturedModelData getData(Dilation dilation, boolean alex) {
+        public static TexturedModelData getData(Dilation dilation, boolean alex, int x, int y, int z) {
             ModelData data = new ModelData();
             ModelPartData root = data.getRoot();
 
-            root.addChild(EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create().uv(0, alex ? 6 : 0).cuboid(-3, 7, -2, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
-            root.addChild(EntityModelPartNames.LEFT_ARM,  ModelPartBuilder.create().mirrored().uv(0, alex ? 6 : 0).cuboid(-1, 7, -2, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
+            root.addChild(EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create().uv(0, alex ? 6 : 0).cuboid(-3 + x, 7 + y, -2 + z, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
+            root.addChild(EntityModelPartNames.LEFT_ARM,  ModelPartBuilder.create().mirrored().uv(0, alex ? 6 : 0).cuboid(-1 - x, 7 + y, -2 + z, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
 
             return TexturedModelData.of(data, 64, 32);
         }

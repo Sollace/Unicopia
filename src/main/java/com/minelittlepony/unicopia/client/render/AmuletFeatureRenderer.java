@@ -55,7 +55,7 @@ public class AmuletFeatureRenderer<E extends LivingEntity> implements AccessoryF
         }
     }
 
-    static class AmuletModel extends Model {
+    public static class AmuletModel extends Model {
 
         private final ModelPart amulet;
 

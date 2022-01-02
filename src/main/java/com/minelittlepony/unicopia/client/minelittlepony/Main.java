@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.client.minelittlepony;
 import com.minelittlepony.api.model.IModel;
 import com.minelittlepony.api.model.ModelAttributes;
 import com.minelittlepony.api.model.fabric.PonyModelPrepareCallback;
+import com.minelittlepony.api.model.gear.IGear;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -19,6 +20,8 @@ public class Main implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         PonyModelPrepareCallback.EVENT.register(this::onPonyModelPrepared);
+        IGear.register(BangleGear::new);
+        IGear.register(AmuletGear::new);
     }
 
     @SuppressWarnings("unchecked")
