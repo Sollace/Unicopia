@@ -18,7 +18,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class RayTraceHelper {
     public static <T extends Entity> Optional<T> findEntity(Entity e, double distance, float tickDelta, Predicate<Entity> predicate) {
-        return doTrace(e, distance, tickDelta, EntityPredicates.CAN_COLLIDE.and(predicate)).getEntity();
+        return doTrace(e, distance, tickDelta, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(predicate)).getEntity();
     }
 
     /**
