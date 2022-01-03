@@ -128,6 +128,11 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     @Override
+    public String toString() {
+        return super.toString() + "[" + traits.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(",")) + "]";
+    }
+
+    @Override
     public int hashCode() {
         return traits.hashCode();
     }

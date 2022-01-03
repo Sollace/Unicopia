@@ -7,7 +7,7 @@ import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
-import com.minelittlepony.unicopia.container.SpellbookScreenHandler.OutputSlot;
+import com.minelittlepony.unicopia.container.SpellbookScreenHandler.InputSlot;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler.SpellbookSlot;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.URecipes;
@@ -120,7 +120,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
             if (slot.isEnabled() && slot instanceof SpellbookSlot) {
                 drawTexture(matrices, slot.x - 8, slot.y - 8, 0, 0, 32, 32, 32, 32);
 
-                if (slot instanceof OutputSlot) {
+                if (slot instanceof InputSlot) {
                     RenderSystem.setShaderColor(1, 1, 1, 0.3F);
                     RenderSystem.setShaderTexture(0, new Identifier("unicopia", "textures/item/gemstone.png"));
                     drawTexture(matrices, slot.x, slot.y, 0, 0, 16, 16, 16, 16);

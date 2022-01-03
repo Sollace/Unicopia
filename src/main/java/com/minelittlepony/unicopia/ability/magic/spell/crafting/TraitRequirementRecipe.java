@@ -42,11 +42,7 @@ public class TraitRequirementRecipe implements SpellbookRecipe {
 
     @Override
     public boolean matches(SpellbookInventory inventory, World world) {
-        return requirement.test(inventory.getItemToModify())
-            && requiredTraits.test(SpellTraits.union(
-                    inventory.getTraits(),
-                    SpellTraits.of(output)
-            ));
+        return requirement.test(inventory.getItemToModify()) && requiredTraits.test(inventory.getTraits());
     }
 
     @Override

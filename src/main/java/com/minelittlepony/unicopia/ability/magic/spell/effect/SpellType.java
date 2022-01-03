@@ -200,7 +200,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     @SuppressWarnings("unchecked")
     public static <T extends Spell> SpellType<T> getKey(@Nullable Identifier id) {
-        return (SpellType<T>)REGISTRY.get(id);
+        return (SpellType<T>)REGISTRY.getOrEmpty(id).orElse(EMPTY_KEY);
     }
 
     public static Set<SpellType<?>> byAffinity(Affinity affinity) {
