@@ -1,6 +1,11 @@
 package com.minelittlepony.unicopia.client.particle;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vector4f;
@@ -12,53 +17,46 @@ public class SphereModel {
     public static final SphereModel SPHERE = new SphereModel(40, 40, TWO_PI);
     public static final SphereModel DISK = new SphereModel(40, 2, PI);
 
-    private final double azimuthRange;
-
-    private final double zenithIncrement;
-    private final double azimuthIncrement;
+    private final List<Vector4f> vertices = new ArrayList<>();
+    private final Vector4f drawVert = new Vector4f();
 
     public SphereModel(double rings, double sectors, double azimuthRange) {
-        this.azimuthRange = azimuthRange;
-
-        zenithIncrement = PI / rings;
-        azimuthIncrement = TWO_PI / sectors;
+        double zenithIncrement = PI / rings;
+        double azimuthIncrement = TWO_PI / sectors;
+        compileVertices(azimuthRange, zenithIncrement, azimuthIncrement, vertices::add);
     }
 
     public final void render(MatrixStack matrices, VertexConsumer vertexWriter, int light, int overlay, float radius, float r, float g, float b, float a) {
-        if (radius <= 0) {
+        radius = Math.abs(radius);
+        if (radius < 0.001F) {
             return;
         }
 
-        Matrix4f position = matrices.peek().getPositionMatrix();
-        Vector4f vec = new Vector4f();
+        Matrix4f model = matrices.peek().getPositionMatrix();
+        for (Vector4f vertex : vertices) {
+            drawVert.set(vertex.getX() * radius, vertex.getY() * radius, vertex.getZ() * radius, vertex.getW());
+            drawVert.transform(model);
+            vertexWriter.vertex(drawVert.getX(), drawVert.getY(), drawVert.getZ(), r, g, b, a, 0, 0, overlay, light, 0, 0, 0);
+        }
+    }
 
+    private static void compileVertices(double azimuthRange, double zenithIncrement, double azimuthIncrement, Consumer<Vector4f> collector) {
         for (double zenith = -PI; zenith < PI; zenith += zenithIncrement) {
             for (double azimuth = -azimuthRange; azimuth < azimuthRange; azimuth += azimuthIncrement) {
-                drawQuad(position, vec, vertexWriter, radius, zenith, azimuth, light, overlay, r, g, b, a);
+                collector.accept(convertToCartesianCoord(new Vector4f(), 1, zenith, azimuth));
+                collector.accept(convertToCartesianCoord(new Vector4f(), 1, zenith + zenithIncrement, azimuth));
+                collector.accept(convertToCartesianCoord(new Vector4f(), 1, zenith + zenithIncrement, azimuth + azimuthIncrement));
+                collector.accept(convertToCartesianCoord(new Vector4f(), 1, zenith, azimuth + azimuthIncrement));
             }
         }
     }
 
-    private void drawQuad(Matrix4f model, Vector4f vec, VertexConsumer vertexWriter,
-            double radius, double zenith, double azimuth,
-            int light, int overlay, float r, float g, float b, float a) {
-        drawVertex(model, vertexWriter, convertToCartesianCoord(vec, radius, zenith, azimuth), light, overlay, r, g, b, a);
-        drawVertex(model, vertexWriter, convertToCartesianCoord(vec, radius, zenith + zenithIncrement, azimuth), light, overlay, r, g, b, a);
-        drawVertex(model, vertexWriter, convertToCartesianCoord(vec, radius, zenith + zenithIncrement, azimuth + azimuthIncrement), light, overlay, r, g, b, a);
-        drawVertex(model, vertexWriter, convertToCartesianCoord(vec, radius, zenith, azimuth + azimuthIncrement), light, overlay, r, g, b, a);
-    }
-
-    private static void drawVertex(Matrix4f model, VertexConsumer vertexWriter, Vector4f position, int light, int overlay, float r, float g, float b, float a) {
-        position.transform(model);
-        vertexWriter.vertex(position.getX(), position.getY(), position.getZ(), r, g, b, a, 0, 0, overlay, light, 0, 0, 0);
-    }
-
     public static Vector4f convertToCartesianCoord(Vector4f output, double r, double theta, double phi) {
-        double st = Math.sin(theta);
+        float st = MathHelper.sin((float)theta);
         output.set(
-            (float)(r * st * Math.cos(phi)),
-            (float)(r * st * Math.sin(phi)),
-            (float)(r * Math.cos(theta)),
+            (float)(r * st * MathHelper.cos((float)phi)),
+            (float)(r * st * MathHelper.sin((float)phi)),
+            (float)(r * MathHelper.cos((float)theta)),
             1
         );
         return output;

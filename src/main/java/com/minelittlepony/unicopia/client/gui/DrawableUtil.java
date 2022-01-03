@@ -178,7 +178,7 @@ public class DrawableUtil {
 
     private static void cylendricalVertex(BufferBuilder bufferBuilder, Matrix4f model, double radius, double angle, float r, float g, float b, float k) {
         bufferBuilder.vertex(model,
-                (float)(radius * Math.sin(angle)),
-                (float)(radius * Math.cos(angle)), 0).color(r, g, b, k).normal(2, 2, 2).next();
+                (float)(radius * MathHelper.sin((float)angle)),
+                (float)(radius * MathHelper.cos((float)angle)), 0).color(r, g, b, k).normal(2, 2, 2).next();
     }
 }
