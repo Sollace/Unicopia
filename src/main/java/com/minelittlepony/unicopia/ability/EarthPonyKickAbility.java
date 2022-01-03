@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.data.tree.TreeType;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
@@ -88,6 +89,8 @@ public class EarthPonyKickAbility implements Ability<Pos> {
             iplayer.subtractEnergyCost(3);
             return;
         }
+
+        iplayer.setAnimation(Animation.KICK, 30);
 
         BlockPos pos = data.pos();
 

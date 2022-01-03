@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UTags;
@@ -30,6 +31,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.toxin.Toxin;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgOtherPlayerCapabilities;
+import com.minelittlepony.unicopia.network.MsgPlayerAnimationChange;
 import com.minelittlepony.unicopia.network.MsgRequestSpeciesChange;
 import com.minelittlepony.unicopia.network.datasync.Transmittable;
 import com.minelittlepony.unicopia.network.datasync.EffectSync.UpdateCallback;
@@ -58,6 +60,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
@@ -106,6 +109,10 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     private int ticksInSun;
     private boolean hasShades;
 
+    private Animation animation = Animation.NONE;
+    private int animationMaxDuration;
+    private int animationDuration;
+
     public Pony(PlayerEntity player) {
         super(player, EFFECT);
         this.mana = new ManaContainer(this);
@@ -119,6 +126,33 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         builder.add(PlayerAttributes.EXTENDED_REACH_DISTANCE);
         builder.add(PlayerAttributes.EXTRA_MINING_SPEED);
         builder.add(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+    }
+
+    public void setAnimation(Animation animation, int duration) {
+        if (animation != this.animation && duration != animationDuration) {
+            this.animation = animation;
+            this.animationDuration = animation == Animation.NONE ? 0 : Math.max(0, duration);
+            this.animationMaxDuration = animationDuration;
+
+            if (!isClient()) {
+                Channel.SERVER_PLAYER_ANIMATION_CHANGE.send(getWorld(), new MsgPlayerAnimationChange(this, animation, animationDuration));
+            }
+
+            if (animation == Animation.WOLOLO) {
+                playSound(SoundEvents.ENTITY_EVOKER_PREPARE_WOLOLO, 0.9F, 1);
+            }
+        }
+    }
+
+    public Animation getAnimation() {
+        return animation;
+    }
+
+    public float getAnimationProgress(float delta) {
+        if (animation == Animation.NONE) {
+            return 0;
+        }
+        return 1 - ((animationDuration + delta) / animationMaxDuration);
     }
 
     @Override
@@ -288,6 +322,11 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     @Override
     public void tick() {
+        if (animationDuration >= 0) {
+            if (--animationDuration <= 0) {
+                setAnimation(Animation.NONE, 0);
+            }
+        }
 
         if (isHanging()) {
             if (ticksHanging++ > 40) {

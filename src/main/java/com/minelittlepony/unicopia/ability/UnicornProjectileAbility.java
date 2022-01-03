@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
@@ -69,6 +70,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
             Spell spell = thrown.getValue().create();
 
             spell.toThrowable().throwProjectile(player).ifPresent(projectile -> {
+                player.setAnimation(Animation.ARMS_FORWARD, 5);
                 if (spell instanceof HomingSpell) {
                     RayTraceHelper.doTrace(player.getMaster(), 600, 1, EntityPredicates.CAN_COLLIDE).getEntity().filter(((HomingSpell)spell)::setTarget).ifPresent(target -> {
                         projectile.setHomingTarget(target);

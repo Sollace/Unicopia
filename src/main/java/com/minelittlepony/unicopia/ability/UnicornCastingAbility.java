@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
@@ -106,11 +107,14 @@ public class UnicornCastingAbility implements Ability<Hit> {
                         player.spawnParticles(ParticleTypes.LARGE_SMOKE, 6);
                         player.playSound(SoundEvents.ENTITY_ITEM_BREAK, 1, 0.5F);
                     } else {
+                        player.setAnimation(Animation.ARMS_UP, 5);
                         if (s instanceof HomingSpell) {
                             RayTraceHelper.doTrace(player.getMaster(), 600, 1, EntityPredicates.CAN_COLLIDE).getEntity().ifPresent(((HomingSpell)s)::setTarget);
                         }
                         player.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 0.05F, 2.2F);
                     }
+                } else {
+                    player.setAnimation(Animation.WOLOLO, 20);
                 }
             }
         }

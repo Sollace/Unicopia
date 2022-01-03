@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
@@ -43,6 +44,7 @@ public class UnicornDispellAbility implements Ability<Pos> {
     public boolean onQuickAction(Pony player, ActivationType type) {
 
         if (type.getTapCount() > 1) {
+            player.setAnimation(Animation.WOLOLO, 10);
             if (player.getSpellSlot().clear()) {
                 player.getMaster().sendMessage(new TranslatableText("gui.unicopia.action.spells_cleared"), true);
             } else {
@@ -73,6 +75,7 @@ public class UnicornDispellAbility implements Ability<Pos> {
 
     @Override
     public void apply(Pony player, Pos data) {
+        player.setAnimation(Animation.WOLOLO, 30);
         Caster.stream(VecHelper.findInRange(player.getEntity(), player.getWorld(), data.vec(), 2, EquinePredicates.IS_PLACED_SPELL).stream()).forEach(target -> {
             target.getSpellSlot().clear();
         });
