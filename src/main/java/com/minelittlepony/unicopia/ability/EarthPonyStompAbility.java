@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.BlockDestructionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
@@ -89,6 +90,8 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     @Override
     public void apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.getMaster();
+
+        iplayer.setAnimation(Animation.STOMP, 10);
 
         thrustDownwards(iplayer);
 
