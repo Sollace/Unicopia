@@ -10,12 +10,13 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.data.tree.TreeType;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
-import com.minelittlepony.unicopia.util.shape.Shape;
-import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Block;
@@ -26,8 +27,6 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.BlockStateParticleEffect;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -55,13 +54,32 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
     @Override
     public double getCostEstimate(Pony player) {
-        return 3;
+        double distance = MineLPConnector.getPlayerPonyRace(player.getMaster()).isDefault() ? 6 : -6;
+
+        return RayTraceHelper.doTrace(player.getMaster(), distance, 1)
+                .getBlockPos()
+                .filter(pos -> TreeType.at(pos, player.getWorld()) != TreeType.NONE)
+                .isPresent() ? 3 : 1;
     }
 
     @Nullable
     @Override
     public Pos tryActivate(Pony player) {
-        return RayTraceHelper.doTrace(player.getMaster(), 6, 1).getBlockPos().map(Pos::new).orElse(null);
+        double distance = MineLPConnector.getPlayerPonyRace(player.getMaster()).isDefault() ? 6 : -6;
+
+        return RayTraceHelper.doTrace(player.getMaster(), distance, 1)
+                .getBlockPos()
+                .filter(pos -> TreeType.at(pos, player.getWorld()) != TreeType.NONE)
+                .map(Pos::new)
+                .orElseGet(() -> getDefaultKickLocation(player));
+    }
+
+    private Pos getDefaultKickLocation(Pony player) {
+        Vec3d kickVector = player.getMaster().getRotationVector().multiply(1, 0, 1);
+        if (!MineLPConnector.getPlayerPonyRace(player.getMaster()).isDefault()) {
+            kickVector = kickVector.rotateY((float)Math.PI);
+        }
+        return new Pos(new BlockPos(player.getOriginVector().add(kickVector)));
     }
 
     @Override
@@ -69,9 +87,9 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         BlockPos pos = data.pos();
         TreeType tree = TreeType.at(pos, player.getWorld());
 
-        return tree != TreeType.NONE && tree.findBase(player.getWorld(), pos).map(base -> {
-            return tree.countBlocks(player.getWorld(), pos) > 0;
-        }).orElse(false);
+        return tree == TreeType.NONE || tree.findBase(player.getWorld(), pos)
+                .map(base -> tree.countBlocks(player.getWorld(), pos) > 0)
+                .orElse(false);
     }
 
     @Override
@@ -81,24 +99,27 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
     @Override
     public void apply(Pony iplayer, Pos data) {
+        BlockPos pos = data.pos();
+        TreeType tree = TreeType.at(pos, iplayer.getWorld());
+
+        iplayer.setAnimation(Animation.KICK);
+        iplayer.subtractEnergyCost(tree == TreeType.NONE ? 1 : 3);
+
+        if (tree == TreeType.NONE) {
+            return;
+        } else {
+            ParticleUtils.spawnParticle(iplayer.getWorld(), UParticles.GROUND_POUND, data.vec(), Vec3d.ZERO);
+        }
+
         PlayerEntity player = iplayer.getMaster();
 
         boolean harmed = player.getHealth() < player.getMaxHealth();
-
-        if (harmed && player.world.random.nextInt(30) == 0) {
-            iplayer.subtractEnergyCost(3);
-            return;
-        }
-
-        iplayer.setAnimation(Animation.KICK, 30);
-
-        BlockPos pos = data.pos();
 
         BlockDestructionManager destr = ((BlockDestructionManager.Source)player.world).getDestructionManager();
 
         if (destr.getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
             if (!harmed || player.world.random.nextInt(30) == 0) {
-                TreeType.at(pos, player.world).traverse(player.world, pos, (w, state, p, recurseLevel) -> {
+                tree.traverse(player.world, pos, (w, state, p, recurseLevel) -> {
                     if (recurseLevel < 5) {
                         w.breakBlock(p, true);
                     } else {
@@ -113,7 +134,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
             int cost = dropApples(player, pos);
 
             if (cost > 0) {
-                iplayer.subtractEnergyCost(cost * 3);
+                iplayer.subtractEnergyCost(cost / 7F);
             }
         }
     }
@@ -125,32 +146,6 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
     @Override
     public void postApply(Pony player, AbilitySlot slot) {
-        int timeDiff = getCooldownTime(player) - player.getAbilities().getStat(slot).getRemainingCooldown();
-
-        if (player.getMaster().getEntityWorld().getTime() % 1 == 0 || timeDiff == 0) {
-            spawnParticleRing(player.getMaster(), timeDiff, 1);
-        }
-    }
-
-    private void spawnParticleRing(PlayerEntity player, int timeDiff, double yVel) {
-        int animationTicks = timeDiff / 10;
-        if (animationTicks < 6) {
-            Shape shape = new Sphere(true, animationTicks, 1, 0, 1);
-
-            double y = 0.5 + (Math.sin(animationTicks) * 1.5);
-
-            yVel *= y * 5;
-
-            for (int i = 0; i < shape.getVolumeOfSpawnableSpace(); i++) {
-                Vec3d point = shape.computePoint(player.getEntityWorld().random).add(player.getPos());
-                player.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.DIRT.getDefaultState()),
-                        point.x,
-                        point.y + y,
-                        point.z,
-                        0, yVel, 0
-                );
-            }
-        }
     }
 
     private int dropApples(PlayerEntity player, BlockPos pos) {
