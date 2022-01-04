@@ -178,8 +178,8 @@ public class PlayerPoser {
         WOLOLO(SoundEvents.ENTITY_EVOKER_PREPARE_WOLOLO, 40),
         ARMS_FORWARD(5),
         ARMS_UP(5),
-        WAVE_ONE(20),
-        WAVE_TWO(20),
+        WAVE_ONE(SoundEvents.ENTITY_PARROT_AMBIENT, 20),
+        WAVE_TWO(SoundEvents.ENTITY_PARROT_AMBIENT, 20),
         KICK(SoundEvents.ENTITY_PHANTOM_FLAP, 5),
         STOMP(5),
         WIGGLE_NOSE(6);
