@@ -5,14 +5,19 @@ import com.minelittlepony.unicopia.Race;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.player.PlayerEntity;
 
 public final class MineLPConnector {
     public static Race getPlayerPonyRace() {
-        if (!FabricLoader.getInstance().isModLoaded("minelp") || MinecraftClient.getInstance().player == null) {
+        return getPlayerPonyRace(MinecraftClient.getInstance().player);
+    }
+
+    public static Race getPlayerPonyRace(PlayerEntity player) {
+        if (!FabricLoader.getInstance().isModLoaded("minelp") || player == null) {
             return Race.HUMAN;
         }
 
-        switch (MineLittlePony.getInstance().getManager().getPony(MinecraftClient.getInstance().player).getRace(false)) {
+        switch (MineLittlePony.getInstance().getManager().getPony(player).getRace(false)) {
             case ALICORN:
                 return Race.ALICORN;
             case CHANGELING:

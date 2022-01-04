@@ -15,6 +15,7 @@ public class Commands {
             GravityCommand.register(dispatcher);
             DisguiseCommand.register(dispatcher);
             TraitCommand.register(dispatcher);
+            EmoteCommand.register(dispatcher);
         });
         Object game = FabricLoader.getInstance().getGameInstance();
         if (game instanceof MinecraftServer) {

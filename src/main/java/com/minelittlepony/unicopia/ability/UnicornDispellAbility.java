@@ -75,7 +75,7 @@ public class UnicornDispellAbility implements Ability<Pos> {
 
     @Override
     public void apply(Pony player, Pos data) {
-        player.setAnimation(Animation.WOLOLO, 30);
+        player.setAnimation(Animation.WOLOLO);
         Caster.stream(VecHelper.findInRange(player.getEntity(), player.getWorld(), data.vec(), 2, EquinePredicates.IS_PLACED_SPELL).stream()).forEach(target -> {
             target.getSpellSlot().clear();
         });

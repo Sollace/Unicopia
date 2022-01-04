@@ -70,7 +70,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
             Spell spell = thrown.getValue().create();
 
             spell.toThrowable().throwProjectile(player).ifPresent(projectile -> {
-                player.setAnimation(Animation.ARMS_FORWARD, 5);
+                player.setAnimation(Animation.ARMS_FORWARD);
                 if (spell instanceof HomingSpell) {
                     RayTraceHelper.doTrace(player.getMaster(), 600, 1, EntityPredicates.CAN_COLLIDE).getEntity().filter(((HomingSpell)spell)::setTarget).ifPresent(target -> {
                         projectile.setHomingTarget(target);

@@ -60,7 +60,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
@@ -128,6 +127,10 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         builder.add(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
     }
 
+    public void setAnimation(Animation animation) {
+        setAnimation(animation, animation.getDuration());
+    }
+
     public void setAnimation(Animation animation, int duration) {
         if (animation != this.animation && duration != animationDuration) {
             this.animation = animation;
@@ -138,9 +141,9 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
                 Channel.SERVER_PLAYER_ANIMATION_CHANGE.send(getWorld(), new MsgPlayerAnimationChange(this, animation, animationDuration));
             }
 
-            if (animation == Animation.WOLOLO) {
-                playSound(SoundEvents.ENTITY_EVOKER_PREPARE_WOLOLO, 0.9F, 1);
-            }
+            animation.getSound().ifPresent(sound -> {
+                playSound(sound, 0.9F, 1);
+            });
         }
     }
 
@@ -152,7 +155,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         if (animation == Animation.NONE) {
             return 0;
         }
-        return 1 - ((animationDuration + delta) / animationMaxDuration);
+        return 1 - (((float)animationDuration) / animationMaxDuration);
     }
 
     @Override
@@ -324,7 +327,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     public void tick() {
         if (animationDuration >= 0) {
             if (--animationDuration <= 0) {
-                setAnimation(Animation.NONE, 0);
+                setAnimation(Animation.NONE);
             }
         }
 

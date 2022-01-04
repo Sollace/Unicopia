@@ -37,13 +37,13 @@ abstract class MixinLivingEntityRenderer<T extends LivingEntity, M extends Entit
     )
     private void onRender(
             T entity,
-            float f, float g,
-            MatrixStack matrixStack,
-            VertexConsumerProvider vertexConsumerProvider,
-            int i,
+            float yaw, float tickDelta,
+            MatrixStack matrices,
+            VertexConsumerProvider vertices,
+            int light,
             CallbackInfo into) {
         if (entity instanceof PlayerEntity player) {
-            PlayerPoser.INSTANCE.applyPosing(player, (BipedEntityModel<?>)getModel());
+            PlayerPoser.INSTANCE.applyPosing(matrices, player, (BipedEntityModel<?>)getModel());
         }
     }
 }

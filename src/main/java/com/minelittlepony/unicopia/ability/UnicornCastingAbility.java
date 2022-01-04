@@ -107,14 +107,14 @@ public class UnicornCastingAbility implements Ability<Hit> {
                         player.spawnParticles(ParticleTypes.LARGE_SMOKE, 6);
                         player.playSound(SoundEvents.ENTITY_ITEM_BREAK, 1, 0.5F);
                     } else {
-                        player.setAnimation(Animation.ARMS_UP, 5);
+                        player.setAnimation(Animation.ARMS_UP);
                         if (s instanceof HomingSpell) {
                             RayTraceHelper.doTrace(player.getMaster(), 600, 1, EntityPredicates.CAN_COLLIDE).getEntity().ifPresent(((HomingSpell)s)::setTarget);
                         }
                         player.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 0.05F, 2.2F);
                     }
                 } else {
-                    player.setAnimation(Animation.WOLOLO, 20);
+                    player.setAnimation(Animation.WOLOLO);
                 }
             }
         }
