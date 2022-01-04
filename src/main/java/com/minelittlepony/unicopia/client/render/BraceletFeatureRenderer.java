@@ -43,8 +43,8 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
     public BraceletFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
         this.context = context;
         Dilation dilation = new Dilation(0.3F);
-        steveModel = new BraceletModel(BraceletModel.getData(dilation, false, 0, 0, 0).createModel(), false);
-        alexModel = new BraceletModel(BraceletModel.getData(dilation, true, 0, 0, 0).createModel(), true);
+        steveModel = new BraceletModel(BraceletModel.getData(dilation, false, 0, 0, 0).createModel());
+        alexModel = new BraceletModel(BraceletModel.getData(dilation, true, 0, 0, 0).createModel());
     }
 
     @Override
@@ -90,7 +90,7 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
             boolean glowing = ((GlowableItem)item.getItem()).isGlowing(item);
 
 
-            if (!MineLPConnector.getPlayerPonyRace().isDefault()) {
+            if (!MineLPConnector.getPlayerPonyRace((ClientPlayerEntity)entity).isDefault()) {
                 stack.translate(side == Arm.LEFT ? 0.06 : -0.06, 0.3, 0);
             } else {
                 stack.translate(0, -0.1, 0);
@@ -109,11 +109,8 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
         private final ModelPart leftArm;
         private final ModelPart rightArm;
 
-        private final boolean alex;
-
-        public BraceletModel(ModelPart tree, boolean alex) {
+        public BraceletModel(ModelPart tree) {
             super(RenderLayer::getEntityTranslucent);
-            this.alex = alex;
             this.leftArm = tree.getChild(EntityModelPartNames.LEFT_ARM);
             this.rightArm = tree.getChild(EntityModelPartNames.RIGHT_ARM);
         }
@@ -122,7 +119,7 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
             ModelData data = new ModelData();
             ModelPartData root = data.getRoot();
 
-            root.addChild(EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create().uv(0, alex ? 6 : 0).cuboid(-3 + x, 7 + y, -2 + z, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
+            root.addChild(EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create().uv(0, alex ? 6 : 0).cuboid(-2 + x, 7 + y, -2 + z, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
             root.addChild(EntityModelPartNames.LEFT_ARM,  ModelPartBuilder.create().mirrored().uv(0, alex ? 6 : 0).cuboid(-1 - x, 7 + y, -2 + z, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
 
             return TexturedModelData.of(data, 64, 32);
@@ -131,9 +128,6 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
         public void setAngles(BipedEntityModel<?> biped) {
             leftArm.copyTransform(biped.leftArm);
             rightArm.copyTransform(biped.rightArm);
-            if (alex) {
-                rightArm.pivotX++;
-            }
         }
 
         public void setVisible(Arm arm) {

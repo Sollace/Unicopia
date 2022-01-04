@@ -35,8 +35,8 @@ class BangleGear implements IGear {
 
     public BangleGear() {
         Dilation dilation = new Dilation(0.3F);
-        steveModel = new BraceletModel(BraceletModel.getData(dilation, false, -1, 4, 0).createModel(), false);
-        alexModel = new BraceletModel(BraceletModel.getData(dilation, true, -1, 4, 0).createModel(), true);
+        steveModel = new BraceletModel(BraceletModel.getData(dilation, false, -1, 4, 0).createModel());
+        alexModel = new BraceletModel(BraceletModel.getData(dilation, true, -1, 4, 0).createModel());
     }
 
     @Override
@@ -57,11 +57,6 @@ class BangleGear implements IGear {
 
     @Override
     public void setModelAttributes(IModel model, Entity entity) {
-
-        Dilation dilation = new Dilation(0.3F);
-        steveModel = new BraceletModel(BraceletModel.getData(dilation, false, -1, 4, 0).createModel(), false);
-        alexModel = new BraceletModel(BraceletModel.getData(dilation, true, -1, 4, 0).createModel(), true);
-
         ItemStack item = ((LivingEntity)entity).getEquippedStack(EquipmentSlot.CHEST);
 
         color = ((DyeableItem)item.getItem()).getColor(item);
