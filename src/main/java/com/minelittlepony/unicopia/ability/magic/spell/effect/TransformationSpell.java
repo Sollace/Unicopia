@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
@@ -19,7 +20,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Util;
 
 /**
@@ -41,10 +41,10 @@ public class TransformationSpell extends AbstractSpell implements ProjectileSpel
             return;
         }
         pickType(entity.getType(), entity.world.random).flatMap(type -> convert(entity, type)).ifPresentOrElse(e -> {
-            entity.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1, 1);
+            entity.playSound(USounds.SPELL_TRANSFORM_TRANSMUTE_ENTITY, 1, 1);
         }, () -> {
             ParticleUtils.spawnParticles(ParticleTypes.SMOKE, entity, 20);
-            entity.playSound(SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
+            entity.playSound(USounds.GUI_ABILITY_FAIL, 1, 1);
         });
     }
 

@@ -187,7 +187,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (typeChanged) {
             pony.spawnParticles(ParticleTypes.CLOUD, 10);
 
-            entity.playSound(entity.world.getDimension().isUltrawarm() ? SoundEvents.BLOCK_BELL_USE : SoundEvents.BLOCK_BELL_RESONATE, 0.1125F, 1.5F);
+            entity.playSound(entity.world.getDimension().isUltrawarm() ? USounds.ITEM_ICARUS_WINGS_CORRUPT : USounds.ITEM_ICARUS_WINGS_PURIFY, 0.1125F, 1.5F);
         }
 
         entity.getAbilities().allowFlying = type.canFlyCreative(entity);
@@ -319,7 +319,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
             if (entity.world.random.nextInt(9000) == 0) {
                 entity.dropItem(UItems.PEGASUS_FEATHER);
-                entity.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 0.3F, 1);
+                entity.playSound(USounds.ENTITY_PLAYER_PEGASUS_MOLT, 0.3F, 1);
                 UCriteria.SHED_FEATHER.trigger(entity);
             }
         }
@@ -373,7 +373,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             AmuletItem.consumeEnergy(stack, energyConsumed);
 
             if (AmuletItem.getEnergy(stack) < 9) {
-                entity.playSound(SoundEvents.BLOCK_CHAIN_STEP, 0.13F, 0.5F);
+                entity.playSound(USounds.ITEM_ICARUS_WINGS_WARN, 0.13F, 0.5F);
             }
 
             if (entity.world.random.nextInt(damageInterval) == 0) {
@@ -381,7 +381,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             }
 
             if (!getFlightType().canFly()) {
-                entity.playSound(SoundEvents.ITEM_SHIELD_BREAK, 1, 2);
+                entity.playSound(USounds.ITEM_ICARUS_WINGS_EXHAUSTED, 1, 2);
                 cancelFlight();
             }
         }

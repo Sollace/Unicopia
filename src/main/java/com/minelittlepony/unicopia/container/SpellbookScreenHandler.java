@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
@@ -28,7 +29,6 @@ import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
 public class SpellbookScreenHandler extends ScreenHandler {
@@ -432,7 +432,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
         public void setStack(ItemStack stack) {
             super.setStack(stack);
             if (!stack.isEmpty()) {
-                player.playSound(SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.MASTER, 1, 0.3F);
+                player.playSound(USounds.GUI_SPELL_CRAFT_SUCCESS, SoundCategory.MASTER, 1, 0.3F);
             }
         }
 

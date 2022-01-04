@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -13,7 +14,6 @@ import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 public final class ThrowableSpell extends AbstractDelegatingSpell {
@@ -57,7 +57,7 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
             return Optional.empty();
         }
 
-        caster.playSound(SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
+        caster.playSound(USounds.SPELL_CAST_SHOOT, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
         if (!caster.isClient()) {
             MagicProjectileEntity projectile = new MagicProjectileEntity(world, entity);

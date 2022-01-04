@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.AwaitTickQueue;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.ItemImpl.TickableItem;
@@ -35,7 +36,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -182,7 +182,7 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
         }
 
         if (attachedTime == 1) {
-            world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.PLAYERS, 3, 1);
+            world.playSound(null, player.getBlockPos(), USounds.ITEM_ALICORN_AMULET_CURSE, SoundCategory.PLAYERS, 3, 1);
         }
 
         // attempt to play 3 tricks every tick
@@ -213,7 +213,7 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
         ItemEntity entity = (ItemEntity)item;
 
         if (entity.world.random.nextInt(500) == 0) {
-            entity.world.playSound(null, entity.getBlockPos(), SoundEvents.AMBIENT_CAVE, SoundCategory.HOSTILE, 0.5F, 1);
+            entity.world.playSound(null, entity.getBlockPos(), USounds.ITEM_ALICORN_AMULET_AMBIENT, SoundCategory.HOSTILE, 0.5F, 1);
         }
 
         return ActionResult.PASS;
@@ -222,7 +222,7 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
     public static class Trick {
         private static final List<Trick> ALL = new ArrayList<>();
 
-        public static final Trick SPOOK = new Trick(0, 1050, player -> player.world.playSound(null, player.getBlockPos(), SoundEvents.AMBIENT_NETHER_WASTES_MOOD, SoundCategory.PLAYERS, 3, 1));
+        public static final Trick SPOOK = new Trick(0, 1050, player -> player.world.playSound(null, player.getBlockPos(), USounds.ITEM_ALICORN_AMULET_HALLUCINATION, SoundCategory.PLAYERS, 3, 1));
         public static final Trick WITHER = new Trick(20000, 100, player -> {
             StatusEffectInstance effect = new StatusEffectInstance(player.world.random.nextInt(32000) == 0 ? StatusEffects.WITHER : StatusEffects.HUNGER, 300, 3);
             effect.setPermanent(true);

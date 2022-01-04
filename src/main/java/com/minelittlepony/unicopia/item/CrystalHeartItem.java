@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.item;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.entity.FloatingArtefactEntity;
 import com.minelittlepony.unicopia.entity.UEntities;
@@ -29,7 +30,6 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -66,7 +66,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
             entity.setStack(context.getStack().split(1));
             ((ServerWorld)world).spawnEntityAndPassengers(entity);
 
-            entity.playSound(SoundEvents.BLOCK_BEACON_ACTIVATE, 0.75F, 0.8F);
+            entity.playSound(USounds.ENTITY_CRYSTAL_HEART_ACTIVATE, 0.75F, 0.8F);
         } else {
             context.getStack().decrement(1);
         }
@@ -151,7 +151,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
 
     @Override
     public ActionResult onArtifactDestroyed(FloatingArtefactEntity entity) {
-        entity.playSound(SoundEvents.BLOCK_BEACON_DEACTIVATE, 0.75F, 1);
+        entity.playSound(USounds.ENTITY_CRYSTAL_HEART_DEACTIVATE, 0.75F, 1);
         entity.dropStack(new ItemStack(UItems.CRYSTAL_SHARD, 1 + entity.world.random.nextInt(5)), 0);
         return ActionResult.SUCCESS;
     }

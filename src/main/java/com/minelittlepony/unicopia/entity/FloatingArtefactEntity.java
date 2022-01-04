@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
@@ -13,7 +14,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -129,7 +129,7 @@ public class FloatingArtefactEntity extends Entity {
 
         if (world.getTime() % 80 == 0) {
             State state = getState();
-            playSound(SoundEvents.BLOCK_BEACON_AMBIENT, state.getVolume(), state.getPitch());
+            playSound(USounds.ENTITY_ARTEFACT_AMBIENT, state.getVolume(), state.getPitch());
         }
     }
 

@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
@@ -26,7 +27,6 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
 public class ShieldSpell extends AbstractSpell {
@@ -151,7 +151,7 @@ public class ShieldSpell extends AbstractSpell {
         if (ProjectileUtil.isFlyingProjectile(target)) {
             if (!ProjectileUtil.isProjectileThrownBy(target, source.getMaster())) {
                 if (distance < 1) {
-                    target.playSound(SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, 0.1F, 1);
+                    target.playSound(USounds.SPELL_SHIELD_BURN_PROJECTILE, 0.1F, 1);
                     target.remove(RemovalReason.DISCARDED);
                 } else {
                     ProjectileUtil.ricochet(target, pos, 0.9F);

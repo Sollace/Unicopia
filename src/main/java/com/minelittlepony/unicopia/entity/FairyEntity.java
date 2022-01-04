@@ -34,7 +34,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -86,13 +85,13 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
     @Override
     @Nullable
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.ENTITY_BAT_HURT;
+        return USounds.ENTITY_TWITTERMITE_HURT;
     }
 
     @Override
     @Nullable
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_BAT_DEATH;
+        return USounds.ENTITY_TWITTERMITE_DEATH;
     }
 
     @Override
@@ -189,7 +188,7 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
                 setStaying(getBlockPos());
             }
 
-            playSound(SoundEvents.ENTITY_BAT_AMBIENT, getSoundVolume() / 3, getSoundPitch() * 3);
+            playSound(USounds.ENTITY_TWITTERMITE_AMBIENT, getSoundVolume() / 3, getSoundPitch() * 3);
 
             return ActionResult.SUCCESS;
         }

@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.network.handler;
 
 import com.minelittlepony.unicopia.Owned;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
 import com.minelittlepony.unicopia.client.DiscoveryToast;
@@ -15,7 +16,6 @@ import com.minelittlepony.unicopia.network.MsgUnlockTraits;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.sound.SoundEvents;
 
 public class ClientNetworkHandlerImpl implements ClientNetworkHandler {
 
@@ -58,7 +58,7 @@ public class ClientNetworkHandlerImpl implements ClientNetworkHandler {
 
     @Override
     public void handleCancelAbility(MsgCancelPlayerAbility packet) {
-        client.player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
+        client.player.playSound(USounds.GUI_ABILITY_FAIL, 1, 1);
         Pony.of(client.player).getAbilities().getStats().forEach(s -> s.setCooldown(0));
     }
 

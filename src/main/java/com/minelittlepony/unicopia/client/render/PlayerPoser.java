@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.render;
 
 import java.util.Optional;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -10,7 +11,6 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
@@ -175,12 +175,12 @@ public class PlayerPoser {
 
     public enum Animation {
         NONE(0),
-        WOLOLO(SoundEvents.ENTITY_EVOKER_PREPARE_WOLOLO, 40),
+        WOLOLO(USounds.ENTITY_PLAYER_WOLOLO, 40),
         ARMS_FORWARD(5),
         ARMS_UP(5),
-        WAVE_ONE(SoundEvents.ENTITY_PARROT_AMBIENT, 20),
-        WAVE_TWO(SoundEvents.ENTITY_PARROT_AMBIENT, 20),
-        KICK(SoundEvents.ENTITY_PHANTOM_FLAP, 5),
+        WAVE_ONE(USounds.ENTITY_PLAYER_WHISTLE, 20),
+        WAVE_TWO(USounds.ENTITY_PLAYER_WHISTLE, 20),
+        KICK(USounds.ENTITY_PLAYER_KICK, 5),
         STOMP(5),
         WIGGLE_NOSE(6);
 

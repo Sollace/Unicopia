@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
@@ -26,7 +27,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -74,7 +74,7 @@ public class DarkVortexSpell extends AttractiveSpell {
         setDirty();
 
         if (age % 20 == 0) {
-            source.getWorld().playSound(null, source.getOrigin(), SoundEvents.AMBIENT_SOUL_SAND_VALLEY_ADDITIONS, SoundCategory.AMBIENT, 1, 1);
+            source.getWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_ADDITIONS, SoundCategory.AMBIENT, 1, 1);
         }
 
         source.subtractEnergyCost(-accumulatedMass);
@@ -224,9 +224,7 @@ public class DarkVortexSpell extends AttractiveSpell {
             }
 
             source.subtractEnergyCost(-getMass(target) * 10);
-
-            source.getWorld().playSound(null, source.getOrigin(), SoundEvents.AMBIENT_CRIMSON_FOREST_MOOD, SoundCategory.AMBIENT, 2, 0.02F);
-
+            source.getWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_MOOD, SoundCategory.AMBIENT, 2, 0.02F);
         } else {
             double force = getAttractiveForce(source, target);
 

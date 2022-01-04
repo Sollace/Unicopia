@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -19,7 +20,6 @@ import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -136,7 +136,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             return;
         }
 
-        teleportee.getWorld().playSound(null, teleportee.getOrigin(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
+        teleportee.getWorld().playSound(null, teleportee.getOrigin(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
 
         double distance = destination.distanceTo(teleportee) / 10;
 
@@ -160,7 +160,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
         player.fallDistance /= distance;
 
-        player.world.playSound(null, destination.pos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 1, 1);
+        player.world.playSound(null, destination.pos(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
     }
 
     private boolean enterable(World w, BlockPos pos) {

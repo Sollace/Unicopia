@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
@@ -18,7 +19,6 @@ import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 
 /**
  * Changeling ability to disguise themselves as other players.
@@ -58,7 +58,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
             return null;
         }).orElse(null));
 
-        player.getEntityWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PARROT_IMITATE_RAVAGER, SoundCategory.PLAYERS, 1.4F, 0.4F);
+        player.getEntityWorld().playSound(null, player.getBlockPos(), USounds.ENTITY_PLAYER_CHANGELING_TRANSFORM, SoundCategory.PLAYERS, 1.4F, 0.4F);
 
         iplayer.getSpellSlot().get(SpellType.CHANGELING_DISGUISE, true)
             .orElseGet(() -> SpellType.CHANGELING_DISGUISE.withTraits().apply(iplayer))

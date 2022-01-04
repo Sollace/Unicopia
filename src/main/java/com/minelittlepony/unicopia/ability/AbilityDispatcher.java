@@ -9,6 +9,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
@@ -17,7 +18,6 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
 public class AbilityDispatcher implements Tickable, NbtSerialisable {
@@ -211,7 +211,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
                     if (data != null) {
                         Channel.CLIENT_PLAYER_ABILITY.send(new MsgPlayerAbility<>(ability, data, ActivationType.NONE));
                     } else {
-                        player.getEntity().playSound(SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
+                        player.getEntity().playSound(USounds.GUI_ABILITY_FAIL, 1, 1);
                         setCooldown(0);
                     }
                 }

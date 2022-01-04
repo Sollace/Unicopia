@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -17,7 +18,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -49,7 +49,7 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
             }
 
             player.incrementStat(Stats.USED.getOrCreateStat(this));
-            player.playSound(SoundEvents.ITEM_BOOK_PUT, 1, 1);
+            player.playSound(USounds.ITEM_BRACELET_SIGN, 1, 1);
 
             if (stack.isEmpty()) {
                 return TypedActionResult.consume(result);

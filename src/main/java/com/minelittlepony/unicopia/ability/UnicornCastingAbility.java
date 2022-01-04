@@ -5,6 +5,7 @@ import java.util.Random;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -20,7 +21,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -90,7 +90,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
                 if (amount < 0) {
                     AmuletItem.consumeEnergy(stack, amount);
                     player.getMagicalReserves().getMana().add(amount * player.getMagicalReserves().getMana().getMax());
-                    player.getWorld().playSoundFromEntity(null, player.getMaster(), SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.PLAYERS, 1, 1);
+                    player.getWorld().playSoundFromEntity(null, player.getMaster(), USounds.ITEM_AMULET_RECHARGE, SoundCategory.PLAYERS, 1, 1);
                 }
             }
         } else {
@@ -105,13 +105,13 @@ public class UnicornCastingAbility implements Ability<Hit> {
                     Spell s = spell.apply(player);
                     if (s == null) {
                         player.spawnParticles(ParticleTypes.LARGE_SMOKE, 6);
-                        player.playSound(SoundEvents.ENTITY_ITEM_BREAK, 1, 0.5F);
+                        player.playSound(USounds.SPELL_CAST_FAIL, 1, 0.5F);
                     } else {
                         player.setAnimation(Animation.ARMS_UP);
                         if (s instanceof HomingSpell) {
                             RayTraceHelper.doTrace(player.getMaster(), 600, 1, EntityPredicates.CAN_COLLIDE).getEntity().ifPresent(((HomingSpell)s)::setTarget);
                         }
-                        player.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 0.05F, 2.2F);
+                        player.playSound(USounds.SPELL_CAST_SUCCESS, 0.05F, 2.2F);
                     }
                 } else {
                     player.setAnimation(Animation.WOLOLO);
@@ -146,7 +146,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
 
             Random rng = player.getWorld().random;
             player.addParticle(i > 0.5F ? ParticleTypes.LARGE_SMOKE : ParticleTypes.CLOUD, eyes, VecHelper.supply(() -> (rng.nextGaussian() - 0.5) / 10));
-            player.playSound(SoundEvents.ENTITY_GUARDIAN_ATTACK, 1, i / 20);
+            player.playSound(USounds.ITEM_AMULET_CHARGING, 1, i / 20);
         } else {
             player.spawnParticles(MagicParticleEffect.UNICORN, 5);
         }

@@ -67,29 +67,512 @@
        "unicopia:wind/altitude_wind7"
      ]
   },
-  "record.crusade": {
+  "music_disc.crusade": {
     "category": "blocks",
     "sounds": [
       { "name": "unicopia:record/crusade", "stream": true}
     ]
   },
-  "record.popular": {
+  "music_disc.popular": {
     "category": "blocks",
     "sounds": [
       { "name": "unicopia:record/popular", "stream": true}
     ]
   },
-  "record.pet": {
+  "music_disc.pet": {
     "category": "blocks",
     "stream": true,
     "sounds": [
       { "name": "unicopia:record/pet", "stream": true}
     ]
   },
-  "record.funk": {
+  "music_disc.funk": {
     "category": "blocks",
     "sounds": [
       { "name": "unicopia:record/funk", "stream": true, "attenuation_distance": 21120}
+    ]
+  },
+
+
+
+
+
+
+
+
+ "entity.player.changeling.transform": {
+    "sounds": [
+      {
+        "name": "entity.ravager.ambient",
+        "pitch": 1.8,
+        "type": "event",
+        "volume": 0.2
+      }
+    ],
+    "subtitle": "unicopia.subtitle.changeling.transform"
+  },
+  "entity.player.pegasus.molt": {
+    "sounds": [
+      "mob/chicken/plop"
+    ],
+    "subtitle": "unicopia.subtitle.pegasus.molt"
+  },
+  "entity.player.unicorn.teleport": {
+    "sounds": [
+      "random/pop"
+    ],
+    "subtitle": "unicopia.subtitle.unicorn.teleport"
+  },
+  "entity.player.wololo": {
+    "sounds": [
+      "mob/evocation_illager/prepare_wololo"
+    ],
+    "subtitle": "unicopia.subtitle.player.wololo"
+  },
+  "entity.player.whistle": {
+    "sounds": [
+      {
+        "name": "mob/parrot/idle2"
+      },
+      {
+        "name": "mob/parrot/idle3"
+      },
+      {
+        "name": "mob/parrot/idle4"
+      }
+    ],
+    "subtitle": "unicopia.subtitle.entity.player.whistle"
+  },
+  "entity.player.kick": {
+    "sounds": [
+      {
+        "name": "mob/phantom/flap1",
+        "volume": 0.9
+      },
+      {
+        "name": "mob/phantom/flap2",
+        "volume": 0.9
+      },
+      {
+        "name": "mob/phantom/flap3",
+        "volume": 0.9
+      },
+      {
+        "name": "mob/phantom/flap4",
+        "volume": 0.9
+      },
+      {
+        "name": "mob/phantom/flap5",
+        "volume": 0.9
+      },
+      {
+        "name": "mob/phantom/flap6",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "unicopia.subtitle.entity.player.kick"
+  },
+  
+  "entity.artefact.ambient": {
+    "sounds": [
+      {
+        "attenuation_distance": 7,
+        "name": "block/beacon/ambient",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "unicopia.subtitle.entity.artefact.ambient"
+  },
+  "entity.butterfly.hurt": {
+    "sounds": [
+      "mob/bat/hurt1",
+      "mob/bat/hurt2",
+      "mob/bat/hurt3",
+      "mob/bat/hurt4"
+    ],
+    "subtitle": "unicopia.subtitle.entity.butterfly.hurt"
+  },
+  "entity.twittermite.ambient": {
+    "sounds": [
+      "mob/bat/idle1",
+      "mob/bat/idle2",
+      "mob/bat/idle3",
+      "mob/bat/idle4"
+    ],
+    "subtitle": "unicopia.subtitle.entity.twittermite.ambient"
+  },
+  "entity.twittermite.death": {
+    "sounds": [
+      "mob/bat/death"
+    ],
+    "subtitle": "unicopia.subtitle.entity.twittermite.death"
+  },
+  "entity.twittermite.hurt": {
+    "sounds": [
+      "mob/bat/hurt1",
+      "mob/bat/hurt2",
+      "mob/bat/hurt3",
+      "mob/bat/hurt4"
+    ],
+    "subtitle": "unicopia.subtitle.entity.twittermite.hurt"
+  },
+  "entity.jar.throw": {
+    "sounds": [
+      "random/bow"
+    ],
+    "subtitle": "unicopia.subtitle.entity.jar.throw"
+  },
+  "entity.crystal_heart.activate": {
+    "sounds": [
+      "block/beacon/activate"
+    ],
+    "subtitle": "unicopia.subtitle.entity.crystal_heart.activate"
+  },
+  "entity.crystal_heart.deactivate": {
+    "sounds": [
+      "block/beacon/deactivate"
+    ],
+    "subtitle": "unicopia.subtitle.entity.crystal_heart.deactivate"
+  },
+  
+  "item.amulet.charging": {
+    "sounds": [
+      "mob/guardian/attack_loop"
+    ],
+    "subtitle": "unicopia.subtitle.item.amulet.charging"
+  },
+  "item.amulet.recharge": {
+    "sounds": [
+      "block/end_portal/eyeplace1",
+      "block/end_portal/eyeplace2",
+      "block/end_portal/eyeplace3"
+    ],
+    "subtitle": "unicopia.subtitle.item.amulet.recharge"
+  },
+  "item.icarus_wings.resonate": {
+    "sounds": [
+      "block/bell/resonate",
+      {
+        "name": "block/bell/resonate",
+        "pitch": 0.85
+      },
+      {
+        "name": "block/bell/resonate",
+        "pitch": 0.9
+      }
+    ],
+    "subtitle": "unicopia.subtitle.item.icarus_wings.resonate"
+  },
+  "item.icarus_wings.corrupted": {
+    "sounds": [
+      {
+        "name": "block/bell/bell_use01",
+        "pitch": 0.93,
+        "volume": 12.0
+      },
+      {
+        "name": "block/bell/bell_use01",
+        "pitch": 0.95,
+        "volume": 12.0
+      },
+      {
+        "name": "block/bell/bell_use01",
+        "pitch": 0.97,
+        "volume": 12.0
+      },
+      {
+        "name": "block/bell/bell_use02",
+        "pitch": 0.93,
+        "volume": 12.0
+      },
+      {
+        "name": "block/bell/bell_use02",
+        "pitch": 0.95,
+        "volume": 12.0
+      },
+      {
+        "name": "block/bell/bell_use02",
+        "pitch": 0.97,
+        "volume": 12.0
+      }
+    ],
+    "subtitle": "unicopia.subtitle.item.icarus_wings.corrupted"
+  },
+  "item.icarus_wings.warn": {
+    "sounds": [
+      "block/chain/step1",
+      "block/chain/step2",
+      "block/chain/step3",
+      "block/chain/step4",
+      "block/chain/step5",
+      "block/chain/step6"
+    ],
+    "subtitle": "unicopia.subtitle.item.icarus_wings.warn"
+  },
+  "item.icarus_wings.break": {
+    "sounds": [
+      "random/break"
+    ],
+    "subtitle": "unicopia.subtitle.item.icarus_wings.break"
+  },
+  "item.alicorn_amulet.curse": {
+    "sounds": [
+      "mob/guardian/curse"
+    ],
+    "subtitle": "unicopia.subtitle.item.alicorn_amulet.curse"
+  },
+  "item.alicorn_amulet.hallucination": {
+    "sounds": [
+      "ambient/nether/nether_wastes/mood1",
+      "ambient/nether/nether_wastes/mood2",
+      "ambient/nether/nether_wastes/mood3",
+      "ambient/nether/nether_wastes/mood4",
+      "ambient/nether/nether_wastes/mood5"
+    ]
+  },
+  "item.alicorn_amulet.ambient": {
+    "sounds": [
+      "ambient/cave/cave1",
+      "ambient/cave/cave2",
+      "ambient/cave/cave3",
+      "ambient/cave/cave4",
+      "ambient/cave/cave5",
+      "ambient/cave/cave6",
+      "ambient/cave/cave7",
+      "ambient/cave/cave8",
+      "ambient/cave/cave9",
+      "ambient/cave/cave10",
+      "ambient/cave/cave11",
+      "ambient/cave/cave12",
+      "ambient/cave/cave13",
+      "ambient/cave/cave14",
+      "ambient/cave/cave15",
+      "ambient/cave/cave16",
+      "ambient/cave/cave17",
+      "ambient/cave/cave18",
+      "ambient/cave/cave19"
+    ],
+    "subtitle": "unicopia.subtitle.item.alicorn_amulet.ambient"
+  },
+  "item.apple.rot": {
+    "sounds": [
+      "mob/turtle/egg/jump_egg1",
+      "mob/turtle/egg/jump_egg2",
+      "mob/turtle/egg/jump_egg3",
+      "mob/turtle/egg/jump_egg4"
+    ],
+    "subtitle": "unicopia.subtitle.item.apple.rot"
+  },
+  "item.bracelet.sign": {
+    "sounds": [
+      "item/book/close_put1",
+      "item/book/close_put2"
+    ],
+    "subtitle": "unicopia.subtitle.item.bracelet.sign"
+  },
+  
+  "spell.cast.fail": {
+    "sounds": [
+      "random/break"
+    ],
+    "subtitle": "unicopia.subtitle.spell.cast.fail"
+  },
+  "spell.cast.success": {
+    "sounds": [
+      "block/beacon/power1",
+      "block/beacon/power2",
+      "block/beacon/power3"
+    ],
+    "subtitle": "unicopia.subtitle.spell.cast.success"
+  },
+  "spell.cast.shoot": {
+    "sounds": [
+      "mob/endermen/portal",
+      "mob/endermen/portal2"
+    ],
+    "subtitle": "unicopia.subtitle.spell.cast.shoot"
+  },
+  "spell.illusion.disperse": {
+    "sounds": [
+      "mob/zombie/remedy"
+    ],
+    "subtitle": "unicopia.subtitle.spell.illusion.disperse"
+  },
+  "spell.fire.shoot.bolt": {
+    "sounds": [
+      "mob/ghast/fireball4"
+    ],
+    "subtitle": "unicopia.subtitle.spell.fire.shoot.bolt"
+  },
+  "spell.shield.projectile.burn": {
+    "sounds": [
+      "mob/zombie/remedy"
+    ],
+    "subtitle": "unicopia.subtitle.spell.shield.projectile.burn"
+  },
+  "spell.transform.transmute.entity": {
+    "sounds": [
+      "random/pop"
+    ],
+    "subtitle": "unicopia.subtitle.spell.transform.transmute.entity"
+  },
+  
+  "ambient.dark_vortex.mood": {
+    "sounds": [
+      "ambient/nether/crimson_forest/mood1",
+      "ambient/nether/crimson_forest/mood2",
+      "ambient/nether/crimson_forest/mood3"
+    ]
+  },
+  "ambient.dark_vortex.additions": {
+    "sounds": [
+      {
+        "name": "ambient/nether/soulsand_valley/sand1",
+        "volume": 0.2,
+        "weight": 25
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/sand2",
+        "volume": 0.2,
+        "weight": 25
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/sand3",
+        "volume": 0.4,
+        "weight": 2
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/voices1",
+        "volume": 0.4,
+        "weight": 5
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/voices2",
+        "volume": 0.4,
+        "weight": 5
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/voices3",
+        "volume": 0.4,
+        "weight": 5
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/voices4",
+        "volume": 0.8,
+        "weight": 5
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/voices5",
+        "volume": 0.4,
+        "weight": 5
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/voices5",
+        "pitch": 0.7,
+        "volume": 0.15,
+        "weight": 5
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/whisper1",
+        "volume": 0.9,
+        "weight": 5
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/whisper2",
+        "volume": 0.9,
+        "weight": 5
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/whisper3",
+        "volume": 0.9,
+        "weight": 5
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/whisper4",
+        "volume": 0.9,
+        "weight": 5
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/whisper5",
+        "volume": 0.9,
+        "weight": 5
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/whisper6",
+        "volume": 0.9,
+        "weight": 5
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/whisper7",
+        "volume": 0.9,
+        "weight": 5
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/whisper8",
+        "weight": 5
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/wind1",
+        "volume": 0.3,
+        "weight": 25
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/wind1",
+        "pitch": 0.75,
+        "volume": 0.3,
+        "weight": 25
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/wind2",
+        "volume": 0.25,
+        "weight": 25
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/wind2",
+        "pitch": 0.75,
+        "volume": 0.3,
+        "weight": 25
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/wind3",
+        "volume": 0.25,
+        "weight": 25
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/wind3",
+        "pitch": 0.75,
+        "volume": 0.3,
+        "weight": 25
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/wind4",
+        "volume": 0.3,
+        "weight": 25
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/wind4",
+        "pitch": 0.75,
+        "volume": 0.3,
+        "weight": 25
+      },
+      {
+        "name": "ambient/nether/soulsand_valley/with1",
+        "volume": 0.6,
+        "weight": 4
+      }
+    ]
+  },
+  
+  "gui.ability.fail": {
+    "sounds": [
+      "note/didgeridoo"
+    ]
+  },
+  "gui.spellcraft.success": {
+    "sounds": [
+      "block/end_portal/eyeplace1",
+      "block/end_portal/eyeplace2",
+      "block/end_portal/eyeplace3"
     ]
   }
 }

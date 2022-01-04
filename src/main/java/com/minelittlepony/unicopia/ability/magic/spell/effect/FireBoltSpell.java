@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
@@ -12,7 +13,6 @@ import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.sound.SoundEvents;
 
 public class FireBoltSpell extends AbstractSpell implements ProjectileSpell, HomingSpell {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
@@ -67,7 +67,7 @@ public class FireBoltSpell extends AbstractSpell implements ProjectileSpell, Hom
                 c.setHomingTarget(target);
             });
 
-            caster.playSound(SoundEvents.ENTITY_BLAZE_SHOOT, 0.7F, 0.4F / (caster.getWorld().random.nextFloat() * 0.4F + 0.8F));
+            caster.playSound(USounds.SPELL_FIRE_BOLT_SHOOT, 0.7F, 0.4F / (caster.getWorld().random.nextFloat() * 0.4F + 0.8F));
         }
         return false;
     }

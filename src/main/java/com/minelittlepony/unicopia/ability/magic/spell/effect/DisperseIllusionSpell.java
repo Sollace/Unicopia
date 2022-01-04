@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
@@ -9,8 +10,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -44,7 +43,7 @@ public class DisperseIllusionSpell extends AbstractAreaEffectSpell {
                 .filter(spell -> spell.isVulnerable(source, this))
                 .ifPresent(spell -> {
                 spell.onSuppressed(source, 1 + getTraits().get(Trait.STRENGTH));
-                source.getWorld().playSound(null, e.getOrigin(), SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, SoundCategory.PLAYERS, 0.2F, 0.5F);
+                e.playSound(USounds.SPELL_ILLUSION_DISPERSE, 0.2F, 0.5F);
             });
         });
 

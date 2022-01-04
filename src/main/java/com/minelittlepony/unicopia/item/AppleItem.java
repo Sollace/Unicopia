@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.item;
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.item.toxin.Toxicity;
@@ -14,7 +15,6 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
@@ -57,7 +57,7 @@ public class AppleItem extends Item implements ItemImpl.TickableItem {
                         entity.world.random.nextGaussian() - 0.5F,
                         entity.world.random.nextGaussian() - 0.5F);
             }
-            entity.playSound(SoundEvents.ENTITY_ZOMBIE_DESTROY_EGG, 0.5F, 1.5F);
+            entity.playSound(USounds.ITEM_APPLE_ROT, 0.5F, 1.5F);
         }
 
         return ActionResult.PASS;
