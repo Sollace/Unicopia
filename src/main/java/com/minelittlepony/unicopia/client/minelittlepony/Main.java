@@ -6,7 +6,9 @@ import com.minelittlepony.api.model.fabric.PonyModelPrepareCallback;
 import com.minelittlepony.api.model.gear.IGear;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.AnimationUtil;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.entity.Entity;
@@ -39,6 +41,11 @@ public class Main implements ClientModInitializer {
                     model.getAttributes().isHorizontal = true;
                 }
                 model.getAttributes().isGoingFast |= pony.getMotion().isRainbooming();
+
+                if (pony.getAnimation() == Animation.SPREAD_WINGS) {
+                    model.getAttributes().wingAngle = -AnimationUtil.seeSitSaw(pony.getAnimationProgress(1), 1.5F) * (float)Math.PI / 1.2F;
+                    model.getAttributes().isFlying = true;
+                }
             }
         } catch (Throwable t) {
             Unicopia.LOGGER.error("Exception occured in MineLP hook:onPonyModelPrepared", t);

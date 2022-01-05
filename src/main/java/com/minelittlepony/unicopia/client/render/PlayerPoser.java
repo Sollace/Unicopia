@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.AnimationUtil;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -73,7 +74,7 @@ public class PlayerPoser {
             }
             case WAVE_ONE:
             case WAVE_TWO: {
-                progress = seesaw(progress);
+                progress = AnimationUtil.seesaw(progress);
 
                 if (animation == Animation.WAVE_TWO && isPony) {
                     rearUp(matrices, model, progress);
@@ -124,7 +125,7 @@ public class PlayerPoser {
                 break;
             }
             case STOMP: {
-                progress = seesaw(progress);
+                progress = AnimationUtil.seesaw(progress);
 
                 if (!isPony) {
                     if (player.getMainArm() == Arm.LEFT) {
@@ -145,10 +146,10 @@ public class PlayerPoser {
                     break;
                 }
 
-                progress = seesaw(progress) * MathHelper.sin(player.age / 4F);
+                progress = AnimationUtil.seesaw(progress) * MathHelper.sin(player.age) / 7F;
 
-                model.getHead().getChild("mare").pivotY += progress;
-                model.getHead().getChild("stallion").pivotY += progress;
+                model.getHead().getChild("mare").pivotY = progress;
+                model.getHead().getChild("stallion").pivotY = progress;
                 break;
             }
             default:
@@ -169,10 +170,6 @@ public class PlayerPoser {
         model.leftLeg.yaw = roll / 7F;
     }
 
-    static float seesaw(float progress) {
-        return Math.max(0, MathHelper.cos((progress - 0.5F) * (float)Math.PI));
-    }
-
     public enum Animation {
         NONE(0),
         WOLOLO(USounds.ENTITY_PLAYER_WOLOLO, 40),
@@ -182,7 +179,8 @@ public class PlayerPoser {
         WAVE_TWO(USounds.ENTITY_PLAYER_WHISTLE, 20),
         KICK(USounds.ENTITY_PLAYER_KICK, 5),
         STOMP(5),
-        WIGGLE_NOSE(6);
+        WIGGLE_NOSE(6),
+        SPREAD_WINGS(6);
 
         private final int duration;
         private final Optional<SoundEvent> sound;

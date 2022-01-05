@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.Jumper;
@@ -18,6 +19,7 @@ import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
+import com.minelittlepony.unicopia.util.AnimationUtil;
 import com.minelittlepony.unicopia.util.MutableVector;
 
 import net.minecraft.block.Block;
@@ -99,6 +101,11 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
     @Override
     public float getWingAngle() {
+
+        if (pony.getAnimation() == Animation.SPREAD_WINGS) {
+            return AnimationUtil.seeSitSaw(pony.getAnimationProgress(1), 1.5F);
+        }
+
         float spreadAmount = -0.5F;
 
         if (isFlying()) {
