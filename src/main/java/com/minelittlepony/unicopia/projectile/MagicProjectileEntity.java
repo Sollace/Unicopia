@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
+import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -55,6 +56,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
     private static final LevelStore LEVELS = Levelled.fixed(1);
+
+    public static final byte PROJECTILE_COLLISSION = 3;
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
 
@@ -208,12 +211,14 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
 
     @Override
     public void handleStatus(byte id) {
-       if (id == 3) {
+       if (id == PROJECTILE_COLLISSION) {
           ParticleEffect effect = getParticleParameters();
 
           for(int i = 0; i < 8; i++) {
              world.addParticle(effect, getX(), getY(), getZ(), 0, 0, 0);
           }
+       } else {
+           super.handleStatus(id);
        }
     }
 
@@ -244,7 +249,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
             super.onCollision(result);
 
             if (!world.isClient()) {
-                world.sendEntityStatus(this, (byte)3);
+                world.sendEntityStatus(this, PROJECTILE_COLLISSION);
                 discard();
             }
         }
@@ -277,7 +282,12 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     }
 
     protected void forEachDelegates(Consumer<ProjectileDelegate> consumer) {
-        getSpellSlot().get(SpellPredicate.HAS_PROJECTILE_EVENTS, true).ifPresent(consumer);
+        getSpellSlot().forEach(spell -> {
+            if (SpellPredicate.HAS_PROJECTILE_EVENTS.test(spell)) {
+                consumer.accept((ProjectileDelegate)spell);
+            }
+            return Operation.SKIP;
+        }, true);
         if (getItem().getItem() instanceof ProjectileDelegate) {
             consumer.accept(((ProjectileDelegate)getItem().getItem()));
         }

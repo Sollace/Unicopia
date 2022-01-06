@@ -66,6 +66,7 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
             projectile.getSpellSlot().put(this);
             projectile.setVelocity(entity, entity.getPitch(), entity.getYaw(), 0, 1.5F, divergance);
             projectile.setHydrophobic();
+            projectile.setNoGravity(true);
             configureProjectile(projectile, caster);
             world.spawnEntity(projectile);
 
