@@ -28,8 +28,8 @@ class BangleGear implements IGear {
     private int color;
     private boolean alex;
 
-    private BraceletModel steveModel;
-    private BraceletModel alexModel;
+    private final BraceletModel steveModel;
+    private final BraceletModel alexModel;
 
     private IModel model;
 

@@ -49,7 +49,6 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
 
     @Override
     public void render(MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch) {
-
         ItemStack item = entity.getEquippedStack(EquipmentSlot.CHEST);
 
         if (item.getItem() instanceof FriendshipBraceletItem) {
@@ -128,8 +127,14 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
             ModelData data = new ModelData();
             ModelPartData root = data.getRoot();
 
-            root.addChild(EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create().uv(0, alex ? 6 : 0).cuboid(-2 + x, 7 + y, -2 + z, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
-            root.addChild(EntityModelPartNames.LEFT_ARM,  ModelPartBuilder.create().mirrored().uv(0, alex ? 6 : 0).cuboid(-1 - x, 7 + y, -2 + z, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
+            root.addChild(EntityModelPartNames.RIGHT_ARM,
+                    ModelPartBuilder.create()
+                        .uv(0, alex ? 6 : 0)
+                        .cuboid((alex ? -2 : -3) + x, 7 + y, -2 + z, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
+            root.addChild(EntityModelPartNames.LEFT_ARM,
+                    ModelPartBuilder.create().mirrored()
+                        .uv(0, alex ? 6 : 0)
+                        .cuboid(-1 - x, 7 + y, -2 + z, alex ? 3 : 4, 2, 4, dilation), ModelTransform.NONE);
 
             return TexturedModelData.of(data, 64, 32);
         }
