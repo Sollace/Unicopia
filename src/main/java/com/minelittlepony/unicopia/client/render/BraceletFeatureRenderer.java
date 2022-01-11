@@ -59,14 +59,12 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
             BraceletModel model = alex ? alexModel : steveModel;
 
             boolean isLeft = entity.getMainArm() == Arm.LEFT;
-            int sigma = isLeft ? 1 : -1;
 
             if (entity instanceof ArmorStandEntity) {
                 ModelPart arm = isLeft ? context.getModel().leftArm : context.getModel().rightArm;
                 arm.visible = true;
                 VertexConsumer consumer = renderContext.getBuffer(context.getModel().getLayer(context.getTexture(entity)));
                 arm.render(stack, consumer, lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
-                arm.pivotX += sigma;
             }
 
             boolean glowing = ((GlowableItem)item.getItem()).isGlowing(item);
@@ -76,11 +74,6 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
             model.setAngles(context.getModel());
             model.setVisible(entity.getMainArm());
             model.render(stack, consumer, glowing ? 0x0F00F0 : lightUv, OverlayTexture.DEFAULT_UV, Color.r(j), Color.g(j), Color.b(j), 1);
-
-            if (entity instanceof ArmorStandEntity) {
-                ModelPart arm = isLeft ? context.getModel().leftArm : context.getModel().rightArm;
-                arm.pivotX -= sigma;
-            }
         }
     }
 
