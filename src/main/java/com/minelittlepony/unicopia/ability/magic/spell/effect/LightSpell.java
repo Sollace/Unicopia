@@ -37,6 +37,10 @@ public class LightSpell extends AbstractSpell {
     @Override
     public boolean tick(Caster<?> caster, Situation situation) {
 
+        if (situation == Situation.PROJECTILE) {
+            return false;
+        }
+
         age++;
 
         if (age % 20 == 0) {
