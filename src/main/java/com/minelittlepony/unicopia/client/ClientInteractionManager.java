@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.gui.DismissSpellScreen;
+import com.minelittlepony.unicopia.client.sound.LoopedEntityTrackingSoundInstance;
 import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
 import com.minelittlepony.unicopia.client.sound.MotionBasedSoundInstance;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
@@ -54,7 +55,7 @@ public class ClientInteractionManager extends InteractionManager {
             SoundManager soundManager = client.getSoundManager();
 
             if (type == SOUND_EARS_RINGING && source instanceof LivingEntity) {
-                soundManager.play(new LoopingSoundInstance<>((LivingEntity)source, e -> e.hasStatusEffect(UEffects.SUN_BLINDNESS), USounds.ENTITY_PLAYER_EARS_RINGING, 1F, 1F));
+                soundManager.play(new LoopingSoundInstance<>((LivingEntity)source, e -> e.hasStatusEffect(UEffects.SUN_BLINDNESS), USounds.ENTITY_PLAYER_EARS_RINGING, 1, 1));
             } else if (type == SOUND_BEE && source instanceof BeeEntity) {
                 soundManager.playNextTick(
                         ((BeeEntity)source).hasAngerTime()
@@ -70,6 +71,8 @@ public class ClientInteractionManager extends InteractionManager {
                 }, USounds.ENTITY_PLAYER_CHANGELING_BUZZ, 1F, 1F));
             } else if (type == SOUND_GLIDING && source instanceof PlayerEntity) {
                 soundManager.play(new MotionBasedSoundInstance(SoundEvents.ITEM_ELYTRA_FLYING, (PlayerEntity)source));
+            } else if (type == SOUND_MAGIC_BEAM) {
+                soundManager.play(new LoopedEntityTrackingSoundInstance(USounds.SPELL_CAST_SHOOT, 0.3F, 1F, source));
             }
         });
     }

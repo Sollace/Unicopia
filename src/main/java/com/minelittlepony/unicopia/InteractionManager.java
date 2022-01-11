@@ -20,6 +20,7 @@ public class InteractionManager {
     public static final int SOUND_BEE = 2;
     public static final int SOUND_MINECART = 3;
     public static final int SOUND_GLIDING = 4;
+    public static final int SOUND_MAGIC_BEAM = 5;
 
     public static final int SCREEN_DISPELL_ABILITY = 0;
 

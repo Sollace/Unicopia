@@ -1,11 +1,13 @@
 package com.minelittlepony.unicopia.network.handler;
 
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
 import com.minelittlepony.unicopia.client.DiscoveryToast;
 import com.minelittlepony.unicopia.client.gui.TribeSelectionScreen;
+import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.MsgBlockDestruction;
 import com.minelittlepony.unicopia.network.MsgCancelPlayerAbility;
@@ -42,6 +44,10 @@ public class ClientNetworkHandlerImpl implements ClientNetworkHandler {
 
         if (entity instanceof Owned) {
             ((Owned<Entity>) entity).setMaster(world.getEntityById(packet.getEntityData()));
+        }
+
+        if (entity.getType() == UEntities.MAGIC_BEAM) {
+            InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_MAGIC_BEAM);
         }
 
         world.addEntity(packet.getId(), entity);

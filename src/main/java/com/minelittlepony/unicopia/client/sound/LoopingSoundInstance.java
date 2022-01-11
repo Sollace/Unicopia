@@ -29,7 +29,6 @@ public class LoopingSoundInstance<T extends Entity> extends FadeOutSoundInstance
         x = source.getX();
         y = source.getY();
         z = source.getZ();
-
         return true;
     }
 }
