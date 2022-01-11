@@ -47,14 +47,20 @@ public class MagicBeamEntityRenderer extends EntityRenderer<MagicProjectileEntit
             return;
         }
 
+        float scale = 1 - tickDelta/30F;
+
         matrices.push();
+        matrices.scale(scale, scale, scale);
 
         model.setAngles(entity, 0, 0, tickDelta,
                 entity.getYaw(tickDelta) * MathHelper.RADIANS_PER_DEGREE,
                 -entity.getPitch(tickDelta) * MathHelper.RADIANS_PER_DEGREE
         );
 
-        RenderLayer layer = model.getLayer(getTexture(entity));
+        RenderLayer layer = entity.getSpellSlot().get(true)
+                .map(spell -> spell.getType().getColor())
+                .map(RenderLayers::getMagicColored)
+                .orElseGet(RenderLayers::getMagicColored);
 
         model.render(matrices, vertexConsumers.getBuffer(layer), light, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
 
@@ -67,7 +73,7 @@ public class MagicBeamEntityRenderer extends EntityRenderer<MagicProjectileEntit
         private final ModelPart part;
 
         public Model(ModelPart part) {
-            super(texture -> RenderLayers.getFairy());
+            super(texture -> RenderLayers.getMagicColored());
             this.part = part;
         }
 

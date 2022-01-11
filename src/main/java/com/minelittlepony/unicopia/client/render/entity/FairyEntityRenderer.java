@@ -27,7 +27,7 @@ public class FairyEntityRenderer extends MobEntityRenderer<FairyEntity, FairyEnt
         private float radius;
 
         public Model() {
-            super(texture -> RenderLayers.getFairy());
+            super(texture -> RenderLayers.getMagicColored());
         }
 
         @Override

@@ -129,7 +129,7 @@ public class SphereParticle extends Particle implements Attachment {
         RenderSystem.setShaderColor(color[0], color[1], color[2], colorAlpha / 3F);
 
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        VertexConsumer buffer = immediate.getBuffer(RenderLayers.getMagicGlow());
+        VertexConsumer buffer = immediate.getBuffer(RenderLayers.getMagicNoColor());
 
         MatrixStack matrices = new MatrixStack();
 
