@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.trait;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.gson.JsonObject;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 
@@ -32,7 +34,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
 
 public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     public static final SpellTraits EMPTY = new SpellTraits(Map.of());
@@ -71,6 +72,10 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
 
     public boolean isEmpty() {
         return traits.isEmpty();
+    }
+
+    public boolean isPresent() {
+        return !isEmpty();
     }
 
     public boolean includes(SpellTraits other) {
@@ -142,6 +147,19 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return this == other || other instanceof SpellTraits && Objects.equals(traits, ((SpellTraits) other).traits);
     }
 
+    public static SpellTraits union(SpellTraits a, SpellTraits b) {
+        if (a.isEmpty()) {
+            return b;
+        }
+        if (b.isEmpty()) {
+            return a;
+        }
+        Map<Trait, Float> traits = new HashMap<>();
+        combine(traits, a.traits);
+        combine(traits, b.traits);
+        return traits.isEmpty() ? EMPTY : new SpellTraits(traits);
+    }
+
     public static SpellTraits union(SpellTraits...many) {
         Map<Trait, Float> traits = new HashMap<>();
         for (SpellTraits i : many) {
@@ -165,7 +183,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static SpellTraits of(Item item) {
-        return TraitLoader.INSTANCE.values.getOrDefault(Registry.ITEM.getId(item), EMPTY);
+        return TraitLoader.INSTANCE.getTraits(item);
     }
 
     public static SpellTraits of(Block block) {
@@ -219,6 +237,17 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
             return Optional.empty();
         }
         return Optional.of(new SpellTraits(entries));
+    }
+
+    public static Optional<SpellTraits> fromString(String traits) {
+        return fromEntries(Arrays.stream(traits.split(" ")).map(a -> a.split(":")).map(pair -> {
+            Trait key = Trait.fromName(pair[0]).orElse(null);
+            if (key == null) {
+                Unicopia.LOGGER.warn("Skipping unknown trait {}", pair[0]);
+                return null;
+            }
+            return Map.entry(key, Float.parseFloat(pair[1]));
+        }));
     }
 
     public static Stream<Map.Entry<Trait, Float>> streamFromNbt(NbtCompound traits) {
