@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -17,6 +18,7 @@ import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -29,6 +31,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.explosion.Explosion.DestructionType;
 
 /**
  * More powerful version of the vortex spell which creates a black hole.
@@ -37,7 +40,7 @@ import net.minecraft.util.math.Vec3d;
  *  - Garbage bin
  *  - Link with a teleportation spell to create a wormhole
  */
-public class DarkVortexSpell extends AttractiveSpell {
+public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
             .with(Trait.CHAOS, 5)
             .with(Trait.KNOWLEDGE, 1)
@@ -52,6 +55,14 @@ public class DarkVortexSpell extends AttractiveSpell {
 
     protected DarkVortexSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
+    }
+
+    @Override
+    public void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
+        if (!projectile.isClient()) {
+            projectile.world.createExplosion(projectile, pos.getX(), pos.getY(), pos.getZ(), 3, DestructionType.NONE);
+            toPlaceable().tick(projectile, Situation.BODY);
+        }
     }
 
     @Override
