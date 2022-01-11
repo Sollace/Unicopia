@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.minelittlepony.unicopia.client.gui.DrawableUtil;
+
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
@@ -11,18 +13,15 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vector4f;
 
 public class SphereModel {
-    protected static final double PI = Math.PI;
-    protected static final double TWO_PI = PI * 2F;
-
-    public static final SphereModel SPHERE = new SphereModel(40, 40, TWO_PI);
-    public static final SphereModel DISK = new SphereModel(40, 2, PI);
+    public static final SphereModel SPHERE = new SphereModel(40, 40, DrawableUtil.TAU);
+    public static final SphereModel DISK = new SphereModel(40, 2, DrawableUtil.PI);
 
     private final List<Vector4f> vertices = new ArrayList<>();
     private final Vector4f drawVert = new Vector4f();
 
     public SphereModel(double rings, double sectors, double azimuthRange) {
-        double zenithIncrement = PI / rings;
-        double azimuthIncrement = TWO_PI / sectors;
+        double zenithIncrement = DrawableUtil.PI / rings;
+        double azimuthIncrement = DrawableUtil.TAU / sectors;
         compileVertices(azimuthRange, zenithIncrement, azimuthIncrement, vertices::add);
     }
 
@@ -41,7 +40,7 @@ public class SphereModel {
     }
 
     private static void compileVertices(double azimuthRange, double zenithIncrement, double azimuthIncrement, Consumer<Vector4f> collector) {
-        for (double zenith = -PI; zenith < PI; zenith += zenithIncrement) {
+        for (double zenith = -DrawableUtil.PI; zenith < DrawableUtil.PI; zenith += zenithIncrement) {
             for (double azimuth = -azimuthRange; azimuth < azimuthRange; azimuth += azimuthIncrement) {
                 collector.accept(convertToCartesianCoord(new Vector4f(), 1, zenith, azimuth));
                 collector.accept(convertToCartesianCoord(new Vector4f(), 1, zenith + zenithIncrement, azimuth));

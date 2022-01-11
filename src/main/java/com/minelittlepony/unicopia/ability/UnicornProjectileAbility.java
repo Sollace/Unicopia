@@ -32,7 +32,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
 
     @Override
     public int getWarmupTime(Pony player) {
-        return 1;
+        return 8;
     }
 
     @Override
@@ -61,16 +61,38 @@ public class UnicornProjectileAbility implements Ability<Hit> {
     }
 
     @Override
+    public boolean onQuickAction(Pony player, ActivationType type) {
+        if (type == ActivationType.DOUBLE_TAP) {
+            if (!player.isClient()) {
+                TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(Hand.OFF_HAND);
+
+                if (thrown.getResult() != ActionResult.FAIL) {
+                    thrown.getValue().create().toThrowable().throwProjectile(player).ifPresent(projectile -> {
+                        player.subtractEnergyCost(getCostEstimate(player));
+                        player.setAnimation(Animation.ARMS_FORWARD, 2);
+                    });
+                }
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
     public void apply(Pony player, Hit data) {
-        TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(Hand.OFF_HAND);
+        TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(Hand.MAIN_HAND);
 
         if (thrown.getResult() != ActionResult.FAIL) {
-            player.subtractEnergyCost(getCostEstimate(player));
+
 
             Spell spell = thrown.getValue().create();
 
             spell.toThrowable().throwProjectile(player).ifPresent(projectile -> {
+                player.subtractEnergyCost(getCostEstimate(player));
                 player.setAnimation(Animation.ARMS_FORWARD);
+                projectile.setHydrophobic();
+
                 if (spell instanceof HomingSpell) {
                     RayTraceHelper.doTrace(player.getMaster(), 600, 1, EntityPredicates.CAN_COLLIDE).getEntity().filter(((HomingSpell)spell)::setTarget).ifPresent(target -> {
                         projectile.setHomingTarget(target);

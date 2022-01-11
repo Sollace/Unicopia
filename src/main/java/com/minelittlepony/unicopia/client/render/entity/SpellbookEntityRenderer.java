@@ -11,8 +11,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
 public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntity, SpellbookModel> {
-    private static final Identifier BLUE = new Identifier("unicopia", "textures/entity/spellbook/blue.png");
-    private static final Identifier NORMAL = new Identifier("unicopia", "textures/entity/spellbook/normal.png");
+    private static final Identifier TEXTURE = new Identifier("unicopia", "textures/entity/spellbook/normal.png");
 
     public SpellbookEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new SpellbookModel(SpellbookModel.getTexturedModelData().createModel()), 0);
@@ -20,7 +19,7 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
 
     @Override
     public Identifier getTexture(SpellbookEntity entity) {
-        return entity.isAltered() ? BLUE : NORMAL;
+        return TEXTURE;
     }
 
     @Override

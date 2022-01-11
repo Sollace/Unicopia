@@ -15,9 +15,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 
 public class DrawableUtil {
-    public static final double TWO_PI = Math.PI * 2;
+    public static final double PI = Math.PI;
+    public static final double TAU = Math.PI * 2;
     private static final double NUM_RINGS = 300;
-    private static final double INCREMENT = TWO_PI / NUM_RINGS;
+    private static final double INCREMENT = TAU / NUM_RINGS;
 
 
     public static void renderItemIcon(ItemStack stack, double x, double y, float scale) {
@@ -76,7 +77,7 @@ public class DrawableUtil {
             return;
         }
 
-        final double maxAngle = MathHelper.clamp(startAngle + arcAngle, 0, TWO_PI - INCREMENT);
+        final double maxAngle = MathHelper.clamp(startAngle + arcAngle, 0, TAU - INCREMENT);
 
         if (!mirrorHorizontally) {
             startAngle = -startAngle;
@@ -137,7 +138,7 @@ public class DrawableUtil {
             return;
         }
 
-        final double maxAngle = MathHelper.clamp(startAngle + arcAngle, 0, TWO_PI - INCREMENT);
+        final double maxAngle = MathHelper.clamp(startAngle + arcAngle, 0, TAU - INCREMENT);
 
         if (!mirrorHorizontally) {
             startAngle = -startAngle;

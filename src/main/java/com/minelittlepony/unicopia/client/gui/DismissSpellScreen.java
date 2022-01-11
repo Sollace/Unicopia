@@ -59,12 +59,12 @@ public class DismissSpellScreen extends GameGui {
         matrices.push();
         matrices.translate(width - mouseX, height - mouseY, 0);
         DrawableUtil.drawLine(matrices, 0, 0, relativeMouseX, relativeMouseY, 0xFFFFFF88);
-        DrawableUtil.drawArc(matrices, 40, 80, 0, DrawableUtil.TWO_PI, 0x00000010, false);
-        DrawableUtil.drawArc(matrices, 160, 1600, 0, DrawableUtil.TWO_PI, 0x00000020, false);
+        DrawableUtil.drawArc(matrices, 40, 80, 0, DrawableUtil.TAU, 0x00000010, false);
+        DrawableUtil.drawArc(matrices, 160, 1600, 0, DrawableUtil.TAU, 0x00000020, false);
 
         super.render(matrices, mouseX, mouseY, delta);
 
-        DrawableUtil.drawCircle(matrices, 2, 0, DrawableUtil.TWO_PI, 0xFFAAFF99, false);
+        DrawableUtil.drawCircle(matrices, 2, 0, DrawableUtil.TAU, 0xFFAAFF99, false);
         matrices.pop();
 
         DrawableUtil.drawLine(matrices, mouseX, mouseY - 4, mouseX, mouseY + 4, 0xFFAAFF99);
@@ -159,10 +159,10 @@ public class DismissSpellScreen extends GameGui {
 
             int color = actualSpell.getType().getColor() << 2;
 
-            DrawableUtil.drawArc(matrices, 7, 8, 0, DrawableUtil.TWO_PI, color | 0x00000088, false);
+            DrawableUtil.drawArc(matrices, 7, 8, 0, DrawableUtil.TAU, color | 0x00000088, false);
 
             if (isMouseOver(relativeMouseX, relativeMouseY)) {
-                DrawableUtil.drawArc(matrices, 0, 8, 0, DrawableUtil.TWO_PI, color | 0x000000FF, false);
+                DrawableUtil.drawArc(matrices, 0, 8, 0, DrawableUtil.TAU, color | 0x000000FF, false);
                 renderTooltip(matrices, tooltip, 0, 0);
 
                 if (!lastMouseOver) {

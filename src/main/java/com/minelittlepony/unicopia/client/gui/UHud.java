@@ -167,8 +167,8 @@ public class UHud extends DrawableHelper {
                 int color = spell.type().getColor() | 0x000000FF;
                 double radius = 2 + Math.sin(client.player.age / 9D) / 4;
 
-                DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TWO_PI, color & 0xFFFFFF2F, false);
-                DrawableUtil.drawArc(modelStack, radius + 3, radius + 4, 0, DrawableUtil.TWO_PI, color & 0xFFFFFFAF, false);
+                DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TAU, color & 0xFFFFFF2F, false);
+                DrawableUtil.drawArc(modelStack, radius + 3, radius + 4, 0, DrawableUtil.TAU, color & 0xFFFFFFAF, false);
 
                 modelStack.pop();
             }

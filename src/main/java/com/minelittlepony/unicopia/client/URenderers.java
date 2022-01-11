@@ -22,6 +22,7 @@ import com.minelittlepony.unicopia.client.render.WingsFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.entity.ButterflyEntityRenderer;
 import com.minelittlepony.unicopia.client.render.entity.CastSpellEntityRenderer;
 import com.minelittlepony.unicopia.client.render.entity.FairyEntityRenderer;
+import com.minelittlepony.unicopia.client.render.entity.MagicBeamEntityRenderer;
 import com.minelittlepony.unicopia.client.render.entity.SpellbookEntityRenderer;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.ChameleonItem;
@@ -70,6 +71,7 @@ public interface URenderers {
         AccessoryFeatureRenderer.register(BatWingsFeatureRenderer::new);
 
         EntityRendererRegistry.register(UEntities.THROWN_ITEM, FlyingItemEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.MAGIC_BEAM, MagicBeamEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.BUTTERFLY, ButterflyEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.FLOATING_ARTEFACT, FloatingArtefactEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.CAST_SPELL, CastSpellEntityRenderer::new);
