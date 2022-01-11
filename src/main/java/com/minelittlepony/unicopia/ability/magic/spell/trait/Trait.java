@@ -6,10 +6,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.minelittlepony.common.client.gui.Tooltip;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -100,6 +103,13 @@ public enum Trait {
 
     public static Collection<Trait> all() {
         return IDS.values();
+    }
+
+    public static Stream<Trait> fromNbt(NbtList nbt) {
+        return nbt.stream()
+                .map(NbtElement::asString)
+                .map(Trait::fromId)
+                .flatMap(Optional::stream);
     }
 
     public static Optional<Trait> fromId(Identifier id) {

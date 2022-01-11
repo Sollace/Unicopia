@@ -122,23 +122,24 @@ public class TraitDiscovery implements NbtSerialisable {
         NbtCompound disco = compound.getCompound("items");
         disco.getKeys().forEach(key -> {
             Optional.ofNullable(Identifier.tryParse(key)).ifPresent(id -> {
-                SpellTraits.fromNbt(disco.getCompound(key)).ifPresent(val -> {
+                loadTraits(id, disco.getCompound(key)).filter(SpellTraits::isPresent).ifPresent(val -> {
                     items.put(id, val);
                 });
             });
         });
-        compound.getList("traits", NbtElement.STRING_TYPE).stream()
-            .map(NbtElement::asString)
-            .map(Trait::fromId)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .forEach(this.traits::add);
-        compound.getList("unreadTraits", NbtElement.STRING_TYPE).stream()
-            .map(NbtElement::asString)
-            .map(Trait::fromId)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .forEach(this.unreadTraits::add);
+        Trait.fromNbt(compound.getList("traits", NbtElement.STRING_TYPE)).forEach(traits::add);
+        Trait.fromNbt(compound.getList("unreadTraits", NbtElement.STRING_TYPE)).forEach(unreadTraits::add);
+    }
+
+    private Optional<SpellTraits> loadTraits(Identifier itemId, NbtCompound nbt) {
+        if (!pony.isClient()) {
+            return Registry.ITEM.getOrEmpty(itemId)
+                    .flatMap(item -> Optional.of(SpellTraits.of(item)))
+                    .filter(SpellTraits::isPresent)
+                    .or(() -> SpellTraits.fromNbt(nbt));
+        }
+
+        return SpellTraits.fromNbt(nbt);
     }
 
     public void copyFrom(TraitDiscovery old) {
