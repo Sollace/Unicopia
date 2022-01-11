@@ -1,0 +1,16 @@
+{
+   "replace": false,
+   "traits": "air:4",
+   "items": [
+     "minecraft:scute",
+     "minecraft:arrow",
+     "minecraft:fishing_rod",
+     "minecraft:end_crystal",
+     "minecraft:spectral_arrow",
+     "minecraft:tipped_arrow",
+     "minecraft:splash_potion",
+     "minecraft:dragon_breath",
+     "minecraft:lingering_potion",
+     "minecraft:phantom_membrane"
+   ]
+}

@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "traits": "darkness:2 earth:-1 chaos:2 order:-1 blood:4",
+  "items": [
+    "minecraft:soul_sand"
+  ]
+}

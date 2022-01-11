@@ -1,0 +1,12 @@
+{
+   "replace": false,
+   "traits": "fire:5",
+   "items": [
+     "minecraft:fire_charge",
+     "minecraft:lava_bucket",
+     "minecraft:blaze_powder",
+     "minecraft:magma_cream",
+     "minecraft:glistering_melon_slice",
+     "minecraft:furnace_minecart"
+   ]
+}

@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "traits": "earth:2 life:1 water:9",
+  "items": [
+    "minecraft:wet_sponge"
+  ]
+}

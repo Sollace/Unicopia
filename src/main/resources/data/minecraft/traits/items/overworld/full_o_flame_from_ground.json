@@ -1,0 +1,9 @@
+{
+   "replace": false,
+   "traits": "fire:3 earth:2",
+   "items": [
+     "minecraft:flint",
+     "minecraft:flint_and_steel",
+     "minecraft:coal"
+   ]
+}

@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "traits": "happiness:7 knowledge:7 order:4 focus:2",
+  "items": [
+    "minecraft:painting"
+  ]
+}

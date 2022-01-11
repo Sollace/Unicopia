@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "traits": "strength:5 earth:2 power:-2 knowledge:2 darkness:3 blood:4",
+  "items": [
+    "minecraft:chiseled_red_sandstone"
+  ]
+}

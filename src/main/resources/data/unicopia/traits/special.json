@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "items": {
+    "unicopia:empty_jar": "air:9",
+    "unicopia:rain_cloud_jar": "air:8 water:6",
+    "unicopia:storm_cloud_jar": "air:8 water:6",
+    "unicopia:lightning_cloud_jar": "air:8 water:6 power:9",
+    "unicopia:zap_apple_jam_jar": "air:8 chaos:6",
+    "unicopia:mug": "earth:1 order:1",
+    "unicopia:golden_feather": "order:16 chaos:-14",
+    "unicopia:butterfly": "darkness:4 blood:7",
+    "unicopia:spellbook": "power:18 darkness:7",
+    "unicopia:pegasus_amulet": "power:18 order:10 power:9",
+    "unicopia:alicorn_amulet": "strength:23 order:-10 power:11 darkness:22"
+  }
+}

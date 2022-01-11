@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "traits": "knowledge:9 order:3",
+  "items": [
+    "minecraft:flower_banner_pattern",
+    "minecraft:creeper_banner_pattern",
+    "minecraft:skull_banner_pattern",
+    "minecraft:mojang_banner_pattern",
+    "minecraft:globe_banner_pattern",
+    "minecraft:piglin_banner_pattern",
+    "minecraft:map",
+    "minecraft:item_frame",
+    "minecraft:written_book",
+    "minecraft:filled_map",
+
+    "minecraft:clock",
+    "minecraft:spyglass",
+    "minecraft:compass"
+  ]
+}

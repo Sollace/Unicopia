@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "items": {
+    "unicopia:crystal_heart": "order:19 power:17",
+    "unicopia:crystal_shard": "order:2 power:6",
+    "unicopia:gemstone": "order:1 power:-1",
+    "unicopia:pebbles": "earth:3",
+    "unicopia:rock": "earth:6",
+    "unicopia:weird_rock": "earth:16 chaos:9",
+    "unicopia:rock_stew": "earth:9 chaos:16"
+  }
+}

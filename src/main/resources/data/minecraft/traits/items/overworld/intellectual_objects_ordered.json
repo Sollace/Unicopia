@@ -1,0 +1,10 @@
+{
+   "replace": false,
+   "traits": "knowledge:9 order:9",
+   "items": [
+     "minecraft:minecart",
+     "minecraft:chest_minecart",
+     "minecraft:hopper_minecart",
+     "minecraft:bucket"
+   ]
+}

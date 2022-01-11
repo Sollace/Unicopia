@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "traits": "life:10 earth:2",
+  "items": [
+    "minecraft:pumpkin_seeds",
+    "minecraft:beetroot_seeds",
+    "minecraft:melon_seeds",
+    "minecraft:cocoa_beans",
+    "minecraft:egg",
+    "minecraft:wheat_seeds",
+    "minecraft:wheat",
+    "minecraft:bone_meal",
+    "minecraft:honeycomb"
+  ]
+}

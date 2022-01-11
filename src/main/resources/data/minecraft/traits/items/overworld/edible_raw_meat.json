@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "traits": "blood:1 famine:-2",
+  "items": [
+    "minecraft:beef",
+    "minecraft:rabbit",
+    "minecraft:porkchop",
+    "minecraft:chicken",
+    "minecraft:mutton"
+  ]
+}

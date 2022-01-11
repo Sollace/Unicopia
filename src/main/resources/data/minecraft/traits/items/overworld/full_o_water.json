@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "traits": "water:7",
+  "items": [
+    "minecraft:water_bucket"
+  ]
+}

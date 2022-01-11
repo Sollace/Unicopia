@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "traits": "strength:12 earth:-0.5 generosity:-1 blood:2 darkness:9",
+  "items": [
+    "minecraft:netherite_helmet",
+    "minecraft:netherite_chestplate",
+    "minecraft:netherite_leggings",
+    "minecraft:netherite_boots"
+  ]
+}

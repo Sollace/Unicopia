@@ -1,0 +1,23 @@
+{
+   "replace": false,
+   "traits": "order:1 knowledge:3",
+   "items": [
+     "minecraft:bowl",
+     "minecraft:string",
+     "minecraft:paper",
+     "minecraft:bundle",
+     "minecraft:oak_sign",
+     "minecraft:spruce_sign",
+     "minecraft:birch_sign",
+     "minecraft:jungle_sign",
+     "minecraft:acacia_sign",
+     "minecraft:dark_oak_sign",
+     "minecraft:oak_boat",
+     "minecraft:spruce_boat",
+     "minecraft:birch_boat",
+     "minecraft:jungle_boat",
+     "minecraft:acacia_boat",
+     "minecraft:dark_oak_boat",
+     "minecraft:rabbit_hide"
+   ]
+}

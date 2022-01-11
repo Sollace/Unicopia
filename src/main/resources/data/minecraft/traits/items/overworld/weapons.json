@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "traits": "order:-2 kindness:-8 strength:9 blood:2",
+  "items": [
+    "minecraft:wooden_sword",
+    "minecraft:stone_sword",
+    "minecraft:golden_sword",
+    "minecraft:iron_sword",
+    "minecraft:diamond_sword",
+    "minecraft:trident",
+    "minecraft:crossbow"
+  ]
+}

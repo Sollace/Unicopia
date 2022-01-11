@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "traits": "blood:5 darkness:9 rot:1",
+  "items": [
+    "minecraft:pufferfish",
+    "minecraft:bone",
+    "minecraft:rabbit_foot",
+    "minecraft:shulker_shell",
+    "minecraft:leather"
+  ]
+}

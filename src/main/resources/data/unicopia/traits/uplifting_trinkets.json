@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "items": {
+    "unicopia:music_disc_crusade": "order:10 happiness:9",
+    "unicopia:music_disc_pet": "order:10 kindness:8 focus:9",
+    "unicopia:music_disc_popular": "order:10 generosity:8 focus:9",
+    "unicopia:music_disc_funk": "chaos:-10",
+    "unicopia:friendship_bracelet": "generosity:1 order:2 happiness:1"
+  }
+}

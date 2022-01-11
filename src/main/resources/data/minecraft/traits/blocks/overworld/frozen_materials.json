@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "traits": "ice:3 water:3",
+  "items": [
+    "minecraft:snow",
+    "minecraft:ice",
+    "minecraft:snow_block",
+    "minecraft:packed_ice",
+    "minecraft:blue_ice"
+  ]
+}

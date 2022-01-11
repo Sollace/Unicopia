@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "traits": "blood:1 strength:5",
+  "items": [
+    "minecraft:saddle",
+    "minecraft:leather_helmet",
+    "minecraft:leather_chestplate",
+    "minecraft:leather_leggings",
+    "minecraft:leather_boots",
+    "minecraft:leather_horse_armor"
+  ]
+}

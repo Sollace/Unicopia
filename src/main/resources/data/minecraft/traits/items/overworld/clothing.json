@@ -1,0 +1,11 @@
+{
+   "replace": false,
+   "traits": "strength:3 earth:0.5",
+   "items": [
+     "minecraft:iron_helmet",
+     "minecraft:iron_chestplate",
+     "minecraft:iron_leggings",
+     "minecraft:iron_boots",
+     "minecraft:iron_horse_armor"
+   ]
+}

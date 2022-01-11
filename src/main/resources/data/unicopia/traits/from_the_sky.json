@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "traits": "life:1 air:9 kindness:-6",
+  "items": [
+    "unicopia:gryphon_feather"
+  ]
+}

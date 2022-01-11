@@ -1,0 +1,73 @@
+{
+  "replace": false,
+  "traits": "knowledge:3 order:1 power:0.5",
+  "items": [
+    "minecraft:lever",
+    "minecraft:enchanting_table",
+    "minecraft:end_rod",
+    
+    "minecraft:stone_button",
+    "minecraft:polished_blackstone_button",
+    "minecraft:stone_pressure_plate",
+    "minecraft:polished_blackstone_pressure_plate",
+    "minecraft:light_weighted_pressure_plate",
+    "minecraft:heavy_weighted_pressure_plate",
+    "minecraft:ender_chest",
+    "minecraft:scaffolding",
+    "minecraft:respawn_anchor",
+    
+    "minecraft:beacon",
+    "minecraft:piston",
+    "minecraft:sticky_piston",
+    "minecraft:torch",
+    "minecraft:observer",
+    "minecraft:hopper",
+    "minecraft:dispenser",
+    "minecraft:dropper",
+    "minecraft:lectern",
+    "minecraft:target",
+    "minecraft:conduit",
+
+    "minecraft:redstone",
+    "minecraft:redstone_torch",
+    "minecraft:redstone_block",
+   
+    "minecraft:stonecutter",
+    "minecraft:bell",
+    "minecraft:lantern",
+    "minecraft:soul_lantern",
+    "minecraft:furnace",
+    
+    "minecraft:smoker",
+    "minecraft:blast_furnace",
+    "minecraft:cartography_table",
+    "minecraft:fletching_table",
+    "minecraft:grindstone",
+    "minecraft:smithing_table",
+    "minecraft:lodestone",
+    
+    "minecraft:brewing_stand",
+    "minecraft:cauldron",
+    "minecraft:flower_pot",
+    
+    "minecraft:lightning_rod",
+    "minecraft:daylight_detector",
+    
+    "minecraft:tripwire_hook",
+    
+    
+    "minecraft:iron_door",
+    "minecraft:iron_trapdoor",
+    "minecraft:powered_rail",
+    "minecraft:detector_rail",
+    "minecraft:rail",
+    "minecraft:activator_rail",
+    
+    "minecraft:redstone_lamp",
+    "minecraft:note_block",
+    
+    "minecraft:repeater",
+    "minecraft:comparator",
+    "minecraft:jukebox"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "items": {
+    "minecraft:nether_star": "power:19",
+    "minecraft:armor_stand": "power:9",
+    "minecraft:name_tag": "knowledge:10",
+    "minecraft:book": "knowledge:1",
+    "minecraft:shield": "strength:15",
+    "minecraft:sugar": "happiness:1",
+    "minecraft:totem_of_undying": "generosity:16",
+    "minecraft:heart_of_the_sea": "kindness:17",
+    "minecraft:elytra": "power:1 focus:2",
+    "minecraft:turtle_helmet": "strength:4 darkness:1",
+    "minecraft:stick": "earth:1",
+    "minecraft:slime_ball": "rot:2",
+    "minecraft:ink_sac": "darkness:4",
+    "minecraft:glow_ink_sac": "focus:1 chaos:3",
+    "minecraft:nautilus_shell": "water:6 life:3"
+  }
+}

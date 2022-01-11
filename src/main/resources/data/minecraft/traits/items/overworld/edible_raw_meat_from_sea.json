@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "traits": "life:1 famine:-2 water:5",
+  "items": [
+    "minecraft:cod",
+    "minecraft:salmon",
+    "minecraft:tropical_fish"
+  ]
+}

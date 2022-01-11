@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "traits": "strength:5 earth:2 power:-2 knowledge:2",
+  "items": [
+    "minecraft:polished_granite",
+    "minecraft:polished_diorite",
+    "minecraft:polished_andesite",
+    "minecraft:polished_deepslate",
+    "minecraft:polished_deepslate_wall",
+    "minecraft:polished_granite_stairs",
+    "minecraft:polished_diorite_stairs",
+    "minecraft:polished_andesite_stairs",
+    "minecraft:polished_deepslate_stairs",
+    "minecraft:polished_granite_slab",
+    "minecraft:polished_diorite_slab",
+    "minecraft:polished_andesite_slab",
+    "minecraft:polished_deepslate_slab",
+    "minecraft:chiseled_stone_bricks",
+    "minecraft:chiseled_deepslate"
+  ]
+}

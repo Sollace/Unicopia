@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "items": {
+    "minecraft:netherite_ingot": "power:7 order:6 strength:5 darkness:7",
+    "minecraft:netherite_scrap": "power:1 order:1.5 strength:1 darkness:8",
+    "minecraft:glowstone_dust": "fire:0.5",
+    "minecraft:nether_brick": "earth:-1 chaos:1 darkness:3",
+    "minecraft:blaze_rod": "fire:3.5",
+    "minecraft:ghast_tear": "water:0.1 darkness:5"
+  }
+}

@@ -1,0 +1,10 @@
+{
+   "replace": false,
+   "traits": "earth:4",
+   "items": [
+     "minecraft:brick",
+     "minecraft:clay_ball",
+     "minecraft:prismarine_shard",
+     "minecraft:prismarine_crystals"
+   ]
+}

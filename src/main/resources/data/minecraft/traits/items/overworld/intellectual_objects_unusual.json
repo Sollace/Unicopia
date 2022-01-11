@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "traits": "knowledge:7 chaos:1",
+  "items": [
+    "minecraft:glow_item_frame",
+    "minecraft:ender_pearl"
+  ]
+}

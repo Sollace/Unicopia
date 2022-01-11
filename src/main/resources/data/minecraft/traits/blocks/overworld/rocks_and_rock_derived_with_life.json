@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "traits": "strength:2 earth:1 power:-2 life:1",
+  "items": [
+    "minecraft:mossy_stone_bricks",
+    "minecraft:mossy_stone_brick_wall",
+    "minecraft:mossy_stone_brick_stairs",
+    "minecraft:mossy_stone_brick_slab"
+  ]
+}

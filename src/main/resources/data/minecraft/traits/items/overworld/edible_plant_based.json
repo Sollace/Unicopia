@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "items": {
+    "minecraft:apple": "life:3",
+    "minecraft:bread": "earth:3 kindness:1",
+    "minecraft:carrot_on_a_stick": "chaos:1",
+    "minecraft:mushroom_stew": "order:2 life:1",
+    "minecraft:chorus_fruit": "chaos:2",
+    "minecraft:popped_chorus_fruit": "chaos:3",
+    "minecraft:beetroot": "strength:1 earth:1",
+    "minecraft:pumpkin_pie": "happiness:2",
+    "minecraft:dried_kelp": "life:-1 rot:0.03",
+    "minecraft:beetroot_soup": "earth:1",
+    "minecraft:suspicious_stew": "chaos:3 happiness:-1",
+    "minecraft:baked_potato": "earth:2",
+    "minecraft:poisonous_potato": "earth:2 poison:1",
+    "minecraft:melon_slice": "life:1",
+    "minecraft:cookie": "happiness:6"
+  }
+}

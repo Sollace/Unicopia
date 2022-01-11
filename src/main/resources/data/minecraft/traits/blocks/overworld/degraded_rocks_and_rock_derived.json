@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "traits": "strength:2 earth:5 power:-1 order:-1",
+  "items": [
+    "minecraft:cracked_stone_bricks",
+    "minecraft:cracked_deepslate_bricks",
+    "minecraft:cracked_deepslate_tiles"
+  ]
+}

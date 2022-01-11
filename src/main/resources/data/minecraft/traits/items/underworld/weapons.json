@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "traits": "order:-2 kindness:-3 strength:13 darkness:9 blood:4",
+  "items": [
+    "minecraft:netherite_sword"
+  ]
+}

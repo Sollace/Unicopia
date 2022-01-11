@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "traits": "order:9 happiness:10 strength:7 focus:14",
+  "items": [
+    "minecraft:golden_apple",
+    "minecraft:enchanted_golden_apple",
+    "minecraft:golden_carrot",
+    "minecraft:honey_bottle"
+  ]
+}

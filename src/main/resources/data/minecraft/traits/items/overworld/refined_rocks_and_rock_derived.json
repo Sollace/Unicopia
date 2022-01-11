@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "items": {
+    "minecraft:diamond": "strength:10",
+    "minecraft:emerald": "generosity:-2",
+    "minecraft:quartz": "earth:-1.3 strength:-1 darkness:1",
+    "minecraft:amethyst_shard": "earth:-0.1 order:9",
+    
+    "minecraft:lapis_lazuli": "order:2 power:4 order:5",
+
+    "minecraft:raw_iron": "focus:2 earth:-0.7 strength:4",
+    "minecraft:raw_copper": "focus:1.5 earth:-0.7 strength:4",
+    "minecraft:raw_gold": "focus:0.5 earth:-1.9 strength:-2 order:7",
+
+    "minecraft:gold_nugget": "earth:0.1 chaos:1 happiness:1",
+    "minecraft:iron_nugget": "earth:0.1 chaos:1 generosity:1",
+    "minecraft:iron_ingot": "focus:7 earth:-2 strength:12",
+    "minecraft:copper_ingot": "focus:6 earth:-2 strength:11",
+    "minecraft:gold_ingot": "focus:2 earth:-2.9 strength:-1 order:8"
+  }
+}

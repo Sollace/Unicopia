@@ -1,0 +1,76 @@
+{
+  "replace": false,
+  "traits": "strength:2 earth:1 power:-0.5",
+  "items": [
+    "minecraft:grass_block",
+    "minecraft:dirt",
+    "minecraft:course_dirt",
+    "minecraft:podzol",
+    "minecraft:rooted_dirt",
+
+    "minecraft:dirt_path",
+
+    "minecraft:clay",
+
+	"minecraft:coal_ore",
+    "minecraft:deepslate_coal_ore",
+    "minecraft:iron_ore",
+    "minecraft:deepslate_iron_ore",
+    "minecraft:copper_ore",
+    "minecraft:deepslate_copper_ore",
+    "minecraft:gold_ore",
+    "minecraft:deepslate_gold_ore",
+    "minecraft:redstone_ore",
+    "minecraft:deepslare_redstone_ore",
+    "minecraft:emerald_ore",
+    "minecraft:deepslate_emerald_ore",
+    "minecraft:lapis_ore",
+    "minecraft:deepslate_lapis_ore",
+    "minecraft:diamond_ore",
+    "minecraft:deepslate_diamond_ore",
+
+    "minecraft:raw_iron_block",
+    "minecraft:raw_copper_block",
+    "minecraft:raw_gold_block",
+
+    "minecraft:amethyst_block",
+    "minecraft:budding_amethyst",
+    
+    "minecraft:lapis_block",
+
+    "minecraft:brick_slab",
+    "minecraft:bricks",
+
+    "minecraft:petrified_oak_slab",
+
+    "minecraft:small_amethyst_bud",
+    "minecraft:medium_amethyst_bud",
+    "minecraft:large_amethyst_bud",
+    "minecraft:amethyst_cluster",
+    "minecraft:pointed_dripstone",
+    
+    "minecraft:anvil",
+    "minecraft:chipped_anvil",
+    "minecraft:damaged_anvil",
+    "minecraft:chiseled_quartz_block",
+    "minecraft:quartz_block",
+    "minecraft:quartz_bricks",
+    "minecraft:quartz_pillar",
+    "minecraft:quartz_stairs",
+
+    "minecraft:magma_block",
+    "minecraft:bone_block",
+    "minecraft:obsidian",
+    "minecraft:crying_obsidian",
+    
+    "minecraft:prismarine",
+    "minecraft:prismarine_bricks",
+    "minecraft:dark_prismarine",
+    "minecraft:prismarine_stairs",
+    "minecraft:prismarine_brick_stairs",
+    "minecraft:dark_prismarine_stairs",
+    
+    "minecraft:iron_bars",
+    "minecraft:chain"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "traits": "fire:1 blood:1 rot:1",
+  "items": [
+    "minecraft:shroomlight"
+  ]
+}

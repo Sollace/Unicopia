@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "traits": "water:5 life:5",
+  "items": [
+    "minecraft:milk_bucket",
+    "minecraft:pufferfish_bucket",
+    "minecraft:salmon_bucket",
+    "minecraft:cod_bucket",
+    "minecraft:tropical_fish_bucket",
+    "minecraft:axolotl_bucket"
+  ]
+}

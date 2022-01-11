@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "traits": "darkness:2 earth:-1 chaos:1 blood:4",
+  "items": [
+    "minecraft:red_sandstone",
+    "minecraft:cut_red_sandstone",
+    "minecraft:red_sandstone_stairs"
+  ]
+}

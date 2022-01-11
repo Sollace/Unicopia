@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "traits": "water:6 ice:3",
+  "items": [
+    "minecraft:powder_snow_bucket",
+    "minecraft:snowball"
+  ]
+}

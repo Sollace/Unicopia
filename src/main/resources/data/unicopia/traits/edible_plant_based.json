@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "items": {
+    "unicopia:green_apple": "life:3",
+    "unicopia:sweet_apple": "life:3",
+    "unicopia:sour_apple": "life:3",
+    "unicopia:zap_apple": "chaos:5",
+    "unicopia:rotten_apple": "rot:2",
+    "unicopia:cooked_zap_apple": "chaos:10",
+    "unicopia:daffodil_daisy_sandwich": "life:2 earth:1",
+    "unicopia:hay_burger": "life:2 earth:1",
+    "unicopia:hay_fries": "life:1 earth:2",
+    "unicopia:wheat_worms": "life:4 earth:6",
+    "unicopia:cider": "chaos:1 darkness:1",
+    "unicopia:juice": "chaos:-1 darkness:-9",
+    "unicopia:burned_juice": "chaos:-1 darkness:-19"
+  }
+}

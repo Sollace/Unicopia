@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "traits": "earth:1 chaos:8",
+  "items": [
+    "minecraft:purpur_slab",
+    "minecraft:purpur_block",
+    "minecraft:purpur_pillar",
+    "minecraft:purpur_stairs"
+  ]
+}

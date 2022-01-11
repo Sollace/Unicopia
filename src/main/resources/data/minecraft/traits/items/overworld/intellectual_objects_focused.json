@@ -1,0 +1,9 @@
+{
+   "replace": false,
+   "traits": "knowledge:9 focus:9",
+   "items": [
+     "minecraft:potion",
+     "minecraft:glass_bottle",
+     "minecraft:ender_eye"
+   ]
+}

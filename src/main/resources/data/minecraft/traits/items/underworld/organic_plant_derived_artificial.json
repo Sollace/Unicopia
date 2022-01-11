@@ -1,0 +1,8 @@
+{
+   "replace": false,
+   "traits": "order:1 knowledge:3 blood:4 darkness:2",
+   "items": [
+     "minecraft:crimson_sign",
+     "minecraft:warped_sign"
+   ]
+}

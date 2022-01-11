@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "traits": "knowledge:9 order:5 focus:8 power:2",
+  "items": [
+    "minecraft:experience_bottle",
+    "minecraft:firework_rocket",
+    "minecraft:firework_star",
+    "minecraft:enchanted_book"
+  ]
+}
