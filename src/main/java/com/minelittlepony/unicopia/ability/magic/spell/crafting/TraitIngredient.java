@@ -22,20 +22,12 @@ public record TraitIngredient (
     }
 
     public void write(PacketByteBuf buf) {
-        min.ifPresentOrElse(m -> {
-            buf.writeBoolean(true);
-            m.write(buf);
-        }, () -> buf.writeBoolean(false));
-        max.ifPresentOrElse(m -> {
-            buf.writeBoolean(true);
-            m.write(buf);
-        }, () -> buf.writeBoolean(false));
+        buf.writeOptional(min, (b, m) -> m.write(b));
+        buf.writeOptional(max, (b, m) -> m.write(b));
     }
 
     public static TraitIngredient fromPacket(PacketByteBuf buf) {
-        Optional<SpellTraits> min = Optional.empty();
-        Optional<SpellTraits> max = Optional.empty();
-        return new TraitIngredient(min, max);
+        return new TraitIngredient(SpellTraits.fromPacket(buf), SpellTraits.fromPacket(buf));
     }
 
     public static TraitIngredient fromJson(JsonObject json) {

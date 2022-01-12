@@ -216,6 +216,12 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static Optional<SpellTraits> fromPacket(PacketByteBuf buf) {
+
+        boolean present = buf.readBoolean();
+        if (!present) {
+            return Optional.empty();
+        }
+
         Map<Trait, Float> entries = new HashMap<>();
         int count = buf.readInt();
         if (count <= 0) {
