@@ -10,6 +10,7 @@ run/
 .factorypath
 logs/
 .idea/
+completed_ideas
 ideas
 *.iml
 classes/
