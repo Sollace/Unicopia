@@ -1,0 +1,13 @@
+{
+  "type": "unicopia:spellbook/crafting",
+  "material": {
+    "item": { "item": "unicopia:gemstone" },
+    "spell": "unicopia:dark_vortex"
+  },
+  "traits": {
+    "darkness": 30, "power": 30, "blood": 30
+  },
+  "result": {
+    "item": "unicopia:alicorn_amulet"
+  }
+}
