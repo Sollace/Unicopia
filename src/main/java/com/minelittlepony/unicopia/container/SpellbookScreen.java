@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.container;
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.element.Button;
+import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -15,6 +16,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
@@ -23,9 +26,11 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
-public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
+public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> implements RecipeBookProvider {
     public static final Identifier TEXTURE = new Identifier("unicopia", "textures/gui/container/book.png");
     public static final Identifier SLOT = new Identifier("unicopia", "textures/gui/container/slot.png");
+
+    private final RecipeBookWidget recipeBook = new RecipeBookWidget();
 
     private final ScrollContainer container = new ScrollContainer() {
         {
@@ -89,6 +94,18 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
         addDrawableChild(new PageButton(x + 350, y + 187, 1));
         addDrawableChild(new PageButton(x + 300, y + 187, -1));
         container.init(this::initPageContent);
+        addDrawable(container);
+        ((IViewRoot)this).getChildElements().add(container);
+    }
+
+    @Override
+    public void refreshRecipeBook() {
+        container.init(this::initPageContent);
+    }
+
+    @Override
+    public RecipeBookWidget getRecipeBookWidget() {
+        return recipeBook;
     }
 
     @Override
@@ -147,8 +164,6 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
     private void initPageContent() {
         container.getContentPadding().setVertical(10);
         container.getContentPadding().bottom = 30;
-        addDrawable(container);
-        ((IViewRoot)this).getChildElements().add(container);
 
         switch (SpellbookPage.getCurrent()) {
             case DISCOVERIES: {
@@ -173,11 +188,16 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> {
             case RECIPES:
                 int top = 0;
                 for (SpellbookRecipe recipe : this.client.world.getRecipeManager().listAllOfType(URecipes.SPELLBOOK)) {
-                    IngredientTree tree = new IngredientTree(0, top,
-                            container.width - container.scrollbar.getBounds().width + 2,
-                            20);
-                    recipe.buildCraftingTree(tree);
-                    top += tree.build(container);
+                    if (client.player.getRecipeBook().contains(recipe)) {
+                        IngredientTree tree = new IngredientTree(0, top,
+                                container.width - container.scrollbar.getBounds().width + 2,
+                                20);
+                        recipe.buildCraftingTree(tree);
+                        top += tree.build(container);
+                    }
+                }
+                if (top == 0) {
+                    container.addButton(new Label(container.width / 2, 0).setCentered()).getStyle().setText("gui.unicopia.spellbook.page.recipes.empty");
                 }
         }
     }

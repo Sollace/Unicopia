@@ -298,6 +298,7 @@
   "gui.unicopia.spellbook.page.inventory": "Inventory",
   "gui.unicopia.spellbook.page.discoveries": "Discoveries",
   "gui.unicopia.spellbook.page.recipes": "Recipes",
+  "gui.unicopia.spellbook.page.recipes.empty": "0 Recipes Unlocked",
 
   "gui.unicopia.action.spells_cleared": "Removed all spells",
   "gui.unicopia.action.no_spells_cleared": "You have no active spells",

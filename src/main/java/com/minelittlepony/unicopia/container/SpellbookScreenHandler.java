@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 import com.mojang.datafixers.util.Pair;
@@ -132,6 +131,10 @@ public class SpellbookScreenHandler extends ScreenHandler {
         onContentChanged(input);
     }
 
+    public int getOutputSlotId() {
+        return outputSlot.id;
+    }
+
     @Override
     public boolean canUse(PlayerEntity player) {
         return EquinePredicates.IS_CASTER.test(player);
@@ -139,6 +142,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
     @Override
     public void onContentChanged(Inventory inventory) {
+        super.onContentChanged(inventory);
         context.run((world, pos) -> {
             if (!world.isClient && !gemSlot.getStack().isEmpty()) {
                 outputSlot.setStack(
@@ -410,7 +414,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
         }
     }
 
-    public static class ResultSlot extends CraftingResultSlot implements SpellbookSlot {
+    public class ResultSlot extends CraftingResultSlot implements SpellbookSlot {
         private final PlayerEntity player;
         private final SpellbookInventory input;
 
@@ -421,11 +425,6 @@ public class SpellbookScreenHandler extends ScreenHandler {
             this.player = player;
             this.input = input;
             this.ring = params[2];
-        }
-
-        @Override
-        public boolean canInsert(ItemStack stack) {
-            return stack.getItem() == UItems.GEMSTONE;
         }
 
         @Override
