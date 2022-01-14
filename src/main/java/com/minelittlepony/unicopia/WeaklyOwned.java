@@ -18,8 +18,6 @@ import net.minecraft.world.World;
  */
 public interface WeaklyOwned<E extends Entity> extends Owned<E> {
 
-    World getWorld();
-
     EntityReference<E> getMasterReference();
 
     /**
@@ -34,6 +32,10 @@ public interface WeaklyOwned<E extends Entity> extends Owned<E> {
         } else {
             setMaster(sibling.getMaster());
         }
+    }
+
+    default World getWorld() {
+        return ((Entity)this).world;
     }
 
     @Nullable
