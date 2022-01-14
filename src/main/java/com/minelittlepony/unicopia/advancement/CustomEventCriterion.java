@@ -41,14 +41,19 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
                 playerPredicate,
                 JsonHelper.getString(json, "event"),
                 races,
-                json.has("flying") ? json.get("flying").getAsBoolean() : null
+                json.has("flying") ? json.get("flying").getAsBoolean() : null,
+                JsonHelper.getInt(json, "repeats", 0)
         );
     }
 
     public CustomEventCriterion.Trigger createTrigger(String name) {
         return player -> {
+
             if (player instanceof ServerPlayerEntity) {
-                trigger((ServerPlayerEntity)player, c -> c.test(name, (ServerPlayerEntity)player));
+                ServerPlayerEntity p = (ServerPlayerEntity)player;
+                int counter = Pony.of(player).getAdvancementProgress().compute(name, (key, i) -> i == null ? 1 : i + 1);
+
+                trigger((ServerPlayerEntity)player, c -> c.test(name, counter, p));
             }
         };
     }
@@ -64,17 +69,21 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
 
         private final Boolean flying;
 
-        public Conditions(Extended playerPredicate, String event, Set<Race> races, Boolean flying) {
+        private final int repeatCount;
+
+        public Conditions(Extended playerPredicate, String event, Set<Race> races, Boolean flying, int repeatCount) {
             super(ID, playerPredicate);
             this.event = event;
             this.races = races;
             this.flying = flying;
+            this.repeatCount = repeatCount;
         }
 
-        public boolean test(String event, ServerPlayerEntity player) {
+        public boolean test(String event, int count, ServerPlayerEntity player) {
             return this.event.equalsIgnoreCase(event)
                     && (races.isEmpty() || races.contains(Pony.of(player).getSpecies()))
-                    && (flying == null || flying == Pony.of(player).getPhysics().isFlying());
+                    && (flying == null || flying == Pony.of(player).getPhysics().isFlying())
+                    && (repeatCount <= 0 || (count > 0 && count % repeatCount == 0));
         }
 
         @Override
@@ -88,6 +97,9 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
             }
             if (flying != null) {
                 json.addProperty("flying", flying);
+            }
+            if (repeatCount > 0) {
+                json.addProperty("repeats", repeatCount);
             }
             return json;
         }

@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -85,6 +87,8 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     private final PlayerCamera camera = new PlayerCamera(this);
     private final TraitDiscovery discoveries = new TraitDiscovery(this);
 
+    private final Map<String, Integer> advancementProgress = new HashMap<>();
+
     private final ManaContainer mana;
     private final PlayerLevelStore levels;
 
@@ -156,6 +160,10 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             return 0;
         }
         return 1 - (((float)animationDuration) / animationMaxDuration);
+    }
+
+    public Map<String, Integer> getAdvancementProgress() {
+        return advancementProgress;
     }
 
     @Override
@@ -526,6 +534,12 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         getSpellSlot().get(true).ifPresent(effect ->{
             compound.put("effect", Spell.writeNbt(effect));
         });
+
+        NbtCompound progress = new NbtCompound();
+        advancementProgress.forEach((key, count) -> {
+            progress.putInt(key, count);
+        });
+        compound.put("advancementProgress", progress);
     }
 
     @Override
@@ -544,6 +558,12 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         if (compound.contains("effect")) {
             getSpellSlot().put(Spell.readNbt(compound.getCompound("effect")));
         }
+
+        NbtCompound progress = compound.getCompound("advancementProgress");
+        advancementProgress.clear();
+        for (String key : progress.getKeys()) {
+            advancementProgress.put(key, progress.getInt(key));
+        }
     }
 
     @Override
@@ -559,6 +579,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         getDiscoveries().copyFrom(oldPlayer.getDiscoveries());
         getCharms().equipSpell(Hand.MAIN_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.MAIN_HAND));
         getCharms().equipSpell(Hand.OFF_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.OFF_HAND));
+        advancementProgress.putAll(oldPlayer.getAdvancementProgress());
         setDirty();
     }
 

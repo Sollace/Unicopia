@@ -19,87 +19,16 @@
     "experience": 90
   },
   "criteria": {
-    "one": {
+    "lightning_struck_player_10": {
       "trigger": "unicopia:custom",
       "conditions": {
         "event": "lightning_struck_player",
-        "race": ["bat"]
-      }
-    },
-    "two": {
-      "trigger": "unicopia:custom",
-      "conditions": {
-        "event": "lightning_struck_player",
-        "race": ["bat"]
-      }
-    },
-    "three": {
-      "trigger": "unicopia:custom",
-      "conditions": {
-        "event": "lightning_struck_player",
-        "race": ["bat"]
-      }
-    },
-    "four": {
-      "trigger": "unicopia:custom",
-      "conditions": {
-        "event": "lightning_struck_player",
-        "race": ["bat"]
-      }
-    },
-    "five": {
-      "trigger": "unicopia:custom",
-      "conditions": {
-        "event": "lightning_struck_player",
-        "race": ["bat"]
-      }
-    },
-    "six": {
-      "trigger": "unicopia:custom",
-      "conditions": {
-        "event": "lightning_struck_player",
-        "race": ["bat"]
-      }
-    },
-    "seven": {
-      "trigger": "unicopia:custom",
-      "conditions": {
-        "event": "lightning_struck_player",
-        "race": ["bat"]
-      }
-    },
-    "eight": {
-      "trigger": "unicopia:custom",
-      "conditions": {
-        "event": "lightning_struck_player",
-        "race": ["bat"]
-      }
-    },
-    "nine": {
-      "trigger": "unicopia:custom",
-      "conditions": {
-        "event": "lightning_struck_player",
-        "race": ["bat"]
-      }
-    },
-    "ten": {
-      "trigger": "unicopia:custom",
-      "conditions": {
-        "event": "lightning_struck_player",
-        "race": ["bat"]
+        "race": ["bat"],
+        "repeats": 10
       }
     }
   },
   "requirements": [
-    [ "one" ],
-    [ "two" ],
-    [ "three" ],
-    [ "four" ],
-    [ "five" ],
-    [ "six" ],
-    [ "seven" ],
-    [ "eight" ],
-    [ "nine" ],
-    [ "ten" ]
+    [ "lightning_struck_player_10" ]
   ]
 }

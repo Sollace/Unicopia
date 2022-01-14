@@ -16,42 +16,15 @@
     "hidden": true
   },
   "criteria": {
-    "shed_feather_1": {
-      "trigger": "unicopia:custom",
-      "conditions": {
-        "event": "shed_feather"
-      }
-    },
-    "shed_feather_2": {
-      "trigger": "unicopia:custom",
-      "conditions": {
-        "event": "shed_feather"
-      }
-    },
-    "shed_feather_3": {
-      "trigger": "unicopia:custom",
-      "conditions": {
-        "event": "shed_feather"
-      }
-    },
-    "shed_feather_4": {
-      "trigger": "unicopia:custom",
-      "conditions": {
-        "event": "shed_feather"
-      }
-    },
     "shed_feather_5": {
       "trigger": "unicopia:custom",
       "conditions": {
-        "event": "shed_feather"
+        "event": "shed_feather",
+        "repeats": 5
       }
     }
   },
   "requirements": [
-  	[ "shed_feather_1" ],
-  	[ "shed_feather_2" ],
-  	[ "shed_feather_3" ],
-  	[ "shed_feather_4" ],
   	[ "shed_feather_5" ]
   ]
 }
