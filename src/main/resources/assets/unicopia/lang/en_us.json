@@ -14,7 +14,7 @@
   "item.unicopia.friendship_bracelet": "Bangle of Comradery",
   "item.unicopia.friendship_bracelet.issuer": "Signed by %s",
   "item.unicopia.friendship_bracelet.glowing": "Glowing",
-  
+
   "item.unicopia.spellbook": "Spellbook",
 
   "item.unicopia.butterfly_spawn_egg": "Butterfly Spawn Egg",
@@ -457,7 +457,7 @@
   "unicopia.subtitle.ears_ringing": "Ears ringing",
   "unicopia.subtitle.heartbeat": "Heart beats",
   "unicopia.subtitle.entity.artefact.ambient": "Magic hums",
-  "unicopia.subtitle.entity.butterfly.hurt": "Nutterfly hurts",
+  "unicopia.subtitle.entity.butterfly.hurt": "Butterfly hurts",
   "unicopia.subtitle.entity.twittermite.ambient": "Twittermite squeaks",
   "unicopia.subtitle.entity.twittermite.death": "Twittermite dies",
   "unicopia.subtitle.entity.twittermite.hurt": "Twittermite hurts",
@@ -532,7 +532,7 @@
 
   "advancements.unicopia.molting_season_3.title": "Molting Season 3",
   "advancements.unicopia.molting_season_3.description": "Drop 15 feathers whilst flying",
-  
+
   "unicopia.toast.discoveries.title": "New Discoveries!",
   "unicopia.toast.discoveries.description": "Check your spellbook"
 }
