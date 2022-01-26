@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
-import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -37,6 +36,10 @@ import net.minecraft.world.WorldAccess;
 
 public class ButterflyEntity extends AmbientEntity {
     private static final int MAX_BREEDING_COOLDOWN = 300;
+    private static final int MAX_REST_TICKS = 40;
+    private static final int BREEDING_INTERVAL = 20;
+    private static final int FLOWER_DETECTION_RANGE = 10;
+    private static final int FLOWER_UPDATE_INTERVAL = 100;
 
     private static final TrackedData<Boolean> RESTING = DataTracker.registerData(ButterflyEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(ButterflyEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -172,15 +175,24 @@ public class ButterflyEntity extends AmbientEntity {
         visited.entrySet().removeIf(e -> e.getValue() < age - 500);
 
         if (isResting()) {
-            if (flowerPosition.isPresent() && breed()) {
+            if (!flowerPosition.isPresent()) {
+                setResting(false);
                 return;
             }
 
             if (world.getBlockState(below).isAir()
                 || !world.getOtherEntities(this, getBoundingBox().expand(7), this::isAggressor).isEmpty()
-                || (ticksResting++ > 40 || world.random.nextInt(500) == 0)
+                || (ticksResting++ > MAX_REST_TICKS || world.random.nextInt(500) == 0)
                 || world.hasRain(below)) {
                 setResting(false);
+                return;
+            }
+
+            if (!world.isClient
+                    && age % BREEDING_INTERVAL == 0
+                    && world.random.nextInt(200) == 0
+                    && canBreed()) {
+                breed();
             }
         } else {
             ticksResting = 0;
@@ -200,28 +212,16 @@ public class ButterflyEntity extends AmbientEntity {
             if (random.nextInt(100) == 0 && world.getBlockState(below).isOpaque()) {
                 setResting(true);
             }
-
-            if (!world.isClient && age % 20 == 0 && world.random.nextInt(200) == 0) {
-                if (!world.getOtherEntities(this, getBoundingBox().expand(20), i -> i.getType() == getType()).isEmpty()) {
-                    breed();
-                }
-            }
         }
     }
 
+    private boolean canBreed() {
+        return age > BREEDING_INTERVAL && breedingCooldown <= 0 && isResting() && world.getOtherEntities(this, getBoundingBox().expand(20), i -> {
+            return i instanceof ButterflyEntity && i.getType() == getType() && ((ButterflyEntity)i).isResting();
+        }).size() == 1;
+    }
+
     private boolean breed() {
-
-        int others = 0;
-        for (Entity i : world.getOtherEntities(this, getBoundingBox().expand(20))) {
-            if (i.getType() == getType() && others++ > 3) {
-                setResting(false);
-                return true;
-            }
-        }
-
-        if (age < 20 || breedingCooldown > 0) {
-            return false;
-        }
         breedingCooldown = MAX_BREEDING_COOLDOWN;
 
         ButterflyEntity copy = (ButterflyEntity)getType().create(world);
@@ -249,26 +249,21 @@ public class ButterflyEntity extends AmbientEntity {
 
     private Optional<BlockPos> updateFlowerPosition() {
 
-        if (flowerPosition.isPresent()) {
+        if (age > 0 && age % FLOWER_UPDATE_INTERVAL != 0) {
             return flowerPosition;
         }
 
-        if (age % 50 == 0) {
-            flowerPosition = findFlower(state -> {
-                return state.isIn(BlockTags.FLOWERS);
-            });
-            flowerPosition.ifPresent(p -> {
+        flowerPosition = flowerPosition.filter(p -> world.getBlockState(p).isIn(BlockTags.FLOWERS)).or(() -> {
+            return BlockPos.streamOutwards(getBlockPos(), FLOWER_DETECTION_RANGE, FLOWER_DETECTION_RANGE, FLOWER_DETECTION_RANGE)
+                    .filter(p -> !visited.containsKey(p) && world.getBlockState(p).isIn(BlockTags.FLOWERS))
+                    .findFirst()
+                    .map(p -> {
                 visited.put(p, (long)age - 900);
+                return p;
             });
-        }
+        });
 
-        return Optional.empty();
-    }
-
-    private Optional<BlockPos> findFlower(Predicate<BlockState> predicate) {
-        return BlockPos.streamOutwards(this.getBlockPos(), 10, 10, 10).filter(p -> {
-            return !visited.containsKey(p) && predicate.test(world.getBlockState(p));
-        }).findFirst();
+        return flowerPosition;
     }
 
     private void moveTowards(BlockPos pos) {
