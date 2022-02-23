@@ -598,6 +598,10 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         return player == null ? null : ((PonyContainer<Pony>)player).get();
     }
 
+    public static Optional<Pony> of(Entity entity) {
+        return entity instanceof PlayerEntity ? PonyContainer.of(entity).map(a -> (Pony)a.get()) : Optional.empty();
+    }
+
     public static boolean equal(GameProfile one, GameProfile two) {
         return one == two || (one != null && two != null && one.getId().equals(two.getId()));
     }

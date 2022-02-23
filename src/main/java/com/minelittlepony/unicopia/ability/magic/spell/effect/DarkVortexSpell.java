@@ -189,16 +189,12 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell 
     }
 
     private double getAttractiveForce(Caster<?> source, Entity target) {
-        return (getMass() * getMass(target)) / Math.pow(getOrigin(source).distanceTo(target.getPos()), 2);
+        return AttractionUtils.getAttractiveForce(getMass(), getOrigin(source), target);
     }
 
     private double getMass() {
         float pulse = (float)Math.sin(age * 8) / 1F;
         return 10 + Math.min(15, Math.min(0.5F + pulse, (float)Math.exp(age) / 8F - 90) + accumulatedMass / 10F) + pulse;
-    }
-
-    private double getMass(Entity entity) {
-        return entity.getWidth() * entity.getHeight();
     }
 
     @Override
@@ -227,20 +223,21 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell 
                 return;
             }
 
-            accumulatedMass += getMass(target);
+            double massOfTarget = AttractionUtils.getMass(target);
+
+            accumulatedMass += massOfTarget;
             setDirty();
             target.damage(MagicalDamageSource.create("black_hole"), Integer.MAX_VALUE);
             if (!(target instanceof PlayerEntity)) {
                 target.discard();
             }
 
-            source.subtractEnergyCost(-getMass(target) * 10);
+            source.subtractEnergyCost(-massOfTarget * 10);
             source.getWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_MOOD, SoundCategory.AMBIENT, 2, 0.02F);
         } else {
             double force = getAttractiveForce(source, target);
 
-            target.setVelocity(target.getVelocity().multiply(Math.min(1, 1 - force)));
-            applyForce(getOrigin(source), target, -force, 0);
+            AttractionUtils.applyForce(getOrigin(source), target, -force, 0, true);
 
             source.subtractEnergyCost(-2);
         }
