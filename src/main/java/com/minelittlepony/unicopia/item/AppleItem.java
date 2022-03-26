@@ -1,33 +1,28 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.List;
-import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemImpl;
-import com.minelittlepony.unicopia.item.toxin.Toxicity;
 
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
-public class AppleItem extends Item implements ItemImpl.TickableItem {
+public class AppleItem {
+    private static final ItemImpl.GroundTickCallback TICK_CALLBACK = AppleItem::onGroundTick;
 
-    public AppleItem(Settings settings) {
-        super(settings);
+    private AppleItem() { }
+
+    public static <T extends Item> T registerTickCallback(T item) {
+        return ItemImpl.registerTickCallback(item, TICK_CALLBACK);
     }
 
-    @Override
-    public ActionResult onGroundTick(IItemEntity item) {
+    private static ActionResult onGroundTick(IItemEntity item) {
         ItemEntity entity = item.get().getMaster();
 
         if (!entity.isRemoved() && item.getPickupDelay() == 0 && item.getAge() > 2030 && entity.world.random.nextInt(150) < 10) {
@@ -61,14 +56,5 @@ public class AppleItem extends Item implements ItemImpl.TickableItem {
         }
 
         return ActionResult.PASS;
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, @Nullable World worldIn, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(getToxicity(stack).getTooltip());
-    }
-
-    public Toxicity getToxicity(ItemStack stack) {
-        return Toxicity.SAFE;
     }
 }

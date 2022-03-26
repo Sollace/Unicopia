@@ -11,7 +11,6 @@ import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemImpl;
-import com.minelittlepony.unicopia.entity.ItemImpl.TickableItem;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.PlayerCharmTracker;
@@ -47,7 +46,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion.DestructionType;
 
-public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.Charm, ItemImpl.ClingyItem, TickableItem {
+public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.Charm, ItemImpl.ClingyItem, ItemImpl.GroundTickCallback {
 
     public AlicornAmuletItem(FabricItemSettings settings) {
         super(settings, 0, new AmuletItem.ModifiersBuilder()

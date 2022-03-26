@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
+import java.util.List;
 import java.util.Random;
 
 import org.jetbrains.annotations.NotNull;
@@ -113,8 +114,8 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
                 }
             }
 
-            if (stack.getItem() instanceof TickableItem) {
-                return ((TickableItem)stack.getItem()).onGroundTick(i) == ActionResult.SUCCESS;
+            if (stack.getItem() instanceof GroundTickCallback) {
+                return ((GroundTickCallback)stack.getItem()).onGroundTick(i).isAccepted();
             }
         }
 
@@ -165,7 +166,32 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
         return owner;
     }
 
-    public interface TickableItem {
+    public static <T extends Item> T registerTickCallback(T item, GroundTickCallback callback) {
+        ((ItemImpl.TickableItem)item).addGroundTickCallback(callback);
+        return item;
+    }
+
+    public interface TickableItem extends GroundTickCallback {
+
+        List<GroundTickCallback> getCallbacks();
+
+        default void addGroundTickCallback(GroundTickCallback callback) {
+            getCallbacks().add(callback);
+        }
+
+        @Override
+        default ActionResult onGroundTick(IItemEntity entity) {
+            for (var callback : getCallbacks()) {
+                ActionResult result = callback.onGroundTick(entity);
+                if (result.isAccepted()) {
+                    return result;
+                }
+            }
+            return ActionResult.PASS;
+        }
+    }
+
+    public interface GroundTickCallback {
         ActionResult onGroundTick(IItemEntity entity);
     }
 

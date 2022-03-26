@@ -1,11 +1,16 @@
 package com.minelittlepony.unicopia.item;
 
+import static com.minelittlepony.unicopia.item.toxin.Toxin.INNERT;
+
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.toxin.Ailment;
+import com.minelittlepony.unicopia.item.toxin.Toxic;
+import com.minelittlepony.unicopia.item.toxin.ToxicHolder;
 import com.minelittlepony.unicopia.item.toxin.Toxicity;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -21,6 +26,7 @@ import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -37,7 +43,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class ZapAppleItem extends AppleItem implements ChameleonItem {
+public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder {
+    private static final Optional<Toxic> TOXIC = Optional.of(new Toxic.Builder(Ailment.of(Toxicity.SEVERE, INNERT)).build("zap"));
+    private static final Optional<Toxic> HIDDEN_TOXIC = Optional.of(new Toxic.Builder(Ailment.of(Toxicity.SAFE, INNERT)).build("zap_hidden"));
 
     public ZapAppleItem(Settings settings) {
         super(settings);
@@ -128,8 +136,8 @@ public class ZapAppleItem extends AppleItem implements ChameleonItem {
     }
 
     @Override
-    public Toxicity getToxicity(ItemStack stack) {
-        return hasAppearance(stack) ? Toxicity.SEVERE : Toxicity.SAFE;
+    public Optional<Toxic> getToxic(ItemStack stack) {
+        return hasAppearance(stack) ? TOXIC : HIDDEN_TOXIC;
     }
 
     @Override

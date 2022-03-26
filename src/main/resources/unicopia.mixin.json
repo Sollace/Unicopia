@@ -16,7 +16,6 @@
     "MixinFallingBlockEntity",
     "MixinItem",
     "MixinItemEntity",
-    "MixinItems",
     "MixinLivingEntity",
     "MixinMilkBucketItem",
     "MixinMobEntity",

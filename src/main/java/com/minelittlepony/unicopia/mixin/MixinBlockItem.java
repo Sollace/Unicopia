@@ -18,14 +18,14 @@ abstract class MixinBlockItem extends Item implements ToxicHolder {
 
     @Override
     public UseAction getUseAction(ItemStack stack) {
-        return getToxic()
+        return getToxic(stack)
                 .map(t -> t.getUseAction(stack))
                 .orElseGet(() -> super.getUseAction(stack));
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        return getToxic()
+        return getToxic(player.getStackInHand(hand))
                 .map(t -> t.use(world, player, hand))
                 .orElseGet(() -> super.use(world, player, hand));
     }

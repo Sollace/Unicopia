@@ -33,7 +33,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
-public class JarItem extends Item implements ProjectileDelegate, ItemImpl.TickableItem {
+public class JarItem extends Item implements ProjectileDelegate, ItemImpl.GroundTickCallback {
 
     private final boolean rain;
     private final boolean thunder;
