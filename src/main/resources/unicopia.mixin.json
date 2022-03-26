@@ -41,7 +41,6 @@
     "client.MixinItem",
     "client.MixinItemModels",
     "client.MixinKeyboardInput",
-    "client.MixinLightmapTextureManager",
     "client.MixinLivingEntityRenderer",
     "client.MixinMouse",
     "client.MixinPlayerEntityRenderer",

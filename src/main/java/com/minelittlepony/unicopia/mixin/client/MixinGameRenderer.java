@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.client.BatEyesApplicator;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
@@ -27,8 +28,15 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
 
     @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V",
             at = @At("HEAD"))
-    private void onRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
+    private void beforeRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
         UnicopiaClient.getCamera().ifPresent(c -> matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(c.calculateRoll())));
+        BatEyesApplicator.INSTANCE.enable();
+    }
+
+    @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V",
+            at = @At("RETURN"))
+    private void afterRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
+        BatEyesApplicator.INSTANCE.disable();
     }
 
     @Inject(method = "getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F",

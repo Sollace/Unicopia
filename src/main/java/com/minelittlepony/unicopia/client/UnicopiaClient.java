@@ -52,7 +52,7 @@ public class UnicopiaClient implements ClientModInitializer {
     }
 
     public static float getWorldBrightness(float initial) {
-        return initial > 0 ? 3 : 2;
+        return 0.6F;
     }
 
     @Override
