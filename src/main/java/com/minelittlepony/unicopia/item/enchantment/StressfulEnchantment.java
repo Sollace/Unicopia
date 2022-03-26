@@ -16,7 +16,7 @@ public class StressfulEnchantment extends SimpleEnchantment {
     public void onUserTick(Living<?> user, int level) {
         if (user instanceof Pony) {
             Bar bar = ((Pony)user).getMagicalReserves().getEnergy();
-            float targetPercent = (level / (float)getMaxLevel()) * 0.5F;
+            float targetPercent = (level / (float)getMaxLevel()) * 0.25F;
             if (bar.getPercentFill() < targetPercent) {
                 bar.add(10);
             }
