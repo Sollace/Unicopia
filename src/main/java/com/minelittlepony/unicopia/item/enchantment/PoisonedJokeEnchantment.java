@@ -31,7 +31,7 @@ public class PoisonedJokeEnchantment extends SimpleEnchantment implements Identi
     private List<SoundEvent> sounds = new ArrayList<>();
 
     protected PoisonedJokeEnchantment() {
-        super(Rarity.COMMON, true, 1, EquipmentSlot.values());
+        super(Rarity.VERY_RARE, true, 1, EquipmentSlot.values());
     }
 
     @Override

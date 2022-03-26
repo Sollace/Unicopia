@@ -12,7 +12,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 
 public class CollaboratorEnchantment extends AttributedEnchantment {
     protected CollaboratorEnchantment() {
-        super(Rarity.COMMON, EnchantmentTarget.WEAPON, false, 3, EquipmentSlot.MAINHAND);
+        super(Rarity.RARE, EnchantmentTarget.WEAPON, false, 3, EquipmentSlot.MAINHAND);
         this.addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, this::getModifier);
     }
 

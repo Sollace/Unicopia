@@ -9,7 +9,7 @@ import net.minecraft.entity.EquipmentSlot;
 public class StressfulEnchantment extends SimpleEnchantment {
 
     protected StressfulEnchantment() {
-        super(Rarity.COMMON, true, 3, EquipmentSlot.values());
+        super(Rarity.RARE, true, 3, EquipmentSlot.values());
     }
 
     @Override
@@ -18,7 +18,7 @@ public class StressfulEnchantment extends SimpleEnchantment {
             Bar bar = ((Pony)user).getMagicalReserves().getEnergy();
             float targetPercent = (level / (float)getMaxLevel()) * 0.5F;
             if (bar.getPercentFill() < targetPercent) {
-                bar.add(20);
+                bar.add(10);
             }
         }
     }
