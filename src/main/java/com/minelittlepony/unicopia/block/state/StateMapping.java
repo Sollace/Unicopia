@@ -6,13 +6,15 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
 
+import com.minelittlepony.unicopia.util.Registries;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Property;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.world.World;
 
 interface StateMapping extends Predicate<BlockState>, BiFunction<World, BlockState, BlockState> {
@@ -49,13 +51,13 @@ interface StateMapping extends Predicate<BlockState>, BiFunction<World, BlockSta
                 (w, s) -> Blocks.AIR.getDefaultState());
     }
 
-    static StateMapping replaceBlock(Tag<Block> tag, Block to) {
+    static StateMapping replaceBlock(TagKey<Block> tag, Block to) {
         return build(
                 s -> s.isIn(tag),
                 (w, s) -> to.getDefaultState(),
                 s -> build(
                         p -> p.isOf(to),
-                        (w, p) -> tag.getRandom(w.random).getDefaultState()
+                        (w, p) -> Registries.entriesForTag(w, tag).getRandom(w.random).get().value().getDefaultState()
                     )
                 );
     }

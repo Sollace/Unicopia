@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 
 public class CastSpellEntity extends LightEmittingEntity implements Caster<LivingEntity>, WeaklyOwned<LivingEntity> {
     private static final TrackedData<Float> GRAVITY = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+    private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 
     private static final LevelStore LEVELS = Levelled.fixed(0);
 

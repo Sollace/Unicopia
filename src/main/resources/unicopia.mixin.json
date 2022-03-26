@@ -13,6 +13,7 @@
     "MixinDamageSource",
     "MixinEntity",
     "MixinFallingBlock",
+    "MixinFallingBlockEntity",
     "MixinItem",
     "MixinItemEntity",
     "MixinItems",

@@ -1,6 +1,11 @@
 package com.minelittlepony.unicopia.mixin;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.StringWriter;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -10,6 +15,7 @@ import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.item.toxin.Toxic;

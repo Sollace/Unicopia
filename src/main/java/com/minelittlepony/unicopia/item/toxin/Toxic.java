@@ -13,7 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
@@ -27,9 +27,9 @@ public class Toxic {
     private final Ailment defaultAilment;
     private final Map<Race, Ailment> ailments;
 
-    private final Tag<Item> tag;
+    private final TagKey<Item> tag;
 
-    Toxic(UseAction action, Optional<FoodComponent> component, Tag<Item> tag, Ailment defaultAilment, Map<Race, Ailment> ailments) {
+    Toxic(UseAction action, Optional<FoodComponent> component, TagKey<Item> tag, Ailment defaultAilment, Map<Race, Ailment> ailments) {
         this.action = action;
         this.component = component;
         this.tag = tag;
@@ -37,8 +37,9 @@ public class Toxic {
         this.ailments = ailments;
     }
 
+    @SuppressWarnings("deprecation")
     public boolean matches(Item item) {
-        return tag.contains(item);
+        return item.getRegistryEntry().isIn(tag);
     }
 
     public Optional<FoodComponent> getFoodComponent() {

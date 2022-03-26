@@ -8,13 +8,15 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.util.Registries;
+
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Util;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
@@ -36,7 +38,7 @@ public interface UTradeOffers {
 
         TradeOfferHelper.registerWanderingTraderOffers(1, factories -> {
             factories.add(buyTiered(UItems.GEMSTONE, 30, UItems.GOLDEN_FEATHER, 1, UItems.GOLDEN_WING, 1, 30, 2, 0.05F));
-            factories.add((e, rng) -> new TradeOffer(new ItemStack(UItems.GEMSTONE, 3), GemstoneItem.enchant(UItems.GEMSTONE.getDefaultStack(), SpellType.REGISTRY.getRandom(rng)), 20, 1, 0.05F));
+            factories.add((e, rng) -> new TradeOffer(new ItemStack(UItems.GEMSTONE, 3), GemstoneItem.enchant(UItems.GEMSTONE.getDefaultStack(), SpellType.REGISTRY.getRandom(rng).get().value()), 20, 1, 0.05F));
             factories.add(buy(UItems.GEMSTONE, 20, UItems.HAY_FRIES, 5, 50, 3, 0.06F));
             factories.add(buy(Items.WHEAT, 17, UItems.HAY_BURGER, 1, 10, 6, 0.08F));
             factories.add(buy(ItemTags.SMALL_FLOWERS, 2, UItems.DAFFODIL_DAISY_SANDWICH, 1, 10, 6, 0.08F));
@@ -64,17 +66,21 @@ public interface UTradeOffers {
         return (e, rng) -> new TradeOffer(new ItemStack(item, count), new ItemStack(intermediate, intermediatCount), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
     }
 
-    private static TradeOffers.Factory buy(Tag<Item> item, int count, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
-        return (e, rng) -> new TradeOffer(new ItemStack(item.getRandom(rng), count), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
+    private static TradeOffers.Factory buy(TagKey<Item> item, int count, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
+        return (e, rng) -> new TradeOffer(new ItemStack(random(e, item, rng), count), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
     }
 
     @SuppressWarnings("unused")
-    private static TradeOffers.Factory buy(Tag<Item> item, int count, Tag<Item> returnItem, int returnCount, int maxUses, int experience, float priceChange) {
-        return (e, rng) -> new TradeOffer(new ItemStack(item.getRandom(rng), count), new ItemStack(returnItem.getRandom(rng), returnCount), maxUses, experience, priceChange);
+    private static TradeOffers.Factory buy(TagKey<Item> item, int count, TagKey<Item> returnItem, int returnCount, int maxUses, int experience, float priceChange) {
+        return (e, rng) -> new TradeOffer(new ItemStack(random(e, item, rng), count), new ItemStack(random(e, returnItem, rng), returnCount), maxUses, experience, priceChange);
     }
 
-    private static TradeOffers.Factory buy(Item item, int count, Tag<Item> returnItem, int returnCount, int maxUses, int experience, float priceChange) {
-        return (e, rng) -> new TradeOffer(new ItemStack(item, count), new ItemStack(returnItem.getRandom(rng), returnCount), maxUses, experience, priceChange);
+    private static TradeOffers.Factory buy(Item item, int count, TagKey<Item> returnItem, int returnCount, int maxUses, int experience, float priceChange) {
+        return (e, rng) -> new TradeOffer(new ItemStack(item, count), new ItemStack(random(e, returnItem, rng), returnCount), maxUses, experience, priceChange);
+    }
+
+    private static Item random(Entity e, TagKey<Item> item, Random rng) {
+        return Registries.entriesForTag(e.world, item).getRandom(rng).get().value();
     }
 
     static class JarredItemTradeOfferFactory implements TradeOffers.Factory {

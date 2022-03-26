@@ -50,7 +50,7 @@ public abstract class OrientedBillboardParticle extends AbstractBillboardParticl
            corner.add(x, y, z);
         }
 
-        float alpha = colorAlpha * (1 - ((float)age / maxAge));
+        float alpha = this.alpha * (1 - ((float)age / maxAge));
 
         renderQuad(te, buffer, corners, alpha, tickDelta);
     }

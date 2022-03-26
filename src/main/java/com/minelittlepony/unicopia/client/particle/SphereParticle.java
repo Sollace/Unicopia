@@ -49,10 +49,10 @@ public class SphereParticle extends Particle implements Attachment {
         super(w, x, y, z);
         this.parameters = parameters;
         this.radius = parameters.getRadius();
-        this.colorRed = parameters.getColor().getX() / 255F;
-        this.colorGreen = parameters.getColor().getY() / 255F;
-        this.colorBlue = parameters.getColor().getZ() / 255F;
-        this.colorAlpha = parameters.getAlpha();
+        this.red = parameters.getColor().getX() / 255F;
+        this.green = parameters.getColor().getY() / 255F;
+        this.blue = parameters.getColor().getZ() / 255F;
+        this.alpha = parameters.getAlpha();
 
         setMaxAge(10);
     }
@@ -82,12 +82,12 @@ public class SphereParticle extends Particle implements Attachment {
         }
         if (key == 1) {
             int tint = (int)value;
-            colorRed = Color.r(tint);
-            colorGreen = Color.g(tint);
-            colorBlue = Color.b(tint);
+            red = Color.r(tint);
+            green = Color.g(tint);
+            blue = Color.b(tint);
         }
         if (key == 2) {
-            colorAlpha = (float)value;
+            alpha = (float)value;
         }
     }
 
@@ -121,12 +121,12 @@ public class SphereParticle extends Particle implements Attachment {
     @Override
     public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
 
-        if (colorAlpha <= 0 || radius <= 0) {
+        if (alpha <= 0 || radius <= 0) {
             return;
         }
 
-        float[] color = ColorHelper.changeSaturation(colorRed, colorGreen, colorBlue, 4);
-        RenderSystem.setShaderColor(color[0], color[1], color[2], colorAlpha / 3F);
+        float[] color = ColorHelper.changeSaturation(red, green, blue, 4);
+        RenderSystem.setShaderColor(color[0], color[1], color[2], alpha / 3F);
 
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         VertexConsumer buffer = immediate.getBuffer(RenderLayers.getMagicNoColor());

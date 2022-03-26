@@ -78,7 +78,7 @@ public class KeyBindingsHandler {
         } else {
             for (Binding i : keys.keySet()) {
                 AbilitySlot slot = keys.get(i);
-                if (slot == AbilitySlot.PRIMARY && client.options.keySneak.isPressed() && abilities.isFilled(AbilitySlot.PASSIVE)) {
+                if (slot == AbilitySlot.PRIMARY && client.options.sneakKey.isPressed() && abilities.isFilled(AbilitySlot.PASSIVE)) {
                     slot = AbilitySlot.PASSIVE;
                 }
                 if (slot == AbilitySlot.PRIMARY && !abilities.isFilled(slot)) {

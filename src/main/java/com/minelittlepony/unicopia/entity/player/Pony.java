@@ -78,7 +78,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     static final TrackedData<Float> MANA = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> XP = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
-    private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+    private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 
     private final AbilityDispatcher powers = new AbilityDispatcher(this);
     private final PlayerPhysics gravity = new PlayerPhysics(this);
@@ -323,7 +323,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     public boolean canHangAt(BlockPos pos) {
         BlockState state = getWorld().getBlockState(pos);
 
-        return state.hasSolidTopSurface(getWorld(), pos, getEntity(), Direction.DOWN);
+        return state.isSolidSurface(getWorld(), pos, getEntity(), Direction.DOWN);
     }
 
     private BlockPos getHangingPos() {

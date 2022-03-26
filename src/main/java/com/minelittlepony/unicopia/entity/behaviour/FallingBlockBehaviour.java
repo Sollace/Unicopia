@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlock;
+import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.block.Block;
@@ -71,9 +72,9 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
             BlockState lowerState = state.with(DoorBlock.HALF, DoubleBlockHalf.LOWER);
             BlockState upperState = state.with(DoorBlock.HALF, DoubleBlockHalf.UPPER);
 
-            context.attachExtraEntity(configure(new FallingBlockEntity(entity.world, entity.getX(), entity.getY(), entity.getZ(), upperState), block));
+            context.attachExtraEntity(configure(MixinFallingBlockEntity.createInstance(entity.world, entity.getX(), entity.getY(), entity.getZ(), upperState), block));
 
-            return configure(new FallingBlockEntity(entity.world, entity.getX(), entity.getY() + 1, entity.getZ(), lowerState), block);
+            return configure(MixinFallingBlockEntity.createInstance(entity.world, entity.getX(), entity.getY() + 1, entity.getZ(), lowerState), block);
         }
 
         if (block instanceof BlockEntityProvider) {
@@ -91,7 +92,7 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
             boolean logged = entity.world.isWater(entity.getBlockPos());
 
             if (state.get(Properties.WATERLOGGED) != logged) {
-                entity = new FallingBlockEntity(entity.world, entity.getX(), entity.getY(), entity.getZ(), state.with(Properties.WATERLOGGED, logged));
+                entity = MixinFallingBlockEntity.createInstance(entity.world, entity.getX(), entity.getY(), entity.getZ(), state.with(Properties.WATERLOGGED, logged));
                 spell.getDisguise().setAppearance(entity);
                 return;
             }

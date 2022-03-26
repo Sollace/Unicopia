@@ -27,10 +27,10 @@ public class MagicParticle extends SpriteBillboardParticle {
         scale = random.nextFloat() * 0.12F;
         maxAge = (int)(Math.random() * 10) + 20;
 
-        colorRed = color.getX();
-        colorGreen = color.getY();
-        colorBlue = color.getZ();
-        colorAlpha = alpha;
+        red = color.getX();
+        green = color.getY();
+        blue = color.getZ();
+        this.alpha = alpha;
     }
 
     public MagicParticle(MagicParticleEffect effect, SpriteProvider provider, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {

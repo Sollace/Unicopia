@@ -43,9 +43,9 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
         super(effect, world, x, y, z, velocityX, velocityY, velocityZ);
         setMaxAge(70);
 
-        colorRed = world.random.nextFloat();
-        colorGreen = world.random.nextFloat();
-        colorBlue = world.random.nextFloat();
+        red = world.random.nextFloat();
+        green = world.random.nextFloat();
+        blue = world.random.nextFloat();
     }
 
     @Override
@@ -72,9 +72,9 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
     public void setAttribute(int key, Object value) {
         if (key == 1) {
             int tint = (int)value;
-            colorRed = Color.r(tint);
-            colorGreen = Color.g(tint);
-            colorBlue = Color.b(tint);
+            red = Color.r(tint);
+            green = Color.g(tint);
+            blue = Color.b(tint);
         }
     }
     @Override
@@ -100,13 +100,13 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
     @Override
     protected void renderQuads(Tessellator te, BufferBuilder buffer, float x, float y, float z, float tickDelta) {
 
-        float alpha = colorAlpha * getAlphaScale();
+        float alpha = this.alpha * getAlphaScale();
 
         float angle = MathHelper.lerp(tickDelta, prevRotationAngle, rotationAngle);
 
         for (int i = 0; i < TEXTURES.length; i++) {
             RenderSystem.setShaderTexture(0, TEXTURES[i]);
-            RenderSystem.setShaderColor(colorRed, colorGreen, colorBlue, alpha);
+            RenderSystem.setShaderColor(red, green, blue, alpha);
 
             Vec3f[] corners = new Vec3f[]{
                     new Vec3f(-1, -1, 0),

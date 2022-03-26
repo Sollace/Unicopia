@@ -27,10 +27,10 @@ public abstract class AbstractGeometryBasedParticle extends Particle {
         int light = getBrightness(tickDelta);
 
         buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
-        buffer.vertex(corners[0].getX(), corners[0].getY(), corners[0].getZ()).texture(0, 0).color(colorRed, colorGreen, colorBlue, alpha).light(light).next();
-        buffer.vertex(corners[1].getX(), corners[1].getY(), corners[1].getZ()).texture(1, 0).color(colorRed, colorGreen, colorBlue, alpha).light(light).next();
-        buffer.vertex(corners[2].getX(), corners[2].getY(), corners[2].getZ()).texture(1, 1).color(colorRed, colorGreen, colorBlue, alpha).light(light).next();
-        buffer.vertex(corners[3].getX(), corners[3].getY(), corners[3].getZ()).texture(0, 1).color(colorRed, colorGreen, colorBlue, alpha).light(light).next();
+        buffer.vertex(corners[0].getX(), corners[0].getY(), corners[0].getZ()).texture(0, 0).color(red, green, blue, alpha).light(light).next();
+        buffer.vertex(corners[1].getX(), corners[1].getY(), corners[1].getZ()).texture(1, 0).color(red, green, blue, alpha).light(light).next();
+        buffer.vertex(corners[2].getX(), corners[2].getY(), corners[2].getZ()).texture(1, 1).color(red, green, blue, alpha).light(light).next();
+        buffer.vertex(corners[3].getX(), corners[3].getY(), corners[3].getZ()).texture(0, 1).color(red, green, blue, alpha).light(light).next();
 
         te.draw();
     }
@@ -39,7 +39,7 @@ public abstract class AbstractGeometryBasedParticle extends Particle {
         int light = getBrightness(tickDelta);
 
         for (Vec3f corner : corners) {
-            buffer.vertex(corner.getX(), corner.getY(), corner.getZ()).color(colorRed, colorGreen, colorBlue, alpha).light(light).next();
+            buffer.vertex(corner.getX(), corner.getY(), corner.getZ()).color(red, green, blue, alpha).light(light).next();
         }
     }
 

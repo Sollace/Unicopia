@@ -6,7 +6,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 
 public interface DynamicLightSource {
-    int getLightLevel();
+    default int getLightLevel() {
+        return 0;
+    }
 
     static final class LightEmitter<T extends Entity & DynamicLightSource> {
         @Nullable

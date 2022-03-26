@@ -78,7 +78,7 @@ public class DismissSpellScreen extends GameGui {
     }
 
     @Override
-    public boolean isPauseScreen() {
+    public boolean shouldPause() {
         return false;
     }
 

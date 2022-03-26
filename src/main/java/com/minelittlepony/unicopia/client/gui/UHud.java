@@ -113,7 +113,7 @@ public class UHud extends DrawableHelper {
         RenderSystem.enableBlend();
         RenderSystem.setShaderTexture(0, HUD_TEXTURE);
 
-        boolean swap = client.options.keySneak.isPressed();
+        boolean swap = client.options.sneakKey.isPressed();
 
         slots.forEach(slot -> slot.renderBackground(matrices, abilities, swap, tickDelta));
         slots.forEach(slot -> slot.renderLabel(matrices, abilities, tickDelta));
@@ -271,7 +271,7 @@ public class UHud extends DrawableHelper {
 
     void renderAbilityIcon(MatrixStack matrices, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
         stat.getAbility(KeyBindingsHandler.INSTANCE.page).ifPresent(ability -> {
-            RenderSystem.setShaderTexture(0, ability.getIcon(Pony.of(client.player), client.options.keySneak.isPressed()));
+            RenderSystem.setShaderTexture(0, ability.getIcon(Pony.of(client.player), client.options.sneakKey.isPressed()));
             drawTexture(matrices, x, y, 0, 0, frameWidth, frameHeight, u, v);
             RenderSystem.setShaderTexture(0, HUD_TEXTURE);
         });

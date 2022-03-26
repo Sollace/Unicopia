@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -29,12 +30,14 @@ public class WorldTribeManager extends PersistentState {
         return tag;
     }
 
-    @SuppressWarnings("deprecation")
-    public static String nameFor(DimensionType dimension) {
-        return "unicopia:tribes" + dimension.getSuffix();
+    public static String nameFor(RegistryEntry<DimensionType> dimension) {
+        if (dimension.matchesKey(DimensionType.THE_END_REGISTRY_KEY)) {
+            return "unicopia:tribes_end";
+        }
+        return "unicopia:tribes";
     }
 
     public static WorldTribeManager forWorld(ServerWorld world) {
-        return world.getPersistentStateManager().getOrCreate(WorldTribeManager::new, WorldTribeManager::new, nameFor(world.getDimension()));
+        return world.getPersistentStateManager().getOrCreate(WorldTribeManager::new, WorldTribeManager::new, nameFor(world.method_40134()));
     }
 }

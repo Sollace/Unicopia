@@ -11,7 +11,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.state.property.Property;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.world.World;
 
 /**
@@ -66,7 +66,7 @@ class BlockStateMap implements BlockStateConverter {
             return add(StateMapping.replaceBlock(from, to));
         }
 
-        public Builder replaceBlock(Tag<Block> from, Block to) {
+        public Builder replaceBlock(TagKey<Block> from, Block to) {
             return add(StateMapping.replaceBlock(from, to));
         }
 

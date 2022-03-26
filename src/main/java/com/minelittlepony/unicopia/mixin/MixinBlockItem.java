@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 
 @Mixin(BlockItem.class)
 abstract class MixinBlockItem extends Item implements ToxicHolder {
-    public MixinBlockItem() {super(null); }
+    MixinBlockItem() {super(null); }
 
     @Override
     public UseAction getUseAction(ItemStack stack) {

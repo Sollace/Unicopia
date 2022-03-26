@@ -154,7 +154,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     public static void spawnEffectAround(Entity source, BlockPos center, double radius, double range) {
 
         BlockPos.iterate(center.add(-radius, -radius, -radius), center.add(radius, radius, radius)).forEach(i -> {
-            double dist = Math.sqrt(i.getSquaredDistance(source.getX(), source.getY(), source.getZ(), true));
+            double dist = Math.sqrt(i.getSquaredDistance(source.getX(), source.getY(), source.getZ()));
 
             if (dist <= radius) {
                 spawnEffect(source.world, i, dist, range);

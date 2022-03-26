@@ -96,7 +96,7 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
     @Override
     public void finish() {
         finished = true;
-        onClose();
+        close();
     }
 
     @Override

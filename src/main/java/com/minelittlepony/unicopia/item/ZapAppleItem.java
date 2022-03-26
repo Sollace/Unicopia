@@ -3,12 +3,16 @@ package com.minelittlepony.unicopia.item;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.toxin.Toxicity;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
+import com.minelittlepony.unicopia.util.Registries;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -107,12 +111,13 @@ public class ZapAppleItem extends AppleItem implements ChameleonItem {
     public void appendStacks(ItemGroup tab, DefaultedList<ItemStack> items) {
         super.appendStacks(tab, items);
         if (isIn(tab)) {
-            UTags.APPLES.values().forEach(item -> {
-                if (item != this) {
-                    ItemStack stack = new ItemStack(this);
-                    stack.getOrCreateNbt().putString("appearance", Registry.ITEM.getId(item).toString());
-                    items.add(stack);
-                }
+            Unicopia.SIDE.getPony().map(Pony::getWorld)
+                    .stream()
+                    .flatMap(world -> Registries.valuesForTag(world, UTags.APPLES))
+                    .filter(a -> a != this).forEach(item -> {
+                ItemStack stack = new ItemStack(this);
+                stack.getOrCreateNbt().putString("appearance", Registry.ITEM.getId(item).toString());
+                items.add(stack);
             });
         }
     }

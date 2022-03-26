@@ -10,10 +10,10 @@ import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -53,7 +53,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
                     .orElse(e) : e;
         }).orElseGet(() -> trace.getBlockPos().map(pos -> {
             if (!iplayer.getWorld().isAir(pos)) {
-                return new FallingBlockEntity(player.getEntityWorld(), 0, 0, 0, iplayer.getWorld().getBlockState(pos));
+                return MixinFallingBlockEntity.createInstance(player.getEntityWorld(), 0, 0, 0, iplayer.getWorld().getBlockState(pos));
             }
             return null;
         }).orElse(null));

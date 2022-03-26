@@ -18,12 +18,6 @@ public abstract class LightEmittingEntity extends Entity implements DynamicLight
     }
 
     @Override
-    public void setRemoved(RemovalReason reason) {
-        super.setRemoved(reason);
-        emitter.remove();
-    }
-
-    @Override
     public void onRemoved() {
         super.onRemoved();
         emitter.remove();
