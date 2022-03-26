@@ -50,6 +50,11 @@ public class SunBlindnessStatusEffect extends StatusEffect {
     }
 
     public static boolean hasSunExposure(LivingEntity entity) {
+
+        if (entity.hasNetherPortalCooldown()) { // TODO: test this. Entities shouldn't get sun blindness when existing a portal
+            return false;
+        }
+
         if (entity.hasStatusEffect(StatusEffects.BLINDNESS)) {
             return false;
         }
