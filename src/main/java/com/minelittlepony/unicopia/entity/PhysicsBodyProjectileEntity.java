@@ -20,6 +20,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -84,6 +85,17 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
             setVelocity(vel.multiply(0.3));
             addVelocity(0, -0.025, 0);
         }
+    }
+
+    @Override
+    protected void onEntityHit(EntityHitResult hit) {
+        if (isBouncy()) {
+            setVelocity(getVelocity().multiply(-0.1, -0.3, -0.1));
+            setYaw(getYaw() + 180);
+            prevYaw += 180;
+            return;
+        }
+        super.onEntityHit(hit);
     }
 
     @Override
