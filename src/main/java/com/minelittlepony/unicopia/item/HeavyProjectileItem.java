@@ -33,16 +33,13 @@ public class HeavyProjectileItem extends ProjectileItem {
     }
 
     @Override
-    protected ProjectileEntity createProjectile(ItemStack stack, World world, PlayerEntity player) {
+    protected PhysicsBodyProjectileEntity createProjectile(ItemStack stack, World world, PlayerEntity player) {
         PhysicsBodyProjectileEntity projectile = player == null ? new PhysicsBodyProjectileEntity(world) : new PhysicsBodyProjectileEntity(world, player);
         if (player != null) {
             projectile.setVelocity(player, player.getPitch(), player.getYaw(), 0, 1.5F, 1);
         }
         projectile.pickupType = PersistentProjectileEntity.PickupPermission.ALLOWED;
-        projectile.setStack(stack.copy());
-        if (this == UItems.MUFFIN) {
-            projectile.setBouncy();
-        }
+        projectile.setStack(stack.copy().split(1));
         return projectile;
     }
 
