@@ -55,6 +55,10 @@ public interface ProjectileUtil {
 
     /**
      * Reverses a projectile's direction to deflect it off a surface.
+     *
+     * @param projectile The projectile to deflect
+     * @param post       The position the projectile must be deflected away from
+     * @param absorbtionRate Percentage of the projectile velocity to absorb.
      */
     static void ricochet(Entity projectile, Vec3d pos, float absorbtionRate) {
         Vec3d position = projectile.getPos();

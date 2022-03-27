@@ -25,6 +25,10 @@ public interface UEntities {
             .trackRangeBlocks(100)
             .trackedUpdateRate(2)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));
+    EntityType<PhysicsBodyProjectileEntity> MUFFIN = register("muffin", FabricEntityTypeBuilder.<PhysicsBodyProjectileEntity>create(SpawnGroup.MISC, PhysicsBodyProjectileEntity::new)
+            .trackRangeBlocks(100)
+            .trackedUpdateRate(2)
+            .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));
     EntityType<MagicProjectileEntity> MAGIC_BEAM = register("magic_beam", FabricEntityTypeBuilder.<MagicProjectileEntity>create(SpawnGroup.MISC, MagicProjectileEntity::new)
             .trackRangeBlocks(100)
             .trackedUpdateRate(2)

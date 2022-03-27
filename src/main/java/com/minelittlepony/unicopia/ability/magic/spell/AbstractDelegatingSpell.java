@@ -87,17 +87,19 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
         return execute(getDelegates().stream(), spell -> spell.tick(source, situation));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
         getDelegates().stream().filter(a -> a instanceof ProjectileDelegate).forEach(a -> {
-            ((ProjectileDelegate)a).onImpact(projectile, pos, state);
+            ((ProjectileDelegate<MagicProjectileEntity>)a).onImpact(projectile, pos, state);
         });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onImpact(MagicProjectileEntity projectile, Entity entity) {
         getDelegates().stream().filter(a -> a instanceof ProjectileDelegate).forEach(a -> {
-            ((ProjectileDelegate)a).onImpact(projectile, entity);
+            ((ProjectileDelegate<MagicProjectileEntity>)a).onImpact(projectile, entity);
         });
     }
 

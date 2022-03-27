@@ -71,6 +71,7 @@ public interface URenderers {
         AccessoryFeatureRenderer.register(BatWingsFeatureRenderer::new);
 
         EntityRendererRegistry.register(UEntities.THROWN_ITEM, FlyingItemEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.MUFFIN, FlyingItemEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.MAGIC_BEAM, MagicBeamEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.BUTTERFLY, ButterflyEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.FLOATING_ARTEFACT, FloatingArtefactEntityRenderer::new);

@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 /**
  * Magic effects that can be thrown.
  */
-public interface ProjectileSpell extends Spell, ProjectileDelegate {
+public interface ProjectileSpell extends Spell, ProjectileDelegate<MagicProjectileEntity> {
 
     @Override
     default void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {

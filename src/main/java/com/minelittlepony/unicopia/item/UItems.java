@@ -67,9 +67,10 @@ public interface UItems {
     Item HAY_BURGER = register("hay_burger", new Item(new Item.Settings().group(ItemGroup.FOOD).maxCount(1).food(UFoodComponents.HAY_BURGER)));
     Item HAY_FRIES = register("hay_fries", new Item(new Item.Settings().group(ItemGroup.FOOD).maxCount(16).food(UFoodComponents.HAY_FRIES)));
     Item WHEAT_WORMS = register("wheat_worms", new Item(new Item.Settings().group(ItemGroup.MISC).maxCount(16).food(UFoodComponents.INSECTS)));
+    Item MUFFIN = register("muffin", new MuffinItem(new Item.Settings().group(ItemGroup.FOOD).maxCount(32).food(FoodComponents.BREAD), 0));
 
     Item PEBBLES = register("pebbles", new RacePredicatedAliasedBlockItem(UBlocks.ROCKS, new Item.Settings().group(ItemGroup.MATERIALS), Race::canUseEarth));
-    Item ROCK = register("rock", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+    Item ROCK = register("rock", new HeavyProjectileItem(new Item.Settings().group(ItemGroup.MATERIALS), 3));
     Item WEIRD_ROCK = register("weird_rock", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     Item ROCK_STEW = register("rock_stew", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.MUSHROOM_STEW)));
 
