@@ -114,17 +114,28 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
             if (isBouncy()) {
                 Direction.Axis side = hit.getSide().getAxis();
 
+                double randomisation = ((world.random.nextFloat() - 0.5F) / 5);
+
+                double inflectionAmount = randomisation + -0.4;
+                double deflectionAmount = randomisation + 0.3;
+
                 if (side == Direction.Axis.X) {
-                    setVelocity(getVelocity().multiply(-0.4, 0.3, 0.3));
+                    setVelocity(getVelocity().multiply(inflectionAmount, deflectionAmount, deflectionAmount));
                 }
 
                 if (side == Direction.Axis.Y) {
-                    setVelocity(getVelocity().multiply(0.3, -0.4, 0.3));
+                    setVelocity(getVelocity().multiply(deflectionAmount, inflectionAmount, deflectionAmount));
                 }
 
                 if (side == Direction.Axis.Z) {
-                    setVelocity(getVelocity().multiply(0.3, 0.3, -0.4));
+                    setVelocity(getVelocity().multiply(deflectionAmount, deflectionAmount, inflectionAmount));
                 }
+
+                addVelocity(
+                        ((world.random.nextFloat() - 0.5F) / 5),
+                        ((world.random.nextFloat() - 0.5F) / 5),
+                        ((world.random.nextFloat() - 0.5F) / 5)
+                );
             } else {
                 super.onBlockHit(hit);
             }
