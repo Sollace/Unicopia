@@ -22,7 +22,7 @@ public class BreakHeartGoal extends Goal {
     public BreakHeartGoal(MobEntity mob, DynamicTargetGoal targetter) {
         this.mob = mob;
         this.targetter = targetter;
-        this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
+        this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK, Goal.Control.JUMP));
 
         target = targetter.addPredicate(this::canTarget);
     }

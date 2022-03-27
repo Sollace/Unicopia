@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.TargetSelecter;
 import com.minelittlepony.unicopia.entity.ai.BreakHeartGoal;
 import com.minelittlepony.unicopia.entity.ai.DynamicTargetGoal;
+import com.minelittlepony.unicopia.entity.ai.EatMuffinGoal;
 import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;
 import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
 
@@ -32,15 +33,18 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SlimeEntity;
+import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class Creature extends Living<LivingEntity> implements WeaklyOwned<LivingEntity> {
     private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
     private static final TrackedData<NbtCompound> MASTER = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
     public static final TrackedData<Float> GRAVITY = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    private static final TrackedData<Integer> EATING = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     private static final LevelStore LEVELS = Levelled.fixed(0);
 
@@ -55,10 +59,15 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
     @Nullable
     private GoalSelector targets;
 
+    private int eatTimer;
+    @Nullable
+    private EatMuffinGoal eatMuffinGoal;
+
     public Creature(LivingEntity entity) {
         super(entity, EFFECT);
         physics = new EntityPhysics<>(entity, GRAVITY);
         entity.getDataTracker().startTracking(MASTER, master.toNBT());
+        entity.getDataTracker().startTracking(EATING, 0);
     }
 
     @Override
@@ -115,6 +124,10 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
         if (entity.getType().getSpawnGroup() == SpawnGroup.MONSTER) {
             goals.add(3, new BreakHeartGoal((MobEntity)entity, targetter));
         }
+        if (entity instanceof PigEntity) {
+            eatMuffinGoal = new EatMuffinGoal((MobEntity)entity, targetter);
+            goals.add(3, eatMuffinGoal);
+        }
 
         if (master.isPresent(getWorld())) {
             initMinionAi();
@@ -145,6 +158,37 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
     public void tick() {
         super.tick();
         physics.tick();
+
+        if (isClient()) {
+            eatTimer = entity.getDataTracker().get(EATING);
+        } else if (eatMuffinGoal != null) {
+            eatTimer = eatMuffinGoal.getTimer();
+            entity.getDataTracker().set(EATING, eatTimer);
+        }
+    }
+
+    public float getNeckAngle(float delta) {
+        if (eatTimer <= 0) {
+            return 0;
+        }
+        if (eatTimer >= 4 && eatTimer <= 36) {
+            return 1;
+        }
+        if (eatTimer < 4) {
+            return (eatTimer - delta) / 4F;
+        }
+        return -(eatTimer - 40 - delta) / 4F;
+    }
+
+    public float getHeadAngle(float delta) {
+        if (eatTimer > 4 && eatTimer <= 36) {
+            float f = (eatTimer - 4 - delta) / 32F;
+            return 0.62831855f + 0.21991149f * MathHelper.sin(f * 28.7F);
+        }
+        if (eatTimer > 0) {
+            return 0.62831855f;
+        }
+        return entity.getPitch() * ((float)Math.PI / 180);
     }
 
     @Override

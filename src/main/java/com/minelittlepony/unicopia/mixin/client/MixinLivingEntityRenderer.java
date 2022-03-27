@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.minelittlepony.unicopia.client.render.AnimalPoser;
 import com.minelittlepony.unicopia.client.render.PlayerPoser;
 
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -16,6 +17,7 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 @Mixin(LivingEntityRenderer.class)
@@ -36,6 +38,9 @@ abstract class MixinLivingEntityRenderer<T extends LivingEntity, M extends Entit
             CallbackInfo into) {
         if (entity instanceof PlayerEntity player) {
             PlayerPoser.INSTANCE.applyPosing(matrices, player, (BipedEntityModel<?>)getModel());
+        }
+        if (entity instanceof MobEntity mob) {
+            AnimalPoser.INSTANCE.applyPosing(matrices, mob, getModel());
         }
     }
 }

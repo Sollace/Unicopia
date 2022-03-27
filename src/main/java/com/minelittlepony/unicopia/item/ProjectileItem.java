@@ -29,11 +29,7 @@ abstract class ProjectileItem extends Item implements ProjectileDelegate<Project
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
 
         if (isFood() && !player.isSneaking()) {
-            TypedActionResult<ItemStack> eaten = super.use(world, player, hand);
-
-            if (eaten.getResult().isAccepted()) {
-                return eaten;
-            }
+            return super.use(world, player, hand);
         }
 
         ItemStack stack = player.getStackInHand(hand);
