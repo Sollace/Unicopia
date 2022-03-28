@@ -4,7 +4,7 @@
   "items": [
     "minecraft:grass_block",
     "minecraft:dirt",
-    "minecraft:course_dirt",
+    "minecraft:coarse_dirt",
     "minecraft:podzol",
     "minecraft:rooted_dirt",
 
@@ -21,7 +21,7 @@
     "minecraft:gold_ore",
     "minecraft:deepslate_gold_ore",
     "minecraft:redstone_ore",
-    "minecraft:deepslare_redstone_ore",
+    "minecraft:deepslate_redstone_ore",
     "minecraft:emerald_ore",
     "minecraft:deepslate_emerald_ore",
     "minecraft:lapis_ore",
