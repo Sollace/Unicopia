@@ -16,6 +16,7 @@ public interface UCriteria {
     CustomEventCriterion.Trigger SCREECH_SELF = CUSTOM_EVENT.createTrigger("screech_self");
     CustomEventCriterion.Trigger SCREECH_TWENTY_MOBS = CUSTOM_EVENT.createTrigger("screech_twenty_mobs");
     CustomEventCriterion.Trigger SHED_FEATHER = CUSTOM_EVENT.createTrigger("shed_feather");
+    CustomEventCriterion.Trigger THROW_MUFFIN = CUSTOM_EVENT.createTrigger("throw_muffin");
 
     private static <T extends Criterion<?>> T register(T obj) {
         return MixinCriteria.register(obj);

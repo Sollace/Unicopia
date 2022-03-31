@@ -1,0 +1,31 @@
+{
+  "parent": "unicopia:unicopia/root",
+  "display": {
+    "icon": {
+      "item": "unicopia:muffin"
+    },
+    "title": {
+      "translate": "advancements.unicopia.baked_bads.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.baked_bads.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "throw_muffin": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": [ "unicopia:muffin" ] }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [ "throw_muffin" ]
+  ]
+}

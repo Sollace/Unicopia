@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.item;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.PhysicsBodyProjectileEntity;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,10 +16,11 @@ public class MuffinItem extends HeavyProjectileItem {
     }
 
     @Override
-    protected PhysicsBodyProjectileEntity createProjectile(ItemStack stack, World world, PlayerEntity player) {
+    protected PhysicsBodyProjectileEntity createProjectile(ItemStack stack, World world, @Nullable PlayerEntity player) {
         PhysicsBodyProjectileEntity projectile = super.createProjectile(stack, world, player);
         projectile.setBouncy();
         projectile.setDamage(0);
+        UCriteria.THROW_MUFFIN.trigger(player);
         return projectile;
     }
 }

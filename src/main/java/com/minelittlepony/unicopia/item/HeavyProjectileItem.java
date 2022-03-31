@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.entity.PhysicsBodyProjectileEntity;
@@ -33,7 +35,7 @@ public class HeavyProjectileItem extends ProjectileItem {
     }
 
     @Override
-    protected PhysicsBodyProjectileEntity createProjectile(ItemStack stack, World world, PlayerEntity player) {
+    protected PhysicsBodyProjectileEntity createProjectile(ItemStack stack, World world, @Nullable PlayerEntity player) {
         PhysicsBodyProjectileEntity projectile = player == null ? new PhysicsBodyProjectileEntity(world) : new PhysicsBodyProjectileEntity(world, player);
         if (player != null) {
             projectile.setVelocity(player, player.getPitch(), player.getYaw(), 0, 1.5F, 1);

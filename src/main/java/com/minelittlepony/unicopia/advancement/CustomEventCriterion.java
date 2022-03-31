@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.advancement;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.Race;
@@ -31,6 +33,7 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
     protected Conditions conditionsFromJson(JsonObject json, Extended playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
 
         Set<Race> races = new HashSet<>();
+
         if (json.has("race")) {
             json.get("race").getAsJsonArray().forEach(el -> {
                 races.add(Race.fromName(el.getAsString()));
@@ -48,18 +51,16 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
 
     public CustomEventCriterion.Trigger createTrigger(String name) {
         return player -> {
-
-            if (player instanceof ServerPlayerEntity) {
-                ServerPlayerEntity p = (ServerPlayerEntity)player;
+            if (player instanceof ServerPlayerEntity p) {
                 int counter = Pony.of(player).getAdvancementProgress().compute(name, (key, i) -> i == null ? 1 : i + 1);
 
-                trigger((ServerPlayerEntity)player, c -> c.test(name, counter, p));
+                trigger(p, c -> c.test(name, counter, p));
             }
         };
     }
 
     public interface Trigger {
-        void trigger(PlayerEntity player);
+        void trigger(@Nullable PlayerEntity player);
     }
 
     public static class Conditions extends AbstractCriterionConditions {
