@@ -13,6 +13,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -31,6 +32,8 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(PhysicsBodyProjectileEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<Boolean> BOUNCY = DataTracker.registerData(PhysicsBodyProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+
+    private int inWaterTime;
 
     public PhysicsBodyProjectileEntity(EntityType<PhysicsBodyProjectileEntity> type, World world) {
         super(type, world);
@@ -84,6 +87,28 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
             setVelocity(vel.multiply(0.3));
             addVelocity(0, -0.025, 0);
+        }
+
+        if (isBouncy() && isInsideWaterOrBubbleColumn()) {
+            setVelocity(getVelocity().multiply(0.3).add(0, 0.05125, 0));
+            inWaterTime++;
+        } else {
+            inWaterTime = 0;
+        }
+    }
+
+    @Override
+    public void onPlayerCollision(PlayerEntity player) {
+
+        if (world.isClient || isNoClip() || shake > 0) {
+            return;
+        }
+
+        if (inWaterTime <= 0) {
+            super.onPlayerCollision(player);
+        } else if (tryPickup(player)) {
+            player.sendPickup(this, 1);
+            discard();
         }
     }
 
