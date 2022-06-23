@@ -73,9 +73,9 @@ public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
             e.setVelocity(caster.getEntity().getVelocity());
         } else {
             e.addVelocity(
-                ((caster.getWorld().random.nextFloat() * HORIZONTAL_VARIANCE) - HORIZONTAL_VARIANCE + vel.x * 0.8F) * 0.1F,
+                ((caster.getReferenceWorld().random.nextFloat() * HORIZONTAL_VARIANCE) - HORIZONTAL_VARIANCE + vel.x * 0.8F) * 0.1F,
                 0.1F + (getTraits().get(Trait.STRENGTH, -MAX_STRENGTH, MAX_STRENGTH) - 40) / 16D,
-                ((caster.getWorld().random.nextFloat() * HORIZONTAL_VARIANCE) - HORIZONTAL_VARIANCE + vel.z * 0.8F) * 0.1F
+                ((caster.getReferenceWorld().random.nextFloat() * HORIZONTAL_VARIANCE) - HORIZONTAL_VARIANCE + vel.z * 0.8F) * 0.1F
             );
         }
     }
@@ -94,7 +94,7 @@ public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
             Optional.ofNullable(result.getEntity()).ifPresent(apply);
         } else if (ray.getType() == HitResult.Type.BLOCK) {
             if (caster.canModifyAt(((BlockHitResult)ray).getBlockPos())) {
-                createBlockEntity(caster.getWorld(), ((BlockHitResult)ray).getBlockPos(), apply);
+                createBlockEntity(caster.getReferenceWorld(), ((BlockHitResult)ray).getBlockPos(), apply);
             }
         }
     }

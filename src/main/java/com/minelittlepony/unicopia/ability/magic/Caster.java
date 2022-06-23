@@ -42,7 +42,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
      * Gets the minecraft world
      */
     @Override
-    default World getWorld() {
+    default World getReferenceWorld() {
         return getEntity().getEntityWorld();
     }
 
@@ -50,7 +50,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
      * Returns true if we're executing on the client.
      */
     default boolean isClient() {
-        return getWorld().isClient();
+        return getReferenceWorld().isClient();
     }
 
     /**
@@ -62,13 +62,13 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
 
     default boolean canModifyAt(BlockPos pos) {
         if (getMaster() instanceof PlayerEntity) {
-            return getWorld().canPlayerModifyAt((PlayerEntity)getMaster(), pos);
+            return getReferenceWorld().canPlayerModifyAt((PlayerEntity)getMaster(), pos);
         }
-        return getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
+        return getReferenceWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
     }
 
     default void playSound(SoundEvent sound, float volume, float pitch) {
-        getWorld().playSound(null, getEntity().getX(), getEntity().getY(), getEntity().getZ(), sound, getEntity().getSoundCategory(), volume, pitch);
+        getReferenceWorld().playSound(null, getEntity().getX(), getEntity().getY(), getEntity().getZ(), sound, getEntity().getSoundCategory(), volume, pitch);
     }
 
     /**
@@ -87,7 +87,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     }
 
     default Stream<Entity> findAllEntitiesInRange(double radius, @Nullable Predicate<Entity> test) {
-        return VecHelper.findInRange(getEntity(), getWorld(), getOriginVector(), radius, test).stream();
+        return VecHelper.findInRange(getEntity(), getReferenceWorld(), getOriginVector(), radius, test).stream();
     }
 
     default Stream<Entity> findAllEntitiesInRange(double radius) {

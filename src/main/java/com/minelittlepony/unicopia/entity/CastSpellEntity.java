@@ -135,4 +135,9 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
     public Packet<?> createSpawnPacket() {
         return Channel.SERVER_SPAWN_PROJECTILE.toPacket(new MsgSpawnProjectile(this));
     }
+
+    @Override
+    public World getReferenceWorld() {
+        return WeaklyOwned.super.getReferenceWorld();
+    }
 }

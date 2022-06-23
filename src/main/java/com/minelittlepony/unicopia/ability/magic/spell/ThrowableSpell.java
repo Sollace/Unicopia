@@ -50,7 +50,7 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
      * Returns the resulting projectile entity for customization (or null if on the client).
      */
     public Optional<MagicProjectileEntity> throwProjectile(Caster<?> caster, float divergance) {
-        World world = caster.getWorld();
+        World world = caster.getReferenceWorld();
 
         LivingEntity entity = caster.getMaster();
 

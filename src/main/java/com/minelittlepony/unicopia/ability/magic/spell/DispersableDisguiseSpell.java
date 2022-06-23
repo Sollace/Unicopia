@@ -51,7 +51,7 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
             if (isSuppressed()) {
                 source.spawnParticles(MagicParticleEffect.UNICORN, 5);
                 source.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
-            } else if (source.getWorld().random.nextInt(30) == 0) {
+            } else if (source.getReferenceWorld().random.nextInt(30) == 0) {
                 source.spawnParticles(UParticles.CHANGELING_MAGIC, 2);
             }
         }

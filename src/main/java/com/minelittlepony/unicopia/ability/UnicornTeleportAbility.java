@@ -69,7 +69,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
         int maxDistance = player.getMaster().isCreative() ? 1000 : 100;
         HitResult ray = RayTraceHelper.doTrace(player.getMaster(), maxDistance, 1, EntityPredicates.CAN_COLLIDE).getResult();
 
-        World w = player.getWorld();
+        World w = player.getReferenceWorld();
 
         if (ray.getType() == HitResult.Type.MISS) {
             return null;
@@ -136,7 +136,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             return;
         }
 
-        teleportee.getWorld().playSound(null, teleportee.getOrigin(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
+        teleportee.getReferenceWorld().playSound(null, teleportee.getOrigin(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
 
         double distance = destination.distanceTo(teleportee) / 10;
 

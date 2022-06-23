@@ -74,7 +74,7 @@ public class TraitDiscovery implements NbtSerialisable {
         });
         unreadTraits.addAll(newTraits);
         pony.setDirty();
-        if (!newTraits.isEmpty() && !pony.getWorld().isClient) {
+        if (!newTraits.isEmpty() && !pony.getReferenceWorld().isClient) {
             Channel.UNLOCK_TRAITS.send((ServerPlayerEntity)pony.getMaster(), new MsgUnlockTraits(newTraits));
         }
     }

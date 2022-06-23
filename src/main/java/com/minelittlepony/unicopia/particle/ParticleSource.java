@@ -14,7 +14,7 @@ public interface ParticleSource extends ParticleSpawner {
     /**
      * gets the minecraft world
      */
-    World getWorld();
+    World getReferenceWorld();
 
     Entity getEntity();
 
@@ -34,13 +34,13 @@ public interface ParticleSource extends ParticleSpawner {
     }
 
     default void spawnParticles(Vec3d pos, Shape area, int count, Consumer<Vec3d> particleSpawner) {
-        area.randomPoints(count, getWorld().random)
+        area.randomPoints(count, getReferenceWorld().random)
             .map(point -> point.add(pos))
             .forEach(particleSpawner);
     }
 
     @Override
     default void addParticle(ParticleEffect effect, Vec3d position, Vec3d velocity) {
-        getWorld().addParticle(effect, position.x, position.y, position.z, velocity.x, velocity.y, velocity.z);
+        getReferenceWorld().addParticle(effect, position.x, position.y, position.z, velocity.x, velocity.y, velocity.z);
     }
 }

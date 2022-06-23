@@ -119,7 +119,7 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder {
     public void appendStacks(ItemGroup tab, DefaultedList<ItemStack> items) {
         super.appendStacks(tab, items);
         if (isIn(tab)) {
-            Unicopia.SIDE.getPony().map(Pony::getWorld)
+            Unicopia.SIDE.getPony().map(Pony::getReferenceWorld)
                     .stream()
                     .flatMap(world -> Registries.valuesForTag(world, UTags.APPLES))
                     .filter(a -> a != this).forEach(item -> {

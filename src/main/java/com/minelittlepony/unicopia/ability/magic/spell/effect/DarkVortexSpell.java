@@ -86,13 +86,13 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell 
         setDirty();
 
         if (age % 20 == 0) {
-            source.getWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_ADDITIONS, SoundCategory.AMBIENT, 1, 1);
+            source.getReferenceWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_ADDITIONS, SoundCategory.AMBIENT, 1, 1);
         }
 
         source.subtractEnergyCost(-accumulatedMass);
 
-        if (!source.isClient() && source.getWorld().random.nextInt(300) == 0) {
-            ParticleUtils.spawnParticle(source.getWorld(), UParticles.LIGHTNING_BOLT, getOrigin(source), Vec3d.ZERO);
+        if (!source.isClient() && source.getReferenceWorld().random.nextInt(300) == 0) {
+            ParticleUtils.spawnParticle(source.getReferenceWorld(), UParticles.LIGHTNING_BOLT, getOrigin(source), Vec3d.ZERO);
         }
 
         return super.tick(source, situation);
@@ -161,9 +161,9 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell 
                         return;
                     }
                     if (source.getOrigin().isWithinDistance(i, getEventHorizonRadius() / 2)) {
-                        source.getWorld().breakBlock(i, false);
+                        source.getReferenceWorld().breakBlock(i, false);
                     } else {
-                        CatapultSpell.createBlockEntity(source.getWorld(), i, e -> {
+                        CatapultSpell.createBlockEntity(source.getReferenceWorld(), i, e -> {
                             applyRadialEffect(source, e, e.getPos().distanceTo(origin), radius);
                         });
                     }
@@ -177,8 +177,8 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell 
 
     protected boolean canAffect(Caster<?> source, BlockPos pos) {
         return source.canModifyAt(pos)
-            && source.getWorld().getFluidState(pos).isEmpty()
-            && source.getWorld().getBlockState(pos).getHardness(source.getWorld(), pos) >= 0;
+            && source.getReferenceWorld().getFluidState(pos).isEmpty()
+            && source.getReferenceWorld().getBlockState(pos).getHardness(source.getReferenceWorld(), pos) >= 0;
     }
 
     // 1. force decreases with distance: distance scale 1 -> 0
@@ -235,7 +235,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell 
             }
 
             source.subtractEnergyCost(-massOfTarget * 10);
-            source.getWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_MOOD, SoundCategory.AMBIENT, 2, 0.02F);
+            source.getReferenceWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_MOOD, SoundCategory.AMBIENT, 2, 0.02F);
         } else {
             double force = getAttractiveForce(source, target);
 

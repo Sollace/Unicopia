@@ -55,7 +55,7 @@ public class AttractiveSpell extends ShieldSpell implements ProjectileSpell {
             force *= AttractionUtils.getForceAdjustment(target);
         }
 
-        if (!isGood && source.getWorld().random.nextInt(4500) == 0) {
+        if (!isGood && source.getReferenceWorld().random.nextInt(4500) == 0) {
             source.getEntity().damage(MagicalDamageSource.create("vortex"), 4);
         }
 

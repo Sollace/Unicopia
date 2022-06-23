@@ -90,7 +90,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
                 if (amount < 0) {
                     AmuletItem.consumeEnergy(stack, amount);
                     player.getMagicalReserves().getMana().add(amount * player.getMagicalReserves().getMana().getMax());
-                    player.getWorld().playSoundFromEntity(null, player.getMaster(), USounds.ITEM_AMULET_RECHARGE, SoundCategory.PLAYERS, 1, 1);
+                    player.getReferenceWorld().playSoundFromEntity(null, player.getMaster(), USounds.ITEM_AMULET_RECHARGE, SoundCategory.PLAYERS, 1, 1);
                 }
             }
         } else {
@@ -144,7 +144,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
 
             float i = player.getAbilities().getStat(slot).getFillProgress();
 
-            Random rng = player.getWorld().random;
+            Random rng = player.getReferenceWorld().random;
             player.addParticle(i > 0.5F ? ParticleTypes.LARGE_SMOKE : ParticleTypes.CLOUD, eyes, VecHelper.supply(() -> (rng.nextGaussian() - 0.5) / 10));
             player.playSound(USounds.ITEM_AMULET_CHARGING, 1, i / 20);
         } else {

@@ -77,12 +77,12 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
             if (!source.isClient()) {
 
                 if (dimension == null) {
-                    dimension = source.getWorld().getRegistryKey();
+                    dimension = source.getReferenceWorld().getRegistryKey();
                     setDirty();
                 }
 
                 if (getSpellEntity(source).isEmpty()) {
-                    CastSpellEntity entity = UEntities.CAST_SPELL.create(source.getWorld());
+                    CastSpellEntity entity = UEntities.CAST_SPELL.create(source.getReferenceWorld());
                     Vec3d pos = castEntity.getPosition().orElse(source.getOriginVector());
                     entity.updatePositionAndAngles(pos.x, pos.y, pos.z, 0, 0);
                     entity.getSpellSlot().put(spell.toPlaceable());
@@ -123,7 +123,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
 
     protected Optional<CastSpellEntity> getSpellEntity(Caster<?> source) {
         return Optional.ofNullable(dimension)
-                .map(dim -> source.getWorld().getServer().getWorld(dimension))
+                .map(dim -> source.getReferenceWorld().getServer().getWorld(dimension))
                 .map(castEntity::get);
     }
 

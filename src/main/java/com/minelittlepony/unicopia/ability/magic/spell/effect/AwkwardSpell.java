@@ -29,7 +29,7 @@ public class AwkwardSpell extends AbstractSpell {
 
                 List<Identifier> names = new ArrayList<>(Registry.PARTICLE_TYPE.getIds());
 
-                int index = (int)MathHelper.nextDouble(source.getWorld().random, 0, names.size());
+                int index = (int)MathHelper.nextDouble(source.getReferenceWorld().random, 0, names.size());
 
                 Identifier id = names.get(index);
                 ParticleType<?> type = Registry.PARTICLE_TYPE.get(id);

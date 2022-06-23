@@ -70,7 +70,7 @@ public class RainboomAbilitySpell extends AbstractSpell {
             e.damage(MagicalDamageSource.create("rainboom", source), 6);
         });
         PosHelper.getAllInRegionMutable(source.getOrigin(), effect_range).forEach(pos -> {
-            BlockState state = source.getWorld().getBlockState(pos);
+            BlockState state = source.getReferenceWorld().getBlockState(pos);
             if (state.isIn(UTags.FRAGILE) && canBreak(pos, owner)) {
                 owner.world.breakBlock(pos, true);
             }

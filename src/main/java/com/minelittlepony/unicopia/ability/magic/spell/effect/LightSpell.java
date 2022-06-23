@@ -53,17 +53,17 @@ public class LightSpell extends AbstractSpell {
 
         if (!caster.isClient()) {
             if (lights.isEmpty()) {
-                int size = 2 + caster.getWorld().random.nextInt(2) + (int)(getTraits().get(Trait.LIFE, 10, 20) - 10)/10;
+                int size = 2 + caster.getReferenceWorld().random.nextInt(2) + (int)(getTraits().get(Trait.LIFE, 10, 20) - 10)/10;
                 while (lights.size() < size) {
                     lights.add(new EntityReference<FairyEntity>());
                 }
             }
 
             lights.forEach(ref -> {
-                if (!ref.isPresent(caster.getWorld())) {
-                    FairyEntity entity = UEntities.TWITTERMITE.create(caster.getWorld());
+                if (!ref.isPresent(caster.getReferenceWorld())) {
+                    FairyEntity entity = UEntities.TWITTERMITE.create(caster.getReferenceWorld());
                     entity.setPosition(ref.getPosition().orElseGet(() -> {
-                        return caster.getOriginVector().add(VecHelper.supply(() -> caster.getWorld().random.nextInt(3) - 1));
+                        return caster.getOriginVector().add(VecHelper.supply(() -> caster.getReferenceWorld().random.nextInt(3) - 1));
                     }));
                     entity.setMaster(caster);
                     entity.world.spawnEntity(entity);
@@ -83,7 +83,7 @@ public class LightSpell extends AbstractSpell {
             return;
         }
         lights.forEach(ref -> {
-            ref.ifPresent(caster.getWorld(), e -> {
+            ref.ifPresent(caster.getReferenceWorld(), e -> {
                 e.world.sendEntityStatus(e, (byte)60);
                 e.discard();
             });

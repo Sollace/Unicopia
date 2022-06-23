@@ -58,7 +58,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
         return RayTraceHelper.doTrace(player.getMaster(), distance, 1)
                 .getBlockPos()
-                .filter(pos -> TreeType.at(pos, player.getWorld()) != TreeType.NONE)
+                .filter(pos -> TreeType.at(pos, player.getReferenceWorld()) != TreeType.NONE)
                 .isPresent() ? 3 : 1;
     }
 
@@ -69,7 +69,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
         return RayTraceHelper.doTrace(player.getMaster(), distance, 1)
                 .getBlockPos()
-                .filter(pos -> TreeType.at(pos, player.getWorld()) != TreeType.NONE)
+                .filter(pos -> TreeType.at(pos, player.getReferenceWorld()) != TreeType.NONE)
                 .map(Pos::new)
                 .orElseGet(() -> getDefaultKickLocation(player));
     }
@@ -85,10 +85,10 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     @Override
     public boolean canApply(Pony player, Pos data) {
         BlockPos pos = data.pos();
-        TreeType tree = TreeType.at(pos, player.getWorld());
+        TreeType tree = TreeType.at(pos, player.getReferenceWorld());
 
-        return tree == TreeType.NONE || tree.findBase(player.getWorld(), pos)
-                .map(base -> tree.countBlocks(player.getWorld(), pos) > 0)
+        return tree == TreeType.NONE || tree.findBase(player.getReferenceWorld(), pos)
+                .map(base -> tree.countBlocks(player.getReferenceWorld(), pos) > 0)
                 .orElse(false);
     }
 
@@ -100,7 +100,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     @Override
     public void apply(Pony iplayer, Pos data) {
         BlockPos pos = data.pos();
-        TreeType tree = TreeType.at(pos, iplayer.getWorld());
+        TreeType tree = TreeType.at(pos, iplayer.getReferenceWorld());
 
         iplayer.setAnimation(Animation.KICK);
         iplayer.subtractEnergyCost(tree == TreeType.NONE ? 1 : 3);
@@ -108,7 +108,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         if (tree == TreeType.NONE) {
             return;
         } else {
-            ParticleUtils.spawnParticle(iplayer.getWorld(), UParticles.GROUND_POUND, data.vec(), Vec3d.ZERO);
+            ParticleUtils.spawnParticle(iplayer.getReferenceWorld(), UParticles.GROUND_POUND, data.vec(), Vec3d.ZERO);
         }
 
         PlayerEntity player = iplayer.getMaster();

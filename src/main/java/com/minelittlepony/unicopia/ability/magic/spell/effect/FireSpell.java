@@ -50,7 +50,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpel
     @Override
     public void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
         if (!projectile.isClient()) {
-            projectile.getWorld().createExplosion(projectile.getEntity(), pos.getX(), pos.getY(), pos.getZ(), 2, DestructionType.DESTROY);
+            projectile.getReferenceWorld().createExplosion(projectile.getEntity(), pos.getX(), pos.getY(), pos.getZ(), 2, DestructionType.DESTROY);
         }
     }
 
@@ -61,9 +61,9 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpel
         }
 
         return PosHelper.getAllInRegionMutable(source.getOrigin(), new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER)))).reduce(false,
-                (r, i) -> source.canModifyAt(i) && applyBlocks(source.getWorld(), i),
+                (r, i) -> source.canModifyAt(i) && applyBlocks(source.getReferenceWorld(), i),
                 (a, b) -> a || b)
-                || applyEntities(null, source.getWorld(), source.getOriginVector());
+                || applyEntities(null, source.getReferenceWorld(), source.getOriginVector());
     }
 
     protected void generateParticles(Caster<?> source) {

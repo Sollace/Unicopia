@@ -34,14 +34,14 @@ public interface WeaklyOwned<E extends Entity> extends Owned<E> {
         }
     }
 
-    default World getWorld() {
-        return ((Entity)this).world;
+    default World getReferenceWorld() {
+        return ((Entity)this).getEntityWorld();
     }
 
     @Nullable
     @Override
     default E getMaster() {
-        return getMasterReference().get(getWorld());
+        return getMasterReference().get(getReferenceWorld());
     }
 
     @Override

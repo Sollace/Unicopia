@@ -142,7 +142,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             this.animationMaxDuration = animationDuration;
 
             if (!isClient()) {
-                Channel.SERVER_PLAYER_ANIMATION_CHANGE.send(getWorld(), new MsgPlayerAnimationChange(this, animation, animationDuration));
+                Channel.SERVER_PLAYER_ANIMATION_CHANGE.send(getReferenceWorld(), new MsgPlayerAnimationChange(this, animation, animationDuration));
             }
 
             animation.getSound().ifPresent(sound -> {
@@ -271,8 +271,8 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     @Override
     public boolean beforeUpdate() {
 
-        if (!speciesSet && getWorld() instanceof ServerWorld) {
-            setSpecies(WorldTribeManager.forWorld((ServerWorld)getWorld()).getDefaultRace());
+        if (!speciesSet && getReferenceWorld() instanceof ServerWorld) {
+            setSpecies(WorldTribeManager.forWorld((ServerWorld)getReferenceWorld()).getDefaultRace());
             setDirty();
         }
 
@@ -321,9 +321,9 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     }
 
     public boolean canHangAt(BlockPos pos) {
-        BlockState state = getWorld().getBlockState(pos);
+        BlockState state = getReferenceWorld().getBlockState(pos);
 
-        return state.isSolidSurface(getWorld(), pos, getEntity(), Direction.DOWN);
+        return state.isSolidSurface(getReferenceWorld(), pos, getEntity(), Direction.DOWN);
     }
 
     private BlockPos getHangingPos() {

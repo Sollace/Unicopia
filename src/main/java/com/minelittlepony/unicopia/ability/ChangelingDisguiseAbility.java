@@ -52,8 +52,8 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
                     .map(EntityAppearance::getAppearance)
                     .orElse(e) : e;
         }).orElseGet(() -> trace.getBlockPos().map(pos -> {
-            if (!iplayer.getWorld().isAir(pos)) {
-                return MixinFallingBlockEntity.createInstance(player.getEntityWorld(), 0, 0, 0, iplayer.getWorld().getBlockState(pos));
+            if (!iplayer.getReferenceWorld().isAir(pos)) {
+                return MixinFallingBlockEntity.createInstance(player.getEntityWorld(), 0, 0, 0, iplayer.getReferenceWorld().getBlockState(pos));
             }
             return null;
         }).orElse(null));

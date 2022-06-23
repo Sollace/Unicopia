@@ -162,7 +162,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                             ), p -> createPlayer(nbt, p, source));
             } else {
                 if (source.isClient()) {
-                    entity = EntityType.fromNbt(nbt).map(type -> type.create(source.getWorld())).orElse(null);
+                    entity = EntityType.fromNbt(nbt).map(type -> type.create(source.getReferenceWorld())).orElse(null);
                     if (entity != null) {
                         try {
                             entity.readNbt(nbt);
@@ -172,7 +172,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                         entity = EntityBehaviour.forEntity(entity).onCreate(entity, this, true);
                     }
                 } else {
-                    entity = EntityType.loadEntityWithPassengers(nbt, source.getWorld(), e -> {
+                    entity = EntityType.loadEntityWithPassengers(nbt, source.getReferenceWorld(), e -> {
                         return EntityBehaviour.forEntity(e).onCreate(e, this, true);
                     });
                 }
@@ -202,7 +202,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         }
 
         if (source.isClient()) {
-            source.getWorld().spawnEntity(entity);
+            source.getReferenceWorld().spawnEntity(entity);
         }
     }
 

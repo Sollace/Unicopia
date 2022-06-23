@@ -67,7 +67,7 @@ public class FireBoltSpell extends AbstractSpell implements ProjectileSpell, Hom
                 c.setHomingTarget(target);
             });
 
-            caster.playSound(USounds.SPELL_FIRE_BOLT_SHOOT, 0.7F, 0.4F / (caster.getWorld().random.nextFloat() * 0.4F + 0.8F));
+            caster.playSound(USounds.SPELL_FIRE_BOLT_SHOOT, 0.7F, 0.4F / (caster.getReferenceWorld().random.nextFloat() * 0.4F + 0.8F));
         }
         return false;
     }
@@ -81,7 +81,7 @@ public class FireBoltSpell extends AbstractSpell implements ProjectileSpell, Hom
     }
 
     protected int getNumberOfBalls(Caster<?> caster) {
-        return 1 + caster.getWorld().random.nextInt(3) + (int)getTraits().get(Trait.EARTH) * 3;
+        return 1 + caster.getReferenceWorld().random.nextInt(3) + (int)getTraits().get(Trait.EARTH) * 3;
     }
 
     @Override

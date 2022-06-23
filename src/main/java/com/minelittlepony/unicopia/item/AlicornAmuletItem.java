@@ -123,7 +123,7 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
     public void onRemoved(Pony pony, int timeWorn) {
         float attachedTime = timeWorn / 100F;
 
-        LocalDifficulty difficulty = pony.getWorld().getLocalDifficulty(pony.getOrigin());
+        LocalDifficulty difficulty = pony.getReferenceWorld().getLocalDifficulty(pony.getOrigin());
         float amount = attachedTime * (1 + difficulty.getClampedLocalDifficulty());
 
         amount = Math.min(amount, pony.getMaster().getMaxHealth());
