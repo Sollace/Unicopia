@@ -12,8 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.*;
 import net.minecraft.util.Hand;
 
 class TraitCommand {
@@ -44,13 +43,13 @@ class TraitCommand {
 
     static int add(ServerCommandSource source, PlayerEntity player, Trait trait, float amount) throws CommandSyntaxException {
         if (trait == null) {
-            source.sendError(new LiteralText("Invalid trait"));
+            source.sendError(Text.literal("Invalid trait"));
             return 0;
         }
 
         ItemStack stack = player.getMainHandStack();
         if (stack.isEmpty()) {
-            source.sendError(new LiteralText("That trait cannot be added to the current item"));
+            source.sendError(Text.literal("That trait cannot be added to the current item"));
             return 0;
         }
 
@@ -61,7 +60,7 @@ class TraitCommand {
 
     static int remove(ServerCommandSource source, PlayerEntity player, Trait trait) throws CommandSyntaxException {
         if (trait == null) {
-            source.sendError(new LiteralText("Invalid trait"));
+            source.sendError(Text.literal("Invalid trait"));
             return 0;
         }
 
@@ -85,9 +84,9 @@ class TraitCommand {
         float gravity = iplayer.getPhysics().getGravityModifier();
 
         if (source.getPlayer() == player) {
-            player.sendMessage(new TranslatableText(translationKey, gravity), false);
+            player.sendMessage(Text.translatable(translationKey, gravity), false);
         } else {
-            source.sendFeedback(new TranslatableText(translationKey + ".other", player.getName(), gravity), true);
+            source.sendFeedback(Text.translatable(translationKey + ".other", player.getName(), gravity), true);
         }
 
         return 0;

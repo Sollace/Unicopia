@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.math.random.Random;
 
 public class LoopingSoundInstance<T extends Entity> extends FadeOutSoundInstance {
 
@@ -12,8 +13,8 @@ public class LoopingSoundInstance<T extends Entity> extends FadeOutSoundInstance
 
     private final Predicate<T> shouldPlay;
 
-    public LoopingSoundInstance(T source, Predicate<T> shouldPlay, SoundEvent soundEvent, float volume, float pitch) {
-        super(soundEvent, source.getSoundCategory(), volume);
+    public LoopingSoundInstance(T source, Predicate<T> shouldPlay, SoundEvent soundEvent, float volume, float pitch, Random random) {
+        super(soundEvent, source.getSoundCategory(), volume, random);
         this.source = source;
         this.shouldPlay = shouldPlay;
         this.pitch = pitch;

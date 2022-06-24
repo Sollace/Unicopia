@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
 import java.util.List;
-import java.util.Random;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -26,6 +25,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 
 public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
     private static final TrackedData<Integer> ITEM_RACE = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.INTEGER);

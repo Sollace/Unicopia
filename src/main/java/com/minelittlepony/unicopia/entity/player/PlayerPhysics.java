@@ -194,7 +194,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (typeChanged) {
             pony.spawnParticles(ParticleTypes.CLOUD, 10);
 
-            entity.playSound(entity.world.getDimension().isUltrawarm() ? USounds.ITEM_ICARUS_WINGS_CORRUPT : USounds.ITEM_ICARUS_WINGS_PURIFY, 0.1125F, 1.5F);
+            entity.playSound(entity.world.getDimension().ultrawarm() ? USounds.ITEM_ICARUS_WINGS_CORRUPT : USounds.ITEM_ICARUS_WINGS_PURIFY, 0.1125F, 1.5F);
         }
 
         entity.getAbilities().allowFlying = type.canFlyCreative(entity);
@@ -345,7 +345,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
             if (!SpellPredicate.IS_DISGUISE.isOn(pony)) {
                 if (ticksInAir % GLIDING_SOUND_INTERVAL == 1 && pony.isClient()) {
-                    InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_GLIDING);
+                    InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_GLIDING, entity.getId());
                 }
             }
 
@@ -355,7 +355,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         } else if (type == FlightType.INSECTOID && !SpellPredicate.IS_DISGUISE.isOn(pony)) {
             if (entity.world.isClient && !soundPlaying) {
                 soundPlaying = true;
-                InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_CHANGELING_BUZZ);
+                InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_CHANGELING_BUZZ, entity.getId());
             }
         }
     }
@@ -371,7 +371,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             if (entity.world.hasRain(entity.getBlockPos())) {
                 energyConsumed *= 3;
             }
-            if (entity.world.getDimension().isUltrawarm()) {
+            if (entity.world.getDimension().ultrawarm()) {
                 energyConsumed *= 4;
                 damageInterval /= 2;
                 minDamage *= 3;

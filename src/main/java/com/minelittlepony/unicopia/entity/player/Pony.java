@@ -63,7 +63,6 @@ import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -356,7 +355,6 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
         if (getSpecies() == Race.BAT) {
             if (SunBlindnessStatusEffect.hasSunExposure(entity)) {
-                System.out.println("Sun exposure " + entity);
                 if (ticksInSun < 200) {
                     ticksInSun++;
                 }
@@ -366,7 +364,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
                         entity.addStatusEffect(new StatusEffectInstance(UEffects.SUN_BLINDNESS, SunBlindnessStatusEffect.MAX_DURATION * 10, 1, true, false));
                         UCriteria.LOOK_INTO_SUN.trigger(entity);
                     } else if (isClientPlayer()) {
-                        InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING);
+                        InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING, getEntity().getId());
                     }
                 }
             } else if (ticksInSun > 0) {
@@ -434,6 +432,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         return Optional.empty();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void handleFall(float distance, float damageMultiplier, DamageSource cause) {
         super.handleFall(distance, damageMultiplier, cause);
@@ -500,13 +499,13 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     public Optional<Text> trySleep(BlockPos pos) {
 
         if (UItems.ALICORN_AMULET.isApplicable(entity)) {
-            return Optional.of(new TranslatableText("block.unicopia.bed.not_tired"));
+            return Optional.of(Text.translatable("block.unicopia.bed.not_tired"));
         }
 
         return findAllSpellsInRange(10)
                 .filter(p -> p instanceof Pony && ((Pony)p).isEnemy(this))
                 .findFirst()
-                .map(p -> new TranslatableText("block.unicopia.bed.not_safe"));
+                .map(p -> Text.translatable("block.unicopia.bed.not_safe"));
     }
 
     @Override

@@ -23,7 +23,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> implements RecipeBookProvider {
@@ -156,7 +155,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
         textRenderer.draw(matrices, title, titleX, titleY, 4210752);
         textRenderer.draw(matrices, SpellbookPage.getCurrent().getLabel(), 220, this.titleY, 4210752);
 
-        Text pageText = new TranslatableText("%s/%s", SpellbookPage.getCurrent().ordinal() + 1, SpellbookPage.VALUES.length);
+        Text pageText = Text.translatable("%s/%s", SpellbookPage.getCurrent().ordinal() + 1, SpellbookPage.VALUES.length);
         textRenderer.draw(matrices, pageText,
                 x + 325 - textRenderer.getWidth(pageText) / 2F, y + 188 - textRenderer.fontHeight, 4210752);
     }

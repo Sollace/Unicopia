@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -53,7 +52,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
 
         Multimap<Identifier, TraitStream> prepared = HashMultimap.create();
 
-        for (Identifier path : new HashSet<>(manager.findResources("traits", p -> p.endsWith(".json")))) {
+        for (var path : manager.findResources("traits", p -> p.getPath().endsWith(".json")).keySet()) {
             profiler.push(path.toString());
             try {
                 for (Resource resource : manager.getAllResources(path)) {

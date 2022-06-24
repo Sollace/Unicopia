@@ -13,8 +13,7 @@ import com.minelittlepony.common.client.gui.Tooltip;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
@@ -91,14 +90,14 @@ public enum Trait {
                     : Formatting.WHITE;
 
         return Tooltip.of(
-                new TranslatableText("gui.unicopia.trait.label",
-                        new TranslatableText("trait." + getId().getNamespace() + "." + getId().getPath() + ".name")
+                Text.translatable("gui.unicopia.trait.label",
+                        Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".name")
                 ).formatted(Formatting.YELLOW)
-                .append(new TranslatableText("gui.unicopia.trait.group", getGroup().name().toLowerCase()).formatted(Formatting.ITALIC, Formatting.GRAY))
-                .append(new LiteralText("\n\n").formatted(Formatting.WHITE)
-                .append(new TranslatableText("trait." + getId().getNamespace() + "." + getId().getPath() + ".description").formatted(Formatting.GRAY))
+                .append(Text.translatable("gui.unicopia.trait.group", getGroup().name().toLowerCase()).formatted(Formatting.ITALIC, Formatting.GRAY))
+                .append(Text.literal("\n\n").formatted(Formatting.WHITE)
+                .append(Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".description").formatted(Formatting.GRAY))
                 .append("\n")
-                .append(new TranslatableText("gui.unicopia.trait.corruption", ItemStack.MODIFIER_FORMAT.format(getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor))), 200);
+                .append(Text.translatable("gui.unicopia.trait.corruption", ItemStack.MODIFIER_FORMAT.format(getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor))), 200);
     }
 
     public static Collection<Trait> all() {

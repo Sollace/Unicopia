@@ -22,15 +22,12 @@ public interface Resources {
             .create();
 
     static Stream<Resource> getResources(ResourceManager manager, Identifier id) {
-        try {
-            return manager.getAllResources(id).stream();
-        } catch (IOException ignored) { }
-        return Stream.empty();
+        return manager.getAllResources(id).stream();
     }
 
     static Stream<Identifier> loadFile(Resource res, Type type, String msg) throws JsonParseException {
-        try (Resource resource = res) {
-            return (GSON.<List<Identifier>>fromJson(new InputStreamReader(resource.getInputStream()), type)).stream();
+        try (InputStreamReader reader = new InputStreamReader(res.getInputStream())) {
+            return (GSON.<List<Identifier>>fromJson(reader, type)).stream();
         } catch (JsonParseException e) {
             Unicopia.LOGGER.warn(msg + res.getResourcePackName(), e);
         } catch (IOException ignored) {}

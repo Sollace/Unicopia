@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.container;
 
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 public enum SpellbookPage {
@@ -12,7 +11,7 @@ public enum SpellbookPage {
     public static final SpellbookPage[] VALUES = values();
     private static int current;
 
-    private final Text label = new TranslatableText("gui.unicopia.spellbook.page." + name().toLowerCase());
+    private final Text label = Text.translatable("gui.unicopia.spellbook.page." + name().toLowerCase());
 
     public Text getLabel() {
         return label;

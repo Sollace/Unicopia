@@ -47,7 +47,7 @@ public class ClientNetworkHandlerImpl implements ClientNetworkHandler {
         }
 
         if (entity.getType() == UEntities.MAGIC_BEAM) {
-            InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_MAGIC_BEAM);
+            InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_MAGIC_BEAM, entity.getId());
         }
 
         world.addEntity(packet.getId(), entity);

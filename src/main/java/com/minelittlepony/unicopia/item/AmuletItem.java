@@ -22,12 +22,10 @@ import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
@@ -54,7 +52,7 @@ public class AmuletItem extends WearableItem {
                 && entity instanceof LivingEntity
                 && ((LivingEntity) entity).getEquippedStack(EquipmentSlot.CHEST) == stack
                 && isApplicable((LivingEntity)entity)) {
-            ParticleUtils.spawnParticles(entity.world.getDimension().isUltrawarm() ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.COMPOSTER, entity, 1);
+            ParticleUtils.spawnParticles(entity.world.getDimension().ultrawarm() ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.COMPOSTER, entity, 1);
         }
     }
 
@@ -62,8 +60,8 @@ public class AmuletItem extends WearableItem {
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
 
         for (StringVisitable line : MinecraftClient.getInstance().textRenderer.getTextHandler().wrapLines(
-                new TranslatableText(getTranslationKey(stack) + ".lore"), 150, Style.EMPTY)) {
-            MutableText compiled = new LiteralText("").formatted(Formatting.ITALIC, Formatting.GRAY);
+                Text.translatable(getTranslationKey(stack) + ".lore"), 150, Style.EMPTY)) {
+            MutableText compiled = Text.literal("").formatted(Formatting.ITALIC, Formatting.GRAY);
             line.visit(s -> {
                 compiled.append(s);
                 return Optional.empty();
@@ -72,7 +70,7 @@ public class AmuletItem extends WearableItem {
         }
 
         if (isChargable()) {
-            list.add(new TranslatableText("item.unicopia.amulet.energy", (int)Math.floor(getEnergy(stack)), maxEnergy));
+            list.add(Text.translatable("item.unicopia.amulet.energy", (int)Math.floor(getEnergy(stack)), maxEnergy));
         }
     }
 

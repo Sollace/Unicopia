@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 
 @Mixin(ServerWorld.class)
 abstract class MixinServerWorld extends World implements StructureWorldAccess {
-    private MixinServerWorld() {super(null, null, null, null, false, false, 0);}
+    MixinServerWorld() { super(null, null, null, null, false, false, 0, 0); }
 
     @Inject(method = "onBlockChanged", at = @At("HEAD"))
     private void onOnBlockChanged(BlockPos pos, BlockState oldState, BlockState newState, CallbackInfo info) {

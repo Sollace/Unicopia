@@ -39,7 +39,7 @@ public class InfernoSpell extends FireSpell {
 
             Vec3d origin = source.getOriginVector();
 
-            BlockStateConverter converter = w.getDimension().isUltrawarm() ? StateMaps.HELLFIRE_AFFECTED.getInverse() : StateMaps.HELLFIRE_AFFECTED;
+            BlockStateConverter converter = w.getDimension().ultrawarm() ? StateMaps.HELLFIRE_AFFECTED.getInverse() : StateMaps.HELLFIRE_AFFECTED;
 
             for (int i = 0; i < radius; i++) {
                 BlockPos pos = new BlockPos(shape.computePoint(w.random).add(origin));

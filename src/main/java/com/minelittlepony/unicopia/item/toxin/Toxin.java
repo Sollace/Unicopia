@@ -12,7 +12,6 @@ import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.StringHelper;
 import net.minecraft.world.Difficulty;
 
@@ -68,7 +67,7 @@ public interface Toxin extends Affliction {
 
             @Override
             public Text getName() {
-                return self.getName().shallowCopy().append(" + ").append(other.getName());
+                return self.getName().copy().append(" + ").append(other.getName());
             }
         };
     }
@@ -90,13 +89,13 @@ public interface Toxin extends Affliction {
     static Toxin of(StatusEffect effect, int seconds, int amplifier) {
         int ticks = seconds * 20;
 
-        MutableText text = effect.getName().shallowCopy();
+        MutableText text = effect.getName().copy();
 
         if (amplifier > 0) {
-            text = new TranslatableText("potion.withAmplifier", text, new TranslatableText("potion.potency." + amplifier));
+            text = Text.translatable("potion.withAmplifier", text, Text.translatable("potion.potency." + amplifier));
         }
 
-        text = new TranslatableText("potion.withDuration", text, StringHelper.formatTicks(ticks));
+        text = Text.translatable("potion.withDuration", text, StringHelper.formatTicks(ticks));
 
         return of(text, (player, stack) -> {
             StatusEffectInstance current = player.getStatusEffect(effect);
@@ -138,7 +137,7 @@ public interface Toxin extends Affliction {
 
                 @Override
                 public Text getName() {
-                    return Predicate.this.getName().shallowCopy().append(toxin.getName());
+                    return Predicate.this.getName().copy().append(toxin.getName());
                 }
             };
         }

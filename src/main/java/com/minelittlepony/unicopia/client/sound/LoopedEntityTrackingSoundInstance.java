@@ -5,8 +5,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundEvent;
 
 public class LoopedEntityTrackingSoundInstance extends EntityTrackingSoundInstance {
-    public LoopedEntityTrackingSoundInstance(SoundEvent soundEvent, float volume, float pitch, Entity entity) {
-        super(soundEvent, entity.getSoundCategory(), volume, pitch, entity);
+    public LoopedEntityTrackingSoundInstance(SoundEvent soundEvent, float volume, float pitch, Entity entity, long seed) {
+        super(soundEvent, entity.getSoundCategory(), volume, pitch, entity, seed);
         this.repeat = true;
         this.repeatDelay = 0;
     }

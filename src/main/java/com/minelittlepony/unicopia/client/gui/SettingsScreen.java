@@ -21,7 +21,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public class SettingsScreen extends GameGui {
@@ -33,7 +32,7 @@ public class SettingsScreen extends GameGui {
     private Style mineLpStatus;
 
     public SettingsScreen(Screen parent) {
-        super(new TranslatableText("unicopia.options.title"), parent);
+        super(Text.translatable("unicopia.options.title"), parent);
 
         content.margin.setVertical(30);
         content.getContentPadding().setHorizontal(10);
@@ -76,7 +75,7 @@ public class SettingsScreen extends GameGui {
 
         content.addButton(new EnumSlider<>(LEFT, row += 25, config.preferredRace.get()))
                 .onChange(config.preferredRace::set)
-                .setTextFormat(v -> new TranslatableText("unicopia.options.preferred_race", v.getValue().getDisplayName()));
+                .setTextFormat(v -> Text.translatable("unicopia.options.preferred_race", v.getValue().getDisplayName()));
 
         IntegratedServer server = client.getServer();
         if (server != null) {
@@ -87,7 +86,7 @@ public class SettingsScreen extends GameGui {
 
             content.addButton(new EnumSlider<>(LEFT, row += 20, tribes.getDefaultRace()))
                     .onChange(tribes::setDefaultRace)
-                    .setTextFormat(v -> new TranslatableText("unicopia.options.world.default_race", v.getValue().getDisplayName()))
+                    .setTextFormat(v -> Text.translatable("unicopia.options.world.default_race", v.getValue().getDisplayName()))
                     .setEnabled(client.isInSingleplayer());
         }
     }
@@ -97,13 +96,13 @@ public class SettingsScreen extends GameGui {
 
         if (hasMineLP) {
             if (config.ignoreMineLP.get()) {
-                return new TranslatableText("unicopia.options.ignore_mine_lp.undetected").formatted(Formatting.DARK_GREEN);
+                return Text.translatable("unicopia.options.ignore_mine_lp.undetected").formatted(Formatting.DARK_GREEN);
             }
 
-            return new TranslatableText("unicopia.options.ignore_mine_lp.detected", MineLPConnector.getPlayerPonyRace().getDisplayName()).formatted(Formatting.GREEN);
+            return Text.translatable("unicopia.options.ignore_mine_lp.detected", MineLPConnector.getPlayerPonyRace().getDisplayName()).formatted(Formatting.GREEN);
         }
 
-        return new TranslatableText("unicopia.options.ignore_mine_lp.missing").formatted(Formatting.RED);
+        return Text.translatable("unicopia.options.ignore_mine_lp.missing").formatted(Formatting.RED);
     }
 
     @Override

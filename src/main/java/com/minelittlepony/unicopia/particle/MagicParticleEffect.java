@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.particle;
 
 import java.util.Locale;
-import java.util.Random;
 
 import com.minelittlepony.common.util.Color;
 import com.mojang.brigadier.StringReader;
@@ -12,6 +11,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 
 public class MagicParticleEffect implements ParticleEffect {

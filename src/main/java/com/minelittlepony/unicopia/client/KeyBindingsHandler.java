@@ -20,7 +20,6 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 public class KeyBindingsHandler {
@@ -106,7 +105,7 @@ public class KeyBindingsHandler {
     private void changePage(MinecraftClient client, long max, int sigma) {
         page += sigma;
         client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.75F + (0.25F * sigma)));
-        UHud.INSTANCE.setMessage(new TranslatableText("gui.unicopia.page_num", page + 1, max + 1));
+        UHud.INSTANCE.setMessage(Text.translatable("gui.unicopia.page_num", page + 1, max + 1));
     }
 
     public class Binding {

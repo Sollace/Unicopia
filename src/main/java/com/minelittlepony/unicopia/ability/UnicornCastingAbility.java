@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.ability;
 
-import java.util.Random;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
@@ -25,6 +23,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 
 /**
  * Casts magic onto the user directly, or uses the item in the main hand slot.

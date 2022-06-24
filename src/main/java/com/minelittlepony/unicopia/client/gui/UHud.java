@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.client.gui;
 
 import java.util.List;
-import java.util.Random;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +34,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.random.Random;
 
 public class UHud extends DrawableHelper {
 
@@ -227,7 +227,7 @@ public class UHud extends DrawableHelper {
                 client.getSoundManager().play(
                         heartbeatSound = new LoopingSoundInstance<>(client.player, player -> {
                             return Pony.of(player).getMagicalReserves().getExhaustion().getPercentFill() > 0.5F;
-                        }, USounds.ENTITY_PLAYER_HEARTBEAT, 1, 1)
+                        }, USounds.ENTITY_PLAYER_HEARTBEAT, 1, 1, client.world.random)
                 );
             }
 

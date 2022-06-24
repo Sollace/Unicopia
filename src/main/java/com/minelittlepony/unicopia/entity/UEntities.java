@@ -13,10 +13,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biome.Category;
 
 public interface UEntities {
     EntityType<ButterflyEntity> BUTTERFLY = register("butterfly", FabricEntityTypeBuilder.create(SpawnGroup.AMBIENT, ButterflyEntity::new)
@@ -59,8 +59,15 @@ public interface UEntities {
         final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()
                 .and(ctx -> ctx.getBiome().getPrecipitation() == Biome.Precipitation.RAIN);
 
-        BiomeModifications.addSpawn(butterflySpawnable.and(BiomeSelectors.categories(Category.RIVER, Category.FOREST, Category.EXTREME_HILLS)), SpawnGroup.AMBIENT, BUTTERFLY, 3, 3, 12);
-        BiomeModifications.addSpawn(butterflySpawnable.and(BiomeSelectors.categories(Category.PLAINS, Category.JUNGLE)), SpawnGroup.AMBIENT, BUTTERFLY, 7, 5, 19);
+        BiomeModifications.addSpawn(butterflySpawnable.and(
+                    BiomeSelectors.tag(BiomeTags.IS_RIVER)
+                .or(BiomeSelectors.tag(BiomeTags.IS_FOREST))
+                .or(BiomeSelectors.tag(BiomeTags.IS_HILL))
+        ), SpawnGroup.AMBIENT, BUTTERFLY, 3, 3, 12);
+        BiomeModifications.addSpawn(butterflySpawnable.and(
+                    BiomeSelectors.tag(BiomeTags.IS_JUNGLE)
+                .or(BiomeSelectors.tag(BiomeTags.IS_MOUNTAIN))
+        ), SpawnGroup.AMBIENT, BUTTERFLY, 7, 5, 19);
 
         UTradeOffers.bootstrap();
     }

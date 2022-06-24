@@ -11,7 +11,7 @@ import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import net.minecraft.world.level.ServerWorldProperties;
@@ -109,7 +109,7 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
     }
 
     private void tell(Pony player, String translation) {
-        player.getMaster().sendMessage(new TranslatableText(translation), true);
+        player.getMaster().sendMessage(Text.translatable(translation), true);
     }
 
     @Override

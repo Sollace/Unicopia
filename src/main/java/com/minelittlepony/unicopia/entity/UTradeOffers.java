@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.entity;
 
-import java.util.Random;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.UTags;
@@ -18,6 +16,7 @@ import net.minecraft.item.Items;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.VillagerProfession;

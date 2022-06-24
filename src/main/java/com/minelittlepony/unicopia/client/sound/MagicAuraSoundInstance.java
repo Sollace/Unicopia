@@ -9,13 +9,14 @@ import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 
 public class MagicAuraSoundInstance extends FadeOutSoundInstance {
 
     private final Living<?> living;
 
-    public MagicAuraSoundInstance(SoundCategory category, Living<?> living) {
-        super(USounds.ITEM_MAGIC_AURA, category, 1);
+    public MagicAuraSoundInstance(SoundCategory category, Living<?> living, Random random) {
+        super(USounds.ITEM_MAGIC_AURA, category, 1, random);
         this.living = living;
     }
 

@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 
 public class MotionBasedSoundInstance extends FadeOutSoundInstance {
 
@@ -12,8 +13,8 @@ public class MotionBasedSoundInstance extends FadeOutSoundInstance {
 
     private int tickCount;
 
-    public MotionBasedSoundInstance(SoundEvent sound, PlayerEntity player) {
-        super(sound, player.getSoundCategory(), 0.1F);
+    public MotionBasedSoundInstance(SoundEvent sound, PlayerEntity player, Random random) {
+        super(sound, player.getSoundCategory(), 0.1F, random);
         this.player = player;
     }
 

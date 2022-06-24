@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client.gui;
 
+import java.util.List;
+
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -12,11 +14,9 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.BaseText;
-import net.minecraft.text.CharacterVisitor;
-import net.minecraft.text.OrderedText;
+import net.minecraft.text.*;
 
-public class ItemTraitsTooltipRenderer extends BaseText implements OrderedText, TooltipComponent {
+public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComponent {
 
     private final SpellTraits traits;
 
@@ -67,8 +67,8 @@ public class ItemTraitsTooltipRenderer extends BaseText implements OrderedText, 
     }
 
     @Override
-    public BaseText copy() {
-        return new ItemTraitsTooltipRenderer(traits);
+    public MutableText copy() {
+        return Text.empty();
     }
 
     public static void renderTraitIcon(Trait trait, float value, MatrixStack matrices, int xx, int yy) {
@@ -87,5 +87,23 @@ public class ItemTraitsTooltipRenderer extends BaseText implements OrderedText, 
         textRenderer.draw(value > 99 ? "99+" : Math.round(value) + "", 0, 0, 16777215, true, matrices.peek().getPositionMatrix(), immediate, false, 0, 15728880);
         immediate.draw();
         matrices.pop();
+    }
+
+    @Override
+    public Style getStyle() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public TextContent getContent() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Text> getSiblings() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

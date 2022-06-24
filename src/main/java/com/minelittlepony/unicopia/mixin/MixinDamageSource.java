@@ -11,7 +11,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Mixin(DamageSource.class)
 abstract class MixinDamageSource {
@@ -23,11 +22,11 @@ abstract class MixinDamageSource {
 
             Entity prime = entity.getPrimeAdversary();
             if (prime != null && !(attacker instanceof Owned<?> && ((Owned<Entity>)attacker).isOwnedBy(prime))) {
-                info.setReturnValue(new TranslatableText("death.attack.generic.and_also", info.getReturnValue(), attacker.getDisplayName()));
+                info.setReturnValue(Text.translatable("death.attack.generic.and_also", info.getReturnValue(), attacker.getDisplayName()));
                 return;
             }
 
-            info.setReturnValue(new TranslatableText("death.attack." + self.getName() + ".player", entity.getDisplayName(), attacker.getDisplayName()));
+            info.setReturnValue(Text.translatable("death.attack." + self.getName() + ".player", entity.getDisplayName(), attacker.getDisplayName()));
         });
     }
 }

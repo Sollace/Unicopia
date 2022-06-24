@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
-import java.util.Random;
-
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinSheepEntity;
 
@@ -14,6 +12,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldEvents;
 
 public class SheepBehaviour extends EntityBehaviour<SheepEntity> {

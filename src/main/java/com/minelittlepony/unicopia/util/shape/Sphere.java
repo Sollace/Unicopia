@@ -2,8 +2,7 @@ package com.minelittlepony.unicopia.util.shape;
 
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-
-import java.util.Random;
+import net.minecraft.util.math.random.Random;
 
 /**
  * A sphere, or 2d circle of you so desire.

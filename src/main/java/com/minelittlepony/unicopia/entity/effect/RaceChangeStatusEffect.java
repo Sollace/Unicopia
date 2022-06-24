@@ -18,7 +18,6 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -142,7 +141,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
         }
 
         public Text getMessage(Race race) {
-            return new TranslatableText(getTranslationKey(), race.getDisplayName());
+            return Text.translatable(getTranslationKey(), race.getDisplayName());
         }
     }
 }

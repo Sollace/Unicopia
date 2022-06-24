@@ -5,6 +5,7 @@ import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 
 public abstract class FadeOutSoundInstance extends MovingSoundInstance {
 
@@ -19,8 +20,8 @@ public abstract class FadeOutSoundInstance extends MovingSoundInstance {
 
     private boolean fadingOut;
 
-    public FadeOutSoundInstance(SoundEvent sound, SoundCategory category, float volume) {
-        super(sound, category);
+    public FadeOutSoundInstance(SoundEvent sound, SoundCategory category, float volume, Random random) {
+        super(sound, category, random);
         this.relative = true;
         this.repeat = true;
         this.volume = volume;
@@ -71,6 +72,6 @@ public abstract class FadeOutSoundInstance extends MovingSoundInstance {
 
     @Override
     public final float getVolume() {
-        return getLerpedVolume() * sound.getVolume();
+        return getLerpedVolume() * sound.getVolume().get(field_38800);
     }
 }

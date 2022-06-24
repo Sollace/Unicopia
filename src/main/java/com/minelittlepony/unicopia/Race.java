@@ -16,7 +16,6 @@ import com.minelittlepony.unicopia.ability.magic.Affine;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public enum Race implements Affine {
@@ -86,11 +85,11 @@ public enum Race implements Affine {
     }
 
     public Text getDisplayName() {
-        return new TranslatableText(getTranslationKey());
+        return Text.translatable(getTranslationKey());
     }
 
     public Text getAltDisplayName() {
-        return new TranslatableText(getTranslationKey() + ".alt");
+        return Text.translatable(getTranslationKey() + ".alt");
     }
 
     public String getTranslationKey() {

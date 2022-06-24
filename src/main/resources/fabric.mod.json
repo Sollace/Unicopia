@@ -34,13 +34,10 @@
     "fabricloader": ">=0.12.0",
     "java": ">=17",
     "fabric-api-base": ">=0.1.0",
-    "fabric-events-lifecycle-v0": ">=0.1.0",
     "kirin": "*"
   },
   "suggests": {
     "minelp": "*",
-    "modmenu": "*",
-    "fabric-keybindings-v0": ">=0.1.0",
-    "fabric-rendering-v1": ">=0.1.0"
+    "modmenu": "*"
   }
 }

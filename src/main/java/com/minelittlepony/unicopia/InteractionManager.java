@@ -48,7 +48,7 @@ public class InteractionManager {
     /**
      * Plays a custom sound instance
      */
-    public void playLoopingSound(Entity source, int type) {
+    public void playLoopingSound(Entity source, int type, long seed) {
 
     }
 

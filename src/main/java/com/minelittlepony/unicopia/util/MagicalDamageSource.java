@@ -13,7 +13,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public class MagicalDamageSource extends EntityDamageSource {
 
@@ -89,6 +88,6 @@ public class MagicalDamageSource extends EntityDamageSource {
             params.add(item.toHoverableText());
         }
 
-        return new TranslatableText(basic, params.toArray());
+        return Text.translatable(basic, params.toArray());
     }
 }

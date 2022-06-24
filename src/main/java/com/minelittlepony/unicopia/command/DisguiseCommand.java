@@ -26,13 +26,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.world.GameRules;
 
 public class DisguiseCommand {
-    private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.disguise.notfound"));
+    private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.disguise.notfound"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager
@@ -88,13 +87,13 @@ public class DisguiseCommand {
             .setDisguise(entity);
 
         if (source.getEntity() == player) {
-            source.sendFeedback(new TranslatableText("commands.disguise.success.self", entity.getName()), true);
+            source.sendFeedback(Text.translatable("commands.disguise.success.self", entity.getName()), true);
         } else {
             if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendSystemMessage(new TranslatableText("commands.disguise.success", entity.getName()), Util.NIL_UUID);
+                player.sendMessage(Text.translatable("commands.disguise.success", entity.getName()));
             }
 
-            source.sendFeedback(new TranslatableText("commands.disguise.success.other", player.getName(), entity.getName()), true);
+            source.sendFeedback(Text.translatable("commands.disguise.success.other", player.getName(), entity.getName()), true);
         }
 
         return 0;
@@ -115,13 +114,13 @@ public class DisguiseCommand {
         iplayer.getSpellSlot().removeIf(SpellPredicate.IS_DISGUISE, true);
 
         if (source.getEntity() == player) {
-            source.sendFeedback(new TranslatableText("commands.disguise.removed.self"), true);
+            source.sendFeedback(Text.translatable("commands.disguise.removed.self"), true);
         } else {
             if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendSystemMessage(new TranslatableText("commands.disguise.removed"), Util.NIL_UUID);
+                player.sendMessage(Text.translatable("commands.disguise.removed"));
             }
 
-            source.sendFeedback(new TranslatableText("commands.disguise.removed.other", player.getName()), true);
+            source.sendFeedback(Text.translatable("commands.disguise.removed.other", player.getName()), true);
         }
 
         return 0;

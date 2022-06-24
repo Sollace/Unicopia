@@ -15,6 +15,8 @@ import net.minecraft.util.math.Vector4f;
 public class SphereModel {
     public static final SphereModel SPHERE = new SphereModel(40, 40, DrawableUtil.TAU);
     public static final SphereModel DISK = new SphereModel(40, 2, DrawableUtil.PI);
+    public static final SphereModel HEXAGON = new SphereModel(3, 2, DrawableUtil.TAU);
+    public static final SphereModel PRISM = new SphereModel(6, 6, DrawableUtil.TAU);
 
     private final List<Vector4f> vertices = new ArrayList<>();
     private final Vector4f drawVert = new Vector4f();
@@ -40,8 +42,8 @@ public class SphereModel {
     }
 
     private static void compileVertices(double azimuthRange, double zenithIncrement, double azimuthIncrement, Consumer<Vector4f> collector) {
-        for (double zenith = -DrawableUtil.PI; zenith < DrawableUtil.PI; zenith += zenithIncrement) {
-            for (double azimuth = -azimuthRange; azimuth < azimuthRange; azimuth += azimuthIncrement) {
+        for (double zenith = 0; zenith < DrawableUtil.PI; zenith += zenithIncrement) {
+            for (double azimuth = 0; azimuth < azimuthRange; azimuth += azimuthIncrement) {
                 collector.accept(convertToCartesianCoord(new Vector4f(), 1, zenith, azimuth));
                 collector.accept(convertToCartesianCoord(new Vector4f(), 1, zenith + zenithIncrement, azimuth));
                 collector.accept(convertToCartesianCoord(new Vector4f(), 1, zenith + zenithIncrement, azimuth + azimuthIncrement));
