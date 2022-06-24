@@ -32,8 +32,8 @@ public interface Toxin extends Affliction {
     Toxin STRENGTH = of(StatusEffects.STRENGTH, 30, 0);
     Toxin BLINDNESS = of(StatusEffects.BLINDNESS, 30, 0);
     Toxin POISON = of(StatusEffects.POISON, 45, 2);
-    Toxin FOOD_POISONING = of(UEffects.FOOD_POISONING, 300, 2);
-    Toxin WEAK_FOOD_POISONING = of(UEffects.FOOD_POISONING, 150, 1);
+    Toxin FOOD_POISONING = of(UEffects.FOOD_POISONING, 100, 2);
+    Toxin WEAK_FOOD_POISONING = of(UEffects.FOOD_POISONING, 50, 1);
 
     Toxin LOVE_SICKNESS = of(Text.of("Love Sickness "), (player, stack) -> {
         FoodComponent food = stack.getItem().getFoodComponent();

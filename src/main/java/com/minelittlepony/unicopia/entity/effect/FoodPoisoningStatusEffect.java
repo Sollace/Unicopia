@@ -33,8 +33,9 @@ public class FoodPoisoningStatusEffect extends StatusEffect {
             entity.addStatusEffect(nausea);
         }
 
-        entity.damage(MagicalDamageSource.FOOD_POISONING, amplifier);
-
+        if (entity.getHealth() > amplifier) {
+            entity.damage(MagicalDamageSource.FOOD_POISONING, amplifier);
+        }
     }
 
     @Override
