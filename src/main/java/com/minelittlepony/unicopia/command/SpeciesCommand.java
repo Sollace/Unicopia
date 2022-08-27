@@ -13,6 +13,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.GameRules;
 
 class SpeciesCommand {
@@ -101,11 +102,11 @@ class SpeciesCommand {
     }
 
     static int describe(PlayerEntity player, Race species) {
-        String name = species.getTranslationKey();
+        Identifier id = Race.REGISTRY.getId(species);
 
-        player.sendMessage(Text.translatable(String.format("commands.race.describe.%s.1", name)).styled(s -> s.withColor(Formatting.YELLOW)), false);
-        player.sendMessage(Text.translatable(String.format("commands.race.describe.%s.2", name)), false);
-        player.sendMessage(Text.translatable(String.format("commands.race.describe.%s.3", name)).styled(s -> s.withColor(Formatting.RED)), false);
+        player.sendMessage(Text.translatable(String.format("commands.race.describe.%s.%s.1", id.getNamespace(), id.getPath())).styled(s -> s.withColor(Formatting.YELLOW)), false);
+        player.sendMessage(Text.translatable(String.format("commands.race.describe.%s.%s.2", id.getNamespace(), id.getPath())), false);
+        player.sendMessage(Text.translatable(String.format("commands.race.describe.%s.%s.3", id.getNamespace(), id.getPath())).styled(s -> s.withColor(Formatting.RED)), false);
 
         return 0;
     }
