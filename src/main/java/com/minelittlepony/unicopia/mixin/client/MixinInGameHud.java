@@ -25,7 +25,7 @@ abstract class MixinInGameHud {
 abstract class MixinInGameHud$HeartType {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Inject(
-        method = "fromPlayerState(Lnet/minecraft/entity/player/PlayerEntity;F)Lnet/minecraft/client/gui/hud/InGameHud$HeartType;",
+        method = "fromPlayerState(Lnet/minecraft/entity/player/PlayerEntity;)Lnet/minecraft/client/gui/hud/InGameHud$HeartType;",
         at = @At("RETURN"),
         cancellable = true)
     private static void onFromPlayerState(PlayerEntity player, CallbackInfoReturnable<Enum> cbi) {
