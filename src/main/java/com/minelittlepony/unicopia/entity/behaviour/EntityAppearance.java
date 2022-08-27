@@ -15,7 +15,7 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
-import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
+import com.minelittlepony.unicopia.entity.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.PlayerDimensions;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
@@ -198,7 +198,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         Caster.of(entity).ifPresent(c -> c.getSpellSlot().clear());
 
         if (entity instanceof LivingEntity) {
-            ((LivingEntity) entity).getAttributeInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER).clearModifiers();
+            ((LivingEntity) entity).getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER).clearModifiers();
         }
 
         if (source.isClient()) {

@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.entity;
 
-import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
 import com.minelittlepony.unicopia.util.Copieable;
 import com.minelittlepony.unicopia.util.Tickable;
 
@@ -145,7 +144,7 @@ public class EntityPhysics<T extends Entity> implements Physics, Copieable<Entit
                 return 1;
             }
 
-            return getBaseGravityModifier() * (float)((LivingEntity)entity).getAttributeValue(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+            return getBaseGravityModifier() * (float)((LivingEntity)entity).getAttributeValue(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
         }
 
         return getBaseGravityModifier();

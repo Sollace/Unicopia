@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.entity.Equine;
-import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
+import com.minelittlepony.unicopia.entity.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.enchantment.AttributedEnchantment;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
@@ -55,7 +55,7 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
                 List<Text> newLines = new ArrayList<>();
 
                 modifs.entries().stream()
-                    .filter(entry -> entry.getKey().equals(EntityAttributes.GENERIC_MOVEMENT_SPEED) || PlayerAttributes.REGISTRY.contains(entry.getKey()))
+                    .filter(entry -> entry.getKey().equals(EntityAttributes.GENERIC_MOVEMENT_SPEED) || UEntityAttributes.REGISTRY.contains(entry.getKey()))
                     .forEach(entry -> describeModifiers(entry.getKey(), entry.getValue(), null, newLines));
 
                 if (!newLines.isEmpty()) {
@@ -133,9 +133,9 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
         if (baseAdjusted) {
             lines.add(Text.literal(" ").append(getModifierLineBase("equals", displayValue, op, attribute, Formatting.DARK_GREEN)));
         } else if (value > 0) {
-            lines.add(getModifierLineBase("plus", displayValue, op, attribute, attribute == PlayerAttributes.ENTITY_GRAVTY_MODIFIER ? Formatting.RED : Formatting.BLUE));
+            lines.add(getModifierLineBase("plus", displayValue, op, attribute, attribute == UEntityAttributes.ENTITY_GRAVTY_MODIFIER ? Formatting.RED : Formatting.BLUE));
         } else if (value < 0) {
-            lines.add(getModifierLineBase("take", -displayValue, op, attribute, attribute == PlayerAttributes.ENTITY_GRAVTY_MODIFIER ? Formatting.BLUE : Formatting.RED));
+            lines.add(getModifierLineBase("take", -displayValue, op, attribute, attribute == UEntityAttributes.ENTITY_GRAVTY_MODIFIER ? Formatting.BLUE : Formatting.RED));
         }
     }
 

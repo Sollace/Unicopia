@@ -86,11 +86,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
                 ((PlayerEntity)entity).sendMessage(stage.getMessage(race), true);
             }
 
-            float hitAmount = entity.getHealth() / 2;
-
-            if (hitAmount > 1) {
-                entity.damage(DamageSource.MAGIC, hitAmount);
-            }
+            entity.damage(DamageSource.MAGIC, 0);
         }
 
         if (entity instanceof PlayerEntity) {
@@ -112,9 +108,12 @@ public class RaceChangeStatusEffect extends StatusEffect {
                 ((Caster<?>)eq).getSpellSlot().clear();
             }
 
-            if (eq instanceof Pony) {
-                ((Pony)eq).setDirty();
+            if (eq instanceof Pony pony) {
+                MagicReserves magic = pony.getMagicalReserves();
+                magic.getExertion().set(0.2F);
+                pony.setDirty();
             }
+
             entity.damage(MagicalDamageSource.TRIBE_SWAP, Float.MAX_VALUE);
         }
     }

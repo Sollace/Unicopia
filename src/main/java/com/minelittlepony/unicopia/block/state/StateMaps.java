@@ -94,4 +94,6 @@ public class StateMaps {
     static boolean isOre(BlockState s) {
         return s.getBlock() instanceof OreBlock;
     }
+
+    public static void bootstrap() {}
 }

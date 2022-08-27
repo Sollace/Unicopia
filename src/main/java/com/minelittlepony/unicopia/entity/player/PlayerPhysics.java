@@ -8,10 +8,7 @@ import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
-import com.minelittlepony.unicopia.entity.Creature;
-import com.minelittlepony.unicopia.entity.EntityPhysics;
-import com.minelittlepony.unicopia.entity.Jumper;
-import com.minelittlepony.unicopia.entity.Leaner;
+import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
@@ -250,7 +247,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (type.canFly()) {
             if (isFlying()) {
                 if (pony.getSpecies() == Race.BAT && entity.verticalCollision && pony.canHangAt(pony.getOrigin().up(2))) {
-                    EntityAttributeInstance attr = entity.getAttributeInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+                    EntityAttributeInstance attr = entity.getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
 
                     if (!attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
                         attr.addPersistentModifier(PlayerAttributes.BAT_HANGING);

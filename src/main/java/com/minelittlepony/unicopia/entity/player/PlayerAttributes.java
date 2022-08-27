@@ -1,29 +1,19 @@
 package com.minelittlepony.unicopia.entity.player;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.entity.UEntityAttributes;
 import com.minelittlepony.unicopia.util.Tickable;
 
-import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.registry.Registry;
 
 public class PlayerAttributes implements Tickable {
-
-    public static final List<EntityAttribute> REGISTRY = new ArrayList<>();
-
-    public static final EntityAttribute EXTENDED_REACH_DISTANCE = register("unicopia.pegasus.reach", new ClampedEntityAttribute("player.reachDistance", 0, 0, 10).setTracked(true));
-    public static final EntityAttribute EXTRA_MINING_SPEED = register("unicopia.earth.mining_speed", new ClampedEntityAttribute("player.miningSpeed", 1, 0, 5).setTracked(true));
-    public static final EntityAttribute ENTITY_GRAVTY_MODIFIER = register("unicopia.player.gravity", (new EntityAttribute("player.gravityModifier", 1) {}).setTracked(true));
-
     private static final EntityAttributeModifier EARTH_PONY_STRENGTH =
             new EntityAttributeModifier(UUID.fromString("777a5505-521e-480b-b9d5-6ea54f259564"), "Earth Pony Strength", 0.6, Operation.MULTIPLY_TOTAL);
     private static final EntityAttributeModifier EARTH_PONY_MINING_SPEED =
@@ -55,12 +45,11 @@ public class PlayerAttributes implements Tickable {
         toggleAttribute(entity, EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, EARTH_PONY_KNOCKBACK_RESISTANCE, race.canUseEarth() && entity.isSneaking());
         toggleAttribute(entity, EntityAttributes.GENERIC_MOVEMENT_SPEED, PEGASUS_SPEED, race.canFly());
         toggleAttribute(entity, EntityAttributes.GENERIC_ATTACK_SPEED, PEGASUS_SPEED, race.canFly());
-        toggleAttribute(entity, EXTENDED_REACH_DISTANCE, PEGASUS_REACH, race.canFly());
-        toggleAttribute(entity, EXTRA_MINING_SPEED, EARTH_PONY_MINING_SPEED, race.canUseEarth());
+        toggleAttribute(entity, UEntityAttributes.EXTENDED_REACH_DISTANCE, PEGASUS_REACH, race.canFly());
+        toggleAttribute(entity, UEntityAttributes.EXTRA_MINING_SPEED, EARTH_PONY_MINING_SPEED, race.canUseEarth());
     }
 
     private void toggleAttribute(PlayerEntity entity, EntityAttribute attribute, EntityAttributeModifier modifier, boolean enable) {
-
         EntityAttributeInstance instance = entity.getAttributeInstance(attribute);
 
         if (enable) {
@@ -72,8 +61,4 @@ public class PlayerAttributes implements Tickable {
         }
     }
 
-    private static EntityAttribute register(String id, EntityAttribute attribute) {
-        REGISTRY.add(attribute);
-        return Registry.register(Registry.ATTRIBUTE, id, attribute);
-    }
 }

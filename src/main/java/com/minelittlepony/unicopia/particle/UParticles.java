@@ -32,4 +32,6 @@ public interface UParticles {
     static <T extends ParticleType<?>> T register(String name, T type) {
         return Registry.register(Registry.PARTICLE_TYPE, Unicopia.id(name), type);
     }
+
+    static void bootstrap() {}
 }

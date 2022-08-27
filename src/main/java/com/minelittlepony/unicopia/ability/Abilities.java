@@ -58,4 +58,5 @@ public interface Abilities {
         return Registry.register(REGISTRY, id, power);
     }
 
+    static void bootstrap() {}
 }

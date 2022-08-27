@@ -290,4 +290,6 @@ public class EntityBehaviour<T extends Entity> {
         register(BlazeBehaviour::new, EntityType.BLAZE);
         register(MinecartBehaviour::new, EntityType.CHEST_MINECART, EntityType.COMMAND_BLOCK_MINECART, EntityType.FURNACE_MINECART, EntityType.HOPPER_MINECART, EntityType.MINECART, EntityType.SPAWNER_MINECART, EntityType.TNT_MINECART);
     }
+
+    public static void bootstrap() {}
 }

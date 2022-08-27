@@ -24,9 +24,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
 import com.minelittlepony.unicopia.advancement.UCriteria;
-import com.minelittlepony.unicopia.entity.PonyContainer;
-import com.minelittlepony.unicopia.entity.Living;
-import com.minelittlepony.unicopia.entity.Trap;
+import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.item.UItems;
@@ -125,9 +123,9 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     }
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
-        builder.add(PlayerAttributes.EXTENDED_REACH_DISTANCE);
-        builder.add(PlayerAttributes.EXTRA_MINING_SPEED);
-        builder.add(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+        builder.add(UEntityAttributes.EXTENDED_REACH_DISTANCE);
+        builder.add(UEntityAttributes.EXTRA_MINING_SPEED);
+        builder.add(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
     }
 
     public void setAnimation(Animation animation) {
@@ -248,11 +246,11 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     }
 
     public float getExtendedReach() {
-        return (float)entity.getAttributeInstance(PlayerAttributes.EXTENDED_REACH_DISTANCE).getValue();
+        return (float)entity.getAttributeInstance(UEntityAttributes.EXTENDED_REACH_DISTANCE).getValue();
     }
 
     public float getBlockBreakingSpeed() {
-        return (float)entity.getAttributeInstance(PlayerAttributes.EXTRA_MINING_SPEED).getValue();
+        return (float)entity.getAttributeInstance(UEntityAttributes.EXTRA_MINING_SPEED).getValue();
     }
 
     public Motion getMotion() {
@@ -316,7 +314,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     }
 
     public boolean isHanging() {
-        return entity.getAttributeInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER).hasModifier(PlayerAttributes.BAT_HANGING);
+        return entity.getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER).hasModifier(PlayerAttributes.BAT_HANGING);
     }
 
     public boolean canHangAt(BlockPos pos) {
@@ -345,7 +343,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
                         || !canHangAt(getHangingPos())) {
 
 
-                    entity.getAttributes().getCustomInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER).removeModifier(PlayerAttributes.BAT_HANGING);
+                    entity.getAttributes().getCustomInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER).removeModifier(PlayerAttributes.BAT_HANGING);
                     entity.calculateDimensions();
                 }
             }

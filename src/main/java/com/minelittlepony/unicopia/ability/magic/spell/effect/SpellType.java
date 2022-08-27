@@ -62,6 +62,8 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<FireBoltSpell> FIRE_BOLT = register("fire_bolt", Affinity.GOOD, 0xFF8811, true, FireBoltSpell.DEFAULT_TRAITS, FireBoltSpell::new);
     public static final SpellType<LightSpell> LIGHT = register("light", Affinity.GOOD, 0xEEFFAA, true, LightSpell.DEFAULT_TRAITS, LightSpell::new);
 
+    public static void bootstrap() {}
+
     private final Identifier id;
     private final Affinity affinity;
     private final int color;

@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.entity;
 import java.util.function.Predicate;
 
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.entity.behaviour.EntityBehaviour;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -70,5 +71,7 @@ public interface UEntities {
         ), SpawnGroup.AMBIENT, BUTTERFLY, 7, 5, 19);
 
         UTradeOffers.bootstrap();
+        EntityBehaviour.bootstrap();
+        UEntityAttributes.bootstrap();
     }
 }

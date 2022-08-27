@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
+import com.minelittlepony.unicopia.entity.UEntityAttributes;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantment.Rarity;
@@ -49,7 +49,7 @@ public interface UEnchantments {
      * Alters gravity
      */
     Enchantment REPULSION = register("repulsion", new AttributedEnchantment(Rarity.VERY_RARE, EnchantmentTarget.ARMOR_FEET, false, 3, EquipmentSlot.FEET))
-            .addModifier(PlayerAttributes.ENTITY_GRAVTY_MODIFIER, (user, level) -> {
+            .addModifier(UEntityAttributes.ENTITY_GRAVTY_MODIFIER, (user, level) -> {
                 return new EntityAttributeModifier(UUID.fromString("1734bbd6-1916-4124-b710-5450ea70fbdb"), "Anti Grav", (0.5F - (0.375 * (level - 1))) - 1, Operation.MULTIPLY_TOTAL);
             });
 

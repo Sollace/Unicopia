@@ -17,7 +17,6 @@ import com.minelittlepony.unicopia.entity.ai.BreakHeartGoal;
 import com.minelittlepony.unicopia.entity.ai.DynamicTargetGoal;
 import com.minelittlepony.unicopia.entity.ai.EatMuffinGoal;
 import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;
-import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -151,7 +150,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
         builder.add(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         builder.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
-        builder.add(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+        builder.add(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
     }
 
     @Override

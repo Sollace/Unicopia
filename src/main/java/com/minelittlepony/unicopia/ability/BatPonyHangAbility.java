@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Multi;
+import com.minelittlepony.unicopia.entity.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
@@ -67,7 +68,7 @@ public class BatPonyHangAbility implements Ability<Multi> {
 
     @Override
     public void apply(Pony player, Multi data) {
-        EntityAttributeInstance attr = player.getMaster().getAttributeInstance(PlayerAttributes.ENTITY_GRAVTY_MODIFIER);
+        EntityAttributeInstance attr = player.getMaster().getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
 
         if (data.hitType == 0 && attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
             attr.removeModifier(PlayerAttributes.BAT_HANGING);
