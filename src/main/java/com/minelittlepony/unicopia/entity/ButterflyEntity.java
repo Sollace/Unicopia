@@ -102,7 +102,7 @@ public class ButterflyEntity extends AmbientEntity {
     }
 
     @Override
-    public boolean collides() {
+    public boolean isCollidable() {
         return true;
     }
 

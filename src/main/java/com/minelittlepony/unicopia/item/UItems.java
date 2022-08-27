@@ -37,10 +37,10 @@ public interface UItems {
     Item ROTTEN_APPLE = register("rotten_apple", new RottenAppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)));
     Item COOKED_ZAP_APPLE = register("cooked_zap_apple", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)));
 
-    Item MUSIC_DISC_CRUSADE = register("music_disc_crusade", USounds.RECORD_CRUSADE);
-    Item MUSIC_DISC_PET = register("music_disc_pet", USounds.RECORD_PET);
-    Item MUSIC_DISC_POPULAR = register("music_disc_popular", USounds.RECORD_POPULAR);
-    Item MUSIC_DISC_FUNK = register("music_disc_funk", USounds.RECORD_FUNK);
+    Item MUSIC_DISC_CRUSADE = register("music_disc_crusade", USounds.RECORD_CRUSADE, 181);
+    Item MUSIC_DISC_PET = register("music_disc_pet", USounds.RECORD_PET, 221);
+    Item MUSIC_DISC_POPULAR = register("music_disc_popular", USounds.RECORD_POPULAR, 112);
+    Item MUSIC_DISC_FUNK = register("music_disc_funk", USounds.RECORD_FUNK, 91);
 
     FriendshipBraceletItem FRIENDSHIP_BRACELET = register("friendship_bracelet", new FriendshipBraceletItem(
             new FabricItemSettings()
@@ -106,11 +106,11 @@ public interface UItems {
         return Registry.register(Registry.ITEM, new Identifier("unicopia", name), item);
     }
 
-    static MusicDiscItem register(String name, SoundEvent sound) {
+    static MusicDiscItem register(String name, SoundEvent sound, int seconds) {
         return register(name, new MusicDiscItem(1, sound, new Settings()
                 .maxCount(1)
                 .group(ItemGroup.MISC)
-                .rarity(Rarity.RARE)
+                .rarity(Rarity.RARE), seconds
             ) {});
     }
 

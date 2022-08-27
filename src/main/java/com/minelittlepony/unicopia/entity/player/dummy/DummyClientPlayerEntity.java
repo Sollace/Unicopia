@@ -49,7 +49,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
             playerInfo = connection.getPlayerListEntry(getGameProfile().getId());
 
             if (playerInfo == null) {
-                playerInfo = new PlayerListEntry(new Packet().entry(), MinecraftClient.getInstance().getServicesSignatureVerifier());
+                playerInfo = new PlayerListEntry(new Packet().entry(), MinecraftClient.getInstance().getServicesSignatureVerifier(), false);
             }
         }
 

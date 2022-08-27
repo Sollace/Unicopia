@@ -59,7 +59,7 @@ public class PlayerCharmTracker implements Tickable, NbtSerialisable {
     }
 
     public TypedActionResult<CustomisedSpellType<?>> getSpellInHand(Hand hand) {
-        return Streams.stream(pony.getMaster().getItemsHand())
+        return Streams.stream(pony.getMaster().getHandItems())
                 .filter(GemstoneItem::isEnchanted)
                 .map(stack -> GemstoneItem.consumeSpell(stack, pony.getMaster(), null))
                 .findFirst()
