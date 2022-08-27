@@ -11,8 +11,7 @@ import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Language;
+import net.minecraft.util.*;
 
 public class TribeConfirmationScreen extends GameGui implements HidesHud {
     private final Race selection;
@@ -53,8 +52,10 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
 
         int maxWidth = 280;
 
+        Identifier id = Race.REGISTRY.getId(selection);
+
         for (int i = 0; i < 5; i++) {
-            String key = String.format("gui.unicopia.tribe_selection.confirm.goods.%d.%s", i, selection.name().toLowerCase());
+            String key = String.format("gui.unicopia.tribe_selection.confirm.goods.%d.%s.%s", i, id.getNamespace(), id.getPath());
             if (Language.getInstance().hasTranslation(key)) {
                 TextBlock block = addDrawable(new TextBlock(left, top, maxWidth));
                 block.getStyle().setText(Text.translatable(key));
@@ -67,7 +68,7 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
         top += 15;
 
         for (int i = 0; i < 5; i++) {
-            String key = String.format("gui.unicopia.tribe_selection.confirm.bads.%d.%s", i, selection.name().toLowerCase());
+            String key = String.format("gui.unicopia.tribe_selection.confirm.bads.%d.%s.%s", i, id.getNamespace(), id.getPath());
             if (Language.getInstance().hasTranslation(key)) {
                 TextBlock block = addDrawable(new TextBlock(left, top, maxWidth));
                 block.getStyle().setText(Text.translatable(key));

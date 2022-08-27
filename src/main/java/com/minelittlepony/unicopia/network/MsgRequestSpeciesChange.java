@@ -21,7 +21,7 @@ public class MsgRequestSpeciesChange implements Packet<ServerPlayerEntity> {
 
     MsgRequestSpeciesChange(PacketByteBuf buffer) {
         force = buffer.readBoolean();
-        newRace = Race.fromId(buffer.readInt());
+        newRace = buffer.readRegistryValue(Race.REGISTRY);
     }
 
     public MsgRequestSpeciesChange(Race newRace) {
@@ -36,7 +36,7 @@ public class MsgRequestSpeciesChange implements Packet<ServerPlayerEntity> {
     @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeBoolean(force);
-        buffer.writeInt(newRace.ordinal());
+        buffer.writeRegistryValue(Race.REGISTRY, newRace);
     }
 
     @Override

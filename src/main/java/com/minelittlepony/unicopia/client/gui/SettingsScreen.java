@@ -4,15 +4,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.common.client.gui.ScrollContainer;
-import com.minelittlepony.common.client.gui.element.Button;
-import com.minelittlepony.common.client.gui.element.EnumSlider;
-import com.minelittlepony.common.client.gui.element.Label;
-import com.minelittlepony.common.client.gui.element.Toggle;
+import com.minelittlepony.common.client.gui.element.*;
 import com.minelittlepony.common.client.gui.style.Style;
-import com.minelittlepony.unicopia.Config;
-import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.WorldTribeManager;
+import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
+import com.minelittlepony.unicopia.util.RegistryIndexer;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
@@ -73,9 +69,11 @@ public class SettingsScreen extends GameGui {
 
         mineLpStatus = content.addButton(new Label(LEFT, row += 10)).getStyle().setText(getMineLPStatus());
 
-        content.addButton(new EnumSlider<>(LEFT, row += 25, config.preferredRace.get()))
-                .onChange(config.preferredRace::set)
-                .setTextFormat(v -> Text.translatable("unicopia.options.preferred_race", v.getValue().getDisplayName()));
+        RegistryIndexer<Race> races = RegistryIndexer.of(Race.REGISTRY);
+
+        content.addButton(new Slider(LEFT, row += 25, 0, races.size(), races.indexOf(config.preferredRace.get())))
+                .onChange(races.createSetter(config.preferredRace::set))
+                .setTextFormat(v -> Text.translatable("unicopia.options.preferred_race", races.valueOf(v.getValue()).getDisplayName()));
 
         IntegratedServer server = client.getServer();
         if (server != null) {
@@ -84,9 +82,9 @@ public class SettingsScreen extends GameGui {
 
             WorldTribeManager tribes = WorldTribeManager.forWorld((ServerWorld)server.getPlayerManager().getPlayer(MinecraftClient.getInstance().player.getUuid()).world);
 
-            content.addButton(new EnumSlider<>(LEFT, row += 20, tribes.getDefaultRace()))
-                    .onChange(tribes::setDefaultRace)
-                    .setTextFormat(v -> Text.translatable("unicopia.options.world.default_race", v.getValue().getDisplayName()))
+            content.addButton(new Slider(LEFT, row += 20, 0, races.size(), races.indexOf(tribes.getDefaultRace())))
+                    .onChange(races.createSetter(tribes::setDefaultRace))
+                    .setTextFormat(v -> Text.translatable("unicopia.options.world.default_race", races.valueOf(v.getValue()).getDisplayName()))
                     .setEnabled(client.isInSingleplayer());
         }
     }

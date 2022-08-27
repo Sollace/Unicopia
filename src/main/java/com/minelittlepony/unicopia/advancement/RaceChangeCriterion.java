@@ -25,7 +25,7 @@ public class RaceChangeCriterion extends AbstractCriterion<RaceChangeCriterion.C
 
     @Override
     protected Conditions conditionsFromJson(JsonObject json, Extended playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
-        return new Conditions(playerPredicate, Race.fromName(JsonHelper.getString(json, "race")));
+        return new Conditions(playerPredicate, Race.fromName(JsonHelper.getString(json, "race"), Race.EARTH));
     }
 
     public void trigger(PlayerEntity player) {
@@ -49,7 +49,7 @@ public class RaceChangeCriterion extends AbstractCriterion<RaceChangeCriterion.C
         @Override
         public JsonObject toJson(AdvancementEntityPredicateSerializer serializer) {
             JsonObject json = super.toJson(serializer);
-            json.addProperty("race", race.name().toLowerCase());
+            json.addProperty("race", Race.REGISTRY.getId(race).toString());
 
             return json;
         }

@@ -6,6 +6,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -18,7 +19,7 @@ class SpeciesCommand {
     static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("race");
 
-        EnumArgumentType<Race> raceArgument = EnumArgumentType.of(Race.class, Race::isUsable, Race.EARTH);
+        RegistryKeyArgumentType<Race> raceArgument = Race.argument();
 
         builder.then(CommandManager.literal("get")
                       .executes(context -> get(context.getSource(), context.getSource().getPlayer(), true))
@@ -52,15 +53,13 @@ class SpeciesCommand {
             pony.setSpecies(race);
             pony.setDirty();
 
-            Text formattedName = Text.translatable(race.name().toLowerCase());
-
             if (!isSelf) {
-                source.sendFeedback(Text.translatable("commands.race.success.other", player.getName(), formattedName), true);
+                source.sendFeedback(Text.translatable("commands.race.success.other", player.getName(), race.getDisplayName()), true);
             } else {
                 if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
                     player.sendMessage(Text.translatable("commands.race.success.self"), false);
                 }
-                source.sendFeedback(Text.translatable("commands.race.success.otherself", player.getName(), formattedName), true);
+                source.sendFeedback(Text.translatable("commands.race.success.otherself", player.getName(), race.getDisplayName()), true);
             }
         } else if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
             player.sendMessage(Text.translatable("commands.race.permission"), false);
@@ -88,9 +87,10 @@ class SpeciesCommand {
         MutableText message = Text.literal("");
 
         boolean first = true;
-        for (Race i : Race.values()) {
+        for (Race i : Race.REGISTRY) {
             if (!i.isDefault() && i.isPermitted(player)) {
-                message.append(Text.translatable((!first ? "\n" : "") + " - " + i.name().toLowerCase()));
+                message.append(Text.literal((!first ? "\n" : "") + " - "));
+                message.append(i.getDisplayName());
                 first = false;
             }
         }
@@ -101,7 +101,7 @@ class SpeciesCommand {
     }
 
     static int describe(PlayerEntity player, Race species) {
-        String name = species.name().toLowerCase();
+        String name = species.getTranslationKey();
 
         player.sendMessage(Text.translatable(String.format("commands.race.describe.%s.1", name)).styled(s -> s.withColor(Formatting.YELLOW)), false);
         player.sendMessage(Text.translatable(String.format("commands.race.describe.%s.2", name)), false);

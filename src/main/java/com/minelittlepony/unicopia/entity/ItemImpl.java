@@ -21,6 +21,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.ActionResult;
@@ -28,7 +29,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
 public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
-    private static final TrackedData<Integer> ITEM_RACE = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<String> ITEM_RACE = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.STRING);
     static final TrackedData<Float> ITEM_GRAVITY = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
     private final ItemEntity owner;
@@ -41,7 +42,7 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
         this.owner = owner;
         this.physics = new ItemPhysics(owner);
         owner.getDataTracker().startTracking(ITEM_GRAVITY, 1F);
-        owner.getDataTracker().startTracking(ITEM_RACE, Race.HUMAN.ordinal());
+        owner.getDataTracker().startTracking(ITEM_RACE, Race.REGISTRY.getId(Race.HUMAN).toString());
     }
 
     @Override
@@ -135,23 +136,25 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
 
     @Override
     public Race getSpecies() {
-        return Race.fromId(owner.getDataTracker().get(ITEM_RACE));
+        return Race.fromName(owner.getDataTracker().get(ITEM_RACE), Race.HUMAN);
     }
 
     @Override
     public void setSpecies(Race race) {
-        owner.getDataTracker().set(ITEM_RACE, race.ordinal());
+        owner.getDataTracker().set(ITEM_RACE, Race.REGISTRY.getId(race).toString());
     }
 
     @Override
     public void toNBT(NbtCompound compound) {
-        compound.putString("owner_species", getSpecies().name());
+        compound.putString("owner_race", Race.REGISTRY.getId(getSpecies()).toString());
         physics.toNBT(compound);
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
-        setSpecies(Race.fromName(compound.getString("owner_species")));
+        if (compound.contains("owner_race", NbtElement.STRING_TYPE)) {
+            setSpecies(Race.fromName(compound.getString("owner_race"), Race.HUMAN));
+        }
         physics.fromNBT(compound);
     }
 

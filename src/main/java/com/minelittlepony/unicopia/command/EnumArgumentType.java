@@ -11,7 +11,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.Race;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -28,12 +27,6 @@ import net.minecraft.network.PacketByteBuf;
 
 class EnumArgumentType<T extends Enum<T>> implements ArgumentType<T>, Serializable {
     private static final long serialVersionUID = 3731493854867412243L;
-
-    private static final EnumArgumentType<Race> RACE = of(Race.class, Race::isUsable, Race.EARTH);
-
-    public static EnumArgumentType<Race> race() {
-        return RACE;
-    }
 
     public static <T extends Enum<T>> EnumArgumentType<T> of(Class<T> type, Predicate<T> filter, T def) {
         return new EnumArgumentType<>(type, filter, def);

@@ -11,16 +11,19 @@ import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.common.client.gui.element.Toggle;
 import com.minelittlepony.common.client.gui.packing.GridPacker;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
+import com.minelittlepony.common.client.gui.style.Style;
 import com.minelittlepony.unicopia.Config;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.util.RegistryIndexer;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Identifier;
 
 public class LanSettingsScreen extends GameGui {
 
@@ -82,7 +85,7 @@ public class LanSettingsScreen extends GameGui {
         boolean whitelistEnabled = (forceShowWhitelist || !whitelist.isEmpty()) && !forceHideWhitelist;
 
         if (whitelist.isEmpty() && forceShowWhitelist) {
-            for (Race r : Race.all()) {
+            for (Race r : Race.REGISTRY) {
                 if (!r.isDefault()) {
                     whitelist.add(r);
                 }
@@ -106,7 +109,7 @@ public class LanSettingsScreen extends GameGui {
             row += 20;
             WHITELIST_GRID_PACKER.start();
 
-            for (Race race : Race.all()) {
+            for (Race race : Race.REGISTRY) {
                 if (!race.isDefault()) {
                     Bounds bound = WHITELIST_GRID_PACKER.next();
 
@@ -120,7 +123,7 @@ public class LanSettingsScreen extends GameGui {
                             return v;
                         })
                         .setEnabled(canEditWhitelist)
-                        .setStyle(race.createStyle());
+                        .setStyle(createStyle(race));
 
                     ((TextureSprite)button.getStyle().getIcon()).setPosition(-20, 0);
                 }
@@ -143,7 +146,20 @@ public class LanSettingsScreen extends GameGui {
         config.save();
     }
 
+    public static Style createStyle(Race race) {
+        int ordinal = Race.REGISTRY.getRawId(race);
+        return new Style()
+                .setIcon(new TextureSprite()
+                        .setPosition(2, 2)
+                        .setSize(16, 16)
+                        .setTexture(new Identifier("unicopia", "textures/gui/icons.png"))
+                        .setTextureOffset((16 * ordinal) % 256, (ordinal / 256) * 16)
+                )
+                .setTooltip(race.getTranslationKey(), 0, 10);
+    }
+
     public static Cycler createRaceSelector(Screen screen) {
+        RegistryIndexer<Race> races = RegistryIndexer.of(Race.REGISTRY);
         return new Cycler(screen.width / 2 + 110, 60, 20, 20) {
             @Override
             protected void renderForground(MatrixStack matrices, MinecraftClient mc, int mouseX, int mouseY, int foreColor) {
@@ -152,18 +168,11 @@ public class LanSettingsScreen extends GameGui {
                     renderToolTip(matrices, screen, mouseX, mouseY);
                 }
             }
-        }.setStyles(
-                Race.EARTH.createStyle(),
-                Race.UNICORN.createStyle(),
-                Race.PEGASUS.createStyle(),
-                Race.BAT.createStyle(),
-                Race.ALICORN.createStyle(),
-                Race.CHANGELING.createStyle()
-        ).onChange(i -> {
-            Unicopia.getConfig().preferredRace.set(Race.fromId(i + 1));
+        }.setStyles(Race.REGISTRY.stream().map(LanSettingsScreen::createStyle).toArray(Style[]::new)).onChange(i -> {
+            Unicopia.getConfig().preferredRace.set(races.valueOf(i));
             Unicopia.getConfig().save();
 
             return i;
-        }).setValue(MathHelper.clamp(Unicopia.getConfig().preferredRace.get().ordinal() - 1, 0, 5));
+        }).setValue(races.indexOf(Unicopia.getConfig().preferredRace.get()));
     }
 }

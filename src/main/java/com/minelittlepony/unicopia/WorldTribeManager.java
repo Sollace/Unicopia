@@ -14,7 +14,7 @@ public class WorldTribeManager extends PersistentState {
     public WorldTribeManager() {}
 
     public WorldTribeManager(NbtCompound nbt) {
-        defaultRace = Race.fromName(nbt.getString("defaultRace"));
+        defaultRace = Race.fromName(nbt.getString("defaultRace"), Race.HUMAN);
     }
 
     public Race getDefaultRace() {
@@ -27,7 +27,7 @@ public class WorldTribeManager extends PersistentState {
 
     @Override
     public NbtCompound writeNbt(NbtCompound tag) {
-        tag.putString("defaultRace", defaultRace.name());
+        tag.putString("defaultRace", Race.REGISTRY.getId(defaultRace).toString());
         return tag;
     }
 

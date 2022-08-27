@@ -6,17 +6,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public interface UPotions {
-    Potion TRIBE_SWAP_EARTH_PONY = registerRacePotion(RaceChangeStatusEffect.CHANGE_RACE_EARTH);
-    Potion TRIBE_SWAP_UNICORN = registerRacePotion(RaceChangeStatusEffect.CHANGE_RACE_UNICORN);
-    Potion TRIBE_SWAP_PEGASUS = registerRacePotion(RaceChangeStatusEffect.CHANGE_RACE_PEGASUS);
-    Potion TRIBE_SWAP_BAT = registerRacePotion(RaceChangeStatusEffect.CHANGE_RACE_BAT);
-    Potion TRIBE_SWAP_CHANGELING = registerRacePotion(RaceChangeStatusEffect.CHANGE_RACE_CHANGELING);
-
-    static Potion registerRacePotion(RaceChangeStatusEffect effect) {
-        String name = "tribe_swap_" + effect.getSpecies().name().toLowerCase();
-        return register(name, new Potion("unicopia." + name,
-                new StatusEffectInstance(effect, RaceChangeStatusEffect.MAX_DURATION)));
-    }
+    Potion TRIBE_SWAP_EARTH_PONY = register("tribe_swap_earth", new Potion("unicopia.tribe_swap_earth", new StatusEffectInstance(RaceChangeStatusEffect.CHANGE_RACE_EARTH, RaceChangeStatusEffect.MAX_DURATION)));
+    Potion TRIBE_SWAP_UNICORN = register("tribe_swap_unicorn", new Potion("unicopia.tribe_swap_unicorn", new StatusEffectInstance(RaceChangeStatusEffect.CHANGE_RACE_UNICORN, RaceChangeStatusEffect.MAX_DURATION)));
+    Potion TRIBE_SWAP_PEGASUS = register("tribe_swap_pegasus", new Potion("unicopia.tribe_swap_pegasus", new StatusEffectInstance(RaceChangeStatusEffect.CHANGE_RACE_PEGASUS, RaceChangeStatusEffect.MAX_DURATION)));
+    Potion TRIBE_SWAP_BAT = register("tribe_swap_bat", new Potion("unicopia.tribe_swap_bat", new StatusEffectInstance(RaceChangeStatusEffect.CHANGE_RACE_BAT, RaceChangeStatusEffect.MAX_DURATION)));
+    Potion TRIBE_SWAP_CHANGELING = register("tribe_swap_changeling", new Potion("unicopia.tribe_swap_changeling", new StatusEffectInstance(RaceChangeStatusEffect.CHANGE_RACE_CHANGELING, RaceChangeStatusEffect.MAX_DURATION)));
 
     static Potion register(String name, Potion potion) {
         return Registry.register(Registry.POTION, new Identifier("unicopia", name), potion);

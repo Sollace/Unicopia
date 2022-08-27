@@ -25,23 +25,29 @@ public class RaceChangeStatusEffect extends StatusEffect {
     public static final int STAGE_DURATION = 50;
     public static final int MAX_DURATION = Stage.VALUES.length * STAGE_DURATION + 1;
 
-    public static final RaceChangeStatusEffect CHANGE_RACE_EARTH = new RaceChangeStatusEffect(0x886F0F, Race.EARTH);
-    public static final RaceChangeStatusEffect CHANGE_RACE_UNICORN = new RaceChangeStatusEffect(0x88FFFF, Race.UNICORN);
-    public static final RaceChangeStatusEffect CHANGE_RACE_PEGASUS = new RaceChangeStatusEffect(0x00FFFF, Race.PEGASUS);
-    public static final RaceChangeStatusEffect CHANGE_RACE_BAT = new RaceChangeStatusEffect(0x0FFF00, Race.BAT);
-    public static final RaceChangeStatusEffect CHANGE_RACE_CHANGELING = new RaceChangeStatusEffect(0xFFFF00, Race.CHANGELING);
+    public static final StatusEffect CHANGE_RACE_EARTH = register(0x886F0F, Race.EARTH);
+    public static final StatusEffect CHANGE_RACE_UNICORN = register(0x88FFFF, Race.UNICORN);
+    public static final StatusEffect CHANGE_RACE_PEGASUS = register(0x00FFFF, Race.PEGASUS);
+    public static final StatusEffect CHANGE_RACE_BAT = register(0x0FFF00, Race.BAT);
+    public static final StatusEffect CHANGE_RACE_CHANGELING = register(0xFFFF00, Race.CHANGELING);
 
-    private final Race species;
+    private final Race race;
 
-    protected RaceChangeStatusEffect(int color, Race species) {
+    public static StatusEffect register(int color, Race race) {
+        Identifier id = Race.REGISTRY.getId(race);
+        return Registry.register(Registry.STATUS_EFFECT,
+                new Identifier(id.getNamespace(), "change_race_" + id.getPath().toLowerCase()),
+                new RaceChangeStatusEffect(color, race)
+        );
+    }
+
+    public RaceChangeStatusEffect(int color, Race race) {
         super(StatusEffectCategory.NEUTRAL, color);
-        this.species = species;
-
-        Registry.register(Registry.STATUS_EFFECT, new Identifier("unicopia", "change_race_" + species.name().toLowerCase()), this);
+        this.race = race;
     }
 
     public Race getSpecies() {
-        return species;
+        return race;
     }
 
     @Override
@@ -68,16 +74,16 @@ public class RaceChangeStatusEffect extends StatusEffect {
 
         int progression = ticks % (stage.ordinal() * STAGE_DURATION);
 
-        if (eq.getSpecies() == species || !species.isPermitted(entity instanceof PlayerEntity ? (PlayerEntity)entity : null)) {
+        if (eq.getSpecies() == race || !race.isPermitted(entity instanceof PlayerEntity ? (PlayerEntity)entity : null)) {
             if (progression == 0 && entity instanceof PlayerEntity && stage == Stage.CRAWLING) {
-                ((PlayerEntity)entity).sendMessage(Stage.INITIAL.getMessage(species), true);
+                ((PlayerEntity)entity).sendMessage(Stage.INITIAL.getMessage(race), true);
             }
             return;
         }
 
         if (progression == 0) {
             if (stage != Stage.DEATH && entity instanceof PlayerEntity) {
-                ((PlayerEntity)entity).sendMessage(stage.getMessage(species), true);
+                ((PlayerEntity)entity).sendMessage(stage.getMessage(race), true);
             }
 
             float hitAmount = entity.getHealth() / 2;
@@ -101,7 +107,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
 
         if (stage == Stage.DEATH) {
 
-            eq.setSpecies(species);
+            eq.setSpecies(race);
             if (eq instanceof Caster) {
                 ((Caster<?>)eq).getSpellSlot().clear();
             }

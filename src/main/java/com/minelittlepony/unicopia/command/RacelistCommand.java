@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,7 +19,7 @@ class RacelistCommand {
     static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("racelist").requires(s -> s.hasPermissionLevel(4));
 
-        EnumArgumentType<Race> raceArgument = EnumArgumentType.of(Race.class, Race::isUsable, Race.EARTH);
+        RegistryKeyArgumentType<Race> raceArgument = Race.argument();
 
         builder.then(CommandManager.literal("allow")
                 .then(CommandManager.argument("race", raceArgument)
@@ -51,7 +52,7 @@ class RacelistCommand {
             translationKey += ".failed";
         }
 
-        Text formattedName = Text.translatable(race.name().toLowerCase()).formatted(Formatting.GOLD);
+        Text formattedName = race.getDisplayName().copy().formatted(Formatting.GOLD);
 
         source.sendFeedback(Text.translatable(translationKey, formattedName).formatted(Formatting.GREEN), false);
         return 0;

@@ -15,14 +15,14 @@ public class MsgTribeSelect implements Packet<PlayerEntity> {
     private final Set<Race> availableRaces;
 
     public MsgTribeSelect(PlayerEntity player) {
-        availableRaces = Race.all().stream().filter(r -> r.isPermitted(player)).collect(Collectors.toSet());
+        availableRaces = Race.REGISTRY.stream().filter(r -> r.isPermitted(player)).collect(Collectors.toSet());
     }
 
     public MsgTribeSelect(PacketByteBuf buffer) {
         int len = buffer.readInt();
         availableRaces = new HashSet<>();
         while (len-- > 0) {
-            availableRaces.add(Race.fromId(buffer.readInt()));
+            availableRaces.add(buffer.readRegistryValue(Race.REGISTRY));
         }
     }
 
@@ -33,7 +33,7 @@ public class MsgTribeSelect implements Packet<PlayerEntity> {
     @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeInt(availableRaces.size());
-        availableRaces.forEach(race -> buffer.writeInt(race.ordinal()));
+        availableRaces.forEach(race -> buffer.writeRegistryValue(Race.REGISTRY, race));
     }
 
     @Override

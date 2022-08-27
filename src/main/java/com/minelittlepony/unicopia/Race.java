@@ -1,41 +1,54 @@
 package com.minelittlepony.unicopia;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Strings;
-import com.minelittlepony.common.client.gui.sprite.TextureSprite;
-import com.minelittlepony.common.client.gui.style.Style;
 import com.minelittlepony.unicopia.ability.magic.Affine;
+import com.minelittlepony.unicopia.util.Registries;
 
+import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 
-public enum Race implements Affine {
+public final class Race implements Affine {
+    public static final String DEFAULT_ID = "unicopia:human";
+    public static final Registry<Race> REGISTRY = Registries.createDefaulted(Unicopia.id("race"), DEFAULT_ID);
+    public static final RegistryKey<? extends Registry<Race>> REGISTRY_KEY = REGISTRY.getKey();
+
+    public static Race register(String name, boolean magic, FlightType flight, boolean earth) {
+        return register(Unicopia.id(name), magic, flight, earth);
+    }
+
+    public static Race register(Identifier id, boolean magic, FlightType flight, boolean earth) {
+        return Registry.register(REGISTRY, id, new Race(magic, flight, earth));
+    }
+
+    public static RegistryKeyArgumentType<Race> argument() {
+        return RegistryKeyArgumentType.registryKey(REGISTRY_KEY);
+    }
+
     /**
      * The default, unset race.
      * This is used if there are no other races.
      */
-    HUMAN(false, FlightType.NONE, false),
-    EARTH(false, FlightType.NONE, true),
-    UNICORN(true, FlightType.NONE, false),
-    PEGASUS(false, FlightType.AVIAN, false),
-    BAT(false, FlightType.AVIAN, false),
-    ALICORN(true, FlightType.AVIAN, true),
-    CHANGELING(false, FlightType.INSECTOID, false);
+    public static final Race HUMAN = register("human", false, FlightType.NONE, false);
+    public static final Race EARTH = register("earth", false, FlightType.NONE, true);
+    public static final Race UNICORN = register("unicorn", true, FlightType.NONE, false);
+    public static final Race PEGASUS = register("pegasus", false, FlightType.AVIAN, false);
+    public static final Race BAT = register("bat", false, FlightType.AVIAN, false);
+    public static final Race ALICORN = register("alicorn", true, FlightType.AVIAN, true);
+    public static final Race CHANGELING = register("changeling", false, FlightType.INSECTOID, false);
+
+    public static void bootstrap() {}
 
     private final boolean magic;
     private final FlightType flight;
     private final boolean earth;
-
-    private final static Map<Integer, Race> REGISTRY = Arrays.stream(values()).collect(Collectors.toMap(Enum::ordinal, Function.identity()));
 
     Race(boolean magic, FlightType flight, boolean earth) {
         this.magic = magic;
@@ -93,7 +106,8 @@ public enum Race implements Affine {
     }
 
     public String getTranslationKey() {
-        return String.format("unicopia.race.%s", name().toLowerCase());
+        Identifier id = REGISTRY.getId(this);
+        return String.format("%s.race.%s", id.getNamespace(), id.getPath().toLowerCase());
     }
 
     public boolean isPermitted(@Nullable PlayerEntity sender) {
@@ -120,45 +134,26 @@ public enum Race implements Affine {
         return this;
     }
 
-    public Style createStyle() {
-        return new Style()
-                .setIcon(new TextureSprite()
-                        .setPosition(2, 2)
-                        .setSize(16, 16)
-                        .setTexture(new Identifier("unicopia", "textures/gui/icons.png"))
-                        .setTextureOffset((16 * ordinal()) % 256, (ordinal() / 256) * 16)
-                )
-                .setTooltip(getTranslationKey(), 0, 10);
-    }
-
     public boolean equals(String s) {
-        return name().equalsIgnoreCase(s)
+        return REGISTRY.getId(this).toString().equalsIgnoreCase(s)
                 || getTranslationKey().equalsIgnoreCase(s);
     }
 
     public static Race fromName(String s, Race def) {
         if (!Strings.isNullOrEmpty(s)) {
-            for (Race i : values()) {
-                if (i.equals(s)) return i;
+            Identifier id = Identifier.tryParse(s);
+            if (id != null) {
+                if (id.getNamespace() == Identifier.DEFAULT_NAMESPACE) {
+                    id = new Identifier(Unicopia.DEFAULT_NAMESPACE, id.getPath());
+                }
+                return REGISTRY.getOrEmpty(id).orElse(def);
             }
         }
-
-        try {
-            return fromId(Integer.parseInt(s));
-        } catch (NumberFormatException e) { }
 
         return def;
     }
 
-    public static Collection<Race> all() {
-        return REGISTRY.values();
-    }
-
     public static Race fromName(String name) {
         return fromName(name, EARTH);
-    }
-
-    public static Race fromId(int id) {
-        return REGISTRY.getOrDefault(id, EARTH);
     }
 }

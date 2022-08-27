@@ -36,7 +36,7 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
 
         if (json.has("race")) {
             json.get("race").getAsJsonArray().forEach(el -> {
-                races.add(Race.fromName(el.getAsString()));
+                races.add(Race.fromName(el.getAsString(), Race.EARTH));
             });
         }
 
@@ -93,7 +93,7 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
             json.addProperty("event", event);
             if (!races.isEmpty()) {
                 JsonArray arr = new JsonArray();
-                races.forEach(r -> arr.add(r.name().toLowerCase()));
+                races.forEach(r -> arr.add(Race.REGISTRY.getId(r).toString()));
                 json.add("race", arr);
             }
             if (flying != null) {

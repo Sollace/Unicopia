@@ -10,6 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 public class TribeButton extends Button {
@@ -23,6 +24,7 @@ public class TribeButton extends Button {
         this.race = race;
         int size = 32;
         int textureSize = 512;
+        int ordinal = Race.REGISTRY.getRawId(race);
 
         getStyle()
             .setIcon(new TextureSprite()
@@ -30,7 +32,7 @@ public class TribeButton extends Button {
                 .setSize(size, size)
                 .setTextureSize(textureSize, textureSize)
                 .setTexture(TribeSelectionScreen.ICONS)
-                .setTextureOffset((size * race.ordinal()) % textureSize, (race.ordinal() / textureSize) * size)
+                .setTextureOffset((size * ordinal) % textureSize, (ordinal / textureSize) * size)
             )
             .setText(race.getTranslationKey());
     }
@@ -54,7 +56,8 @@ public class TribeButton extends Button {
             drawTexture(matrices, x  - 4, y - 14, 76, 0, 78, 71);
 
             if (hovered && screenWidth > 0) {
-                drawCenteredText(matrices, getFont(), Text.translatable("gui.unicopia.tribe_selection.describe." + race.name().toLowerCase()), screenWidth / 2, y + height, 0xFFFFFFFF);
+                Identifier id = Race.REGISTRY.getId(race);
+                drawCenteredText(matrices, getFont(), Text.translatable("gui.unicopia.tribe_selection.describe." + id.getNamespace() + "." + id.getPath()), screenWidth / 2, y + height, 0xFFFFFFFF);
             }
         }
 

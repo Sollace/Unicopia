@@ -69,7 +69,7 @@ import net.minecraft.util.math.Direction;
 
 public class Pony extends Living<PlayerEntity> implements Transmittable, Copieable<Pony>, UpdateCallback {
 
-    private static final TrackedData<Integer> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<String> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
 
     static final TrackedData<Float> ENERGY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> EXHAUSTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -121,7 +121,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         this.levels = new PlayerLevelStore(this);
         this.tickers = Lists.newArrayList(gravity, mana, attributes, charms);
 
-        player.getDataTracker().startTracking(RACE, Race.HUMAN.ordinal());
+        player.getDataTracker().startTracking(RACE, Race.DEFAULT_ID);
     }
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
@@ -171,7 +171,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             return Race.HUMAN;
         }
 
-        return Race.fromId(getMaster().getDataTracker().get(RACE));
+        return Race.fromName(getMaster().getDataTracker().get(RACE), Race.HUMAN);
     }
 
     @Override
@@ -179,7 +179,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         race = race.validate(entity);
         speciesSet = true;
         ticksInSun = 0;
-        entity.getDataTracker().set(RACE, race.ordinal());
+        entity.getDataTracker().set(RACE, Race.REGISTRY.getId(race).toString());
 
         gravity.updateFlightState();
         entity.sendAbilitiesUpdate();
@@ -522,7 +522,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
-        compound.putString("playerSpecies", getSpecies().name());
+        compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
 
         compound.putFloat("magicExhaustion", magicExhaustion);
 
@@ -546,7 +546,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         speciesPersisted = true;
-        setSpecies(Race.fromName(compound.getString("playerSpecies")));
+        setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
 
         powers.fromNBT(compound.getCompound("powers"));
         gravity.fromNBT(compound.getCompound("gravity"));

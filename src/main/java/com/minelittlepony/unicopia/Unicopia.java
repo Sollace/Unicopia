@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.util.Identifier;
 
 import java.util.Optional;
 
@@ -23,7 +24,7 @@ import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.Channel;
 
 public class Unicopia implements ModInitializer {
-
+    public static final String DEFAULT_NAMESPACE = "unicopia";
     public static final Logger LOGGER = LogManager.getLogger();
 
     public static SidedAccess SIDE = Optional::empty;
@@ -35,6 +36,10 @@ public class Unicopia implements ModInitializer {
             CONFIG = new Config();
         }
         return CONFIG;
+    }
+
+    public static Identifier id(String name) {
+        return new Identifier(DEFAULT_NAMESPACE, name);
     }
 
     public Unicopia() {

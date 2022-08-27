@@ -1,8 +1,6 @@
 package com.minelittlepony.unicopia.item.toxin;
 
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UTags;
@@ -74,7 +72,7 @@ public class Toxic {
 
     public static class Builder {
         private final Ailment def;
-        private final Map<Race, Ailment> ailments = new EnumMap<>(Race.class);
+        private final Map<Race, Ailment> ailments = new HashMap<>();
         private UseAction action = UseAction.EAT;
         private Optional<FoodComponent> component = Optional.empty();
 
