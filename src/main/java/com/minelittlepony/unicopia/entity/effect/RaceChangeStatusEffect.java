@@ -11,10 +11,7 @@ import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.entity.effect.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.text.Text;
@@ -22,7 +19,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class RaceChangeStatusEffect extends StatusEffect {
-    public static final int STAGE_DURATION = 50;
+    public static final int STAGE_DURATION = 200;
     public static final int MAX_DURATION = Stage.VALUES.length * STAGE_DURATION + 1;
 
     public static final StatusEffect CHANGE_RACE_EARTH = register(0x886F0F, Race.EARTH);
@@ -39,6 +36,10 @@ public class RaceChangeStatusEffect extends StatusEffect {
                 new Identifier(id.getNamespace(), "change_race_" + id.getPath().toLowerCase()),
                 new RaceChangeStatusEffect(color, race)
         );
+    }
+
+    public static boolean hasEffect(PlayerEntity player) {
+        return player.getStatusEffects().stream().anyMatch(effect -> effect.getEffectType() instanceof RaceChangeStatusEffect);
     }
 
     public RaceChangeStatusEffect(int color, Race race) {
@@ -85,9 +86,9 @@ public class RaceChangeStatusEffect extends StatusEffect {
             if (stage != Stage.DEATH && entity instanceof PlayerEntity) {
                 ((PlayerEntity)entity).sendMessage(stage.getMessage(race), true);
             }
-
-            entity.damage(DamageSource.MAGIC, 0);
         }
+
+        entity.setHealth(1);
 
         if (entity instanceof PlayerEntity) {
             Pony pony  = (Pony)eq;
@@ -110,11 +111,14 @@ public class RaceChangeStatusEffect extends StatusEffect {
 
             if (eq instanceof Pony pony) {
                 MagicReserves magic = pony.getMagicalReserves();
-                magic.getExertion().set(0.2F);
+                magic.getEnergy().set(0.6F);
+                magic.getExhaustion().set(0);
+                magic.getExertion().set(0);
                 pony.setDirty();
             }
 
             entity.damage(MagicalDamageSource.TRIBE_SWAP, Float.MAX_VALUE);
+            entity.setHealth(0);
         }
     }
 

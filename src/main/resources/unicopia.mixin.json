@@ -39,6 +39,7 @@
     "client.MixinEntityRenderDispatcher",
     "client.MixinGameRenderer",
     "client.MixinInGameHud",
+    "client.MixinInGameHud$HeartType",
     "client.MixinItem",
     "client.MixinItemModels",
     "client.MixinKeyboardInput",

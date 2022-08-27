@@ -23,6 +23,7 @@ public class Commands {
             DisguiseCommand.register(dispatcher);
             TraitCommand.register(dispatcher);
             EmoteCommand.register(dispatcher);
+            ManaCommand.register(dispatcher);
         });
         Object game = FabricLoader.getInstance().getGameInstance();
         if (game instanceof MinecraftServer) {
