@@ -7,9 +7,13 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.base.Strings;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.util.Registries;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 
 import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -19,6 +23,7 @@ public final class Race implements Affine {
     public static final String DEFAULT_ID = "unicopia:human";
     public static final Registry<Race> REGISTRY = Registries.createDefaulted(Unicopia.id("race"), DEFAULT_ID);
     public static final RegistryKey<? extends Registry<Race>> REGISTRY_KEY = REGISTRY.getKey();
+    private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("race.unknown", id));
 
     public static Race register(String name, boolean magic, FlightType flight, boolean earth) {
         return register(Unicopia.id(name), magic, flight, earth);
@@ -156,4 +161,17 @@ public final class Race implements Affine {
     public static Race fromName(String name) {
         return fromName(name, EARTH);
     }
+
+    public static Race fromArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+        Identifier id = context.getArgument(name, RegistryKey.class).getValue();
+        return REGISTRY.getOrEmpty(id).orElseThrow(() -> UNKNOWN_RACE_EXCEPTION.create(id));
+    }
 }
+
+
+
+
+
+
+
+

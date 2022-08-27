@@ -23,7 +23,7 @@ class RacelistCommand {
 
         builder.then(CommandManager.literal("allow")
                 .then(CommandManager.argument("race", raceArgument)
-                .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), context.getArgument("race", Race.class), "allowed", race -> {
+                .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), Race.fromArgument(context, "race"), "allowed", race -> {
                     boolean result = Unicopia.getConfig().speciesWhiteList.get().add(race);
 
                     Unicopia.getConfig().save();
@@ -33,7 +33,7 @@ class RacelistCommand {
         ));
         builder.then(CommandManager.literal("disallow")
                 .then(CommandManager.argument("race", raceArgument)
-                .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), context.getArgument("race", Race.class), "disallowed", race -> {
+                .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), Race.fromArgument(context, "race"), "disallowed", race -> {
                     boolean result = Unicopia.getConfig().speciesWhiteList.get().remove(race);
 
                     Unicopia.getConfig().save();

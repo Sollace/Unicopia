@@ -29,19 +29,19 @@ class SpeciesCommand {
 
         builder.then(CommandManager.literal("set")
                .then(CommandManager.argument("race", raceArgument)
-                       .executes(context -> set(context.getSource(), context.getSource().getPlayer(), context.getArgument("race", Race.class), true))
+                       .executes(context -> set(context.getSource(), context.getSource().getPlayer(), Race.fromArgument(context, "race"), true))
                .then(CommandManager.argument("target", EntityArgumentType.player())
-                       .executes(context -> set(context.getSource(), EntityArgumentType.getPlayer(context, "target"), context.getArgument("race", Race.class), false))
-               )));
+                       .executes(context -> set(context.getSource(), EntityArgumentType.getPlayer(context, "target"), Race.fromArgument(context, "race"), false)))
+               ));
 
         builder.then(CommandManager.literal("describe")
                .then(CommandManager.argument("race", raceArgument)
-                       .executes(context -> describe(context.getSource().getPlayer(), context.getArgument("race", Race.class))
-               )));
+                       .executes(context -> describe(context.getSource().getPlayer(), Race.fromArgument(context, "race")))
+               ));
 
         builder.then(CommandManager.literal("list")
                        .executes(context -> list(context.getSource().getPlayer())
-                ));
+               ));
 
         dispatcher.register(builder);
     }
