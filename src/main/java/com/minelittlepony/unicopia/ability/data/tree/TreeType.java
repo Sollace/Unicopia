@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.data.tree;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.Weighted;
 
@@ -11,14 +12,13 @@ import java.util.function.Supplier;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public interface TreeType {
     TreeType NONE = new TreeTypeImpl(
-            new Identifier("unicopia", "none"),
+            Unicopia.id("none"),
             false,
             new Weighted<Supplier<ItemStack>>(),
             Set.of(),

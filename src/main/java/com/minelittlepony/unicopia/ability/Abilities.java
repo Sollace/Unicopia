@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.util.Identifier;
@@ -15,7 +16,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public interface Abilities {
-    Registry<Ability<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "abilities"));
+    Registry<Ability<?>> REGISTRY = Registries.createSimple(Unicopia.id("abilities"));
     Map<AbilitySlot, Set<Ability<?>>> BY_SLOT = new EnumMap<>(AbilitySlot.class);
     BiFunction<AbilitySlot, Race, List<Ability<?>>> BY_SLOT_AND_RACE = Util.memoize((slot, race) -> {
         return BY_SLOT.computeIfAbsent(slot, s -> new LinkedHashSet<>())
@@ -52,7 +53,7 @@ public interface Abilities {
     Ability<?> EEEE = register(new BatEeeeAbility(), "eee", AbilitySlot.TERTIARY);
 
     static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {
-        Identifier id = new Identifier("unicopia", name);
+        Identifier id = Unicopia.id(name);
         BY_SLOT.computeIfAbsent(slot, s -> new LinkedHashSet<>()).add(power);
         return Registry.register(REGISTRY, id, power);
     }

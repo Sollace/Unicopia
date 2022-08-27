@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.advancement.criterion.AbstractCriterion;
@@ -22,7 +23,7 @@ import net.minecraft.util.JsonHelper;
 
 public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion.Conditions> {
 
-    private static final Identifier ID = new Identifier("unicopia", "custom");
+    private static final Identifier ID = Unicopia.id("custom");
 
     @Override
     public Identifier getId() {

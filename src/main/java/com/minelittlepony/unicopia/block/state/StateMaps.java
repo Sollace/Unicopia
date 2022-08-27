@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.block.state;
 
 import java.util.function.Predicate;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.util.Registries;
 
@@ -15,11 +16,10 @@ import net.minecraft.block.PlantBlock;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.block.SnowBlock;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class StateMaps {
-    private static final Registry<BlockStateConverter> REGISTRY = Registries.createSimple(new Identifier("unicopia", "state_map"));
+    private static final Registry<BlockStateConverter> REGISTRY = Registries.createSimple(Unicopia.id("state_map"));
 
     public static final BlockStateConverter SNOW_PILED = register("snow_piled", new BlockStateMap.Builder()
             .add(StateMapping.cycleProperty(Blocks.SNOW, SnowBlock.LAYERS, 7)));
@@ -82,7 +82,7 @@ public class StateMaps {
             .add(StateMapping.build(s -> !s.isOf(Blocks.NETHER_QUARTZ_ORE) && isOre(s), Blocks.NETHER_QUARTZ_ORE, s -> StateMapping.replaceBlock(Blocks.NETHER_QUARTZ_ORE, Blocks.COAL_ORE))));
 
     private static <T extends BlockStateConverter> T register(String name, BlockStateMap.Builder value) {
-        return Registry.register(REGISTRY, new Identifier("unicopia", name), value.build());
+        return Registry.register(REGISTRY, Unicopia.id(name), value.build());
     }
 
     static Predicate<BlockState> isOf(Block block) {

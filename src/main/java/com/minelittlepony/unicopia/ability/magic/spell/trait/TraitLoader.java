@@ -31,7 +31,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 
 public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Identifier, TraitLoader.TraitStream>> implements IdentifiableResourceReloadListener {
-    private static final Identifier ID = new Identifier("unicopia", "data/traits");
+    private static final Identifier ID = Unicopia.id("data/traits");
 
     public static final TraitLoader INSTANCE = new TraitLoader();
 

@@ -8,6 +8,7 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
@@ -31,10 +32,10 @@ import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 public final class SpellType<T extends Spell> implements Affine, SpellPredicate<T> {
-    public static final Identifier EMPTY_ID = new Identifier("unicopia", "none");
+    public static final Identifier EMPTY_ID = Unicopia.id("none");
     public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, SpellTraits.EMPTY, (t, c) -> null);
 
-    public static final Registry<SpellType<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "spells"));
+    public static final Registry<SpellType<?>> REGISTRY = Registries.createSimple(Unicopia.id("spells"));
     private static final Map<Affinity, Set<SpellType<?>>> BY_AFFINITY = new EnumMap<>(Affinity.class);
 
     public static final SpellType<CompoundSpell> COMPOUND_SPELL = register("compound", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, CompoundSpell::new);
@@ -178,7 +179,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     }
 
     public static <T extends Spell> SpellType<T> register(String name, Affinity affinity, int color, boolean obtainable, SpellTraits traits, Factory<T> factory) {
-        return register(new Identifier("unicopia", name), affinity, color, obtainable, traits, factory);
+        return register(Unicopia.id(name), affinity, color, obtainable, traits, factory);
     }
 
     public static <T extends Spell> SpellType<T> register(Identifier id, Affinity affinity, int color, boolean obtainable, SpellTraits traits, Factory<T> factory) {

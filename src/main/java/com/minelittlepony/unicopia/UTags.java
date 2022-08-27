@@ -6,7 +6,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.tag.TagKey;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public interface UTags {
@@ -28,15 +27,15 @@ public interface UTags {
     TagKey<EntityType<?>> TRANSFORMABLE_ENTITIES = entity("transformable");
 
     static TagKey<Item> item(String name) {
-        return TagKey.of(Registry.ITEM_KEY, new Identifier("unicopia", name));
+        return TagKey.of(Registry.ITEM_KEY, Unicopia.id(name));
     }
 
     static TagKey<Block> block(String name) {
-        return TagKey.of(Registry.BLOCK_KEY, new Identifier("unicopia", name));
+        return TagKey.of(Registry.BLOCK_KEY, Unicopia.id(name));
     }
 
     static TagKey<EntityType<?>> entity(String name) {
-        return TagKey.of(Registry.ENTITY_TYPE_KEY, new Identifier("unicopia", name));
+        return TagKey.of(Registry.ENTITY_TYPE_KEY, Unicopia.id(name));
     }
 
     static void bootstrap() {

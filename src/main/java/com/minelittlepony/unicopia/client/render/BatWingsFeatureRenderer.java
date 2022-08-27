@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.client.model.Dilation;
@@ -15,7 +16,7 @@ import net.minecraft.util.Identifier;
 
 public class BatWingsFeatureRenderer<E extends LivingEntity> extends WingsFeatureRenderer<E> {
 
-    private static final Identifier TEXTURE = new Identifier("unicopia", "textures/models/wings/bat.png");
+    private static final Identifier TEXTURE = Unicopia.id("textures/models/wings/bat.png");
 
     public BatWingsFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
         super(context);

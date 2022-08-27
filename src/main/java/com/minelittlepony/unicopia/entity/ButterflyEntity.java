@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.block.BlockState;
@@ -357,7 +358,7 @@ public class ButterflyEntity extends AmbientEntity {
 
         private static final Variant[] VALUES = Variant.values();
 
-        private final Identifier skin = new Identifier("unicopia", "textures/entity/butterfly/" + name().toLowerCase() + ".png");
+        private final Identifier skin = Unicopia.id("textures/entity/butterfly/" + name().toLowerCase() + ".png");
 
         public Identifier getSkin() {
             return skin;

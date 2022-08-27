@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.entity;
 
 import java.util.function.Predicate;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -14,7 +15,6 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.tag.BiomeTags;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
@@ -48,7 +48,7 @@ public interface UEntities {
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         EntityType<T> type = builder.build();
-        return Registry.register(Registry.ENTITY_TYPE, new Identifier("unicopia", name), type);
+        return Registry.register(Registry.ENTITY_TYPE, Unicopia.id(name), type);
     }
 
     static void bootstrap() {

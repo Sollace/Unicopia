@@ -11,6 +11,8 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 
 public class CollaboratorEnchantment extends AttributedEnchantment {
+    private static final UUID TEAM_STRENGTH_UUID = UUID.fromString("5f08c02d-d959-4763-ac84-16e2acfd4b62");
+
     protected CollaboratorEnchantment() {
         super(Rarity.RARE, EnchantmentTarget.WEAPON, false, 3, EquipmentSlot.MAINHAND);
         this.addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, this::getModifier);
@@ -22,7 +24,7 @@ public class CollaboratorEnchantment extends AttributedEnchantment {
     }
 
     private EntityAttributeModifier getModifier(Living<?> user, int level) {
-        return new EntityAttributeModifier(UUID.fromString("5f08c02d-d959-4763-ac84-16e2acfd4b62"), "Team Strength", user.getEnchants().computeIfAbsent(this, Data::new).level / 2, Operation.ADDITION);
+        return new EntityAttributeModifier(TEAM_STRENGTH_UUID, "Team Strength", user.getEnchants().computeIfAbsent(this, Data::new).level / 2, Operation.ADDITION);
     }
 
     private int getTeamCollectiveLevel(Living<?> user, int radius) {

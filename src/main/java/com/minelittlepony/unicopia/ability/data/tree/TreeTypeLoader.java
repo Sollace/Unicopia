@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.Resources;
 import com.minelittlepony.unicopia.util.Weighted;
@@ -27,7 +28,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
-    private static final Identifier ID = new Identifier("unicopia", "data/tree_type");
+    private static final Identifier ID = Unicopia.id("data/tree_type");
 
     public static final TreeTypeLoader INSTANCE = new TreeTypeLoader();
 

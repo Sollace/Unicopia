@@ -6,6 +6,7 @@ import java.util.Set;
 import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgRequestSpeciesChange;
@@ -16,8 +17,8 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class TribeSelectionScreen extends GameGui implements HidesHud {
-    static final Identifier ICONS = new Identifier("unicopia", "textures/gui/icons.png");
-    static final Identifier TEXTURE = new Identifier("unicopia", "textures/gui/tribe_selection.png");
+    static final Identifier ICONS = Unicopia.id("textures/gui/icons.png");
+    static final Identifier TEXTURE = Unicopia.id("textures/gui/tribe_selection.png");
 
     final Set<Race> allowedRaces;
 

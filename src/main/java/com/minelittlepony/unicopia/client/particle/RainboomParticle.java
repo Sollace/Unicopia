@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client.particle;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 
 import net.minecraft.client.world.ClientWorld;
@@ -9,7 +10,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 public class RainboomParticle extends OrientedBillboardParticle {
-    private static final Identifier TEXTURE = new Identifier("unicopia", "textures/particles/rainboom_ring.png");
+    private static final Identifier TEXTURE = Unicopia.id("textures/particles/rainboom_ring.png");
 
     protected float prevBaseSize = 0;
     protected float baseSize = 0;

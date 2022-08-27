@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.common.util.Color;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.GlowableItem;
@@ -33,7 +34,7 @@ import net.minecraft.util.Identifier;
 
 public class BraceletFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
 
-    public static final Identifier TEXTURE = new Identifier("unicopia", "textures/models/armor/bracelet.png");
+    public static final Identifier TEXTURE = Unicopia.id("textures/models/armor/bracelet.png");
 
     private final BraceletModel steveModel;
     private final BraceletModel alexModel;

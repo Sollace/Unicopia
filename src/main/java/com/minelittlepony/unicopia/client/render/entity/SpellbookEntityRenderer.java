@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.client.render.entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.SpellbookEntity;
 
 import net.minecraft.client.render.entity.EntityRendererFactory;
@@ -11,7 +12,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
 public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntity, SpellbookModel> {
-    private static final Identifier TEXTURE = new Identifier("unicopia", "textures/entity/spellbook/normal.png");
+    private static final Identifier TEXTURE = Unicopia.id("textures/entity/spellbook/normal.png");
 
     public SpellbookEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new SpellbookModel(SpellbookModel.getTexturedModelData().createModel()), 0);

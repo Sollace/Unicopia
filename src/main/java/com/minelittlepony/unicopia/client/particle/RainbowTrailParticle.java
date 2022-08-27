@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
@@ -19,7 +20,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 public class RainbowTrailParticle extends AbstractBillboardParticle implements Attachment {
-    private static final Identifier TEXTURE = new Identifier("unicopia", "textures/particles/rainboom_trail.png");
+    private static final Identifier TEXTURE = Unicopia.id("textures/particles/rainboom_trail.png");
 
     private final List<Segment> segments = new ArrayList<>();
 

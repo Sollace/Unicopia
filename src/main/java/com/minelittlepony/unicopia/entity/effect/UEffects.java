@@ -1,7 +1,8 @@
 package com.minelittlepony.unicopia.entity.effect;
 
+import com.minelittlepony.unicopia.Unicopia;
+
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public interface UEffects {
@@ -10,7 +11,7 @@ public interface UEffects {
     StatusEffect CORRUPT_INFLUENCE = register("corrupt_influence", new CorruptInfluenceStatusEffect(0x00FF00));
 
     private static StatusEffect register(String name, StatusEffect effect) {
-        return Registry.register(Registry.STATUS_EFFECT, new Identifier("unicopia", name), effect);
+        return Registry.register(Registry.STATUS_EFFECT, Unicopia.id(name), effect);
     }
 
     static void bootstrap() {}

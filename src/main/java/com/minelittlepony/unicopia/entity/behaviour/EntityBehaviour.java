@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.ItemWielder;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -30,7 +31,6 @@ import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -38,7 +38,7 @@ import net.minecraft.util.registry.Registry;
 public class EntityBehaviour<T extends Entity> {
 
     private static final EntityBehaviour<Entity> DEFAULT = new EntityBehaviour<>();
-    private static final Registry<EntityBehaviour<?>> REGISTRY = Registries.createSimple(new Identifier("unicopia", "entity_behaviour"));
+    private static final Registry<EntityBehaviour<?>> REGISTRY = Registries.createSimple(Unicopia.id("entity_behaviour"));
 
     /**
      * Equivalent of the entity#tick method. Called every tick to update th logic for a disguise.

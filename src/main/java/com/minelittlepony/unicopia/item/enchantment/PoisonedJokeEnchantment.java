@@ -25,8 +25,8 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 
 public class PoisonedJokeEnchantment extends SimpleEnchantment implements IdentifiableResourceReloadListener {
-    private static final Identifier ID = new Identifier("unicopia", "data/poisoned_joke_sounds");
-    private static final Identifier FILE = new Identifier("unicopia", "poisoned_joke_sounds.json");
+    private static final Identifier ID = Unicopia.id("data/poisoned_joke_sounds");
+    private static final Identifier FILE = Unicopia.id("poisoned_joke_sounds.json");
     private static final Type TYPE = TypeUtils.parameterize(List.class, Identifier.class);
     private List<SoundEvent> sounds = new ArrayList<>();
 

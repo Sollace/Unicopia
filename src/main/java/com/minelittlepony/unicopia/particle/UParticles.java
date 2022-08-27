@@ -1,9 +1,10 @@
 package com.minelittlepony.unicopia.particle;
 
+import com.minelittlepony.unicopia.Unicopia;
+
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public interface UParticles {
@@ -29,6 +30,6 @@ public interface UParticles {
     DefaultParticleType LIGHTNING_BOLT = register("lightning_bolt", FabricParticleTypes.simple(true));
 
     static <T extends ParticleType<?>> T register(String name, T type) {
-        return Registry.register(Registry.PARTICLE_TYPE, new Identifier("unicopia", name), type);
+        return Registry.register(Registry.PARTICLE_TYPE, Unicopia.id(name), type);
     }
 }

@@ -23,7 +23,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 
 public class LanSettingsScreen extends GameGui {
 
@@ -152,7 +151,7 @@ public class LanSettingsScreen extends GameGui {
                 .setIcon(new TextureSprite()
                         .setPosition(2, 2)
                         .setSize(16, 16)
-                        .setTexture(new Identifier("unicopia", "textures/gui/icons.png"))
+                        .setTexture(TribeSelectionScreen.ICONS)
                         .setTextureOffset((16 * ordinal) % 256, (ordinal / 256) * 16)
                 )
                 .setTooltip(race.getTranslationKey(), 0, 10);

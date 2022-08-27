@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.client.particle;
 import java.util.Optional;
 
 import com.minelittlepony.common.util.Color;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
@@ -21,12 +22,12 @@ import net.minecraft.util.math.Vec3d;
 public class RunesParticle extends OrientedBillboardParticle implements Attachment {
 
     private static final Identifier[] TEXTURES = new Identifier[] {
-            new Identifier("unicopia", "textures/particles/runes_0.png"),
-            new Identifier("unicopia", "textures/particles/runes_1.png"),
-            new Identifier("unicopia", "textures/particles/runes_2.png"),
-            new Identifier("unicopia", "textures/particles/runes_3.png"),
-            new Identifier("unicopia", "textures/particles/runes_4.png"),
-            new Identifier("unicopia", "textures/particles/runes_5.png")
+            Unicopia.id("textures/particles/runes_0.png"),
+            Unicopia.id("textures/particles/runes_1.png"),
+            Unicopia.id("textures/particles/runes_2.png"),
+            Unicopia.id("textures/particles/runes_3.png"),
+            Unicopia.id("textures/particles/runes_4.png"),
+            Unicopia.id("textures/particles/runes_5.png")
     };
 
     protected float prevBaseSize = 0;

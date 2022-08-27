@@ -3,8 +3,7 @@ package com.minelittlepony.unicopia.item;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
@@ -20,7 +19,6 @@ import net.minecraft.item.FoodComponents;
 import net.minecraft.item.MusicDiscItem;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
@@ -103,7 +101,7 @@ public interface UItems {
         if (item instanceof BlockItem) {
             ((BlockItem)item).appendBlocks(Item.BLOCK_ITEMS, item);
         }
-        return Registry.register(Registry.ITEM, new Identifier("unicopia", name), item);
+        return Registry.register(Registry.ITEM, Unicopia.id(name), item);
     }
 
     static MusicDiscItem register(String name, SoundEvent sound, int seconds) {

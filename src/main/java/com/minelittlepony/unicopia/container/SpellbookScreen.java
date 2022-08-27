@@ -5,6 +5,7 @@ import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
@@ -26,8 +27,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> implements RecipeBookProvider {
-    public static final Identifier TEXTURE = new Identifier("unicopia", "textures/gui/container/book.png");
-    public static final Identifier SLOT = new Identifier("unicopia", "textures/gui/container/slot.png");
+    public static final Identifier TEXTURE = Unicopia.id("textures/gui/container/book.png");
+    public static final Identifier SLOT = Unicopia.id("textures/gui/container/slot.png");
+    public static final Identifier GEM = Unicopia.id("textures/item/gemstone.png");
 
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
 
@@ -138,7 +140,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
                 if (slot instanceof InputSlot) {
                     RenderSystem.setShaderColor(1, 1, 1, 0.3F);
-                    RenderSystem.setShaderTexture(0, new Identifier("unicopia", "textures/item/gemstone.png"));
+                    RenderSystem.setShaderTexture(0, GEM);
                     drawTexture(matrices, slot.x, slot.y, 0, 0, 16, 16, 16, 16);
                     RenderSystem.setShaderColor(1, 1, 1, 1);
                     RenderSystem.setShaderTexture(0, SLOT);

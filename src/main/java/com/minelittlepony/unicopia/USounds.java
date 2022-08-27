@@ -72,7 +72,7 @@ public interface USounds {
     SoundEvent RECORD_FUNK = register("music_disc.funk");
 
     static SoundEvent register(String name) {
-        Identifier id = new Identifier("unicopia", name);
+        Identifier id = Unicopia.id(name);
         return Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(id));
     }
 

@@ -4,8 +4,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
@@ -40,7 +39,7 @@ public class UHud extends DrawableHelper {
 
     public static final UHud INSTANCE = new UHud();
 
-    public static final Identifier HUD_TEXTURE = new Identifier("unicopia", "textures/gui/hud.png");
+    public static final Identifier HUD_TEXTURE = Unicopia.id("textures/gui/hud.png");
 
     public static final int PRIMARY_SLOT_SIZE = 49;
 

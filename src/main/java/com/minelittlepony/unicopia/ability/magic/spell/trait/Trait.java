@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.minelittlepony.common.client.gui.Tooltip;
+import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
@@ -65,8 +66,8 @@ public enum Trait {
     private final TraitGroup group;
 
     Trait(TraitGroup group) {
-        this.id = new Identifier("unicopia", name().toLowerCase());
-        this.sprite = new Identifier("unicopia", "textures/gui/trait/" + name().toLowerCase() + ".png");
+        this.id = Unicopia.id(name().toLowerCase());
+        this.sprite = Unicopia.id("textures/gui/trait/" + name().toLowerCase() + ".png");
         this.group = group;
     }
 

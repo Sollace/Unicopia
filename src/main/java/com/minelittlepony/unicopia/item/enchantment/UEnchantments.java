@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
 
 import net.minecraft.enchantment.Enchantment;
@@ -13,7 +14,6 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.enchantment.EnchantmentTarget;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public interface UEnchantments {
@@ -81,6 +81,6 @@ public interface UEnchantments {
 
     static <T extends SimpleEnchantment> T register(String name, T enchantment) {
         REGISTRY.add(enchantment);
-        return Registry.register(Registry.ENCHANTMENT, new Identifier("unicopia", name), enchantment);
+        return Registry.register(Registry.ENCHANTMENT, Unicopia.id(name), enchantment);
     }
 }

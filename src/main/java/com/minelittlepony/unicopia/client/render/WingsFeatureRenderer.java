@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client.render;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.client.model.Dilation;
@@ -26,7 +27,7 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
 
     protected static final int FEATHER_COUNT = 8;
 
-    private static final Identifier PEGASUS_WINGS = new Identifier("unicopia", "textures/models/wings/pegasus.png");
+    private static final Identifier PEGASUS_WINGS = Unicopia.id("textures/models/wings/pegasus.png");
 
     private final WingsModel model;
 
