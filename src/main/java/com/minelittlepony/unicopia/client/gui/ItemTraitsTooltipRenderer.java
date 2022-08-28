@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.*;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
@@ -27,7 +27,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
 
     @Override
     public int getHeight() {
-        return getRows() * 16 + 4;
+        return getRows() * 17 + 2;
     }
 
     @Override
@@ -36,11 +36,15 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
     }
 
     private int getColumns() {
-        return Math.max(4, (int)Math.ceil(Math.sqrt(traits.entries().size() + 1)));
+        return Math.min(traits.entries().size(), Math.max(6, (int)Math.ceil(Math.sqrt(traits.entries().size() + 1))));
     }
 
     private int getRows() {
-        return Math.max(1, (int)Math.ceil((traits.entries().size() + 1) / getColumns()));
+        int columns = getColumns();
+        if (columns == traits.entries().size()) {
+            return 1;
+        }
+        return Math.max(1, (int)Math.ceil((float)(traits.entries().size() + 1) / getColumns()));
     }
 
     @Override
@@ -51,7 +55,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
         for (var entry : traits) {
             renderTraitIcon(entry.getKey(), entry.getValue(), matrices,
                     x + (i % columns) * 17,
-                    y + (i / columns) * 16
+                    y + (i / columns) * 17
             );
             i++;
         }
@@ -77,6 +81,14 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
         ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
 
         int size = 12;
+
+        if (MinecraftClient.getInstance().player != null) {
+            TraitDiscovery discoveries = Pony.of(MinecraftClient.getInstance().player).getDiscoveries();
+
+            if (!discoveries.isKnown(trait)) {
+                trait = Trait.values()[MinecraftClient.getInstance().player.getRandom().nextInt(Trait.all().size())];
+            }
+        }
 
         RenderSystem.setShaderTexture(0, trait.getSprite());
         DrawableHelper.drawTexture(matrices, xx + 2, yy + 1, 0, 0, 0, size, size, size, size);
