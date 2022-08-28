@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client.gui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -91,19 +92,16 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
 
     @Override
     public Style getStyle() {
-        // TODO Auto-generated method stub
-        return null;
+        return Text.empty().getStyle();
     }
 
     @Override
     public TextContent getContent() {
-        // TODO Auto-generated method stub
-        return null;
+        return Text.empty().getContent();
     }
 
     @Override
     public List<Text> getSiblings() {
-        // TODO Auto-generated method stub
-        return null;
+        return new ArrayList<>();
     }
 }
