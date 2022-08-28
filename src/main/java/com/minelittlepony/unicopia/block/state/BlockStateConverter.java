@@ -1,15 +1,24 @@
 package com.minelittlepony.unicopia.block.state;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public interface BlockStateConverter {
+
+    static ReversableBlockStateConverter of(Identifier id) {
+        return new StateMapLoader.Indirect<ReversableBlockStateConverter>(id, Optional.empty());
+    }
+
     /**
      * Checks if this collection contains a mapping capable of converting the given state.
      *
@@ -49,16 +58,17 @@ public interface BlockStateConverter {
         }
 
         if (!newState.contains(Properties.DOUBLE_BLOCK_HALF)) {
-            world.setBlockState(pos, newState, 16 | 2);
+            world.setBlockState(pos, newState, Block.FORCE_STATE | Block.NOTIFY_LISTENERS);
             return true;
         }
 
+        // for two-tall blocks (like doors) we have to update it's sibling
         boolean lower = newState.get(Properties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER;
         BlockPos other = lower ? pos.up() : pos.down();
 
         if (world.getBlockState(other).isOf(state.getBlock())) {
-            world.setBlockState(other, newState.with(Properties.DOUBLE_BLOCK_HALF, lower ? DoubleBlockHalf.UPPER : DoubleBlockHalf.LOWER), 16 | 2);
-            world.setBlockState(pos, newState, 16 | 2);
+            world.setBlockState(other, newState.with(Properties.DOUBLE_BLOCK_HALF, lower ? DoubleBlockHalf.UPPER : DoubleBlockHalf.LOWER), Block.FORCE_STATE | Block.NOTIFY_LISTENERS);
+            world.setBlockState(pos, newState, Block.FORCE_STATE | Block.NOTIFY_LISTENERS);
 
             return true;
         }

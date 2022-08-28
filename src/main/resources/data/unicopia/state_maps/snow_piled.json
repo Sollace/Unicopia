@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "entries": [
+    {
+      "match": { "state": "minecraft:snow{layers<7}" },
+      "apply": {
+        "action": "unicopia:cycle_property",
+        "property": "layers"
+      }
+    }
+  ]
+}

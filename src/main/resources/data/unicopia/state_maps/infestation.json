@@ -1,0 +1,47 @@
+{
+  "replace": false,
+  "entries": [
+    {
+      "match": { "state": "minecraft:chiseled_stone_bricks" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:infested_chiseled_stone_bricks"
+      }
+    },
+    {
+      "match": { "state": "minecraft:cobblestone" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:infested_cobblestone"
+      }
+    },
+    {
+      "match": { "state": "minecraft:cracked_stone_bricks" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:infested_cracked_stone_bricks"
+      }
+    },
+    {
+      "match": { "state": "minecraft:mossy_stone_bricks" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:infested_mossy_stone_bricks"
+      }
+    },
+    {
+      "match": { "state": "minecraft:stone" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:infested_stone"
+      }
+    },
+    {
+      "match": { "state": "minecraft:stone_bricks" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:infested_stone_bricks"
+      }
+    }
+  ]
+}

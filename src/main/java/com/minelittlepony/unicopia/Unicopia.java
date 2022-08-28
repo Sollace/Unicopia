@@ -17,7 +17,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitLoader;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.block.UBlocks;
-import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.container.UScreenHandlers;
 import com.minelittlepony.unicopia.entity.UEntities;
@@ -70,7 +69,6 @@ public class Unicopia implements ModInitializer {
         Race.bootstrap();
         SpellType.bootstrap();
         Abilities.bootstrap();
-        StateMaps.bootstrap();
         UScreenHandlers.bootstrap();
     }
 

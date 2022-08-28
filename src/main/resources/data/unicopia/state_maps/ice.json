@@ -1,0 +1,35 @@
+{
+  "parent": "unicopia:snow_piled",
+  "replace": false,
+  "entries": [
+    {
+      "match": { "state": "minecraft:water" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:frosted_ice"
+      }
+    },
+    {
+      "match": { "state": "minecraft:lava" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "unicopia:frosted_obsidian"
+      }
+    },
+    {
+      "match": { "state": "minecraft:fire" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:air"
+      }
+    },
+    {
+      "match": { "state": "minecraft:redstone_wire" },
+      "apply": {
+        "action": "unicopia:set_property",
+        "property": "power",
+        "value": 0
+      }
+    }
+  ]
+}

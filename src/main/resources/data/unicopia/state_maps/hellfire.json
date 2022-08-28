@@ -1,0 +1,169 @@
+{
+  "replace": false,
+  "entries": [
+    {
+      "match": { "state": "minecraft:grass_block" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:warped_nylium"
+      }
+    },
+    {
+      "match": { "state": "minecraft:stone" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:netherrack"
+      }
+    },
+    {
+      "match": { "state": "minecraft:sand" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:soul_sand"
+      }
+    },
+    {
+      "match": [
+        { "state": "minecraft:dirt" },
+        { "state": "minecraft:coarse_dirt" }
+      ],
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:soul_soil"
+      }
+    },
+    {
+      "match": { "state": "minecraft:torch" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:soul_torch"
+      }
+    },
+    {
+      "match": { "state": "minecraft:wall_torch" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:soul_wall_torch"
+      }
+    },
+    {
+      "match": { "state": "minecraft:oak_log" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:warped_stem"
+      }
+    },
+    {
+      "match": { "state": "minecraft:stripped_oak_log" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:stripped_warped_stem"
+      }
+    },
+    {
+      "match": { "state": "minecraft:stripped_oak_wood" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:stripped_warped_hyphae"
+      }
+    },
+    {
+      "match": { "state": "minecraft:oak_planks" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:warped_planks"
+      }
+    },
+    {
+      "match": { "state": "minecraft:oak_door" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:warped_door"
+      }
+    },
+    {
+      "match": { "state": "minecraft:oak_stairs" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:warped_stairs"
+      }
+    },
+    {
+      "match": { "state": "minecraft:oak_trapdoor" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:warped_trapdoor"
+      }
+    },
+    {
+      "match": { "state": "minecraft:oak_pressure_plate" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:warped_pressure_plate"
+      }
+    },
+    {
+      "match": { "state": "minecraft:oak_button" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:warped_button"
+      }
+    },
+    {
+      "match": { "state": "minecraft:oak_fence" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:warped_fence"
+      }
+    },
+    {
+      "match": { "state": "minecraft:oak_fence_gate" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:warped_fence_gate"
+      }
+    },
+    {
+      "match": { "tag": "minecraft:leaves" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:warped_hyphae"
+      }
+    },
+    {
+      "match": { "state": "minecraft:water" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:obsidian"
+      }
+    },
+    {
+      "match": { "builtin": "plants" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:nether_wart"
+      },
+      "reverse": {
+        "match": { "state": "minecraft:nether_wart" },
+        "apply": {
+          "action": "unicopia:set_state",
+          "state": "minecraft:grass"
+        }
+      }
+    },
+    {
+      "match": { "builtin": "ores" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:nether_quartz_ore"
+      },
+      "reverse": {
+        "match": { "state": "minecraft:nether_quartz_ore" },
+        "apply": {
+          "action": "unicopia:set_state",
+          "state": "minecraft:coal_ore"
+        }
+      }
+    }
+  ]
+}
