@@ -1,12 +1,13 @@
 package com.minelittlepony.unicopia.container;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 import com.mojang.datafixers.util.Pair;
@@ -147,10 +148,12 @@ public class SpellbookScreenHandler extends ScreenHandler {
             if (!world.isClient && !gemSlot.getStack().isEmpty()) {
                 outputSlot.setStack(
                         world.getServer().getRecipeManager()
-                        .getFirstMatch(URecipes.SPELLBOOK, input, world)
+                        .getAllMatches(URecipes.SPELLBOOK, input, world)
+                        .stream().sorted(Comparator.comparing(SpellbookRecipe::getPriority))
+                        .findFirst()
                         .filter(recipe -> result.shouldCraftRecipe(world, (ServerPlayerEntity)this.inventory.player, recipe))
                         .map(recipe -> recipe.craft(input))
-                        .orElse(ItemStack.EMPTY));
+                        .orElse(UItems.BOTCHED_GEM.getDefaultStack()));
 
                 ((ServerPlayerEntity)this.inventory.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, nextRevision(), outputSlot.id, outputSlot.getStack()));
             }
@@ -431,7 +434,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
         public void setStack(ItemStack stack) {
             super.setStack(stack);
             if (!stack.isEmpty()) {
-                player.playSound(USounds.GUI_SPELL_CRAFT_SUCCESS, SoundCategory.MASTER, 1, 0.3F);
+                player.playSound(stack.getItem() == UItems.BOTCHED_GEM ? USounds.GUI_ABILITY_FAIL : USounds.GUI_SPELL_CRAFT_SUCCESS, SoundCategory.MASTER, 1, 0.3F);
             }
         }
 

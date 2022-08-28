@@ -27,6 +27,8 @@ public interface SpellbookRecipe extends Recipe<SpellbookInventory> {
 
     void buildCraftingTree(CraftingTreeBuilder builder);
 
+    int getPriority();
+
     interface CraftingTreeBuilder {
         void input(ItemStack...stack);
 

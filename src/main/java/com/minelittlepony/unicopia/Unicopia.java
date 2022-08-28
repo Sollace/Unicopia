@@ -47,10 +47,6 @@ public class Unicopia implements ModInitializer {
         return new Identifier(DEFAULT_NAMESPACE, name);
     }
 
-    public Unicopia() {
-        getConfig();
-    }
-
     @Override
     public void onInitialize() {
         Channel.bootstrap();

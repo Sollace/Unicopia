@@ -1,12 +1,12 @@
 {
   "type": "unicopia:spellbook/crafting",
-  "material": {
-    "item": { "item": "unicopia:gemstone" },
-    "spell": "unicopia:flame"
-  },
+  "material": { "item": "unicopia:gemstone", "spell": "unicopia:none" },
   "traits": {
     "fire": 50, "dark": 10
   },
+  "ingredients": [
+    { "item": "unicopia:gemstone", "spell": "unicopia:flame" }
+  ],
   "result": {
     "item": "unicopia:gemstone",
     "spell": "unicopia:infernal"

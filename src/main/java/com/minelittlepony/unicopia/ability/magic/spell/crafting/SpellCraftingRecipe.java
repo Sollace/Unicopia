@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
+import java.util.List;
+
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -13,27 +15,49 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 /**
- * Recipe that requires an item and a certain number of traits to produce a result.
+ * A recipe for creating a new spell from input traits and items.
  */
-public class TraitRequirementRecipe implements SpellbookRecipe {
+public class SpellCraftingRecipe implements SpellbookRecipe {
     private final Identifier id;
-    private final IngredientWithSpell requirement;
+
+    /**
+     * The ingredient to modify
+     */
+    private final IngredientWithSpell material;
+
+    /**
+     * The required traits
+     */
     private final TraitIngredient requiredTraits;
+
+    /**
+     * Items required for crafting.
+     */
+    private final List<IngredientWithSpell> requiredItems;
+
+    /**
+     * The resulting item
+     */
     private final ItemStack output;
 
-    private TraitRequirementRecipe(Identifier id, IngredientWithSpell requirement, TraitIngredient requiredTraits, ItemStack output) {
+    private SpellCraftingRecipe(Identifier id, IngredientWithSpell material, TraitIngredient requiredTraits, List<IngredientWithSpell> requiredItems, ItemStack output) {
         this.id = id;
-        this.requirement = requirement;
+        this.material = material;
         this.requiredTraits = requiredTraits;
+        this.requiredItems = requiredItems;
         this.output = output;
     }
 
     @Override
     public void buildCraftingTree(CraftingTreeBuilder builder) {
-        builder.input(requirement.getMatchingStacks());
+        builder.input(material.getMatchingStacks());
+        for (var ingredient : requiredItems) {
+            builder.input(ingredient.getMatchingStacks());
+        }
         requiredTraits.min().ifPresent(min -> {
             min.forEach(e -> builder.input(e.getKey(), e.getValue()));
         });
@@ -41,8 +65,13 @@ public class TraitRequirementRecipe implements SpellbookRecipe {
     }
 
     @Override
+    public int getPriority() {
+        return 0;
+    }
+
+    @Override
     public boolean matches(SpellbookInventory inventory, World world) {
-        return requirement.test(inventory.getItemToModify()) && requiredTraits.test(inventory.getTraits());
+        return material.test(inventory.getItemToModify()) && requiredTraits.test(inventory.getTraits());
     }
 
     @Override
@@ -86,28 +115,31 @@ public class TraitRequirementRecipe implements SpellbookRecipe {
         return stack;
     }
 
-    public static class Serializer implements RecipeSerializer<TraitRequirementRecipe> {
+    public static class Serializer implements RecipeSerializer<SpellCraftingRecipe> {
         @Override
-        public TraitRequirementRecipe read(Identifier id, JsonObject json) {
-            return new TraitRequirementRecipe(id,
-                    IngredientWithSpell.fromJson(JsonHelper.getObject(json, "material")),
+        public SpellCraftingRecipe read(Identifier id, JsonObject json) {
+            return new SpellCraftingRecipe(id,
+                    IngredientWithSpell.fromJson(json.get("material")),
                     TraitIngredient.fromJson(JsonHelper.getObject(json, "traits")),
+                    IngredientWithSpell.fromJson(JsonHelper.asArray(json.get("ingredients"), "ingredients")),
                     outputFromJson(JsonHelper.getObject(json, "result")));
         }
 
         @Override
-        public TraitRequirementRecipe read(Identifier id, PacketByteBuf buf) {
-            return new TraitRequirementRecipe(id,
+        public SpellCraftingRecipe read(Identifier id, PacketByteBuf buf) {
+            return new SpellCraftingRecipe(id,
                     IngredientWithSpell.fromPacket(buf),
                     TraitIngredient.fromPacket(buf),
+                    buf.readCollection(DefaultedList::ofSize, IngredientWithSpell::fromPacket),
                     buf.readItemStack()
             );
         }
 
         @Override
-        public void write(PacketByteBuf buf, TraitRequirementRecipe recipe) {
-            recipe.requirement.write(buf);
+        public void write(PacketByteBuf buf, SpellCraftingRecipe recipe) {
+            recipe.material.write(buf);
             recipe.requiredTraits.write(buf);
+            buf.writeCollection(recipe.requiredItems, (b, i) -> i.write(b));
             buf.writeItemStack(recipe.output);
         }
     }

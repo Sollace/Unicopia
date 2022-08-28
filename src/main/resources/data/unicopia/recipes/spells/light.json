@@ -1,12 +1,12 @@
 {
   "type": "unicopia:spellbook/crafting",
-  "material": {
-    "item": { "item": "unicopia:gemstone" },
-    "spell": "unicopia:fire_bolt"
-  },
+  "material": { "item": "unicopia:gemstone", "spell": "unicopia:none" },
   "traits": {
     "ice": 30, "life": 30, "focus": 10
   },
+  "ingredients": [
+    { "item": "unicopia:gemstone", "spell": "unicopia:fire_bolt" }
+  ],
   "result": {
     "item": "unicopia:gemstone",
     "spell": "unicopia:light"

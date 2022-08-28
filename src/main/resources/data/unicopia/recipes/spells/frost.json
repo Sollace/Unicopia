@@ -1,12 +1,10 @@
 {
   "type": "unicopia:spellbook/crafting",
-  "material": {
-    "item": { "item": "unicopia:gemstone" },
-    "spell": "unicopia:none"
-  },
+  "material": { "item": "unicopia:gemstone", "spell": "unicopia:none" },
   "traits": {
     "ice": 1
   },
+  "ingredients": [],
   "result": {
     "item": "unicopia:gemstone",
     "spell": "unicopia:frost"

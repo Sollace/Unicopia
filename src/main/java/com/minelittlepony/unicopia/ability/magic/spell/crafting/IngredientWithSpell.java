@@ -6,7 +6,8 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 
@@ -15,8 +16,11 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.collection.DefaultedList;
 
 public class IngredientWithSpell implements Predicate<ItemStack> {
+    private static final Predicate<Ingredient> INGREDIENT_IS_PRESENT = ((Predicate<Ingredient>)(Ingredient::isEmpty)).negate();
+
     private Optional<Ingredient> stack = Optional.empty();
     private Optional<SpellType<?>> spell = Optional.empty();
 
@@ -43,45 +47,39 @@ public class IngredientWithSpell implements Predicate<ItemStack> {
         return stacks;
     }
 
+    public boolean isEmpty() {
+        return stack.filter(INGREDIENT_IS_PRESENT).isEmpty() && spell.isEmpty();
+    }
+
     public void write(PacketByteBuf buf) {
-        stack.ifPresentOrElse(i -> {
-            buf.writeBoolean(true);
-            i.write(buf);
-        }, () -> buf.writeBoolean(false));
-        spell.ifPresentOrElse(i -> {
-            buf.writeBoolean(true);
-            buf.writeIdentifier(i.getId());
-        }, () -> buf.writeBoolean(false));
+        buf.writeOptional(stack, (b, i) -> i.write(b));
+        buf.writeOptional(spell.map(SpellType::getId), PacketByteBuf::writeIdentifier);
     }
 
     public static IngredientWithSpell fromPacket(PacketByteBuf buf) {
         IngredientWithSpell ingredient = new IngredientWithSpell();
+        ingredient.stack = buf.readOptional(Ingredient::fromPacket);
+        ingredient.spell = buf.readOptional(PacketByteBuf::readIdentifier).flatMap(SpellType.REGISTRY::getOrEmpty);
+        return ingredient;
+    }
 
-        if (buf.readBoolean()) {
-            ingredient.stack = Optional.ofNullable(Ingredient.fromPacket(buf));
-        }
-        if (buf.readBoolean()) {
-            ingredient.spell = SpellType.REGISTRY.getOrEmpty(buf.readIdentifier());
+    public static IngredientWithSpell fromJson(JsonElement json) {
+        IngredientWithSpell ingredient = new IngredientWithSpell();
+        ingredient.stack = Optional.ofNullable(Ingredient.fromJson(json));
+        if (json.isJsonObject() && json.getAsJsonObject().has("spell")) {
+            ingredient.spell = SpellType.REGISTRY.getOrEmpty(Identifier.tryParse(JsonHelper.getString(json.getAsJsonObject(), "spell")));
         }
 
         return ingredient;
     }
 
-    public static IngredientWithSpell fromJson(JsonObject json) {
-
-        IngredientWithSpell ingredient = new IngredientWithSpell();
-
-        if (json.has("item") || json.has("spell")) {
-            if (json.has("item")) {
-                ingredient.stack = Optional.ofNullable(Ingredient.fromJson(JsonHelper.getObject(json, "item")));
-            }
-            if (json.has("spell")) {
-                ingredient.spell = SpellType.REGISTRY.getOrEmpty(Identifier.tryParse(JsonHelper.getString(json, "spell")));
-            }
-        } else {
-            ingredient.stack = Optional.ofNullable(Ingredient.fromJson(json));
+    public static DefaultedList<IngredientWithSpell> fromJson(JsonArray json) {
+        DefaultedList<IngredientWithSpell> ingredients = DefaultedList.of();
+        for (int i = 0; i < json.size(); i++) {
+            IngredientWithSpell ingredient = fromJson(json.get(i));
+            if (ingredient.isEmpty()) continue;
+            ingredients.add(ingredient);
         }
-
-        return ingredient;
+        return ingredients;
     }
 }

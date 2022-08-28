@@ -3,8 +3,7 @@ package com.minelittlepony.unicopia.item;
 import java.util.List;
 
 import com.google.gson.JsonArray;
-import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
-import com.minelittlepony.unicopia.ability.magic.spell.crafting.TraitRequirementRecipe;
+import com.minelittlepony.unicopia.ability.magic.spell.crafting.*;
 
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.minecraft.loot.LootTable;
@@ -22,7 +21,8 @@ public interface URecipes {
     RecipeSerializer<ShapelessRecipe> ZAP_APPLE_SERIALIZER = RecipeSerializer.register("unicopia:crafting_zap_apple", new ZapAppleRecipe.Serializer());
     RecipeSerializer<GlowingRecipe> GLOWING_SERIALIZER = RecipeSerializer.register("unicopia:crafting_glowing", new SpecialRecipeSerializer<>(GlowingRecipe::new));
     RecipeSerializer<JarInsertRecipe> JAR_INSERT_SERIALIZER = RecipeSerializer.register("unicopia:jar_insert", new SpecialRecipeSerializer<>(JarInsertRecipe::new));
-    RecipeSerializer<TraitRequirementRecipe> TRAIT_REQUIREMENT = RecipeSerializer.register("unicopia:spellbook/crafting", new TraitRequirementRecipe.Serializer());
+    RecipeSerializer<SpellCraftingRecipe> TRAIT_REQUIREMENT = RecipeSerializer.register("unicopia:spellbook/crafting", new SpellCraftingRecipe.Serializer());
+    RecipeSerializer<SpellEnhancingRecipe> TRAIT_COMBINING = RecipeSerializer.register("unicopia:spellbook/combining", new SpellEnhancingRecipe.Serializer());
 
     static DefaultedList<Ingredient> getIngredients(JsonArray json) {
         DefaultedList<Ingredient> defaultedList = DefaultedList.of();

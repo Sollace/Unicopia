@@ -1,12 +1,12 @@
 {
   "type": "unicopia:spellbook/crafting",
-  "material": {
-    "item": { "item": "unicopia:gemstone" },
-  	"spell": "unicopia:infernal"
-  },
+  "material": { "item": "unicopia:gemstone", "spell": "unicopia:none" },
   "traits": {
     "blood": 8, "poison": 10
   },
+  "ingredients": [
+    { "item": "unicopia:gemstone", "spell": "unicopia:infernal" }
+  ],
   "result": {
     "item": "unicopia:gemstone",
     "spell": "unicopia:siphoning"

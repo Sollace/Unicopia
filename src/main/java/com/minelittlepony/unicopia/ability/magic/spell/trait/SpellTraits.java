@@ -56,6 +56,10 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return amount == 0 ? this : map(v -> v + amount);
     }
 
+    public SpellTraits add(SpellTraits traits) {
+        return union(this, traits);
+    }
+
     public SpellTraits map(Function<Float, Float> function) {
         return map((k, v) -> function.apply(v));
     }

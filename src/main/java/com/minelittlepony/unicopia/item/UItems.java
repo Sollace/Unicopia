@@ -57,6 +57,7 @@ public interface UItems {
     Item CRYSTAL_SHARD = register("crystal_shard", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 
     Item GEMSTONE = register("gemstone", new GemstoneItem(new Item.Settings().group(ItemGroup.MATERIALS)));
+    Item BOTCHED_GEM = register("botched_gem", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 
     Item PEGASUS_FEATHER = register("pegasus_feather", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     Item GRYPHON_FEATHER = register("gryphon_feather", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
