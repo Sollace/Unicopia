@@ -153,7 +153,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
                         .findFirst()
                         .filter(recipe -> result.shouldCraftRecipe(world, (ServerPlayerEntity)this.inventory.player, recipe))
                         .map(recipe -> recipe.craft(input))
-                        .orElse(UItems.BOTCHED_GEM.getDefaultStack()));
+                        .orElse(!input.hasIngredients() ? ItemStack.EMPTY : input.getTraits().applyTo(UItems.BOTCHED_GEM.getDefaultStack())));
 
                 ((ServerPlayerEntity)this.inventory.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, nextRevision(), outputSlot.id, outputSlot.getStack()));
             }
@@ -331,6 +331,15 @@ public class SpellbookScreenHandler extends ScreenHandler {
             return gemSlot.getStack();
         }
 
+        public boolean hasIngredients() {
+            for (int i = 0; i < GEM_SLOT_INDEX; i++) {
+                if (!getStack(i).isEmpty()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public int getRing(int slot) {
             Slot s = slots.get(slot);
             return s instanceof SpellbookSlot ? ((SpellbookSlot)s).getRing() : 0;
@@ -432,10 +441,10 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
         @Override
         public void setStack(ItemStack stack) {
-            super.setStack(stack);
-            if (!stack.isEmpty()) {
+            if (!stack.isEmpty() && !ItemStack.areEqual(stack, getStack())) {
                 player.playSound(stack.getItem() == UItems.BOTCHED_GEM ? USounds.GUI_ABILITY_FAIL : USounds.GUI_SPELL_CRAFT_SUCCESS, SoundCategory.MASTER, 1, 0.3F);
             }
+            super.setStack(stack);
         }
 
         @Override
@@ -454,6 +463,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
             InventoryUtil.iterate(input).forEach(s -> {
                 pony.getDiscoveries().unlock(s.getItem());
             });
+           //gemSlot.setStack(ItemStack.EMPTY);
             super.onTakeItem(player, stack);
         }
     }
