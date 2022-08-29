@@ -1,9 +1,15 @@
 {
-  "parent": "unicopia:snow_piled",
   "replace": false,
   "entries": [
     {
-      "match": { "state": "minecraft:water" },
+      "match": { "state": "minecraft:snow{layers<7}" },
+      "apply": {
+        "action": "unicopia:cycle_property",
+        "property": "layers"
+      }
+    },
+    {
+      "match": { "tag": "minecraft:water" },
       "apply": {
         "action": "unicopia:set_state",
         "state": "minecraft:frosted_ice"

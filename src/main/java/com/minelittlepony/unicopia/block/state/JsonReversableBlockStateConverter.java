@@ -21,7 +21,7 @@ public class JsonReversableBlockStateConverter implements ReversableBlockStateCo
 
     public JsonReversableBlockStateConverter(JsonElement json) {
         this(new ArrayList<>(), null);
-        JsonHelper.getArray(json.getAsJsonObject(), "entries").forEach(entry -> {
+        json.getAsJsonArray().forEach(entry -> {
             entries.add(Entry.of(entry.getAsJsonObject(), true));
         });
     }

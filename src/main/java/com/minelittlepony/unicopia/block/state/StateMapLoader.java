@@ -1,20 +1,24 @@
 package com.minelittlepony.unicopia.block.state;
 
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
-import com.google.gson.JsonElement;
+import com.google.common.collect.Maps;
+import com.google.gson.*;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Resources;
+import com.mojang.logging.LogUtils;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.block.BlockState;
-import net.minecraft.resource.JsonDataLoader;
-import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.*;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.World;
 
@@ -22,6 +26,11 @@ public class StateMapLoader extends JsonDataLoader implements IdentifiableResour
     private static final Identifier ID = Unicopia.id("data/state_maps");
 
     public static final StateMapLoader INSTANCE = new StateMapLoader();
+
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private static final String FILE_SUFFIX = ".json";
+    private static final int FILE_SUFFIX_LENGTH = ".json".length();
+    private static final String DATA_TYPE = "state_maps";
 
     private Map<Identifier, ReversableBlockStateConverter> converters = new HashMap<>();
 
@@ -32,6 +41,46 @@ public class StateMapLoader extends JsonDataLoader implements IdentifiableResour
     @Override
     public Identifier getFabricId() {
         return ID;
+    }
+
+    @Override
+    protected Map<Identifier, JsonElement> prepare(ResourceManager resourceManager, Profiler profiler) {
+        Map<Identifier, JsonElement> map = Maps.newHashMap();
+        int i = DATA_TYPE.length() + 1;
+
+        resourceManager.findAllResources(DATA_TYPE, id -> id.getPath().endsWith(FILE_SUFFIX)).entrySet().stream().forEach(entry -> {
+            Identifier resId = entry.getKey();
+            String path = resId.getPath();
+            Identifier id = new Identifier(resId.getNamespace(), path.substring(i, path.length() - FILE_SUFFIX_LENGTH));
+
+            JsonArray entries = new JsonArray();
+            for (var resource : entry.getValue()) {
+                try (BufferedReader reader = resource.getReader()) {
+                    JsonObject json = JsonHelper.deserialize(Resources.GSON, reader, JsonObject.class);
+
+                    if (json != null) {
+                        if (json.has("entries")) {
+
+                            JsonArray incoming = JsonHelper.getArray(json, "entries");
+                            if (json.has("replace") && json.get("replace").getAsBoolean()) {
+                                entries = incoming;
+                            } else {
+                                entries.addAll(incoming);
+                            }
+                        }
+
+                        continue;
+                    }
+
+                    LOGGER.error("Couldn't load data file {} from {} as it's null or empty", id, resId);
+                } catch (JsonParseException | IOException | IllegalArgumentException e) {
+                    LOGGER.error("Couldn't parse data file {} from {}", id, resId, e);
+                }
+            }
+
+            map.put(id, entries);
+        });
+        return map;
     }
 
     @Override

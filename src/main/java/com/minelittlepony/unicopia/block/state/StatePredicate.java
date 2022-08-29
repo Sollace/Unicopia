@@ -110,7 +110,7 @@ public abstract class StatePredicate implements Predicate<BlockState> {
         }
     }
 
-    static boolean isPlant(BlockState s) {
+    public static boolean isPlant(BlockState s) {
         return s.getBlock() instanceof PlantBlock;
     }
 
@@ -119,11 +119,11 @@ public abstract class StatePredicate implements Predicate<BlockState> {
     }
 
     public static Predicate<BlockState> ofState(String state) {
-        Identifier id = new Identifier(state.split("{")[0]);
+        Identifier id = new Identifier(state.split("\\{")[0]);
         List<PropertyOp> properties = Optional.of(state)
                 .filter(s -> s.contains("{"))
                 .stream()
-                .flatMap(s -> Stream.of(s.split("{")[1].split("}")[0].split(",")))
+                .flatMap(s -> Stream.of(s.split("\\{")[1].split("\\}")[0].split(",")))
                 .map(PropertyOp::of)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
