@@ -55,6 +55,11 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     }
 
     public int build(ScrollContainer container) {
+
+        if (entries.isEmpty()) {
+            return 0;
+        }
+
         int ii = 0;
 
         int colWidth = 22;
