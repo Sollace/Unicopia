@@ -76,7 +76,7 @@ public class ButterflyEntity extends AmbientEntity {
 
     @Override
     protected Entity.MoveEffect getMoveEffect() {
-        return Entity.MoveEffect.EVENTS;
+        return Entity.MoveEffect.NONE;
     }
 
     @Override
@@ -100,11 +100,6 @@ public class ButterflyEntity extends AmbientEntity {
     @Override
     public boolean isPushable() {
         return false;
-    }
-
-    @Override
-    public boolean isCollidable() {
-        return true;
     }
 
     @Override
