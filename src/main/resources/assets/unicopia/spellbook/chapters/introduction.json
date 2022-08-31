@@ -1,0 +1,113 @@
+{
+  "side": "RIGHT",
+  "y_position": 0,
+  "color": 0,
+  "content": {
+    "pages": [
+      {
+        "title": "Preface",
+        "level": 0,
+        "elements": [
+          {
+             "text": "To whomever holds this tome, beware what you seek for you might not like what you find.",
+             "extra": [
+                { "text": "Hither yonder equs.", "obfuscated": true }
+             ]
+          },
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "Magic in Equestria",
+        "level": 0,
+        "elements": [
+          {
+            "text": "Equestria is filled with magic of all different shapes and forms. Following recent events, however, it's has become plainly obvious that we do not fully understand all that there is about the world of Equestria. That is why the crown has tasked me with researching Magic in all of its forms, so we might utilise it and, I hope, save ourselves from the",
+            "extra": [
+              { "text": "aaaaaaa", "obfuscated": "true" }
+            ]
+          },
+          { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/profile.png" }
+        ]
+      },
+      {
+        "title": "1st Mare '12",
+        "level": 0,
+        "elements": [
+          "Odd Rocks",
+          "These 'Gemstones' are a common material found around the world. Earth Ponies dig them up all the time and don't think any much of it, but these stones have a special trait I found that lets them hold magic.",
+          "What's odd is that they seem to have some magical properties I haven't seen before.",
+          { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/item/gemstone.png" }
+        ]
+      },
+      {
+        "title": "Gemstones",
+        "level": 0,
+        "elements": [
+          {
+            "text": "My research is",
+            "extra": [
+              { "text": "still incomplete", "obfuscated": true},
+              { "text": "but I believe these may become useful for storing and applying complex spells, if I do so correctly..."}
+            ]
+          },
+          {
+            "text": "Luna-wants",
+            "strikethrough": true,
+            "extra": [
+              { "text": "I'm going to keep experimenting. Hooves-crossed, I'll update you tomorrow if I find anything.", "strikethrough": false}
+            ]
+          },
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "2nd Mare '12",
+        "level": 0,
+        "elements": [
+          {
+            "text": "It worked! Holy",
+            "extra": [
+              { "text": "Celestia's ass-cheeks'", "obfuscated": true},
+              { "text": "it actually worked." }
+            ]
+          },
+          "This is amazing! These can do so much more than I could have ever imagined. Think of the advances I could bring to Equestria. Gem-powered lighting, heating, cooling, I'd no longer have to spend summer sitting on this-",
+          "I'm getting ahead of myself. Let me explain..."
+        ]
+      },
+      {
+        "title": "Spellcrafting",
+        "level": 0,
+        "elements": [
+          { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/crafting.png" },
+          "I drew a guide at the start of this book to help with the placement.",
+          "Put a raw gem-it mustn't have any spells already-in the middle and place materials around it in the slots I marked.",
+          "Each material gives different effects and putting them closer also enhances their influence on the gem."
+        ]
+      },
+      {
+        "title": "3rd Mare '12",
+        "level": 0,
+        "elements": [
+          "I'm going to start documenting spell combinations as I find them. Some of them are pretty obvious, like gem + fire = fire gem",
+          "But some are less clear. For instance, what traits would an egg add?",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "Botched Gems",
+        "level": 1,
+        "elements": [
+          { "x": 127, "y": 1, "width": 32, "height": 32, "texture": "unicopia:textures/item/botched_gem.png" },
+          "Okay, I guess not every combination works. That's dissapointing, and now I have all these useless stones piling up in my chambers.",
+          "I don't know what to do with them. They're not edible, I don't think.",
+          "They do still have the traits I gave them, so maybe I can find a use other than building a rock-fort with little Luna..."
+        ]
+      }
+    ]
+  }
+}

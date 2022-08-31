@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.container;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
@@ -55,6 +56,8 @@ public class SpellbookScreenHandler extends ScreenHandler {
     private final PlayerInventory inventory;
 
     private final ScreenHandlerContext context;
+
+    private Predicate<SlotType> canShowSlots;
 
     protected SpellbookScreenHandler(int syncId, PlayerInventory inv) {
         this(syncId, inv, ScreenHandlerContext.EMPTY);
@@ -133,6 +136,10 @@ public class SpellbookScreenHandler extends ScreenHandler {
         onContentChanged(input);
     }
 
+    public void addSlotShowingCondition(Predicate<SlotType> canShowSlots) {
+        this.canShowSlots = canShowSlots;
+    }
+
     public int getOutputSlotId() {
         return outputSlot.id;
     }
@@ -154,7 +161,10 @@ public class SpellbookScreenHandler extends ScreenHandler {
                         .findFirst()
                         .filter(recipe -> result.shouldCraftRecipe(world, (ServerPlayerEntity)this.inventory.player, recipe))
                         .map(recipe -> recipe.craft(input))
-                        .orElse(!input.hasIngredients() ? ItemStack.EMPTY : input.getTraits().applyTo(UItems.BOTCHED_GEM.getDefaultStack())));
+                        .orElse(!input.hasIngredients() || input.getItemToModify().getItem() != UItems.GEMSTONE
+                            ? ItemStack.EMPTY
+                            : input.getTraits().applyTo(UItems.BOTCHED_GEM.getDefaultStack()))
+                        );
 
                 ((ServerPlayerEntity)this.inventory.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, nextRevision(), outputSlot.id, outputSlot.getStack()));
             }
@@ -363,7 +373,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
         }
     }
 
-    public static class InventorySlot extends Slot implements SpellbookSlot {
+    public class InventorySlot extends Slot implements SpellbookSlot {
         public InventorySlot(Inventory inventory, int index, int x, int y) {
             super(inventory, index, x, y);
         }
@@ -375,11 +385,11 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
         @Override
         public boolean isEnabled() {
-           return SpellbookPage.getCurrent() == SpellbookPage.INVENTORY;
+           return canShowSlots.test(SlotType.INVENTORY);
         }
     }
 
-    public static class ModifierSlot extends Slot implements SpellbookSlot {
+    public class ModifierSlot extends Slot implements SpellbookSlot {
         private final int ring;
 
         public ModifierSlot(Inventory inventory, int index, int[] params) {
@@ -400,6 +410,11 @@ public class SpellbookScreenHandler extends ScreenHandler {
         @Override
         public int getRing() {
             return ring;
+        }
+
+        @Override
+        public boolean isEnabled() {
+           return canShowSlots.test(SlotType.CRAFTING) && super.isEnabled();
         }
     }
 
@@ -423,7 +438,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
         @Override
         public boolean isEnabled() {
-           return !outputSlot.isEnabled();
+           return canShowSlots.test(SlotType.CRAFTING) && !outputSlot.isEnabled();
         }
     }
 
@@ -457,7 +472,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
         @Override
         public boolean isEnabled() {
-           return hasStack();
+           return canShowSlots.test(SlotType.CRAFTING) && hasStack();
         }
 
         @Override
@@ -469,5 +484,10 @@ public class SpellbookScreenHandler extends ScreenHandler {
            //gemSlot.setStack(ItemStack.EMPTY);
             super.onTakeItem(player, stack);
         }
+    }
+
+    public enum SlotType {
+        INVENTORY,
+        CRAFTING
     }
 }

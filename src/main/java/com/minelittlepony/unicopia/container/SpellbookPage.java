@@ -17,14 +17,6 @@ public enum SpellbookPage {
         return label;
     }
 
-    public boolean isFirst() {
-        return ordinal() == 0;
-    }
-
-    public boolean isLast() {
-        return ordinal() == VALUES.length - 1;
-    }
-
     public static SpellbookPage getCurrent() {
         return VALUES[current];
     }
