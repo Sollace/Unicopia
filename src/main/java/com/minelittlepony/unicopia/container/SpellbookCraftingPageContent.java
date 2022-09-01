@@ -36,7 +36,7 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
     }
 
     @Override
-    public void draw(MatrixStack matrices, int mouseX, int mouseY) {
+    public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
         textRenderer.draw(matrices, screen.getTitle(), SpellbookScreen.TITLE_X, SpellbookScreen.TITLE_Y, SpellbookScreen.TITLE_COLOR);
         textRenderer.draw(matrices, SpellbookPage.getCurrent().getLabel(), screen.getBackgroundWidth() / 2 + SpellbookScreen.TITLE_X, SpellbookScreen.TITLE_Y, SpellbookScreen.TITLE_COLOR);
 

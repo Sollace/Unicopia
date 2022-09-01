@@ -11,6 +11,7 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 
@@ -19,6 +20,14 @@ public interface DrawableUtil {
     double TAU = Math.PI * 2;
     double NUM_RINGS = 300;
     double INCREMENT = TAU / NUM_RINGS;
+
+    static void drawScaledText(MatrixStack matrices, Text text, int x, int y, float size, int color) {
+        matrices.push();
+        matrices.translate(x, y, 0);
+        matrices.scale(size, size, 1);
+        MinecraftClient.getInstance().textRenderer.draw(matrices, text, 0, 0, color);
+        matrices.pop();
+    }
 
     static void renderItemIcon(ItemStack stack, double x, double y, float scale) {
         MatrixStack modelStack = RenderSystem.getModelViewStack();

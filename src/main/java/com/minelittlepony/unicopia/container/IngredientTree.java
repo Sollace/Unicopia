@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.minelittlepony.common.client.gui.ScrollContainer;
-import com.minelittlepony.common.client.gui.Tooltip;
+import com.minelittlepony.common.client.gui.*;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -54,7 +53,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         }
     }
 
-    public int build(ScrollContainer container) {
+    public int build(IViewRoot container) {
 
         if (entries.isEmpty()) {
             return 0;

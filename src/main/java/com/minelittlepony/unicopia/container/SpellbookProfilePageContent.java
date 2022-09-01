@@ -1,10 +1,10 @@
 package com.minelittlepony.unicopia.container;
 
+import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
-import com.minelittlepony.unicopia.entity.player.MagicReserves;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.entity.player.*;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
@@ -32,23 +32,15 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
     }
 
     @Override
-    public void draw(MatrixStack matrices, int mouseX, int mouseY) {
+    public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
 
         int y = SpellbookScreen.TITLE_Y;
 
         float delta = pony.getEntity().age + client.getTickDelta();
         int currentLevel = pony.getLevel().get();
 
-        matrices.push();
-        matrices.translate(SpellbookScreen.TITLE_X, y, 0);
-        matrices.scale(1.3F, 1.3F, 1);
-        font.draw(matrices, pony.getEntity().getName(), 0, 0, SpellbookScreen.TITLE_COLOR);
-        matrices.pop();
-        matrices.push();
-        matrices.translate(SpellbookScreen.TITLE_X, y + 13, 0);
-        matrices.scale(0.8F, 0.8F, 1);
-        font.draw(matrices, "Friendship Student", 0, 0, 0xAA0040FF);
-        matrices.pop();
+        DrawableUtil.drawScaledText(matrices, pony.getEntity().getName(), SpellbookScreen.TITLE_X, y, 1.3F, SpellbookScreen.TITLE_COLOR);
+        DrawableUtil.drawScaledText(matrices, ExperienceGroup.forLevel(currentLevel).getLabel(), SpellbookScreen.TITLE_X, y + 13, 0.8F, 0xAA0040FF);
 
         MagicReserves reserves = pony.getMagicalReserves();
 

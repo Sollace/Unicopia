@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.IntConsumer;
 
 import com.minelittlepony.common.client.gui.GameGui;
+import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
@@ -179,7 +180,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        chapters.getCurrentChapter().content().ifPresent(content -> content.draw(matrices, mouseX, mouseY));
+        chapters.getCurrentChapter().content().ifPresent(content -> content.draw(matrices, mouseX, mouseY, (IViewRoot)this));
     }
 
     @Override

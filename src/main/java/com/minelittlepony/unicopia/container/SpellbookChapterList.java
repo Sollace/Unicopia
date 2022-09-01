@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.client.util.math.MatrixStack;
@@ -78,14 +79,14 @@ public class SpellbookChapterList {
                 }
 
                 @Override
-                public void draw(MatrixStack matrices, int mouseX, int mouseY) {
-                    obj.draw(matrices, mouseX, mouseY);
+                public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
+                    obj.draw(matrices, mouseX, mouseY, container);
                 }
             });
         }
     }
 
     public interface Drawable {
-        void draw(MatrixStack matrices, int mouseX, int mouseY);
+        void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container);
     }
 }
