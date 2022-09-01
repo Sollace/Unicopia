@@ -32,15 +32,24 @@ class ParagraphWrappingVisitor implements StyledVisitor<Object> {
 
     @Override
     public Optional<Object> accept(Style style, String s) {
+
+        int remainingLength = (int)(pageWidth - currentLineCollectedLength);
+
         while (!s.isEmpty()) {
-            int trimmedLength = handler.getTrimmedLength(s, pageWidth, style);
+            int trimmedLength = handler.getTrimmedLength(s, remainingLength, style);
+            int newline = s.indexOf('\n');
+
+            if (newline >= 0 && newline < trimmedLength) {
+                trimmedLength = newline;
+            } else {
+                newline = -1;
+            }
 
             if (trimmedLength == 0) {
                 trimmedLength = s.length();
             }
 
             String wrappedFragment = s.substring(0, trimmedLength);
-
             int lastSpace = wrappedFragment.lastIndexOf(' ');
             trimmedLength = lastSpace > 0 ? Math.min(lastSpace, trimmedLength) : trimmedLength;
 
@@ -53,6 +62,7 @@ class ParagraphWrappingVisitor implements StyledVisitor<Object> {
 
             if (currentLineCollectedLength > 0) {
                 currentLine.append(" ");
+                currentLineCollectedLength += handler.getWidth(" ");
             }
             currentLine.append(fragment);
             currentLineCollectedLength += grabbedWidth;
@@ -60,6 +70,8 @@ class ParagraphWrappingVisitor implements StyledVisitor<Object> {
             if (trimmedLength <= s.length()) {
                 s = s.substring(trimmedLength, s.length());
             }
+
+            remainingLength = pageWidth;
         }
 
         return Optional.empty();
