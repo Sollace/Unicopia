@@ -87,6 +87,11 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
     }
 
     @Override
+    public LevelStore getCorruption() {
+        return Caster.of(getMaster()).map(Caster::getCorruption).orElse(LEVELS);
+    }
+
+    @Override
     public Affinity getAffinity() {
         return getSpellSlot().get(true).map(Spell::getAffinity).orElse(Affinity.NEUTRAL);
     }

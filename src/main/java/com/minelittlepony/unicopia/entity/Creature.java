@@ -9,8 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.WeaklyOwned;
-import com.minelittlepony.unicopia.ability.magic.Affine;
-import com.minelittlepony.unicopia.ability.magic.Levelled;
+import com.minelittlepony.unicopia.ability.magic.*;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.TargetSelecter;
 import com.minelittlepony.unicopia.entity.ai.BreakHeartGoal;
@@ -206,6 +205,11 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
 
     @Override
     public LevelStore getLevel() {
+        return LEVELS;
+    }
+
+    @Override
+    public LevelStore getCorruption() {
         return LEVELS;
     }
 
