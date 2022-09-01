@@ -87,7 +87,7 @@ public class ShieldSpell extends AbstractSpell {
 
         long costMultiplier = applyEntities(source);
         if (costMultiplier > 0) {
-            double cost = 2 + source.getLevel().get();
+            double cost = 2 - source.getLevel().getScaled(2);
 
             cost *= costMultiplier / ((1 + source.getLevel().get()) * 3F);
             cost /= 2.725D;
@@ -107,7 +107,7 @@ public class ShieldSpell extends AbstractSpell {
     public double getDrawDropOffRange(Caster<?> source) {
         float multiplier = source.getMaster() != null && source.getMaster().isSneaking() ? 1 : 2;
         float min = 4 + getTraits().get(Trait.POWER);
-        return (min + (source.getLevel().get() * 2)) / multiplier;
+        return (min + (source.getLevel().getScaled(8) * 2)) / multiplier;
     }
 
     protected boolean isValidTarget(Caster<?> source, Entity entity) {

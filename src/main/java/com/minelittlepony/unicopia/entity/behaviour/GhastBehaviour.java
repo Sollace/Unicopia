@@ -31,7 +31,7 @@ public class GhastBehaviour extends MobBehaviour<GhastEntity> {
                         rot.getX(),
                         rot.getY(),
                         rot.getZ(),
-                        entity.getFireballStrength() * (player.getLevel().get() + 1)
+                        (int)player.getLevel().getScaled(entity.getFireballStrength())
                 );
                 proj.updatePosition(
                         entity.getX() + rot.x * 4,

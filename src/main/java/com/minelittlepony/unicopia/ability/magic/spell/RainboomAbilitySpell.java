@@ -88,7 +88,7 @@ public class RainboomAbilitySpell extends AbstractSpell {
             ((Pony)source).getMagicalReserves().getExhaustion().multiply(0.2F);
         }
 
-        return !source.getEntity().isRemoved() && age++ < 90 + 7 * (source.getLevel().get() + 1);
+        return !source.getEntity().isRemoved() && age++ < 90 + 7 * source.getLevel().getScaled(9);
     }
 
     private boolean canBreak(BlockPos pos, LivingEntity entity) {

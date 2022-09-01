@@ -411,7 +411,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         if (!entity.isCreative() && !entity.isSpectator()) {
 
             if (extraProtection) {
-                distance /= (getLevel().get() + 1);
+                distance /= (getLevel().getScaled(3) + 1);
                 if (entity.isSneaking()) {
                     distance /= 2;
                 }

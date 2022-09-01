@@ -392,7 +392,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     private void tickNaturalFlight(MutableVector velocity) {
-        int level = pony.getLevel().get() + 1;
+        float level = pony.getLevel().getScaled(5) + 1;
 
         if (ticksInAir > (level * 100)) {
             Bar mana = pony.getMagicalReserves().getMana();
@@ -482,7 +482,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private void moveFlying(MutableVector velocity) {
         double motion = getHorizontalMotion();
 
-        float forward = 0.000015F * (1 + (pony.getLevel().get() / 10F)) * (float)Math.sqrt(motion);
+        float forward = 0.000015F * (1 + (pony.getLevel().getScaled(10) / 10F)) * (float)Math.sqrt(motion);
 
         // vertical drop due to gravity
         forward += 0.005F;

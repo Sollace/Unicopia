@@ -85,9 +85,9 @@ public class ManaContainer implements MagicReserves, Tickable {
         @Override
         public void set(float value) {
             float diff = value - get();
-            if (diff < 0) {
+            if (diff > 0) {
                 if (pony.getLevel().canLevelUp()) {
-                    xp.add(-diff / (float)Math.pow(1000, 1 + pony.getLevel().get()));
+                    xp.add(diff / (float)Math.pow(1000, 1 + pony.getLevel().get()));
                     if (xp.getPercentFill() >= 1) {
                         pony.getLevel().add(1);
                         xp.set(0);

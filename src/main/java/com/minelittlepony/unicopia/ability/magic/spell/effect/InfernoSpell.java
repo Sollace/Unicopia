@@ -34,7 +34,7 @@ public class InfernoSpell extends FireSpell {
         World w = source.getReferenceWorld();
 
         if (!w.isClient) {
-            int radius = 4 + (source.getLevel().get() * 4);
+            float radius = 4 + (source.getLevel().getScaled(4) * 4);
             Shape shape = new Sphere(false, radius);
 
             Vec3d origin = source.getOriginVector();

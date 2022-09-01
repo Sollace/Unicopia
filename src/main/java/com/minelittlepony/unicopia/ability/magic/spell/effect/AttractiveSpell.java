@@ -36,7 +36,7 @@ public class AttractiveSpell extends ShieldSpell implements ProjectileSpell {
 
     @Override
     public double getDrawDropOffRange(Caster<?> caster) {
-        return 10 + (caster.getLevel().get() * 2);
+        return 10 + (caster.getLevel().getScaled(8) * 2);
     }
 
     @Override

@@ -32,7 +32,7 @@ class PlayerLevelStore implements Levelled.LevelStore {
 
     @Override
     public int getMax() {
-        return 3;
+        return 900;
     }
 
     @Override

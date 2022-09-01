@@ -42,7 +42,7 @@ class ManaRingSlot extends Slot {
                 float max = mana.getMana().getMax();
 
                 cost *= 10;
-                cost /= 1 + pony.getLevel().get();
+                cost /= 1 + pony.getLevel().getScaled(3);
 
                 int color = cost / max > percent ? 0xFF000099 : 0xFFFF0099;
 

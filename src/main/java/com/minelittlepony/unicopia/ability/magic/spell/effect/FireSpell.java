@@ -67,7 +67,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpel
     }
 
     protected void generateParticles(Caster<?> source) {
-        source.spawnParticles(new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER))), (1 + source.getLevel().get()) * 6, pos -> {
+        source.spawnParticles(new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER))), (int)(1 + source.getLevel().getScaled(8)) * 6, pos -> {
             source.addParticle(ParticleTypes.LARGE_SMOKE, pos, Vec3d.ZERO);
         });
     }

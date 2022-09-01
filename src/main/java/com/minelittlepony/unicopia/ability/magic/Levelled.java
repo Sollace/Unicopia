@@ -32,6 +32,10 @@ public interface Levelled {
 
         void set(int level);
 
+        default float getScaled(float max) {
+            return (1 + ((float)get() / getMax())) * max;
+        }
+
         default boolean canLevelUp() {
             int max = getMax();
             return max < 0 || get() < max;

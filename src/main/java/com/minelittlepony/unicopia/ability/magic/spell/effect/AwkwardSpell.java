@@ -25,7 +25,7 @@ public class AwkwardSpell extends AbstractSpell {
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
         if (source.isClient()) {
-            source.spawnParticles(new Sphere(false, (1 + source.getLevel().get()) * 8), 10, pos -> {
+            source.spawnParticles(new Sphere(false, (1 + source.getLevel().getScaled(8)) * 8), 10, pos -> {
 
                 List<Identifier> names = new ArrayList<>(Registry.PARTICLE_TYPE.getIds());
 

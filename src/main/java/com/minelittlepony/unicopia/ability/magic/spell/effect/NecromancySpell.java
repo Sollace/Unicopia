@@ -50,7 +50,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        float radius = (source.getLevel().get() + 1) * 4 + getTraits().get(Trait.POWER);
+        float radius = source.getLevel().getScaled(4) * 4 + getTraits().get(Trait.POWER);
 
         if (radius <= 0) {
             return false;
