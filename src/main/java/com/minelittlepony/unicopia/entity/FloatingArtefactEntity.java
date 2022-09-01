@@ -181,7 +181,7 @@ public class FloatingArtefactEntity extends Entity {
 
     @Override
     public boolean canHit() {
-        return false;
+        return true;
     }
 
     @Override
