@@ -25,6 +25,8 @@ public interface Levelled {
 
     LevelStore getLevel();
 
+    LevelStore getCorruption();
+
     interface LevelStore {
         int getMax();
 

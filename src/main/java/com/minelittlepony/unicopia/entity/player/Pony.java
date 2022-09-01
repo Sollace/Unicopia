@@ -60,6 +60,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -74,6 +75,8 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     static final TrackedData<Float> EXERTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> MANA = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> XP = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    static final TrackedData<Integer> LEVEL = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    static final TrackedData<Integer> CORRUPTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 
@@ -88,6 +91,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     private final ManaContainer mana;
     private final PlayerLevelStore levels;
+    private final PlayerLevelStore corruption;
 
     private final List<Tickable> tickers;
 
@@ -116,7 +120,8 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     public Pony(PlayerEntity player) {
         super(player, EFFECT);
         this.mana = new ManaContainer(this);
-        this.levels = new PlayerLevelStore(this);
+        this.levels = new PlayerLevelStore(this, LEVEL, true, SoundEvents.ENTITY_PLAYER_LEVELUP);
+        this.corruption = new PlayerLevelStore(this, CORRUPTION, false, SoundEvents.PARTICLE_SOUL_ESCAPE);
         this.tickers = Lists.newArrayList(gravity, mana, attributes, charms);
 
         player.getDataTracker().startTracking(RACE, Race.DEFAULT_ID);
@@ -200,6 +205,11 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     @Override
     public LevelStore getLevel() {
         return levels;
+    }
+
+    @Override
+    public LevelStore getCorruption() {
+        return corruption;
     }
 
     @Override
@@ -528,6 +538,9 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         compound.put("gravity", gravity.toNBT());
         compound.put("charms", charms.toNBT());
         compound.put("discoveries", discoveries.toNBT());
+        compound.putInt("levels", levels.get());
+        compound.putInt("corruption", corruption.get());
+        compound.putFloat("magicXp", mana.getXp().get());
 
         getSpellSlot().get(true).ifPresent(effect ->{
             compound.put("effect", Spell.writeNbt(effect));
@@ -550,6 +563,9 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         gravity.fromNBT(compound.getCompound("gravity"));
         charms.fromNBT(compound.getCompound("charms"));
         discoveries.fromNBT(compound.getCompound("discoveries"));
+        levels.set(compound.getInt("levels"));
+        corruption.set(compound.getInt("corruption"));
+        mana.getXp().set(compound.getFloat("magicXp"));
 
         magicExhaustion = compound.getFloat("magicExhaustion");
 
@@ -577,12 +593,20 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         getDiscoveries().copyFrom(oldPlayer.getDiscoveries());
         getCharms().equipSpell(Hand.MAIN_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.MAIN_HAND));
         getCharms().equipSpell(Hand.OFF_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.OFF_HAND));
+        corruption.set(oldPlayer.getCorruption().get());
+        levels.set(oldPlayer.getLevel().get());
+        mana.getXp().set(oldPlayer.getMagicalReserves().getXp().get());
         advancementProgress.putAll(oldPlayer.getAdvancementProgress());
         setDirty();
     }
 
     @Override
     public void onSpellSet(@Nullable Spell spell) {
+        if (spell != null) {
+            if (spell.getAffinity() == Affinity.BAD && entity.getWorld().random.nextInt(120) == 0) {
+                getCorruption().add(1);
+            }
+        }
         setDirty();
     }
 
