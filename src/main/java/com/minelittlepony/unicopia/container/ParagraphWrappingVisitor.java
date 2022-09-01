@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.container;
 
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import net.minecraft.client.MinecraftClient;
@@ -22,9 +22,9 @@ class ParagraphWrappingVisitor implements StyledVisitor<Object> {
     private boolean progressedNonEmpty;
 
     private final Int2IntFunction widthSupplier;
-    private final Consumer<Text> lineConsumer;
+    private final BiConsumer<Text, Integer> lineConsumer;
 
-    ParagraphWrappingVisitor(DynamicContent.Page page, Int2IntFunction widthSupplier, Consumer<Text> lineConsumer) {
+    ParagraphWrappingVisitor(Int2IntFunction widthSupplier, BiConsumer<Text, Integer> lineConsumer) {
         this.widthSupplier = widthSupplier;
         this.lineConsumer = lineConsumer;
         pageWidth = widthSupplier.applyAsInt((line) * font.fontHeight);
@@ -87,7 +87,7 @@ class ParagraphWrappingVisitor implements StyledVisitor<Object> {
     public void advance() {
         if (progressedNonEmpty || currentLineCollectedLength > 0) {
             progressedNonEmpty = true;
-            lineConsumer.accept(currentLine);
+            lineConsumer.accept(currentLine, (++line) * font.fontHeight);
         }
         pageWidth = widthSupplier.applyAsInt((++line) * font.fontHeight);
         currentLine = Text.empty();

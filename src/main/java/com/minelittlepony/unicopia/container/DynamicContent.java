@@ -6,7 +6,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.container.SpellbookChapterList.Content;
-import com.minelittlepony.unicopia.container.SpellbookChapterList.Draw;
+import com.minelittlepony.unicopia.container.SpellbookChapterList.Drawable;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -66,15 +66,16 @@ public class DynamicContent implements Content {
         });
     }
 
-    class Page implements Draw {
+    class Page implements Drawable {
         private final List<Page.Paragraph> paragraphs = new ArrayList<>();
         private final List<Page.Image> images = new ArrayList<>();
 
-        private boolean compiled = false;
-        private final List<Text> wrappedText = new ArrayList<>();
+        private final List<PageElement> elements = new ArrayList<>();
 
         private final Text title;
         private final int level;
+
+        private boolean compiled;
 
         public Page(JsonObject json) {
             title = Text.Serializer.fromJson(json.get("title"));
@@ -93,7 +94,8 @@ public class DynamicContent implements Content {
                                 JsonHelper.getInt(image, "x", 0),
                                 JsonHelper.getInt(image, "width", 0),
                                 JsonHelper.getInt(image, "height", 0)
-                            )
+                            ),
+                            Flow.valueOf(JsonHelper.getString(image, "flow", "RIGHT"))
                         ));
                     } else {
                         paragraphs.add(new Paragraph(lineNumber[0], Text.Serializer.fromJson(element)));
@@ -104,33 +106,21 @@ public class DynamicContent implements Content {
             });
         }
 
-        public void compile() {
-            if (!compiled) {
-                compiled = true;
-                wrappedText.clear();
-                ParagraphWrappingVisitor visitor = new ParagraphWrappingVisitor(this, yPosition -> {
-                    return (bounds.width / 2 - 10) - images.stream()
-                        .map(Image::bounds)
-                        .filter(b -> b.contains(b.left + b.width / 2, yPosition))
-                        .mapToInt(b -> b.width)
-                        .max()
-                        .orElse(0);
-                }, wrappedText::add);
-                paragraphs.forEach(paragraph -> {
-                    paragraph.text().visit(visitor, Style.EMPTY);
-                    visitor.forceAdvance();
-                });
-            }
-        }
-
         public void reset() {
             compiled = false;
         }
 
         @Override
         public void draw(MatrixStack matrices, int mouseX, int mouseY) {
+            if (!compiled) {
+                compiled = true;
+                int relativeY = 0;
+                for (PageElement element : elements.stream().filter(PageElement::isInline).toList()) {
+                    element.compile(relativeY);
+                    relativeY += element.bounds().height;
+                }
+            }
 
-            compile();
             TextRenderer font = MinecraftClient.getInstance().textRenderer;
             boolean needsMoreXp = level < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < level;
 
@@ -148,21 +138,22 @@ public class DynamicContent implements Content {
             matrices.pop();
 
             matrices.push();
-            matrices.translate(0, 16, 0);
+            matrices.translate(bounds.left, bounds.top + 16, 0);
+            elements.stream().filter(PageElement::isFloating).forEach(element -> {
+                Bounds bounds = element.bounds();
+                matrices.push();
+                matrices.translate(bounds.left, bounds.top, 0);
+                element.draw(matrices, mouseX, mouseY);
+                matrices.pop();
+            });
+            matrices.push();
 
-            for (int y = 0; y < wrappedText.size(); y++) {
-                Text line = wrappedText.get(y);
-                if (needsMoreXp) {
-                    line = line.copy().formatted(Formatting.OBFUSCATED);
-                }
-                font.draw(matrices, line,
-                        bounds.left,
-                        bounds.top + (y * font.fontHeight),
-                        0
-                );
-            }
+            elements.stream().filter(PageElement::isInline).forEach(element -> {
+                element.draw(matrices, mouseX, mouseY);
+                matrices.translate(0, element.bounds().height, 0);
+            });
+            matrices.pop();
 
-            matrices.translate(bounds.left, bounds.top, 0);
             images.forEach(image -> image.draw(matrices, mouseX, mouseY));
             matrices.pop();
         }
@@ -171,13 +162,99 @@ public class DynamicContent implements Content {
 
         public record Image(
             Identifier texture,
-            Bounds bounds) implements Draw {
+            Bounds bounds,
+            Flow flow) implements PageElement {
             @Override
             public void draw(MatrixStack matrices, int mouseX, int mouseY) {
                 RenderSystem.setShaderTexture(0, texture);
                 DrawableHelper.drawTexture(matrices, bounds().left, bounds().top, 0, 0, 0, bounds().width, bounds().height, bounds().width, bounds().height);
                 RenderSystem.setShaderTexture(0, SpellbookScreen.TEXTURE);
             }
+        }
+
+        protected int getLineLimitAt(int yPosition) {
+            return (bounds.width / 2 - 10) - elements.stream()
+                    .filter(PageElement::isFloating)
+                    .map(PageElement::bounds)
+                    .filter(b -> b.contains(b.left + b.width / 2, yPosition))
+                    .mapToInt(b -> b.width)
+                    .sum();
+        }
+
+        protected int getLeftMarginAt(int yPosition) {
+            return elements.stream()
+                    .filter(p -> p.flow() == Flow.LEFT)
+                    .map(PageElement::bounds)
+                    .filter(b -> b.contains(b.left + b.width / 2, yPosition))
+                    .mapToInt(b -> b.width)
+                    .sum();
+        }
+
+        public class TextBlock implements PageElement {
+            private final Text unwrappedText;
+            private final List<Line> wrappedText = new ArrayList<>();
+            private final Bounds bounds = Bounds.empty();
+
+            public TextBlock(Text text) {
+                unwrappedText = text;
+            }
+
+            @Override
+            public void compile(int y) {
+                wrappedText.clear();
+                ParagraphWrappingVisitor visitor = new ParagraphWrappingVisitor(yPosition -> {
+                    return getLineLimitAt(y + yPosition);
+                }, (line, yPosition) -> {
+                    wrappedText.add(new Line(line, getLeftMarginAt(y + yPosition)));
+                });
+                unwrappedText.visit(visitor, Style.EMPTY);
+                visitor.forceAdvance();
+                bounds.height = MinecraftClient.getInstance().textRenderer.fontHeight * (wrappedText.size() + 1);
+            }
+
+            @Override
+            public void draw(MatrixStack matrices, int mouseX, int mouseY) {
+                TextRenderer font = MinecraftClient.getInstance().textRenderer;
+                boolean needsMoreXp = level < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < level;
+                matrices.push();
+                wrappedText.forEach(line -> {
+                    font.draw(matrices, needsMoreXp ? line.text().copy().formatted(Formatting.OBFUSCATED) : line.text(), line.x(), 0, 0);
+                    matrices.translate(0, font.fontHeight, 0);
+                });
+                matrices.pop();
+            }
+
+            @Override
+            public Bounds bounds() {
+                return bounds;
+            }
+
+            @Override
+            public Flow flow() {
+                return Flow.NONE;
+            }
+
+            private record Line(Text text, int x) { }
+        }
+
+        private interface PageElement extends Drawable {
+            Bounds bounds();
+
+            Flow flow();
+
+            default boolean isInline() {
+                return flow() == Flow.NONE;
+            }
+
+            default boolean isFloating() {
+                return !isInline();
+            }
+
+            default void compile(int y) {}
+        }
+
+        private enum Flow {
+            NONE, LEFT, RIGHT
         }
     }
 }

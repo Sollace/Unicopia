@@ -65,12 +65,12 @@ public class SpellbookChapterList {
         RIGHT
     }
 
-    public interface Content extends Draw {
+    public interface Content extends Drawable {
         void init(SpellbookScreen screen);
 
         default void copyStateFrom(Content old) {}
 
-        static Optional<Content> of(Consumer<SpellbookScreen> init, Draw draw) {
+        static Optional<Content> of(Consumer<SpellbookScreen> init, Drawable obj) {
             return Optional.of(new Content() {
                 @Override
                 public void init(SpellbookScreen screen) {
@@ -79,13 +79,13 @@ public class SpellbookChapterList {
 
                 @Override
                 public void draw(MatrixStack matrices, int mouseX, int mouseY) {
-                    draw.draw(matrices, mouseX, mouseY);
+                    obj.draw(matrices, mouseX, mouseY);
                 }
             });
         }
     }
 
-    public interface Draw {
+    public interface Drawable {
         void draw(MatrixStack matrices, int mouseX, int mouseY);
     }
 }
