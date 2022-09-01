@@ -117,7 +117,12 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
 
     @Override
     public LevelStore getLevel() {
-        return LEVELS;
+        return Caster.of(getMaster()).map(Caster::getLevel).orElse(LEVELS);
+    }
+
+    @Override
+    public LevelStore getCorruption() {
+        return Caster.of(getMaster()).map(Caster::getCorruption).orElse(LEVELS);
     }
 
     @Override
