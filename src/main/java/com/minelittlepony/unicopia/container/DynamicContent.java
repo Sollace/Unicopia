@@ -132,7 +132,7 @@ public class DynamicContent implements Content {
 
             compile();
             TextRenderer font = MinecraftClient.getInstance().textRenderer;
-            boolean needsMoreXp = Pony.of(MinecraftClient.getInstance().player).getLevel().get() < level;
+            boolean needsMoreXp = level < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < level;
 
             matrices.push();
             matrices.translate(bounds.left, bounds.top - 10, mouseY);
@@ -144,7 +144,7 @@ public class DynamicContent implements Content {
             matrices.translate(bounds.left, bounds.top - 10, mouseY);
             matrices.translate(0, 12, 0);
             matrices.scale(0.8F, 0.8F, 1);
-            font.draw(matrices, Text.literal("Level: " + (level + 1)).formatted(Formatting.DARK_GREEN), 0, 0, mouseY);
+            font.draw(matrices, Text.literal(level < 0 ? "Level: ???" : "Level: " + (level + 1)).formatted(Formatting.DARK_GREEN), 0, 0, mouseY);
             matrices.pop();
 
             matrices.push();
