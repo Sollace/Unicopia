@@ -2,7 +2,7 @@
   "type": "unicopia:spellbook/crafting",
   "material": { "item": "unicopia:gemstone", "spell": "unicopia:none" },
   "traits": {
-    "ice": 1
+    "ice": 15
   },
   "ingredients": [],
   "result": {

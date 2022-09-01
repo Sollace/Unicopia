@@ -1,5 +1,103 @@
 {
   "side": "RIGHT",
   "y_position": 3,
-  "color": 0
+  "color": 0,
+  "content": {
+    "pages": [
+      {
+        "title": "9th Jum '12",
+        "level": 0,
+        "elements": [
+          "Fire magic has proven to a be a little more... unpredictable than anticipated. Every time I feel like I'm making progress it finds a way to set me back.",
+          {
+            "text": "I can't stop now, though. The situation in the west is growing dire. The Princess has asked me to pick up the pace and produce something we can use to get the upper hoof against the",
+            "extra": [
+              { "text": "Changeling Storm", "obfuscated": true}
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Fire Magic",
+        "level": 0,
+        "elements": [
+          "Scorch",
+          "This is my first attempt at using fire magic. The results are rather... dissapointing. All this seems to do is create a minor heating effect.",
+          "I may be able to improve it by adding more traits, though.",
+          "Requires:",
+          "- At least 10x fire trait",
+          { "x": 115, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
+          { "x": 115, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/fire.png" }
+        ]
+      },
+      {
+        "title": "Fire Magic II",
+        "level": 0,
+        "elements": [
+          "Flame",
+          "Creates a heating affect up to a radius of 3 hooves from any surfaces it touches.",
+          "Useful when one needs a flame in a hurry or to fend off a wild wendigo",
+          "Requires:",
+          "- At least 15x fire trait\n- A gem with scorch",
+          { "x": 115, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
+          { "x": 115, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/fire.png" }
+        ]
+      },
+      {
+        "title": "10 Jum '12",
+        "level": 0,
+        "elements": [
+          "Progress?",
+          "I've managed to improve the previous spell somewhat, but there is still something lacking. It's all very orderly. Predicatable.",
+          "Luna has suggested adding more fire, but I'm weary to create more scorch marks on the tower. Faust save me if anypony were to find out what I've been doing..."
+        ]
+      },
+      {
+        "title": "11 Jum '12",
+        "level": 2,
+        "elements": [
+          "Got a knock at the door today. Luna was very eager to answer it but I had to send her away as it was a messenger from the crown.",
+          "My research has garnered a certain bit of notoriety, it appears. The royals are very eager to see what I have concocted.",
+          "They've gotten it in their heads that they can use it against the West."
+        ]
+      },
+      {
+        "title": "",
+        "level": 3,
+        "elements": [
+          "What have I to show them though?",
+          "At the princess' behest",
+          "- Starswirl the Bearded",
+          "Addendum",
+          {
+            "text": "",
+            "strikethrough": true,
+            "extra": [
+              {"text": "west", "obfuscated": true},
+              {"text": ", I am told the crown has started giving directions to find other uses. Ways to...Weaponise it."}
+            ]
+          }
+        ]
+      },
+      {
+        "title": "",
+        "level": 0,
+        "elements": []
+      },
+      {
+        "title": "",
+        "level": 0,
+        "elements": []
+      },
+      {
+        "title": "21 Jum '12",
+        "level": 0,
+        "elements": [
+          "I shall visit Commander Hurricane tomorrow. Perhaps she may shed light onto my predicament",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      }
+    ]
+  }
 }

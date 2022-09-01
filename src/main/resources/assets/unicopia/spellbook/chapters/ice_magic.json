@@ -1,5 +1,44 @@
 {
   "side": "RIGHT",
   "y_position": 2,
-  "color": 0
+  "color": 0,
+  "content": {
+    "pages": [
+      {
+        "title": "4th Mare 12",
+        "level": 0,
+        "elements": [
+          "This is an interesting one. Rather simple, I admit, but Luna insisted I make something cold to help us deal with this darn heat",
+          "All you need is a gem and something cold. Like a snowball.",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "Ice Magic",
+        "level": 0,
+        "elements": [
+          "Frost",
+          "Creates a chilling affect up to a radius of 3 hooves from any surfaces it touches.",
+          "Will sap energy out of the immediate environment causing a phase change.",
+          "Requires:",
+          "- At least 15x cold trait",
+          { "x": 115, "y": -20, "width": 32, "height": 32, "texture": "minecraft:textures/item/snowball.png" },
+          { "x": 115, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/ice.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": -1,
+        "elements": [
+          "Ice Spell II",
+          "Creates a cooling affect up to a radius of 3 hooves from any surfaces it touches.",
+          "Requires:",
+          "- At least 15x cold trait",
+          { "x": 115, "y": -20, "width": 32, "height": 32, "texture": "minecraft:textures/item/snowball.png" },
+          { "x": 115, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/ice.png" }
+        ]
+      }
+    ]
+  }
 }
