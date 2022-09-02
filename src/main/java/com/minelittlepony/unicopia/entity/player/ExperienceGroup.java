@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity.player;
 
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 
 public enum ExperienceGroup {
     MAGICAL_KINDERGARTENER,
@@ -26,7 +27,7 @@ public enum ExperienceGroup {
 
     public static ExperienceGroup forLevel(int level) {
         level /= 20;
-
-        return FRIENDSHIP_STUDENT;
+        level = MathHelper.clamp(level, 0, values().length - 1);
+        return values()[level];
     }
 }
