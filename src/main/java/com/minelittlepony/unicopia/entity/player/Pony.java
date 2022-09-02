@@ -606,6 +606,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             if (spell.getAffinity() == Affinity.BAD && entity.getWorld().random.nextInt(120) == 0) {
                 getCorruption().add(1);
             }
+            getCorruption().add((int)spell.getTraits().getCorruption());
         }
         setDirty();
     }

@@ -48,6 +48,10 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         this(new EnumMap<>(from.traits));
     }
 
+    public float getCorruption() {
+        return (float)stream().filter(e -> e.getValue() != 0).mapToDouble(e -> e.getKey().getGroup().getCorruption()).sum();
+    }
+
     public SpellTraits multiply(float factor) {
         return factor == 0 ? EMPTY : map(v -> v * factor);
     }

@@ -26,6 +26,11 @@ public interface Spell extends NbtSerialisable, Affine {
     SpellType<?> getType();
 
     /**
+     * Gets the traits of this spell.
+     */
+    SpellTraits getTraits();
+
+    /**
      * The unique id of this particular spell instance.
      */
     UUID getUuid();
