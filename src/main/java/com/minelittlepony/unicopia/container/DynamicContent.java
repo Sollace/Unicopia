@@ -140,8 +140,10 @@ public class DynamicContent implements Content {
 
             boolean needsMoreXp = level < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < level;
 
-            DrawableUtil.drawScaledText(matrices, needsMoreXp ? UNKNOWN : title, bounds.left, bounds.top - 10, 1.3F, mouseY);
-            DrawableUtil.drawScaledText(matrices, level < 0 ? UNKNOWN_LEVEL : Text.literal("Level: " + (level + 1)).formatted(Formatting.DARK_GREEN), bounds.left, bounds.top - 10 + 12, 0.8F, mouseY);
+            int headerColor = mouseY % 255;
+
+            DrawableUtil.drawScaledText(matrices, needsMoreXp ? UNKNOWN : title, bounds.left, bounds.top - 10, 1.3F, headerColor);
+            DrawableUtil.drawScaledText(matrices, level < 0 ? UNKNOWN_LEVEL : Text.literal("Level: " + (level + 1)).formatted(Formatting.DARK_GREEN), bounds.left, bounds.top - 10 + 12, 0.8F, headerColor);
 
             matrices.push();
             matrices.translate(bounds.left, bounds.top + 16, 0);

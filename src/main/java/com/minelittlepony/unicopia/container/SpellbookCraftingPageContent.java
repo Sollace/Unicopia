@@ -5,6 +5,7 @@ import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.client.gui.DrawableUtil;
 import com.minelittlepony.unicopia.container.SpellbookScreen.TraitButton;
 import com.minelittlepony.unicopia.item.URecipes;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -37,11 +38,13 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
 
     @Override
     public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
-        textRenderer.draw(matrices, screen.getTitle(), SpellbookScreen.TITLE_X, SpellbookScreen.TITLE_Y, SpellbookScreen.TITLE_COLOR);
-        textRenderer.draw(matrices, SpellbookPage.getCurrent().getLabel(), screen.getBackgroundWidth() / 2 + SpellbookScreen.TITLE_X, SpellbookScreen.TITLE_Y, SpellbookScreen.TITLE_COLOR);
+
+        int headerColor = mouseY % 255;
+
+        DrawableUtil.drawScaledText(matrices, SpellbookPage.getCurrent().getLabel(), screen.getFrameBounds().left + screen.getFrameBounds().width / 2 + 20, SpellbookScreen.TITLE_Y, 1.3F, headerColor);
 
         Text pageText = Text.translatable("%s/%s", SpellbookPage.getCurrent().ordinal() + 1, SpellbookPage.VALUES.length);
-        textRenderer.draw(matrices, pageText, 337 - textRenderer.getWidth(pageText) / 2F, 190, SpellbookScreen.TITLE_COLOR);
+        textRenderer.draw(matrices, pageText, 337 - textRenderer.getWidth(pageText) / 2F, 190, headerColor);
     }
 
     @Override
