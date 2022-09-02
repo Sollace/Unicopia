@@ -15,16 +15,29 @@
         ]
       },
       {
-        "title": "Ice Magic",
+        "title": "",
         "level": 0,
         "elements": [
-          "Frost",
+          { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/ice_magic.png" }
+        ]
+      },
+      {
+        "title": "Frost",
+        "level": 0,
+        "elements": [
           "Creates a chilling affect up to a radius of 3 hooves from any surfaces it touches.",
           "Will sap energy out of the immediate environment causing a phase change.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "minecraft:textures/item/snowball.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/ice.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 0,
+        "elements": [
+          { "recipe": "unicopia:spells/frost" },
           "Requires:",
-          "- At least 15x cold trait",
-          { "x": 115, "y": -20, "width": 32, "height": 32, "texture": "minecraft:textures/item/snowball.png" },
-          { "x": 115, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/ice.png" }
+          "- At least 15x cold trait"
         ]
       },
       {
