@@ -4,10 +4,13 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+
 import com.google.gson.*;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.container.SpellbookChapterList.*;
 import com.minelittlepony.unicopia.util.Resources;
+import com.mojang.logging.LogUtils;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
@@ -17,10 +20,10 @@ import net.minecraft.util.*;
 import net.minecraft.util.profiler.Profiler;
 
 public class SpellbookChapterLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
-
-    public static boolean DEBUG = true;
-
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final Identifier ID = Unicopia.id("spellbook/chapters");
+    private static final Executor EXECUTOR = CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS);
+    public static boolean DEBUG = true;
 
     public static final SpellbookChapterLoader INSTANCE = new SpellbookChapterLoader();
 
@@ -39,20 +42,22 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
         return new HashSet<>(chapters.values());
     }
 
-    private static final Executor EXECUTOR = CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS);
-
     @Override
     protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
-        chapters = data.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
-            JsonObject json = JsonHelper.asObject(entry.getValue(), "root");
+        try {
+            chapters = data.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+                JsonObject json = JsonHelper.asObject(entry.getValue(), "root");
 
-            return new Chapter(entry.getKey(),
-                    TabSide.valueOf(JsonHelper.getString(json, "side")),
-                    JsonHelper.getInt(json, "y_position"),
-                    JsonHelper.getInt(json, "color", 0),
-                    loadContent(JsonHelper.getObject(json, "content", new JsonObject()))
-            );
-        }));
+                return new Chapter(entry.getKey(),
+                        TabSide.valueOf(JsonHelper.getString(json, "side")),
+                        JsonHelper.getInt(json, "y_position"),
+                        JsonHelper.getInt(json, "color", 0),
+                        loadContent(JsonHelper.getObject(json, "content", new JsonObject()))
+                );
+            }));
+        } catch (IllegalStateException | JsonParseException e) {
+            LOGGER.error("Could not load spellbook chapters due to exception", e);
+        }
 
         if (DEBUG) {
             CompletableFuture.runAsync(() -> {

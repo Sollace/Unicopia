@@ -64,13 +64,14 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
         float alphaF = (MathHelper.sin(delta / 9F) + 1) / 2F;
         int alpha = (int)(alphaF * 0x10) & 0xFF;
         int color = 0x10404000 | alpha;
-        int xpColor = 0xAA0040FF | ((int)(xpPercentage * 0xFF) & 0xFF) << 16;
+        int xpColor = 0xAA0040FF | ((int)((0.3F + 0.7F * xpPercentage) * 0xFF) & 0xFF) << 16;
+        int manaColor = 0xFF00F040 | (int)((0.3F + 0.7F * alphaF) * 0x40) << 16;
 
         DrawableUtil.drawArc(matrices, 0, radius + 24, 0, DrawableUtil.TAU, color, false);
         DrawableUtil.drawArc(matrices, radius / 3, radius + 6, 0, DrawableUtil.TAU, color, false);
         DrawableUtil.drawArc(matrices, radius / 3, radius + 6, 0, xpPercentage * DrawableUtil.TAU, xpColor, false);
         radius += 8;
-        DrawableUtil.drawArc(matrices, radius, radius + 6 + growth, 0, manaPercentage * DrawableUtil.TAU, 0xFF40F040, false);
+        DrawableUtil.drawArc(matrices, radius, radius + 6 + growth, 0, manaPercentage * DrawableUtil.TAU, manaColor, false);
 
         String manaString = (int)reserves.getMana().get() + "/" + (int)reserves.getMana().getMax();
 

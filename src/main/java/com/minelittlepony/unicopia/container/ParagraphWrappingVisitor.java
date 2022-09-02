@@ -40,7 +40,7 @@ class ParagraphWrappingVisitor implements StyledVisitor<Object> {
             int newline = s.indexOf('\n');
 
             if (newline >= 0 && newline < trimmedLength) {
-                trimmedLength = newline;
+                trimmedLength = newline + 1;
             } else {
                 newline = -1;
             }
@@ -49,23 +49,33 @@ class ParagraphWrappingVisitor implements StyledVisitor<Object> {
                 trimmedLength = s.length();
             }
 
-            String wrappedFragment = s.substring(0, trimmedLength);
-            int lastSpace = wrappedFragment.lastIndexOf(' ');
-            trimmedLength = lastSpace > 0 ? Math.min(lastSpace, trimmedLength) : trimmedLength;
+            // avoid breaking in the middle of a word
+            if (trimmedLength < s.length() - 1 && trimmedLength > 0
+                    && (!Character.isWhitespace(s.charAt(trimmedLength + 1)) || !Character.isWhitespace(s.charAt(trimmedLength - 1)))) {
+                String wrappedFragment = s.substring(0, trimmedLength);
+                int lastSpace = wrappedFragment.lastIndexOf(' ');
+                trimmedLength = lastSpace > 0 ? Math.min(lastSpace, trimmedLength) : trimmedLength;
+            }
 
             Text fragment = Text.literal(s.substring(0, trimmedLength).trim()).setStyle(style);
             float grabbedWidth = handler.getWidth(fragment);
 
+            // advance if appending the next segment would cause an overflow
             if (currentLineCollectedLength + grabbedWidth > pageWidth) {
                 advance();
             }
 
+            // append the segment to the line that's being built
             if (currentLineCollectedLength > 0) {
                 currentLine.append(" ");
                 currentLineCollectedLength += handler.getWidth(" ");
             }
             currentLine.append(fragment);
             currentLineCollectedLength += grabbedWidth;
+
+            if (newline >= 0) {
+                advance();
+            }
 
             if (trimmedLength <= s.length()) {
                 s = s.substring(trimmedLength, s.length());

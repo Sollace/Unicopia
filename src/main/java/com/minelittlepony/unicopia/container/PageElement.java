@@ -54,7 +54,7 @@ interface PageElement extends Drawable {
             );
         }
         if (el.has("recipe")) {
-            return new Recipe(page, new Identifier(JsonHelper.getString(el, "texture")), new Bounds(0, 0, 0, 30));
+            return new Recipe(page, new Identifier(JsonHelper.getString(el, "recipe")), new Bounds(0, 0, 0, 0));
         }
         return new TextBlock(page, Text.Serializer.fromJson(element));
     }
@@ -86,11 +86,10 @@ interface PageElement extends Drawable {
         @Override
         public void compile(int y, IViewRoot container) {
             wrappedText.clear();
-            ParagraphWrappingVisitor visitor = new ParagraphWrappingVisitor(yPosition -> {
-                return page.getLineLimitAt(y + yPosition);
-            }, (line, yPosition) -> {
-                wrappedText.add(new Line(line, page.getLeftMarginAt(y + yPosition)));
-            });
+            ParagraphWrappingVisitor visitor = new ParagraphWrappingVisitor(
+                    yPosition -> page.getLineLimitAt(y + yPosition),
+                    (line, yPosition) -> wrappedText.add(new Line(line, page.getLeftMarginAt(y + yPosition)))
+            );
             unwrappedText.visit(visitor, Style.EMPTY);
             visitor.forceAdvance();
             bounds.height = MinecraftClient.getInstance().textRenderer.fontHeight * (wrappedText.size());
@@ -128,12 +127,18 @@ interface PageElement extends Drawable {
         }
 
         @Override
-        public void compile(int y, IViewRoot Container) {
+        public void compile(int y, IViewRoot container) {
+            if (container instanceof SpellbookScreen book) {
+                bounds().left = book.getX();
+                bounds().top = book.getY();
+            }
             MinecraftClient.getInstance().world.getRecipeManager().get(id).ifPresent(recipe -> {
                 if (recipe instanceof SpellbookRecipe spellRecipe) {
-                    IngredientTree tree = new IngredientTree(page.getBounds().left, y, page().getBounds().width / 2 - 20, 20);
+                    IngredientTree tree = new IngredientTree(
+                            bounds().left + page().getBounds().left,
+                            bounds().top + page().getBounds().top + y + 10, page().getBounds().width - 20, 20);
                     spellRecipe.buildCraftingTree(tree);
-                    bounds.height = tree.build(Container);
+                    bounds.height = tree.build(container) - 10;
                 }
             });
         }

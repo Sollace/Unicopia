@@ -2,8 +2,7 @@ package com.minelittlepony.unicopia.container;
 
 import java.util.*;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
@@ -25,8 +24,8 @@ public class DynamicContent implements Content {
 
     private Bounds bounds = Bounds.empty();
 
-    public DynamicContent(JsonArray pages) {
-        pages.forEach(page -> this.pages.add(new Page(page.getAsJsonObject())));
+    public DynamicContent(JsonArray json) {
+        json.forEach(element -> pages.add(new Page(element.getAsJsonObject())));
     }
 
     @Override
@@ -36,8 +35,10 @@ public class DynamicContent implements Content {
         getPage(pageIndex).ifPresent(page -> page.draw(matrices, mouseX, mouseY, container));
 
         matrices.push();
-        matrices.translate(bounds.width / 2 + 20, 0, 0);
-        getPage(pageIndex + 1).ifPresent(page -> page.draw(matrices, mouseX, mouseY, container));
+        getPage(pageIndex + 1).ifPresent(page -> {
+            page.bounds.left = bounds.left + bounds.width / 2 + 20;
+            page.draw(matrices, mouseX, mouseY, container);
+        });
         matrices.pop();
     }
 
@@ -45,7 +46,7 @@ public class DynamicContent implements Content {
     public void copyStateFrom(Content old) {
         if (old instanceof DynamicContent o) {
             offset = o.offset;
-            bounds = o.bounds;
+            setBounds(o.bounds);
         }
     }
 
@@ -56,10 +57,18 @@ public class DynamicContent implements Content {
         return Optional.of(pages.get(index));
     }
 
+    private void setBounds(Bounds bounds) {
+        this.bounds = bounds;
+        pages.forEach(page -> {
+            page.reset();
+            page.bounds.copy(bounds);
+            page.bounds.width /= 2;
+        });
+    }
+
     @Override
     public void init(SpellbookScreen screen) {
-        bounds = screen.getFrameBounds();
-        pages.forEach(Page::reset);
+        setBounds(screen.getFrameBounds());
         screen.addPageButtons(187, 30, 350, incr -> {
             offset = MathHelper.clamp(offset + incr, 0, (int)Math.ceil(pages.size() / 2F) - 1);
         });
@@ -73,6 +82,8 @@ public class DynamicContent implements Content {
 
         private boolean compiled;
 
+        private Bounds bounds = Bounds.empty();
+
         public Page(JsonObject json) {
             title = Text.Serializer.fromJson(json.get("title"));
             level = JsonHelper.getInt(json, "level", 0);
@@ -82,7 +93,7 @@ public class DynamicContent implements Content {
         }
 
         protected int getLineLimitAt(int yPosition) {
-            return (bounds.width / 2 - 10) - elements.stream()
+            return (bounds.width - 10) - elements.stream()
                     .filter(PageElement::isFloating)
                     .map(PageElement::bounds)
                     .filter(b -> b.contains(b.left + b.width / 2, yPosition))
@@ -113,6 +124,11 @@ public class DynamicContent implements Content {
 
         @Override
         public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
+
+            if (elements.isEmpty()) {
+                return;
+            }
+
             if (!compiled) {
                 compiled = true;
                 int relativeY = 0;
