@@ -71,7 +71,7 @@ public class ManaContainer implements MagicReserves, Tickable {
 
         if (!pony.getSpecies().canFly() || !pony.getPhysics().isFlying()) {
             if (mana.getShadowFill() <= mana.getPercentFill()) {
-                mana.add(18);
+                mana.add(18 * pony.getLevel().get());
             }
         }
     }
@@ -80,6 +80,11 @@ public class ManaContainer implements MagicReserves, Tickable {
 
         XpCollectingBar(TrackedData<Float> marker, float max, float initial) {
             super(marker, max, initial);
+        }
+
+        @Override
+        public float getMax() {
+            return super.getMax() + 50 * pony.getLevel().get();
         }
 
         @Override
