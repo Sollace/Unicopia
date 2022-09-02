@@ -93,7 +93,7 @@ interface PageElement extends Drawable {
             });
             unwrappedText.visit(visitor, Style.EMPTY);
             visitor.forceAdvance();
-            bounds.height = MinecraftClient.getInstance().textRenderer.fontHeight * (wrappedText.size() + 1);
+            bounds.height = MinecraftClient.getInstance().textRenderer.fontHeight * (wrappedText.size());
         }
 
         @Override
