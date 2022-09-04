@@ -1,11 +1,10 @@
 package com.minelittlepony.unicopia.util;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtDouble;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -48,5 +47,39 @@ public interface NbtSerialisable {
 
     static Optional<BlockPos> readBlockPos(String name, NbtCompound nbt) {
         return nbt.contains(name) ? Optional.ofNullable(NbtHelper.toBlockPos(nbt.getCompound(name))) : Optional.empty();
+    }
+
+    interface Serializer<T> {
+        T read(NbtCompound compound);
+
+        NbtCompound write(T t);
+
+        default T read(NbtElement element) {
+            return read((NbtCompound)element);
+        }
+
+        default NbtList writeAll(Collection<T> ts) {
+            NbtList list = new NbtList();
+            ts.stream().map(this::write).forEach(list::add);
+            return list;
+        }
+
+        default Stream<T> readAll(NbtList list) {
+            return list.stream().map(this::read).filter(Objects::nonNull);
+        }
+
+        static <T> Serializer<T> of(Function<NbtCompound, T> read, Function<T, NbtCompound> write) {
+            return new Serializer<>() {
+                @Override
+                public T read(NbtCompound compound) {
+                    return read.apply(compound);
+                }
+
+                @Override
+                public NbtCompound write(T t) {
+                    return write.apply(t);
+                }
+            };
+        }
     }
 }

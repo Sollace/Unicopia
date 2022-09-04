@@ -1,8 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +14,7 @@ import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.UParticles;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -134,7 +132,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
             compound.putString("dimension", dimension.getValue().toString());
         }
         compound.put("castEntity", castEntity.toNBT());
-        compound.put("spell", Spell.writeNbt(spell));
+
     }
 
     @Override
@@ -149,7 +147,17 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
         if (compound.contains("castEntity")) {
             castEntity.fromNBT(compound.getCompound("castEntity"));
         }
-        spell = Spell.readNbt(compound.getCompound("spell"));
+
+    }
+
+    @Override
+    protected void loadDelegates(NbtCompound compound) {
+        spell = Spell.SERIALIZER.read(compound.getCompound("spell"));
+    }
+
+    @Override
+    protected void saveDelegates(NbtCompound compound) {
+        compound.put("spell", Spell.SERIALIZER.write(spell));
     }
 
     @Override

@@ -53,6 +53,10 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
     }
 
     @Override
+    public SpellTraits getTraits() {
+        return getDelegates().stream().map(Spell::getTraits).reduce(SpellTraits.EMPTY, SpellTraits::union);
+    }
+    @Override
     public UUID getUuid() {
         return uuid;
     }
@@ -113,6 +117,7 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
     @Override
     public void toNBT(NbtCompound compound) {
         compound.putUuid("uuid", uuid);
+        saveDelegates(compound);
     }
 
     @Override
@@ -121,7 +126,12 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
         if (compound.contains("uuid")) {
             uuid = compound.getUuid("uuid");
         }
+        loadDelegates(compound);
     }
+
+    protected abstract void loadDelegates(NbtCompound compound);
+
+    protected abstract void saveDelegates(NbtCompound compound);
 
     private static boolean execute(Stream<Spell> spells, Function<Spell, Boolean> action) {
         return spells.reduce(false, (u, a) -> action.apply(a), (a, b) -> a || b);

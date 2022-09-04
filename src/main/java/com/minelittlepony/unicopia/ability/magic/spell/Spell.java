@@ -19,6 +19,7 @@ import net.minecraft.nbt.NbtCompound;
  * Interface for a magic spells
  */
 public interface Spell extends NbtSerialisable, Affine {
+    Serializer<Spell> SERIALIZER = Serializer.of(Spell::readNbt, Spell::writeNbt);
 
     /**
      * Returns the registered type of this spell.

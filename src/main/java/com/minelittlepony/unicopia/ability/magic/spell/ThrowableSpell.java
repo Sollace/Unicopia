@@ -78,15 +78,13 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        compound.put("spell", Spell.writeNbt(spell));
+    protected void loadDelegates(NbtCompound compound) {
+        spell = Spell.SERIALIZER.read(compound.getCompound("spell"));
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        spell = Spell.readNbt(compound.getCompound("spell"));
+    protected void saveDelegates(NbtCompound compound) {
+        compound.put("spell", Spell.SERIALIZER.write(spell));
     }
 
     @Override
