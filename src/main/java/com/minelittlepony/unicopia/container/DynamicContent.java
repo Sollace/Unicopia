@@ -96,7 +96,7 @@ public class DynamicContent implements Content {
             return (bounds.width - 10) - elements.stream()
                     .filter(PageElement::isFloating)
                     .map(PageElement::bounds)
-                    .filter(b -> b.contains(b.left + b.width / 2, yPosition))
+                    .filter(b -> b.containsY(yPosition))
                     .mapToInt(b -> b.width)
                     .sum();
         }
@@ -105,7 +105,7 @@ public class DynamicContent implements Content {
             return elements.stream()
                     .filter(p -> p.flow() == PageElement.Flow.LEFT)
                     .map(PageElement::bounds)
-                    .filter(b -> b.contains(b.left + b.width / 2, yPosition))
+                    .filter(b -> b.containsY(yPosition))
                     .mapToInt(b -> b.width)
                     .sum();
         }
@@ -150,7 +150,7 @@ public class DynamicContent implements Content {
             elements.stream().filter(PageElement::isFloating).forEach(element -> {
                 Bounds bounds = element.bounds();
                 matrices.push();
-                matrices.translate(bounds.left, bounds.top, 0);
+                bounds.translate(matrices);
                 element.draw(matrices, mouseX, mouseY, container);
                 matrices.pop();
             });
