@@ -180,6 +180,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+        this.clearAndInit();
         chapters.getCurrentChapter().content().ifPresent(content -> content.draw(matrices, mouseX, mouseY, (IViewRoot)this));
     }
 

@@ -40,7 +40,7 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
         int currentLevel = pony.getLevel().get();
 
         DrawableUtil.drawScaledText(matrices, pony.getEntity().getName(), SpellbookScreen.TITLE_X, y, 1.3F, SpellbookScreen.TITLE_COLOR);
-        DrawableUtil.drawScaledText(matrices, ExperienceGroup.forLevel(currentLevel).getLabel(), SpellbookScreen.TITLE_X, y + 13, 0.8F, 0xAA0040FF);
+        DrawableUtil.drawScaledText(matrices, ExperienceGroup.forLevel(currentLevel, pony.getCorruption().get()), SpellbookScreen.TITLE_X, y + 13, 0.8F, 0xAA0040FF);
 
         MagicReserves reserves = pony.getMagicalReserves();
 
