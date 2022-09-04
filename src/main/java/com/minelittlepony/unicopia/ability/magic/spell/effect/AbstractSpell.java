@@ -35,6 +35,7 @@ public abstract class AbstractSpell implements Spell {
         return type;
     }
 
+    @Override
     public final SpellTraits getTraits() {
         return traits == null ? SpellTraits.EMPTY : traits;
     }

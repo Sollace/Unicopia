@@ -39,5 +39,12 @@
   "suggests": {
     "minelp": "*",
     "modmenu": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/zKSZ8Mg"
+      }
+    }
   }
 }
