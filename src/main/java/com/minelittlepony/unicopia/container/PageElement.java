@@ -7,6 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
+import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.container.SpellbookChapterList.Drawable;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -21,9 +22,16 @@ import net.minecraft.text.Text;
 import net.minecraft.util.*;
 
 interface PageElement extends Drawable {
+    @Override
+    default void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
+
+    }
+
     Bounds bounds();
 
-    Flow flow();
+    default Flow flow() {
+        return Flow.NONE;
+    }
 
     default boolean isInline() {
         return flow() == Flow.NONE;
@@ -44,19 +52,28 @@ interface PageElement extends Drawable {
         if (el.has("texture")) {
             return new Image(
                 new Identifier(JsonHelper.getString(el, "texture")),
-                new Bounds(
-                    JsonHelper.getInt(el, "y", 0),
-                    JsonHelper.getInt(el, "x", 0),
-                    JsonHelper.getInt(el, "width", 0),
-                    JsonHelper.getInt(el, "height", 0)
-                ),
+                boundsFromJson(el),
                 Flow.valueOf(JsonHelper.getString(el, "flow", "RIGHT"))
             );
         }
         if (el.has("recipe")) {
             return new Recipe(page, new Identifier(JsonHelper.getString(el, "recipe")), new Bounds(0, 0, 0, 0));
         }
+
+        if (el.has("item")) {
+            return new Stack(page, IngredientWithSpell.fromJson(el.get("item")), boundsFromJson(el));
+        }
+
         return new TextBlock(page, Text.Serializer.fromJson(element));
+    }
+
+    private static Bounds boundsFromJson(JsonObject el) {
+        return new Bounds(
+            JsonHelper.getInt(el, "y", 0),
+            JsonHelper.getInt(el, "x", 0),
+            JsonHelper.getInt(el, "width", 0),
+            JsonHelper.getInt(el, "height", 0)
+        );
     }
 
     record Image(
@@ -101,7 +118,7 @@ interface PageElement extends Drawable {
             boolean needsMoreXp = page.getLevel() < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < page.getLevel();
             matrices.push();
             wrappedText.forEach(line -> {
-                font.draw(matrices, needsMoreXp ? line.text().copy().formatted(Formatting.OBFUSCATED) : line.text(), line.x(), 0, 0);
+                font.draw(matrices, needsMoreXp ? line.text().copy().formatted(Formatting.OBFUSCATED) : line.text().copy(), line.x(), 0, 0);
                 matrices.translate(0, font.fontHeight, 0);
             });
             matrices.pop();
@@ -122,11 +139,6 @@ interface PageElement extends Drawable {
 
     record Recipe (DynamicContent.Page page, Identifier id, Bounds bounds) implements PageElement {
         @Override
-        public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
-
-        }
-
-        @Override
         public void compile(int y, IViewRoot container) {
             if (container instanceof SpellbookScreen book) {
                 bounds().left = book.getX();
@@ -142,10 +154,16 @@ interface PageElement extends Drawable {
                 }
             });
         }
+    }
 
+    record Stack (DynamicContent.Page page, IngredientWithSpell ingredient, Bounds bounds) implements PageElement {
         @Override
-        public Flow flow() {
-            return Flow.NONE;
+        public void compile(int y, IViewRoot container) {
+            IngredientTree tree = new IngredientTree(
+                    bounds().left + page().getBounds().left,
+                    bounds().top + page().getBounds().top + y + 10, 30, 20);
+            tree.input(ingredient.getMatchingStacks());
+            bounds.height = tree.build(container) - 10;
         }
     }
 
