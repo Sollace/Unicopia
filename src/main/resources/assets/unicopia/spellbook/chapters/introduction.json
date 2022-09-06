@@ -98,9 +98,19 @@
         "level": 1,
         "elements": [
           { "x": 127, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/item/botched_gem.png" },
-          "Not every combination works. What's dissapointing is and now I have all these useless stones piling up in my chambers.",
+          "Not every combination works. What's dissapointing is now I have all these useless stones piling up in my chambers.",
           "I don't know what to do with them. They're not edible. At least the locals don't think so.",
           "They do still have the traits I gave them, so maybe I can find a use other than building a rock-fort with little Luna..."
+        ]
+      },
+      {
+        "title": "13th Mare '12",
+        "level": 0,
+        "elements": [
+          "Sorry for the long delay in updates. I've been hard at work researching different spells and desciding my approach.",
+          "Fire is becomg a very interesting aspect, what with traits for it being readily available.",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
         ]
       }
     ]

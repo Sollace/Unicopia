@@ -82,47 +82,46 @@
       },
       {
         "title": "",
+        "level": 13,
+        "elements": [
+          "Gods forbid they succeed. I shudder to think what the council might do if they got their hooves on my work.",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "",
         "level": 3,
         "elements": [
-          "What have I to show them though?",
-          "At the princess' behest",
-          "- Starswirl the Bearded",
           "Addendum",
           {
             "text": "",
             "strikethrough": true,
             "extra": [
-              {"text": "west", "obfuscated": true},
-              {"text": ", I am told the crown has started giving directions to find other uses. Ways to...Weaponise it."}
+              {"text": "I am told the crown has started giving directions to find other uses. Ways to...Weaponise it."}
             ]
-          }
-        ]
-      },
-      {
-        "title": "",
-        "level": 0,
-        "elements": []
-      },
-      {
-        "title": "",
-        "level": 0,
-        "elements": []
-      },
-      {
-        "title": "21 Jum '12",
-        "level": 0,
-        "elements": [
-          "I shall visit Commander Hurricane tomorrow. Perhaps she may shed light onto my predicament",
+          },
+          "What have I to show them though?",
           "At the princess' behest",
           "- Starswirl the Bearded"
         ]
+      },
+      {
+        "title": "",
+        "level": 0,
+        "elements": []
+      },
+      {
+        "title": "",
+        "level": 0,
+        "elements": []
       },
       {
         "title": "Fire Magic III",
         "level": 2,
         "elements": [
           "Focusing Magic",
-          "Some spells spell normally take a great amount of focus to cast, and a steady wit to control, However I've found objects embued with the focusing trait work wonderfully as a substitute for when the caster is lacking.",
+          "Some spells normally take a great amount of focus to cast, and a steady wit to control, However I've found objects embued with the focusing trait work wonderfully as a substitute for when the caster is lacking.",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/focus.png" }
         ]
@@ -132,6 +131,31 @@
         "level": 2,
         "elements": [
           "Any glass objects you can find, eyes, bottles, whatever incorporates a lense can be used to embue focus on a spell.",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "20 Jum '12",
+        "level": 9,
+        "elements": [
+          "I have word from the crown. They appear satisfied, for now, and have agreed to let my continue my research as I have into the winter.",
+          "I am under duress to destroy the last several entries, I'm afraid.",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "21 Jum '12",
+        "level": 0,
+        "elements": [
+          {
+            "text": "I shall visit",
+            "extra": [
+              { "text": "Commander Hurricane", "obfuscated": true },
+              " tomorrow. Perhaps she may shed light onto my predicament"
+            ]
+          },
           "At the princess' behest",
           "- Starswirl the Bearded"
         ]
@@ -176,6 +200,38 @@
           "At the princess' behest",
           "- Starswirl the Bearded"
         ]
+      },
+      {
+        "title": "23th Jum '12",
+        "level": 4,
+        "elements": [
+          "The village-ponies had a bonfire last night. I could tell by the strong smell of burning wood and the sound of music.",
+          "Luna, bless her heart, insisted that we take a break to join them. She had to practically drag me away from the work to do it.",
+          "What can I say? She's a light in my heart."
+        ]
+      },
+      {
+        "title": "Bonfire",
+        "level": 5,
+        "elements": [
+          "We arrived at the bonfire, and of course the first thing they had was a mug of ale in my hoof. I didn't drink it, of course-alcohol is a poison to me. I'd be sick as a mule.",
+          "Luna enjoyed it, though. She made immediate friends with one of the town's fillies, Celly or something. They played the whole night."
+        ]
+      },
+      {
+        "title": "Bonfire II",
+        "level": 6,
+        "elements": [
+          "On the way back Luna was telling me of the stories her friend told her. The town has a lot of legends, as to be expected.",
+          "One of them was about a scary old warlock who lived in a haunted tower at the edge of town. There's no mystery who that was about.",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "",
+        "level": 0,
+        "elements": []
       },
       {
         "title": "Protection",

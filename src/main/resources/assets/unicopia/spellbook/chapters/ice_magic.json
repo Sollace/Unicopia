@@ -51,6 +51,16 @@
           { "x": 115, "y": -20, "width": 32, "height": 32, "texture": "minecraft:textures/item/snowball.png" },
           { "x": 115, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/ice.png" }
         ]
+      },
+      {
+        "title": "6th Mare '12",
+        "level": 4,
+        "elements": [
+          "There was a strange noise in the village last night. Very strange. I heard a lot ponies shouting and there may have been a fire.",
+          "I hope everything is okay.",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
       }
     ]
   }

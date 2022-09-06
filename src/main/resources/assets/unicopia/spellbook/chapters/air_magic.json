@@ -56,8 +56,8 @@
         "title": "Catapult",
         "level": 4,
         "elements": [
-          "Expanding on the defensive capabilities of the protection gem, I've attempted to extend its advantages to party members.",
-          "This one is unusual because of its complexity, but in theory it should allow one to slow their own and friends' descent.",
+          "This is a straightforward application of a unicorn's telekineses. The catapult gem allows a caster to grab any block or creature and fling them into the air.",
+          "Use it again on something already thrown to push it away from you.",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
@@ -68,7 +68,8 @@
         "elements": [
           { "recipe": "unicopia:spells/catapult" },
           "Requires:",
-          "- 1 flame gem\n- At least 9x focus trait\n- At least 9x air trait"
+          "- 1 flame gem\n- At least 9x focus trait\n- At least 9x air trait",
+          "One can add apply force by the strength trait"
         ]
       },
       {
