@@ -128,6 +128,8 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
         drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight, 512, 256);
 
+        this.clearAndInit();
+
         tabs.getAllTabs().forEach(tab -> {
             Bounds bounds = tab.bounds();
             chapters.getCurrentChapter();
@@ -151,6 +153,11 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             drawTexture(matrices, isRight ? bounds.left + bounds.width - 16 - 10 : bounds.left + 10, bounds.top + (bounds.height - 16) / 2, 0, 0, 16, 16, 16, 16);
             RenderSystem.setShaderTexture(0, TEXTURE);
         });
+
+        matrices.push();
+        matrices.translate(x, y, 0);
+        chapters.getCurrentChapter().content().ifPresent(content -> content.draw(matrices, mouseX, mouseY, (IViewRoot)this));
+        matrices.pop();
     }
 
     void drawSlots(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -180,8 +187,6 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
     @Override
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        this.clearAndInit();
-        chapters.getCurrentChapter().content().ifPresent(content -> content.draw(matrices, mouseX, mouseY, (IViewRoot)this));
     }
 
     @Override
