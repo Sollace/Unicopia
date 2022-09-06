@@ -1,5 +1,95 @@
 {
   "side": "RIGHT",
   "y_position": 4,
-  "color": 0
+  "color": 0,
+  "content": {
+    "pages": [
+      {
+        "title": "1st Hoof '12",
+        "level": 1,
+        "elements": [
+          "A new month, a new chapter. Little Luna was getting bored of sitting in the tower all day (and who's to blame her? We've been on this assignment for over two months at this point).",
+          "So as a little treat, we've decided to go on a little trip to the Grand Marepid Falls to visit my friend, Commander Hurricane."
+        ]
+      },
+      {
+        "title": "",
+        "level": 1,
+        "elements": [
+          "The Commander has also very graciously allowed me access to her library to continue my studies. I'm excited to see what combining unicorn and pegasus magics might bring."
+        ]
+      },
+      {
+        "title": "",
+        "level": 0,
+        "elements": []
+      },
+      {
+        "title": "Ch.3 Air Magic",
+        "level": 1,
+        "elements": [
+          { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/air_magic.png" }
+        ]
+      },
+      {
+        "title": "Air Magic I",
+        "level": 3,
+        "elements": [
+          "Pegasus Magic",
+          "Air magic is to pegasi like fire is to unicorns. They're both equally hard to control but where fire is primarily focused around force, destruction, or protection, air is all about flexibility and free motion.",
+          "Command Hurricane has very kindly given me some tips on how to identify this trait in everyday objects.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 3,
+        "elements": [
+          "Anything relating to flight, or that originated from creatures that fly, or that comes from up above can be considered a source of the air trait.",
+          "Eg. Feathers",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "Catapult",
+        "level": 4,
+        "elements": [
+          "Expanding on the defensive capabilities of the protection gem, I've attempted to extend its advantages to party members.",
+          "This one is unusual because of its complexity, but in theory it should allow one to slow their own and friends' descent.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 4,
+        "elements": [
+          { "recipe": "unicopia:spells/catapult" },
+          "Requires:",
+          "- 1 flame gem\n- At least 9x focus trait\n- At least 9x air trait"
+        ]
+      },
+      {
+        "title": "Feather Falling",
+        "level": 5,
+        "elements": [
+          "Expanding on the defensive capabilities of the protection gem, I've attempted to extend its advantages to party members.",
+          "This one is unusual because of its complexity, but in theory it should allow one to slow their own and friends' descent.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 5,
+        "elements": [
+          { "recipe": "unicopia:spells/feather_fall" },
+          "Requires:",
+          "- 1 protection gem\n- At least 20x knowlege trait\n- At least 10x life trait\n- At least 10x generosity trait\n- At least 4x chaos trait"
+        ]
+      }
+    ]
+  }
 }

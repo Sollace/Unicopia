@@ -10,7 +10,7 @@
         "elements": [
           "Fire magic has proven to a be a little more... unpredictable than anticipated. Every time I feel like I'm making progress it finds a way to set me back.",
           {
-            "text": "I can't stop now, though. The situation in the west is growing dire. The Princess has asked me to pick up the pace and produce something we can use to get the upper hoof against the",
+            "text": "I can't stop now, though! The situation in the west is growing dire. The Princess has asked me to pick up the pace and produce something we can use to get the upper hoof against the",
             "extra": [
               { "text": "Changeling Storm", "obfuscated": true}
             ]
@@ -18,7 +18,7 @@
         ]
       },
       {
-        "title": "",
+        "title": "Ch.3 Fire Magic",
         "level": 0,
         "elements": [
           { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/fire_magic.png" }
@@ -153,7 +153,46 @@
         "elements": [
           { "recipe": "unicopia:spells/fire_bolt" },
           "Requires:",
-          "- Equal amounts of 9x focus and air trait for control and flight\n- 30x fire trait for energy\n- A gem with scorch"
+          "- At least 9x focus for control and flight\n- 30x fire trait for energy\n- A gem with scorch"
+        ]
+      },
+      {
+        "title": "Fire Magic IV",
+        "level": 2,
+        "elements": [
+          "Powerful Magic",
+          "Where some spells take focus, others require power. Either to exert a force, or to generate energy in some form.",
+          "There are few unicorns that have the inherent strength and power to cast spells of these kinds, but luckily such a trait is not in short supply around us.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/strength.png" }
+        ]
+      },
+      {
+        "title": "Fire Magic IV-II",
+        "level": 2,
+        "elements": [
+          "Earthly elements, stone, many metals and minerals, that are strong under compression will exhibit the strength trait.",
+          "Electrical/Conductive elements that can be used to power things, or that glow can also be used to obtain the power trait.",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "Protection",
+        "level": 2,
+        "elements": [
+          "Casting shields are one of the first things every unicorn learns in self-defense. It's simple and easy to cast, and is an excellent introduction to incanting.",
+          "Its disadvantage is the energy and mental cost, however we can negate both by attaching it to a gem as per follows...",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/strength.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 2,
+        "elements": [
+          { "recipe": "unicopia:spells/shield" },
+          "Requires:",
+          "- 1 gemstone\n- At least 10x strength trait\n- At least 6x focus trait\n- At least 10x power trait"
         ]
       }
     ]

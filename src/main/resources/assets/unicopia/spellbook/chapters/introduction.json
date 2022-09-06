@@ -19,7 +19,7 @@
         ]
       },
       {
-        "title": "Magic in Equestria",
+        "title": "Ch.1 Magic in Equestria",
         "level": 0,
         "elements": [
           {
@@ -36,8 +36,7 @@
         "level": 0,
         "elements": [
           "Odd Rocks",
-          "These 'Gemstones' are a common material found around the world. Earth Ponies dig them up all the time and don't think any much of it, but these stones have a special trait I found that lets them hold magic.",
-          "What's odd is that they seem to have some magical properties I haven't seen before.",
+          "These 'Gemstones' as the locals call them are a common material found around the world. Farm-Ponies dig them up all the time and consider it a local delicacy, but I believe these stones are capable of a lot more than they let on.",
           { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/item/gemstone.png" }
         ]
       },
@@ -46,11 +45,7 @@
         "level": 0,
         "elements": [
           {
-            "text": "My research is",
-            "extra": [
-              { "text": "still incomplete", "obfuscated": true},
-              { "text": "but I believe these may become useful for storing and applying complex spells, if I do so correctly..."}
-            ]
+            "text": "My research is still incomplete but I may have stumbled upon something. These stones have high magical potentia! More than I've ever seen before!"
           },
           {
             "text": "Luna-wants",
@@ -85,7 +80,7 @@
           { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/crafting.png" },
           "I drew a guide at the start of this book to help with the placement.",
           "Put a raw gem-it mustn't have any spells already-in the middle and place materials around it in the slots I marked.",
-          "Each material gives different effects and putting them closer also enhances their influence on the gem."
+          "Each material gives different effects and putting them closer enhances their influence on the gem."
         ]
       },
       {
@@ -93,7 +88,7 @@
         "level": 0,
         "elements": [
           "I'm going to start documenting spell combinations as I find them. Some of them are pretty obvious, like gem + fire = fire gem",
-          "But some are less clear. For instance, what traits would an egg add?",
+          "But some are less clear. For instance, what traits would an egg add? Much experimenting is needed. Oh, I'm giddy with excitement!",
           "At the princess' behest",
           "- Starswirl the Bearded"
         ]
@@ -103,8 +98,8 @@
         "level": 1,
         "elements": [
           { "x": 127, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/item/botched_gem.png" },
-          "Okay, I guess not every combination works. That's dissapointing, and now I have all these useless stones piling up in my chambers.",
-          "I don't know what to do with them. They're not edible, I don't think.",
+          "Not every combination works. What's dissapointing is and now I have all these useless stones piling up in my chambers.",
+          "I don't know what to do with them. They're not edible. At least the locals don't think so.",
           "They do still have the traits I gave them, so maybe I can find a use other than building a rock-fort with little Luna..."
         ]
       }

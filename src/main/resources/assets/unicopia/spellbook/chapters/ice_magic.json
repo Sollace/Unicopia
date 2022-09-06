@@ -15,7 +15,7 @@
         ]
       },
       {
-        "title": "",
+        "title": "Ch.2 Ice Magic",
         "level": 0,
         "elements": [
           { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/ice_magic.png" }
