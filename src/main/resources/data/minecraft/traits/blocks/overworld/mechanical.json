@@ -28,10 +28,6 @@
     "minecraft:target",
     "minecraft:conduit",
 
-    "minecraft:redstone",
-    "minecraft:redstone_torch",
-    "minecraft:redstone_block",
-   
     "minecraft:stonecutter",
     "minecraft:bell",
     "minecraft:lantern",
@@ -61,8 +57,7 @@
     "minecraft:powered_rail",
     "minecraft:detector_rail",
     "minecraft:rail",
-    "minecraft:activator_rail",
-    
+
     "minecraft:redstone_lamp",
     "minecraft:note_block",
     

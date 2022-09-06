@@ -9,7 +9,7 @@
     "minecraft:sugar": "happiness:1",
     "minecraft:totem_of_undying": "generosity:16",
     "minecraft:heart_of_the_sea": "kindness:17",
-    "minecraft:elytra": "power:1 focus:2",
+    "minecraft:elytra": "power:1 focus:2 air:5",
     "minecraft:turtle_helmet": "strength:4 darkness:1",
     "minecraft:stick": "earth:1",
     "minecraft:slime_ball": "rot:2",

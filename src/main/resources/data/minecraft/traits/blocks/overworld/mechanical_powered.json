@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "traits": "knowledge:1 power:4",
+  "items": [
+    "minecraft:redstone",
+    "minecraft:redstone_torch",
+    "minecraft:redstone_block",
+
+    "minecraft:activator_rail"
+  ]
+}

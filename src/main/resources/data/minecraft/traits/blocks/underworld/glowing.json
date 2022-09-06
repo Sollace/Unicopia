@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "traits": "darkness:2 earth:-1 power:2 blood:4",
+  "items": [
+    "minecraft:glowstone"
+  ]
+}
