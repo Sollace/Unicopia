@@ -9,14 +9,14 @@
       }
     },
     {
-      "match": { "tag": "minecraft:water" },
+      "match": { "builtin": "water" },
       "apply": {
         "action": "unicopia:set_state",
         "state": "minecraft:frosted_ice"
       }
     },
     {
-      "match": { "state": "minecraft:lava" },
+      "match": { "builtin": "lava" },
       "apply": {
         "action": "unicopia:set_state",
         "state": "unicopia:frosted_obsidian"

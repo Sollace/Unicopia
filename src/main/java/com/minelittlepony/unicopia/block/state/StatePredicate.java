@@ -106,6 +106,8 @@ public abstract class StatePredicate implements Predicate<BlockState> {
         switch (type) {
             case "plants": return StatePredicate::isPlant;
             case "ores": return StatePredicate::isOre;
+            case "water": return StatePredicate::isWater;
+            case "lava": return StatePredicate::isLava;
             default: throw new IllegalArgumentException("Invalid builtin type: " + type);
         }
     }
@@ -116,6 +118,14 @@ public abstract class StatePredicate implements Predicate<BlockState> {
 
     static boolean isOre(BlockState s) {
         return s.getBlock() instanceof OreBlock;
+    }
+
+    static boolean isWater(BlockState s) {
+        return s.getMaterial() == Material.WATER;
+    }
+
+    static boolean isLava(BlockState s) {
+        return s.getMaterial() == Material.LAVA;
     }
 
     public static Predicate<BlockState> ofState(String state) {

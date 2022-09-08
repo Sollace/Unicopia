@@ -3,9 +3,9 @@
   "entries": [
     {
       "match": [
-		{ "state": "minecraft:snow" },
-		{ "state": "minecraft:snow_block" },
-		{ "builtin": "plants" }
+        { "state": "minecraft:snow" },
+        { "state": "minecraft:snow_block" },
+        { "builtin": "plants" }
       ],
       "apply": {
         "action": "unicopia:set_state",
@@ -13,7 +13,10 @@
       }
     },
     {
-      "match": { "state": "minecraft:ice" },
+      "match": [
+        { "state": "minecraft:ice" },
+        { "state": "minecraft:frosted_ice" }
+      ],
       "apply": {
         "action": "unicopia:set_state",
         "state": "minecraft:water"
@@ -28,8 +31,8 @@
     },
     {
       "match": [
-		{ "state": "minecraft:obsidian" },
-		{ "state": "unicopia:frosted_obsidian" }
+        { "state": "minecraft:obsidian" },
+        { "state": "unicopia:frosted_obsidian" }
       ],
       "apply": {
         "action": "unicopia:set_state",
