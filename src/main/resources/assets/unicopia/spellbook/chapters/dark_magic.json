@@ -5,8 +5,49 @@
   "content": {
     "pages": [
       {
+        "title": "Ch.5 The Arcane",
+        "level": 10,
+        "elements": [
+          { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" }
+        ]
+      },
+      {
+        "title": "30th Hoof '12",
+        "level": 8,
+        "elements": [
+          "A new communication from the crown today. The situation seems to be worsening in the west and though they've been satisfied with my work until now, they are putting pressure on me to produce something more destructive.",
+          "I tried to tell the messenger that I couldn't-"
+        ]
+      },
+      {
+        "title": "",
+        "level": 0,
+        "elements": []
+      },
+      {
+        "title": "3rd Slep '12",
+        "level": 9,
+        "elements": [
+          "Let it be known that it was never my intention that anypony use my work for nefarious purposes. I am a researcher, above and beyond all else. My intentions are pure, and my wants are nothing more than this world to be at peace"
+        ]
+      },
+      {
+        "title": "",
+        "level": 0,
+        "elements": []
+      },
+      {
+        "title": "4th Slep 12",
+        "level": 10,
+        "elements": [
+          "No review of magic is ever complete without a glimpse into the other side.",
+          "Dark magic, or as I'm going to refer to it as The Arcane are tip-toeing the line between the normal light magic we normally know and the more nefarious side of reality.",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
         "title": "Attraction",
-        "level": 4,
+        "level": 5,
         "elements": [
           "If someone were to ask you 'what is the opposite of a repulsion spell, what would you say? An attraction spell, of course!",
           "By twisting the purpose of the protection spell, I've been able to reverse its function to create a spell that pulls objects and entities closer to the caster.",
@@ -16,12 +57,106 @@
       },
       {
         "title": "",
-        "level": 4,
+        "level": 5,
         "elements": [
           { "recipe": "unicopia:spells/vortex" },
           "Requires:",
           "- 1 protection gem\n- At least 10x strength trait\n- At least 8x knowledge trait\n- At least 9x air trait",
           "+ 10x focus to narrow the effect's range to items specifically"
+        ]
+      },
+      {
+        "title": "10th Slep '12",
+        "level": 11,
+        "elements": [
+          "As per their agreement, the council have sent certain...supplimental materials to aid in the new direction my research is taking. I was a little shocked at first.",
+          "This... thing... Whatever it is. Was, rather.",
+          "Is this really what we're fighting in the west?",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "11th Slep '12",
+        "level": 11,
+        "elements": [
+          "I've put the... thing. In the basement. Locked the door.",
+          "I just couldn't stand looking at it any longer. It's vaguely pony-shaped, but also...",
+          "I couldn't well let Luna see it. I've sent her out to spend the next few nights with Celly whilst I sort out what to do with this.",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "",
+        "level": 0,
+        "elements": []
+      },
+      {
+        "title": "",
+        "level": 0,
+        "elements": []
+      },
+      {
+        "title": "15th Slep '12",
+        "level": 13,
+        "elements": [
+          "I'm sorry for the long delays. Things have been...",
+          "I've learned a lot about these creatures. Attached are some illustrations, done best I could so I wouldn't have to look at the thing directly.",
+          {
+            "text": "Its body is black and vaguely",
+            "extra": [
+              { "text": "insect-like", "obfuscated": true },
+              "with ponish proportions. It has no fur."
+            ]
+          }
+        ]
+      },
+      {
+        "title": "",
+        "level": 14,
+        "elements": [
+          "The magic they use is unusual. Not unusual, like what I've been studying. It's unnatural. Wild.",
+          "There is definitely something I might be able to harness here, but I shudder... Should I?",
+          "I fear that this may be a line that shouldn't be crossed.",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "Transmutation",
+        "level": 13,
+        "elements": [
+          "I've begun by simply harnessing their ability. It's unfocused and hard to control. I can rarely predict what is going to happen, but this gem has very clear transmodrification properties.",
+          "Throwing this at any creature has the chance to transform it into any other creature.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/life.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 13,
+        "elements": [
+          { "recipe": "unicopia:spells/transformation" },
+          "Requires:",
+          "- At least 18x knowledge trait\n- At least 10x life trait\n- At least 4x chaos trait"
+        ]
+      },
+      {
+        "title": "Dispell Illusion",
+        "level": 14,
+        "elements": [
+          "Dispell Illusion is the first line of defense against transformation/illusion spells.",
+          "When cast it will force any nearby disguised changelings in its range to reveal their true form.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/knowledge.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 14,
+        "elements": [
+          { "recipe": "unicopia:spells/reveal" },
+          "Requires:",
+          "- A protection gem\n- At least 18x knowledge trait\n- At least 1x life trait\n- At least 4x harmony trait",
+          "* Increase range by adding the power trait"
         ]
       }
     ]

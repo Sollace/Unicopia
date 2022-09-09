@@ -5,6 +5,13 @@
   "content": {
     "pages": [
       {
+        "title": "Ch.3 Ice Magic",
+        "level": 0,
+        "elements": [
+          { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/ice_magic.png" }
+        ]
+      },
+      {
         "title": "4th Trot 12",
         "level": 0,
         "elements": [
@@ -12,13 +19,6 @@
           "All you need is a gem and something cold. Like a snowball.",
           "At the princess' behest",
           "- Starswirl the Bearded"
-        ]
-      },
-      {
-        "title": "Ch.2 Ice Magic",
-        "level": 0,
-        "elements": [
-          { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/ice_magic.png" }
         ]
       },
       {

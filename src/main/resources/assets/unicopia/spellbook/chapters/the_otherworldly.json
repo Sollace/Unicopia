@@ -1,5 +1,41 @@
 {
   "side": "RIGHT",
   "y_position": 6,
-  "color": 0
+  "color": 0,
+  "content": {
+    "pages": [
+      {
+        "title": "Ch.6 The Beyond",
+        "level": 10,
+        "elements": [
+          { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/the_otherworldly.png" }
+        ]
+      },
+      {
+        "title": "4th Slep 12",
+        "level": 10,
+        "elements": []
+      },
+      {
+        "title": "Dark Vortex",
+        "level": 4,
+        "elements": [
+          "If someone were to ask you 'what is the opposite of a repulsion spell, what would you say? An attraction spell, of course!",
+          "By twisting the purpose of the protection spell, I've been able to reverse its function to create a spell that pulls objects and entities closer to the caster.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/chaos.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/darkness.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 4,
+        "elements": [
+          { "recipe": "unicopia:spells/dark_vortex" },
+          "Requires:",
+          "- 1 arcane attraction gem\n- At least 10x strength trait\n- At least 8x knowledge trait\n- At least 8x chaos trait\n- At least 9x darkness trait",
+          "+ 10x focus to narrow the effect's range to items specifically"
+        ]
+      }
+    ]
+  }
 }

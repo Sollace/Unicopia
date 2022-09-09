@@ -5,6 +5,13 @@
   "content": {
     "pages": [
       {
+        "title": "Ch.2 Fire Magic",
+        "level": 0,
+        "elements": [
+          { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/fire_magic.png" }
+        ]
+      },
+      {
         "title": "9th Jum '12",
         "level": 0,
         "elements": [
@@ -12,13 +19,6 @@
           "It's a working title, okay?",
           "At the princess' behest",
           "- Starswirl the Bearded"
-        ]
-      },
-      {
-        "title": "Ch.3 Fire Magic",
-        "level": 0,
-        "elements": [
-          { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/fire_magic.png" }
         ]
       },
       {
