@@ -441,7 +441,7 @@
   "death.attack.food_poisoning": "%1$s died of food poisoning",
   "death.attack.food_poisoning.attacker": "%2$s poisoned %1$s to death",
   "death.attack.back_hole": "%1$s was sucked into a black hole",
-  "death.attack.back_hole": "%1$s got sucked into %2$s's black hole",
+  "death.attack.back_hole.attacker": "%1$s got sucked into %2$s's black hole",
 
   "unicopia.subtitle.flap_wings": "Wing flaps",
   "unicopia.subtitle.wind_rush": "Wind gusts",
