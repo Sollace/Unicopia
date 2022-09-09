@@ -1,11 +1,11 @@
 {
   "side": "RIGHT",
-  "y_position": 2,
+  "y_position": 3,
   "color": 0,
   "content": {
     "pages": [
       {
-        "title": "4th Mare 12",
+        "title": "4th Trot 12",
         "level": 0,
         "elements": [
           "This is an interesting one. Rather simple, I admit, but Luna insisted I make something cold to help us deal with this darn heat",
@@ -41,6 +41,38 @@
         ]
       },
       {
+        "title": "5th Trot '12",
+        "level": 4,
+        "elements": [
+          "The village-ponies had a bonfire last night. I could tell by the strong smell of burning wood and the sound of music.",
+          "Luna, bless her heart, insisted that we take a break to join them. She had to practically drag me away from my desk to do it.",
+          "What can I say? She's a light in my heart."
+        ]
+      },
+      {
+        "title": "Bonfire",
+        "level": 5,
+        "elements": [
+          "We arrived at the bonfire, and of course the first thing they had was a mug of ale in my hoof. I didn't drink it, of course-alcohol is a poison to me. I'd be sick as a mule.",
+          "Luna enjoyed it-the bonfire, not the ale!-though. She made immediate friends with one of the town's fillies, Celly or something. They played the whole night."
+        ]
+      },
+      {
+        "title": "Bonfire II",
+        "level": 6,
+        "elements": [
+          "On the way back Luna was telling me of the stories her friend told her. The town has a lot of legends, as to be expected.",
+          "One of them was about a scary old warlock who lived in a haunted tower at the edge of town. There's no mystery who that was about.",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "",
+        "level": 6,
+        "elements": []
+      },
+      {
         "title": "",
         "level": -1,
         "elements": [
@@ -53,11 +85,56 @@
         ]
       },
       {
-        "title": "6th Mare '12",
+        "title": "6th Trot '12",
         "level": 4,
         "elements": [
           "There was a strange noise in the village last night. Very strange. I heard a lot ponies shouting and there may have been a fire.",
           "I hope everything is okay.",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "Dancing Lights",
+        "level": 5,
+        "elements": [
+          "By combining a fire bolt gem with a splash of life and the chilling effect of ice I've created a spell to help with seeing in the night.",
+          "Dancing Lights will summon a cluster of glowing orbs to illuminate your path.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "minecraft:textures/item/light.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/ice.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 5,
+        "elements": [
+          { "recipe": "unicopia:spells/light" },
+          "Requires:",
+          "- A fire bolt gem\n- At least 10 focus trait\n- At least 30 life trait\n- At least 30 ice trait",
+          "* By adding more focus you can extend the duration of the spell."
+        ]
+      },
+      {
+        "title": "12th Trot '12",
+        "level": 4,
+        "elements": [
+          "There were more noises last night, this time a lot closer. The town's dimeaner has also changed. A lot of the ponies I see that are normally very cheerful have become sullen.",
+          "Something has happened, that much is obvious, though few will tell me what.",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "15th Trot '12",
+        "level": 4,
+        "elements": [
+          "Winter is nearly upon us now. I just saw the earliest flakes of snow outside this window as I write.",
+          {
+            "text": "The locals have begun their winter unwrapping and though the usual grumblings about frozen fields abound, I can tell there is still ",
+            "extra": [
+              { "text": "a sense of uneasyness.", "obfuscated": true}
+            ]
+          },
           "At the princess' behest",
           "- Starswirl the Bearded"
         ]
