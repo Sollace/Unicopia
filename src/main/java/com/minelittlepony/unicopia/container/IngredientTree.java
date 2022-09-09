@@ -26,10 +26,17 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     private final int y;
     private final int width;
 
-    public IngredientTree(int x, int y, int width, int height) {
+    private boolean addLabels = true;
+
+    public IngredientTree(int x, int y, int width) {
         this.x = x + 4;
         this.y = y;
         this.width = width - 5;
+    }
+
+    public IngredientTree noLabels() {
+        addLabels = false;
+        return this;
     }
 
     @Override
@@ -76,11 +83,11 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             int left = x + column * colWidth + 3 + (row > 0 ? colWidth : 0);
             int top = y + row * rowHeight + 3;
 
-            container.addButton(new IngredientButton(left, top, colWidth, rowHeight, entry, ii == 0 ? "" : "+"));
+            container.addButton(new IngredientButton(left, top, colWidth, rowHeight, entry, !addLabels || ii == 0 ? "" : "+"));
             ii++;
         }
         result.ifPresent(result -> {
-            container.addButton(new IngredientButton(x + width - 17, y + totalHeight / 3 - 2, colWidth, totalHeight, result, "="));
+            container.addButton(new IngredientButton(x + width - 17, y + totalHeight / 3 - 2, colWidth, totalHeight, result, addLabels ? "=" : ""));
         });
 
         return totalHeight + 7;

@@ -10,17 +10,11 @@ import com.minelittlepony.unicopia.container.SpellbookScreen.TraitButton;
 import com.minelittlepony.unicopia.item.URecipes;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
-import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
-public class SpellbookCraftingPageContent extends ScrollContainer implements SpellbookChapterList.Content, RecipeBookProvider {
-
-
+public class SpellbookCraftingPageContent extends ScrollContainer implements SpellbookChapterList.Content, SpellbookScreen.RecipesChangedListener {
     private final SpellbookScreen screen;
-
-    private final RecipeBookWidget recipeBook = new RecipeBookWidget();
 
     public SpellbookCraftingPageContent(SpellbookScreen screen) {
         this.screen = screen;
@@ -31,7 +25,7 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
     @Override
     public void init(SpellbookScreen screen) {
         screen.addPageButtons(187, 300, 350, SpellbookPage::swap);
-        refreshRecipeBook();
+        initContents();
         screen.addDrawable(this);
         ((IViewRoot)screen).getChildElements().add(this);
     }
@@ -48,13 +42,12 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
     }
 
     @Override
-    public void refreshRecipeBook() {
-        init(this::initPageContent);
+    public void onRecipesChanged() {
+        initContents();
     }
 
-    @Override
-    public RecipeBookWidget getRecipeBookWidget() {
-        return recipeBook;
+    public void initContents() {
+        init(this::initPageContent);
     }
 
     private void initPageContent() {
@@ -85,9 +78,7 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
                 int top = 0;
                 for (SpellbookRecipe recipe : this.client.world.getRecipeManager().listAllOfType(URecipes.SPELLBOOK)) {
                     if (client.player.getRecipeBook().contains(recipe)) {
-                        IngredientTree tree = new IngredientTree(0, top,
-                                width - scrollbar.getBounds().width + 2,
-                                20);
+                        IngredientTree tree = new IngredientTree(0, top, width - scrollbar.getBounds().width + 2);
                         recipe.buildCraftingTree(tree);
                         top += tree.build(this);
                     }

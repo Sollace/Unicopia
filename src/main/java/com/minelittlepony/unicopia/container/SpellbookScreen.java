@@ -42,12 +42,13 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
     public static final int TITLE_Y = 20;
     public static final int TITLE_COLOR = 0xFF404040;
 
-    private final SpellbookCraftingPageContent craftingPageWidget = new SpellbookCraftingPageContent(this);
+    private final RecipeBookWidget recipeBook = new RecipeBookWidget();
 
-    private final Chapter craftingChapter = new Chapter(SpellbookChapterList.CRAFTING_ID, TabSide.LEFT, 0, 0, Optional.of(craftingPageWidget));
+    private final Chapter craftingChapter = new Chapter(SpellbookChapterList.CRAFTING_ID, TabSide.LEFT, 0, 0, Optional.of(new SpellbookCraftingPageContent(this)));
     private final Chapter profileChapter = new Chapter(SpellbookChapterList.PROFILE_ID, TabSide.LEFT, 1, 0, Optional.of(new SpellbookProfilePageContent(this)));
+    private final Chapter traitdexChapter = new Chapter(SpellbookChapterList.TRAIT_DEX_ID, TabSide.LEFT, 3, 0, Optional.of(new SpellbookTraitDexPageContent(this)));
 
-    private final SpellbookChapterList chapters = new SpellbookChapterList(craftingChapter, profileChapter);
+    private final SpellbookChapterList chapters = new SpellbookChapterList(craftingChapter, profileChapter, traitdexChapter);
     private final SpellbookTabBar tabs = new SpellbookTabBar(this, chapters);
 
     private Bounds contentBounds = Bounds.empty();
@@ -106,12 +107,15 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
     @Override
     public void refreshRecipeBook() {
-        craftingPageWidget.refreshRecipeBook();
+        chapters.getCurrentChapter()
+            .content()
+            .map(i -> i instanceof RecipesChangedListener ? (RecipesChangedListener)i : null)
+            .ifPresent(RecipesChangedListener::onRecipesChanged);
     }
 
     @Override
     public RecipeBookWidget getRecipeBookWidget() {
-        return craftingPageWidget.getRecipeBookWidget();
+        return recipeBook;
     }
 
     @Override
@@ -319,5 +323,9 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
             RenderSystem.setShaderColor(1, 1, 1, 1);
         }
+    }
+
+    public interface RecipesChangedListener {
+        void onRecipesChanged();
     }
 }

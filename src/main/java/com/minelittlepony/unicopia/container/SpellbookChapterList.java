@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 public class SpellbookChapterList {
     public static final Identifier CRAFTING_ID = Unicopia.id("crafting");
     public static final Identifier PROFILE_ID = Unicopia.id("profile");
+    public static final Identifier TRAIT_DEX_ID = Unicopia.id("traits");
 
     private final Chapter craftingChapter;
 
@@ -20,13 +21,15 @@ public class SpellbookChapterList {
 
     private final Map<Identifier, Chapter> chapters = new HashMap<>();
 
-    public SpellbookChapterList(Chapter craftingChapter, Chapter profileChapter) {
+    public SpellbookChapterList(Chapter craftingChapter, Chapter... builtIn) {
         this.craftingChapter = craftingChapter;
         SpellbookChapterLoader.INSTANCE.getChapters().forEach(chapter -> {
             chapters.put(chapter.id(), chapter);
         });
         chapters.put(craftingChapter.id(), craftingChapter);
-        chapters.put(profileChapter.id(), profileChapter);
+        for (Chapter i : builtIn) {
+            chapters.put(i.id(), i);
+        }
     }
 
     public Stream<Chapter> getTabs(TabSide side) {

@@ -148,7 +148,9 @@ interface PageElement extends Drawable {
                 if (recipe instanceof SpellbookRecipe spellRecipe) {
                     IngredientTree tree = new IngredientTree(
                             bounds().left + page().getBounds().left,
-                            bounds().top + page().getBounds().top + y + 10, page().getBounds().width - 20, 20);
+                            bounds().top + page().getBounds().top + y + 10,
+                            page().getBounds().width - 20
+                    );
                     spellRecipe.buildCraftingTree(tree);
                     bounds.height = tree.build(container) - 10;
                 }
@@ -161,7 +163,9 @@ interface PageElement extends Drawable {
         public void compile(int y, IViewRoot container) {
             IngredientTree tree = new IngredientTree(
                     bounds().left + page().getBounds().left,
-                    bounds().top + page().getBounds().top + y + 10, 30, 20);
+                    bounds().top + page().getBounds().top + y + 10,
+                    30
+            );
             tree.input(ingredient.getMatchingStacks());
             bounds.height = tree.build(container) - 10;
         }
