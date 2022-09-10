@@ -4,9 +4,7 @@ import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
-import com.minelittlepony.unicopia.container.SpellbookScreen.TraitButton;
 import com.minelittlepony.unicopia.item.URecipes;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -55,22 +53,6 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
         getContentPadding().bottom = 30;
 
         switch (SpellbookPage.getCurrent()) {
-            case DISCOVERIES: {
-                int i = 0;
-                int cols = 4;
-
-                int top = 10;
-                int left = 25;
-
-                for (Trait trait : Trait.all()) {
-                    int x = i % cols;
-                    int y = i / cols;
-
-                    addButton(new TraitButton(left + x * 32, top + y * 32, trait));
-                    i++;
-                }
-                break;
-            }
             case INVENTORY:
                 // handled elsewhere
                 break;

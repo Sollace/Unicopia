@@ -5,7 +5,6 @@ import net.minecraft.util.math.MathHelper;
 
 public enum SpellbookPage {
     INVENTORY,
-    DISCOVERIES,
     RECIPES;
 
     public static final SpellbookPage[] VALUES = values();

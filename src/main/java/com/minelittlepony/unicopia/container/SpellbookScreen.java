@@ -9,15 +9,11 @@ import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
 import com.minelittlepony.unicopia.container.SpellbookChapterList.*;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler.*;
-import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
@@ -248,50 +244,6 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
             sprite.setTextureOffset(23 * state, (int)(479 + 6.5F - (increment * 6.5F)));
             super.renderButton(matrices, mouseX, mouseY, tickDelta);
-        }
-    }
-
-    static class TraitButton extends ImageButton {
-        private final Trait trait;
-
-        public TraitButton(int x, int y, Trait trait) {
-            super(x, y, 16, 16);
-            this.trait = trait;
-            getStyle().setIcon(new TextureSprite()
-                    .setTextureSize(16, 16)
-                    .setSize(16, 16)
-                    .setTexture(trait.getSprite()));
-            getStyle().setTooltip(trait.getTooltip());
-
-            onClick(sender -> Pony.of(MinecraftClient.getInstance().player).getDiscoveries().markRead(trait));
-        }
-
-        @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
-            TraitDiscovery discoveries = Pony.of(MinecraftClient.getInstance().player).getDiscoveries();
-            setEnabled(discoveries.isKnown(trait));
-
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            RenderSystem.setShaderTexture(0, TEXTURE);
-            RenderSystem.enableBlend();
-            drawTexture(matrices, x - 2, y - 8, 204, 219, 22, 32, 512, 256);
-
-            if (!active) {
-                drawTexture(matrices, x - 2, y - 1, 74, 223, 18, 18, 512, 256);
-            }
-
-            if (discoveries.isUnread(trait)) {
-                drawTexture(matrices, x - 8, y - 8, 225, 219, 35, 32, 512, 256);
-            }
-
-            super.renderButton(matrices, mouseX, mouseY, tickDelta);
-            hovered &= active;
-        }
-
-        @Override
-        public Button setEnabled(boolean enable) {
-            alpha = enable ? 1 : 0.1125F;
-            return super.setEnabled(enable);
         }
     }
 
