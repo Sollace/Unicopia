@@ -76,11 +76,7 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
 
     @Override
     public ItemStack craft(SpellbookInventory inventory) {
-        return SpellTraits.union(
-                SpellTraits.of(inventory.getItemToModify()),
-                inventory.getTraits(),
-                SpellTraits.of(output)
-        ).applyTo(output);
+        return output.copy();
     }
 
     @Override
