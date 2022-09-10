@@ -25,14 +25,18 @@ public interface Channel {
     Identifier SERVER_SELECT_TRIBE_ID = Unicopia.id("select_tribe");
     S2CPacketType<MsgTribeSelect> SERVER_SELECT_TRIBE = SimpleNetworking.serverToClient(SERVER_SELECT_TRIBE_ID, MsgTribeSelect::new);
 
+    Identifier SERVER_RESOURCES_SEND_ID = Unicopia.id("resources_send");
+    S2CPacketType<MsgServerResources> SERVER_RESOURCES_SEND = SimpleNetworking.serverToClient(SERVER_RESOURCES_SEND_ID, MsgServerResources::new);
+
     S2CBroadcastPacketType<MsgOtherPlayerCapabilities> SERVER_OTHER_PLAYER_CAPABILITIES = SimpleNetworking.serverToClients(Unicopia.id("other_player_capabilities"), MsgOtherPlayerCapabilities::new);
     S2CBroadcastPacketType<MsgPlayerAnimationChange> SERVER_PLAYER_ANIMATION_CHANGE = SimpleNetworking.serverToClients(Unicopia.id("other_player_animation_change"), MsgPlayerAnimationChange::new);
 
     static void bootstrap() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             if (!Pony.of(handler.player).isSpeciesPersisted()) {
-                sender.sendPacket(SERVER_SELECT_TRIBE_ID, new MsgTribeSelect(handler.player).toBuffer());
+                sender.sendPacket(SERVER_SELECT_TRIBE.getId(), new MsgTribeSelect(handler.player).toBuffer());
             }
+            sender.sendPacket(SERVER_RESOURCES_SEND.getId(), new MsgServerResources().toBuffer());
         });
     }
 }

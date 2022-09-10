@@ -27,7 +27,7 @@ public record TraitIngredient (
     }
 
     public static TraitIngredient fromPacket(PacketByteBuf buf) {
-        return new TraitIngredient(SpellTraits.fromPacket(buf), SpellTraits.fromPacket(buf));
+        return new TraitIngredient(SpellTraits.fromPacketOrEmpty(buf), SpellTraits.fromPacketOrEmpty(buf));
     }
 
     public static TraitIngredient fromJson(JsonObject json) {

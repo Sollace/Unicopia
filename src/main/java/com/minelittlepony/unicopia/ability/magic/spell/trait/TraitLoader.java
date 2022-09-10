@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.ability.magic.spell.trait;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -21,7 +20,6 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Resources;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
-import net.minecraft.item.Item;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloader;
@@ -33,17 +31,9 @@ import net.minecraft.util.registry.Registry;
 public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Identifier, TraitLoader.TraitStream>> implements IdentifiableResourceReloadListener {
     private static final Identifier ID = Unicopia.id("data/traits");
 
-    public static final TraitLoader INSTANCE = new TraitLoader();
-
-    private Map<Identifier, SpellTraits> values = new HashMap<>();
-
     @Override
     public Identifier getFabricId() {
         return ID;
-    }
-
-    public SpellTraits getTraits(Item item) {
-        return values.getOrDefault(Registry.ITEM.getId(item), SpellTraits.EMPTY);
     }
 
     @Override
@@ -87,9 +77,9 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
     @Override
     protected void apply(Multimap<Identifier, TraitStream> prepared, ResourceManager manager, Profiler profiler) {
         profiler.startTick();
-        values = prepared.values().stream()
+        SpellTraits.load(prepared.values().stream()
                 .flatMap(TraitStream::entries)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, SpellTraits::union));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, SpellTraits::union)));
         profiler.endTick();
     }
 
