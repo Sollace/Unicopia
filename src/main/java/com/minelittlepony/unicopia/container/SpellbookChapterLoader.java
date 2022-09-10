@@ -23,7 +23,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Identifier ID = Unicopia.id("spellbook/chapters");
     private static final Executor EXECUTOR = CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS);
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
 
     public static final SpellbookChapterLoader INSTANCE = new SpellbookChapterLoader();
 

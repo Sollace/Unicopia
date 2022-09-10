@@ -128,6 +128,10 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
         drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight, 512, 256);
 
+        if (SpellbookChapterLoader.DEBUG) {
+            clearAndInit();
+        }
+
         tabs.getAllTabs().forEach(tab -> {
             Bounds bounds = tab.bounds();
             chapters.getCurrentChapter();
