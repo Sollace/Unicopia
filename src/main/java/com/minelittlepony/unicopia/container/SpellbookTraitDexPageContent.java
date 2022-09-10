@@ -1,8 +1,12 @@
 package com.minelittlepony.unicopia.container;
 
+import java.util.Comparator;
+import java.util.List;
+
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.element.Label;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -10,12 +14,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.*;
 import net.minecraft.text.Text;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 
 public class SpellbookTraitDexPageContent extends DrawableHelper implements SpellbookChapterList.Content, SpellbookScreen.RecipesChangedListener {
 
-    private final Trait[] traits = Trait.all().toArray(Trait[]::new);
+    private final Trait[] traits = Trait.values();
     private int offset;
 
     private final DexPage leftPage = new DexPage();
@@ -51,6 +57,7 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
         public DexPage() {
             scrollbar.layoutToEnd = true;
             backgroundColor = 0xFFf9efd3;
+            getContentPadding().setVertical(10);
         }
 
         public void init(SpellbookScreen screen, int page) {
@@ -80,8 +87,20 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
                         .setText(known ? Text.translatable("gui.unicopia.trait.label",
                                 Text.translatable("trait." + trait.getId().getNamespace() + "." + trait.getId().getPath() + ".name")
                 ) : Text.literal("???"));
-                IngredientTree tree = new IngredientTree(0, 50, width).noLabels();
-                Pony.of(MinecraftClient.getInstance().player).getDiscoveries().getKnownItems(trait).forEach(i -> tree.input(i.getDefaultStack()));
+                IngredientTree tree = new IngredientTree(0, 50, width + 18).noLabels();
+
+                List<Item> knownItems = Pony.of(MinecraftClient.getInstance().player).getDiscoveries().getKnownItems(trait).toList();
+                SpellTraits.getItems(trait)
+                    .sorted(Comparator.comparing(u -> knownItems.contains(u) ? 0 : 1))
+                    .forEach(i -> {
+                        DefaultedList<ItemStack> stacks = DefaultedList.of();
+                        i.appendStacks(ItemGroup.SEARCH, stacks);
+                        if (knownItems.contains(i)) {
+                            tree.input(stacks);
+                        } else {
+                            tree.mystery(stacks);
+                        }
+                    });
                 tree.build(this);
             });
             screen.addDrawable(this);
@@ -93,7 +112,7 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
         public void drawOverlays(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
             matrices.push();
             matrices.translate(margin.left, margin.top, 0);
-            matrices.translate(-2, -2, 0);
+            matrices.translate(-2, -2, 200);
             RenderSystem.enableBlend();
             RenderSystem.setShaderTexture(0, SpellbookScreen.TEXTURE);
             int tileSize = 25;
@@ -102,10 +121,7 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
             final int right = width - tileSize + 9;
 
             drawTexture(matrices, 0, 0, 405, 62, tileSize, tileSize, 512, 256);
-            drawTexture(matrices, right, 0, 425, 62, tileSize, tileSize, 512, 256);
-
             drawTexture(matrices, 0, bottom, 405, 72, tileSize, tileSize, 512, 256);
-            drawTexture(matrices, right, bottom, 425, 72, tileSize, tileSize, 512, 256);
 
             for (int i = tileSize; i < right; i += tileSize) {
                 drawTexture(matrices, i, 0, 415, 62, tileSize, tileSize, 512, 256);
@@ -116,6 +132,9 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
                 drawTexture(matrices, 0, i, 405, 67, tileSize, tileSize, 512, 256);
                 drawTexture(matrices, right, i, 425, 67, tileSize, tileSize, 512, 256);
             }
+
+            drawTexture(matrices, right, 0, 425, 62, tileSize, tileSize, 512, 256);
+            drawTexture(matrices, right, bottom, 425, 72, tileSize, tileSize, 512, 256);
             matrices.pop();
 
             if (this == rightPage) {

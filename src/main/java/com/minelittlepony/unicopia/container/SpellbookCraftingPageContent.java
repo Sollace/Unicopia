@@ -104,7 +104,7 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
     public void drawOverlays(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
         matrices.push();
         matrices.translate(margin.left, margin.top, 0);
-        matrices.translate(-2, -2, 0);
+        matrices.translate(-2, -2, 200);
         RenderSystem.enableBlend();
         RenderSystem.setShaderTexture(0, SpellbookScreen.TEXTURE);
         int tileSize = 25;

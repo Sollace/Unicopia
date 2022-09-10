@@ -9,13 +9,19 @@ import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Vector4f;
 
 class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
@@ -54,6 +60,13 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     }
 
     @Override
+    public void mystery(ItemStack... stacks) {
+        if (stacks.length > 0) {
+            entries.add(new HiddenStacks(stacks));
+        }
+    }
+
+    @Override
     public void result(ItemStack...stacks) {
         if (stacks.length > 0) {
             result = Optional.of(new Stacks(stacks));
@@ -80,7 +93,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             int column = ii % cols;
             int row = ii / cols;
 
-            int left = x + column * colWidth + 3 + (row > 0 ? colWidth : 0);
+            int left = x + column * colWidth + 3 + (addLabels && row > 0 ? colWidth : 0);
             int top = y + row * rowHeight + 3;
 
             container.addButton(new IngredientButton(left, top, colWidth, rowHeight, entry, !addLabels || ii == 0 ? "" : "+"));
@@ -101,13 +114,14 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             super(x, y, width, height);
             this.entry = entry;
             this.label = label;
-            this.getStyle().setTooltip(entry.getTooltip());
+            Tooltip tooltip = entry.getTooltip();
+            if (tooltip != null) {
+                this.getStyle().setTooltip(tooltip);
+            }
         }
-
 
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
-
             RenderSystem.setShaderColor(1, 1, 1, 1);
             RenderSystem.setShaderTexture(0, SpellbookScreen.SLOT);
             RenderSystem.enableBlend();
@@ -124,6 +138,18 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             );
             entry.render(matrices, x, y, tickDelta);
         }
+
+        @Override
+        public void renderToolTip(MatrixStack matrices, Screen parent, int mouseX, int mouseY) {
+            if (visible) {
+                getStyle().getTooltip().ifPresent(tooltip -> {
+                    List<Text> lines = tooltip.getLines();
+                    if (!lines.isEmpty()) {
+                        parent.renderTooltip(matrices, tooltip.getLines(), mouseX + getStyle().toolTipX, mouseY + getStyle().toolTipY);
+                    }
+                });
+            }
+        }
     }
 
     interface Entry {
@@ -134,10 +160,10 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
 
     class Stacks implements IngredientTree.Entry {
         private int ticker;
-        private int index;
-        private final ItemStack[] stacks;
+        protected int index;
+        protected final ItemStack[] stacks;
 
-        private final ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
+        protected final ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
 
         Stacks(ItemStack[] stacks) {
             this.stacks = stacks;
@@ -150,19 +176,68 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             if (ticker++ % 500 == 0) {
                 index = (index + 1) % stacks.length;
             }
-            float z = itemRenderer.zOffset;
-            itemRenderer.zOffset = -100;
 
-            Vector4f vector4f = new Vector4f(x, y, z, 1);
-            vector4f.transform(matrices.peek().getPositionMatrix());
+            Vector4f pos = new Vector4f(x, y, 0, 1);
+            pos.transform(matrices.peek().getPositionMatrix());
+            drawItem((int)pos.getX(), (int)pos.getY());
+        }
 
-            itemRenderer.renderInGui(stacks[index], (int)vector4f.getX(), (int)vector4f.getY());
-            itemRenderer.zOffset = z;
+        protected void drawItem(int x, int y) {
+            itemRenderer.renderInGui(stacks[index], x, y);
         }
 
         @Override
         public Tooltip getTooltip() {
-            return () -> stacks[index].getTooltip(MinecraftClient.getInstance().player, TooltipContext.Default.NORMAL);
+            return () -> {
+                if (stacks[index].isEmpty()) {
+                    return List.of();
+                }
+                return stacks[index].getTooltip(MinecraftClient.getInstance().player, TooltipContext.Default.NORMAL);
+            };
+        }
+    }
+
+    class HiddenStacks extends Stacks {
+        HiddenStacks(ItemStack[] stacks) {
+            super(stacks);
+        }
+
+        @Override
+        protected void drawItem(int x, int y) {
+            var model = itemRenderer.getModel(stacks[index], null, null, 0);
+
+            MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
+            RenderSystem.setShaderTexture(0, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+            RenderSystem.setShaderColor(1, 1, 1, 0.2F);
+            MatrixStack matrixStack = RenderSystem.getModelViewStack();
+            matrixStack.push();
+            matrixStack.translate(x, y, 100 + itemRenderer.zOffset);
+            matrixStack.translate(8, 8, 0);
+            matrixStack.scale(1, -1, 1);
+            matrixStack.scale(8, 8, 8);
+            RenderSystem.applyModelViewMatrix();
+            VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+            boolean bl = !model.isSideLit();
+            if (bl) {
+                DiffuseLighting.disableGuiDepthLighting();
+            }
+            itemRenderer.renderItem(stacks[index], ModelTransformation.Mode.GUI, false, new MatrixStack(), immediate, 0, OverlayTexture.DEFAULT_UV, model);
+            immediate.draw();
+            RenderSystem.enableDepthTest();
+            if (bl) {
+                DiffuseLighting.enableGuiDepthLighting();
+            }
+            matrixStack.pop();
+            RenderSystem.applyModelViewMatrix();
+
+            RenderSystem.setShaderColor(1, 1, 1, 1);
+        }
+
+        @Override
+        public Tooltip getTooltip() {
+            return List::of;
         }
     }
 
