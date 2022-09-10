@@ -153,7 +153,6 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
         owner.heal(healthGain);
     }
 
-
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);

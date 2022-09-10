@@ -62,11 +62,45 @@
           { "recipe": "unicopia:spells/vortex" },
           "Requires:",
           "- 1 protection gem\n- At least 10x strength trait\n- At least 8x knowledge trait\n- At least 9x air trait",
-          "+ 10x focus to narrow the effect's range to items specifically"
+          "+ 10x knowledge to narrow the effect's range to items\n+ Add focus trait to increase duration\n+ add power trait to increase range"
         ]
       },
       {
-        "title": "10th Slep '12",
+        "title": "8th Slep '12",
+        "level": 6,
+        "elements": [
+          "Additional Notes for the Attraction Spell",
+          "I caught Luna playing with my spellcrafting grid today, even though I expressly forbid her from entering my study when I'm not there.",
+          "Apparently it was over some dispute with Celly, I don't really remember, but it culminated in Luna sneaking into the study whilst I was out to get some bread."
+        ]
+      },
+      {
+        "title": "Arcane Attraction II",
+        "level": 6,
+        "elements": [
+          "This isn't really about that, though. She's been scolded and sent back to her room, however as I was cleaning up the mess she'd made I noticed something in the piles of gems.",
+          "It's hard to describe, really. This is still distincly an attraction gem, but it's different.",
+          "It has traits I hadn't considered before, and the way it behaves... "
+        ]
+      },
+      {
+        "title": "Arcane Attraction II Cont.",
+        "level": 6,
+        "elements": [
+          "Well I'll leave that up to tomorrow. I'm still tired from everything that's happened this week.",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "",
+        "level": 6,
+        "elements": [
+          ">0 generosity --> ??",
+          ">20 order trait --> ???"
+        ]
+      },
+      {
+        "title": "20th Slep '12",
         "level": 11,
         "elements": [
           "As per their agreement, the council have sent certain...supplimental materials to aid in the new direction my research is taking. I was a little shocked at first.",
@@ -76,7 +110,7 @@
         ]
       },
       {
-        "title": "11th Slep '12",
+        "title": "21st Slep '12",
         "level": 11,
         "elements": [
           "I've put the... thing. In the basement. Locked the door.",
@@ -87,19 +121,19 @@
       },
       {
         "title": "",
-        "level": 0,
+        "level": -1,
         "elements": []
       },
       {
         "title": "",
-        "level": 0,
+        "level": -1,
         "elements": []
       },
       {
-        "title": "15th Slep '12",
+        "title": "25th Slep '12",
         "level": 13,
         "elements": [
-          "I'm sorry for the long delays. Things have been...",
+          "I'm sorry for the long delays. Things have been... Busy.",
           "I've learned a lot about these creatures. Attached are some illustrations, done best I could so I wouldn't have to look at the thing directly.",
           {
             "text": "Its body is black and vaguely",
@@ -141,7 +175,7 @@
       },
       {
         "title": "Dispell Illusion",
-        "level": 14,
+        "level": 15,
         "elements": [
           "Dispell Illusion is the first line of defense against transformation/illusion spells.",
           "When cast it will force any nearby disguised changelings in its range to reveal their true form.",
@@ -151,7 +185,7 @@
       },
       {
         "title": "",
-        "level": 14,
+        "level": 15,
         "elements": [
           { "recipe": "unicopia:spells/reveal" },
           "Requires:",

@@ -220,7 +220,8 @@
         "elements": [
           { "recipe": "unicopia:spells/shield" },
           "Requires:",
-          "- 1 gemstone\n- At least 10x strength trait\n- At least 6x focus trait\n- At least 10x power trait"
+          "- 1 gemstone\n- At least 10x strength trait\n- At least 6x focus trait\n- At least 10x power trait",
+          "\n+ add power trait to increase effect range"
         ]
       },
       {

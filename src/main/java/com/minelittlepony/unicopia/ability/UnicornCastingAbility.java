@@ -108,7 +108,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
                     } else {
                         player.setAnimation(Animation.ARMS_UP);
                         if (s instanceof HomingSpell) {
-                            RayTraceHelper.doTrace(player.getMaster(), 600, 1, EntityPredicates.CAN_COLLIDE).getEntity().ifPresent(((HomingSpell)s)::setTarget);
+                            RayTraceHelper.doTrace(player.getMaster(), 600, 1, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(EntityPredicates.VALID_ENTITY)).getEntity().ifPresent(((HomingSpell)s)::setTarget);
                         }
                         player.playSound(USounds.SPELL_CAST_SUCCESS, 0.05F, 2.2F);
                     }
