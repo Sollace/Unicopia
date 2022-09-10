@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.container;
+package com.minelittlepony.unicopia.client.gui;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -10,7 +10,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.text.*;
 import net.minecraft.text.StringVisitable.StyledVisitor;
 
-class ParagraphWrappingVisitor implements StyledVisitor<Object> {
+public class ParagraphWrappingVisitor implements StyledVisitor<Object> {
     private int line = 0;
     private int pageWidth;
 
@@ -24,7 +24,7 @@ class ParagraphWrappingVisitor implements StyledVisitor<Object> {
     private final Int2IntFunction widthSupplier;
     private final BiConsumer<Text, Integer> lineConsumer;
 
-    ParagraphWrappingVisitor(Int2IntFunction widthSupplier, BiConsumer<Text, Integer> lineConsumer) {
+    public ParagraphWrappingVisitor(Int2IntFunction widthSupplier, BiConsumer<Text, Integer> lineConsumer) {
         this.widthSupplier = widthSupplier;
         this.lineConsumer = lineConsumer;
         pageWidth = widthSupplier.applyAsInt((line) * font.fontHeight);

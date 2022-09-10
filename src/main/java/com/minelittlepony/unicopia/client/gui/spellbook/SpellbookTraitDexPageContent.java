@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.container;
+package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import java.util.Comparator;
 import java.util.List;
@@ -9,7 +9,7 @@ import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.*;
-import com.minelittlepony.unicopia.container.SpellbookScreen.ImageButton;
+import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen.ImageButton;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.systems.RenderSystem;
 

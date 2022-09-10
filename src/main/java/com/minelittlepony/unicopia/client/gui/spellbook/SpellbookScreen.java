@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.container;
+package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import java.util.Optional;
 import java.util.function.IntConsumer;
@@ -9,7 +9,9 @@ import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.container.SpellbookChapterList.*;
+import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
+import com.minelittlepony.unicopia.container.SpellbookPage;
+import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler.*;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;

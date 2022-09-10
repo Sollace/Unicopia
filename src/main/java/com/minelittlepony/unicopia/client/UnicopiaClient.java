@@ -10,6 +10,8 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.LanSettingsScreen;
 import com.minelittlepony.unicopia.client.gui.UHud;
+import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterLoader;
+import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
 import com.minelittlepony.unicopia.container.*;
 import com.minelittlepony.unicopia.entity.player.PlayerCamera;

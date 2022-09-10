@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.container;
+package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import java.util.*;
 
@@ -6,8 +6,8 @@ import com.google.gson.*;
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
-import com.minelittlepony.unicopia.container.SpellbookChapterList.Content;
-import com.minelittlepony.unicopia.container.SpellbookChapterList.Drawable;
+import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Content;
+import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Drawable;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;

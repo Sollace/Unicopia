@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.container;
+package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,8 @@ import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
-import com.minelittlepony.unicopia.container.SpellbookChapterList.Drawable;
+import com.minelittlepony.unicopia.client.gui.ParagraphWrappingVisitor;
+import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Drawable;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.systems.RenderSystem;
 

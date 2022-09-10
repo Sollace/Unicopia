@@ -1,11 +1,11 @@
-package com.minelittlepony.unicopia.container;
+package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import java.util.*;
 import java.util.stream.Stream;
 
 import com.minelittlepony.common.client.gui.dimension.Bounds;
-import com.minelittlepony.unicopia.container.SpellbookChapterList.Chapter;
-import com.minelittlepony.unicopia.container.SpellbookChapterList.TabSide;
+import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Chapter;
+import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.TabSide;
 
 import net.minecraft.util.Identifier;
 

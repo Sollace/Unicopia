@@ -1,9 +1,10 @@
-package com.minelittlepony.unicopia.container;
+package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
+import com.minelittlepony.unicopia.container.SpellbookPage;
 import com.minelittlepony.unicopia.entity.player.*;
 import com.mojang.blaze3d.systems.RenderSystem;
 

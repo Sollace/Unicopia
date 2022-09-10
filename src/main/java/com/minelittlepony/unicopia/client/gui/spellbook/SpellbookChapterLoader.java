@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.container;
+package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 
 import com.google.gson.*;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.container.SpellbookChapterList.*;
+import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
 import com.minelittlepony.unicopia.util.Resources;
 import com.mojang.logging.LogUtils;
 
