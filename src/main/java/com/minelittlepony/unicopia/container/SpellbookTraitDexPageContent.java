@@ -47,6 +47,8 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
         rightPage.init(screen, page + 1);
         screen.addPageButtons(187, 30, 350, incr -> {
             offset = MathHelper.clamp(offset + incr, 0, (int)Math.ceil(traits.length / 2F) - 1);
+            leftPage.scrollbar.scrollBy(leftPage.scrollbar.getVerticalScrollAmount());
+            rightPage.scrollbar.scrollBy(rightPage.scrollbar.getVerticalScrollAmount());
         });
     }
 
