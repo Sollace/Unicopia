@@ -21,6 +21,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.math.Vec3d;
@@ -111,14 +114,26 @@ public class ShieldSpell extends AbstractSpell {
     }
 
     protected boolean isValidTarget(Caster<?> source, Entity entity) {
-        return (entity instanceof LivingEntity
+        boolean valid = (entity instanceof LivingEntity
                 || entity instanceof TntEntity
                 || entity instanceof FallingBlockEntity
-                || entity instanceof EyeOfEnderEntity
-                || entity instanceof BoatEntity
                 || ProjectileUtil.isFlyingProjectile(entity)
                 || entity instanceof AbstractMinecartEntity)
-            && !(entity instanceof ArmorStandEntity);
+            && !(  entity instanceof ArmorStandEntity
+                || entity instanceof EyeOfEnderEntity
+                || entity instanceof BoatEntity
+        );
+
+        if (getTraits().get(Trait.LIFE) > 0) {
+            valid &= !(entity instanceof PassiveEntity);
+        }
+        if (getTraits().get(Trait.BLOOD) > 0) {
+            valid &= entity instanceof HostileEntity;
+        }
+        if (getTraits().get(Trait.ICE) > 0) {
+            valid &= entity instanceof PlayerEntity;
+        }
+        return valid;
     }
 
     protected long applyEntities(Caster<?> source) {
