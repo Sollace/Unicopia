@@ -40,8 +40,6 @@ public class MsgSpellbookStateChanged<T extends PlayerEntity> implements Packet<
             return;
         }
 
-        System.out.println("Spellbook update page=" + state.getCurrentPageId().get() + " offset=" + state.getState(state.getCurrentPageId().get()).getOffset() + " to " + sender);
-
         if (sender.currentScreenHandler instanceof SpellbookScreenHandler spellbook) {
             spellbook.getSpellbookState().copyFrom(state);
             if (sender instanceof ServerPlayerEntity) {
