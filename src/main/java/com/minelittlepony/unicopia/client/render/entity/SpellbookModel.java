@@ -28,11 +28,6 @@ public class SpellbookModel extends EntityModel<SpellbookEntity> {
        book.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 
-    @Deprecated
-    public void setPageAngles(float breath, float leftPageRot, float rightPageRot, float openAngle) {
-       book.setPageAngles(breath, leftPageRot, rightPageRot, openAngle);
-    }
-
     @Override
     public void setAngles(SpellbookEntity entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
         float breath = MathHelper.sin((entity.age + customAngle) / 20) * 0.01F + 0.1F;

@@ -13,8 +13,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 public class SpellbookState extends Synchronizable<SpellbookState> implements NbtSerialisable {
-    public static final SpellbookState INSTANCE = new SpellbookState();
-
     private Optional<Identifier> currentPageId = Optional.empty();
 
     private final Map<Identifier, PageState> states = new HashMap<>();
