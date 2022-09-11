@@ -10,7 +10,6 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.LanSettingsScreen;
 import com.minelittlepony.unicopia.client.gui.UHud;
-import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterLoader;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
 import com.minelittlepony.unicopia.container.*;
@@ -19,14 +18,12 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.OpenToLanScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.text.Text;
 
 public class UnicopiaClient implements ClientModInitializer {
@@ -66,7 +63,6 @@ public class UnicopiaClient implements ClientModInitializer {
         URenderers.bootstrap();
 
         HandledScreens.register(UScreenHandlers.SPELL_BOOK, SpellbookScreen::new);
-        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(SpellbookChapterLoader.INSTANCE);
 
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
         ScreenInitCallback.EVENT.register(this::onScreenInit);

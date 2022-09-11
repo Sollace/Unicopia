@@ -2,16 +2,17 @@ package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import java.util.*;
 
-import com.google.gson.*;
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Content;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Drawable;
+import com.minelittlepony.unicopia.container.SpellbookChapterLoader.Flow;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 
@@ -20,12 +21,12 @@ public class DynamicContent implements Content {
     private static final Text UNKNOWN_LEVEL = Text.literal("Level: ???").formatted(Formatting.DARK_GREEN);
 
     private SpellbookState.PageState state = new SpellbookState.PageState();
-    private final List<Page> pages = new ArrayList<>();
+    private final List<Page> pages;
 
     private Bounds bounds = Bounds.empty();
 
-    public DynamicContent(JsonArray json) {
-        json.forEach(element -> pages.add(new Page(element.getAsJsonObject())));
+    public DynamicContent(PacketByteBuf buffer) {
+        pages = buffer.readList(Page::new);
     }
 
     @Override
@@ -76,21 +77,19 @@ public class DynamicContent implements Content {
     }
 
     class Page implements Drawable {
-        private final List<PageElement> elements = new ArrayList<>();
-
         private final Text title;
         private final int level;
+
+        private final List<PageElement> elements;
 
         private boolean compiled;
 
         private Bounds bounds = Bounds.empty();
 
-        public Page(JsonObject json) {
-            title = Text.Serializer.fromJson(json.get("title"));
-            level = JsonHelper.getInt(json, "level", 0);
-            JsonHelper.getArray(json, "elements", new JsonArray()).forEach(element -> {
-                elements.add(PageElement.fromJson(this, element));
-            });
+        public Page(PacketByteBuf buffer) {
+            title = buffer.readText();
+            level = buffer.readInt();
+            elements = buffer.readList(r -> PageElement.read(this, r));
         }
 
         protected int getLineLimitAt(int yPosition) {
@@ -104,7 +103,7 @@ public class DynamicContent implements Content {
 
         protected int getLeftMarginAt(int yPosition) {
             return elements.stream()
-                    .filter(p -> p.flow() == PageElement.Flow.LEFT)
+                    .filter(p -> p.flow() == Flow.LEFT)
                     .map(PageElement::bounds)
                     .filter(b -> b.containsY(yPosition))
                     .mapToInt(b -> b.width)

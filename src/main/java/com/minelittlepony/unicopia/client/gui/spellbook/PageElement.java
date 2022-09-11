@@ -3,14 +3,13 @@ package com.minelittlepony.unicopia.client.gui.spellbook;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.client.gui.ParagraphWrappingVisitor;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Drawable;
+import com.minelittlepony.unicopia.container.SpellbookChapterLoader.Flow;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -18,6 +17,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
@@ -44,37 +44,19 @@ interface PageElement extends Drawable {
 
     default void compile(int y, IViewRoot Container) {}
 
-    static PageElement fromJson(DynamicContent.Page page, JsonElement element) {
-        if (element.isJsonPrimitive()) {
-            return new TextBlock(page, Text.Serializer.fromJson(element));
-        }
-
-        JsonObject el = JsonHelper.asObject(element, "element");
-        if (el.has("texture")) {
-            return new Image(
-                new Identifier(JsonHelper.getString(el, "texture")),
-                boundsFromJson(el),
-                Flow.valueOf(JsonHelper.getString(el, "flow", "RIGHT"))
-            );
-        }
-        if (el.has("recipe")) {
-            return new Recipe(page, new Identifier(JsonHelper.getString(el, "recipe")), new Bounds(0, 0, 0, 0));
-        }
-
-        if (el.has("item")) {
-            return new Stack(page, IngredientWithSpell.fromJson(el.get("item")), boundsFromJson(el));
-        }
-
-        return new TextBlock(page, Text.Serializer.fromJson(element));
+    static PageElement read(DynamicContent.Page page, PacketByteBuf buffer) {
+        byte type = buffer.readByte();
+        return (switch (type) {
+            case 0 -> new Image(buffer.readIdentifier(), boundsFromBuffer(buffer), buffer.readEnumConstant(Flow.class));
+            case 1 -> new Recipe(page, buffer.readIdentifier(), Bounds.empty());
+            case 2 -> new Stack(page, IngredientWithSpell.fromPacket(buffer), boundsFromBuffer(buffer));
+            case 3 -> new TextBlock(page, buffer.readText());
+            default -> throw new IllegalArgumentException("Unexpected value: " + type);
+        });
     }
 
-    private static Bounds boundsFromJson(JsonObject el) {
-        return new Bounds(
-            JsonHelper.getInt(el, "y", 0),
-            JsonHelper.getInt(el, "x", 0),
-            JsonHelper.getInt(el, "width", 0),
-            JsonHelper.getInt(el, "height", 0)
-        );
+    private static Bounds boundsFromBuffer(PacketByteBuf buffer) {
+        return new Bounds(buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readInt());
     }
 
     record Image(
@@ -170,9 +152,5 @@ interface PageElement extends Drawable {
             tree.input(ingredient.getMatchingStacks());
             bounds.height = tree.build(container) - 10;
         }
-    }
-
-    enum Flow {
-        NONE, LEFT, RIGHT
     }
 }

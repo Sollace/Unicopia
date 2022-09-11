@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.container.SpellbookChapterLoader;
 
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -24,7 +25,7 @@ public class SpellbookChapterList {
     public SpellbookChapterList(SpellbookScreen screen, Chapter craftingChapter, Chapter... builtIn) {
         this.screen = screen;
         this.craftingChapter = craftingChapter;
-        SpellbookChapterLoader.INSTANCE.getChapters().forEach(chapter -> {
+        ClientChapters.getChapters().forEach(chapter -> {
             chapters.put(chapter.id(), chapter);
         });
         chapters.put(craftingChapter.id(), craftingChapter);
@@ -39,7 +40,7 @@ public class SpellbookChapterList {
 
     public Chapter getCurrentChapter() {
         if (SpellbookChapterLoader.DEBUG) {
-            SpellbookChapterLoader.INSTANCE.getChapters().forEach(chapter -> {
+            ClientChapters.getChapters().forEach(chapter -> {
                 Optional.ofNullable(chapters.get(chapter.id())).flatMap(Chapter::content).ifPresent(old -> {
                     chapter.content().ifPresent(neu -> neu.copyStateFrom(old));
                 });
