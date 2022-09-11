@@ -44,10 +44,19 @@ public class GemstoneItem extends Item {
             PlayerCharmTracker charms = Pony.of(user).getCharms();
 
             TypedActionResult<CustomisedSpellType<?>> spell = consumeSpell(stack, user, ((Predicate<CustomisedSpellType<?>>)charms.getEquippedSpell(hand)::equals).negate());
+
+            CustomisedSpellType<?> existing = charms.getEquippedSpell(hand);
+
+            if (existing != null) {
+                stack = existing.traits().applyTo(enchant(stack, existing.type()));
+            }
+
             if (spell.getResult().isAccepted()) {
                 charms.equipSpell(hand, spell.getValue());
-                return TypedActionResult.success(stack, true);
+            } else {
+                charms.equipSpell(hand, SpellType.EMPTY_KEY.withTraits());
             }
+            return TypedActionResult.success(stack, true);
         }
 
         return result;
