@@ -94,7 +94,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
                 projectile.setHydrophobic();
 
                 if (spell instanceof HomingSpell) {
-                    RayTraceHelper.doTrace(player.getMaster(), 600, 1, EntityPredicates.CAN_COLLIDE).getEntity().filter(((HomingSpell)spell)::setTarget).ifPresent(target -> {
+                    RayTraceHelper.doTrace(player.getMaster(), 600, 1, EntityPredicates.EXCEPT_SPECTATOR).getEntity().filter(((HomingSpell)spell)::setTarget).ifPresent(target -> {
                         projectile.setHomingTarget(target);
                     });
                 }

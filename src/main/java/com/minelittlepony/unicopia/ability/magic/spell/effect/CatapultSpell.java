@@ -87,7 +87,7 @@ public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
 
         double maxDistance = 2 + (getTraits().get(Trait.FOCUS) - 50) * 8;
 
-        HitResult ray = RayTraceHelper.doTrace(caster.getEntity(), maxDistance, 1, EntityPredicates.CAN_COLLIDE).getResult();
+        HitResult ray = RayTraceHelper.doTrace(caster.getEntity(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR).getResult();
 
         if (ray.getType() == HitResult.Type.ENTITY) {
             EntityHitResult result = (EntityHitResult)ray;

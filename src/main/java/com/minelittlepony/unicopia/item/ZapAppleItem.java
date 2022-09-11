@@ -55,7 +55,7 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        Optional<Entity> entity = RayTraceHelper.doTrace(player, 5, 1, EntityPredicates.CAN_COLLIDE.and(e -> canFeedTo(stack, e))).getEntity();
+        Optional<Entity> entity = RayTraceHelper.doTrace(player, 5, 1, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(e -> canFeedTo(stack, e))).getEntity();
 
         if (entity.isPresent()) {
             return onFedTo(stack, player, entity.get());

@@ -33,7 +33,7 @@ public class RayTraceHelper {
      * @return A Trace describing what was found.
      */
     public static Trace doTrace(Entity e, double distance, float tickDelta) {
-        return doTrace(e, distance, tickDelta, EntityPredicates.CAN_COLLIDE);
+        return doTrace(e, distance, tickDelta, EntityPredicates.EXCEPT_SPECTATOR);
     }
 
     /**

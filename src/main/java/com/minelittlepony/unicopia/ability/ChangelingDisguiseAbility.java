@@ -42,7 +42,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
             return;
         }
 
-        RayTraceHelper.Trace trace = RayTraceHelper.doTrace(player, 10, 1, EntityPredicates.CAN_COLLIDE.and(e -> !(e instanceof LightningEntity)));
+        RayTraceHelper.Trace trace = RayTraceHelper.doTrace(player, 10, 1, EntityPredicates.EXCEPT_SPECTATOR.and(e -> !(e instanceof LightningEntity)));
 
         Entity looked = trace.getEntity().filter(e -> !(e instanceof AbstractDecorationEntity)).map(e -> {
             return e instanceof PlayerEntity ? Pony.of((PlayerEntity)e)
