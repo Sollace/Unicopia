@@ -8,6 +8,7 @@
     "MixinBlazeEntity",
     "MixinBlockEntity",
     "MixinBlockItem",
+    "MixinBoatEntity",
     "MixinBrain",
     "MixinCriteria",
     "MixinDamageSource",

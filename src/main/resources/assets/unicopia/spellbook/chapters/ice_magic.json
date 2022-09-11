@@ -33,11 +33,30 @@
       },
       {
         "title": "",
-        "level": 0,
+        "level": 3,
         "elements": [
           { "recipe": "unicopia:spells/frost" },
           "Requires:",
           "- At least 15x cold trait"
+        ]
+      },
+      {
+        "title": "Chilling Breath",
+        "level": 0,
+        "elements": [
+          "Alters the ability of certain objects to distenguish between hot and cold.",
+          "This is a very weak spell, but when used with a boat can be exceedingly useful to get out of a sticky stituation.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "minecraft:textures/item/boat.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/ice.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 0,
+        "elements": [
+          { "recipe": "unicopia:spells/chilling_breath" },
+          "Requires:",
+          "- At least 5x cold trait\n- At least 15x knowleged trait"
         ]
       },
       {

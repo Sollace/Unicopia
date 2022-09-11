@@ -9,7 +9,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.ItemWielder;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.mixin.MixinEntity;
+import com.minelittlepony.unicopia.entity.Removeable;
 import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.entity.Entity;
@@ -105,7 +105,7 @@ public class EntityBehaviour<T extends Entity> {
     public void copyBaseAttributes(LivingEntity from, Entity to, Vec3d positionOffset) {
         // Set first because position calculations rely on it
         to.age = from.age;
-        ((MixinEntity)to).setRemovalReason(from.getRemovalReason());
+        ((Removeable)to).setRemovalReason(from.getRemovalReason());
         to.setOnGround(from.isOnGround());
 
         if (!from.world.isClient) {

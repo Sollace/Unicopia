@@ -45,13 +45,14 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<AbstractDisguiseSpell> CHANGELING_DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, SpellTraits.EMPTY, DispersableDisguiseSpell::new);
     public static final SpellType<RainboomAbilitySpell> RAINBOOM = register("rainboom", Affinity.GOOD, 0xBDBDF9, false, SpellTraits.EMPTY, RainboomAbilitySpell::new);
 
-    public static final SpellType<IceSpell> FROST = register("frost", Affinity.GOOD, 0xFAEAFA, true, IceSpell.DEFAULT_TRAITS, IceSpell::new);
+    public static final SpellType<IceSpell> FROST = register("frost", Affinity.GOOD, 0xEABBFF, true, IceSpell.DEFAULT_TRAITS, IceSpell::new);
+    public static final SpellType<ChillingBreathSpell> CHILLING_BREATH = register("chilling_breath", Affinity.NEUTRAL, 0xFFEAFF, true, ChillingBreathSpell.DEFAULT_TRAITS, ChillingBreathSpell::new);
     public static final SpellType<ScorchSpell> SCORCH = register("scorch", Affinity.BAD, 0xF8EC1F, true, ScorchSpell.DEFAULT_TRAITS, ScorchSpell::new);
     public static final SpellType<FireSpell> FLAME = register("flame", Affinity.GOOD, 0xFFBB99, true, FireSpell.DEFAULT_TRAITS, FireSpell::new);
     public static final SpellType<InfernoSpell> INFERNAL = register("infernal", Affinity.BAD, 0xFFAA00, true, InfernoSpell.DEFAULT_TRAITS, InfernoSpell::new);
     public static final SpellType<ShieldSpell> SHIELD = register("shield", Affinity.NEUTRAL, 0x66CDAA, true, ShieldSpell.DEFAULT_TRAITS, ShieldSpell::new);
-    public static final SpellType<AttractiveSpell> VORTEX = register("vortex", Affinity.NEUTRAL, 0x4CDEE7, true, AttractiveSpell.DEFAULT_TRAITS, AttractiveSpell::new);
-    public static final SpellType<DarkVortexSpell> DARK_VORTEX = register("dark_vortex", Affinity.BAD, 0, true, DarkVortexSpell.DEFAULT_TRAITS, DarkVortexSpell::new);
+    public static final SpellType<AttractiveSpell> VORTEX = register("vortex", Affinity.NEUTRAL, 0xFFEA88, true, AttractiveSpell.DEFAULT_TRAITS, AttractiveSpell::new);
+    public static final SpellType<DarkVortexSpell> DARK_VORTEX = register("dark_vortex", Affinity.BAD, 0xA33333, true, DarkVortexSpell.DEFAULT_TRAITS, DarkVortexSpell::new);
     public static final SpellType<NecromancySpell> NECROMANCY = register("necromancy", Affinity.BAD, 0xFA3A3A, true, NecromancySpell::new);
     public static final SpellType<SiphoningSpell> SIPHONING = register("siphoning", Affinity.NEUTRAL, 0xFFA3AA, true, SiphoningSpell::new);
     public static final SpellType<DisperseIllusionSpell> REVEALING = register("reveal", Affinity.GOOD, 0xFFFFAF, true, DisperseIllusionSpell::new);

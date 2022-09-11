@@ -12,13 +12,7 @@ import com.minelittlepony.unicopia.client.particle.RainbowTrailParticle;
 import com.minelittlepony.unicopia.client.particle.RaindropsParticle;
 import com.minelittlepony.unicopia.client.particle.RunesParticle;
 import com.minelittlepony.unicopia.client.particle.SphereParticle;
-import com.minelittlepony.unicopia.client.render.AccessoryFeatureRenderer;
-import com.minelittlepony.unicopia.client.render.AmuletFeatureRenderer;
-import com.minelittlepony.unicopia.client.render.BatWingsFeatureRenderer;
-import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer;
-import com.minelittlepony.unicopia.client.render.FloatingArtefactEntityRenderer;
-import com.minelittlepony.unicopia.client.render.IcarusWingsFeatureRenderer;
-import com.minelittlepony.unicopia.client.render.WingsFeatureRenderer;
+import com.minelittlepony.unicopia.client.render.*;
 import com.minelittlepony.unicopia.client.render.entity.ButterflyEntityRenderer;
 import com.minelittlepony.unicopia.client.render.entity.CastSpellEntityRenderer;
 import com.minelittlepony.unicopia.client.render.entity.FairyEntityRenderer;
@@ -29,6 +23,8 @@ import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.particle.UParticles;
+
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry.PendingParticleFactory;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
@@ -45,6 +41,7 @@ import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.Identifier;
@@ -117,6 +114,9 @@ public interface URenderers {
         ColorProviderRegistry.ITEM.register((stack, i) -> {
             return i > 0 || !GemstoneItem.isEnchanted(stack) ? -1 : GemstoneItem.getSpellKey(stack).getColor();
         }, UItems.GEMSTONE);
+
+        // for lava boats
+        BlockRenderLayerMap.INSTANCE.putFluids(RenderLayers.getTranslucent(), Fluids.LAVA, Fluids.FLOWING_LAVA);
     }
 
     static <T extends ParticleEffect> PendingParticleFactory<T> createFactory(ParticleSupplier<T> supplier) {
