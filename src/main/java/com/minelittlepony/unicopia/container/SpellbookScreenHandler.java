@@ -185,6 +185,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
     @Override
     public ItemStack transferSlot(PlayerEntity player, int index) {
+        System.out.println("Transfer slot: " + index);
         Slot sourceSlot = slots.get(index);
 
         if (sourceSlot == null || !sourceSlot.hasStack()) {
@@ -194,7 +195,11 @@ public class SpellbookScreenHandler extends ScreenHandler {
         ItemStack transferredStack = sourceSlot.getStack();
         ItemStack stack = transferredStack.copy();
 
-        if (index >= HOTBAR_START) {
+        if (sourceSlot instanceof ResultSlot result) {
+            result.onTakeItem(player, stack);
+        }
+
+        if (index >= HOTBAR_START && !(sourceSlot instanceof ResultSlot || sourceSlot instanceof InputSlot)) {
             if (!gemSlot.hasStack() && gemSlot.canInsert(stack)) {
                 if (insertItem(transferredStack, GEM_SLOT_INDEX, GEM_SLOT_INDEX + 1, false)) {
                     onContentChanged(input);
