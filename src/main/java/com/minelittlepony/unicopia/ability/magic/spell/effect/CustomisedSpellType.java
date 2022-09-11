@@ -31,11 +31,11 @@ public record CustomisedSpellType<T extends Spell> (
 
     @Override
     public boolean test(Spell spell) {
-        return type.test(spell);
+        return type.test(spell) && spell.getTraits().equals(traits);
     }
 
     public ItemStack getDefaultStack() {
-        return type.getDefualtStack();
+        return traits.applyTo(type.getDefualtStack());
     }
 
     public TypedActionResult<CustomisedSpellType<?>> toAction() {
