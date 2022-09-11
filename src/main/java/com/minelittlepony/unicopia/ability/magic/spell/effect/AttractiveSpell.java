@@ -126,7 +126,6 @@ public class AttractiveSpell extends ShieldSpell implements ProjectileSpell, Hom
         if (getTraits().get(Trait.ORDER) >= 20) {
             this.target.set(target);
             target.setGlowing(true);
-            this.onDestroyed(null);
             return true;
         }
         return false;
