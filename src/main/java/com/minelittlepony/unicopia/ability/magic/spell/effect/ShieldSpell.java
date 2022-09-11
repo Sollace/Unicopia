@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
@@ -42,6 +43,14 @@ public class ShieldSpell extends AbstractSpell {
 
     protected ShieldSpell(SpellType<?> type, SpellTraits traits) {
         super(type, traits);
+    }
+
+    @Override
+    public boolean apply(Caster<?> source) {
+        if (getTraits().get(Trait.GENEROSITY) > 0) {
+            return toPlaceable().apply(source);
+        }
+        return super.apply(source);
     }
 
     @Override
@@ -108,9 +117,13 @@ public class ShieldSpell extends AbstractSpell {
      * Calculates the maximum radius of the shield. aka The area of effect.
      */
     public double getDrawDropOffRange(Caster<?> source) {
-        float multiplier = source.getMaster() != null && source.getMaster().isSneaking() ? 1 : 2;
+        float multiplier = source instanceof Pony pony && pony.getMaster().isSneaking() ? 1 : 2;
         float min = 4 + getTraits().get(Trait.POWER);
-        return (min + (source.getLevel().getScaled(4) * 2)) / multiplier;
+        double range = (min + (source.getLevel().getScaled(4) * 2)) / multiplier;
+        if (source instanceof Pony && range > 2) {
+            range = Math.sqrt(range);
+        }
+        return range;
     }
 
     protected boolean isValidTarget(Caster<?> source, Entity entity) {
