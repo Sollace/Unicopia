@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
@@ -15,13 +15,14 @@ public class SpellbookChapterList {
     public static final Identifier PROFILE_ID = Unicopia.id("profile");
     public static final Identifier TRAIT_DEX_ID = Unicopia.id("traits");
 
-    private final Chapter craftingChapter;
+    private final SpellbookScreen screen;
 
-    private Optional<Identifier> currentChapter = Optional.empty();
+    private final Chapter craftingChapter;
 
     private final Map<Identifier, Chapter> chapters = new HashMap<>();
 
-    public SpellbookChapterList(Chapter craftingChapter, Chapter... builtIn) {
+    public SpellbookChapterList(SpellbookScreen screen, Chapter craftingChapter, Chapter... builtIn) {
+        this.screen = screen;
         this.craftingChapter = craftingChapter;
         SpellbookChapterLoader.INSTANCE.getChapters().forEach(chapter -> {
             chapters.put(chapter.id(), chapter);
@@ -45,11 +46,8 @@ public class SpellbookChapterList {
                 chapters.put(chapter.id(), chapter);
             });
         }
-        return currentChapter.map(chapters::get).orElse(craftingChapter);
-    }
 
-    public void setCurrentChapter(Chapter chapter) {
-        currentChapter = Optional.of(chapter.id());
+        return screen.getState().getCurrentPageId().map(chapters::get).orElse(craftingChapter);
     }
 
     public record Chapter (
@@ -70,15 +68,19 @@ public class SpellbookChapterList {
     }
 
     public interface Content extends Drawable {
-        void init(SpellbookScreen screen);
+        void init(SpellbookScreen screen, Identifier pageId);
 
         default void copyStateFrom(Content old) {}
 
-        static Optional<Content> of(Consumer<SpellbookScreen> init, Drawable obj) {
+        default boolean showInventory() {
+            return false;
+        }
+
+        static Optional<Content> of(BiConsumer<SpellbookScreen, Identifier> init, Drawable obj) {
             return Optional.of(new Content() {
                 @Override
-                public void init(SpellbookScreen screen) {
-                    init.accept(screen);
+                public void init(SpellbookScreen screen, Identifier pageId) {
+                    init.accept(screen, pageId);
                 }
 
                 @Override

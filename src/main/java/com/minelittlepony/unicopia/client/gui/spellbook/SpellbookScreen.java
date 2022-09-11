@@ -10,9 +10,10 @@ import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
-import com.minelittlepony.unicopia.container.SpellbookPage;
-import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
+import com.minelittlepony.unicopia.container.*;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler.*;
+import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -25,6 +26,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -42,11 +44,12 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
 
-    private final Chapter craftingChapter = new Chapter(SpellbookChapterList.CRAFTING_ID, TabSide.LEFT, 0, 0, Optional.of(new SpellbookCraftingPageContent(this)));
-    private final Chapter profileChapter = new Chapter(SpellbookChapterList.PROFILE_ID, TabSide.LEFT, 1, 0, Optional.of(new SpellbookProfilePageContent(this)));
-    private final Chapter traitdexChapter = new Chapter(SpellbookChapterList.TRAIT_DEX_ID, TabSide.LEFT, 3, 0, Optional.of(new SpellbookTraitDexPageContent(this)));
-
-    private final SpellbookChapterList chapters = new SpellbookChapterList(craftingChapter, profileChapter, traitdexChapter);
+    private final Chapter craftingChapter;
+    private final SpellbookChapterList chapters = new SpellbookChapterList(this,
+        craftingChapter = new Chapter(SpellbookChapterList.CRAFTING_ID, TabSide.LEFT, 0, 0, Optional.of(new SpellbookCraftingPageContent(this))),
+        new Chapter(SpellbookChapterList.PROFILE_ID, TabSide.LEFT, 1, 0, Optional.of(new SpellbookProfilePageContent(this))),
+        new Chapter(SpellbookChapterList.TRAIT_DEX_ID, TabSide.LEFT, 3, 0, Optional.of(new SpellbookTraitDexPageContent(this)))
+    );
     private final SpellbookTabBar tabs = new SpellbookTabBar(this, chapters);
 
     private Bounds contentBounds = Bounds.empty();
@@ -59,11 +62,17 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
         handler.addSlotShowingCondition(slotType -> {
             if (slotType == SlotType.INVENTORY) {
-                return chapters.getCurrentChapter() == profileChapter
-                   || (chapters.getCurrentChapter() == craftingChapter && SpellbookPage.getCurrent() == SpellbookPage.INVENTORY);
+                return chapters.getCurrentChapter().content().filter(Content::showInventory).isPresent();
             }
             return chapters.getCurrentChapter() == craftingChapter;
         });
+        handler.getSpellbookState().setSynchronizer(state -> {
+            Channel.CLIENT_SPELLBOOK_UPDATE.send(new MsgSpellbookStateChanged<ServerPlayerEntity>(handler.syncId, state));
+        });
+    }
+
+    public SpellbookState getState() {
+        return handler.getSpellbookState();
     }
 
     public void addPageButtons(int buttonY, int prevX, int nextX, IntConsumer pageAction) {
@@ -100,7 +109,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
     public void init() {
         super.init();
         tabs.init();
-        chapters.getCurrentChapter().content().ifPresent(content -> content.init(this));
+        chapters.getCurrentChapter().content().ifPresent(content -> content.init(this, chapters.getCurrentChapter().id()));
     }
 
     @Override
@@ -196,9 +205,8 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return tabs.getAllTabs().anyMatch(tab -> {
-
             if (tab.bounds().contains(mouseX, mouseY) && chapters.getCurrentChapter() != tab.chapter()) {
-                chapters.setCurrentChapter(tab.chapter());
+                getState().setCurrentPageId(tab.chapter().id());
                 GameGui.playSound(SoundEvents.ITEM_BOOK_PAGE_TURN);
                 clearAndInit();
                 return true;

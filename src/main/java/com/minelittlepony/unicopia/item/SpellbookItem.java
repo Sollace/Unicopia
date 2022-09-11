@@ -12,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
@@ -31,7 +32,7 @@ public class SpellbookItem extends BookItem implements Dispensable {
         BlockPos pos = source.getPos().offset(facing);
 
         float yaw = facing.getOpposite().asRotation();
-        placeBook(source.getWorld(), pos.getX(), pos.getY(), pos.getZ(), yaw);
+        placeBook(stack, source.getWorld(), pos.getX(), pos.getY(), pos.getZ(), yaw);
         stack.decrement(1);
 
         return new TypedActionResult<>(ActionResult.SUCCESS, stack);
@@ -46,7 +47,7 @@ public class SpellbookItem extends BookItem implements Dispensable {
         if (!context.getWorld().isClient && EquinePredicates.PLAYER_UNICORN.test(player)) {
             BlockPos pos = context.getBlockPos().offset(context.getSide());
 
-            placeBook(context.getWorld(), pos.getX(), pos.getY(), pos.getZ(), context.getPlayerYaw() + 180);
+            placeBook(context.getStack(), context.getWorld(), pos.getX(), pos.getY(), pos.getZ(), context.getPlayerYaw() + 180);
 
             if (!player.getAbilities().creativeMode) {
                 player.getStackInHand(context.getHand()).decrement(1);
@@ -57,12 +58,19 @@ public class SpellbookItem extends BookItem implements Dispensable {
         return ActionResult.PASS;
     }
 
-    private static void placeBook(World world, int x, int y, int z, float yaw) {
+    private static void placeBook(ItemStack stack, World world, int x, int y, int z, float yaw) {
         SpellbookEntity book = UEntities.SPELLBOOK.create(world);
 
         book.refreshPositionAndAngles(x + 0.5, y, z + 0.5, 0, 0);
         book.setHeadYaw(yaw);
         book.setYaw(yaw);
+
+        @Nullable
+        NbtCompound tag = stack.getSubNbt("spellbookState");
+        if (tag != null) {
+            book.getSpellbookState().fromNBT(tag);
+        }
+
         world.spawnEntity(book);
     }
 }

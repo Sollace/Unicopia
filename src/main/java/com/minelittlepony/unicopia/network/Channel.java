@@ -8,6 +8,8 @@ import com.minelittlepony.unicopia.util.network.C2SPacketType;
 import com.minelittlepony.unicopia.util.network.SimpleNetworking;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public interface Channel {
@@ -24,6 +26,9 @@ public interface Channel {
 
     Identifier SERVER_SELECT_TRIBE_ID = Unicopia.id("select_tribe");
     S2CPacketType<MsgTribeSelect> SERVER_SELECT_TRIBE = SimpleNetworking.serverToClient(SERVER_SELECT_TRIBE_ID, MsgTribeSelect::new);
+
+    S2CPacketType<MsgSpellbookStateChanged<PlayerEntity>> SERVER_SPELLBOOK_UPDATE = SimpleNetworking.serverToClient(Unicopia.id("server_spellbook_update"), MsgSpellbookStateChanged::new);
+    C2SPacketType<MsgSpellbookStateChanged<ServerPlayerEntity>> CLIENT_SPELLBOOK_UPDATE = SimpleNetworking.clientToServer(Unicopia.id("client_spellbook_update"), MsgSpellbookStateChanged::new);
 
     Identifier SERVER_RESOURCES_SEND_ID = Unicopia.id("resources_send");
     S2CPacketType<MsgServerResources> SERVER_RESOURCES_SEND = SimpleNetworking.serverToClient(SERVER_RESOURCES_SEND_ID, MsgServerResources::new);

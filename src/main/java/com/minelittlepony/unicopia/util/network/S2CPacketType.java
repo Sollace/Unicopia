@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 /**
  * A client packet type. Sent by the server to a specific player.
  */
-public interface S2CPacketType<T extends Packet<PlayerEntity>> {
+public interface S2CPacketType<T extends Packet<? extends PlayerEntity>> {
     Identifier getId();
 
     default void send(ServerPlayerEntity recipient, T packet) {

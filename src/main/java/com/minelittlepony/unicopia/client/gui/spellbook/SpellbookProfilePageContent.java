@@ -14,6 +14,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 public class SpellbookProfilePageContent extends DrawableHelper implements SpellbookChapterList.Content {
@@ -28,8 +29,13 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
     }
 
     @Override
-    public void init(SpellbookScreen screen) {
+    public void init(SpellbookScreen screen, Identifier pageId) {
 
+    }
+
+    @Override
+    public boolean showInventory() {
+        return true;
     }
 
     @Override

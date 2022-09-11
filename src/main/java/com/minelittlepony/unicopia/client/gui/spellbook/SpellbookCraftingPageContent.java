@@ -6,14 +6,18 @@ import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
 import com.minelittlepony.unicopia.container.SpellbookPage;
+import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.item.URecipes;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 public class SpellbookCraftingPageContent extends ScrollContainer implements SpellbookChapterList.Content, SpellbookScreen.RecipesChangedListener {
     private final SpellbookScreen screen;
+
+    private SpellbookState.PageState state = new SpellbookState.PageState();
 
     public SpellbookCraftingPageContent(SpellbookScreen screen) {
         this.screen = screen;
@@ -22,8 +26,11 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
     }
 
     @Override
-    public void init(SpellbookScreen screen) {
-        screen.addPageButtons(187, 300, 350, SpellbookPage::swap);
+    public void init(SpellbookScreen screen, Identifier pageId) {
+        state = screen.getState().getState(pageId);
+        screen.addPageButtons(187, 300, 350, incr -> {
+            state.swap(incr, SpellbookPage.VALUES.length);
+        });
         initContents();
         screen.addDrawable(this);
         ((IViewRoot)screen).getChildElements().add(this);
@@ -34,9 +41,9 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
 
         int headerColor = mouseY % 255;
 
-        DrawableUtil.drawScaledText(matrices, SpellbookPage.getCurrent().getLabel(), screen.getFrameBounds().left + screen.getFrameBounds().width / 2 + 20, SpellbookScreen.TITLE_Y, 1.3F, headerColor);
+        DrawableUtil.drawScaledText(matrices, SpellbookPage.VALUES[state.getOffset()].getLabel(), screen.getFrameBounds().left + screen.getFrameBounds().width / 2 + 20, SpellbookScreen.TITLE_Y, 1.3F, headerColor);
 
-        Text pageText = Text.translatable("%s/%s", SpellbookPage.getCurrent().ordinal() + 1, SpellbookPage.VALUES.length);
+        Text pageText = Text.translatable("%s/%s", state.getOffset() + 1, SpellbookPage.VALUES.length);
         textRenderer.draw(matrices, pageText, 337 - textRenderer.getWidth(pageText) / 2F, 190, headerColor);
     }
 
@@ -49,11 +56,16 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
         init(this::initPageContent);
     }
 
+    @Override
+    public boolean showInventory() {
+        return SpellbookPage.VALUES[state.getOffset()] == SpellbookPage.INVENTORY;
+    }
+
     private void initPageContent() {
         getContentPadding().setVertical(10);
         getContentPadding().bottom = 30;
 
-        switch (SpellbookPage.getCurrent()) {
+        switch (SpellbookPage.VALUES[state.getOffset()]) {
             case INVENTORY:
                 // handled elsewhere
                 break;

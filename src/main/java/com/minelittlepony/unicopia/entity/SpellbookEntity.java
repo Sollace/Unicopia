@@ -4,8 +4,12 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
+import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
 
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -15,14 +19,17 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.screen.ScreenHandlerContext;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
+import net.minecraft.screen.*;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -39,10 +46,23 @@ public class SpellbookEntity extends MobEntity {
 
     private int activeTicks = TICKS_TO_SLEEP;
 
+    private final SpellbookState state = new SpellbookState();
+
     public SpellbookEntity(EntityType<SpellbookEntity> type, World world) {
         super(type, world);
         setPersistent();
         setAltered(world.random.nextInt(3) == 0);
+        if (!world.isClient) {
+            state.setSynchronizer(state -> {
+                getWorld().getPlayers().forEach(player -> {
+                    if (player instanceof ServerPlayerEntity recipient
+                            && player.currentScreenHandler instanceof SpellbookScreenHandler book
+                            && getUuid().equals(book.entityId)) {
+                        Channel.SERVER_SPELLBOOK_UPDATE.send(recipient, new MsgSpellbookStateChanged<>(player.currentScreenHandler.syncId, state));
+                    }
+                });
+            });
+        }
     }
 
     @Override
@@ -54,9 +74,15 @@ public class SpellbookEntity extends MobEntity {
         dataTracker.startTracking(ALTERED, false);
     }
 
+    public SpellbookState getSpellbookState() {
+        return state;
+    }
+
     @Override
     public ItemStack getPickBlockStack() {
-        return new ItemStack(UItems.SPELLBOOK);
+        ItemStack stack = UItems.SPELLBOOK.getDefaultStack();
+        stack.getOrCreateNbt().put("spellbookState", state.toNBT());
+        return stack;
     }
 
     @Override
@@ -180,7 +206,7 @@ public class SpellbookEntity extends MobEntity {
             world.playSound(getX(), getY(), getZ(), sound.getBreakSound(), SoundCategory.BLOCKS, sound.getVolume(), sound.getPitch(), true);
 
             if (world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
-                dropItem(UItems.SPELLBOOK, 1);
+                dropStack(getPickBlockStack(), 1);
             }
         }
         return false;
@@ -198,7 +224,22 @@ public class SpellbookEntity extends MobEntity {
 
         if (isOpen() && EquinePredicates.PLAYER_UNICORN.test(player)) {
             setBored(false);
-            player.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inv, ply) -> new SpellbookScreenHandler(syncId, inv, ScreenHandlerContext.create(world, getBlockPos())), getDisplayName()));
+            player.openHandledScreen(new ExtendedScreenHandlerFactory() {
+                @Override
+                public Text getDisplayName() {
+                    return SpellbookEntity.this.getDisplayName();
+                }
+
+                @Override
+                public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                    return new SpellbookScreenHandler(syncId, inv, ScreenHandlerContext.create(world, getBlockPos()), state, getUuid());
+                }
+
+                @Override
+                public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+                    state.toPacket(buf);
+                }
+            });
             player.playSound(SoundEvents.ITEM_BOOK_PAGE_TURN, 2, 1);
             return ActionResult.SUCCESS;
         }
@@ -213,6 +254,8 @@ public class SpellbookEntity extends MobEntity {
         setBored(compound.getBoolean("bored"));
         setAltered(compound.getBoolean("altered"));
         setLocked(compound.contains("locked") ? TriState.of(compound.getBoolean("locked")) : TriState.DEFAULT);
+
+        state.fromNBT(compound.getCompound("spellbookState"));
     }
 
     @Override
@@ -226,5 +269,7 @@ public class SpellbookEntity extends MobEntity {
         if (locked != TriState.DEFAULT) {
             compound.putBoolean("locked", locked.get());
         }
+
+        compound.put("spellbookState", state.toNBT());
     }
 }

@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.container;
 import java.util.*;
 import java.util.function.Predicate;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
@@ -23,6 +25,7 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -59,12 +62,19 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
     private Predicate<SlotType> canShowSlots;
 
-    protected SpellbookScreenHandler(int syncId, PlayerInventory inv) {
-        this(syncId, inv, ScreenHandlerContext.EMPTY);
+    private final SpellbookState state;
+
+    @Nullable
+    public UUID entityId;
+
+    protected SpellbookScreenHandler(int syncId, PlayerInventory inv, PacketByteBuf buf) {
+        this(syncId, inv, ScreenHandlerContext.EMPTY, new SpellbookState().fromPacket(buf), null);
     }
 
-    public SpellbookScreenHandler(int syncId, PlayerInventory inv, ScreenHandlerContext context) {
+    public SpellbookScreenHandler(int syncId, PlayerInventory inv, ScreenHandlerContext context, SpellbookState state, UUID entityId) {
         super(UScreenHandlers.SPELL_BOOK, syncId);
+        this.entityId = entityId;
+        this.state = state;
         inventory = inv;
         this.context = context;
 
@@ -134,6 +144,10 @@ public class SpellbookScreenHandler extends ScreenHandler {
         addSlot(outputSlot = new ResultSlot(inventory.player, input, result, 0, gemPos.get(0)));
 
         onContentChanged(input);
+    }
+
+    public SpellbookState getSpellbookState() {
+        return state;
     }
 
     public void addSlotShowingCondition(Predicate<SlotType> canShowSlots) {

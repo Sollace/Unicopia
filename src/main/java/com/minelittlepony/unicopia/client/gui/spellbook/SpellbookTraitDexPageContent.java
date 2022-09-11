@@ -10,6 +10,7 @@ import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.*;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen.ImageButton;
+import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -18,13 +19,13 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.MathHelper;
 
 public class SpellbookTraitDexPageContent extends DrawableHelper implements SpellbookChapterList.Content, SpellbookScreen.RecipesChangedListener {
 
     private final Trait[] traits = Trait.values();
-    private int offset;
+    private SpellbookState.PageState state = new SpellbookState.PageState();
 
     private final DexPage leftPage = new DexPage();
     private final DexPage rightPage = new DexPage();
@@ -41,12 +42,14 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
     }
 
     @Override
-    public void init(SpellbookScreen screen) {
-        int page = offset * 2;
+    public void init(SpellbookScreen screen, Identifier pageId) {
+        state = screen.getState().getState(pageId);
+
+        int page = state.getOffset() * 2;
         leftPage.init(screen, page);
         rightPage.init(screen, page + 1);
         screen.addPageButtons(187, 30, 350, incr -> {
-            offset = MathHelper.clamp(offset + incr, 0, (int)Math.ceil(traits.length / 2F) - 1);
+            state.swap(incr, (int)Math.ceil(traits.length / 2F));
             leftPage.scrollbar.scrollBy(leftPage.scrollbar.getVerticalScrollAmount());
             rightPage.scrollbar.scrollBy(rightPage.scrollbar.getVerticalScrollAmount());
         });
@@ -54,7 +57,7 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
 
     @Override
     public void onRecipesChanged() {
-        init(screen);
+        init(screen, SpellbookChapterList.TRAIT_DEX_ID);
     }
 
     private final class DexPage extends ScrollContainer {

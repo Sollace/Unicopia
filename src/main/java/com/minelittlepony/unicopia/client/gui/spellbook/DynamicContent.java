@@ -8,18 +8,18 @@ import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Content;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Drawable;
+import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
-import net.minecraft.util.math.MathHelper;
 
 public class DynamicContent implements Content {
     private static final Text UNKNOWN = Text.of("???");
     private static final Text UNKNOWN_LEVEL = Text.literal("Level: ???").formatted(Formatting.DARK_GREEN);
 
-    private int offset = 0;
+    private SpellbookState.PageState state = new SpellbookState.PageState();
     private final List<Page> pages = new ArrayList<>();
 
     private Bounds bounds = Bounds.empty();
@@ -30,7 +30,7 @@ public class DynamicContent implements Content {
 
     @Override
     public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
-        int pageIndex = offset * 2;
+        int pageIndex = state.getOffset() * 2;
 
         getPage(pageIndex).ifPresent(page -> page.draw(matrices, mouseX, mouseY, container));
 
@@ -45,7 +45,7 @@ public class DynamicContent implements Content {
     @Override
     public void copyStateFrom(Content old) {
         if (old instanceof DynamicContent o) {
-            offset = o.offset;
+            state = o.state;
             setBounds(o.bounds);
         }
     }
@@ -67,10 +67,11 @@ public class DynamicContent implements Content {
     }
 
     @Override
-    public void init(SpellbookScreen screen) {
+    public void init(SpellbookScreen screen, Identifier pageId) {
+        state = screen.getState().getState(pageId);
         setBounds(screen.getFrameBounds());
         screen.addPageButtons(187, 30, 350, incr -> {
-            offset = MathHelper.clamp(offset + incr, 0, (int)Math.ceil(pages.size() / 2F) - 1);
+            state.swap(incr, (int)Math.ceil(pages.size() / 2F));
         });
     }
 
