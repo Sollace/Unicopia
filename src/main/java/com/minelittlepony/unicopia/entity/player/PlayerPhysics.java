@@ -297,17 +297,17 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         if (isFlying() && !entity.isFallFlying()) {
 
-            float pitch = ((Leaner)entity).getLeaningPitch();
+            float pitch = ((LivingEntityDuck)entity).getLeaningPitch();
             if (pitch < 1) {
                 if (pitch < 0.9F) {
                     pitch += 0.1F;
                 }
                 pitch += 0.09F;
-                ((Leaner)entity).setLeaningPitch(Math.max(0, pitch));
+                ((LivingEntityDuck)entity).setLeaningPitch(Math.max(0, pitch));
             }
 
             entity.limbAngle = 20 + (float)Math.cos(entity.age / 7F) - 0.5F;
-            entity.limbDistance = this.thrustScale;
+            entity.limbDistance = thrustScale;
         }
     }
 

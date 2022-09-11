@@ -23,10 +23,7 @@ public class ChickenBehaviour extends EntityBehaviour<ChickenEntity> {
     public void update(Caster<?> source, ChickenEntity entity, Disguise spell) {
         entity.eggLayTime = Integer.MAX_VALUE;
 
-        if (source instanceof Pony) {
-            Pony player = (Pony)source;
-
-
+        if (source instanceof Pony player) {
             if (player.sneakingChanged()) {
                 ItemStack egg = entity.getEquippedStack(EquipmentSlot.OFFHAND);
 
@@ -53,7 +50,7 @@ public class ChickenBehaviour extends EntityBehaviour<ChickenEntity> {
 
         Entity src = source.getEntity();
 
-        if (src.isOnGround() || src instanceof PlayerEntity && ((PlayerEntity)src).getAbilities().flying) {
+        if (src.isOnGround() || src instanceof PlayerEntity player && player.getAbilities().flying) {
             return;
         }
 

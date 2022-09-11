@@ -46,8 +46,8 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
             entity.handleFallDamage(distance, damageMultiplier, cause);
 
             BlockState state = entity.getBlockState();
-            if (state.getBlock() instanceof FallingBlock) {
-                ((FallingBlock)state.getBlock()).onLanding(entity.world, entity.getBlockPos(), state, state, entity);
+            if (state.getBlock() instanceof FallingBlock fb) {
+                fb.onLanding(entity.world, entity.getBlockPos(), state, state, entity);
             }
         }
     }
@@ -77,8 +77,8 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
             return configure(MixinFallingBlockEntity.createInstance(entity.world, entity.getX(), entity.getY() + 1, entity.getZ(), lowerState), block);
         }
 
-        if (block instanceof BlockEntityProvider) {
-            context.addBlockEntity(((BlockEntityProvider)block).createBlockEntity(entity.getBlockPos(), state));
+        if (block instanceof BlockEntityProvider bep) {
+            context.addBlockEntity(bep.createBlockEntity(entity.getBlockPos(), state));
         }
 
         return configure(entity, block);
@@ -106,10 +106,7 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
 
         BlockEntity be = disguise.getBlockEntity();
 
-        if (source instanceof Pony && be instanceof Tickable && (be instanceof ChestBlockEntity || be instanceof EnderChestBlockEntity)) {
-            Pony player = (Pony)source;
-            Tickable ceb = (Tickable)disguise.getBlockEntity();
-
+        if (source instanceof Pony player && be instanceof Tickable ceb && (be instanceof ChestBlockEntity || be instanceof EnderChestBlockEntity)) {
             if (player.sneakingChanged()) {
                 be.onSyncedBlockEvent(1, isSneakingOnGround(source) ? 1 : 0);
             }

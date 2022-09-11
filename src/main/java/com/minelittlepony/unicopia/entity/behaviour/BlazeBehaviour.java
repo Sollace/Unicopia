@@ -19,7 +19,7 @@ public class BlazeBehaviour extends EntityBehaviour<BlazeEntity> {
 
         Entity src = source.getEntity();
 
-        if (src.isOnGround() || src instanceof PlayerEntity && ((PlayerEntity)src).getAbilities().flying) {
+        if (src.isOnGround() || src instanceof PlayerEntity player && player.getAbilities().flying) {
             return;
         }
 
@@ -67,7 +67,7 @@ public class BlazeBehaviour extends EntityBehaviour<BlazeEntity> {
 
             if (fireballsFired > 0) {
                 if (!entity.isSilent()) {
-                    entity.world.syncWorldEvent((PlayerEntity)null, WorldEvents.BLAZE_SHOOTS, entity.getBlockPos(), 0);
+                    entity.world.syncWorldEvent(null, WorldEvents.BLAZE_SHOOTS, entity.getBlockPos(), 0);
                 }
 
                 Vec3d rot = player.getEntity().getRotationVec(1);

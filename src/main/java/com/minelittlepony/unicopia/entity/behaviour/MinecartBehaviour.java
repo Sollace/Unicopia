@@ -25,11 +25,9 @@ public class MinecartBehaviour extends EntityBehaviour<AbstractMinecartEntity> {
         entity.setPitch(0);
         entity.prevPitch = 0;
 
-        if (source.getEntity() instanceof LivingEntity) {
-            int hurt = ((LivingEntity)source.getEntity()).hurtTime;
-
-            if (hurt > 0) {
-                entity.setDamageWobbleTicks(hurt);
+        if (source.getEntity() instanceof LivingEntity living) {
+            if (living.hurtTime > 0) {
+                entity.setDamageWobbleTicks(living.hurtTime);
                 entity.setDamageWobbleStrength(1);
                 entity.setDamageWobbleSide(20 + (int)source.getEntity().fallDistance / 10);
             }
