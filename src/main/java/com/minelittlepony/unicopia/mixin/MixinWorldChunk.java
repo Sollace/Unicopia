@@ -4,7 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import com.minelittlepony.unicopia.entity.RotatedView;
+import com.minelittlepony.unicopia.entity.duck.RotatedView;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.WorldChunk;

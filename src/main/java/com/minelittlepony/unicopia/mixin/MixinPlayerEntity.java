@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.PonyContainer;
-import com.minelittlepony.unicopia.entity.CapeHolder;
+import com.minelittlepony.unicopia.entity.duck.PlayerEntityDuck;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.datafixers.util.Either;
@@ -28,7 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 @Mixin(PlayerEntity.class)
-abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<Pony>, CapeHolder {
+abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<Pony>, PlayerEntityDuck {
     private MixinPlayerEntity() { super(null, null); }
     @Override
     @Invoker("updateCapeAngles")

@@ -7,9 +7,9 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.entity.ItemWielder;
+import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
+import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.entity.Removeable;
 import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.entity.Entity;
@@ -105,7 +105,7 @@ public class EntityBehaviour<T extends Entity> {
     public void copyBaseAttributes(LivingEntity from, Entity to, Vec3d positionOffset) {
         // Set first because position calculations rely on it
         to.age = from.age;
-        ((Removeable)to).setRemovalReason(from.getRemovalReason());
+        ((EntityDuck)to).setRemovalReason(from.getRemovalReason());
         to.setOnGround(from.isOnGround());
 
         if (!from.world.isClient) {
@@ -146,8 +146,8 @@ public class EntityBehaviour<T extends Entity> {
 
             to.updatePosition(x, y, z);
 
-            if (to instanceof FallingBlockEntity) {
-                ((FallingBlockEntity)to).setFallingBlockPos(from.getBlockPos());
+            if (to instanceof FallingBlockEntity fbe) {
+                fbe.setFallingBlockPos(from.getBlockPos());
             }
         } else {
             to.copyPositionAndRotation(from);
@@ -170,13 +170,11 @@ public class EntityBehaviour<T extends Entity> {
         to.horizontalSpeed = from.horizontalSpeed;
         to.prevHorizontalSpeed = from.prevHorizontalSpeed;
         to.setOnGround(from.isOnGround());
-        to.setInvulnerable(from.isInvulnerable() || (from instanceof PlayerEntity && ((PlayerEntity)from).getAbilities().creativeMode));
+        to.setInvulnerable(from.isInvulnerable() || (from instanceof PlayerEntity player && player.getAbilities().creativeMode));
 
         to.distanceTraveled = from.distanceTraveled;
 
-        if (to instanceof LivingEntity) {
-            LivingEntity l = (LivingEntity)to;
-
+        if (to instanceof LivingEntity l) {
             l.headYaw = from.headYaw;
             l.prevHeadYaw = from.prevHeadYaw;
             l.bodyYaw = from.bodyYaw;
@@ -205,19 +203,19 @@ public class EntityBehaviour<T extends Entity> {
             copyInventory(from, l);
         }
 
-        if (to instanceof TameableEntity) {
-            ((TameableEntity)to).setSitting(from.isSneaking());
+        if (to instanceof TameableEntity tameable) {
+            tameable.setSitting(from.isSneaking());
         }
 
-        if (to instanceof AbstractSkeletonEntity) {
-            ((AbstractSkeletonEntity)to).setAttacking(from.getItemUseTimeLeft() > 0);
+        if (to instanceof AbstractSkeletonEntity skeleton) {
+            skeleton.setAttacking(from.getItemUseTimeLeft() > 0);
         }
 
-        if (to instanceof ItemWielder) {
-            ((ItemWielder)to).updateItemUsage(from.getActiveHand(), from.getActiveItem(), from.getItemUseTimeLeft());
+        if (to instanceof LivingEntityDuck duck) {
+            duck.updateItemUsage(from.getActiveHand(), from.getActiveItem(), from.getItemUseTimeLeft());
         }
 
-        if (from.age < 100 || from instanceof PlayerEntity && (((PlayerEntity)from).isCreative() || ((PlayerEntity)from).isSpectator())) {
+        if (from.age < 100 || from instanceof PlayerEntity player && (player.isCreative() || player.isSpectator())) {
             to.extinguish();
         }
 
@@ -251,7 +249,7 @@ public class EntityBehaviour<T extends Entity> {
 
     protected boolean isSneakingOnGround(Caster<?> source) {
         Entity e = source.getEntity();
-        return e.isSneaking() && (e.isOnGround() && !(e instanceof PlayerEntity && ((PlayerEntity)e).getAbilities().flying));
+        return e.isSneaking() && (e.isOnGround() && !(e instanceof PlayerEntity player && player.getAbilities().flying));
     }
 
     public static <T extends Entity> void register(Supplier<EntityBehaviour<T>> behaviour, EntityType<?>... types) {

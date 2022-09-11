@@ -5,7 +5,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.entity.LavaAffine;
+import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 
 import net.minecraft.entity.Entity;
 

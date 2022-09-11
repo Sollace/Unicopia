@@ -15,14 +15,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
-import com.minelittlepony.unicopia.entity.Creature;
-import com.minelittlepony.unicopia.entity.PonyContainer;
+import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
+import com.minelittlepony.unicopia.entity.duck.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.entity.Equine;
-import com.minelittlepony.unicopia.entity.ItemWielder;
-import com.minelittlepony.unicopia.entity.Jumper;
-import com.minelittlepony.unicopia.entity.Leaner;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -34,7 +30,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 
 @Mixin(LivingEntity.class)
-abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<?>>, ItemWielder, Jumper, Leaner {
+abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<?>>, LivingEntityDuck {
     @Shadow
     protected ItemStack activeItemStack;
     @Shadow

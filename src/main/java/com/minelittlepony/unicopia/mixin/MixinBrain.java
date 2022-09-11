@@ -4,9 +4,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import com.minelittlepony.unicopia.entity.RotatedView;
+
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.duck.RotatedView;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;

@@ -9,6 +9,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.*;
+import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
+import com.minelittlepony.unicopia.entity.duck.Leaner;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
@@ -231,7 +233,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 cancelFlight();
             }
 
-            if (entity.isClimbing() && (entity.horizontalCollision || ((Jumper)entity).isJumping())) {
+            if (entity.isClimbing() && (entity.horizontalCollision || ((LivingEntityDuck)entity).isJumping())) {
                 velocity.y = -0.2F;
             }
         }

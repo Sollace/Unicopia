@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.entity.PonyContainer;
-import com.minelittlepony.unicopia.entity.MotionChecker;
+import com.minelittlepony.unicopia.entity.duck.ServerPlayerEntityDuck;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,7 +15,7 @@ import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 @Mixin(ServerPlayerEntity.class)
-abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHandlerListener, PonyContainer<Pony>, MotionChecker {
+abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHandlerListener, PonyContainer<Pony>, ServerPlayerEntityDuck {
     MixinServerPlayerEntity() {super(null, null, 0, null, null);}
 
     @Override

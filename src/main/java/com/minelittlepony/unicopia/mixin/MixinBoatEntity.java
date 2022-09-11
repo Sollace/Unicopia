@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.minelittlepony.unicopia.entity.LavaAffine;
+import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.data.*;
@@ -67,5 +67,4 @@ abstract class MixinBoatEntity extends Entity implements LavaAffine {
     public boolean isLavaAffine() {
         return dataTracker.get(IS_LAVA_BOAT);
     }
-
 }

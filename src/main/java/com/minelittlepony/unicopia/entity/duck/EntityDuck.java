@@ -1,7 +1,7 @@
-package com.minelittlepony.unicopia.entity;
+package com.minelittlepony.unicopia.entity.duck;
 
 import net.minecraft.entity.Entity.RemovalReason;
 
-public interface Removeable {
+public interface EntityDuck {
     void setRemovalReason(RemovalReason reason);
 }

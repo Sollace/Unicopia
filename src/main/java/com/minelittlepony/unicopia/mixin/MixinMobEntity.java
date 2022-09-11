@@ -6,11 +6,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import com.minelittlepony.unicopia.entity.Creature;
-import com.minelittlepony.unicopia.entity.PonyContainer;
-import com.minelittlepony.unicopia.entity.RotatedView;
-import com.minelittlepony.unicopia.entity.Equine;
-import com.minelittlepony.unicopia.entity.Living;
+
+import com.minelittlepony.unicopia.entity.*;
+import com.minelittlepony.unicopia.entity.duck.RotatedView;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;

@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.minelittlepony.unicopia.entity.MotionChecker;
+import com.minelittlepony.unicopia.entity.duck.ServerPlayerEntityDuck;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.network.NetworkThreadUtils;
@@ -45,7 +45,7 @@ abstract class MixinServerPlayNetworkHandler implements EntityTrackingListener, 
     private void setPreventMotionChecks(boolean motionChecks) {
         ServerPlayerEntity player = ((ServerPlayNetworkHandler)(Object)this).player;
         prevMotionChecks = player.isInTeleportationState();
-        ((MotionChecker)player).setPreventMotionChecks(motionChecks);
+        ((ServerPlayerEntityDuck)player).setPreventMotionChecks(motionChecks);
         player.fallDistance = 0;
         floating = false;
         floatingTicks = 0;

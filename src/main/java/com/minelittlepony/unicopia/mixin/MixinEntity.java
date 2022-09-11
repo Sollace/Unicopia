@@ -6,14 +6,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.entity.LavaAffine;
-import com.minelittlepony.unicopia.entity.Removeable;
+import com.minelittlepony.unicopia.entity.duck.LavaAffine;
+import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.Entity.RemovalReason;
 
 @Mixin(Entity.class)
-abstract class MixinEntity implements Removeable {
+abstract class MixinEntity implements EntityDuck {
     @Override
     @Accessor
     public abstract void setRemovalReason(RemovalReason reason);
