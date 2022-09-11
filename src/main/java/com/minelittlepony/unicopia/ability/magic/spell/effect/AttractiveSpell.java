@@ -138,7 +138,7 @@ public class AttractiveSpell extends ShieldSpell implements ProjectileSpell, Hom
 
     @Override
     public void onImpact(MagicProjectileEntity projectile, Entity entity) {
-        if (!isDead() && getTraits().get(Trait.GENEROSITY) > 0) {
+        if (!isDead() && getTraits().get(Trait.CHAOS) > 0) {
             setDead();
             Caster.of(entity).ifPresent(getType().create(getTraits())::apply);
         }
