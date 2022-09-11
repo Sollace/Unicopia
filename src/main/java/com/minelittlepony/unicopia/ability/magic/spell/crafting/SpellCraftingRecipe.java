@@ -5,7 +5,7 @@ import java.util.List;
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
-import com.minelittlepony.unicopia.container.SpellbookScreenHandler.SpellbookInventory;
+import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.URecipes;
 

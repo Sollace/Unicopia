@@ -4,7 +4,6 @@ import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
-import com.minelittlepony.unicopia.container.SpellbookPage;
 import com.minelittlepony.unicopia.entity.player.*;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -54,7 +53,7 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
         matrices.push();
         matrices.translate(screen.getBackgroundWidth() / 2 + SpellbookScreen.TITLE_X - 10, y, 0);
         matrices.scale(1.3F, 1.3F, 1);
-        font.draw(matrices, SpellbookPage.INVENTORY.getLabel(), 0, 0, SpellbookScreen.TITLE_COLOR);
+        font.draw(matrices, SpellbookCraftingPageContent.INVENTORY_TITLE, 0, 0, SpellbookScreen.TITLE_COLOR);
         matrices.pop();
 
         Bounds bounds = screen.getFrameBounds();

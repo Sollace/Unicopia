@@ -5,7 +5,6 @@ import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
-import com.minelittlepony.unicopia.container.SpellbookPage;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.item.URecipes;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -15,6 +14,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class SpellbookCraftingPageContent extends ScrollContainer implements SpellbookChapterList.Content, SpellbookScreen.RecipesChangedListener {
+    public static final Text INVENTORY_TITLE = Text.translatable("gui.unicopia.spellbook.page.inventory");
+    public static final Text RECIPES_TITLE = Text.translatable("gui.unicopia.spellbook.page.recipes");
+    public static final int TOTAL_PAGES = 2;
+
     private final SpellbookScreen screen;
 
     private SpellbookState.PageState state = new SpellbookState.PageState();
@@ -29,7 +32,7 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
     public void init(SpellbookScreen screen, Identifier pageId) {
         state = screen.getState().getState(pageId);
         screen.addPageButtons(187, 300, 350, incr -> {
-            state.swap(incr, SpellbookPage.VALUES.length);
+            state.swap(incr, TOTAL_PAGES);
         });
         initContents();
         screen.addDrawable(this);
@@ -41,9 +44,9 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
 
         int headerColor = mouseY % 255;
 
-        DrawableUtil.drawScaledText(matrices, SpellbookPage.VALUES[state.getOffset()].getLabel(), screen.getFrameBounds().left + screen.getFrameBounds().width / 2 + 20, SpellbookScreen.TITLE_Y, 1.3F, headerColor);
+        DrawableUtil.drawScaledText(matrices, state.getOffset() == 0 ? INVENTORY_TITLE : RECIPES_TITLE, screen.getFrameBounds().left + screen.getFrameBounds().width / 2 + 20, SpellbookScreen.TITLE_Y, 1.3F, headerColor);
 
-        Text pageText = Text.translatable("%s/%s", state.getOffset() + 1, SpellbookPage.VALUES.length);
+        Text pageText = Text.translatable("%s/%s", state.getOffset() + 1, TOTAL_PAGES);
         textRenderer.draw(matrices, pageText, 337 - textRenderer.getWidth(pageText) / 2F, 190, headerColor);
     }
 
@@ -58,29 +61,25 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
 
     @Override
     public boolean showInventory() {
-        return SpellbookPage.VALUES[state.getOffset()] == SpellbookPage.INVENTORY;
+        return state.getOffset() == 0;
     }
 
     private void initPageContent() {
         getContentPadding().setVertical(10);
         getContentPadding().bottom = 30;
 
-        switch (SpellbookPage.VALUES[state.getOffset()]) {
-            case INVENTORY:
-                // handled elsewhere
-                break;
-            case RECIPES:
-                int top = 0;
-                for (SpellbookRecipe recipe : this.client.world.getRecipeManager().listAllOfType(URecipes.SPELLBOOK)) {
-                    if (client.player.getRecipeBook().contains(recipe)) {
-                        IngredientTree tree = new IngredientTree(0, top, width - scrollbar.getBounds().width + 2);
-                        recipe.buildCraftingTree(tree);
-                        top += tree.build(this);
-                    }
+        if (state.getOffset() == 1) {
+            int top = 0;
+            for (SpellbookRecipe recipe : this.client.world.getRecipeManager().listAllOfType(URecipes.SPELLBOOK)) {
+                if (client.player.getRecipeBook().contains(recipe)) {
+                    IngredientTree tree = new IngredientTree(0, top, width - scrollbar.getBounds().width + 2);
+                    recipe.buildCraftingTree(tree);
+                    top += tree.build(this);
                 }
-                if (top == 0) {
-                    addButton(new Label(width / 2, 0).setCentered()).getStyle().setText("gui.unicopia.spellbook.page.recipes.empty");
-                }
+            }
+            if (top == 0) {
+                addButton(new Label(width / 2, 0).setCentered()).getStyle().setText("gui.unicopia.spellbook.page.recipes.empty");
+            }
         }
     }
 

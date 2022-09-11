@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.container.SpellbookScreenHandler.SpellbookInventory;
+import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.*;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 

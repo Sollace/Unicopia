@@ -11,7 +11,7 @@ import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
 import com.minelittlepony.unicopia.container.*;
-import com.minelittlepony.unicopia.container.SpellbookScreenHandler.*;
+import com.minelittlepony.unicopia.container.inventory.*;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
 import com.mojang.blaze3d.platform.GlStateManager;
