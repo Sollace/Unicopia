@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell.trait;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -188,9 +187,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static SpellTraits of(Inventory inventory) {
-        List<ItemStack> stacks = new ArrayList<>();
-        InventoryUtil.iterate(inventory).forEach(stacks::add);
-        return of(stacks);
+        return of(InventoryUtil.stream(inventory).toList());
     }
 
     public static SpellTraits of(Collection<ItemStack> stacks) {

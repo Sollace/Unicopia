@@ -168,18 +168,16 @@ public class SpellbookScreenHandler extends ScreenHandler {
         super.onContentChanged(inventory);
         context.run((world, pos) -> {
             if (!world.isClient && !gemSlot.getStack().isEmpty()) {
-                outputSlot.setStack(
-                        world.getServer().getRecipeManager()
+                ItemStack resultStack = input.hasIngredients() ? world.getServer().getRecipeManager()
                         .getAllMatches(URecipes.SPELLBOOK, input, world)
                         .stream().sorted(Comparator.comparing(SpellbookRecipe::getPriority))
                         .findFirst()
                         .filter(recipe -> result.shouldCraftRecipe(world, (ServerPlayerEntity)this.inventory.player, recipe))
                         .map(recipe -> recipe.craft(input))
-                        .orElse(!input.hasIngredients() || input.getItemToModify().getItem() != UItems.GEMSTONE
-                            ? ItemStack.EMPTY
-                            : input.getTraits().applyTo(UItems.BOTCHED_GEM.getDefaultStack()))
-                        );
+                        .orElse(input.getTraits().applyTo(UItems.BOTCHED_GEM.getDefaultStack())) : ItemStack.EMPTY;
+                outputSlot.setStack(resultStack);
 
+                setPreviousTrackedSlot(outputSlot.id, resultStack);
                 ((ServerPlayerEntity)this.inventory.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, nextRevision(), outputSlot.id, outputSlot.getStack()));
             }
         });
@@ -299,7 +297,6 @@ public class SpellbookScreenHandler extends ScreenHandler {
         super.close(playerEntity);
         context.run((world, pos) -> {
             dropInventory(playerEntity, input);
-            dropInventory(playerEntity, result);
         });
     }
 
@@ -492,7 +489,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
         @Override
         public void onTakeItem(PlayerEntity player, ItemStack stack) {
             Pony pony = Pony.of(player);
-            InventoryUtil.iterate(input).forEach(s -> {
+            InventoryUtil.stream(input).forEach(s -> {
                 pony.getDiscoveries().unlock(s.getItem());
             });
            //gemSlot.setStack(ItemStack.EMPTY);

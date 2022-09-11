@@ -147,7 +147,6 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
         if (compound.contains("castEntity")) {
             castEntity.fromNBT(compound.getCompound("castEntity"));
         }
-
     }
 
     @Override
