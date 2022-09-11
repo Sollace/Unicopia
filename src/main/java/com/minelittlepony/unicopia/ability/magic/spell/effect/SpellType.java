@@ -176,6 +176,11 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         return this == EMPTY_KEY;
     }
 
+    @Override
+    public String toString() {
+        return getTranslationKey();
+    }
+
     @Deprecated(forRemoval = true)
     public static <T extends Spell> SpellType<T> register(String name, Affinity affinity, int color, boolean obtainable, Factory<T> factory) {
         return register(name, affinity, color, obtainable, SpellTraits.EMPTY, factory);

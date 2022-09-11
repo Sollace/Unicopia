@@ -141,10 +141,10 @@ public class ShieldSpell extends AbstractSpell {
             valid &= !(entity instanceof PassiveEntity);
         }
         if (getTraits().get(Trait.BLOOD) > 0) {
-            valid &= entity instanceof HostileEntity;
+            valid &= !(entity instanceof HostileEntity);
         }
         if (getTraits().get(Trait.ICE) > 0) {
-            valid &= entity instanceof PlayerEntity;
+            valid &= !(entity instanceof PlayerEntity);
         }
         return valid;
     }

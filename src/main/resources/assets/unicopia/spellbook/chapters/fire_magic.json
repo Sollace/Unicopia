@@ -225,14 +225,19 @@
         ]
       },
       {
-        "title": "",
-        "level": 0,
-        "elements": []
+        "title": "Protection II",
+        "level": 4,
+        "elements": [
+          "By adding extra traits, I was able to slightly modify the shield to allow or deny certain parties into the effect range.",
+          "+ add life trait --> all animals may enter\n+ add blood trait --> all monsters may enter\n+ add ice trait --> all ponies may enter"
+        ]
       },
       {
-        "title": "",
-        "level": 0,
-        "elements": []
+        "title": "Protection III",
+        "level": 5,
+        "elements": [
+          "+ add genorosity trait to attach the spell to a location rather than yourself"
+        ]
       },
       {
         "title": "Scrap: 9th Jum '12",
