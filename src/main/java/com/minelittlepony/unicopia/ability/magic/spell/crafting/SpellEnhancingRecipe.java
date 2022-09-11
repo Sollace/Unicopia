@@ -31,7 +31,7 @@ public class SpellEnhancingRecipe implements SpellbookRecipe {
 
     @Override
     public int getPriority() {
-        return 1;
+        return 2;
     }
 
     @Override
