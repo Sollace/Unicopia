@@ -173,7 +173,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         public void render(MatrixStack matrices, int x, int y, float tickDelta) {
             y -= 2;
 
-            if (ticker++ % 500 == 0) {
+            if (ticker++ % 30 == 0) {
                 index = (index + 1) % stacks.length;
             }
 

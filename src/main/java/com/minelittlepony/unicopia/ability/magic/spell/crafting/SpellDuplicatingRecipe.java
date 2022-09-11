@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
 import com.google.gson.JsonObject;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler.SpellbookInventory;
 import com.minelittlepony.unicopia.item.*;
 import com.minelittlepony.unicopia.util.InventoryUtil;
@@ -26,7 +27,13 @@ public class SpellDuplicatingRecipe implements SpellbookRecipe {
 
     @Override
     public void buildCraftingTree(CraftingTreeBuilder builder) {
-
+        ItemStack[] spells = SpellType.REGISTRY.stream()
+                .filter(SpellType::isObtainable)
+                .map(type -> GemstoneItem.enchant(UItems.GEMSTONE.getDefaultStack(), type))
+                .toArray(ItemStack[]::new);
+        builder.input(UItems.BOTCHED_GEM.getDefaultStack());
+        builder.input(spells);
+        builder.result(spells);
     }
 
     @Override
