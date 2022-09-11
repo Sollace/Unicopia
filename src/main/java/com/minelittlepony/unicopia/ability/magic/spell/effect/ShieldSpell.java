@@ -107,7 +107,7 @@ public class ShieldSpell extends AbstractSpell {
     public double getDrawDropOffRange(Caster<?> source) {
         float multiplier = source.getMaster() != null && source.getMaster().isSneaking() ? 1 : 2;
         float min = 4 + getTraits().get(Trait.POWER);
-        return (min + (source.getLevel().getScaled(8) * 2)) / multiplier;
+        return (min + (source.getLevel().getScaled(4) * 2)) / multiplier;
     }
 
     protected boolean isValidTarget(Caster<?> source, Entity entity) {
