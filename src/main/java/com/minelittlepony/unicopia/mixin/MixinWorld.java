@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.mixin;
 
 import java.util.List;
 import java.util.Stack;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
@@ -27,10 +28,10 @@ import net.minecraft.world.WorldAccess;
 @Mixin(World.class)
 abstract class MixinWorld implements WorldAccess, BlockDestructionManager.Source, RotatedView {
 
-    private final BlockDestructionManager destructions = new BlockDestructionManager((World)(Object)this);
+    private final Supplier<BlockDestructionManager> destructions = BlockDestructionManager.create((World)(Object)this);
 
     private int recurseCount = 0;
-    private Stack<Integer> rotations = new Stack<>();
+    private final Stack<Integer> rotations = new Stack<>();
 
     @Override
     public Stack<Integer> getRotations() {
@@ -44,7 +45,7 @@ abstract class MixinWorld implements WorldAccess, BlockDestructionManager.Source
 
     @Override
     public BlockDestructionManager getDestructionManager() {
-        return destructions;
+        return destructions.get();
     }
 
     @Override

@@ -2,22 +2,27 @@ package com.minelittlepony.unicopia;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
+import com.google.common.base.Suppliers;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgBlockDestruction;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.block.BlockState;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
-public class BlockDestructionManager {
-
+public class BlockDestructionManager extends PersistentState {
+    public static final int DESTRUCTION_COOLDOWN = 50;
     public static final int UNSET_DAMAGE = -1;
     public static final int MAX_DAMAGE = 10;
 
@@ -25,29 +30,57 @@ public class BlockDestructionManager {
 
     private final World world;
 
-    private final Long2ObjectMap<Chunk> destructions = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectMap<Chunk> chunks = new Long2ObjectOpenHashMap<>();
 
     private final Object locker = new Object();
 
-    public BlockDestructionManager(World world) {
+    public static Supplier<BlockDestructionManager> create(World world) {
+        if (world instanceof ServerWorld serverWorld) {
+            return Suppliers.memoize(() -> {
+                return serverWorld.getPersistentStateManager().getOrCreate(
+                        compound -> new BlockDestructionManager(world, compound),
+                        () -> new BlockDestructionManager(world),
+                        "unicopia:destruction_manager"
+                );
+            });
+        }
+        return Suppliers.memoize(() -> new BlockDestructionManager(world));
+    }
+
+    BlockDestructionManager(World world) {
         this.world = world;
     }
 
+    BlockDestructionManager(World world, NbtCompound compound) {
+        this(world);
+        NbtCompound d = compound.getCompound("chunks");
+        d.getKeys().forEach(id -> {
+            chunks.computeIfAbsent(Long.valueOf(id), Chunk::new).fromNBT(d.getCompound(id));
+        });
+    }
+
+    @Override
+    public NbtCompound writeNbt(NbtCompound compound) {
+        NbtCompound destructions = new NbtCompound();
+        this.chunks.forEach((id, chunk) -> {
+            destructions.put(id.toString(), chunk.toNBT());
+        });
+        compound.put("chunks", destructions);
+        return compound;
+    }
+
     public int getBlockDestruction(BlockPos pos) {
-        return getDestructions(pos).getBlockDestruction(pos);
+        return getChunk(pos).getBlockDestruction(pos);
     }
 
-    private Chunk getDestructions(BlockPos pos) {
-        return destructions.computeIfAbsent(new ChunkPos(pos).toLong(), Chunk::new);
-    }
-
-    public void clearBlockDestruction(BlockPos pos) {
-        setBlockDestruction(pos, -1);
+    private Chunk getChunk(BlockPos pos) {
+        return chunks.computeIfAbsent(new ChunkPos(pos).toLong(), Chunk::new);
     }
 
     public void setBlockDestruction(BlockPos pos, int amount) {
         synchronized (locker) {
-            getDestructions(pos).setBlockDestruction(pos, amount);
+            getChunk(pos).setBlockDestruction(pos, amount);
+            markDirty();
         }
     }
 
@@ -62,21 +95,21 @@ public class BlockDestructionManager {
 
     public void onBlockChanged(BlockPos pos, BlockState oldState, BlockState newstate) {
         if (oldState.getBlock() != newstate.getBlock()) {
-            clearBlockDestruction(pos);
+            setBlockDestruction(pos, UNSET_DAMAGE);
         }
     }
 
     public void tick() {
         synchronized (locker) {
-            destructions.long2ObjectEntrySet().removeIf(entry -> entry.getValue().tick());
+            chunks.long2ObjectEntrySet().removeIf(entry -> entry.getValue().tick());
 
             if (world instanceof ServerWorld) {
-                destructions.forEach((chunkPos, chunk) -> chunk.sendUpdates((ServerWorld)world));
+                chunks.forEach((chunkPos, chunk) -> chunk.sendUpdates((ServerWorld)world));
             }
         }
     }
 
-    private class Chunk {
+    private class Chunk implements NbtSerialisable {
         private final Long2ObjectMap<Destruction> destructions = new Long2ObjectOpenHashMap<>();
 
         private final long pos;
@@ -132,11 +165,29 @@ public class BlockDestructionManager {
                 });
             }
         }
+
+        @Override
+        public void toNBT(NbtCompound compound) {
+            NbtCompound states = new NbtCompound();
+            destructions.forEach((id, state) -> {
+                states.put(id.toString(), state.toNBT());
+            });
+            compound.put("states", states);
+        }
+
+        @Override
+        public void fromNBT(NbtCompound compound) {
+            NbtCompound d = compound.getCompound("states");
+            chunks.clear();
+            d.getKeys().forEach(id -> {
+                destructions.computeIfAbsent(Long.valueOf(id), i -> new Destruction()).fromNBT(d.getCompound(id));
+            });
+        }
     }
 
-    private class Destruction {
-        int amount = -1;
-        int age = 50;
+    private class Destruction implements NbtSerialisable {
+        int amount = UNSET_DAMAGE;
+        int age = DESTRUCTION_COOLDOWN;
         boolean dirty;
 
         boolean tick() {
@@ -151,9 +202,22 @@ public class BlockDestructionManager {
         }
 
         void set(int amount) {
-            this.age = 50;
+            this.age = DESTRUCTION_COOLDOWN;
             this.amount = amount >= 0 && amount < MAX_DAMAGE ? amount : UNSET_DAMAGE;
             this.dirty = true;
+        }
+
+        @Override
+        public void toNBT(NbtCompound compound) {
+            compound.putInt("destruction", amount);
+            compound.putInt("age", age);
+        }
+
+        @Override
+        public void fromNBT(NbtCompound compound) {
+            amount = compound.getInt("destruction");
+            age = compound.getInt("age");
+            dirty = true;
         }
     }
 
