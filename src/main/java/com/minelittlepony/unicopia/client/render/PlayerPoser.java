@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.util.AnimationUtil;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
@@ -154,6 +155,14 @@ public class PlayerPoser {
             }
             default:
         }
+
+        if (model instanceof PlayerEntityModel<?> m) {
+            m.leftSleeve.copyTransform(m.leftArm);
+            m.rightSleeve.copyTransform(m.rightArm);
+            m.leftPants.copyTransform(m.leftLeg);
+            m.rightPants.copyTransform(m.rightLeg);
+        }
+        model.hat.copyTransform(model.head);
     }
 
     private void rearUp(MatrixStack matrices, BipedEntityModel<?> model, float progress) {

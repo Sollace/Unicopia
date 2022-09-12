@@ -4,9 +4,11 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.client.render.AccessoryFeatureRenderer;
+import com.minelittlepony.unicopia.client.render.PlayerPoser;
 import com.minelittlepony.unicopia.client.render.AccessoryFeatureRenderer.FeatureRoot;
 
 import net.minecraft.client.model.ModelPart;
@@ -41,5 +43,14 @@ abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<AbstractCl
     private void onRenderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo info) {
         Arm a = this.getModel().leftArm == arm ? Arm.LEFT : Arm.RIGHT;
         getAccessories().renderArm(matrices, vertexConsumers, light, player, arm, a);
+    }
+
+    @Inject(method = "renderArm",
+            at = @At(
+                value = "INVOKE",
+                target = "Lnet/minecraft/client/render/entity/model/PlayerEntityModel;setAngles(Lnet/minecraft/entity/LivingEntity;FFFFF)V",
+                shift = Shift.AFTER))
+    private void onPoseArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo info) {
+        PlayerPoser.INSTANCE.applyPosing(matrices, player, getModel());
     }
 }
