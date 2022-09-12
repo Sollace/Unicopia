@@ -12,14 +12,16 @@ import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
+import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgServerResources;
 import com.minelittlepony.unicopia.util.Resources;
 import com.mojang.logging.LogUtils;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.profiler.Profiler;
@@ -32,6 +34,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
 
     public static final SpellbookChapterLoader INSTANCE = new SpellbookChapterLoader();
 
+    private boolean dirty;
     private Map<Identifier, Chapter> chapters = new HashMap<>();
 
     public SpellbookChapterLoader() {
@@ -47,6 +50,18 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
         return chapters;
     }
 
+    public void sendUpdate(MinecraftServer server) {
+        if (dirty) {
+            dirty = false;
+            MsgServerResources msg = new MsgServerResources();
+            server.getWorlds().forEach(world -> {
+                world.getPlayers().forEach(player -> {
+                    Channel.SERVER_RESOURCES_SEND.send(player, msg);
+                });
+            });
+        }
+    }
+
     @Override
     protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
         try {
@@ -60,7 +75,11 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
 
         if (DEBUG) {
             CompletableFuture.runAsync(() -> {
-                reload(CompletableFuture::completedFuture, manager, profiler, profiler, Util.getMainWorkerExecutor(), MinecraftClient.getInstance());
+                try {
+                    Util.waitAndApply(executor -> reload(CompletableFuture::completedFuture, manager, profiler, profiler, Util.getMainWorkerExecutor(), executor)).get();
+                } catch (InterruptedException | ExecutionException e) {
+                }
+                dirty = true;
             }, EXECUTOR);
         }
     }

@@ -58,6 +58,9 @@ public class Unicopia implements ModInitializer {
 
         ServerTickEvents.END_WORLD_TICK.register(w -> {
             ((BlockDestructionManager.Source)w).getDestructionManager().tick();
+            if (SpellbookChapterLoader.DEBUG) {
+                SpellbookChapterLoader.INSTANCE.sendUpdate(w.getServer());
+            }
         });
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(TreeTypeLoader.INSTANCE);
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(UEnchantments.POISONED_JOKE);
