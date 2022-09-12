@@ -9,13 +9,9 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
-import com.minelittlepony.unicopia.InteractionManager;
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UTags;
-import com.minelittlepony.unicopia.WorldTribeManager;
+import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.EarthPonyStompAbility;
 import com.minelittlepony.unicopia.ability.magic.Affine;
@@ -148,7 +144,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             }
 
             animation.getSound().ifPresent(sound -> {
-                playSound(sound, 0.9F, 1);
+                playSound(sound, sound == USounds.ENTITY_PLAYER_WOLOLO ? 0.1F : 0.9F, 1);
             });
         }
     }
