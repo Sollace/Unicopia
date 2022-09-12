@@ -47,13 +47,23 @@ public class GemstoneItem extends Item {
 
             CustomisedSpellType<?> existing = charms.getEquippedSpell(hand);
 
-            if (existing != null) {
-                stack = existing.traits().applyTo(enchant(stack, existing.type()));
+            if (!existing.isEmpty()) {
+
+                if (stack.getCount() == 1) {
+                    stack = existing.traits().applyTo(enchant(stack, existing.type()));
+                } else {
+                    user.giveItemStack(existing.traits().applyTo(enchant(stack.split(1), existing.type())));
+                }
             }
 
             if (spell.getResult().isAccepted()) {
                 charms.equipSpell(hand, spell.getValue());
             } else {
+
+                if (existing.isEmpty()) {
+                    return result;
+                }
+
                 charms.equipSpell(hand, SpellType.EMPTY_KEY.withTraits());
             }
             return TypedActionResult.success(stack, true);

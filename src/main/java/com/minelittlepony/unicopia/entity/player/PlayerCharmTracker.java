@@ -55,7 +55,7 @@ public class PlayerCharmTracker implements Tickable, NbtSerialisable {
     }
 
     public CustomisedSpellType<?> getEquippedSpell(Hand hand) {
-        return handSpells[hand.ordinal()];
+        return handSpells[hand.ordinal()] == null ? SpellType.EMPTY_KEY.withTraits() : handSpells[hand.ordinal()];
     }
 
     public TypedActionResult<CustomisedSpellType<?>> getSpellInHand(Hand hand) {
