@@ -56,7 +56,7 @@
         "elements": [
           { "recipe": "unicopia:spells/chilling_breath" },
           "Requires:",
-          "- At least 5x cold trait\n- At least 15x knowleged trait"
+          "- A frost gem\n- At least 5x ice trait\n- At least 10x knowledge trait"
         ]
       },
       {
