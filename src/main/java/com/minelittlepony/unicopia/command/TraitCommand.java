@@ -43,13 +43,13 @@ class TraitCommand {
 
     static int add(ServerCommandSource source, PlayerEntity player, Trait trait, float amount) throws CommandSyntaxException {
         if (trait == null) {
-            source.sendError(Text.literal("Invalid trait"));
+            source.sendError(new LiteralText("Invalid trait"));
             return 0;
         }
 
         ItemStack stack = player.getMainHandStack();
         if (stack.isEmpty()) {
-            source.sendError(Text.literal("That trait cannot be added to the current item"));
+            source.sendError(new LiteralText("That trait cannot be added to the current item"));
             return 0;
         }
 
@@ -60,7 +60,7 @@ class TraitCommand {
 
     static int remove(ServerCommandSource source, PlayerEntity player, Trait trait) throws CommandSyntaxException {
         if (trait == null) {
-            source.sendError(Text.literal("Invalid trait"));
+            source.sendError(new LiteralText("Invalid trait"));
             return 0;
         }
 
@@ -84,9 +84,9 @@ class TraitCommand {
         float gravity = iplayer.getPhysics().getGravityModifier();
 
         if (source.getPlayer() == player) {
-            player.sendMessage(Text.translatable(translationKey, gravity), false);
+            player.sendMessage(new TranslatableText(translationKey, gravity), false);
         } else {
-            source.sendFeedback(Text.translatable(translationKey + ".other", player.getName(), gravity), true);
+            source.sendFeedback(new TranslatableText(translationKey + ".other", player.getName(), gravity), true);
         }
 
         return 0;

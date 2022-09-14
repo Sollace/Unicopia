@@ -24,7 +24,7 @@ abstract class MixinBoatEntity extends Entity implements LavaAffine {
 
     @Redirect(
             method = {
-                    "getWaterHeightBelow",
+                    "method_7544",
                     "checkBoatInWater",
                     "getUnderWaterLocation",
                     "fall",

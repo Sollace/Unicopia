@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.client.sound;
 
 import java.util.Optional;
+import java.util.Random;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.Living;
@@ -9,7 +10,6 @@ import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 
 public class MagicAuraSoundInstance extends FadeOutSoundInstance {
 

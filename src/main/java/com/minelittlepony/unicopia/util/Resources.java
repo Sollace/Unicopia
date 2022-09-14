@@ -21,7 +21,7 @@ public interface Resources {
             .registerTypeAdapter(Identifier.class, new ToStringAdapter<>(Identifier::new))
             .create();
 
-    static Stream<Resource> getResources(ResourceManager manager, Identifier id) {
+    static Stream<Resource> getResources(ResourceManager manager, Identifier id) throws IOException {
         return manager.getAllResources(id).stream();
     }
 

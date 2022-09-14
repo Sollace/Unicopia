@@ -22,7 +22,7 @@ public class MsgTribeSelect implements Packet<PlayerEntity> {
         int len = buffer.readInt();
         availableRaces = new HashSet<>();
         while (len-- > 0) {
-            availableRaces.add(buffer.readRegistryValue(Race.REGISTRY));
+            availableRaces.add(Race.REGISTRY.get(buffer.readIdentifier()));
         }
     }
 
@@ -33,7 +33,7 @@ public class MsgTribeSelect implements Packet<PlayerEntity> {
     @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeInt(availableRaces.size());
-        availableRaces.forEach(race -> buffer.writeRegistryValue(Race.REGISTRY, race));
+        availableRaces.forEach(race -> buffer.writeIdentifier(Race.REGISTRY.getId(race)));
     }
 
     @Override

@@ -28,7 +28,7 @@ public class FrostedObsidianBlock extends FrostedIceBlock {
 
     @Override
     protected void melt(BlockState state, World world, BlockPos pos) {
-        if (world.getDimension().ultrawarm()) {
+        if (world.getDimension().isUltrawarm()) {
             world.removeBlock(pos, false);
             return;
         }

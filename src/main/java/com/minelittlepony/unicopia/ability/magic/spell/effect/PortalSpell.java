@@ -111,12 +111,12 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
         destination.entity.getPosition().ifPresent(targetPos -> {
             source.findAllEntitiesInRange(1).forEach(entity -> {
-                if (!entity.hasPortalCooldown() && entity.timeUntilRegen <= 0) {
+                if (!entity.hasNetherPortalCooldown() && entity.timeUntilRegen <= 0) {
                     Vec3d offset = entity.getPos().subtract(source.getOriginVector());
                     float yawDifference = pitch < 15 ? (180 - yaw + destination.yaw) : 0;
                     Vec3d dest = targetPos.add(offset.rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE)).add(0, 0.05, 0);
 
-                    entity.resetPortalCooldown();
+                    entity.resetNetherPortalCooldown();
                     entity.timeUntilRegen = 100;
 
                     entity.setYaw(entity.getYaw() + yawDifference);

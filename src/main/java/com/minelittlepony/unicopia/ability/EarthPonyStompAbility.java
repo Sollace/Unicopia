@@ -189,7 +189,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                     ItemStack stack = UItems.PEBBLES.getDefaultStack();
                     stack.setCount(1 + w.getRandom().nextInt(2));
                     Block.dropStack(w, pos, stack);
-                    state.onStacksDropped((ServerWorld)w, pos, stack, true);
+                    state.onStacksDropped((ServerWorld)w, pos, stack);
                 }
             }
         } else {

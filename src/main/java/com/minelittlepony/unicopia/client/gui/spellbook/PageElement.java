@@ -101,7 +101,7 @@ interface PageElement extends Drawable {
             boolean needsMoreXp = page.getLevel() < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < page.getLevel();
             matrices.push();
             wrappedText.forEach(line -> {
-                font.draw(matrices, needsMoreXp ? line.text().copy().formatted(Formatting.OBFUSCATED) : line.text().copy(), line.x(), 0, 0);
+                font.draw(matrices, needsMoreXp ? line.text().shallowCopy().formatted(Formatting.OBFUSCATED, Formatting.BLACK) : line.text(), line.x(), 0, 0xFF000000);
                 matrices.translate(0, font.fontHeight, 0);
             });
             matrices.pop();

@@ -12,7 +12,7 @@ import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgRequestSpeciesChange;
 
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
@@ -24,7 +24,7 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
     private boolean finished;
 
     public TribeSelectionScreen(Set<Race> allowedRaces) {
-        super(Text.translatable("gui.unicopia.tribe_selection"));
+        super(new TranslatableText("gui.unicopia.tribe_selection"));
         this.allowedRaces = allowedRaces;
     }
 
@@ -40,11 +40,11 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
         top += height / 8;
 
         TextBlock block = addDrawable(new TextBlock(left, top += 10, pageWidth));
-        block.getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.welcome.journey"));
+        block.getStyle().setText(new TranslatableText("gui.unicopia.tribe_selection.welcome.journey"));
         top += block.getBounds().height;
 
         block = addDrawable(new TextBlock(left, top += 7, pageWidth));
-        block.getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.welcome.choice"));
+        block.getStyle().setText(new TranslatableText("gui.unicopia.tribe_selection.welcome.choice"));
         top += block.getBounds().height;
 
         Race preference = UnicopiaClient.getPreferredRace();
@@ -67,7 +67,7 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
         top = height - 20;
 
         if (!preference.isDefault()) {
-            addDrawable(new Label(width / 2, top).setCentered()).getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.preference", preference.getDisplayName().copy().formatted(Formatting.YELLOW)));
+            addDrawable(new Label(width / 2, top).setCentered()).getStyle().setText(new TranslatableText("gui.unicopia.tribe_selection.preference", preference.getDisplayName().copy().formatted(Formatting.YELLOW)));
         }
     }
 

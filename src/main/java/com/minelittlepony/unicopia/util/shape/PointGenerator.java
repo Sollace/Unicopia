@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.util.shape;
 
+import java.util.Random;
 import java.util.Spliterator;
 import java.util.Spliterators.AbstractSpliterator;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,7 +11,6 @@ import java.util.stream.StreamSupport;
 import com.google.common.collect.Streams;
 
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 
 /**
  *

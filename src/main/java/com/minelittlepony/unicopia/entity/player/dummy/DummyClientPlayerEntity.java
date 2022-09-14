@@ -17,7 +17,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
-import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
 import net.minecraft.world.GameMode;
 
 public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implements Owned<PlayerEntity> {
@@ -27,7 +27,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
     private PlayerEntity owner;
 
     public DummyClientPlayerEntity(ClientWorld world, GameProfile profile) {
-        super(world, profile, null);
+        super(world, profile);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
             playerInfo = connection.getPlayerListEntry(getGameProfile().getId());
 
             if (playerInfo == null) {
-                playerInfo = new PlayerListEntry(new Packet().entry(), MinecraftClient.getInstance().getServicesSignatureVerifier(), false);
+                playerInfo = new PlayerListEntry(new Packet().entry());
             }
         }
 
@@ -57,7 +57,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
     }
 
     @Override
-    protected void playEquipSound(ItemStack stack) {
+    protected void onEquipStack(ItemStack stack) {
         /*noop*/
     }
 
@@ -87,7 +87,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
                     getGameProfile(),
                     0,
                     GameMode.DEFAULT,
-                    Text.literal(getGameProfile().getName()), null);
+                    new LiteralText(getGameProfile().getName()));
         }
     }
 }

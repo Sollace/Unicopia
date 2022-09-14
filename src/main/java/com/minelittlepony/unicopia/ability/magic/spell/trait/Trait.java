@@ -91,14 +91,14 @@ public enum Trait {
                     : Formatting.WHITE;
 
         return Tooltip.of(
-                Text.translatable("gui.unicopia.trait.label",
-                        Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".name")
+                new TranslatableText("gui.unicopia.trait.label",
+                        new TranslatableText("trait." + getId().getNamespace() + "." + getId().getPath() + ".name")
                 ).formatted(Formatting.YELLOW)
-                .append(Text.translatable("gui.unicopia.trait.group", getGroup().name().toLowerCase()).formatted(Formatting.ITALIC, Formatting.GRAY))
-                .append(Text.literal("\n\n").formatted(Formatting.WHITE)
-                .append(Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".description").formatted(Formatting.GRAY))
+                .append(new TranslatableText("gui.unicopia.trait.group", getGroup().name().toLowerCase()).formatted(Formatting.ITALIC, Formatting.GRAY))
+                .append(new LiteralText("\n\n").formatted(Formatting.WHITE)
+                .append(new TranslatableText("trait." + getId().getNamespace() + "." + getId().getPath() + ".description").formatted(Formatting.GRAY))
                 .append("\n")
-                .append(Text.translatable("gui.unicopia.trait.corruption", ItemStack.MODIFIER_FORMAT.format(getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor))), 200);
+                .append(new TranslatableText("gui.unicopia.trait.corruption", ItemStack.MODIFIER_FORMAT.format(getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor))), 200);
     }
 
     public static Collection<Trait> all() {

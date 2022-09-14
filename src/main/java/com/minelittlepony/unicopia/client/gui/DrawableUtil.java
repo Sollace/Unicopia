@@ -71,7 +71,8 @@ public interface DrawableUtil {
         bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(matrix, x1, y1, 0).color(r, g, b, k).next();
         bufferBuilder.vertex(matrix, x2, y2, 0).color(r, g, b, k).next();
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
@@ -119,7 +120,8 @@ public interface DrawableUtil {
             cylendricalVertex(bufferBuilder, model, innerRadius, angle + INCREMENT, r, g, b, k);
         }
 
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
         RenderSystem.enableTexture();
     }
 
@@ -185,7 +187,8 @@ public interface DrawableUtil {
             }
         }
 
-        BufferRenderer.drawWithShader(bufferBuilder.end());
+        bufferBuilder.end();
+        BufferRenderer.draw(bufferBuilder);
         RenderSystem.enableTexture();
     }
 

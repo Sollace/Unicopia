@@ -13,12 +13,13 @@ import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public class DiscoveryToast implements Toast {
     private static final long MAX_AGE = 5000L;
-    private static final Text TITLE = Text.translatable("unicopia.toast.discoveries.title");
-    private static final Text DESCRIPTION = Text.translatable("unicopia.toast.discoveries.description");
+    private static final Text TITLE = new TranslatableText("unicopia.toast.discoveries.title");
+    private static final Text DESCRIPTION = new TranslatableText("unicopia.toast.discoveries.description");
 
     private final List<Identifier> discoveries = new ArrayList<>();
     private long startTime;

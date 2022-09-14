@@ -18,7 +18,7 @@ public class ParagraphWrappingVisitor implements StyledVisitor<Object> {
     private final TextHandler handler = font.getTextHandler();
 
     private float currentLineCollectedLength = 0;
-    private MutableText currentLine = Text.empty();
+    private MutableText currentLine = new LiteralText("");
     private boolean progressedNonEmpty;
 
     private final Int2IntFunction widthSupplier;
@@ -57,7 +57,7 @@ public class ParagraphWrappingVisitor implements StyledVisitor<Object> {
                 trimmedLength = lastSpace > 0 ? Math.min(lastSpace, trimmedLength) : trimmedLength;
             }
 
-            Text fragment = Text.literal(s.substring(0, trimmedLength).trim()).setStyle(style);
+            Text fragment = new LiteralText(s.substring(0, trimmedLength).trim()).setStyle(style);
             float grabbedWidth = handler.getWidth(fragment);
 
             // advance if appending the next segment would cause an overflow
@@ -100,7 +100,7 @@ public class ParagraphWrappingVisitor implements StyledVisitor<Object> {
             lineConsumer.accept(currentLine, (++line) * font.fontHeight);
         }
         pageWidth = widthSupplier.applyAsInt((++line) * font.fontHeight);
-        currentLine = Text.empty();
+        currentLine = new LiteralText("");
         currentLineCollectedLength = 0;
     }
 

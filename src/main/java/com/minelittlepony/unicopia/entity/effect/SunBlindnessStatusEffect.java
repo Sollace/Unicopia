@@ -51,7 +51,7 @@ public class SunBlindnessStatusEffect extends StatusEffect {
 
     public static boolean hasSunExposure(LivingEntity entity) {
 
-        if (entity.hasPortalCooldown()) {
+        if (entity.hasNetherPortalCooldown()) {
             return false;
         }
 

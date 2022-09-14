@@ -16,12 +16,11 @@ import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.Vector4f;
 
 public class DismissSpellScreen extends GameGui {
     private final Pony pony = Pony.of(MinecraftClient.getInstance().player);
@@ -30,7 +29,7 @@ public class DismissSpellScreen extends GameGui {
     private int relativeMouseY;
 
     public DismissSpellScreen() {
-        super(Text.translatable("gui.unicopia.dismiss_spell"));
+        super(new TranslatableText("gui.unicopia.dismiss_spell"));
     }
 
     @Override
@@ -92,7 +91,7 @@ public class DismissSpellScreen extends GameGui {
 
         matrices.push();
         matrices.translate(0, 0, 300);
-        Text cancel = Text.literal("Press ESC to cancel");
+        Text cancel = new LiteralText("Press ESC to cancel");
         getFont().drawWithShadow(matrices, cancel, (width - getFont().getWidth(cancel)) / 2, height - 30, 0xFFFFFFFF);
         matrices.pop();
     }
@@ -185,18 +184,18 @@ public class DismissSpellScreen extends GameGui {
                 MutableText name = actualSpell.getType().getName().copy();
                 color = actualSpell.getType().getColor();
                 name.setStyle(name.getStyle().withColor(color == 0 ? 0xFFAAAAAA : color));
-                tooltip.add(Text.translatable("Spell Type: %s", name));
+                tooltip.add(new TranslatableText("Spell Type: %s", name));
                 actualSpell.getType().getTraits().appendTooltip(tooltip);
-                tooltip.add(ScreenTexts.EMPTY);
-                tooltip.add(Text.translatable("Affinity: %s", actualSpell.getAffinity().name()).formatted(actualSpell.getAffinity().getColor()));
-                tooltip.add(ScreenTexts.EMPTY);
-                tooltip.addAll(FlowingText.wrap(Text.translatable(actualSpell.getType().getTranslationKey() + ".lore").formatted(actualSpell.getAffinity().getColor()), 180).toList());
+                tooltip.add(LiteralText.EMPTY);
+                tooltip.add(new TranslatableText("Affinity: %s", actualSpell.getAffinity().name()).formatted(actualSpell.getAffinity().getColor()));
+                tooltip.add(LiteralText.EMPTY);
+                tooltip.addAll(FlowingText.wrap(new TranslatableText(actualSpell.getType().getTranslationKey() + ".lore").formatted(actualSpell.getAffinity().getColor()), 180).toList());
                 if (spell instanceof TimedSpell timed) {
-                    tooltip.add(ScreenTexts.EMPTY);
-                    tooltip.add(Text.translatable("Time Left: %s", StringHelper.formatTicks(timed.getTimer().getTicksRemaining())));
+                    tooltip.add(LiteralText.EMPTY);
+                    tooltip.add(new TranslatableText("Time Left: %s", StringHelper.formatTicks(timed.getTimer().getTicksRemaining())));
                 }
-                tooltip.add(ScreenTexts.EMPTY);
-                tooltip.add(Text.translatable("[Click to Discard]"));
+                tooltip.add(LiteralText.EMPTY);
+                tooltip.add(new TranslatableText("[Click to Discard]"));
                 renderTooltip(matrices, tooltip, 0, 0);
 
                 if (!lastMouseOver) {

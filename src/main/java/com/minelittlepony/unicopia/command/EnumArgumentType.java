@@ -20,9 +20,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
-import net.minecraft.command.argument.serialize.ArgumentSerializer.ArgumentTypeProperties;
 import net.minecraft.network.PacketByteBuf;
 
 class EnumArgumentType<T extends Enum<T>> implements ArgumentType<T>, Serializable {
@@ -95,52 +93,28 @@ class EnumArgumentType<T extends Enum<T>> implements ArgumentType<T>, Serializab
         return suggestions;
     }
 
-    public static class Serializer<T extends Enum<T>> implements ArgumentSerializer<EnumArgumentType<T>, Serializer<T>.Properties> {
+    public static class Serializer<T extends Enum<T>> implements ArgumentSerializer<EnumArgumentType<T>> {
         @SuppressWarnings("unchecked")
         @Override
-        public Properties fromPacket(PacketByteBuf buf) {
+        public EnumArgumentType<T> fromPacket(PacketByteBuf buf) {
             try (ObjectInputStream stream = new ObjectInputStream(new ByteBufInputStream(buf))) {
-                return getArgumentTypeProperties((EnumArgumentType<T>)stream.readObject());
+                return (EnumArgumentType<T>)stream.readObject();
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }
 
         @Override
-        public void writePacket(Properties properties, PacketByteBuf buf) {
+        public void toPacket(EnumArgumentType<T> type, PacketByteBuf buf) {
             try (ObjectOutputStream stream = new ObjectOutputStream(new ByteBufOutputStream(buf))) {
-                stream.writeObject(properties.type);
+                stream.writeObject(type);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
         @Override
-        public void writeJson(Properties properties, JsonObject json) {
-        }
-
-        @Override
-        public Properties getArgumentTypeProperties(EnumArgumentType<T> type) {
-            return new Properties(type);
-        }
-
-        public final class Properties implements ArgumentTypeProperties<EnumArgumentType<T>> {
-
-            private final EnumArgumentType<T> type;
-
-            public Properties(EnumArgumentType<T> type) {
-                this.type = type;
-            }
-
-            @Override
-            public EnumArgumentType<T> createType(CommandRegistryAccess var1) {
-                return type;
-            }
-
-            @Override
-            public ArgumentSerializer<EnumArgumentType<T>, ?> getSerializer() {
-                return Serializer.this;
-            }
+        public void toJson(EnumArgumentType<T> var1, JsonObject var2) {
         }
     }
 }

@@ -21,7 +21,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public class LanSettingsScreen extends GameGui {
@@ -40,7 +40,7 @@ public class LanSettingsScreen extends GameGui {
     private boolean forceHideWhitelist;
 
     public LanSettingsScreen(Screen parent) {
-        super(Text.translatable("unicopia.options.title"), parent);
+        super(new TranslatableText("unicopia.options.title"), parent);
 
         content.margin.setVertical(30);
         content.getContentPadding().setHorizontal(10);
@@ -103,7 +103,7 @@ public class LanSettingsScreen extends GameGui {
 
         if (whitelistEnabled) {
 
-            content.addButton(new Label(LEFT, row += 20)).getStyle().setText(Text.translatable("unicopia.options.whitelist.details").formatted(Formatting.DARK_GREEN));
+            content.addButton(new Label(LEFT, row += 20)).getStyle().setText(new TranslatableText("unicopia.options.whitelist.details").formatted(Formatting.DARK_GREEN));
 
             row += 20;
             WHITELIST_GRID_PACKER.start();

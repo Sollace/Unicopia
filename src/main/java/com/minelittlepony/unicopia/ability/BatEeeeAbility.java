@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.Random;
+
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
@@ -13,7 +15,6 @@ import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 
 /**
  * A magic casting ability for unicorns.

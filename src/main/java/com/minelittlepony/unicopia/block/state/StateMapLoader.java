@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.block.state;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,34 +49,37 @@ public class StateMapLoader extends JsonDataLoader implements IdentifiableResour
         Map<Identifier, JsonElement> map = Maps.newHashMap();
         int i = DATA_TYPE.length() + 1;
 
-        resourceManager.findAllResources(DATA_TYPE, id -> id.getPath().endsWith(FILE_SUFFIX)).entrySet().stream().forEach(entry -> {
-            Identifier resId = entry.getKey();
+        resourceManager.findResources(DATA_TYPE, id -> id.endsWith(FILE_SUFFIX)).stream().forEach(entry -> {
+            Identifier resId = entry;
             String path = resId.getPath();
             Identifier id = new Identifier(resId.getNamespace(), path.substring(i, path.length() - FILE_SUFFIX_LENGTH));
 
             JsonArray entries = new JsonArray();
-            for (var resource : entry.getValue()) {
-                try (BufferedReader reader = resource.getReader()) {
-                    JsonObject json = JsonHelper.deserialize(Resources.GSON, reader, JsonObject.class);
+            try {
+                for (var resource : resourceManager.getAllResources(entry)) {
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8))) {
+                        JsonObject json = JsonHelper.deserialize(Resources.GSON, reader, JsonObject.class);
 
-                    if (json != null) {
-                        if (json.has("entries")) {
+                        if (json != null) {
+                            if (json.has("entries")) {
 
-                            JsonArray incoming = JsonHelper.getArray(json, "entries");
-                            if (json.has("replace") && json.get("replace").getAsBoolean()) {
-                                entries = incoming;
-                            } else {
-                                entries.addAll(incoming);
+                                JsonArray incoming = JsonHelper.getArray(json, "entries");
+                                if (json.has("replace") && json.get("replace").getAsBoolean()) {
+                                    entries = incoming;
+                                } else {
+                                    entries.addAll(incoming);
+                                }
                             }
+
+                            continue;
                         }
 
-                        continue;
+                        LOGGER.error("Couldn't load data file {} from {} as it's null or empty", id, resId);
+                    } catch (JsonParseException | IOException | IllegalArgumentException e) {
+                        LOGGER.error("Couldn't parse data file {} from {}", id, resId, e);
                     }
-
-                    LOGGER.error("Couldn't load data file {} from {} as it's null or empty", id, resId);
-                } catch (JsonParseException | IOException | IllegalArgumentException e) {
-                    LOGGER.error("Couldn't parse data file {} from {}", id, resId, e);
                 }
+            } catch (IOException e) {
             }
 
             map.put(id, entries);

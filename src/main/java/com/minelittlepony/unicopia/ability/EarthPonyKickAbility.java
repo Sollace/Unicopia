@@ -77,7 +77,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                 for (var e : VecHelper.findInRange(player.getEntity(), w, kickLocation.vec(), 2, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
                     if (e instanceof LivingEntity entity) {
                         float calculatedStrength = 0.5F * (1 + player.getLevel().getScaled(9));
-                        entity.damage(MagicalDamageSource.KICK, player.getReferenceWorld().random.nextBetween(2, 10) + calculatedStrength);
+                        entity.damage(MagicalDamageSource.KICK, 2 + player.getReferenceWorld().random.nextInt(8) + calculatedStrength);
                         entity.takeKnockback(calculatedStrength, origin.x - entity.getX(), origin.z - entity.getZ());
                         player.subtractEnergyCost(3);
                         player.setAnimation(Animation.KICK);

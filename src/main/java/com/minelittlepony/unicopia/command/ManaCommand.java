@@ -8,7 +8,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
 
 public class ManaCommand {
     static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -19,7 +19,7 @@ public class ManaCommand {
                     var pony = Pony.of(source.getSource().getPlayer());
                     var bar = type.getBar(pony.getMagicalReserves());
 
-                    source.getSource().getPlayer().sendMessage(Text.literal(type.name() + " is " + bar.get() + "/" + bar.getMax()));
+                    source.getSource().getPlayer().sendMessage(new LiteralText(type.name() + " is " + bar.get() + "/" + bar.getMax()), false);
                     return 0;
                 })
                     .then(CommandManager.argument("value", FloatArgumentType.floatArg()).executes(source -> {
@@ -28,7 +28,7 @@ public class ManaCommand {
                         var bar = type.getBar(pony.getMagicalReserves());
 
                         bar.set(source.getArgument("value", Float.class));
-                        source.getSource().getPlayer().sendMessage(Text.literal("Set " + type.name() + " to " + bar.get() + "/" + bar.getMax()));
+                        source.getSource().getPlayer().sendMessage(new LiteralText("Set " + type.name() + " to " + bar.get() + "/" + bar.getMax()), false);
                         return 0;
                     }))
                 )

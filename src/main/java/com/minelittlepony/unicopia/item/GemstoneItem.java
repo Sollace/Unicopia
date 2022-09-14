@@ -20,8 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -79,7 +78,7 @@ public class GemstoneItem extends Item {
         if (isEnchanted(stack)) {
             SpellType<?> key = getSpellKey(stack);
 
-            MutableText line = Text.translatable(key.getTranslationKey() + ".lore").formatted(key.getAffinity().getColor());
+            MutableText line = new TranslatableText(key.getTranslationKey() + ".lore").formatted(key.getAffinity().getColor());
 
             if (!Unicopia.SIDE.getPlayerSpecies().canCast()) {
                 line = line.formatted(Formatting.OBFUSCATED);
@@ -112,10 +111,10 @@ public class GemstoneItem extends Item {
     public Text getName(ItemStack stack) {
         if (isEnchanted(stack)) {
             if (!Unicopia.SIDE.getPlayerSpecies().canCast()) {
-                return Text.translatable(getTranslationKey(stack) + ".obfuscated");
+                return new TranslatableText(getTranslationKey(stack) + ".obfuscated");
             }
 
-            return Text.translatable(getTranslationKey(stack) + ".enchanted", getSpellKey(stack).getName());
+            return new TranslatableText(getTranslationKey(stack) + ".enchanted", getSpellKey(stack).getName());
         }
         return super.getName();
     }

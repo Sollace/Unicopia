@@ -12,6 +12,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 class RacelistCommand {
@@ -54,7 +55,7 @@ class RacelistCommand {
 
         Text formattedName = race.getDisplayName().copy().formatted(Formatting.GOLD);
 
-        source.sendFeedback(Text.translatable(translationKey, formattedName).formatted(Formatting.GREEN), false);
+        source.sendFeedback(new TranslatableText(translationKey, formattedName).formatted(Formatting.GREEN), false);
         return 0;
     }
 }

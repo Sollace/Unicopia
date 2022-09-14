@@ -192,7 +192,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (typeChanged) {
             pony.spawnParticles(ParticleTypes.CLOUD, 10);
 
-            entity.playSound(entity.world.getDimension().ultrawarm() ? USounds.ITEM_ICARUS_WINGS_CORRUPT : USounds.ITEM_ICARUS_WINGS_PURIFY, 0.1125F, 1.5F);
+            entity.playSound(entity.world.getDimension().isUltrawarm() ? USounds.ITEM_ICARUS_WINGS_CORRUPT : USounds.ITEM_ICARUS_WINGS_PURIFY, 0.1125F, 1.5F);
         }
 
         entity.getAbilities().allowFlying = type.canFlyCreative(entity);
@@ -369,7 +369,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             if (entity.world.hasRain(entity.getBlockPos())) {
                 energyConsumed *= 3;
             }
-            if (entity.world.getDimension().ultrawarm()) {
+            if (entity.world.getDimension().isUltrawarm()) {
                 energyConsumed *= 4;
                 damageInterval /= 2;
                 minDamage *= 3;

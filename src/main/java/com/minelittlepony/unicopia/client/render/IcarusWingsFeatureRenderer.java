@@ -23,6 +23,6 @@ public class IcarusWingsFeatureRenderer<E extends LivingEntity> extends WingsFea
 
     @Override
     protected Identifier getTexture(E entity) {
-        return entity.world.getDimension().ultrawarm() ? ICARUS_WINGS_CORRUPTED : ICARUS_WINGS;
+        return entity.world.getDimension().isUltrawarm() ? ICARUS_WINGS_CORRUPTED : ICARUS_WINGS;
     }
 }
