@@ -154,7 +154,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             if (color == 0xFFFFFF || color == 0) {
                 v += 48;
             } else {
-                RenderSystem.setShaderColor(NativeImage.getRed(color), NativeImage.getGreen(color), NativeImage.getBlue(color), 1);
+                RenderSystem.setShaderColor(NativeImage.getRed(color) / 255F, NativeImage.getGreen(color) / 255F, NativeImage.getBlue(color) / 255F, 1);
             }
 
             boolean isRight = tab.chapter().side() == TabSide.RIGHT;
