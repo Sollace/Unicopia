@@ -4,7 +4,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.passive.*;
 
-public class SteedBehaviour<T extends AbstractHorseEntity> extends EntityBehaviour<T> {
+public class SteedBehaviour<T extends HorseBaseEntity> extends EntityBehaviour<T> {
 
     @Override
     public void update(Pony player, T horse, Disguise spell) {

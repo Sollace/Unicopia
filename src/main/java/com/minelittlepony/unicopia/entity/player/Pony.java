@@ -58,6 +58,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 
@@ -369,7 +370,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             ticksHanging = 0;
         }
 
-        if (getSpecies() == Race.BAT && !entity.hasPortalCooldown()) {
+        if (getSpecies() == Race.BAT && !entity.hasNetherPortalCooldown()) {
             if (SunBlindnessStatusEffect.hasSunExposure(entity)) {
                 if (ticksInSun < 200) {
                     ticksInSun++;
@@ -448,7 +449,6 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         return Optional.empty();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void handleFall(float distance, float damageMultiplier, DamageSource cause) {
         super.handleFall(distance, damageMultiplier, cause);
@@ -529,13 +529,13 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     public Optional<Text> trySleep(BlockPos pos) {
 
         if (UItems.ALICORN_AMULET.isApplicable(entity)) {
-            return Optional.of(Text.translatable("block.unicopia.bed.not_tired"));
+            return Optional.of(new TranslatableText("block.unicopia.bed.not_tired"));
         }
 
         return findAllSpellsInRange(10)
                 .filter(p -> p instanceof Pony && ((Pony)p).isEnemy(this))
                 .findFirst()
-                .map(p -> Text.translatable("block.unicopia.bed.not_safe"));
+                .map(p -> new TranslatableText("block.unicopia.bed.not_safe"));
     }
 
     @Override

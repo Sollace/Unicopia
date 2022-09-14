@@ -20,7 +20,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -104,9 +104,9 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
                 addButton(new TraitButton(width / 2 - 8, 8, trait));
                 addButton(new Label(width / 2, 26).setCentered())
                     .getStyle()
-                        .setText(known ? Text.translatable("gui.unicopia.trait.label",
-                                Text.translatable("trait." + trait.getId().getNamespace() + "." + trait.getId().getPath() + ".name")
-                ) : Text.literal("???"));
+                        .setText(known ? new TranslatableText("gui.unicopia.trait.label",
+                                new TranslatableText("trait." + trait.getId().getNamespace() + "." + trait.getId().getPath() + ".name")
+                ) : new LiteralText("???"));
                 IngredientTree tree = new IngredientTree(0, 50, width + 18).noLabels();
 
                 List<Item> knownItems = Pony.of(MinecraftClient.getInstance().player).getDiscoveries().getKnownItems(trait).toList();

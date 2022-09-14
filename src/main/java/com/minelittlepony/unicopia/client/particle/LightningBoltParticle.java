@@ -58,9 +58,9 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
 
         while (nodes.size() < intendedLength) {
             startPos = startPos.add(
-                    world.random.nextTriangular(0.1, 3),
-                    world.random.nextTriangular(0.1, 3),
-                    world.random.nextTriangular(0.1, 3)
+                    0.1 + world.random.nextDouble(6) - 3,
+                    0.1 + world.random.nextDouble(6) - 3,
+                    0.1 + world.random.nextDouble(6) - 3
             );
 
             nodes.add(startPos);

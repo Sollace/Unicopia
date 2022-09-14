@@ -11,11 +11,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public class SpellbookCraftingPageContent extends ScrollContainer implements SpellbookChapterList.Content, SpellbookScreen.RecipesChangedListener {
-    public static final Text INVENTORY_TITLE = Text.translatable("gui.unicopia.spellbook.page.inventory");
-    public static final Text RECIPES_TITLE = Text.translatable("gui.unicopia.spellbook.page.recipes");
+    public static final Text INVENTORY_TITLE = new TranslatableText("gui.unicopia.spellbook.page.inventory");
+    public static final Text RECIPES_TITLE = new TranslatableText("gui.unicopia.spellbook.page.recipes");
     public static final int TOTAL_PAGES = 2;
 
     private final SpellbookScreen screen;
@@ -46,7 +47,7 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
 
         DrawableUtil.drawScaledText(matrices, state.getOffset() == 0 ? INVENTORY_TITLE : RECIPES_TITLE, screen.getFrameBounds().left + screen.getFrameBounds().width / 2 + 20, SpellbookScreen.TITLE_Y, 1.3F, headerColor);
 
-        Text pageText = Text.translatable("%s/%s", state.getOffset() + 1, TOTAL_PAGES);
+        Text pageText = new TranslatableText("%s/%s", state.getOffset() + 1, TOTAL_PAGES);
         textRenderer.draw(matrices, pageText, 337 - textRenderer.getWidth(pageText) / 2F, 190, headerColor);
     }
 

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.block;
 
+import java.util.Random;
+
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.item.UItems;
 
@@ -9,7 +11,6 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;

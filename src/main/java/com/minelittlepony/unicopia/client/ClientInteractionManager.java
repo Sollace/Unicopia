@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client;
 
+import java.util.Random;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +34,6 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class ClientInteractionManager extends InteractionManager {
@@ -60,7 +60,7 @@ public class ClientInteractionManager extends InteractionManager {
             if (type == SOUND_EARS_RINGING && source instanceof LivingEntity) {
                 soundManager.play(new LoopingSoundInstance<>((LivingEntity)source,
                         createTicker(100).and(e -> e.hasStatusEffect(UEffects.SUN_BLINDNESS)),
-                        USounds.ENTITY_PLAYER_EARS_RINGING, 0.01F, 2, Random.create(seed)).setFadeIn()
+                        USounds.ENTITY_PLAYER_EARS_RINGING, 0.01F, 2, new Random(seed)).setFadeIn()
                 );
             } else if (type == SOUND_BEE && source instanceof BeeEntity) {
                 soundManager.playNextTick(
@@ -74,9 +74,9 @@ public class ClientInteractionManager extends InteractionManager {
                 soundManager.play(new LoopingSoundInstance<>((PlayerEntity)source, e -> {
                     PlayerPhysics physics = Pony.of(e).getPhysics();
                     return physics.isFlying() && physics.getFlightType() == FlightType.INSECTOID;
-                }, USounds.ENTITY_PLAYER_CHANGELING_BUZZ, 1F, 1F, Random.create(seed)));
+                }, USounds.ENTITY_PLAYER_CHANGELING_BUZZ, 1F, 1F, new Random(seed)));
             } else if (type == SOUND_GLIDING && source instanceof PlayerEntity) {
-                soundManager.play(new MotionBasedSoundInstance(SoundEvents.ITEM_ELYTRA_FLYING, (PlayerEntity)source, Random.create(seed)));
+                soundManager.play(new MotionBasedSoundInstance(SoundEvents.ITEM_ELYTRA_FLYING, (PlayerEntity)source, new Random(seed)));
             } else if (type == SOUND_MAGIC_BEAM) {
                 soundManager.play(new LoopedEntityTrackingSoundInstance(USounds.SPELL_CAST_SHOOT, 0.3F, 1F, source, seed));
             }

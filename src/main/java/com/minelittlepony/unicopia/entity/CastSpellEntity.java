@@ -20,6 +20,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.World;
 
 public class CastSpellEntity extends LightEmittingEntity implements Caster<LivingEntity>, WeaklyOwned<LivingEntity> {
@@ -53,7 +54,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
     public Text getName() {
         Entity master = getMaster();
         if (master != null) {
-            return Text.translatable("entity.unicopia.cast_spell.by", master.getName());
+            return new TranslatableText("entity.unicopia.cast_spell.by", master.getName());
         }
         return super.getName();
     }

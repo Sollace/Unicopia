@@ -73,7 +73,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
 
     @Override
     public MutableText copy() {
-        return Text.empty();
+        return new LiteralText("");
     }
 
     public static void renderTraitIcon(Trait trait, float value, MatrixStack matrices, int xx, int yy) {
@@ -104,16 +104,21 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
 
     @Override
     public Style getStyle() {
-        return Text.empty().getStyle();
-    }
-
-    @Override
-    public TextContent getContent() {
-        return Text.empty().getContent();
+        return Style.EMPTY;
     }
 
     @Override
     public List<Text> getSiblings() {
         return new ArrayList<>();
+    }
+
+    @Override
+    public String asString() {
+        return "";
+    }
+
+    @Override
+    public MutableText shallowCopy() {
+        return copy();
     }
 }

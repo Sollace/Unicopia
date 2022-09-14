@@ -24,7 +24,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public class UnicopiaClient implements ClientModInitializer {
 
@@ -83,7 +83,7 @@ public class UnicopiaClient implements ClientModInitializer {
         if (screen instanceof OpenToLanScreen) {
             buttons.addButton(new Button(screen.width / 2 - 155, 130, 150, 20))
                     .onClick(b -> MinecraftClient.getInstance().setScreen(new LanSettingsScreen(screen)))
-                    .getStyle().setText(Text.translatable("unicopia.options.title"));
+                    .getStyle().setText(new TranslatableText("unicopia.options.title"));
         }
     }
 

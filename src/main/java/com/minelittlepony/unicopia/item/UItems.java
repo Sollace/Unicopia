@@ -113,7 +113,7 @@ public interface UItems {
         return register(name, new MusicDiscItem(1, sound, new Settings()
                 .maxCount(1)
                 .group(ItemGroup.MISC)
-                .rarity(Rarity.RARE), seconds
+                .rarity(Rarity.RARE)
             ) {});
     }
 

@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.*;
 
 public class TribeConfirmationScreen extends GameGui implements HidesHud {
@@ -19,7 +20,7 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
     private final BooleanConsumer callback;
 
     public TribeConfirmationScreen(BooleanConsumer callback, Race selection) {
-        super(Text.translatable("gui.unicopia.tribe_selection"));
+        super(new TranslatableText("gui.unicopia.tribe_selection"));
         this.callback = callback;
         this.selection = selection;
     }
@@ -33,10 +34,10 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
 
         int top = (height - columnHeight) / 2;
 
-        addDrawableChild(new ButtonWidget(width / 2 + 5, top + columnHeight + padding, 100, 20, Text.translatable("Join Tribe"), b -> callback.accept(true)));
-        addDrawableChild(new ButtonWidget(width / 2 - 105, top + columnHeight + padding, 100, 20, Text.translatable("Go Back"), b -> callback.accept(false)));
+        addDrawableChild(new ButtonWidget(width / 2 + 5, top + columnHeight + padding, 100, 20, new TranslatableText("Join Tribe"), b -> callback.accept(true)));
+        addDrawableChild(new ButtonWidget(width / 2 - 105, top + columnHeight + padding, 100, 20, new TranslatableText("Go Back"), b -> callback.accept(false)));
 
-        addDrawable(new Label(width / 2, top - 30).setCentered()).getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.confirm", selection.getDisplayName().copy().formatted(Formatting.YELLOW)));
+        addDrawable(new Label(width / 2, top - 30).setCentered()).getStyle().setText(new TranslatableText("gui.unicopia.tribe_selection.confirm", selection.getDisplayName().copy().formatted(Formatting.YELLOW)));
 
         addDrawable(new TribeButton((width - 70) / 2, top, 0, selection));
 
@@ -46,7 +47,7 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
 
         Text race = selection.getAltDisplayName().copy().formatted(Formatting.YELLOW);
 
-        addDrawable(new Label(left - 3, top += 10)).getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.confirm.goods", race).formatted(Formatting.YELLOW));
+        addDrawable(new Label(left - 3, top += 10)).getStyle().setText(new TranslatableText("gui.unicopia.tribe_selection.confirm.goods", race).formatted(Formatting.YELLOW));
 
         top += 15;
 
@@ -58,12 +59,12 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
             String key = String.format("gui.unicopia.tribe_selection.confirm.goods.%d.%s.%s", i, id.getNamespace(), id.getPath());
             if (Language.getInstance().hasTranslation(key)) {
                 TextBlock block = addDrawable(new TextBlock(left, top, maxWidth));
-                block.getStyle().setText(Text.translatable(key));
+                block.getStyle().setText(new TranslatableText(key));
                 top += block.getBounds().height;
             }
         }
 
-        addDrawable(new Label(left - 3, top += 5)).getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.confirm.bads", race).formatted(Formatting.YELLOW));
+        addDrawable(new Label(left - 3, top += 5)).getStyle().setText(new TranslatableText("gui.unicopia.tribe_selection.confirm.bads", race).formatted(Formatting.YELLOW));
 
         top += 15;
 
@@ -71,7 +72,7 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
             String key = String.format("gui.unicopia.tribe_selection.confirm.bads.%d.%s.%s", i, id.getNamespace(), id.getPath());
             if (Language.getInstance().hasTranslation(key)) {
                 TextBlock block = addDrawable(new TextBlock(left, top, maxWidth));
-                block.getStyle().setText(Text.translatable(key));
+                block.getStyle().setText(new TranslatableText(key));
                 top += block.getBounds().height;
             }
         }

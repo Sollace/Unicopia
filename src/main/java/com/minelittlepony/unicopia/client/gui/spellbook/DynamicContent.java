@@ -13,12 +13,13 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 
 public class DynamicContent implements Content {
     private static final Text UNKNOWN = Text.of("???");
-    private static final Text UNKNOWN_LEVEL = Text.literal("Level: ???").formatted(Formatting.DARK_GREEN);
+    private static final Text UNKNOWN_LEVEL = new LiteralText("Level: ???").formatted(Formatting.DARK_GREEN);
 
     private SpellbookState.PageState state = new SpellbookState.PageState();
     private final List<Page> pages;
@@ -96,7 +97,7 @@ public class DynamicContent implements Content {
             return (bounds.width - 10) - elements.stream()
                     .filter(PageElement::isFloating)
                     .map(PageElement::bounds)
-                    .filter(b -> b.containsY(yPosition))
+                    .filter(b -> b.contains(b.left + b.width / 2, yPosition))
                     .mapToInt(b -> b.width)
                     .sum();
         }
@@ -105,7 +106,7 @@ public class DynamicContent implements Content {
             return elements.stream()
                     .filter(p -> p.flow() == Flow.LEFT)
                     .map(PageElement::bounds)
-                    .filter(b -> b.containsY(yPosition))
+                    .filter(b -> b.contains(b.left + b.width / 2, yPosition))
                     .mapToInt(b -> b.width)
                     .sum();
         }
@@ -143,14 +144,14 @@ public class DynamicContent implements Content {
             int headerColor = mouseY % 255;
 
             DrawableUtil.drawScaledText(matrices, needsMoreXp ? UNKNOWN : title, bounds.left, bounds.top - 10, 1.3F, headerColor);
-            DrawableUtil.drawScaledText(matrices, level < 0 ? UNKNOWN_LEVEL : Text.literal("Level: " + (level + 1)).formatted(Formatting.DARK_GREEN), bounds.left, bounds.top - 10 + 12, 0.8F, headerColor);
+            DrawableUtil.drawScaledText(matrices, level < 0 ? UNKNOWN_LEVEL : new LiteralText("Level: " + (level + 1)).formatted(Formatting.DARK_GREEN), bounds.left, bounds.top - 10 + 12, 0.8F, headerColor);
 
             matrices.push();
             matrices.translate(bounds.left, bounds.top + 16, 0);
             elements.stream().filter(PageElement::isFloating).forEach(element -> {
                 Bounds bounds = element.bounds();
                 matrices.push();
-                bounds.translate(matrices);
+                matrices.translate(bounds.left, bounds.top, 0);
                 element.draw(matrices, mouseX, mouseY, container);
                 matrices.pop();
             });

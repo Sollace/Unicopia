@@ -42,7 +42,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
 
         Multimap<Identifier, TraitStream> prepared = HashMultimap.create();
 
-        for (var path : manager.findResources("traits", p -> p.getPath().endsWith(".json")).keySet()) {
+        for (var path : manager.findResources("traits", p -> p.endsWith(".json"))) {
             profiler.push(path.toString());
             try {
                 for (Resource resource : manager.getAllResources(path)) {

@@ -10,8 +10,7 @@ import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameRules;
@@ -55,15 +54,15 @@ class SpeciesCommand {
             pony.setDirty();
 
             if (!isSelf) {
-                source.sendFeedback(Text.translatable("commands.race.success.other", player.getName(), race.getDisplayName()), true);
+                source.sendFeedback(new TranslatableText("commands.race.success.other", player.getName(), race.getDisplayName()), true);
             } else {
                 if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                    player.sendMessage(Text.translatable("commands.race.success.self"), false);
+                    player.sendMessage(new TranslatableText("commands.race.success.self"), false);
                 }
-                source.sendFeedback(Text.translatable("commands.race.success.otherself", player.getName(), race.getDisplayName()), true);
+                source.sendFeedback(new TranslatableText("commands.race.success.otherself", player.getName(), race.getDisplayName()), true);
             }
         } else if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-            player.sendMessage(Text.translatable("commands.race.permission"), false);
+            player.sendMessage(new TranslatableText("commands.race.permission"), false);
         }
 
         return 0;
@@ -75,22 +74,22 @@ class SpeciesCommand {
         String name = "commands.race.tell.";
         name += isSelf ? "self" : "other";
 
-        player.sendMessage(Text.translatable(name)
-                .append(Text.translatable(spec.getTranslationKey())
+        player.sendMessage(new TranslatableText(name)
+                .append(new TranslatableText(spec.getTranslationKey())
                         .styled(s -> s.withColor(Formatting.GOLD))), false);
 
         return 0;
     }
 
     static int list(PlayerEntity player) {
-        player.sendMessage(Text.translatable("commands.race.list"), false);
+        player.sendMessage(new TranslatableText("commands.race.list"), false);
 
-        MutableText message = Text.literal("");
+        MutableText message = new LiteralText("");
 
         boolean first = true;
         for (Race i : Race.REGISTRY) {
             if (!i.isDefault() && i.isPermitted(player)) {
-                message.append(Text.literal((!first ? "\n" : "") + " - "));
+                message.append(new LiteralText((!first ? "\n" : "") + " - "));
                 message.append(i.getDisplayName());
                 first = false;
             }
@@ -104,9 +103,9 @@ class SpeciesCommand {
     static int describe(PlayerEntity player, Race species) {
         Identifier id = Race.REGISTRY.getId(species);
 
-        player.sendMessage(Text.translatable(String.format("commands.race.describe.%s.%s.1", id.getNamespace(), id.getPath())).styled(s -> s.withColor(Formatting.YELLOW)), false);
-        player.sendMessage(Text.translatable(String.format("commands.race.describe.%s.%s.2", id.getNamespace(), id.getPath())), false);
-        player.sendMessage(Text.translatable(String.format("commands.race.describe.%s.%s.3", id.getNamespace(), id.getPath())).styled(s -> s.withColor(Formatting.RED)), false);
+        player.sendMessage(new TranslatableText(String.format("commands.race.describe.%s.%s.1", id.getNamespace(), id.getPath())).styled(s -> s.withColor(Formatting.YELLOW)), false);
+        player.sendMessage(new TranslatableText(String.format("commands.race.describe.%s.%s.2", id.getNamespace(), id.getPath())), false);
+        player.sendMessage(new TranslatableText(String.format("commands.race.describe.%s.%s.3", id.getNamespace(), id.getPath())).styled(s -> s.withColor(Formatting.RED)), false);
 
         return 0;
     }

@@ -124,7 +124,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 DragonBreathStore store = DragonBreathStore.get(entity.world);
                 String name = entity.getDisplayName().getString();
                 store.popEntries(name).forEach(stack -> {
-                    Vec3d randomPos = targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
+                    Vec3d randomPos = targetPos.add(VecHelper.supply(() -> 0.1 + entity.getRandom().nextDouble(1) - 0.5));
 
                     if (!entity.getWorld().isAir(new BlockPos(randomPos))) {
                         store.put(name, stack.payload());
@@ -132,7 +132,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
                     for (int i = 0; i < 10; i++) {
                         ParticleUtils.spawnParticle(entity.world, ParticleTypes.FLAME, randomPos.add(
-                                VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5))
+                                VecHelper.supply(() -> 0.1 + entity.getRandom().nextDouble(1) - 0.5)
                         ), Vec3d.ZERO);
                     }
 

@@ -1,22 +1,20 @@
 package com.minelittlepony.unicopia.command;
 
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 
-import com.minelittlepony.unicopia.Unicopia;
-
-import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.server.MinecraftServer;
 
 public class Commands {
     @SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
     public static void bootstrap() {
-        ArgumentTypeRegistry.registerArgumentType(
-                Unicopia.id("enumeration"),
+        ArgumentTypes.register(
+                "unicopia:enumeration",
                 EnumArgumentType.class,
                 new EnumArgumentType.Serializer()
         );
-        CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) -> {
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             SpeciesCommand.register(dispatcher);
             RacelistCommand.register(dispatcher);
             GravityCommand.register(dispatcher);
