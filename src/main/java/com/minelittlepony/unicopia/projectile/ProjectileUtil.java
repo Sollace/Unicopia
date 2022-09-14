@@ -21,7 +21,7 @@ public interface ProjectileUtil {
      * Checks if the given entity is a projectile that is not stuck in the ground.
      */
     static boolean isFlyingProjectile(Entity e) {
-        return isProjectile(e) && !(e instanceof MixinPersistentProjectileEntity && ((MixinPersistentProjectileEntity)e).isInGround());
+        return isProjectile(e) && !(e instanceof MixinPersistentProjectileEntity m && m.isInGround());
     }
 
     /**
@@ -42,8 +42,8 @@ public interface ProjectileUtil {
      */
     static void setThrowableHeading(Entity throwable, Vec3d heading, float velocity, float inaccuracy) {
 
-        if (throwable instanceof ProjectileEntity) {
-            ((ProjectileEntity)throwable).setVelocity(heading.x, heading.y, heading.z, velocity, inaccuracy);
+        if (throwable instanceof ProjectileEntity p) {
+            p.setVelocity(heading.x, heading.y, heading.z, velocity, inaccuracy);
         } else {
             heading = heading.normalize().multiply(velocity);
 

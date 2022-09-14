@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.entity.IItemEntity;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -14,7 +15,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -50,7 +50,7 @@ public class FilledJarItem extends JarItem implements ChameleonItem {
     }
 
     @Override
-    public void onImpact(ProjectileEntity projectile, Entity entity) {
+    public void onImpact(MagicProjectileEntity projectile, Entity entity) {
         super.onImpact(projectile, entity);
 
         if (!entity.isAttackable() || !(projectile instanceof FlyingItemEntity)) {
@@ -119,11 +119,8 @@ public class FilledJarItem extends JarItem implements ChameleonItem {
     }
 
     @Override
-    protected void onImpact(ProjectileEntity projectile) {
-        if (!(projectile instanceof FlyingItemEntity)) {
-            return;
-        }
-        ItemStack stack = getAppearanceStack(((FlyingItemEntity)projectile).getStack());
+    protected void onImpact(MagicProjectileEntity projectile) {
+        ItemStack stack = getAppearanceStack(projectile.getStack());
         stack.damage(1, projectile.world.random, null);
         projectile.dropStack(stack);
         projectile.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, projectile.getBlockPos(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));

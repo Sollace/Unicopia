@@ -16,7 +16,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-abstract class ProjectileItem extends Item implements ProjectileDelegate<ProjectileEntity> {
+abstract class ProjectileItem extends Item implements ProjectileDelegate {
 
     private final float projectileDamage;
 

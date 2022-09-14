@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.entity.PhysicsBodyProjectileEntity;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DispenserBlock;
@@ -51,7 +52,7 @@ public class HeavyProjectileItem extends ProjectileItem {
     }
 
     @Override
-    public void onImpact(ProjectileEntity projectile, BlockPos pos, BlockState state) {
+    public void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
         if (projectile.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
             float damage = projectile instanceof FlyingItemEntity ? getProjectileDamage(((FlyingItemEntity)projectile).getStack()) : 0;
 

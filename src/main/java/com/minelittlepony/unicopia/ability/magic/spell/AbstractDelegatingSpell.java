@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -20,6 +19,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 
 public abstract class AbstractDelegatingSpell implements ProjectileSpell {
+    private static final Function<Object, ProjectileSpell> PROJECTILE_SPELL = a -> a instanceof ProjectileSpell p ? p : null;
+    private static final Function<Object, ProjectileDelegate> PROJECTILE_DELEGATE = a -> a instanceof ProjectileDelegate p ? p : null;
 
     private boolean isDirty;
 
@@ -57,6 +58,7 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
     public SpellTraits getTraits() {
         return getDelegates().stream().map(Spell::getTraits).reduce(SpellTraits.EMPTY, SpellTraits::union);
     }
+
     @Override
     public UUID getUuid() {
         return uuid;
@@ -84,35 +86,27 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
 
     @Override
     public void onDestroyed(Caster<?> caster) {
-        getDelegates().forEach(spell -> spell.onDestroyed(caster));
+        getDelegates().forEach(a -> a.onDestroyed(caster));
     }
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        return execute(getDelegates().stream(), spell -> spell.tick(source, situation));
+        return execute(getDelegates().stream(), a -> a.tick(source, situation));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
-        getDelegates().stream().filter(a -> a instanceof ProjectileDelegate).forEach(a -> {
-            ((ProjectileDelegate<MagicProjectileEntity>)a).onImpact(projectile, pos, state);
-        });
+        getDelegates(PROJECTILE_DELEGATE).forEach(a -> a.onImpact(projectile, pos, state));
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void onImpact(MagicProjectileEntity projectile, Entity entity) {
-        getDelegates().stream().filter(a -> a instanceof ProjectileDelegate).forEach(a -> {
-            ((ProjectileDelegate<MagicProjectileEntity>)a).onImpact(projectile, entity);
-        });
+        getDelegates(PROJECTILE_DELEGATE).forEach(a -> a.onImpact(projectile, entity));
     }
 
     @Override
     public void configureProjectile(MagicProjectileEntity projectile, Caster<?> caster) {
-        getDelegates().stream().filter(a -> a instanceof ProjectileSpell).forEach(a -> {
-            ((ProjectileSpell)a).configureProjectile(projectile, caster);
-        });
+        getDelegates(PROJECTILE_SPELL).forEach(a -> a.configureProjectile(projectile, caster));
     }
 
     @Override
@@ -133,6 +127,10 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
     protected abstract void loadDelegates(NbtCompound compound);
 
     protected abstract void saveDelegates(NbtCompound compound);
+
+    private <T> Stream<T> getDelegates(Function<? super Spell, T> cast) {
+        return getDelegates().stream().map(cast).filter(Objects::nonNull);
+    }
 
     private static boolean execute(Stream<Spell> spells, Function<Spell, Boolean> action) {
         return spells.reduce(false, (u, a) -> action.apply(a), (a, b) -> a || b);

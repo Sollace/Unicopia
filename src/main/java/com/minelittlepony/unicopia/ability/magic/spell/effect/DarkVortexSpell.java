@@ -24,7 +24,6 @@ import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
@@ -198,7 +197,6 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell 
         return 10 + Math.min(15, Math.min(0.5F + pulse, (float)Math.exp(age) / 8F - 90) + accumulatedMass / 10F) + pulse;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected void applyRadialEffect(Caster<?> source, Entity target, double distance, double radius) {
 
@@ -212,10 +210,10 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell 
             @Nullable
             Entity master = source.getMaster();
 
-            if (target instanceof MagicProjectileEntity) {
-                Item item = ((MagicProjectileEntity)target).getStack().getItem();
-                if (item instanceof ProjectileDelegate && master != null) {
-                    ((ProjectileDelegate<ProjectileEntity>) item).onImpact(((ProjectileEntity)target), master);
+            if (target instanceof MagicProjectileEntity projectile) {
+                Item item = projectile.getStack().getItem();
+                if (item instanceof ProjectileDelegate p && master != null) {
+                    p.onImpact(projectile, master);
                 }
             } else if (target instanceof PersistentProjectileEntity) {
                 if (master != null) {

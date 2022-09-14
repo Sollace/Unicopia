@@ -290,16 +290,15 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
         }
     }
 
-    @SuppressWarnings("unchecked")
-    protected void forEachDelegates(Consumer<ProjectileDelegate<MagicProjectileEntity>> consumer) {
+    protected void forEachDelegates(Consumer<ProjectileDelegate> consumer) {
         getSpellSlot().forEach(spell -> {
             if (SpellPredicate.HAS_PROJECTILE_EVENTS.test(spell)) {
-                consumer.accept((ProjectileDelegate<MagicProjectileEntity>)spell);
+                consumer.accept((ProjectileDelegate)spell);
             }
             return Operation.SKIP;
         }, true);
         if (getItem().getItem() instanceof ProjectileDelegate) {
-            consumer.accept(((ProjectileDelegate<MagicProjectileEntity>)getItem().getItem()));
+            consumer.accept(((ProjectileDelegate)getItem().getItem()));
         }
     }
 

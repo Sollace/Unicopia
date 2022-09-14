@@ -6,6 +6,8 @@ import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,7 +15,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -81,16 +82,16 @@ public class JarItem extends ProjectileItem implements ItemImpl.GroundTickCallba
     }
 
     @Override
-    public void onImpact(ProjectileEntity projectile, BlockPos pos, BlockState state) {
+    public void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
         onImpact(projectile);
     }
 
     @Override
-    public void onImpact(ProjectileEntity projectile, Entity entity) {
+    public void onImpact(MagicProjectileEntity projectile, Entity entity) {
         onImpact(projectile);
     }
 
-    protected void onImpact(ProjectileEntity projectile) {
+    protected void onImpact(MagicProjectileEntity projectile) {
         if (!projectile.world.isClient()) {
             ServerWorld world = (ServerWorld)projectile.world;
 
