@@ -148,7 +148,7 @@ public interface TreeType {
             pos = pos.up();
         }
 
-        return of(w.getBlockState(pos));
+        return of(w.getBlockState(pos.up()));
     }
 
     boolean isLeaves(BlockState state);
