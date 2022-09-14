@@ -1,0 +1,14 @@
+{
+  "type": "unicopia:spellbook/crafting",
+  "material": { "item": "unicopia:gemstone", "spell": "unicopia:none" },
+  "traits": {
+    "strength": 10, "knowledge": 18
+  },
+  "ingredients": [
+    { "item": "unicopia:gemstone", "spell": "unicopia:shield" }
+  ],
+  "result": {
+    "item": "unicopia:gemstone",
+    "spell": "unicopia:arcane_protection"
+  }
+}

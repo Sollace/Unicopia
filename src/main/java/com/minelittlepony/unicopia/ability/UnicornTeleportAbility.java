@@ -66,6 +66,11 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
     @Override
     public Pos tryActivate(Pony player) {
+
+        if (!player.canCast()) {
+            return null;
+        }
+
         int maxDistance = player.getMaster().isCreative() ? 1000 : 100;
         HitResult ray = RayTraceHelper.doTrace(player.getMaster(), maxDistance, 1, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR).getResult();
 
@@ -129,6 +134,10 @@ public class UnicornTeleportAbility implements Ability<Pos> {
     }
 
     protected void teleport(Pony teleporter, Caster<?> teleportee, Pos destination) {
+
+        if (!teleporter.canCast()) {
+            return;
+        }
 
         LivingEntity player = teleportee.getMaster();
 

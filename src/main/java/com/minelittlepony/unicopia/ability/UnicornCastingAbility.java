@@ -52,6 +52,9 @@ public class UnicornCastingAbility implements Ability<Hit> {
     @Override
     @Nullable
     public Hit tryActivate(Pony player) {
+        if (!player.canCast()) {
+            return null;
+        }
         return Hit.of(player.getMagicalReserves().getMana().get() >= getCostEstimate(player));
     }
 
@@ -77,6 +80,10 @@ public class UnicornCastingAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
+        if (!player.canCast()) {
+            return;
+        }
+
         TypedActionResult<ItemStack> amulet = getAmulet(player);
 
         if (amulet.getResult().isAccepted()) {

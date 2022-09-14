@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Owned;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.particle.ParticleSource;
@@ -18,6 +19,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
@@ -61,6 +63,11 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     }
 
     default boolean canModifyAt(BlockPos pos) {
+
+        if (!canCastAt(Vec3d.ofCenter(pos))) {
+            return false;
+        }
+
         if (getMaster() instanceof PlayerEntity) {
             return getReferenceWorld().canPlayerModifyAt((PlayerEntity)getMaster(), pos);
         }
@@ -92,6 +99,18 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
 
     default Stream<Entity> findAllEntitiesInRange(double radius) {
         return findAllEntitiesInRange(radius, null);
+    }
+
+    default boolean canCast() {
+        return canCastAt(getOriginVector());
+    }
+
+    default boolean canCastAt(Vec3d pos) {
+        return findAllSpellsInRange(500, SpellType.ARCANE_PROTECTION::isOn).noneMatch(caster -> caster
+                .getSpellSlot().get(SpellType.ARCANE_PROTECTION, false)
+                .filter(spell -> spell.blocksMagicFor(caster, this, pos))
+                .isPresent()
+        );
     }
 
     static Stream<Caster<?>> stream(Stream<Entity> entities) {
