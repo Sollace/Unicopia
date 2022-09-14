@@ -192,6 +192,75 @@
           "- A protection gem\n- At least 18x knowledge trait\n- At least 1x life trait\n- At least 4x harmony trait",
           "* Increase range by adding the power trait"
         ]
+      },
+      {
+        "title": "27th Slep '12",
+        "level": 14,
+        "elements": [
+          "Sleep the last few nights has become... elusive.",
+          "I don't know how to describe it, really. Luna appears unaffected, but every night after the sun goes down I find myself lying awake at night unable to sleep. It doesn't help that that sounds in the village have resumed."
+        ]
+      },
+      {
+        "title": "Lost Sleep",
+        "level": 15,
+        "elements": [
+          "Last night, especially, I found myself pacing in the observatory. The air became chill, more than is normal for this time of year, and beyond anything that raging fire in corner of the room could combat.",
+          "The room where I keep the--my patient opposite the wall behind me."
+        ]
+      },
+      {
+        "title": "Lost Sleep Cont.",
+        "level": 15,
+        "elements": [
+          "I've long since taken to keeping that door locked because every so often I could swear I heard something moving in there...",
+          "Gods, am I going crazy?",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "",
+        "level": -1,
+        "elements": []
+      },
+      {
+        "title": "29th Slep '12",
+        "level": 18,
+        "elements": [
+          "Bits, there it is again!",
+          "I thought last night was a fluke, but I just heard it again--I'm shaking. My hooves, I can barely hold this book as I struggle to pen these words.",
+          "There's something--I heard something. Like a chittering--",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "1st Croptober '12",
+        "level": 14,
+        "elements": [
+          "I made a call into town. One of the local blacksmiths have agreed to install a new lock, one of the heavy kind that not even earth ponies can bust.",
+          "I fear it may not be enough, though, it--whatever it is, clearly has magic. I may be forced to research a magical solution to my insomnia.",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "Arcane Protection",
+        "level": 16,
+        "elements": [
+          "This spell will create a magical shroud that can be used to protect from other spellcasters.",
+          "No one else will be able to use magic within its radius.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/knowledge.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/darkness.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 16,
+        "elements": [
+          { "recipe": "unicopia:spells/arcane_protection" },
+          "Requires:",
+          "- A protection gem\n- At least 10x strength trait\n- At least 18x knowledge trait\n- At least 1x darkness trait",
+          "* Increase range by adding the power trait"
+        ]
       }
     ]
   }
