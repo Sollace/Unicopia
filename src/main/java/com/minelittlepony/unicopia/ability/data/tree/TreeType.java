@@ -164,11 +164,11 @@ public interface TreeType {
     boolean isWide();
 
     static TreeType at(BlockPos pos, World world) {
-        return TreeTypeLoader.INSTANCE.get(world.getBlockState(pos), pos, world);
+        return TreeTypes.get(world.getBlockState(pos), pos, world);
     }
 
     static TreeType of(BlockState state) {
-        return TreeTypeLoader.INSTANCE.get(state);
+        return TreeTypes.get(state);
     }
 
     static TreeType of(TreeType logs, TreeType leaves) {

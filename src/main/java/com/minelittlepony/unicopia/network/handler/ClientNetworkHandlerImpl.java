@@ -5,6 +5,7 @@ import java.util.Map;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.ability.data.tree.TreeTypes;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
@@ -82,5 +83,6 @@ public class ClientNetworkHandlerImpl implements ClientNetworkHandler {
     public void handleServerResources(MsgServerResources packet) {
         SpellTraits.load(packet.traits);
         ClientChapters.load((Map<Identifier, Chapter>)packet.chapters);
+        TreeTypes.load(packet.treeTypes);
     }
 }
