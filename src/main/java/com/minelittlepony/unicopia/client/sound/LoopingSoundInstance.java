@@ -1,11 +1,11 @@
 package com.minelittlepony.unicopia.client.sound;
 
+import java.util.Random;
 import java.util.function.Predicate;
 
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.math.random.Random;
 
 public class LoopingSoundInstance<T extends Entity> extends FadeOutSoundInstance {
 

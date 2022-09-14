@@ -26,6 +26,7 @@ import com.minelittlepony.unicopia.util.Registries;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
@@ -127,7 +128,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     }
 
     public Text getName() {
-        return Text.translatable(getTranslationKey());
+        return new TranslatableText(getTranslationKey());
     }
 
     public CustomisedSpellType<T> withTraits() {

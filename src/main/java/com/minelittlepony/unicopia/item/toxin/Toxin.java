@@ -10,8 +10,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.StringHelper;
 import net.minecraft.world.Difficulty;
 
@@ -92,10 +91,10 @@ public interface Toxin extends Affliction {
         MutableText text = effect.getName().copy();
 
         if (amplifier > 0) {
-            text = Text.translatable("potion.withAmplifier", text, Text.translatable("potion.potency." + amplifier));
+            text = new TranslatableText("potion.withAmplifier", text, new TranslatableText("potion.potency." + amplifier));
         }
 
-        text = Text.translatable("potion.withDuration", text, StringHelper.formatTicks(ticks));
+        text = new TranslatableText("potion.withDuration", text, StringHelper.formatTicks(ticks));
 
         return of(text, (player, stack) -> {
             StatusEffectInstance current = player.getStatusEffect(effect);

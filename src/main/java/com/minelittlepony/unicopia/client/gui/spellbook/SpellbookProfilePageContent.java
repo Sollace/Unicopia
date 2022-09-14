@@ -12,7 +12,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -92,7 +92,7 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
         RenderSystem.setShaderTexture(0, SpellbookScreen.TEXTURE);
         matrices.pop();
 
-        Text levelString = I18n.hasTranslation("enchantment.level." + (currentLevel + 1)) ? Text.translatable("enchantment.level." + (currentLevel + 1)) : Text.literal(currentLevel >= 999 ? ">999" : "" + (currentLevel + 1));
+        Text levelString = I18n.hasTranslation("enchantment.level." + (currentLevel + 1)) ? new TranslatableText("enchantment.level." + (currentLevel + 1)) : new LiteralText(currentLevel >= 999 ? ">999" : "" + (currentLevel + 1));
 
         matrices.translate(-font.getWidth(levelString), -35, 0);
         matrices.scale(2F, 2F, 1);

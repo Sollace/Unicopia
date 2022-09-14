@@ -1,11 +1,12 @@
 package com.minelittlepony.unicopia.client.sound;
 
+import java.util.Random;
+
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.Random;
 
 public class MotionBasedSoundInstance extends FadeOutSoundInstance {
 

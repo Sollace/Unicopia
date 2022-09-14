@@ -32,7 +32,7 @@ public class MsgPlayerCapabilities implements Packet<PlayerEntity> {
 
     MsgPlayerCapabilities(PacketByteBuf buffer) {
         playerId = buffer.readUuid();
-        newRace = buffer.readRegistryValue(Race.REGISTRY);
+        newRace = Race.REGISTRY.get(buffer.readIdentifier());
         try (InputStream in = new ByteBufInputStream(buffer)) {
             compoundTag = NbtIo.readCompressed(in);
         } catch (IOException e) {
@@ -49,7 +49,7 @@ public class MsgPlayerCapabilities implements Packet<PlayerEntity> {
     @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeUuid(playerId);
-        buffer.writeRegistryValue(Race.REGISTRY, newRace);
+        buffer.writeIdentifier(Race.REGISTRY.getId(newRace));
         try (OutputStream out = new ByteBufOutputStream(buffer)) {
             NbtIo.writeCompressed(compoundTag, out);
         } catch (IOException e) {

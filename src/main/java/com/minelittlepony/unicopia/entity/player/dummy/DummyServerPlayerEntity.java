@@ -17,11 +17,11 @@ public class DummyServerPlayerEntity extends ServerPlayerEntity implements Owned
     private PlayerEntity owner;
 
     public DummyServerPlayerEntity(ServerWorld world, GameProfile profile) {
-        super(world.getServer(), world, profile, null);
+        super(world.getServer(), world, profile);
     }
 
     @Override
-    protected void playEquipSound(ItemStack stack) {
+    protected void onEquipStack(ItemStack stack) {
         /*noop*/
     }
 

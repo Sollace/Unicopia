@@ -13,7 +13,7 @@ import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
-import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 /**
  * Dispells an active spell
@@ -46,9 +46,9 @@ public class UnicornDispellAbility implements Ability<Pos> {
         if (type.getTapCount() > 1) {
             player.setAnimation(Animation.WOLOLO, 10);
             if (player.getSpellSlot().clear()) {
-                player.getMaster().sendMessage(Text.translatable("gui.unicopia.action.spells_cleared"), true);
+                player.getMaster().sendMessage(new TranslatableText("gui.unicopia.action.spells_cleared"), true);
             } else {
-                player.getMaster().sendMessage(Text.translatable("gui.unicopia.action.no_spells_cleared"), true);
+                player.getMaster().sendMessage(new TranslatableText("gui.unicopia.action.no_spells_cleared"), true);
             }
             return true;
         }

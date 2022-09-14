@@ -180,7 +180,7 @@ public class FloatingArtefactEntity extends Entity {
     }
 
     @Override
-    public boolean canHit() {
+    public boolean collides() {
         return true;
     }
 

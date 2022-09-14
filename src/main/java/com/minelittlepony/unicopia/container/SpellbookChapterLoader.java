@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.container;
 
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -29,7 +28,7 @@ import net.minecraft.util.profiler.Profiler;
 public class SpellbookChapterLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Identifier ID = Unicopia.id("spellbook/chapters");
-    private static final Executor EXECUTOR = CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS);
+    //private static final Executor EXECUTOR = CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS);
     public static boolean DEBUG = false;
 
     public static final SpellbookChapterLoader INSTANCE = new SpellbookChapterLoader();
@@ -73,7 +72,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             LOGGER.error("Could not load spellbook chapters due to exception", e);
         }
 
-        if (DEBUG) {
+        /*if (DEBUG) {
             CompletableFuture.runAsync(() -> {
                 try {
                     Util.waitAndApply(executor -> reload(CompletableFuture::completedFuture, manager, profiler, profiler, Util.getMainWorkerExecutor(), executor)).get();
@@ -81,7 +80,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
                 }
                 dirty = true;
             }, EXECUTOR);
-        }
+        }*/
     }
 
     public record Chapter (

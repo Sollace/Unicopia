@@ -20,6 +20,7 @@ import net.minecraft.item.DyeableItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -66,10 +67,10 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
     @Environment(EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
         if (isSigned(stack)) {
-            list.add(Text.translatable("item.unicopia.friendship_bracelet.issuer", getSignatorName(stack)));
+            list.add(new TranslatableText("item.unicopia.friendship_bracelet.issuer", getSignatorName(stack)));
         }
         if (isGlowing(stack)) {
-            list.add(Text.translatable("item.unicopia.friendship_bracelet.glowing").formatted(Formatting.ITALIC, Formatting.GRAY));
+            list.add(new TranslatableText("item.unicopia.friendship_bracelet.glowing").formatted(Formatting.ITALIC, Formatting.GRAY));
         }
     }
 

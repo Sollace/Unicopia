@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.item.enchantment;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
@@ -20,7 +20,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 
@@ -72,11 +71,13 @@ public class PoisonedJokeEnchantment extends SimpleEnchantment implements Identi
             clientProfiler.startTick();
             clientProfiler.push("Loading poisoned joke sound options");
 
-            sounds = Resources.getResources(manager, FILE)
-                .flatMap(r -> Resources.loadFile(r, TYPE, "Failed to load sounds file at "))
-                .distinct()
-                .flatMap(this::findSound)
-                .collect(Collectors.toList());
+            try {
+                sounds = Resources.getResources(manager, FILE)
+                    .flatMap(r -> Resources.loadFile(r, TYPE, "Failed to load sounds file at "))
+                    .distinct()
+                    .flatMap(this::findSound)
+                    .collect(Collectors.toList());
+            } catch (IOException e) {}
 
             clientProfiler.pop();
             clientProfiler.endTick();

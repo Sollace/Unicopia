@@ -202,6 +202,10 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
     }
 
+    public void clearAndInit() {
+        init(client, width, height);
+    }
+
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         return tabs.getAllTabs().anyMatch(tab -> {
@@ -244,6 +248,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             getStyle().setIcon(sprite);
             onClick(sender -> {
                 pageAction.accept(increment);
+                screen.init();
                 screen.clearAndInit();
             });
         }

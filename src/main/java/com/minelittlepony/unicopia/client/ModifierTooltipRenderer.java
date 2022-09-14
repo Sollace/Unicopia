@@ -26,8 +26,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -59,10 +58,10 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
                     .forEach(entry -> describeModifiers(entry.getKey(), entry.getValue(), null, newLines));
 
                 if (!newLines.isEmpty()) {
-                    Text find = Text.translatable("item.modifiers." + slot.getName()).formatted(Formatting.GRAY);
+                    Text find = new TranslatableText("item.modifiers." + slot.getName()).formatted(Formatting.GRAY);
                     int insertPosition = getInsertPosition(stack, find, flags, lines, context.isAdvanced());
                     if (insertPosition == -1) {
-                        lines.add(ScreenTexts.EMPTY);
+                        lines.add(LiteralText.EMPTY);
                         lines.add(find);
                         lines.addAll(newLines);
                     } else {
@@ -86,23 +85,23 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
 
         if (insertPosition == -1 && stack.hasNbt()) {
             if (isShowing(flags, ItemStack.TooltipSection.MODIFIERS) && stack.getNbt().getBoolean("Unbreakable")) {
-                insertPosition = checkFor(lines, Text.translatable("item.unbreakable").formatted(Formatting.BLUE));
+                insertPosition = checkFor(lines, new TranslatableText("item.unbreakable").formatted(Formatting.BLUE));
             }
 
             if (insertPosition == -1 && isShowing(flags, ItemStack.TooltipSection.CAN_DESTROY) && stack.getNbt().contains("CanDestroy", 9)) {
-                insertPosition = checkFor(lines, Text.translatable("item.canBreak").formatted(Formatting.GRAY));
+                insertPosition = checkFor(lines, new TranslatableText("item.canBreak").formatted(Formatting.GRAY));
             }
 
             if (insertPosition == -1 && isShowing(flags, ItemStack.TooltipSection.CAN_PLACE) && stack.getNbt().contains("CanPlaceOn", 9)) {
-                insertPosition = checkFor(lines, Text.translatable("item.canPlace").formatted(Formatting.GRAY));
+                insertPosition = checkFor(lines, new TranslatableText("item.canPlace").formatted(Formatting.GRAY));
             }
         }
 
         if (insertPosition == -1 && advanced) {
            if (stack.isDamaged()) {
-               insertPosition = checkFor(lines, Text.translatable("item.durability", stack.getMaxDamage() - stack.getDamage(), stack.getMaxDamage()));
+               insertPosition = checkFor(lines, new TranslatableText("item.durability", stack.getMaxDamage() - stack.getDamage(), stack.getMaxDamage()));
            } else {
-               insertPosition = checkFor(lines, Text.literal(Registry.ITEM.getId(stack.getItem()).toString()).formatted(Formatting.DARK_GRAY));
+               insertPosition = checkFor(lines, new LiteralText(Registry.ITEM.getId(stack.getItem()).toString()).formatted(Formatting.DARK_GRAY));
            }
         }
 
@@ -131,7 +130,7 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
         }
 
         if (baseAdjusted) {
-            lines.add(Text.literal(" ").append(getModifierLineBase("equals", displayValue, op, attribute, Formatting.DARK_GREEN)));
+            lines.add(new LiteralText(" ").append(getModifierLineBase("equals", displayValue, op, attribute, Formatting.DARK_GREEN)));
         } else if (value > 0) {
             lines.add(getModifierLineBase("plus", displayValue, op, attribute, attribute == UEntityAttributes.ENTITY_GRAVTY_MODIFIER ? Formatting.RED : Formatting.BLUE));
         } else if (value < 0) {
@@ -140,9 +139,9 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
     }
 
     private Text getModifierLineBase(String root, double displayValue, Operation op, EntityAttribute attribute, Formatting color) {
-        return Text.translatable("attribute.modifier." + root + "." + op.getId(),
+        return new TranslatableText("attribute.modifier." + root + "." + op.getId(),
                 ItemStack.MODIFIER_FORMAT.format(displayValue),
-                Text.translatable(attribute.getTranslationKey())
+                new TranslatableText(attribute.getTranslationKey())
             ).formatted(color);
     }
 

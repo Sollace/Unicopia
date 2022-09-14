@@ -15,6 +15,7 @@ import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -23,7 +24,7 @@ public final class Race implements Affine {
     public static final String DEFAULT_ID = "unicopia:human";
     public static final Registry<Race> REGISTRY = Registries.createDefaulted(Unicopia.id("race"), DEFAULT_ID);
     public static final RegistryKey<? extends Registry<Race>> REGISTRY_KEY = REGISTRY.getKey();
-    private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("race.unknown", id));
+    private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("race.unknown", id));
 
     public static Race register(String name, boolean magic, FlightType flight, boolean earth) {
         return register(Unicopia.id(name), magic, flight, earth);
@@ -103,11 +104,11 @@ public final class Race implements Affine {
     }
 
     public Text getDisplayName() {
-        return Text.translatable(getTranslationKey());
+        return new TranslatableText(getTranslationKey());
     }
 
     public Text getAltDisplayName() {
-        return Text.translatable(getTranslationKey() + ".alt");
+        return new TranslatableText(getTranslationKey() + ".alt");
     }
 
     public String getTranslationKey() {

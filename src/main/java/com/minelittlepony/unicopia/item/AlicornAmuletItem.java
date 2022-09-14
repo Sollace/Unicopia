@@ -36,6 +36,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringHelper;
@@ -70,7 +71,7 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
         if (iplayer != null) {
             int attachedTime = iplayer.getCharms().getArmour().getTicks(this);
             if (attachedTime > 0) {
-                tooltip.add(Text.translatable(getTranslationKey() + ".lore", StringHelper.formatTicks(attachedTime)));
+                tooltip.add(new TranslatableText(getTranslationKey() + ".lore", StringHelper.formatTicks(attachedTime)));
             }
         }
     }

@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public enum Toxicity {
@@ -28,7 +29,7 @@ public enum Toxicity {
     }
 
     public Text getTooltip() {
-        return Text.translatable(getTranslationKey()).formatted(color);
+        return new TranslatableText(getTranslationKey()).formatted(color);
     }
 
     public static Toxicity byName(String name) {

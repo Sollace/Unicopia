@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.client.gui;
 
 import java.util.List;
+import java.util.Random;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +34,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.random.Random;
 
 public class UHud extends DrawableHelper {
 

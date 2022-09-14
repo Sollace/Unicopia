@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldEvents;
@@ -31,7 +32,7 @@ public class FilledJarItem extends JarItem implements ChameleonItem {
 
     @Override
     public Text getName(ItemStack stack) {
-        return hasAppearance(stack) ? Text.translatable(getTranslationKey(stack), getAppearanceStack(stack).getName()) : UItems.EMPTY_JAR.getName(UItems.EMPTY_JAR.getDefaultStack());
+        return hasAppearance(stack) ? new TranslatableText(getTranslationKey(stack), getAppearanceStack(stack).getName()) : UItems.EMPTY_JAR.getName(UItems.EMPTY_JAR.getDefaultStack());
     }
 
     @Override

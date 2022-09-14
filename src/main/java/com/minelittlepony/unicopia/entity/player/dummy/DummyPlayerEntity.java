@@ -16,11 +16,11 @@ public class DummyPlayerEntity extends PlayerEntity implements Owned<PlayerEntit
     private PlayerEntity owner;
 
     public DummyPlayerEntity(World world, GameProfile profile) {
-        super(world, BlockPos.ORIGIN, 0, profile, null);
+        super(world, BlockPos.ORIGIN, 0, profile);
     }
 
     @Override
-    protected void playEquipSound(ItemStack stack) {
+    protected void onEquipStack(ItemStack stack) {
         /*noop*/
     }
 

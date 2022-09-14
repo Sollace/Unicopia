@@ -18,13 +18,13 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.OpenToLanScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 
 public class UnicopiaClient implements ClientModInitializer {
 
@@ -62,7 +62,7 @@ public class UnicopiaClient implements ClientModInitializer {
         KeyBindingsHandler.bootstrap();
         URenderers.bootstrap();
 
-        HandledScreens.register(UScreenHandlers.SPELL_BOOK, SpellbookScreen::new);
+        ScreenRegistry.register(UScreenHandlers.SPELL_BOOK, SpellbookScreen::new);
 
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
         ScreenInitCallback.EVENT.register(this::onScreenInit);
@@ -83,7 +83,7 @@ public class UnicopiaClient implements ClientModInitializer {
         if (screen instanceof OpenToLanScreen) {
             buttons.addButton(new Button(screen.width / 2 - 155, 130, 150, 20))
                     .onClick(b -> MinecraftClient.getInstance().setScreen(new LanSettingsScreen(screen)))
-                    .getStyle().setText(Text.translatable("unicopia.options.title"));
+                    .getStyle().setText(new TranslatableText("unicopia.options.title"));
         }
     }
 

@@ -9,7 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -57,7 +57,7 @@ public class TribeButton extends Button {
 
             if (hovered && screenWidth > 0) {
                 Identifier id = Race.REGISTRY.getId(race);
-                drawCenteredText(matrices, getFont(), Text.translatable("gui.unicopia.tribe_selection.describe." + id.getNamespace() + "." + id.getPath()), screenWidth / 2, y + height, 0xFFFFFFFF);
+                drawCenteredText(matrices, getFont(), new TranslatableText("gui.unicopia.tribe_selection.describe." + id.getNamespace() + "." + id.getPath()), screenWidth / 2, y + height, 0xFFFFFFFF);
             }
         }
 

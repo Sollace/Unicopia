@@ -5,7 +5,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.dimension.DimensionTypes;
 
 public class WorldTribeManager extends PersistentState {
 
@@ -32,13 +31,13 @@ public class WorldTribeManager extends PersistentState {
     }
 
     public static String nameFor(RegistryEntry<DimensionType> dimension) {
-        if (dimension.matchesKey(DimensionTypes.THE_END)) {
+        if (dimension.matchesKey(DimensionType.THE_END_REGISTRY_KEY)) {
             return "unicopia:tribes_end";
         }
         return "unicopia:tribes";
     }
 
     public static WorldTribeManager forWorld(ServerWorld world) {
-        return world.getPersistentStateManager().getOrCreate(WorldTribeManager::new, WorldTribeManager::new, nameFor(world.getDimensionEntry()));
+        return world.getPersistentStateManager().getOrCreate(WorldTribeManager::new, WorldTribeManager::new, nameFor(world.method_40134()));
     }
 }

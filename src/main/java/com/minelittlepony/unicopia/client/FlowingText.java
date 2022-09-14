@@ -9,9 +9,9 @@ import net.minecraft.text.*;
 public interface FlowingText {
     static Stream<Text> wrap(Text text, int maxWidth) {
         return MinecraftClient.getInstance().textRenderer.getTextHandler().wrapLines(text, maxWidth, Style.EMPTY).stream().map(line -> {
-            MutableText compiled = Text.literal("");
+            MutableText compiled = new LiteralText("");
             line.visit((s, t) -> {
-                compiled.append(Text.literal(t).setStyle(s));
+                compiled.append(new LiteralText(t).setStyle(s));
                 return Optional.empty();
             }, text.getStyle());
             return compiled;

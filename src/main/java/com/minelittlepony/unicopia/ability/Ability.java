@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -78,7 +79,7 @@ public interface Ability<T extends Hit> {
      */
     default Text getName() {
         Identifier id = Abilities.REGISTRY.getId(this);
-        return Text.translatable("ability." + id.getNamespace() + "." + id.getPath().replace('/', '.'));
+        return new TranslatableText("ability." + id.getNamespace() + "." + id.getPath().replace('/', '.'));
     }
 
     /**
