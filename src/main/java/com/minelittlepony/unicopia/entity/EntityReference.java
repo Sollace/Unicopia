@@ -51,12 +51,15 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
         }
     }
 
+    /**
+     * Gets the assigned entity's UUID
+     */
     public Optional<UUID> getId() {
         return uuid;
     }
 
     /**
-     * Gets the position the last known position of the assigned entity.
+     * Gets the last known position of the assigned entity.
      */
     public Optional<Vec3d> getPosition() {
         return pos;

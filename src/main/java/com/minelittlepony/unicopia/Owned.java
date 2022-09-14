@@ -46,7 +46,9 @@ public interface Owned<E extends Entity> {
     }
 
     default boolean isOwnedBy(@Nullable Object owner) {
-        return owner instanceof Entity e && getMasterId().isPresent() && e.getUuid().equals(getMasterId().get());
+        return owner instanceof Entity e
+                && getMasterId().isPresent()
+                && e.getUuid().equals(getMasterId().get());
     }
 
     default boolean hasCommonOwner(Owned<?> sibling) {
