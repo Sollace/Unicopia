@@ -13,11 +13,7 @@ import com.minelittlepony.unicopia.client.particle.RaindropsParticle;
 import com.minelittlepony.unicopia.client.particle.RunesParticle;
 import com.minelittlepony.unicopia.client.particle.SphereParticle;
 import com.minelittlepony.unicopia.client.render.*;
-import com.minelittlepony.unicopia.client.render.entity.ButterflyEntityRenderer;
-import com.minelittlepony.unicopia.client.render.entity.CastSpellEntityRenderer;
-import com.minelittlepony.unicopia.client.render.entity.FairyEntityRenderer;
-import com.minelittlepony.unicopia.client.render.entity.MagicBeamEntityRenderer;
-import com.minelittlepony.unicopia.client.render.entity.SpellbookEntityRenderer;
+import com.minelittlepony.unicopia.client.render.entity.*;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.GemstoneItem;
@@ -75,6 +71,7 @@ public interface URenderers {
         EntityRendererRegistry.register(UEntities.CAST_SPELL, CastSpellEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.TWITTERMITE, FairyEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.SPELLBOOK, SpellbookEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.AIR_BALLOON, AirBalloonEntityRenderer::new);
 
         ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack), UItems.FRIENDSHIP_BRACELET);
         BuiltinItemRendererRegistry.INSTANCE.register(UItems.FILLED_JAR, (stack, mode, matrices, vertexConsumers, light, overlay) -> {

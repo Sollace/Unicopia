@@ -15,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -46,6 +47,9 @@ public interface UEntities {
     EntityType<SpellbookEntity> SPELLBOOK = register("spellbook", FabricEntityTypeBuilder.create(SpawnGroup.MISC, SpellbookEntity::new)
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(0.9F, 0.5F)));
+    EntityType<AirBalloonEntity> AIR_BALLOON = register("air_balloon", FabricEntityTypeBuilder.create(SpawnGroup.MISC, AirBalloonEntity::new)
+            .trackRangeBlocks(1000)
+            .dimensions(EntityDimensions.fixed(3, 0.1F)));
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         EntityType<T> type = builder.build();
@@ -56,6 +60,7 @@ public interface UEntities {
         FabricDefaultAttributeRegistry.register(BUTTERFLY, ButterflyEntity.createButterflyAttributes());
         FabricDefaultAttributeRegistry.register(SPELLBOOK, SpellbookEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(TWITTERMITE, FairyEntity.createMobAttributes());
+        FabricDefaultAttributeRegistry.register(AIR_BALLOON, FlyingEntity.createMobAttributes());
 
         final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()
                 .and(ctx -> ctx.getBiome().getPrecipitation() == Biome.Precipitation.RAIN);
