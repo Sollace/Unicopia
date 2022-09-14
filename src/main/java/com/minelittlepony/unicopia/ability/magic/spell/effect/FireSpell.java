@@ -55,6 +55,13 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpel
     }
 
     @Override
+    public void onImpact(MagicProjectileEntity projectile, Entity entity) {
+        if (!projectile.isClient()) {
+            projectile.getReferenceWorld().createExplosion(entity, entity.getX(), entity.getY(), entity.getZ(), 2, DestructionType.DESTROY);
+        }
+    }
+
+    @Override
     public boolean tick(Caster<?> source, Situation situation) {
         if (source.isClient()) {
             generateParticles(source);
@@ -182,4 +189,5 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpel
         Block id = world.getBlockState(pos).getBlock();
         return id == Blocks.SAND || id == Blocks.GLASS;
     }
+
 }
