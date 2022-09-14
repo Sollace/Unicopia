@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
@@ -16,8 +15,8 @@ import net.minecraft.util.math.Vec3d;
 
 public class ScorchSpell extends FireSpell {
 
-    protected ScorchSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    protected ScorchSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override

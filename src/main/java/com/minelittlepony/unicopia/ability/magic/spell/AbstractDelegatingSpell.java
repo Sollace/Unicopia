@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
@@ -26,8 +27,8 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
 
     private final SpellType<?> type;
 
-    public AbstractDelegatingSpell(SpellType<?> type, SpellTraits traits) {
-        this.type = type;
+    public AbstractDelegatingSpell(CustomisedSpellType<?> type) {
+        this.type = type.type();
     }
 
     public abstract Collection<Spell> getDelegates();

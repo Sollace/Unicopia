@@ -6,7 +6,6 @@ import java.util.List;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -44,8 +43,8 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
 
     private int spawnCountdown;
 
-    protected NecromancySpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    protected NecromancySpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override

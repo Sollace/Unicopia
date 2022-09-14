@@ -41,8 +41,8 @@ public class ShieldSpell extends AbstractSpell {
 
     private final TargetSelecter targetSelecter = new TargetSelecter(this);
 
-    protected ShieldSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    protected ShieldSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override

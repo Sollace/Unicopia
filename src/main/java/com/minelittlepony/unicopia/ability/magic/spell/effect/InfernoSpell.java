@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.block.state.BlockStateConverter;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
@@ -21,8 +20,8 @@ import net.minecraft.world.World;
  */
 public class InfernoSpell extends FireSpell {
 
-    protected InfernoSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    protected InfernoSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override

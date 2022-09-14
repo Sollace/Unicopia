@@ -6,8 +6,7 @@ import java.util.Optional;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
@@ -21,8 +20,8 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
 
     private Spell spell;
 
-    public ThrowableSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    public ThrowableSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     public ThrowableSpell setSpell(Spell spell) {

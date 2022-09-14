@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Affine;
-import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.CompoundSpell;
@@ -33,7 +32,7 @@ import net.minecraft.util.registry.Registry;
 
 public final class SpellType<T extends Spell> implements Affine, SpellPredicate<T> {
     public static final Identifier EMPTY_ID = Unicopia.id("none");
-    public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, SpellTraits.EMPTY, (t, c) -> null);
+    public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, SpellTraits.EMPTY, t -> null);
 
     public static final Registry<SpellType<?>> REGISTRY = Registries.createSimple(Unicopia.id("spells"));
     private static final Map<Affinity, Set<SpellType<?>>> BY_AFFINITY = new EnumMap<>(Affinity.class);
@@ -138,29 +137,8 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         return traits.isEmpty() ? withTraits() : new CustomisedSpellType<>(this, traits);
     }
 
-    @Nullable
-    public T create(SpellTraits traits) {
-        try {
-            return factory.create(this, traits);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    @Nullable
-    public T apply(Caster<?> caster, SpellTraits traits) {
-        if (isEmpty()) {
-            return null;
-        }
-
-        T spell = create(traits);
-        if (spell.apply(caster)) {
-            return spell;
-        }
-
-        return null;
+    public Factory<T> getFactory() {
+        return factory;
     }
 
     @Override
@@ -178,7 +156,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     @Override
     public String toString() {
-        return getTranslationKey();
+        return "SpellType[" + getTranslationKey() + "]";
     }
 
     @Deprecated(forRemoval = true)
@@ -216,6 +194,6 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     }
 
     public interface Factory<T extends Spell> {
-        T create(SpellType<T> type, SpellTraits traits);
+        T create(CustomisedSpellType<T> type);
     }
 }

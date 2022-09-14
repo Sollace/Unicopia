@@ -37,9 +37,9 @@ public class FeatherFallSpell extends AbstractSpell {
 
     private int duration;
 
-    protected FeatherFallSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
-        duration = (int)(traits.get(Trait.FOCUS, 0, 160) * 19);
+    protected FeatherFallSpell(CustomisedSpellType<?> type) {
+        super(type);
+        duration = (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19);
     }
 
     @Override

@@ -14,8 +14,8 @@ public class ChillingBreathSpell extends AbstractSpell implements HomingSpell {
             .with(Trait.ICE, 15)
             .build();
 
-    protected ChillingBreathSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    protected ChillingBreathSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override

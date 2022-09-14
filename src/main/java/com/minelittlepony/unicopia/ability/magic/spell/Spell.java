@@ -96,14 +96,14 @@ public interface Spell extends NbtSerialisable, Affine {
      * Returns a compound spell representing the union of this and the other spell.
      */
     default Spell combineWith(Spell other) {
-        return SpellType.COMPOUND_SPELL.create(SpellTraits.EMPTY).combineWith(this).combineWith(other);
+        return SpellType.COMPOUND_SPELL.withTraits().create().combineWith(this).combineWith(other);
     }
 
     /**
      * Converts this spell into a placeable spell.
      */
     default PlaceableSpell toPlaceable() {
-        return SpellType.PLACED_SPELL.create(SpellTraits.EMPTY).setSpell(this);
+        return SpellType.PLACED_SPELL.withTraits().create().setSpell(this);
     }
 
     /**
@@ -111,13 +111,13 @@ public interface Spell extends NbtSerialisable, Affine {
      * @return
      */
     default ThrowableSpell toThrowable() {
-        return SpellType.THROWN_SPELL.create(SpellTraits.EMPTY).setSpell(this);
+        return SpellType.THROWN_SPELL.withTraits().create().setSpell(this);
     }
 
     @Nullable
     static Spell readNbt(@Nullable NbtCompound compound) {
         if (compound != null && compound.contains("effect_id")) {
-            Spell effect = SpellType.getKey(compound).create(SpellTraits.EMPTY);
+            Spell effect = SpellType.getKey(compound).withTraits().create();
 
             if (effect != null) {
                 effect.fromNBT(compound);

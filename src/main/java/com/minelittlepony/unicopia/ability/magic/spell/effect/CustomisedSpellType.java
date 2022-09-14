@@ -21,12 +21,28 @@ public record CustomisedSpellType<T extends Spell> (
     }
 
     public T create() {
-        return type.create(traits);
+        try {
+            return type.getFactory().create(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
+
 
     @Nullable
     public T apply(Caster<?> caster) {
-        return type.apply(caster, traits);
+        if (isEmpty()) {
+            return null;
+        }
+
+        T spell = create();
+        if (spell != null && spell.apply(caster)) {
+            return spell;
+        }
+
+        return null;
     }
 
     @Override

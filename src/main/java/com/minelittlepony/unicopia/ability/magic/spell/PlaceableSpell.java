@@ -5,8 +5,7 @@ import java.util.*;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.UEntities;
@@ -49,8 +48,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
      */
     private Spell spell;
 
-    public PlaceableSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    public PlaceableSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     public PlaceableSpell setSpell(Spell spell) {

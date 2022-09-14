@@ -9,7 +9,6 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
@@ -35,8 +34,8 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
 
     private int ticksUpset;
 
-    protected SiphoningSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    protected SiphoningSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override

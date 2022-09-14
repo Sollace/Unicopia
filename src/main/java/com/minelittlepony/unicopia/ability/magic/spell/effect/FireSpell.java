@@ -43,8 +43,8 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpel
             .with(Trait.FIRE, 15)
             .build();
 
-    protected FireSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    protected FireSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override

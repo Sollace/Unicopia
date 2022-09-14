@@ -2,9 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.AbstractSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
@@ -36,8 +34,8 @@ public class RainboomAbilitySpell extends AbstractSpell {
 
     private int age;
 
-    public RainboomAbilitySpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    public RainboomAbilitySpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override

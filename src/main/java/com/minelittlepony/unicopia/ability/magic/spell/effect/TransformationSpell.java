@@ -10,7 +10,6 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
@@ -28,8 +27,8 @@ import net.minecraft.world.World;
  * Transforms whatever entity it strikes into a random other entity.
  */
 public class TransformationSpell extends AbstractSpell implements ProjectileSpell {
-    protected TransformationSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    protected TransformationSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override

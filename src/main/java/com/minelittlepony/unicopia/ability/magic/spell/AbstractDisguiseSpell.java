@@ -3,9 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.AbstractSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -21,8 +19,8 @@ public abstract class AbstractDisguiseSpell extends AbstractSpell implements Dis
 
     private final EntityAppearance disguise = new EntityAppearance();
 
-    public AbstractDisguiseSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    public AbstractDisguiseSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override

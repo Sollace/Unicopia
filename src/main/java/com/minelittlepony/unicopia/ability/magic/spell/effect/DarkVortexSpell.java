@@ -54,8 +54,8 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell 
     private int age = 0;
     private float accumulatedMass = 0;
 
-    protected DarkVortexSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    protected DarkVortexSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override

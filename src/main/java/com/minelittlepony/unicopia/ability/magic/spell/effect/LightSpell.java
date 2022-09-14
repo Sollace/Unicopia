@@ -29,9 +29,9 @@ public class LightSpell extends AbstractSpell {
 
     private final List<EntityReference<FairyEntity>> lights = new ArrayList<>();
 
-    protected LightSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
-        duration = 120 + (int)(traits.get(Trait.FOCUS, 0, 160) * 19);
+    protected LightSpell(CustomisedSpellType<?> type) {
+        super(type);
+        duration = 120 + (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19);
     }
 
     @Override

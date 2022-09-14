@@ -5,7 +5,6 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -16,8 +15,8 @@ import net.minecraft.util.math.Vec3d;
  * An area-effect spell that disperses illussions.
  */
 public class DisperseIllusionSpell extends AbstractAreaEffectSpell {
-    protected DisperseIllusionSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    protected DisperseIllusionSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override

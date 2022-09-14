@@ -30,8 +30,8 @@ public class FireBoltSpell extends AbstractSpell implements ProjectileSpell, Hom
 
     private final EntityReference<Entity> target = new EntityReference<>();
 
-    protected FireBoltSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    protected FireBoltSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class FireBoltSpell extends AbstractSpell implements ProjectileSpell, Hom
         }
 
         for (int i = 0; i < getNumberOfBalls(caster); i++) {
-            getType().create(getTraits()).toThrowable().throwProjectile(caster, 2).ifPresent(c -> {
+            getTypeAndTraits().create().toThrowable().throwProjectile(caster, 2).ifPresent(c -> {
                 target.ifPresent(caster.getReferenceWorld(), c::setHomingTarget);
             });
 

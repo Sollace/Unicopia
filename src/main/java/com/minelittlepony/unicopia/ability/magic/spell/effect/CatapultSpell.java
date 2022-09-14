@@ -39,8 +39,8 @@ public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
     private static final float HORIZONTAL_VARIANCE = 0.25F;
     private static final float MAX_STRENGTH = 120;
 
-    protected CatapultSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    protected CatapultSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override

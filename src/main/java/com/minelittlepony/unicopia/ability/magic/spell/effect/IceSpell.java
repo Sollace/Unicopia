@@ -34,8 +34,8 @@ public class IceSpell extends AbstractSpell {
     private final int rad = 3;
     private final Shape outerRange = new Sphere(false, rad);
 
-    protected IceSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
+    protected IceSpell(CustomisedSpellType<?> type) {
+        super(type);
     }
 
     @Override

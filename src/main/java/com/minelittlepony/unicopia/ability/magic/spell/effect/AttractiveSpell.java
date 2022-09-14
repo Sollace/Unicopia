@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
@@ -25,9 +24,9 @@ public class AttractiveSpell extends ShieldSpell implements ProjectileSpell, Hom
     private int age;
     private int duration;
 
-    protected AttractiveSpell(SpellType<?> type, SpellTraits traits) {
-        super(type, traits);
-        duration = 120 + (int)(traits.get(Trait.FOCUS, 0, 160) * 19);
+    protected AttractiveSpell(CustomisedSpellType<?> type) {
+        super(type);
+        duration = 120 + (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19);
     }
 
     @Override
@@ -140,7 +139,7 @@ public class AttractiveSpell extends ShieldSpell implements ProjectileSpell, Hom
     public void onImpact(MagicProjectileEntity projectile, Entity entity) {
         if (!isDead() && getTraits().get(Trait.CHAOS) > 0) {
             setDead();
-            Caster.of(entity).ifPresent(getType().create(getTraits())::apply);
+            Caster.of(entity).ifPresent(getTypeAndTraits()::apply);
         }
     }
 
