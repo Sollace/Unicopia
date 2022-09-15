@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.container;
 
 import com.minelittlepony.unicopia.Unicopia;
 
-import net.fabricmc.fabric.impl.screenhandler.ExtendedScreenHandlerType;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.registry.Registry;
