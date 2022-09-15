@@ -12,6 +12,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.math.MathHelper;
 
 public class OutputSlot extends CraftingResultSlot implements SpellbookSlot {
     private final SpellbookScreenHandler handler;
@@ -54,7 +55,7 @@ public class OutputSlot extends CraftingResultSlot implements SpellbookSlot {
         InventoryUtil.stream(input).forEach(s -> {
             pony.getDiscoveries().unlock(s.getItem());
         });
-       //gemSlot.setStack(ItemStack.EMPTY);
+        pony.getMagicalReserves().getXp().add(MathHelper.clamp(player.world.getRandom().nextFloat() / 10F, 0.001F, 0.3F));
         super.onTakeItem(player, stack);
     }
 }
