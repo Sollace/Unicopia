@@ -58,8 +58,8 @@ public class SpellbookChapterList {
         int color,
         Optional<Content> content) {
 
-        public Identifier icon() {
-            return new Identifier(id().getNamespace(), "textures/gui/container/pages/" + id().getPath() + ".png");
+        public static Identifier createIcon(Identifier id, String suffex) {
+            return new Identifier(id.getNamespace(), "textures/gui/container/pages/" + id.getPath() + suffex + ".png");
         }
     }
 
@@ -75,6 +75,10 @@ public class SpellbookChapterList {
 
         default boolean showInventory() {
             return false;
+        }
+
+        default Identifier getIcon(Chapter chapter, Identifier icon) {
+            return icon;
         }
 
         static Optional<Content> of(BiConsumer<SpellbookScreen, Identifier> init, Drawable obj) {

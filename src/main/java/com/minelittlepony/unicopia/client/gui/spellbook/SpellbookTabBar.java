@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import com.minelittlepony.common.client.gui.dimension.Bounds;
@@ -61,11 +62,15 @@ public class SpellbookTabBar {
             }
             int xPosition = side == TabSide.LEFT ? left - width + tabInset : left + backgroundWidth - tabInset;
 
-            tabs.add(new Tab(leftTabs.get(i), new Bounds(top + tabY, xPosition, width, tabHeight), leftTabs.get(i).icon()));
+            Chapter chapter = leftTabs.get(i);
+            Identifier icon = Chapter.createIcon(chapter.id(), "");
+            tabs.add(new Tab(leftTabs.get(i), new Bounds(top + tabY, xPosition, width, tabHeight), () -> {
+                return chapter.content().map(content -> content.getIcon(chapter, icon)).orElse(icon);
+            }));
         }
 
         return tabs;
     }
 
-    record Tab (Chapter chapter, Bounds bounds, Identifier icon) {}
+    record Tab (Chapter chapter, Bounds bounds, Supplier<Identifier> icon) {}
 }

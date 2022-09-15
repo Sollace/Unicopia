@@ -90,6 +90,10 @@ public class TraitDiscovery implements NbtSerialisable {
                 .flatMap(entry -> Registry.ITEM.getOrEmpty(entry.getKey()).stream());
     }
 
+    public boolean isUnread() {
+        return !unreadTraits.isEmpty();
+    }
+
     public boolean isUnread(Trait trait) {
         return unreadTraits.contains(trait);
     }

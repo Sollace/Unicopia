@@ -162,7 +162,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             drawTexture(matrices, bounds.left, bounds.top, isRight ? 510 - bounds.width : 402, v, bounds.width, bounds.height, 512, 256);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            RenderSystem.setShaderTexture(0, tab.icon());
+            RenderSystem.setShaderTexture(0, tab.icon().get());
             drawTexture(matrices, isRight ? bounds.left + bounds.width - 16 - 10 : bounds.left + 10, bounds.top + (bounds.height - 16) / 2, 0, 0, 16, 16, 16, 16);
             RenderSystem.setShaderTexture(0, TEXTURE);
         });

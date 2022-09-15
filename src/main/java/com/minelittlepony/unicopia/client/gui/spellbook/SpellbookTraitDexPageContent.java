@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.ScrollContainer;
@@ -9,6 +10,7 @@ import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.*;
+import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Chapter;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen.ImageButton;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -20,6 +22,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 
 public class SpellbookTraitDexPageContent extends DrawableHelper implements SpellbookChapterList.Content, SpellbookScreen.RecipesChangedListener {
@@ -32,6 +35,8 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
 
     private final SpellbookScreen screen;
 
+    private final Function<Identifier, Identifier> unreadIcon = Util.memoize(id -> Chapter.createIcon(id, "_unread"));
+
     public SpellbookTraitDexPageContent(SpellbookScreen screen) {
         this.screen = screen;
     }
@@ -39,6 +44,14 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
     @Override
     public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
 
+    }
+
+    @Override
+    public Identifier getIcon(Chapter chapter, Identifier icon) {
+        if (Pony.of(MinecraftClient.getInstance().player).getDiscoveries().isUnread()) {
+            return unreadIcon.apply(chapter.id());
+        }
+        return icon;
     }
 
     @Override
