@@ -2,10 +2,11 @@ package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
+import com.minelittlepony.common.client.gui.sprite.TextureSprite;
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.client.gui.DrawableUtil;
+import com.minelittlepony.unicopia.client.gui.*;
 import com.minelittlepony.unicopia.entity.player.*;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -13,6 +14,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -30,6 +32,36 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
     @Override
     public void init(SpellbookScreen screen, Identifier pageId) {
 
+        Bounds bounds = screen.getFrameBounds();
+        Race race = pony.getSpecies();
+        int size = 32;
+        int textureSize = 512;
+        int ordinal = Race.REGISTRY.getRawId(race);
+
+        int x = screen.getX() + bounds.left + bounds.width / 4 - size + 10;
+        int y = screen.getY() + bounds.top + bounds.height / 2;
+
+        screen.addDrawable(new SpellbookScreen.ImageButton(x, y, size, size))
+            .getStyle()
+                .setIcon(new TextureSprite()
+                    .setPosition(0, 0)
+                    .setSize(size, size)
+                    .setTextureSize(textureSize, textureSize)
+                    .setTexture(Unicopia.id("textures/gui/icons.png"))
+                    .setTextureOffset((size * ordinal) % textureSize, (ordinal / textureSize) * size)
+                )
+                .setTooltip(ProfileTooltip.get(pony));
+
+
+        float mainAngle = 90 * MathHelper.RADIANS_PER_DEGREE;
+        float offAngle = 60 * MathHelper.RADIANS_PER_DEGREE;
+        int radius = 75;
+
+        x += size / 4;
+        y += size / 3;
+
+        screen.addDrawable(new EquippedSpellSlot(x + (int)(Math.sin(mainAngle) * radius), y + (int)(Math.cos(mainAngle) * radius), pony.getCharms().getEquippedSpell(Hand.MAIN_HAND)));
+        screen.addDrawable(new EquippedSpellSlot(x + (int)(Math.sin(offAngle) * radius), y + (int)(Math.cos(offAngle) * radius), pony.getCharms().getEquippedSpell(Hand.OFF_HAND)));
     }
 
     @Override
@@ -84,13 +116,6 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
         y = 15;
         font.draw(matrices, "Mana", -font.getWidth("Mana") / 2, y, SpellbookScreen.TITLE_COLOR);
         font.draw(matrices, manaString, -font.getWidth(manaString) / 2, y += font.fontHeight, SpellbookScreen.TITLE_COLOR);
-
-        matrices.push();
-        matrices.scale(1.4F, 1.4F, 1);
-        RenderSystem.setShaderTexture(0, Unicopia.id("textures/gui/icons.png"));
-        drawTexture(matrices, -8, -8, 16 * 2, 0, 16, 16, 256, 256);
-        RenderSystem.setShaderTexture(0, SpellbookScreen.TEXTURE);
-        matrices.pop();
 
         Text levelString = I18n.hasTranslation("enchantment.level." + (currentLevel + 1)) ? Text.translatable("enchantment.level." + (currentLevel + 1)) : Text.literal(currentLevel >= 999 ? ">999" : "" + (currentLevel + 1));
 
