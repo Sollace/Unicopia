@@ -14,8 +14,8 @@ import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.entity.UEntityAttributes;
+import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.player.PlayerDimensions;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
@@ -42,14 +42,9 @@ import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.function.BooleanBiFunction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.WorldAccess;
 
-public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provider, FlightType.Provider {
+public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provider, FlightType.Provider, EntityCollisions.ComplexCollidable {
     private static final Optional<Float> BLOCK_HEIGHT = Optional.of(0.5F);
 
     @NotNull
@@ -358,43 +353,10 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         return entityNbt;
     }
 
-    void getCollissionShapes(ShapeContext context, Consumer<VoxelShape> output) {
-        getCollissionShapes(getAppearance(), context, output);
-        getAttachments().forEach(e -> getCollissionShapes(e, context, output));
+    @Override
+    public void getCollissionShapes(ShapeContext context, Consumer<VoxelShape> output) {
+        EntityCollisions.getCollissionShapes(getAppearance(), context, output);
+        getAttachments().forEach(e -> EntityCollisions.getCollissionShapes(e, context, output));
     }
 
-    private static void getCollissionShapes(@Nullable Entity entity, ShapeContext context, Consumer<VoxelShape> output) {
-        if (entity == null) {
-            return;
-        }
-
-        if (entity.isCollidable()) {
-            output.accept(VoxelShapes.cuboid(entity.getBoundingBox()));
-        } else if (entity instanceof FallingBlockEntity) {
-            BlockPos pos = entity.getBlockPos();
-            output.accept(((FallingBlockEntity) entity).getBlockState()
-                    .getCollisionShape(entity.world, entity.getBlockPos(), context)
-                    .offset(pos.getX(), pos.getY(), pos.getZ())
-            );
-        }
-    }
-
-    public static List<VoxelShape> getColissonShapes(@Nullable Entity entity, WorldAccess world, Box box) {
-        List<VoxelShape> shapes = new ArrayList<>();
-        ShapeContext ctx = entity == null ? ShapeContext.absent() : ShapeContext.of(entity);
-        VoxelShape entityShape = VoxelShapes.cuboid(box.expand(1.0E-6D));
-
-        world.getOtherEntities(entity, box.expand(0.5), e -> {
-            Caster.of(e).flatMap(c -> c.getSpellSlot().get(SpellPredicate.IS_DISGUISE, false)).ifPresent(p -> {
-                p.getDisguise().getCollissionShapes(ctx, shape -> {
-                    if (!shape.isEmpty() && VoxelShapes.matchesAnywhere(shape, entityShape, BooleanBiFunction.AND)) {
-                        shapes.add(shape);
-                    }
-                });
-            });
-            return false;
-        });
-
-        return shapes;
-    }
 }

@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.BlockDestructionManager;
-import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
+import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.duck.RotatedView;
 
 import net.minecraft.block.BlockState;
@@ -51,7 +51,7 @@ abstract class MixinWorld implements WorldAccess, BlockDestructionManager.Source
     @Override
     public List<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box) {
         if (box.getAverageSideLength() >= 1.0E-7D) {
-            List<VoxelShape> shapes = EntityAppearance.getColissonShapes(entity, this, box);
+            List<VoxelShape> shapes = EntityCollisions.getColissonShapes(entity, this, box);
             if (!shapes.isEmpty()) {
                 return Stream.concat(shapes.stream(), WorldAccess.super.getEntityCollisions(entity, box).stream()).toList();
             }
