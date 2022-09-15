@@ -30,7 +30,7 @@ class ManaRingSlot extends Slot {
         arcBegin = renderRing(matrices, 17, 13, 0, mana.getMana(), 0xFF88FF99, tickDelta);
 
         if (!uHud.client.player.isCreative()) {
-            renderRing(matrices, 13, 11, 0, mana.getXp(), 0x88880099, tickDelta);
+            renderRing(matrices, 13, 9, 0, mana.getXp(), 0x88880099, tickDelta);
 
             double cost = abilities.getStats().stream()
                     .mapToDouble(s -> s.getCost(KeyBindingsHandler.INSTANCE.page))
