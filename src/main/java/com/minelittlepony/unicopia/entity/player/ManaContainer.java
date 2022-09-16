@@ -122,9 +122,7 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
                 value = get() + diff / (1 + pony.getLevel().get());
             }
 
-            System.out.println("Setting mana to: " + value);
             super.set(value);
-            System.out.println("Mana set to: " + get());
         }
     }
 
@@ -143,11 +141,7 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
 
         @Override
         public float get() {
-            float value = pony.getMaster().getDataTracker().get(marker);
-            if (this == mana) {
-                System.out.println("Mana is: " + value);
-            }
-            return value;
+            return pony.getMaster().getDataTracker().get(marker);
         }
 
         @Override
