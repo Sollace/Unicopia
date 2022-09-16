@@ -77,7 +77,6 @@ public class ShieldSpell extends AbstractSpell {
             spawner.addParticle(new SphereParticleEffect(UParticles.SPHERE, getType().getColor(), 0.3F, radius), origin, Vec3d.ZERO);
         }).ifPresent(p -> {
             p.setAttribute(Attachment.ATTR_RADIUS, radius);
-            p.setAttribute(Attachment.ATTR_COLOR, getType().getColor());
         });
     }
 

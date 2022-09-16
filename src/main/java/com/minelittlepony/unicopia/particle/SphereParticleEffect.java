@@ -45,7 +45,7 @@ public class SphereParticleEffect implements ParticleEffect {
     }
 
     public SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, int tint, float alpha, float rad, Vec3d offset) {
-        this(type, new Vec3f(Color.r(tint), Color.g(tint), Color.b(tint)), alpha, rad, offset);
+        this(type, new Vec3f(Color.r(tint) * 255, Color.g(tint) * 255, Color.b(tint) * 255), alpha, rad, offset);
     }
 
     public SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, Vec3f color, float alpha, float rad, Vec3d offset) {
