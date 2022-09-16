@@ -108,6 +108,19 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
         return !isDead();
     }
 
+    /**
+     * Detaches this spell from the placed version.
+     * This spell and the placed entity effectively become independent.
+     *
+     * @return The previous cast spell entity if one existed, otherwise empty.
+     */
+    protected Optional<CastSpellEntity> detach(Caster<?> source) {
+        return getSpellEntity(source).map(e -> {
+            castEntity.set(null);
+            return e;
+        });
+    }
+
     @Override
     public void onDestroyed(Caster<?> source) {
         if (!source.isClient()) {

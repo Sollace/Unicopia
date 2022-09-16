@@ -13,7 +13,7 @@ public class DiskParticle extends SphereParticle {
 
     public DiskParticle(SphereParticleEffect effect, ClientWorld w, double x, double y, double z, double rX, double rY, double rZ) {
         super(effect, w, x, y, z, 0, 0, 0);
-        rotation = new Quaternion((float)rX, (float)rY, (float)rZ, true);
+        rotation = new Quaternion((float)effect.getOffset().x, (float)effect.getOffset().y, (float)effect.getOffset().z, true);
     }
 
     @Override

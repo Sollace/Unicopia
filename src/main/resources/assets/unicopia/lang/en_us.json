@@ -152,6 +152,8 @@
   "spell.unicopia.vortex.lore": "Creates a magnetic force that pulls in other targets",
   "spell.unicopia.dark_vortex": "Dark Vortex",
   "spell.unicopia.dark_vortex.lore": "Creates a black hole from which nothing can escape",
+  "spell.unicopia.portal": "Teleportation",
+  "spell.unicopia.portal.lore": "Connects two points in space for fast travel between",
   "spell.unicopia.necromancy": "Necromancy",
   "spell.unicopia.necromancy.lore": "Summons undead minions from beyond the grave",
   "spell.unicopia.siphoning": "Life Sapping",

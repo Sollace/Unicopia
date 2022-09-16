@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
@@ -105,9 +106,9 @@ public class UnicornCastingAbility implements Ability<Hit> {
             if (newSpell.getResult() != ActionResult.FAIL) {
                 CustomisedSpellType<?> spell = newSpell.getValue();
 
-                boolean remove = player.getSpellSlot().removeIf(spell, true);
-                player.subtractEnergyCost(remove ? 2 : 4);
-                if (!remove) {
+                boolean removed = player.getSpellSlot().removeIf(spell.isEmpty() ? spell : SpellType.PORTAL.negate().and(spell), true);
+                player.subtractEnergyCost(removed ? 2 : 4);
+                if (!removed) {
                     Spell s = spell.apply(player);
                     if (s == null) {
                         player.spawnParticles(ParticleTypes.LARGE_SMOKE, 6);

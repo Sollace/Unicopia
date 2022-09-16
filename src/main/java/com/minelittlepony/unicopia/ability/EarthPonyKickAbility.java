@@ -5,11 +5,11 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Lists;
-import com.minelittlepony.unicopia.BlockDestructionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.data.tree.TreeType;
+import com.minelittlepony.unicopia.block.data.BlockDestructionManager;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;

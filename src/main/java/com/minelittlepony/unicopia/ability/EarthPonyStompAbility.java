@@ -2,9 +2,9 @@ package com.minelittlepony.unicopia.ability;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.BlockDestructionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.block.data.BlockDestructionManager;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;

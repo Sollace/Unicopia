@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.minelittlepony.unicopia.BlockDestructionManager;
+import com.minelittlepony.unicopia.block.data.BlockDestructionManager;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
