@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.render.BufferBuilder;
@@ -27,10 +26,7 @@ public abstract class AbstractBillboardParticle extends AbstractGeometryBasedPar
 
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(
-                GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA,
-                GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA
-        );
+        RenderSystem.enableDepthTest();
 
         Vec3d cam = camera.getPos();
 
@@ -41,7 +37,7 @@ public abstract class AbstractBillboardParticle extends AbstractGeometryBasedPar
         renderQuads(te, buffer, renderX, renderY, renderZ, tickDelta);
 
         RenderSystem.enableCull();
-        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableDepthTest();
     }
 
     protected abstract void renderQuads(Tessellator te, BufferBuilder buffer, float x, float y, float z, float tickDelta);
