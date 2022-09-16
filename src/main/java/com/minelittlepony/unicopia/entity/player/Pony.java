@@ -527,16 +527,14 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
         compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
-
         compound.putFloat("magicExhaustion", magicExhaustion);
-
         compound.put("powers", powers.toNBT());
         compound.put("gravity", gravity.toNBT());
         compound.put("charms", charms.toNBT());
         compound.put("discoveries", discoveries.toNBT());
+        compound.put("mana", mana.toNBT());
         compound.putInt("levels", levels.get());
         compound.putInt("corruption", corruption.get());
-        compound.putFloat("magicXp", mana.getXp().get());
 
         getSpellSlot().get(true).ifPresent(effect ->{
             compound.put("effect", Spell.writeNbt(effect));
@@ -561,7 +559,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         discoveries.fromNBT(compound.getCompound("discoveries"));
         levels.set(compound.getInt("levels"));
         corruption.set(compound.getInt("corruption"));
-        mana.getXp().set(compound.getFloat("magicXp"));
+        mana.fromNBT(compound.getCompound("mana"));
 
         magicExhaustion = compound.getFloat("magicExhaustion");
 

@@ -102,8 +102,8 @@ public class ShieldSpell extends AbstractSpell {
             double cost = 2 - source.getLevel().getScaled(2);
 
             cost *= costMultiplier / ((1 + source.getLevel().get()) * 3F);
-            cost /= 2.725D;
             cost /= knowledge;
+            cost += getDrawDropOffRange(source) / 10F;
 
             if (!source.subtractEnergyCost(cost)) {
                 setDead();
@@ -120,7 +120,7 @@ public class ShieldSpell extends AbstractSpell {
         float multiplier = source instanceof Pony pony && pony.getMaster().isSneaking() ? 1 : 2;
         float min = 4 + getTraits().get(Trait.POWER);
         double range = (min + (source.getLevel().getScaled(4) * 2)) / multiplier;
-        if (source instanceof Pony && range > 2) {
+        if (source instanceof Pony && range >= 4) {
             range = Math.sqrt(range);
         }
         return range;

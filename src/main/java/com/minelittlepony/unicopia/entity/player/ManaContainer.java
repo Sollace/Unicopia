@@ -1,11 +1,13 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.entity.data.TrackedData;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 
-public class ManaContainer implements MagicReserves, Tickable {
+public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
     private final Pony pony;
 
     private final BarInst energy;
@@ -21,6 +23,24 @@ public class ManaContainer implements MagicReserves, Tickable {
         this.exertion = new BarInst(Pony.EXERTION, 10F, 0);
         this.xp = new BarInst(Pony.XP, 1, 0);
         this.mana = new XpCollectingBar(Pony.MANA, 100F, 100F);
+    }
+
+    @Override
+    public void toNBT(NbtCompound compound) {
+        compound.put("energy", energy.toNBT());
+        compound.put("exhaustion", exhaustion.toNBT());
+        compound.put("exertion", exertion.toNBT());
+        compound.put("mana",  mana.toNBT());
+        compound.put("xp",  xp.toNBT());
+    }
+
+    @Override
+    public void fromNBT(NbtCompound compound) {
+        energy.fromNBT(compound.getCompound("energy"));
+        exhaustion.fromNBT(compound.getCompound("exhaustion"));
+        exertion.fromNBT(compound.getCompound("exertion"));
+        mana.fromNBT(compound.getCompound("mana"));
+        xp.fromNBT(compound.getCompound("xp"));
     }
 
     @Override
@@ -70,8 +90,8 @@ public class ManaContainer implements MagicReserves, Tickable {
         }
 
         if (!pony.getSpecies().canFly() || !pony.getPhysics().isFlying()) {
-            if (mana.getShadowFill() <= mana.getPercentFill()) {
-                mana.add(18 * pony.getLevel().get());
+            if (mana.getPercentFill() < 1 && mana.getShadowFill() == mana.getPercentFill()) {
+                mana.add((mana.getMax() / 10F) * Math.max(1, pony.getLevel().get() * 4));
             }
         }
     }
@@ -102,11 +122,13 @@ public class ManaContainer implements MagicReserves, Tickable {
                 value = get() + diff / (1 + pony.getLevel().get());
             }
 
+            System.out.println("Setting mana to: " + value);
             super.set(value);
+            System.out.println("Mana set to: " + get());
         }
     }
 
-    class BarInst implements Bar {
+    class BarInst implements Bar, NbtSerialisable {
 
         private final TrackedData<Float> marker;
         private final float max;
@@ -121,7 +143,11 @@ public class ManaContainer implements MagicReserves, Tickable {
 
         @Override
         public float get() {
-            return pony.getMaster().getDataTracker().get(marker);
+            float value = pony.getMaster().getDataTracker().get(marker);
+            if (this == mana) {
+                System.out.println("Mana is: " + value);
+            }
+            return value;
         }
 
         @Override
@@ -131,7 +157,11 @@ public class ManaContainer implements MagicReserves, Tickable {
 
         @Override
         public void set(float value) {
-            pony.getMaster().getDataTracker().set(marker, MathHelper.clamp(value, 0, getMax()));
+            load(MathHelper.clamp(value, 0, getMax()));
+        }
+
+        private void load(float value) {
+            pony.getMaster().getDataTracker().set(marker, value);
         }
 
         @Override
@@ -141,17 +171,29 @@ public class ManaContainer implements MagicReserves, Tickable {
 
         void tick() {
             float fill = getPercentFill();
-            float tralingIncrement = 0.003F;
+            float trailingIncrement = 0.003F;
 
-            if (trailingValue > (fill - tralingIncrement) && trailingValue < (fill + tralingIncrement)) {
+            if (trailingValue > (fill - trailingIncrement) && trailingValue < (fill + trailingIncrement)) {
                 trailingValue = fill;
             }
             if (trailingValue < fill) {
-                trailingValue += tralingIncrement;
+                trailingValue += trailingIncrement;
             }
             if (trailingValue > fill) {
-                trailingValue -= tralingIncrement;
+                trailingValue -= trailingIncrement;
             }
+        }
+
+        @Override
+        public void toNBT(NbtCompound compound) {
+            compound.putFloat("shadow", trailingValue);
+            compound.putFloat("value", get());
+        }
+
+        @Override
+        public void fromNBT(NbtCompound compound) {
+            trailingValue = compound.getFloat("shadow");
+            load(compound.getFloat("value"));
         }
     }
 }
