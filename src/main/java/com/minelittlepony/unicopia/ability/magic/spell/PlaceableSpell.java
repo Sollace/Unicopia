@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
+import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.UEntities;
@@ -86,6 +87,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
                     entity.getSpellSlot().put(spell.toPlaceable());
                     entity.setMaster(source);
                     entity.world.spawnEntity(entity);
+                    Ether.get(entity.world).put(getType(), entity);
 
                     castEntity.set(entity);
                     setDirty();
@@ -96,6 +98,16 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
         }
 
         if (situation == Situation.GROUND_ENTITY) {
+
+            if (!source.isClient()) {
+                Ether ether = Ether.get(source.getReferenceWorld());
+                if (ether.getEntry(getType(), source).filter(Ether.Entry::isAlive).isEmpty()) {
+                    ether.remove(getType(), source);
+                    setDead();
+                    return false;
+                }
+            }
+
             particlEffect.update(getUuid(), source, spawner -> {
                 spawner.addParticle(new OrientedBillboardParticleEffect(UParticles.MAGIC_RUNES, 90, 0), source.getOriginVector(), Vec3d.ZERO);
             }).ifPresent(p -> {
@@ -108,24 +120,15 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
         return !isDead();
     }
 
-    /**
-     * Detaches this spell from the placed version.
-     * This spell and the placed entity effectively become independent.
-     *
-     * @return The previous cast spell entity if one existed, otherwise empty.
-     */
-    protected Optional<CastSpellEntity> detach(Caster<?> source) {
-        return getSpellEntity(source).map(e -> {
-            castEntity.set(null);
-            return e;
-        });
-    }
-
     @Override
     public void onDestroyed(Caster<?> source) {
         if (!source.isClient()) {
+            castEntity.getId().ifPresent(id -> {
+                getWorld(source).map(Ether::get)
+                    .flatMap(ether -> ether.getEntry(getType(), id))
+                    .ifPresent(Ether.Entry::markDead);
+            });
             getSpellEntity(source).ifPresent(e -> {
-                e.getSpellSlot().clear();
                 castEntity.set(null);
             });
         }

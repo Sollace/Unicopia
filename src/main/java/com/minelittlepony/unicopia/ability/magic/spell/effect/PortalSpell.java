@@ -34,7 +34,7 @@ public class PortalSpell extends AbstractSpell {
         if (situation == Situation.GROUND) {
             teleportationTarget.getPosition().ifPresentOrElse(
                     targetPos -> tickWithTargetLink(source, targetPos),
-                    () -> advertiseAvailable(source)
+                    () -> findLink(source)
             );
 
             if (!publishedPosition) {
@@ -76,15 +76,15 @@ public class PortalSpell extends AbstractSpell {
     }
 
     @SuppressWarnings("unchecked")
-    private void advertiseAvailable(Caster<?> source) {
+    private void findLink(Caster<?> source) {
         Ether ether = Ether.get(source.getReferenceWorld());
-        ether.getIds(getType())
+        ether.getEntries(getType())
             .stream()
-            .filter(id -> !id.referenceEquals(source.getEntity()))
+            .filter(entry -> entry.isAvailable() && !entry.entity.referenceEquals(source.getEntity()))
             .findAny()
-            .ifPresent(ref -> {
-                ether.remove(getType(), ref.getId().get());
-                teleportationTarget.copyFrom((EntityReference<CastSpellEntity>)ref);
+            .ifPresent(entry -> {
+                entry.setTaken(true);
+                teleportationTarget.copyFrom((EntityReference<CastSpellEntity>)entry.entity);
             });
     }
 
@@ -105,5 +105,11 @@ public class PortalSpell extends AbstractSpell {
         super.fromNBT(compound);
         publishedPosition = compound.getBoolean("publishedPosition");
         teleportationTarget.fromNBT(compound.getCompound("teleportationTarget"));
+    }
+
+    @Override
+    public void setDead() {
+        super.setDead();
+        particlEffect.destroy();
     }
 }

@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.*;
 import net.minecraft.util.Identifier;
@@ -20,7 +21,7 @@ public class Ether extends PersistentState {
         return WorldOverlay.getPersistableStorage(world, ID, Ether::new, Ether::new);
     }
 
-    private final Map<Identifier, Set<EntityReference<?>>> advertisingEndpoints = new HashMap<>();
+    private final Map<Identifier, Set<Entry>> advertisingEndpoints = new HashMap<>();
 
     private final Object locker = new Object();
 
@@ -29,9 +30,11 @@ public class Ether extends PersistentState {
         compound.getKeys().forEach(key -> {
             Identifier typeId = Identifier.tryParse(key);
             if (typeId != null) {
-                Set<EntityReference<?>> uuids = getIds(typeId);
+                Set<Entry> uuids = getEntries(typeId);
                 compound.getList(key, NbtElement.COMPOUND_TYPE).forEach(entry -> {
-                    uuids.add(new EntityReference<>((NbtCompound)entry));
+                    Entry e = new Entry();
+                    e.fromNBT((NbtCompound)entry);
+                    uuids.add(e);
                 });
             }
         });
@@ -56,7 +59,7 @@ public class Ether extends PersistentState {
 
     public void put(SpellType<?> spellType, Caster<?> caster) {
         synchronized (locker) {
-            getIds(spellType.getId()).add(new EntityReference<>(caster.getEntity()));
+            getEntries(spellType.getId()).add(new Entry(caster));
         }
         markDirty();
     }
@@ -64,9 +67,9 @@ public class Ether extends PersistentState {
     public void remove(SpellType<?> spellType, UUID id) {
         synchronized (locker) {
             Identifier typeId = spellType.getId();
-            Set<EntityReference<?>> refs = advertisingEndpoints.get(typeId);
+            Set<Entry> refs = advertisingEndpoints.get(typeId);
             if (refs != null) {
-                refs.removeIf(ref -> ref.getId().orElse(Util.NIL_UUID).equals(id));
+                refs.removeIf(ref -> ref.entity.getId().orElse(Util.NIL_UUID).equals(id));
                 if (refs.isEmpty()) {
                     advertisingEndpoints.remove(typeId);
                 }
@@ -75,13 +78,89 @@ public class Ether extends PersistentState {
         }
     }
 
-    public Set<EntityReference<?>> getIds(SpellType<?> spellType) {
-        return getIds(spellType.getId());
+    public void remove(SpellType<?> spellType, Caster<?> caster) {
+        remove(spellType, caster.getEntity().getUuid());
     }
 
-    private Set<EntityReference<?>> getIds(Identifier typeId) {
+    public Set<Entry> getEntries(SpellType<?> spellType) {
+        return getEntries(spellType.getId());
+    }
+
+    private Set<Entry> getEntries(Identifier typeId) {
         synchronized (locker) {
             return advertisingEndpoints.computeIfAbsent(typeId, i -> new HashSet<>());
+        }
+    }
+
+    public Optional<Entry> getEntry(SpellType<?> spellType, Caster<?> caster) {
+        synchronized (locker) {
+            return getEntries(spellType).stream().filter(e -> e.entity.referenceEquals(caster.getEntity())).findFirst();
+        }
+    }
+
+    public Optional<Entry> getEntry(SpellType<?> spellType, UUID uuid) {
+        synchronized (locker) {
+            return getEntries(spellType).stream().filter(e -> e.equals(uuid)).findFirst();
+        }
+    }
+
+    public class Entry implements NbtSerialisable {
+        public final EntityReference<?> entity;
+        private boolean removed;
+        private boolean taken;
+
+        public Entry() {
+            entity = new EntityReference<>();
+        }
+
+        public Entry(Caster<?> caster) {
+            entity = new EntityReference<>(caster.getEntity());
+        }
+
+        public boolean isAlive() {
+            return !removed;
+        }
+
+        public void markDead() {
+            removed = true;
+            markDirty();
+        }
+
+        public boolean isAvailable() {
+            return !removed && !taken;
+        }
+
+        public void setTaken(boolean taken) {
+            this.taken = taken;
+            markDirty();
+        }
+
+        @Override
+        public void toNBT(NbtCompound compound) {
+            entity.toNBT(compound);
+            compound.putBoolean("remove", removed);
+            compound.putBoolean("taken", taken);
+        }
+        @Override
+        public void fromNBT(NbtCompound compound) {
+            entity.fromNBT(compound);
+            removed = compound.getBoolean("removed");
+            taken = compound.getBoolean("taken");
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return other instanceof Entry e
+                && e.equals(entity.getId().orElse(Util.NIL_UUID));
+        }
+
+        public boolean equals(UUID uuid) {
+            return entity.getId().orElse(Util.NIL_UUID).equals(uuid);
+        }
+
+        @Override
+        public int hashCode() {
+            return entity.getId().orElse(Util.NIL_UUID).hashCode();
         }
     }
 }
