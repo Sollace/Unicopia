@@ -91,6 +91,13 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
 
                     castEntity.set(entity);
                     setDirty();
+                } else {
+
+                    if (getWorld(source).map(Ether::get)
+                        .flatMap(ether -> castEntity.getId().flatMap(id -> ether.getEntry(getType(), id)))
+                        .isEmpty()) {
+                        setDead();
+                    }
                 }
             }
 
@@ -100,9 +107,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
         if (situation == Situation.GROUND_ENTITY) {
 
             if (!source.isClient()) {
-                Ether ether = Ether.get(source.getReferenceWorld());
-                if (ether.getEntry(getType(), source).filter(Ether.Entry::isAlive).isEmpty()) {
-                    ether.remove(getType(), source);
+                if (Ether.get(source.getReferenceWorld()).getEntry(getType(), source).isEmpty()) {
                     setDead();
                     return false;
                 }
@@ -128,6 +133,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
                     .flatMap(ether -> ether.getEntry(getType(), id))
                     .ifPresent(Ether.Entry::markDead);
             });
+            castEntity.set(null);
             getSpellEntity(source).ifPresent(e -> {
                 castEntity.set(null);
             });

@@ -1,24 +1,32 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.particle.*;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleEffect;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.WorldEvents;
 
 public class PortalSpell extends AbstractSpell {
+    public static final int MAX_COOLDOWN = 20;
     private final EntityReference<CastSpellEntity> teleportationTarget = new EntityReference<>();
 
     private boolean publishedPosition;
 
     private final ParticleHandle particlEffect = new ParticleHandle();
+
+    private int cooldown = MAX_COOLDOWN;
 
     protected PortalSpell(CustomisedSpellType<?> type) {
         super(type);
@@ -31,7 +39,20 @@ public class PortalSpell extends AbstractSpell {
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
+
         if (situation == Situation.GROUND) {
+            if (!source.isClient()) {
+                teleportationTarget.getId().ifPresent(id -> {
+                    Ether ether = Ether.get(source.getReferenceWorld());
+                    if (ether.getEntry(getType(), id).isEmpty()) {
+                        Unicopia.LOGGER.debug("Lost sibling, breaking connection to " + id);
+                        teleportationTarget.set(null);
+                        setDirty();
+                        source.getReferenceWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, source.getOrigin(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
+                    }
+                });
+            }
+
             teleportationTarget.getPosition().ifPresentOrElse(
                     targetPos -> tickWithTargetLink(source, targetPos),
                     () -> findLink(source)
@@ -42,11 +63,21 @@ public class PortalSpell extends AbstractSpell {
                 Ether.get(source.getReferenceWorld()).put(getType(), source);
             }
 
-            if (source.isClient()) {
+            if (source.isClient() && cooldown <= 0) {
                 Vec3d origin = source.getOriginVector();
 
-                source.spawnParticles(origin, new Sphere(true, 2, 1, 0, 1), 17, pos -> {
-                    source.addParticle(new MagicParticleEffect(getType().getColor()), pos, Vec3d.ZERO);
+                ParticleEffect effect = teleportationTarget.getPosition()
+                        .map(target -> {
+                            getType();
+                            return new FollowingParticleEffect(UParticles.HEALTH_DRAIN, target, 0.2F).withChild(ParticleTypes.ELECTRIC_SPARK);
+                        })
+                        .orElseGet(() -> {
+                            new MagicParticleEffect(getType().getColor());
+                            return ParticleTypes.ELECTRIC_SPARK;
+                        });
+
+                source.spawnParticles(origin, new Sphere(true, 2, 1, 0, 1), 3, pos -> {
+                    source.addParticle(effect, pos, Vec3d.ZERO);
                 });
             }
         }
@@ -56,10 +87,14 @@ public class PortalSpell extends AbstractSpell {
 
     private void tickWithTargetLink(Caster<?> source, Vec3d targetPos) {
         particlEffect.update(getUuid(), source, spawner -> {
-            spawner.addParticle(new SphereParticleEffect(UParticles.DISK, getType().getColor(), 0.9F, 2), source.getOriginVector(), Vec3d.ZERO);
-        }).ifPresent(p -> {
-            p.setAttribute(Attachment.ATTR_COLOR, getType().getColor());
+            spawner.addParticle(new SphereParticleEffect(UParticles.DISK, getType().getColor(), 0.8F, 2), source.getOriginVector(), Vec3d.ZERO);
         });
+
+        if (cooldown > 0) {
+            cooldown--;
+            setDirty();
+            return;
+        }
 
         Vec3d center = source.getOriginVector();
         source.findAllEntitiesInRange(1).filter(e -> true).forEach(entity -> {
@@ -70,13 +105,21 @@ public class PortalSpell extends AbstractSpell {
 
                 entity.playSound(USounds.ENTITY_PLAYER_UNICORN_TELEPORT, 1, 1);
                 entity.teleport(destination.x, destination.y, destination.z);
+                entity.playSound(USounds.ENTITY_PLAYER_UNICORN_TELEPORT, 1, 1);
+                setDirty();
             }
+
             ParticleUtils.spawnParticles(new MagicParticleEffect(getType().getColor()), entity, 7);
         });
     }
 
     @SuppressWarnings("unchecked")
     private void findLink(Caster<?> source) {
+
+        if (source.isClient()) {
+            return;
+        }
+
         Ether ether = Ether.get(source.getReferenceWorld());
         ether.getEntries(getType())
             .stream()
@@ -85,12 +128,15 @@ public class PortalSpell extends AbstractSpell {
             .ifPresent(entry -> {
                 entry.setTaken(true);
                 teleportationTarget.copyFrom((EntityReference<CastSpellEntity>)entry.entity);
+                setDirty();
             });
     }
 
     @Override
     public void onDestroyed(Caster<?> caster) {
-        Ether.get(caster.getReferenceWorld()).remove(getType(), caster.getEntity().getUuid());
+        Ether ether = Ether.get(caster.getReferenceWorld());
+        ether.remove(getType(), caster.getEntity().getUuid());
+        teleportationTarget.getId().flatMap(id -> ether.getEntry(getType(), id)).ifPresent(e -> e.setTaken(false));
     }
 
     @Override
@@ -98,6 +144,7 @@ public class PortalSpell extends AbstractSpell {
         super.toNBT(compound);
         compound.putBoolean("publishedPosition", publishedPosition);
         compound.put("teleportationTarget", teleportationTarget.toNBT());
+        compound.putInt("cooldown", cooldown);
     }
 
     @Override
@@ -105,6 +152,7 @@ public class PortalSpell extends AbstractSpell {
         super.fromNBT(compound);
         publishedPosition = compound.getBoolean("publishedPosition");
         teleportationTarget.fromNBT(compound.getCompound("teleportationTarget"));
+        cooldown = compound.getInt("cooldown");
     }
 
     @Override

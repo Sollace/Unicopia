@@ -49,7 +49,11 @@ public class Ether extends PersistentState {
         synchronized (locker) {
             advertisingEndpoints.forEach((id, uuids) -> {
                 NbtList list = new NbtList();
-                uuids.forEach(uuid -> list.add(uuid.toNBT()));
+                uuids.forEach(uuid -> {
+                    if (uuid.isAlive()) {
+                        list.add(uuid.toNBT());
+                    }
+                });
                 compound.put(id.toString(), list);
             });
 
@@ -69,7 +73,7 @@ public class Ether extends PersistentState {
             Identifier typeId = spellType.getId();
             Set<Entry> refs = advertisingEndpoints.get(typeId);
             if (refs != null) {
-                refs.removeIf(ref -> ref.entity.getId().orElse(Util.NIL_UUID).equals(id));
+                refs.removeIf(ref -> ref.removed || ref.entity.getId().orElse(Util.NIL_UUID).equals(id));
                 if (refs.isEmpty()) {
                     advertisingEndpoints.remove(typeId);
                 }
@@ -88,7 +92,14 @@ public class Ether extends PersistentState {
 
     private Set<Entry> getEntries(Identifier typeId) {
         synchronized (locker) {
-            return advertisingEndpoints.computeIfAbsent(typeId, i -> new HashSet<>());
+            return advertisingEndpoints.compute(typeId, (k, old) -> {
+                if (old == null) {
+                    old = new HashSet<>();
+                } else {
+                    old.removeIf(Entry::isDead);
+                }
+                return old;
+            });
         }
     }
 
@@ -117,11 +128,16 @@ public class Ether extends PersistentState {
             entity = new EntityReference<>(caster.getEntity());
         }
 
-        public boolean isAlive() {
+        boolean isAlive() {
             return !removed;
         }
 
+        boolean isDead() {
+            return removed;
+        }
+
         public void markDead() {
+            Unicopia.LOGGER.debug("Marking " + entity.getId().orElse(null) + " as dead");
             removed = true;
             markDirty();
         }
@@ -138,9 +154,10 @@ public class Ether extends PersistentState {
         @Override
         public void toNBT(NbtCompound compound) {
             entity.toNBT(compound);
-            compound.putBoolean("remove", removed);
+            compound.putBoolean("removed", removed);
             compound.putBoolean("taken", taken);
         }
+
         @Override
         public void fromNBT(NbtCompound compound) {
             entity.fromNBT(compound);
