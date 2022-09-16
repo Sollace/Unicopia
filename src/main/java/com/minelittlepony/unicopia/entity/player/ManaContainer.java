@@ -94,6 +94,11 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
                 mana.add((mana.getMax() / 10F) * Math.max(1, pony.getLevel().get() * 4));
             }
         }
+
+        if (xp.getPercentFill() >= 1) {
+            xp.set(0);
+            pony.getLevel().add(1);
+        }
     }
 
     class XpCollectingBar extends BarInst {
