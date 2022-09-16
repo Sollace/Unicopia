@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -16,7 +17,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 
-public class LightSpell extends AbstractSpell {
+public class LightSpell extends AbstractSpell implements TimedSpell {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
             .with(Trait.LIFE, 10)
             .with(Trait.AIR, 0.3F)
@@ -24,14 +25,18 @@ public class LightSpell extends AbstractSpell {
             .with(Trait.ORDER, 25)
             .build();
 
-    private int age;
-    private int duration;
+    private final Timer timer;
 
     private final List<EntityReference<FairyEntity>> lights = new ArrayList<>();
 
     protected LightSpell(CustomisedSpellType<?> type) {
         super(type);
-        duration = 120 + (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19);
+        timer = new Timer((120 + (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19)) * 20);
+    }
+
+    @Override
+    public Timer getTimer() {
+        return timer;
     }
 
     @Override
@@ -41,15 +46,13 @@ public class LightSpell extends AbstractSpell {
             return false;
         }
 
-        age++;
+        timer.tick();
 
-        if (age % 20 == 0) {
-            duration--;
-        }
-
-        if (duration <= 0) {
+        if (timer.duration <= 0) {
             return false;
         }
+
+        setDirty();
 
         if (!caster.isClient()) {
             if (lights.isEmpty()) {
@@ -93,8 +96,7 @@ public class LightSpell extends AbstractSpell {
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
-        compound.putInt("age", age);
-        compound.putInt("duration", duration);
+        timer.toNBT(compound);
         if (!lights.isEmpty()) {
             NbtList list = new NbtList();
             lights.forEach(light -> {
@@ -107,8 +109,7 @@ public class LightSpell extends AbstractSpell {
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
-        age = compound.getInt("age");
-        duration = compound.getInt("duration");
+        timer.fromNBT(compound);
         lights.clear();
         if (compound.contains("lights", NbtElement.LIST_TYPE)) {
             compound.getList("lights", NbtElement.COMPOUND_TYPE).forEach(nbt -> {

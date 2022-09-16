@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.minelittlepony.common.client.gui.GameGui;
-import com.minelittlepony.unicopia.ability.magic.spell.AbstractDelegatingSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.client.FlowingText;
 import com.minelittlepony.unicopia.client.particle.SphereModel;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgRemoveSpell;
 
@@ -23,6 +23,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.math.Vector4f;
 
 public class DismissSpellScreen extends GameGui {
@@ -88,8 +89,6 @@ public class DismissSpellScreen extends GameGui {
 
     class Entry extends Vector4f implements Element, Drawable, Selectable {
 
-        private final List<Text> tooltip = new ArrayList<>();
-
         private final Spell spell;
         private final Spell actualSpell;
 
@@ -103,19 +102,6 @@ public class DismissSpellScreen extends GameGui {
 
             SphereModel.convertToCartesianCoord(this, radius, azimuth, azimuth);
             add(0,  -(float)radius / 2F, 0, 0);
-
-            MutableText name = actualSpell.getType().getName().copy();
-            int color = actualSpell.getType().getColor();
-            name.setStyle(name.getStyle().withColor(color == 0 ? 0xFFAAAAAA : color));
-
-            tooltip.add(Text.translatable("Spell Type: %s", name));
-            actualSpell.getType().getTraits().appendTooltip(tooltip);
-            tooltip.add(ScreenTexts.EMPTY);
-            tooltip.add(Text.translatable("Affinity: %s", actualSpell.getAffinity().name()).formatted(actualSpell.getAffinity().getColor()));
-            tooltip.add(ScreenTexts.EMPTY);
-            tooltip.addAll(FlowingText.wrap(Text.translatable(actualSpell.getType().getTranslationKey() + ".lore").formatted(actualSpell.getAffinity().getColor()), 180).toList());
-            tooltip.add(ScreenTexts.EMPTY);
-            tooltip.add(Text.translatable("[Click to Discard]"));
         }
 
         private Spell getActualSpell() {
@@ -147,7 +133,9 @@ public class DismissSpellScreen extends GameGui {
             copy.set(getX(), getY(), getZ(), getW());
             copy.transform(matrices.peek().getPositionMatrix());
 
-            DrawableUtil.renderItemIcon(actualSpell.getType().getDefualtStack(),
+            var type = actualSpell.getType().withTraits(actualSpell.getTraits());
+
+            DrawableUtil.renderItemIcon(actualSpell.isDead() ? UItems.BOTCHED_GEM.getDefaultStack() : type.getDefaultStack(),
                     copy.getX() - 8 + (copy.getX() - mouseX - 5) / 60D,
                     copy.getY() - 8 + (copy.getY() - mouseY - 5) / 60D,
                     1
@@ -162,6 +150,24 @@ public class DismissSpellScreen extends GameGui {
 
             if (isMouseOver(relativeMouseX, relativeMouseY)) {
                 DrawableUtil.drawArc(matrices, 0, 8, 0, DrawableUtil.TAU, color | 0x000000FF, false);
+
+                List<Text> tooltip = new ArrayList<>();
+
+                MutableText name = actualSpell.getType().getName().copy();
+                color = actualSpell.getType().getColor();
+                name.setStyle(name.getStyle().withColor(color == 0 ? 0xFFAAAAAA : color));
+                tooltip.add(Text.translatable("Spell Type: %s", name));
+                actualSpell.getType().getTraits().appendTooltip(tooltip);
+                tooltip.add(ScreenTexts.EMPTY);
+                tooltip.add(Text.translatable("Affinity: %s", actualSpell.getAffinity().name()).formatted(actualSpell.getAffinity().getColor()));
+                tooltip.add(ScreenTexts.EMPTY);
+                tooltip.addAll(FlowingText.wrap(Text.translatable(actualSpell.getType().getTranslationKey() + ".lore").formatted(actualSpell.getAffinity().getColor()), 180).toList());
+                if (spell instanceof TimedSpell timed) {
+                    tooltip.add(ScreenTexts.EMPTY);
+                    tooltip.add(Text.translatable("Time Left: %s", StringHelper.formatTicks(timed.getTimer().getTicksRemaining())));
+                }
+                tooltip.add(ScreenTexts.EMPTY);
+                tooltip.add(Text.translatable("[Click to Discard]"));
                 renderTooltip(matrices, tooltip, 0, 0);
 
                 if (!lastMouseOver) {

@@ -17,29 +17,31 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class AttractiveSpell extends ShieldSpell implements ProjectileSpell, HomingSpell {
+public class AttractiveSpell extends ShieldSpell implements ProjectileSpell, HomingSpell, TimedSpell {
 
     private final EntityReference<Entity> target = new EntityReference<>();
 
-    private int age;
-    private int duration;
+    private final Timer timer;
 
     protected AttractiveSpell(CustomisedSpellType<?> type) {
         super(type);
-        duration = 120 + (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19);
+        timer = new Timer((120 + (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19)) * 20);
+    }
+
+    @Override
+    public Timer getTimer() {
+        return timer;
     }
 
     @Override
     public boolean tick(Caster<?> caster, Situation situation) {
-        age++;
+        timer.tick();
 
-        if (age % 20 == 0) {
-            duration--;
-        }
-
-        if (duration <= 0) {
+        if (timer.duration <= 0) {
             return false;
         }
+
+        setDirty();
 
         Vec3d pos = caster.getOriginVector();
         if (target.isPresent(caster.getReferenceWorld()) && target.get(caster.getReferenceWorld()).distanceTo(caster.getEntity()) > getDrawDropOffRange(caster)) {
@@ -147,15 +149,13 @@ public class AttractiveSpell extends ShieldSpell implements ProjectileSpell, Hom
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
         compound.put("target", target.toNBT());
-        compound.putInt("age", age);
-        compound.putInt("duration", duration);
+        timer.toNBT(compound);
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         target.fromNBT(compound.getCompound("target"));
-        age = compound.getInt("age");
-        duration = compound.getInt("duration");
+        timer.fromNBT(compound);
     }
 }

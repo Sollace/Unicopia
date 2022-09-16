@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
@@ -17,7 +18,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class FeatherFallSpell extends AbstractSpell {
+public class FeatherFallSpell extends AbstractSpell implements TimedSpell {
     private static final int MIN_RANGE = 1;
     private static final int MAX_RANGE = 20;
     private static final int MIN_TARGETS = 1;
@@ -35,19 +36,27 @@ public class FeatherFallSpell extends AbstractSpell {
             .with(Trait.ORDER, 15)
             .build();
 
-    private int duration;
+    private final Timer timer;
 
     protected FeatherFallSpell(CustomisedSpellType<?> type) {
         super(type);
-        duration = (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19);
+        timer = new Timer(10 + (int)(getTraits().get(Trait.FOCUS, 0, 160)));
+    }
+
+    @Override
+    public Timer getTimer() {
+        return timer;
     }
 
     @Override
     public boolean tick(Caster<?> caster, Situation situation) {
+        timer.tick();
 
-        if (duration-- <= 0) {
+        if (timer.duration <= 0) {
             return false;
         }
+
+        setDirty();
 
         List<Entity> targets = getTargets(caster).toList();
 
@@ -82,7 +91,7 @@ public class FeatherFallSpell extends AbstractSpell {
             ParticleUtils.spawnParticles(new MagicParticleEffect(getType().getColor()), target, 7);
         });
 
-        return caster.subtractEnergyCost(duration % 50 == 0 ? getCostPerEntity() * targets.size() : 0);
+        return caster.subtractEnergyCost(timer.duration % 50 == 0 ? getCostPerEntity() * targets.size() : 0);
     }
 
     protected double getCostPerEntity() {
@@ -117,12 +126,12 @@ public class FeatherFallSpell extends AbstractSpell {
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
-        compound.putInt("duration", duration);
+        timer.toNBT(compound);
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
-        duration = compound.getInt("duration");
+        timer.fromNBT(compound);
     }
 }
