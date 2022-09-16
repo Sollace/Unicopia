@@ -12,7 +12,6 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.CompoundSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.DispersableDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.RainboomAbilitySpell;
 import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
@@ -37,7 +36,6 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final Registry<SpellType<?>> REGISTRY = Registries.createSimple(Unicopia.id("spells"));
     private static final Map<Affinity, Set<SpellType<?>>> BY_AFFINITY = new EnumMap<>(Affinity.class);
 
-    public static final SpellType<CompoundSpell> COMPOUND_SPELL = register("compound", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, CompoundSpell::new);
     public static final SpellType<PlaceableSpell> PLACED_SPELL = register("placed", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, PlaceableSpell::new);
     public static final SpellType<ThrowableSpell> THROWN_SPELL = register("thrown", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, ThrowableSpell::new);
 

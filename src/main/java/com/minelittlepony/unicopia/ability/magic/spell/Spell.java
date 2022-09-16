@@ -91,15 +91,6 @@ public interface Spell extends NbtSerialisable, Affine {
     void onDestroyed(Caster<?> caster);
 
     /**
-     * Used by crafting to combine two spells into one.
-     *
-     * Returns a compound spell representing the union of this and the other spell.
-     */
-    default Spell combineWith(Spell other) {
-        return SpellType.COMPOUND_SPELL.withTraits().create().combineWith(this).combineWith(other);
-    }
-
-    /**
      * Converts this spell into a placeable spell.
      */
     default PlaceableSpell toPlaceable() {
