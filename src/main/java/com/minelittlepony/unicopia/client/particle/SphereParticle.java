@@ -75,18 +75,18 @@ public class SphereParticle extends Particle implements Attachment {
 
     @Override
     public void setAttribute(int key, Object value) {
-        if (key == 0) {
+        if (key == ATTR_RADIUS) {
             toRadius = (float)value;
             steps = 20;
             lerpIncrement = (toRadius - radius) / steps;
         }
-        if (key == 1) {
+        if (key == ATTR_COLOR) {
             int tint = (int)value;
             red = Color.r(tint);
             green = Color.g(tint);
             blue = Color.b(tint);
         }
-        if (key == 2) {
+        if (key == ATTR_OPACITY) {
             alpha = (float)value;
         }
     }

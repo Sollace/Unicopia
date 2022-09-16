@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.UParticles;
+import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 
 import net.minecraft.nbt.*;
 import net.minecraft.util.Identifier;
@@ -98,7 +99,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
             particlEffect.update(getUuid(), source, spawner -> {
                 spawner.addParticle(new OrientedBillboardParticleEffect(UParticles.MAGIC_RUNES, 90, 0), source.getOriginVector(), Vec3d.ZERO);
             }).ifPresent(p -> {
-                p.setAttribute(1, spell.getType().getColor());
+                p.setAttribute(Attachment.ATTR_COLOR, spell.getType().getColor());
             });
 
             return super.tick(source, Situation.GROUND);
@@ -137,7 +138,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
-        if (compound.contains("dimension")) {
+        if (compound.contains("dimension", NbtElement.STRING_TYPE)) {
             Identifier id = Identifier.tryParse(compound.getString("dimension"));
             if (id != null) {
                 dimension = RegistryKey.of(Registry.WORLD_KEY, id);

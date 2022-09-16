@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -116,13 +117,13 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell 
         particlEffect.update(getUuid(), source, spawner -> {
             spawner.addParticle(new SphereParticleEffect(UParticles.SPHERE, getType().getColor(), 0.99F, radius, SPHERE_OFFSET), source.getOriginVector(), Vec3d.ZERO);
         }).ifPresent(p -> {
-            p.setAttribute(0, radius);
+            p.setAttribute(Attachment.ATTR_RADIUS, radius);
         });
         particlEffect.update(getUuid(), "_ring", source, spawner -> {
             spawner.addParticle(new SphereParticleEffect(UParticles.DISK, 0xFFFFFFFF, 0.4F, radius + 1, SPHERE_OFFSET), getOrigin(source), Vec3d.ZERO);
         }).ifPresent(p -> {
-            p.setAttribute(0, radius * 2F);
-            p.setAttribute(1, 0xAAAAAA);
+            p.setAttribute(Attachment.ATTR_RADIUS, radius * 2F);
+            p.setAttribute(Attachment.ATTR_COLOR, 0xAAAAAA);
         });
 
         double angle = age % 260;

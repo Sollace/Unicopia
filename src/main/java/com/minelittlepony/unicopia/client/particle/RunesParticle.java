@@ -71,7 +71,7 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
 
     @Override
     public void setAttribute(int key, Object value) {
-        if (key == 1) {
+        if (key == ATTR_COLOR) {
             int tint = (int)value;
             red = Color.r(tint);
             green = Color.g(tint);

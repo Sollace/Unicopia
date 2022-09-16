@@ -85,6 +85,10 @@ public class ParticleHandle {
     }
 
     public interface Attachment {
+        int ATTR_RADIUS = 0;
+        int ATTR_COLOR = 1;
+        int ATTR_OPACITY = 2;
+
         boolean isStillAlive();
 
         void attach(Link link);
