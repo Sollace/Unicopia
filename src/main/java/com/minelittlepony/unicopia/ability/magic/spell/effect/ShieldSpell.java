@@ -118,11 +118,9 @@ public class ShieldSpell extends AbstractSpell {
      */
     public double getDrawDropOffRange(Caster<?> source) {
         float multiplier = source instanceof Pony pony && pony.getMaster().isSneaking() ? 1 : 2;
-        float min = 4 + getTraits().get(Trait.POWER);
-        double range = (min + (source.getLevel().getScaled(4) * 2)) / multiplier;
-        if (source instanceof Pony && range >= 4) {
-            range = Math.sqrt(range);
-        }
+        float min = (source instanceof Pony ? 4 : 6) + getTraits().get(Trait.POWER);
+        double range = (min + (source.getLevel().getScaled(source instanceof Pony ? 4 : 40) * (source instanceof Pony ? 2 : 10))) / multiplier;
+
         return range;
     }
 
