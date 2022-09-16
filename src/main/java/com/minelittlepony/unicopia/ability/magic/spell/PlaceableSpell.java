@@ -79,7 +79,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
                     setDirty();
                 }
 
-                if (getSpellEntity(source).isEmpty()) {
+                if (getWorld(source).map(castEntity::isUnlinked).orElse(false)) {
                     CastSpellEntity entity = UEntities.CAST_SPELL.create(source.getReferenceWorld());
                     Vec3d pos = castEntity.getPosition().orElse(source.getOriginVector());
                     entity.updatePositionAndAngles(pos.x, pos.y, pos.z, 0, 0);
@@ -119,10 +119,13 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
         super.onDestroyed(source);
     }
 
-    protected Optional<CastSpellEntity> getSpellEntity(Caster<?> source) {
+    public Optional<CastSpellEntity> getSpellEntity(Caster<?> source) {
+        return getWorld(source).map(castEntity::get);
+    }
+
+    protected Optional<World> getWorld(Caster<?> source) {
         return Optional.ofNullable(dimension)
-                .map(dim -> source.getReferenceWorld().getServer().getWorld(dimension))
-                .map(castEntity::get);
+                .map(dim -> source.getReferenceWorld().getServer().getWorld(dim));
     }
 
     @Override

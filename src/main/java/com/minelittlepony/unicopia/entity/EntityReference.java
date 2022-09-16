@@ -69,6 +69,10 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
         return entity != null && entity.getUuid().equals(uuid.orElse(null));
     }
 
+    public boolean isUnlinked(World world) {
+        return getId().isEmpty() || getOrEmpty(world).map(e -> e.isRemoved()).orElse(false);
+    }
+
     public boolean isPresent(World world) {
         return getOrEmpty(world).isPresent();
     }
