@@ -40,11 +40,20 @@ public interface SpellContainer {
     void put(@Nullable Spell effect);
 
     /**
-     * Removes all matching active effects.
+     * Removes all active effects that match or contain a matching effect.
      *
      * @return True if the collection was changed
      */
-    boolean removeIf(Predicate<Spell> test, boolean update);
+    default boolean removeIf(Predicate<Spell> test, boolean update) {
+        return removeWhere(spell -> spell.findMatches(test).findFirst().isPresent(), update);
+    }
+
+    /**
+     * Removes all matching top level active effects.
+     *
+     * @return True if the collection was changed
+     */
+    boolean removeWhere(Predicate<Spell> test, boolean update);
 
     /**
      * Iterates active spells and optionally removes matching ones.

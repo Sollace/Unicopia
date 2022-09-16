@@ -66,9 +66,9 @@ public class EffectSync implements SpellContainer {
     }
 
     @Override
-    public boolean removeIf(Predicate<Spell> test, boolean update) {
+    public boolean removeWhere(Predicate<Spell> test, boolean update) {
         return reduce((initial, effect) -> {
-            if (!effect.findMatches(test).findFirst().isPresent()) {
+            if (!test.test(effect)) {
                 return initial;
             }
             spells.removeReference(effect);
@@ -140,6 +140,6 @@ public class EffectSync implements SpellContainer {
     }
 
     private interface Alteration {
-        boolean apply(boolean initial, Spell item);
+        boolean apply(boolean initial, Spell spell);
     }
 }

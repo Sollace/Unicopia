@@ -106,7 +106,9 @@ public class UnicornCastingAbility implements Ability<Hit> {
             if (newSpell.getResult() != ActionResult.FAIL) {
                 CustomisedSpellType<?> spell = newSpell.getValue();
 
-                boolean removed = player.getSpellSlot().removeIf(spell.isEmpty() ? spell : SpellType.PORTAL.negate().and(spell), true);
+                boolean removed = player.getSpellSlot().removeWhere(s -> {
+                    return s.findMatches(spell).findAny().isPresent() && (spell.isEmpty() || !SpellType.PLACED_SPELL.test(s));
+                }, true);
                 player.subtractEnergyCost(removed ? 2 : 4);
                 if (!removed) {
                     Spell s = spell.apply(player);
