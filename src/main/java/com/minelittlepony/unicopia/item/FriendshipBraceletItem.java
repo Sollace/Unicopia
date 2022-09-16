@@ -2,12 +2,15 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.player.Pony;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -118,5 +121,9 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
             }).isPresent();
         }
         return false;
+    }
+
+    public static Stream<Pony> getPartyMembers(Caster<?> caster, double radius) {
+        return Pony.stream(caster.findAllEntitiesInRange(radius, entity -> isComrade(caster, entity)));
     }
 }

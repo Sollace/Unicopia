@@ -14,8 +14,7 @@ import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.EarthPonyStompAbility;
-import com.minelittlepony.unicopia.ability.magic.Affine;
-import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.*;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
@@ -23,6 +22,7 @@ import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
+import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.toxin.Toxin;
 import com.minelittlepony.unicopia.network.Channel;
@@ -451,6 +451,22 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     @Override
     public boolean subtractEnergyCost(double foodSubtract) {
+
+        List<Pony> partyMembers = FriendshipBraceletItem.getPartyMembers(this, 10).toList();
+
+        if (!partyMembers.isEmpty()) {
+            foodSubtract /= (partyMembers.size() + 1);
+            for (Pony member : partyMembers) {
+                member.directTakeEnergy(foodSubtract);
+            }
+        }
+
+        directTakeEnergy(foodSubtract);
+
+        return entity.getHealth() > 0;
+    }
+
+    protected void directTakeEnergy(double foodSubtract) {
         if (!entity.isCreative() && !entity.world.isClient) {
 
             float currentMana = mana.getMana().get();
@@ -465,8 +481,6 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
                 magicExhaustion += foodSubtract;
             }
         }
-
-        return entity.getHealth() > 0;
     }
 
     private float burnFood(float foodSubtract) {
@@ -615,8 +629,14 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         return player == null ? null : ((PonyContainer<Pony>)player).get();
     }
 
+    public static Stream<Pony> stream(Stream<Entity> entities) {
+        return entities.flatMap(entity -> of(entity).stream());
+    }
+
     public static Optional<Pony> of(Entity entity) {
-        return entity instanceof PlayerEntity ? PonyContainer.of(entity).map(a -> (Pony)a.get()) : Optional.empty();
+        return entity instanceof PlayerEntity
+                ? PonyContainer.of(entity).map(a -> (Pony)a.get())
+                : Optional.empty();
     }
 
     public static boolean equal(GameProfile one, GameProfile two) {
