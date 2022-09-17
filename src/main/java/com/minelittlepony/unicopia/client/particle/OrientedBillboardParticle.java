@@ -20,8 +20,8 @@ public abstract class OrientedBillboardParticle extends AbstractBillboardParticl
 
         fixed = effect.isAngleFixed();
         if (fixed) {
-            rotation.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(180 - effect.getYaw()));
             rotation.hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(effect.getPitch()));
+            rotation.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(180 - effect.getYaw()));
         }
     }
 

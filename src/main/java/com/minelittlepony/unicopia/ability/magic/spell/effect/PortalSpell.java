@@ -1,32 +1,46 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.*;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.particle.*;
+import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldEvents;
 
-public class PortalSpell extends AbstractSpell {
-    public static final int MAX_COOLDOWN = 20;
-    private final EntityReference<CastSpellEntity> teleportationTarget = new EntityReference<>();
+public class PortalSpell extends AbstractSpell implements PlaceableSpell.PlacementDelegate {
+    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+            .with(Trait.LIFE, 10)
+            .with(Trait.KNOWLEDGE, 1)
+            .with(Trait.ORDER, 25)
+            .build();
+
+    private final EntityReference<Entity> teleportationTarget = new EntityReference<>();
 
     private boolean publishedPosition;
 
-    private final ParticleHandle particlEffect = new ParticleHandle();
+    private final ParticleHandle particleEffect = new ParticleHandle();
 
-    private int cooldown = MAX_COOLDOWN;
+    private float pitch;
+    private float yaw;
 
     protected PortalSpell(CustomisedSpellType<?> type) {
         super(type);
@@ -34,36 +48,17 @@ public class PortalSpell extends AbstractSpell {
 
     @Override
     public boolean apply(Caster<?> caster) {
+        pitch = caster.getEntity().getPitch(1);
+        yaw = caster.getEntity().getYaw(1);
         return toPlaceable().apply(caster);
     }
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-
         if (situation == Situation.GROUND) {
-            if (!source.isClient()) {
-                teleportationTarget.getId().ifPresent(id -> {
-                    Ether ether = Ether.get(source.getReferenceWorld());
-                    if (ether.getEntry(getType(), id).isEmpty()) {
-                        Unicopia.LOGGER.debug("Lost sibling, breaking connection to " + id);
-                        teleportationTarget.set(null);
-                        setDirty();
-                        source.getReferenceWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, source.getOrigin(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
-                    }
-                });
-            }
 
-            teleportationTarget.getPosition().ifPresentOrElse(
-                    targetPos -> tickWithTargetLink(source, targetPos),
-                    () -> findLink(source)
-            );
+            if (source.isClient()) {
 
-            if (!publishedPosition) {
-                publishedPosition = true;
-                Ether.get(source.getReferenceWorld()).put(getType(), source);
-            }
-
-            if (source.isClient() && cooldown <= 0) {
                 Vec3d origin = source.getOriginVector();
 
                 ParticleEffect effect = teleportationTarget.getPosition()
@@ -71,51 +66,78 @@ public class PortalSpell extends AbstractSpell {
                             getType();
                             return new FollowingParticleEffect(UParticles.HEALTH_DRAIN, target, 0.2F).withChild(ParticleTypes.ELECTRIC_SPARK);
                         })
-                        .orElseGet(() -> {
-                            new MagicParticleEffect(getType().getColor());
-                            return ParticleTypes.ELECTRIC_SPARK;
-                        });
+                        .orElse(ParticleTypes.ELECTRIC_SPARK);
 
-                source.spawnParticles(origin, new Sphere(true, 2, 1, 0, 1), 3, pos -> {
+                source.spawnParticles(origin, new Sphere(true, 2, 1, 1, 1), 1, pos -> {
                     source.addParticle(effect, pos, Vec3d.ZERO);
                 });
-            }
-        }
 
-        return true;
-    }
+                teleportationTarget.getPosition().ifPresentOrElse(position -> {
+                    particleEffect.update(getUuid(), source, spawner -> {
+                        spawner.addParticle(new SphereParticleEffect(UParticles.DISK, getType().getColor(), 0.8F, 2, new Vec3d(pitch, yaw, 0)), source.getOriginVector(), Vec3d.ZERO);
+                    });
+                }, () -> {
+                    particleEffect.destroy();
+                });
+            } else {
+                teleportationTarget.getId().ifPresent(id -> {
+                    if (Ether.get(source.getReferenceWorld()).getEntry(getType(), id).isEmpty()) {
+                        Unicopia.LOGGER.debug("Lost sibling, breaking connection to " + id);
+                        teleportationTarget.set(null);
+                        setDirty();
+                        source.getReferenceWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, source.getOrigin(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
+                    }
+                });
 
-    private void tickWithTargetLink(Caster<?> source, Vec3d targetPos) {
-        particlEffect.update(getUuid(), source, spawner -> {
-            spawner.addParticle(new SphereParticleEffect(UParticles.DISK, getType().getColor(), 0.8F, 2), source.getOriginVector(), Vec3d.ZERO);
-        });
-
-        if (cooldown > 0) {
-            cooldown--;
-            setDirty();
-            return;
-        }
-
-        Vec3d center = source.getOriginVector();
-        source.findAllEntitiesInRange(1).filter(e -> true).forEach(entity -> {
-            if (!entity.hasPortalCooldown() && entity.timeUntilRegen <= 0) {
-                Vec3d destination = entity.getPos().subtract(center).add(targetPos);
-                entity.resetPortalCooldown();
-                entity.timeUntilRegen = 100;
-
-                entity.playSound(USounds.ENTITY_PLAYER_UNICORN_TELEPORT, 1, 1);
-                entity.teleport(destination.x, destination.y, destination.z);
-                entity.playSound(USounds.ENTITY_PLAYER_UNICORN_TELEPORT, 1, 1);
-                setDirty();
+                getTarget(source).ifPresentOrElse(
+                        entry -> tickWithTargetLink(source, entry),
+                        () -> findLink(source)
+                );
             }
 
-            ParticleUtils.spawnParticles(new MagicParticleEffect(getType().getColor()), entity, 7);
+            if (!publishedPosition) {
+                publishedPosition = true;
+                Ether.Entry entry = Ether.get(source.getReferenceWorld()).put(getType(), source);
+                entry.pitch = pitch;
+                entry.yaw = yaw;
+            }
+
+
+        }
+
+        return !isDead();
+    }
+
+    private void tickWithTargetLink(Caster<?> source, Ether.Entry destination) {
+
+        destination.entity.getPosition().ifPresent(targetPos -> {
+            Vec3d center = source.getOriginVector();
+            source.findAllEntitiesInRange(1).filter(e -> true).forEach(entity -> {
+                if (!entity.hasPortalCooldown() && entity.timeUntilRegen <= 0) {
+                    Vec3d offset = entity.getPos().subtract(center);
+                    Vec3d dest = targetPos;
+                    float yawDifference = pitch < 15 ? (180 - yaw + destination.yaw) : 0;
+
+                    dest = dest.add(offset.rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE)).add(0, 0.05, 0);
+
+                    entity.resetPortalCooldown();
+                    entity.timeUntilRegen = 20;
+
+                    entity.setYaw(entity.getYaw() + yawDifference);
+                    entity.setVelocity(entity.getVelocity().rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE));
+
+                    entity.world.playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
+                    entity.teleport(dest.x, dest.y, dest.z);
+                    entity.world.playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
+                    setDirty();
+                }
+
+                ParticleUtils.spawnParticles(new MagicParticleEffect(getType().getColor()), entity, 7);
+            });
         });
     }
 
-    @SuppressWarnings("unchecked")
     private void findLink(Caster<?> source) {
-
         if (source.isClient()) {
             return;
         }
@@ -123,20 +145,50 @@ public class PortalSpell extends AbstractSpell {
         Ether ether = Ether.get(source.getReferenceWorld());
         ether.getEntries(getType())
             .stream()
-            .filter(entry -> entry.isAvailable() && !entry.entity.referenceEquals(source.getEntity()))
+            .filter(entry -> entry.isAvailable() && !entry.entity.referenceEquals(source.getEntity()) && entry.entity.getId().isPresent())
             .findAny()
             .ifPresent(entry -> {
                 entry.setTaken(true);
-                teleportationTarget.copyFrom((EntityReference<CastSpellEntity>)entry.entity);
+                teleportationTarget.copyFrom(entry.entity);
                 setDirty();
             });
+    }
+
+    private Optional<Ether.Entry> getTarget(Caster<?> source) {
+        return teleportationTarget.getId().flatMap(id -> Ether.get(source.getReferenceWorld()).getEntry(getType(), id));
+    }
+
+    @Override
+    public void onPlaced(Caster<?> source, PlaceableSpell parent, CastSpellEntity entity) {
+        LivingEntity caster = source.getMaster();
+        Vec3d targetPos = caster.getRotationVector().multiply(3).add(caster.getEyePos());
+
+        parent.pitch = -90 - pitch;
+        parent.yaw = -yaw;
+
+        for (Spell delegate : parent.getDelegates()) {
+            if (delegate instanceof PortalSpell copy) {
+                copy.pitch = pitch;
+                copy.yaw = yaw;
+            }
+        }
+
+        entity.setPos(targetPos.x, caster.getY() + 1.5, targetPos.z);
+    }
+
+    @Override
+    public void updatePlacement(Caster<?> source, PlaceableSpell parent) {
+        parent.getParticleEffectAttachment(source).ifPresent(attachment -> {
+            attachment.setAttribute(Attachment.ATTR_RADIUS, 2);
+            attachment.setAttribute(Attachment.ATTR_OPACITY, 0.92F);
+        });
     }
 
     @Override
     public void onDestroyed(Caster<?> caster) {
         Ether ether = Ether.get(caster.getReferenceWorld());
         ether.remove(getType(), caster.getEntity().getUuid());
-        teleportationTarget.getId().flatMap(id -> ether.getEntry(getType(), id)).ifPresent(e -> e.setTaken(false));
+        getTarget(caster).ifPresent(e -> e.setTaken(false));
     }
 
     @Override
@@ -144,7 +196,8 @@ public class PortalSpell extends AbstractSpell {
         super.toNBT(compound);
         compound.putBoolean("publishedPosition", publishedPosition);
         compound.put("teleportationTarget", teleportationTarget.toNBT());
-        compound.putInt("cooldown", cooldown);
+        compound.putFloat("pitch", pitch);
+        compound.putFloat("yaw", yaw);
     }
 
     @Override
@@ -152,12 +205,13 @@ public class PortalSpell extends AbstractSpell {
         super.fromNBT(compound);
         publishedPosition = compound.getBoolean("publishedPosition");
         teleportationTarget.fromNBT(compound.getCompound("teleportationTarget"));
-        cooldown = compound.getInt("cooldown");
+        pitch = compound.getFloat("pitch");
+        yaw = compound.getFloat("yaw");
     }
 
     @Override
     public void setDead() {
         super.setDead();
-        particlEffect.destroy();
+        particleEffect.destroy();
     }
 }

@@ -60,6 +60,10 @@ public class SphereParticleEffect implements ParticleEffect {
         return offset;
     }
 
+    public void setOffset(Vec3d offset) {
+        this.offset = offset;
+    }
+
     public Vec3f getColor() {
         return color;
     }

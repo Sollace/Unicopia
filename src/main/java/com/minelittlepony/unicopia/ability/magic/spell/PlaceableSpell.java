@@ -50,6 +50,9 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
      */
     private Spell spell;
 
+    public float pitch;
+    public float yaw;
+
     public PlaceableSpell(CustomisedSpellType<?> type) {
         super(type);
     }
@@ -84,7 +87,11 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
                     CastSpellEntity entity = UEntities.CAST_SPELL.create(source.getReferenceWorld());
                     Vec3d pos = castEntity.getPosition().orElse(source.getOriginVector());
                     entity.updatePositionAndAngles(pos.x, pos.y, pos.z, 0, 0);
-                    entity.getSpellSlot().put(spell.toPlaceable());
+                    PlaceableSpell copy = spell.toPlaceable();
+                    if (spell instanceof PlacementDelegate delegate) {
+                        delegate.onPlaced(source, copy, entity);
+                    }
+                    entity.getSpellSlot().put(copy);
                     entity.setMaster(source);
                     entity.world.spawnEntity(entity);
                     Ether.get(entity.world).put(getType(), entity);
@@ -113,9 +120,11 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
                 }
             }
 
-            particlEffect.update(getUuid(), source, spawner -> {
-                spawner.addParticle(new OrientedBillboardParticleEffect(UParticles.MAGIC_RUNES, 90, 0), source.getOriginVector(), Vec3d.ZERO);
-            }).ifPresent(p -> {
+            if (spell instanceof PlacementDelegate delegate) {
+                delegate.updatePlacement(source, this);
+            }
+
+            getParticleEffectAttachment(source).ifPresent(p -> {
                 p.setAttribute(Attachment.ATTR_COLOR, spell.getType().getColor());
             });
 
@@ -145,6 +154,13 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
         return getWorld(source).map(castEntity::get);
     }
 
+    public Optional<Attachment> getParticleEffectAttachment(Caster<?> source) {
+        return particlEffect.update(getUuid(), source, spawner -> {
+            source.getOriginVector().add(0, 5, 0);
+            spawner.addParticle(new OrientedBillboardParticleEffect(UParticles.MAGIC_RUNES, pitch + 90, yaw), Vec3d.ZERO, Vec3d.ZERO);
+        });
+    }
+
     protected Optional<World> getWorld(Caster<?> source) {
         return Optional.ofNullable(dimension)
                 .map(dim -> source.getReferenceWorld().getServer().getWorld(dim));
@@ -153,6 +169,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
+        compound.putFloat("pitch", pitch);
+        compound.putFloat("yaw", yaw);
         if (dimension != null) {
             compound.putString("dimension", dimension.getValue().toString());
         }
@@ -163,6 +181,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
+        pitch = compound.getFloat("pitch");
+        yaw = compound.getFloat("yaw");
         if (compound.contains("dimension", NbtElement.STRING_TYPE)) {
             Identifier id = Identifier.tryParse(compound.getString("dimension"));
             if (id != null) {
@@ -182,10 +202,18 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
     @Override
     protected void saveDelegates(NbtCompound compound) {
         compound.put("spell", Spell.SERIALIZER.write(spell));
+
     }
 
     @Override
     public PlaceableSpell toPlaceable() {
         return this;
+    }
+
+    public interface PlacementDelegate {
+
+        void onPlaced(Caster<?> source, PlaceableSpell parent, CastSpellEntity entity);
+
+        void updatePlacement(Caster<?> source, PlaceableSpell parent);
     }
 }

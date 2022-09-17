@@ -33,7 +33,7 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
         fromNBT(nbt);
     }
 
-    public void copyFrom(EntityReference<T> other) {
+    public void copyFrom(EntityReference<? extends T> other) {
         uuid = other.uuid;
         clientId = other.clientId;
         pos = other.pos;

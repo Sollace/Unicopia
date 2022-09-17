@@ -3,8 +3,7 @@ package com.minelittlepony.unicopia.ability.data;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 
 public class Pos extends Hit {
 
@@ -44,7 +43,7 @@ public class Pos extends Hit {
     }
 
     public Vec3d vec() {
-        return new Vec3d(x, y, z);
+        return Vec3d.ofCenter(new Vec3i(x, y, z));
     }
 
     public double distanceTo(Caster<?> caster) {

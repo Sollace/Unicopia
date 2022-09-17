@@ -30,6 +30,8 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
             Unicopia.id("textures/particles/runes_5.png")
     };
 
+    protected float targetSize = 3;
+
     protected float prevBaseSize = 0;
     protected float baseSize = 0;
 
@@ -61,21 +63,30 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
         velocityY = 0;
         velocityZ = 0;
         Vec3d pos = link.get().map(Caster::getOriginVector).orElse(Vec3d.ZERO);
-        setPos(pos.x, pos.y, pos.z);
+        setPos(pos.x, pos.y + 0.25, pos.z);
     }
 
     @Override
     public void detach() {
         link = Optional.empty();
+        if (targetSize > 1) {
+            this.targetSize = 0;
+        }
     }
 
     @Override
-    public void setAttribute(int key, Object value) {
+    public void setAttribute(int key, Number value) {
         if (key == ATTR_COLOR) {
-            int tint = (int)value;
+            int tint = value.intValue();
             red = Color.r(tint);
             green = Color.g(tint);
             blue = Color.b(tint);
+        }
+        if (key == ATTR_OPACITY) {
+            alpha = value.floatValue();
+        }
+        if (key == ATTR_RADIUS) {
+            targetSize = value.floatValue();
         }
     }
     @Override
@@ -137,6 +148,8 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
                 renderQuad(te, buffer, corners, alpha, tickDelta);
             }
         }
+
+        RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
     @Override
@@ -153,8 +166,11 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
         }, this::detach);
 
         prevBaseSize = baseSize;
-        if (baseSize < 3) {
-            baseSize++;
+        if (baseSize < targetSize) {
+            baseSize += 0.1F;
+        }
+        if (baseSize > targetSize) {
+            baseSize -= 0.1F;
         }
 
         rotationAngle = (rotationAngle + 0.3F) % 360;

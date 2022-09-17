@@ -60,7 +60,8 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<CatapultSpell> CATAPULT = register("catapult", Affinity.GOOD, 0x22FF00, true, CatapultSpell.DEFAULT_TRAITS, CatapultSpell::new);
     public static final SpellType<FireBoltSpell> FIRE_BOLT = register("fire_bolt", Affinity.GOOD, 0xFF8811, true, FireBoltSpell.DEFAULT_TRAITS, FireBoltSpell::new);
     public static final SpellType<LightSpell> LIGHT = register("light", Affinity.GOOD, 0xEEFFAA, true, LightSpell.DEFAULT_TRAITS, LightSpell::new);
-    public static final SpellType<PortalSpell> PORTAL = register("portal", Affinity.GOOD, 0x99FFFF, true, LightSpell.DEFAULT_TRAITS, PortalSpell::new);
+    public static final SpellType<DisplacementSpell> DISPLACEMENT = register("displacement", Affinity.NEUTRAL, 0x9900FF, true, PortalSpell.DEFAULT_TRAITS, DisplacementSpell::new);
+    public static final SpellType<PortalSpell> PORTAL = register("portal", Affinity.GOOD, 0x99FFFF, true, PortalSpell.DEFAULT_TRAITS, PortalSpell::new);
 
     public static void bootstrap() {}
 

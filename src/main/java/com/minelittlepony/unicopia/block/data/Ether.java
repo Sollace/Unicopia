@@ -61,11 +61,12 @@ public class Ether extends PersistentState {
         }
     }
 
-    public void put(SpellType<?> spellType, Caster<?> caster) {
+    public Entry put(SpellType<?> spellType, Caster<?> caster) {
         synchronized (locker) {
             getEntries(spellType.getId()).add(new Entry(caster));
+            markDirty();
+            return getEntry(spellType, caster).get();
         }
-        markDirty();
     }
 
     public void remove(SpellType<?> spellType, UUID id) {
@@ -120,6 +121,9 @@ public class Ether extends PersistentState {
         private boolean removed;
         private boolean taken;
 
+        public float pitch;
+        public float yaw;
+
         public Entry() {
             entity = new EntityReference<>();
         }
@@ -156,6 +160,8 @@ public class Ether extends PersistentState {
             entity.toNBT(compound);
             compound.putBoolean("removed", removed);
             compound.putBoolean("taken", taken);
+            compound.putFloat("pitch", pitch);
+            compound.putFloat("yaw", yaw);
         }
 
         @Override
@@ -163,6 +169,8 @@ public class Ether extends PersistentState {
             entity.fromNBT(compound);
             removed = compound.getBoolean("removed");
             taken = compound.getBoolean("taken");
+            pitch = compound.getFloat("pitch");
+            yaw = compound.getFloat("yaw");
         }
 
         @Override

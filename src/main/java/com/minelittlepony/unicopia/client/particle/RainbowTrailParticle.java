@@ -53,7 +53,7 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
     }
 
     @Override
-    public void setAttribute(int key, Object value) {
+    public void setAttribute(int key, Number value) {
 
     }
 

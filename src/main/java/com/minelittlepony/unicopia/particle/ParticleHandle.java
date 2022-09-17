@@ -95,7 +95,7 @@ public class ParticleHandle {
 
         void detach();
 
-        void setAttribute(int key, Object value);
+        void setAttribute(int key, Number value);
     }
 
     public static final class Link {
