@@ -84,7 +84,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         int colWidth = 22;
         int rowHeight = 20;
 
-        int cols = width / colWidth - 1;
+        int cols = Math.max(1, width / colWidth - 1);
         int rows = Math.max(1, (int)Math.ceil((float)entries.size() / cols));
 
         int totalHeight = rowHeight * rows;
