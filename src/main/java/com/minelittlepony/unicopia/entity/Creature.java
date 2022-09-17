@@ -44,8 +44,6 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
     public static final TrackedData<Float> GRAVITY = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Integer> EATING = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
-    private static final LevelStore LEVELS = Levelled.fixed(0);
-
     public static void boostrap() {}
 
     private final EntityPhysics<LivingEntity> physics;
@@ -205,12 +203,12 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
 
     @Override
     public LevelStore getLevel() {
-        return LEVELS;
+        return Levelled.EMPTY;
     }
 
     @Override
     public LevelStore getCorruption() {
-        return LEVELS;
+        return Levelled.EMPTY;
     }
 
     @Override

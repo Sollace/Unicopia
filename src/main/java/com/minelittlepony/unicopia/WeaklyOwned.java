@@ -25,8 +25,9 @@ public interface WeaklyOwned<E extends Entity> extends Owned<E> {
      *
      * @param sibling
      */
+    @Override
     @SuppressWarnings("unchecked")
-    default void setMaster(WeaklyOwned<? extends E> sibling) {
+    default void setMaster(Owned<? extends E> sibling) {
         if (sibling instanceof WeaklyOwned) {
             getMasterReference().copyFrom(((WeaklyOwned<E>)sibling).getMasterReference());
         } else {

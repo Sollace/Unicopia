@@ -16,11 +16,26 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+/**
+ * An indirect reference to an entity by its unique id.
+ * Used to store the 'owner' reference for certain objects that allows them to\
+ * remember who they belong to even when the entity has been unloaded.
+ *
+ * @param <T> The type of the entity this reference points to.
+ */
 public class EntityReference<T extends Entity> implements NbtSerialisable {
 
+    /**
+     * Server UUID of the entity used to look up the entity instance on the server.
+     */
     private Optional<UUID> uuid = Optional.empty();
+    /**
+     * Corresponding client id used to look up the entity instance on the client.
+     */
     private int clientId;
-
+    /**
+     * The last-known position of the entity.
+     */
     private Optional<Vec3d> pos = Optional.empty();
 
     public EntityReference() {}
@@ -88,8 +103,8 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
 
     @SuppressWarnings("unchecked")
     public Optional<T> getOrEmpty(World world) {
-        if (uuid.isPresent() && world instanceof ServerWorld) {
-            return uuid.map(((ServerWorld)world)::getEntity).map(e -> (T)e).filter(this::checkReference);
+        if (uuid.isPresent() && world instanceof ServerWorld serverWorld) {
+            return uuid.map(serverWorld::getEntity).map(e -> (T)e).filter(this::checkReference);
         }
 
         if (clientId != 0) {

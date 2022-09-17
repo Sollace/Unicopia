@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
-import com.minelittlepony.unicopia.Affinity;
-import com.minelittlepony.unicopia.WeaklyOwned;
+import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
@@ -27,13 +26,14 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
     private static final TrackedData<Float> GRAVITY = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 
-    private static final LevelStore LEVELS = Levelled.fixed(0);
-
     private final EntityPhysics<CastSpellEntity> physics = new EntityPhysics<>(this, GRAVITY);
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
 
     private final EntityReference<LivingEntity> owner = new EntityReference<>();
+
+    private LevelStore level = Levelled.EMPTY;
+    private LevelStore corruption = Levelled.EMPTY;
 
     public CastSpellEntity(EntityType<?> type, World world) {
         super(type, world);
@@ -81,14 +81,20 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
         return this;
     }
 
+    public void setCaster(Caster<?> caster) {
+        this.level = Levelled.copyOf(caster.getLevel());
+        this.corruption = Levelled.copyOf(caster.getCorruption());
+        setMaster(caster);
+    }
+
     @Override
     public LevelStore getLevel() {
-        return Caster.of(getMaster()).map(Caster::getLevel).orElse(LEVELS);
+        return level;
     }
 
     @Override
     public LevelStore getCorruption() {
-        return Caster.of(getMaster()).map(Caster::getCorruption).orElse(LEVELS);
+        return corruption;
     }
 
     @Override
@@ -120,6 +126,8 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
     @Override
     protected void writeCustomDataToNbt(NbtCompound tag) {
         tag.put("owner", owner.toNBT());
+        tag.put("level", level.toNbt());
+        tag.put("corruption", corruption.toNbt());
         getSpellSlot().get(true).ifPresent(effect -> {
             tag.put("effect", Spell.writeNbt(effect));
         });
@@ -133,6 +141,8 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
         if (tag.contains("effect")) {
             getSpellSlot().put(Spell.readNbt(tag.getCompound("effect")));
         }
+        level = Levelled.fromNbt(tag.getCompound("level"));
+        corruption = Levelled.fromNbt(tag.getCompound("corruption"));
     }
 
     @Override

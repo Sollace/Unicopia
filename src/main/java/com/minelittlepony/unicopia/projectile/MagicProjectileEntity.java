@@ -55,7 +55,6 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     private static final TrackedData<Float> GRAVITY = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
-    private static final LevelStore LEVELS = Levelled.fixed(1);
 
     public static final byte PROJECTILE_COLLISSION = 3;
 
@@ -117,12 +116,12 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
 
     @Override
     public LevelStore getLevel() {
-        return Caster.of(getMaster()).map(Caster::getLevel).orElse(LEVELS);
+        return Caster.of(getMaster()).map(Caster::getLevel).orElse(Levelled.EMPTY);
     }
 
     @Override
     public LevelStore getCorruption() {
-        return Caster.of(getMaster()).map(Caster::getCorruption).orElse(LEVELS);
+        return Caster.of(getMaster()).map(Caster::getCorruption).orElse(Levelled.EMPTY);
     }
 
     @Override

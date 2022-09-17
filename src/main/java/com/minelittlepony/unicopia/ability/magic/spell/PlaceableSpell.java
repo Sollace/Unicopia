@@ -92,7 +92,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
                         delegate.onPlaced(source, copy, entity);
                     }
                     entity.getSpellSlot().put(copy);
-                    entity.setMaster(source);
+                    entity.setCaster(source);
                     entity.world.spawnEntity(entity);
                     Ether.get(entity.world).put(getType(), entity);
 
