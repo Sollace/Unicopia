@@ -1,0 +1,15 @@
+{
+  "type": "unicopia:spellbook/crafting",
+  "material": {
+    "item": "minecraft:paper"
+  },
+  "traits": {
+    "fire": 1
+  },
+  "ingredients": [
+    { "item": "minecraft:paper" }
+  ],
+  "result": {
+    "item": "unicopia:dragon_breath_scroll"
+  }
+}

@@ -32,10 +32,29 @@
         ]
       },
       {
-        "title": "2nd Mare '12",
+        "title": "5th Mare '12",
         "level": 0,
         "elements": [
           "Other accounts say that this artefact only functions when mounted on a specific pedestal of diamond blocks, like a beacon."
+        ]
+      },
+
+      {
+        "title": "Dragon's Breath Scroll",
+        "level": 0,
+        "elements": [
+          { "item": { "item": "unicopia:dragon_breath_scroll" } },
+          "Status: Confirmed",
+          "It's, um a scroll that you write somepony's name on it and you hold it in one hoof and something in the other hoof and, like, um it goes whooosh and the item is sent to that pony",
+          "- XOXOX Lulu"
+        ]
+      },
+      {
+        "title": "2nd Hoof '12",
+        "level": 0,
+        "elements": [
+          "P.S. Uncle Starswirly is a dunderhead",
+          { "recipe": "unicopia:dragon_breath_scroll" }
         ]
       },
       {

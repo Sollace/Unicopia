@@ -12,19 +12,26 @@ import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.block.data.DragonBreathStore;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
+import com.minelittlepony.unicopia.util.VecHelper;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T> {
 
@@ -108,6 +115,35 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
         prevSneaking = entity.isSneaking();
         prevLanded = entity.isOnGround();
+
+        if (!entity.world.isClient && (entity instanceof PlayerEntity || entity.hasCustomName())) {
+
+            Vec3d targetPos = entity.getRotationVector().multiply(2).add(entity.getEyePos());
+
+            if (entity.getWorld().isAir(new BlockPos(targetPos))) {
+                DragonBreathStore store = DragonBreathStore.get(entity.world);
+                String name = entity.getDisplayName().getString();
+                store.popEntries(name).forEach(stack -> {
+                    Vec3d randomPos = targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
+
+                    if (!entity.getWorld().isAir(new BlockPos(randomPos))) {
+                        store.put(name, stack.payload());
+                    }
+
+                    for (int i = 0; i < 10; i++) {
+                        ParticleUtils.spawnParticle(entity.world, ParticleTypes.FLAME, randomPos.add(
+                                VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5))
+                        ), Vec3d.ZERO);
+                    }
+
+                    ItemEntity item = EntityType.ITEM.create(entity.world);
+                    item.setStack(stack.payload());
+                    item.setPosition(randomPos);
+                    item.world.spawnEntity(item);
+                    entity.world.playSoundFromEntity(null, entity, SoundEvents.ITEM_FIRECHARGE_USE, entity.getSoundCategory(), 1, 1);
+                });
+            }
+        }
     }
 
     @Override
