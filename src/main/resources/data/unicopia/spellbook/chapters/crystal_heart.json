@@ -1,5 +1,95 @@
 {
   "side": "RIGHT",
   "y_position": 7,
-  "color": 0
+  "color": 0,
+  "content": {
+    "pages": [
+      {
+        "title": "Ch.7 Artefacts",
+        "level": 0,
+        "elements": [
+          { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/crystal_heart.png" }
+        ]
+      },
+      {
+        "title": "2nd Mare '12",
+        "level": 0,
+        "elements": [
+          "What follows is a compendium of research into certain objects of interest identified through my research.",
+          "Not all of these have gotten anywhere, as they have been proven to either be pure legend, or perhaps a hoax, so I cannot put stock into their stories.",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "The Crystal Heart",
+        "level": 0,
+        "elements": [
+          { "item": { "item": "unicopia:crystal_heart" } },
+          "Status: Lost",
+          "Crafted by a group of unicorns long ago, its origin and current location is unknown.",
+          "What few accounts exist claim it was a powerful tool of protection and support, as it would funnel life force from enemies towards the caster and their allies."
+        ]
+      },
+      {
+        "title": "2nd Mare '12",
+        "level": 0,
+        "elements": [
+          "Other accounts say that this artefact only functions when mounted on a specific pedestal of diamond blocks, like a beacon."
+        ]
+      },
+      {
+        "title": "Bangle of Comradery",
+        "level": 0,
+        "elements": [
+          { "item": { "item": "unicopia:friendship_bracelet" } },
+          "Status: Confirmed",
+          "Used in the past by spellcasters to communicate over long distances, this band has long since lost its old use.",
+          "Unicorns who sign and hand out this band can use it to share certain magic effects with their friends."
+        ]
+      },
+      {
+        "title": "13th Mare '12",
+        "level": 0,
+        "elements": [
+          "Anyone wearing a bangle you have signed will be able to benefit from the positive effects of your spells, or will be allowed through protection and shield spells.",
+          "Mana costs are also shared equally between all nearby members."
+        ]
+      },
+      {
+        "title": "Wings of Icarus",
+        "level": 0,
+        "elements": [
+          { "item": { "item": "unicopia:pegasus_amulet" } },
+          "Status: Lost",
+          "Commander Hurricane informed me of this, though I've found little texts to back up his claims.",
+          "The Pegasus Amulet is claimed to grant the wearer temporary flight, like a pegasus."
+        ]
+      },
+      {
+        "title": "22nd Trot '12",
+        "level": 0,
+        "elements": [
+          "It was intended as an aide for early unicorn ambassadors to Cloud Heights, but was lost after negotiations broke down."
+        ]
+      },
+      {
+        "title": "Alicorn Amulet",
+        "level": 0,
+        "elements": [
+          { "item": { "item": "unicopia:alicorn_amulet" } },
+          "Status: Unconfirmed",
+          "Like the crystal heart, little is known of this artefact and thus nothing, not even its existance can be confirmed."
+        ]
+      },
+      {
+        "title": "22nd Trot '12",
+        "level": 999,
+        "elements": [
+          "The alicorn amulet is a powerful force of dark magic created created by an unknown mage as their attempt to create the perfect being.",
+          "It combines the traits of all races into one powerful form, but it hard to control and addictive in nature. Anyone who uses it quickly becomes reliant on it and few attempt to remove it survive the ordeal."
+        ]
+      }
+    ]
+  }
 }

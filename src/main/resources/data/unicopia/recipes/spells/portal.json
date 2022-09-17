@@ -1,0 +1,15 @@
+{
+  "type": "unicopia:spellbook/crafting",
+  "material": { "item": "unicopia:gemstone", "spell": "unicopia:none" },
+  "traits": {
+    "knowledge": 18, "chaos": 20
+  },
+  "ingredients": [
+    { "item": "unicopia:gemstone", "spell": "unicopia:displacement" },
+    { "item": "unicopia:gemstone", "spell": "unicopia:dark_vortex" }
+  ],
+  "result": {
+    "item": "unicopia:gemstone",
+    "spell": "unicopia:portal"
+  }
+}

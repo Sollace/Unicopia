@@ -78,7 +78,26 @@
         "elements": [
           { "recipe": "unicopia:spells/dark_vortex" },
           "Requires:",
-          "- 1 arcane attraction gem\n- At least 10x strength trait\n- At least 8x knowledge trait\n- At least 8x chaos trait\n- At least 9x darkness trait"
+          "- 1x arcane attraction gem\n- At least 10x strength trait\n- At least 8x knowledge trait\n- At least 8x chaos trait\n- At least 9x darkness trait"
+        ]
+      },
+      {
+        "title": "Arcane Rift",
+        "level": 24,
+        "elements": [
+          "Combining the effects of the displacement spell created by my predecessor and the dark vortex gem, one is able to tame its chaotic nature.",
+          "The arcane rift spell allows the caster to link two locations together to create a bridge across the ether. Anything that enters one end will appear at the other maintaining its velocity.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/knowledge.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 24,
+        "elements": [
+          { "recipe": "unicopia:spells/portal" },
+          "Requires:",
+          "- 1x gemstone\n- 1x displacement gem\n- 1x dark vortext gem\n- At least 18x knowledge trait\n- At least 20x chaos trait"
         ]
       }
     ]

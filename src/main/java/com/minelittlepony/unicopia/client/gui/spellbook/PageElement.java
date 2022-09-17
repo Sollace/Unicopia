@@ -144,6 +144,10 @@ interface PageElement extends Drawable {
     record Stack (DynamicContent.Page page, IngredientWithSpell ingredient, Bounds bounds) implements PageElement {
         @Override
         public void compile(int y, IViewRoot container) {
+            if (container instanceof SpellbookScreen book) {
+                bounds().left = book.getX();
+                bounds().top = book.getY();
+            }
             IngredientTree tree = new IngredientTree(
                     bounds().left + page().getBounds().left,
                     bounds().top + page().getBounds().top + y + 10,

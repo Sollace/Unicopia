@@ -261,6 +261,24 @@
           "- A protection gem\n- At least 10x strength trait\n- At least 18x knowledge trait\n- At least 1x darkness trait",
           "* Increase range by adding the power trait"
         ]
+      },
+      {
+        "title": "Displacement",
+        "level": 17,
+        "elements": [
+          "By casting this spell, a unicorn is able to swap their location with any other creature.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/knowledge.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 17,
+        "elements": [
+          { "recipe": "unicopia:spells/displacement" },
+          "Requires:",
+          "- 1 gemstone\n- At least 18x knowledge trait\n- At least 10x chaos trait"
+        ]
       }
     ]
   }
