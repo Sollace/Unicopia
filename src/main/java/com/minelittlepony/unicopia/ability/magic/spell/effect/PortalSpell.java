@@ -111,14 +111,11 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
     private void tickWithTargetLink(Caster<?> source, Ether.Entry destination) {
 
         destination.entity.getPosition().ifPresent(targetPos -> {
-            Vec3d center = source.getOriginVector();
-            source.findAllEntitiesInRange(1).filter(e -> true).forEach(entity -> {
+            source.findAllEntitiesInRange(1).forEach(entity -> {
                 if (!entity.hasPortalCooldown() && entity.timeUntilRegen <= 0) {
-                    Vec3d offset = entity.getPos().subtract(center);
-                    Vec3d dest = targetPos;
+                    Vec3d offset = entity.getPos().subtract(source.getOriginVector());
                     float yawDifference = pitch < 15 ? (180 - yaw + destination.yaw) : 0;
-
-                    dest = dest.add(offset.rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE)).add(0, 0.05, 0);
+                    Vec3d dest = targetPos.add(offset.rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE)).add(0, 0.05, 0);
 
                     entity.resetPortalCooldown();
                     entity.timeUntilRegen = 20;
@@ -130,6 +127,8 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
                     entity.teleport(dest.x, dest.y, dest.z);
                     entity.world.playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
                     setDirty();
+
+                    source.subtractEnergyCost(Math.sqrt(entity.getPos().subtract(dest).length()));
                 }
 
                 ParticleUtils.spawnParticles(new MagicParticleEffect(getType().getColor()), entity, 7);
