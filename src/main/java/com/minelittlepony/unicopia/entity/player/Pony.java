@@ -364,8 +364,8 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
                 }
 
                 if (ticksInSun == 1) {
+                    entity.addStatusEffect(new StatusEffectInstance(UEffects.SUN_BLINDNESS, SunBlindnessStatusEffect.MAX_DURATION, 1, true, false));
                     if (!isClient()) {
-                        entity.addStatusEffect(new StatusEffectInstance(UEffects.SUN_BLINDNESS, SunBlindnessStatusEffect.MAX_DURATION * 10, 1, true, false));
                         UCriteria.LOOK_INTO_SUN.trigger(entity);
                     } else if (isClientPlayer()) {
                         InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING, getEntity().getId());

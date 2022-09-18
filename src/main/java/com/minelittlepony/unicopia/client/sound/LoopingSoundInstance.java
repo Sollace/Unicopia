@@ -21,6 +21,13 @@ public class LoopingSoundInstance<T extends Entity> extends FadeOutSoundInstance
         this.attenuationType = SoundInstance.AttenuationType.NONE;
     }
 
+    public LoopingSoundInstance<T> setFadeIn() {
+        float volume = this.volume;
+        this.volume = 0.001F;
+        setTargetVolume(volume);
+        return this;
+    }
+
     @Override
     protected boolean shouldKeepPlaying() {
         if (source.isRemoved() || !shouldPlay.test(source)) {

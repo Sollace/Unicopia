@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client;
 
+import java.util.function.Predicate;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +58,10 @@ public class ClientInteractionManager extends InteractionManager {
             SoundManager soundManager = client.getSoundManager();
 
             if (type == SOUND_EARS_RINGING && source instanceof LivingEntity) {
-                soundManager.play(new LoopingSoundInstance<>((LivingEntity)source, e -> e.hasStatusEffect(UEffects.SUN_BLINDNESS), USounds.ENTITY_PLAYER_EARS_RINGING, 1, 1, Random.create(seed)));
+                soundManager.play(new LoopingSoundInstance<>((LivingEntity)source,
+                        createTicker(100).and(e -> e.hasStatusEffect(UEffects.SUN_BLINDNESS)),
+                        USounds.ENTITY_PLAYER_EARS_RINGING, 0.01F, 2, Random.create(seed)).setFadeIn()
+                );
             } else if (type == SOUND_BEE && source instanceof BeeEntity) {
                 soundManager.playNextTick(
                         ((BeeEntity)source).hasAngerTime()
@@ -76,6 +81,11 @@ public class ClientInteractionManager extends InteractionManager {
                 soundManager.play(new LoopedEntityTrackingSoundInstance(USounds.SPELL_CAST_SHOOT, 0.3F, 1F, source, seed));
             }
         });
+    }
+
+    static Predicate<LivingEntity> createTicker(int ticks) {
+        int[] ticker = new int[] {ticks};
+        return entity -> ticker[0]-- > 0;
     }
 
     @Override
