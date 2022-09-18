@@ -1,0 +1,14 @@
+{
+    "parent": "item/trident_in_hand",
+    "textures": {
+        "particle": "unicopia:item/wooden_polearm"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "throwing": 1
+            },
+            "model": "unicopia:item/wooden_polearm_throwing"
+        }
+    ]
+}

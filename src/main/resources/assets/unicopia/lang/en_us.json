@@ -69,6 +69,13 @@
 
   "item.unicopia.alicorn_amulet": "Alicorn Amulet",
   "item.unicopia.alicorn_amulet.lore": "Time worn: %d",
+  
+  "item.unicopia.wooden_polearm": "Wooden Polearm",
+  "item.unicopia.stone_polearm": "Stone Polearm",
+  "item.unicopia.iron_polearm": "Iron Polearm",
+  "item.unicopia.golden_polearm": "Golden Polearm",
+  "item.unicopia.diamond_polearm": "Diamond Polearm",
+  "item.unicopia.netherite_polearm": "Netherite Polearm",
 
   "item.unicopia.music_disc_pet": "Music Disc",
   "item.unicopia.music_disc_pet.desc": "Danial Ingram - pet",

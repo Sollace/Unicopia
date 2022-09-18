@@ -16,7 +16,6 @@ public interface UEntityAttributes {
     EntityAttribute EXTRA_MINING_SPEED = register("earth.mining_speed", new ClampedEntityAttribute("player.miningSpeed", 1, 0, 5).setTracked(true));
     EntityAttribute ENTITY_GRAVTY_MODIFIER = register("player.gravity", (new EntityAttribute("player.gravityModifier", 1) {}).setTracked(true));
 
-
     private static EntityAttribute register(String name, EntityAttribute attribute) {
         REGISTRY.add(attribute);
         return Registry.register(Registry.ATTRIBUTE, Unicopia.id(name), attribute);

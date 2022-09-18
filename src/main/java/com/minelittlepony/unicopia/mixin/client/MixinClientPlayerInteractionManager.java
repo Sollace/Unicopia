@@ -20,4 +20,11 @@ abstract class MixinClientPlayerInteractionManager {
             info.setReturnValue(player.getExtendedReach() + info.getReturnValueF());
         }
     }
+
+    @Inject(method = "hasExtendedReach", at = @At("HEAD"), cancellable = true)
+    private void onHasExtendedReach(CallbackInfoReturnable<Boolean> info) {
+        if (!info.getReturnValueZ() && Pony.of(MinecraftClient.getInstance().player).getExtendedReach() > 0) {
+            info.setReturnValue(true);
+        }
+    }
 }

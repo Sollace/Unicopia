@@ -1,14 +1,15 @@
 package com.minelittlepony.unicopia.mixin.client;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.client.BatEyesApplicator;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
+
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -19,6 +20,18 @@ import net.minecraft.resource.SynchronousResourceReloader;
 
 @Mixin(GameRenderer.class)
 abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceReloader {
+
+    @Shadow
+    private @Final MinecraftClient client;
+
+    @ModifyConstant(
+            method = "updateTargetedEntity",
+            constant = @Constant(doubleValue = 6)
+    )
+    private double onUpdateTargetedEntity(double initial) {
+        return Math.max(initial, client.interactionManager.getReachDistance());
+    }
+
     @Inject(method = "getFov(Lnet/minecraft/client/render/Camera;FZ)D",
             at = @At("RETURN"),
             cancellable = true)

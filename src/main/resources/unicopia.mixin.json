@@ -23,6 +23,7 @@
     "MixinPersistentProjectileEntity",
     "MixinPlayerEntity",
     "MixinProjectileEntity",
+    "MixinReachDistanceFix",
     "MixinServerPlayerEntity",
     "MixinServerPlayNetworkHandler",
     "MixinServerWorld",

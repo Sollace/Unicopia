@@ -105,6 +105,12 @@ public interface URenderers {
             matrices.push();
 
         });
+        PolearmRenderer.register(UItems.WOODEN_POLEARM);
+        PolearmRenderer.register(UItems.STONE_POLEARM);
+        PolearmRenderer.register(UItems.IRON_POLEARM);
+        PolearmRenderer.register(UItems.GOLDEN_POLEARM);
+        PolearmRenderer.register(UItems.DIAMOND_POLEARM);
+        PolearmRenderer.register(UItems.NETHERITE_POLEARM);
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> {
             return GemstoneItem.isEnchanted(stack) ? 1 + GemstoneItem.getSpellKey(stack).getAffinity().ordinal() : 0;
         });
