@@ -168,6 +168,10 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         return getWorld(source).map(castEntity::get);
     }
 
+    public Optional<Vec3d> getPosition() {
+        return castEntity.getPosition();
+    }
+
     public Optional<Attachment> getParticleEffectAttachment(Caster<?> source) {
         return particlEffect.update(getUuid(), source, spawner -> {
             source.getOriginVector().add(0, 5, 0);

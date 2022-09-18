@@ -17,7 +17,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class TribeSelectionScreen extends GameGui implements HidesHud {
-    static final Identifier ICONS = Unicopia.id("textures/gui/icons.png");
     static final Identifier TEXTURE = Unicopia.id("textures/gui/tribe_selection.png");
 
     final Set<Race> allowedRaces;

@@ -11,11 +11,8 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgRemoveSpell;
-
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
@@ -24,7 +21,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.StringHelper;
-import net.minecraft.util.math.Vector4f;
+import net.minecraft.util.math.*;
 
 public class DismissSpellScreen extends GameGui {
     private final Pony pony = Pony.of(MinecraftClient.getInstance().player);
@@ -41,11 +38,35 @@ public class DismissSpellScreen extends GameGui {
         double azimuth = 0;
         double ring = 2;
 
+        List<PlaceableSpell> placeableSpells = new ArrayList<>();
+
         for (Spell spell : pony.getSpellSlot().stream(true).toList()) {
-            addDrawableChild(new Entry(spell, 75 * ring - 25, azimuth));
+
+            if (spell instanceof PlaceableSpell placeable) {
+                if (placeable.getPosition().isPresent()) {
+                    placeableSpells.add(placeable);
+                    continue;
+                }
+            }
+
+            addDrawableChild(new Entry(spell).ofRadial(75 * ring - 25, azimuth));
             ring *= 1 + 0.03 / ring;
             azimuth += Math.PI / (8 * ring);
         }
+
+        double minimalDistance = 75 * (ring - 1) - 25;
+        Vec3d origin = pony.getOriginVector();
+
+        placeableSpells.forEach(placeable -> {
+            placeable.getPosition().ifPresent(position -> {
+                Vec3d relativePos = position.subtract(origin);
+                Vec3d cartesian = relativePos
+                        .normalize()
+                        .multiply(minimalDistance + relativePos.length())
+                        .rotateY((pony.getEntity().getYaw() - 180) * MathHelper.RADIANS_PER_DEGREE);
+                addDrawableChild(new Entry(placeable).ofCartesian(cartesian));
+            });
+        });
     }
 
     @Override
@@ -63,8 +84,7 @@ public class DismissSpellScreen extends GameGui {
         DrawableUtil.drawArc(matrices, 160, 1600, 0, DrawableUtil.TAU, 0x00000020, false);
 
         super.render(matrices, mouseX, mouseY, delta);
-
-        DrawableUtil.drawCircle(matrices, 2, 0, DrawableUtil.TAU, 0xFFAAFF99, false);
+        DrawableUtil.renderRaceIcon(matrices, pony.getSpecies(), 0, 0, 16);
         matrices.pop();
 
         DrawableUtil.drawLine(matrices, mouseX, mouseY - 4, mouseX, mouseY + 4, 0xFFAAFF99);
@@ -96,12 +116,20 @@ public class DismissSpellScreen extends GameGui {
 
         private final Vector4f copy = new Vector4f();
 
-        public Entry(Spell spell, double radius, double azimuth) {
+        public Entry(Spell spell) {
             this.spell = spell;
             this.actualSpell = getActualSpell();
+        }
 
+        public Entry ofRadial(double radius, double azimuth) {
             SphereModel.convertToCartesianCoord(this, radius, azimuth, azimuth);
             add(0,  -(float)radius / 2F, 0, 0);
+            return this;
+        }
+
+        public Entry ofCartesian(Vec3d pos) {
+            add((float)pos.x, (float)pos.z, (float)pos.y, 1);
+            return this;
         }
 
         private Spell getActualSpell() {
@@ -135,16 +163,17 @@ public class DismissSpellScreen extends GameGui {
 
             var type = actualSpell.getType().withTraits(actualSpell.getTraits());
 
+            DrawableUtil.drawLine(matrices, 0, 0, (int)getX(), (int)getY(), 0xFFAAFF99);
             DrawableUtil.renderItemIcon(actualSpell.isDead() ? UItems.BOTCHED_GEM.getDefaultStack() : type.getDefaultStack(),
-                    copy.getX() - 8 + (copy.getX() - mouseX - 5) / 60D,
-                    copy.getY() - 8 + (copy.getY() - mouseY - 5) / 60D,
+                    copy.getX() - 8 + copy.getZ() / 20F,
+                    copy.getY() - 8 + copy.getZ() / 20F,
                     1
             );
 
+            int color = actualSpell.getType().getColor() << 2;
+
             matrices.push();
             matrices.translate(getX(), getY(), 0);
-
-            int color = actualSpell.getType().getColor() << 2;
 
             DrawableUtil.drawArc(matrices, 7, 8, 0, DrawableUtil.TAU, color | 0x00000088, false);
 

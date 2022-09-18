@@ -156,29 +156,40 @@ public class UHud extends DrawableHelper {
     }
 
     public void renderSpell(CustomisedSpellType<?> spell, double x, double y) {
-        if (!spell.isEmpty()) {
-            Pony pony = Pony.of(client.player);
+        if (spell.isEmpty()) {
+            return;
+        }
 
-            if (spell.isOn(pony)) {
-                MatrixStack modelStack = new MatrixStack();
+        Pony pony = Pony.of(client.player);
 
+        if (spell.isOn(pony)) {
+            MatrixStack modelStack = new MatrixStack();
+
+            modelStack.push();
+            modelStack.translate(x + 5.5, y + 5.5, 0);
+
+            int color = spell.type().getColor() | 0x000000FF;
+            double radius = 2 + Math.sin(client.player.age / 9D) / 4;
+
+            DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TAU, color & 0xFFFFFF2F, false);
+            DrawableUtil.drawArc(modelStack, radius + 3, radius + 4, 0, DrawableUtil.TAU, color & 0xFFFFFFAF, false);
+            pony.getSpellSlot().get(spell.and(SpellPredicate.IS_TIMED), false).map(TimedSpell::getTimer).ifPresent(timer -> {
+                DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TAU * timer.getPercentTimeRemaining(client.getTickDelta()), 0xFFFFFFFF, false);
+            });
+
+            long count = pony.getSpellSlot().stream(spell, false).count();
+            if (count > 1) {
                 modelStack.push();
-                modelStack.translate(x + 5.5, y + 5.5, 0);
-
-                int color = spell.type().getColor() | 0x000000FF;
-                double radius = 2 + Math.sin(client.player.age / 9D) / 4;
-
-                DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TAU, color & 0xFFFFFF2F, false);
-                DrawableUtil.drawArc(modelStack, radius + 3, radius + 4, 0, DrawableUtil.TAU, color & 0xFFFFFFAF, false);
-                pony.getSpellSlot().get(spell.and(SpellPredicate.IS_TIMED), false).map(TimedSpell::getTimer).ifPresent(timer -> {
-                    DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TAU * timer.getPercentTimeRemaining(client.getTickDelta()), 0xFFFFFFFF, false);
-                });
-
+                modelStack.translate(1, 1, 900);
+                modelStack.scale(0.8F, 0.8F, 0.8F);
+                font.drawWithShadow(modelStack, count > 64 ? "64+" : String.valueOf(count), 0, 0, 0xFFFFFFFF);
                 modelStack.pop();
             }
 
-            DrawableUtil.renderItemIcon(spell.getDefaultStack(), x, y, EQUIPPED_GEMSTONE_SCALE);
+            modelStack.pop();
         }
+
+        DrawableUtil.renderItemIcon(spell.getDefaultStack(), x, y, EQUIPPED_GEMSTONE_SCALE);
     }
 
     private void renderMessage(MatrixStack matrices, float tickDelta) {

@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.client.gui;
 
 import com.minelittlepony.common.client.gui.element.Button;
+import com.minelittlepony.common.client.gui.sprite.ISprite;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.Race;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -22,19 +23,8 @@ public class TribeButton extends Button {
         super(x, y, 70, 70);
         this.screenWidth = screenWidth;
         this.race = race;
-        int size = 32;
-        int textureSize = 512;
-        int ordinal = Race.REGISTRY.getRawId(race);
 
-        getStyle()
-            .setIcon(new TextureSprite()
-                .setPosition((70 - size) / 2, 0)
-                .setSize(size, size)
-                .setTextureSize(textureSize, textureSize)
-                .setTexture(TribeSelectionScreen.ICONS)
-                .setTextureOffset((size * ordinal) % textureSize, (ordinal / textureSize) * size)
-            )
-            .setText(race.getTranslationKey());
+        getStyle().setIcon(createSprite(race, (70 - 32) / 2, 0, 32)).setText(race.getTranslationKey());
     }
 
     @Override
@@ -76,5 +66,13 @@ public class TribeButton extends Button {
 
 
         renderForground(matrices, mc, mouseX, mouseY, foreColor | MathHelper.ceil(alpha * 255.0F) << 24);
+    }
+
+    public static ISprite createSprite(Race race, int x, int y, int size) {
+        return new TextureSprite()
+            .setPosition(x, y)
+            .setSize(size, size)
+            .setTextureSize(size, size)
+            .setTexture(race.getIcon());
     }
 }

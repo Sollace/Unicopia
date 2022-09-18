@@ -146,14 +146,7 @@ public class LanSettingsScreen extends GameGui {
     }
 
     public static Style createStyle(Race race) {
-        int ordinal = Race.REGISTRY.getRawId(race);
-        return new Style()
-                .setIcon(new TextureSprite()
-                        .setPosition(2, 2)
-                        .setSize(16, 16)
-                        .setTexture(TribeSelectionScreen.ICONS)
-                        .setTextureOffset((16 * ordinal) % 256, (ordinal / 256) * 16)
-                )
+        return new Style().setIcon(TribeButton.createSprite(race, 2, 2, 15))
                 .setTooltip(race.getTranslationKey(), 0, 10);
     }
 

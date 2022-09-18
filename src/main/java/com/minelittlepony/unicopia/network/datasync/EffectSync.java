@@ -91,7 +91,12 @@ public class EffectSync implements SpellContainer {
 
     @Override
     public Stream<Spell> stream(boolean update) {
-        return read(null, update, true);
+        return stream(null, update);
+    }
+
+    @Override
+    public Stream<Spell> stream(@Nullable SpellPredicate<?> type, boolean update) {
+        return read(type, update, true);
     }
 
     @Override

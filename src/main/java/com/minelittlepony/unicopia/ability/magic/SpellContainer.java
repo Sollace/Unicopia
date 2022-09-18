@@ -64,6 +64,8 @@ public interface SpellContainer {
 
     Stream<Spell> stream(boolean update);
 
+    Stream<Spell> stream(@Nullable SpellPredicate<?> type, boolean update);
+
     /**
      * Removes all effects currently active in this slot.
      */

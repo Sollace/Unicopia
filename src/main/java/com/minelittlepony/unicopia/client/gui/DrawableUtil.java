@@ -1,8 +1,10 @@
 package com.minelittlepony.unicopia.client.gui;
 
+import com.minelittlepony.unicopia.Race;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.GameRenderer;
@@ -44,6 +46,11 @@ public interface DrawableUtil {
         RenderSystem.applyModelViewMatrix();
     }
 
+    static void renderRaceIcon(MatrixStack matrices, Race race, int x, int y, int size) {
+        RenderSystem.setShaderTexture(0, race.getIcon());
+        DrawableHelper.drawTexture(matrices, x - size / 2, y - size / 2, 0, 0, 0, size, size, size, size);
+    }
+
     static void drawLine(MatrixStack matrices, int x1, int y1, int x2, int y2, int color) {
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
@@ -64,7 +71,7 @@ public interface DrawableUtil {
         bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(matrix, x1, y1, 0).color(r, g, b, k).next();
         bufferBuilder.vertex(matrix, x2, y2, 0).color(r, g, b, k).next();
-        BufferRenderer.drawWithoutShader(bufferBuilder.end());
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }

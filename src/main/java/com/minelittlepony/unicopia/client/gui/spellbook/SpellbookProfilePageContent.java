@@ -2,9 +2,6 @@ package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
-import com.minelittlepony.common.client.gui.sprite.TextureSprite;
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.*;
 import com.minelittlepony.unicopia.entity.player.*;
 
@@ -31,25 +28,15 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
 
     @Override
     public void init(SpellbookScreen screen, Identifier pageId) {
-
         Bounds bounds = screen.getFrameBounds();
-        Race race = pony.getSpecies();
         int size = 32;
-        int textureSize = 512;
-        int ordinal = Race.REGISTRY.getRawId(race);
-
         int x = screen.getX() + bounds.left + bounds.width / 4 - size + 10;
         int y = screen.getY() + bounds.top + bounds.height / 2;
 
+
         screen.addDrawable(new SpellbookScreen.ImageButton(x, y, size, size))
             .getStyle()
-                .setIcon(new TextureSprite()
-                    .setPosition(0, 0)
-                    .setSize(size, size)
-                    .setTextureSize(textureSize, textureSize)
-                    .setTexture(Unicopia.id("textures/gui/icons.png"))
-                    .setTextureOffset((size * ordinal) % textureSize, (ordinal / textureSize) * size)
-                )
+                .setIcon(TribeButton.createSprite(pony.getSpecies(), 0, 0, size))
                 .setTooltip(ProfileTooltip.get(pony));
 
 

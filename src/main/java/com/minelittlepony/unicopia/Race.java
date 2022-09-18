@@ -115,6 +115,11 @@ public final class Race implements Affine {
         return String.format("%s.race.%s", id.getNamespace(), id.getPath().toLowerCase());
     }
 
+    public Identifier getIcon() {
+        Identifier id = REGISTRY.getId(this);
+        return new Identifier(id.getNamespace(), "textures/gui/race/" + id.getPath() + ".png");
+    }
+
     public boolean isPermitted(@Nullable PlayerEntity sender) {
         if (isOp() && (sender == null || !sender.getAbilities().creativeMode)) {
             return false;
