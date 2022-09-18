@@ -25,6 +25,7 @@
     "MixinProjectileEntity",
     "MixinReachDistanceFix",
     "MixinServerPlayerEntity",
+    "MixinServerPlayerInteractionManager",
     "MixinServerPlayNetworkHandler",
     "MixinServerWorld",
     "MixinSheepEntity",

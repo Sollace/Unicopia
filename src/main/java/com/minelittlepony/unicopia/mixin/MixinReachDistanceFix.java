@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.mixin;
 
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -13,10 +12,6 @@ import net.minecraft.server.network.*;
         ServerPlayNetworkHandler.class
 })
 abstract class MixinReachDistanceFix {
-
-    @Accessor
-    public abstract ServerPlayerEntity getPlayer();
-
     @Redirect(
             method = {
                     "processBlockBreakingAction",
@@ -30,20 +25,9 @@ abstract class MixinReachDistanceFix {
             )
     )
     private double getMaxBreakSquaredDistance() {
-        double reach = 6 + Pony.of(getPlayer()).getExtendedReach();
+        Object o = this;
+        ServerPlayerEntity player = o instanceof ServerPlayNetworkHandler s ? s.getPlayer() : ((MixinServerPlayerInteractionManager)o).getPlayer();
+        double reach = 6 + Pony.of(player).getExtendedReach();
         return reach * reach;
     }
-/*
-    @ModifyConstant(
-            method = {
-                    "processBlockBreakingAction",
-                    "onPlayerInteractBlock",
-                    "onPlayerInteractEntity"
-            },
-            constant = @Constant(doubleValue = 36D)
-    )
-    private double modifyMaxBreakSquaredDistance(double initial) {
-        double reach = 6 + Pony.of(getPlayer()).getExtendedReach();
-        return reach * reach;
-    }*/
 }
