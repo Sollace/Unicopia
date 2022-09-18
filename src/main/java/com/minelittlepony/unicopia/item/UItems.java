@@ -119,6 +119,11 @@ public interface UItems {
 
     static void bootstrap() {
         AppleItem.registerTickCallback(Items.APPLE);
+        FuelRegistry.INSTANCE.add(WOODEN_POLEARM, 200);
+        FuelRegistry.INSTANCE.add(MUG, 250);
+        FuelRegistry.INSTANCE.add(DRAGON_BREATH_SCROLL, 20000);
+        FuelRegistry.INSTANCE.add(BUTTERFLY, 2);
+        FuelRegistry.INSTANCE.add(SPELLBOOK, 9000);
 
         UEnchantments.bootstrap();
         URecipes.bootstrap();
