@@ -128,11 +128,11 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
 
     protected abstract void saveDelegates(NbtCompound compound);
 
-    private <T> Stream<T> getDelegates(Function<? super Spell, T> cast) {
+    protected <T> Stream<T> getDelegates(Function<? super Spell, T> cast) {
         return getDelegates().stream().map(cast).filter(Objects::nonNull);
     }
 
-    private static boolean execute(Stream<Spell> spells, Function<Spell, Boolean> action) {
+    protected static boolean execute(Stream<Spell> spells, Function<Spell, Boolean> action) {
         return spells.reduce(false, (u, a) -> action.apply(a), (a, b) -> a || b);
     }
 }

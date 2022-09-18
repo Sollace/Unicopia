@@ -28,7 +28,7 @@ import net.minecraft.world.World;
  * The spell's effects are still powered by the casting player, so if the player dies or leaves the area, their
  * spell loses affect until they return.
  */
-public class PlaceableSpell extends AbstractDelegatingSpell {
+public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedSpell {
     /**
      * Dimension the spell was originally cast in
      */
@@ -83,41 +83,19 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
                     setDirty();
                 }
 
-                if (getWorld(source).map(castEntity::isUnlinked).orElse(false)) {
-                    CastSpellEntity entity = UEntities.CAST_SPELL.create(source.getReferenceWorld());
-                    Vec3d pos = castEntity.getPosition().orElse(source.getOriginVector());
-                    entity.updatePositionAndAngles(pos.x, pos.y, pos.z, 0, 0);
-                    PlaceableSpell copy = spell.toPlaceable();
-                    if (spell instanceof PlacementDelegate delegate) {
-                        delegate.onPlaced(source, copy, entity);
-                    }
-                    entity.getSpellSlot().put(copy);
-                    entity.setCaster(source);
-                    entity.world.spawnEntity(entity);
-                    Ether.get(entity.world).put(getType(), entity);
-
-                    castEntity.set(entity);
-                    setDirty();
-                } else {
-
-                    if (getWorld(source).map(Ether::get)
-                        .flatMap(ether -> castEntity.getId().flatMap(id -> ether.getEntry(getType(), id)))
-                        .isEmpty()) {
-                        setDead();
-                    }
-                }
+                castEntity.getId().ifPresentOrElse(
+                        id -> checkDetachment(source, id),
+                        () -> spawnPlacedEntity(source)
+                );
             }
 
             return !isDead();
         }
 
         if (situation == Situation.GROUND_ENTITY) {
-
-            if (!source.isClient()) {
-                if (Ether.get(source.getReferenceWorld()).getEntry(getType(), source).isEmpty()) {
-                    setDead();
-                    return false;
-                }
+            if (!source.isClient() && Ether.get(source.getReferenceWorld()).getEntry(getType(), source).isEmpty()) {
+                setDead();
+                return false;
             }
 
             if (spell instanceof PlacementDelegate delegate) {
@@ -132,6 +110,38 @@ public class PlaceableSpell extends AbstractDelegatingSpell {
         }
 
         return !isDead();
+    }
+
+    private void checkDetachment(Caster<?> source, UUID id) {
+        if (getWorld(source).map(Ether::get).flatMap(ether -> ether.getEntry(getType(), id)).isEmpty()) {
+            setDead();
+        }
+    }
+
+    private void spawnPlacedEntity(Caster<?> source) {
+        CastSpellEntity entity = UEntities.CAST_SPELL.create(source.getReferenceWorld());
+        Vec3d pos = castEntity.getPosition().orElse(source.getOriginVector());
+        entity.updatePositionAndAngles(pos.x, pos.y, pos.z, source.getEntity().getYaw(), source.getEntity().getPitch());
+        PlaceableSpell copy = spell.toPlaceable();
+        if (spell instanceof PlacementDelegate delegate) {
+            delegate.onPlaced(source, copy, entity);
+        }
+        entity.getSpellSlot().put(copy);
+        entity.setCaster(source);
+        entity.world.spawnEntity(entity);
+        Ether.get(entity.world).put(getType(), entity);
+
+        castEntity.set(entity);
+        setDirty();
+    }
+
+    @Override
+    public void setOrientation(float pitch, float yaw) {
+        this.pitch = -90 - pitch;
+        this.yaw = -yaw;
+        getDelegates(spell -> spell instanceof OrientedSpell o ? o : null)
+            .forEach(oriented -> oriented.setOrientation(pitch, yaw));
+        setDirty();
     }
 
     @Override

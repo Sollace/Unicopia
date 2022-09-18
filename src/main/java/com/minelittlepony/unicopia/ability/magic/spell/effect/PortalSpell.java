@@ -26,7 +26,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldEvents;
 
-public class PortalSpell extends AbstractSpell implements PlaceableSpell.PlacementDelegate {
+public class PortalSpell extends AbstractSpell implements PlaceableSpell.PlacementDelegate, OrientedSpell {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
             .with(Trait.LIFE, 10)
             .with(Trait.KNOWLEDGE, 1)
@@ -48,8 +48,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
     @Override
     public boolean apply(Caster<?> caster) {
-        pitch = caster.getEntity().getPitch(1);
-        yaw = caster.getEntity().getYaw(1);
+        setOrientation(caster.getEntity().getPitch(), caster.getEntity().getYaw());
         return toPlaceable().apply(caster);
     }
 
@@ -118,7 +117,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
                     Vec3d dest = targetPos.add(offset.rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE)).add(0, 0.05, 0);
 
                     entity.resetPortalCooldown();
-                    entity.timeUntilRegen = 20;
+                    entity.timeUntilRegen = 100;
 
                     entity.setYaw(entity.getYaw() + yawDifference);
                     entity.setVelocity(entity.getVelocity().rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE));
@@ -158,20 +157,17 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
     }
 
     @Override
+    public void setOrientation(float pitch, float yaw) {
+        this.pitch = pitch;
+        this.yaw = yaw;
+        setDirty();
+    }
+
+    @Override
     public void onPlaced(Caster<?> source, PlaceableSpell parent, CastSpellEntity entity) {
         LivingEntity caster = source.getMaster();
         Vec3d targetPos = caster.getRotationVector().multiply(3).add(caster.getEyePos());
-
-        parent.pitch = -90 - pitch;
-        parent.yaw = -yaw;
-
-        for (Spell delegate : parent.getDelegates()) {
-            if (delegate instanceof PortalSpell copy) {
-                copy.pitch = pitch;
-                copy.yaw = yaw;
-            }
-        }
-
+        parent.setOrientation(pitch, yaw);
         entity.setPos(targetPos.x, caster.getY() + 1.5, targetPos.z);
     }
 
