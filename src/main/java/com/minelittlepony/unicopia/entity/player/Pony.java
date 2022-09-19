@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.*;
+import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
@@ -30,10 +31,8 @@ import com.minelittlepony.unicopia.network.MsgOtherPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgPlayerAnimationChange;
 import com.minelittlepony.unicopia.network.MsgRequestSpeciesChange;
 import com.minelittlepony.unicopia.network.datasync.Transmittable;
+import com.minelittlepony.unicopia.util.*;
 import com.minelittlepony.unicopia.network.datasync.EffectSync.UpdateCallback;
-import com.minelittlepony.unicopia.util.Copieable;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.Tickable;
 import com.minelittlepony.common.util.animation.LinearInterpolator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
@@ -44,6 +43,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -59,8 +59,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.*;
 
 public class Pony extends Living<PlayerEntity> implements Transmittable, Copieable<Pony>, UpdateCallback {
 
@@ -97,6 +96,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     private boolean speciesSet;
     private boolean speciesPersisted;
 
+    private Optional<BlockPos> hangingPosition = Optional.empty();
     private int ticksHanging;
 
     private float magicExhaustion = 0;
@@ -323,41 +323,53 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         return entity.getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER).hasModifier(PlayerAttributes.BAT_HANGING);
     }
 
+    public void stopHanging() {
+        entity.getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER).removeModifier(PlayerAttributes.BAT_HANGING);
+        entity.calculateDimensions();
+        ticksHanging = 0;
+        hangingPosition = Optional.empty();
+    }
+
+    public void startHanging(BlockPos pos) {
+        hangingPosition = Optional.of(pos);
+        EntityAttributeInstance attr = entity.getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
+
+        if (!attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
+            attr.addPersistentModifier(PlayerAttributes.BAT_HANGING);
+        }
+        entity.teleport(pos.getX() + 0.5, pos.getY() - 1, pos.getZ() + 0.5);
+        entity.setVelocity(Vec3d.ZERO);
+        entity.setSneaking(false);
+        entity.stopFallFlying();
+    }
+
     public boolean canHangAt(BlockPos pos) {
+        if (!getReferenceWorld().isAir(pos) || !getReferenceWorld().isAir(pos.down())) {
+            return false;
+        }
+
+        pos = pos.up();
         BlockState state = getReferenceWorld().getBlockState(pos);
 
         return state.isSolidSurface(getReferenceWorld(), pos, getEntity(), Direction.DOWN);
     }
 
-    private BlockPos getHangingPos() {
-        BlockPos pos = getOrigin();
-        return new BlockPos(pos.getX(), pos.getY() + entity.getEyeHeight(entity.getPose()) + 2, pos.getZ());
-    }
-
     @Override
     public void tick() {
-        if (animationDuration >= 0) {
-            if (--animationDuration <= 0) {
-                setAnimation(Animation.NONE);
-            }
+        if (animationDuration >= 0 && --animationDuration <= 0) {
+            setAnimation(Animation.NONE);
         }
 
         if (isHanging()) {
-            if (ticksHanging++ > 40) {
-                if (entity.getVelocity().horizontalLengthSquared() > 0.01
-                        || entity.isSneaking()
-                        || !canHangAt(getHangingPos())) {
-
-
-                    entity.getAttributes().getCustomInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER).removeModifier(PlayerAttributes.BAT_HANGING);
-                    entity.calculateDimensions();
-                }
+            ((LivingEntityDuck)entity).setLeaningPitch(0);
+            if (!isClient() && (getSpecies() != Race.BAT || (ticksHanging++ > 40 && hangingPosition.filter(getOrigin()::equals).filter(this::canHangAt).isPresent()))) {
+                stopHanging();
             }
         } else {
             ticksHanging = 0;
         }
 
-        if (getSpecies() == Race.BAT) {
+        if (getSpecies() == Race.BAT && !entity.hasPortalCooldown()) {
             if (SunBlindnessStatusEffect.hasSunExposure(entity)) {
                 if (ticksInSun < 200) {
                     ticksInSun++;
@@ -542,6 +554,10 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         super.toNBT(compound);
         compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
         compound.putFloat("magicExhaustion", magicExhaustion);
+        compound.putInt("ticksHanging", ticksHanging);
+        NbtSerialisable.writeBlockPos("hangingPosition", hangingPosition, compound);
+        compound.putInt("ticksInSun", ticksInSun);
+        compound.putBoolean("hasShades", hasShades);
         compound.put("powers", powers.toNBT());
         compound.put("gravity", gravity.toNBT());
         compound.put("charms", charms.toNBT());
@@ -566,7 +582,6 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         super.fromNBT(compound);
         speciesPersisted = true;
         setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
-
         powers.fromNBT(compound.getCompound("powers"));
         gravity.fromNBT(compound.getCompound("gravity"));
         charms.fromNBT(compound.getCompound("charms"));
@@ -576,6 +591,10 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         mana.fromNBT(compound.getCompound("mana"));
 
         magicExhaustion = compound.getFloat("magicExhaustion");
+        ticksHanging = compound.getInt("ticksHanging");
+        hangingPosition = NbtSerialisable.readBlockPos("hangingPosition", compound);
+        ticksInSun = compound.getInt("ticksInSun");
+        hasShades = compound.getBoolean("hasShades");
 
         if (compound.contains("effect")) {
             getSpellSlot().put(Spell.readNbt(compound.getCompound("effect")));

@@ -22,7 +22,7 @@ public final class PlayerDimensions {
         return getPredicate()
                 .flatMap(e -> e.getTargetEyeHeight(pony))
                 .filter(h -> h > 0)
-                .or(() -> physics.isFlyingSurvival ? FLYING_EYE_HEIGHT : Optional.empty())
+                .or(() -> physics.isFlyingSurvival ? FLYING_EYE_HEIGHT : physics.isGravityNegative() ? Optional.of(dimensions.height) : Optional.empty())
                 .map(h -> {
                     if (physics.isGravityNegative()) {
                         if (pony.getMaster().isSneaking()) {

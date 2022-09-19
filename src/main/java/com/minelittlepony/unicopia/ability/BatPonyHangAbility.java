@@ -2,15 +2,11 @@ package com.minelittlepony.unicopia.ability;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Multi;
-import com.minelittlepony.unicopia.entity.UEntityAttributes;
-import com.minelittlepony.unicopia.entity.player.PlayerAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.RayTraceHelper;
 
-import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 
 /**
  * A magic casting ability for unicorns.
@@ -47,7 +43,7 @@ public class BatPonyHangAbility implements Ability<Multi> {
 
         return RayTraceHelper.doTrace(player.getMaster(), 5, 1, EntityPredicates.EXCEPT_SPECTATOR).getBlockPos()
                 .map(BlockPos::down)
-                .filter(pos -> player.getReferenceWorld().isAir(pos) && player.getReferenceWorld().isAir(pos.down()) && player.canHangAt(pos))
+                .filter(player::canHangAt)
                 .map(pos -> new Multi(pos, 1))
                 .orElse(null);
     }
@@ -59,20 +55,13 @@ public class BatPonyHangAbility implements Ability<Multi> {
 
     @Override
     public void apply(Pony player, Multi data) {
-        EntityAttributeInstance attr = player.getMaster().getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
-
-        if (data.hitType == 0 && attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
-            attr.removeModifier(PlayerAttributes.BAT_HANGING);
+        if (data.hitType == 0 && player.isHanging()) {
+            player.stopHanging();
             return;
         }
 
         if (data.hitType == 1 && player.canHangAt(data.pos())) {
-            player.getMaster().teleport(data.x + 0.5, data.y - 2, data.z + 0.5);
-            player.getMaster().setVelocity(Vec3d.ZERO);
-
-            if (!attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
-                attr.addPersistentModifier(PlayerAttributes.BAT_HANGING);
-            }
+            player.startHanging(data.pos());
         }
     }
 

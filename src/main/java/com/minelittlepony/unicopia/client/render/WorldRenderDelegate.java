@@ -88,11 +88,15 @@ public class WorldRenderDelegate {
         roll = pony instanceof Pony ? ((Pony)pony).getInterpolator().interpolate("g_roll", roll, 15) : roll;
 
         matrices.translate(x, y + owner.getHeight() / 2, z);
+
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(roll));
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(roll));
 
         if (pony instanceof Pony) {
             roll = ((Pony)pony).getCamera().calculateRoll();
+            if (negative) {
+                roll -= 180;
+            }
 
             matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(yaw));
             matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(roll));

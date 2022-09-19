@@ -42,7 +42,7 @@ public interface NbtSerialisable {
     }
 
     static void writeBlockPos(String name, Optional<BlockPos> pos, NbtCompound nbt) {
-        pos.map(NbtHelper::fromBlockPos).ifPresent(p -> nbt.put("hoveringPosition", p));
+        pos.map(NbtHelper::fromBlockPos).ifPresent(p -> nbt.put(name, p));
     }
 
     static Optional<BlockPos> readBlockPos(String name, NbtCompound nbt) {

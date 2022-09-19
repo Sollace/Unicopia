@@ -294,7 +294,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         entity.setVelocity(velocity.toImmutable());
 
-        if (isFlying() && !entity.isFallFlying()) {
+        if (isFlying() && !entity.isFallFlying() && !pony.isHanging()) {
 
             float pitch = ((LivingEntityDuck)entity).getLeaningPitch();
             if (pitch < 1) {
@@ -429,7 +429,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 && (horMotion > 0.2 || (motion > 0.2 && velocity.y < -0.02 * getGravitySignum()));
         boolean fallingTakeOffCondition = !entity.isOnGround() && velocity.y < -1.6 * getGravitySignum();
 
-        if (takeOffCondition || fallingTakeOffCondition) {
+        if ((takeOffCondition || fallingTakeOffCondition) && !pony.isHanging()) {
             entity.getAbilities().flying = true;
             isFlyingEither = true;
             isFlyingSurvival = true;
