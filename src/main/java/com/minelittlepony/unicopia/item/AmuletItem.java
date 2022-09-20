@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.MinecraftClient;
@@ -99,7 +100,14 @@ public class AmuletItem extends WearableItem {
     }
 
     public boolean isApplicable(LivingEntity entity) {
-        return isApplicable(entity.getEquippedStack(EquipmentSlot.CHEST));
+        return isApplicable(getForEntity(entity));
+    }
+
+    public static ItemStack getForEntity(LivingEntity entity) {
+        return TrinketsDelegate.getInstance().getEquipped(entity, TrinketsDelegate.NECKLACE)
+                .filter(stack -> stack.getItem() instanceof AmuletItem)
+                .findFirst()
+                .orElse(ItemStack.EMPTY);
     }
 
     public boolean isChargable() {

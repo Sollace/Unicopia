@@ -21,7 +21,6 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -43,9 +42,9 @@ public class AmuletFeatureRenderer<E extends LivingEntity> implements AccessoryF
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch) {
 
-        ItemStack stack = entity.getEquippedStack(EquipmentSlot.CHEST);
+        ItemStack stack = AmuletItem.getForEntity(entity);
 
-        if (stack.getItem() instanceof AmuletItem) {
+        if (!stack.isEmpty()) {
             Identifier texture = textures.computeIfAbsent(Registry.ITEM.getId(stack.getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));
 
             VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(texture), false, false);

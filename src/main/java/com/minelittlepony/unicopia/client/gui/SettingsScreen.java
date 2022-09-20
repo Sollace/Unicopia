@@ -7,7 +7,7 @@ import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.element.*;
 import com.minelittlepony.common.client.gui.style.Style;
 import com.minelittlepony.unicopia.*;
-import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.util.RegistryIndexer;
 
 import net.fabricmc.loader.api.FabricLoader;
@@ -97,7 +97,7 @@ public class SettingsScreen extends GameGui {
                 return Text.translatable("unicopia.options.ignore_mine_lp.undetected").formatted(Formatting.DARK_GREEN);
             }
 
-            return Text.translatable("unicopia.options.ignore_mine_lp.detected", MineLPConnector.getPlayerPonyRace().getDisplayName()).formatted(Formatting.GREEN);
+            return Text.translatable("unicopia.options.ignore_mine_lp.detected", MineLPDelegate.getInstance().getPlayerPonyRace().getDisplayName()).formatted(Formatting.GREEN);
         }
 
         return Text.translatable("unicopia.options.ignore_mine_lp.missing").formatted(Formatting.RED);

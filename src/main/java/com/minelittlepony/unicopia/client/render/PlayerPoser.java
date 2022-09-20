@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.client.render;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.AnimationUtil;
 
@@ -24,7 +24,7 @@ public class PlayerPoser {
         Pony pony = Pony.of(player);
         float progress = pony.getAnimationProgress(MinecraftClient.getInstance().getTickDelta());
         Animation animation = pony.getAnimation();
-        boolean isPony = !MineLPConnector.getPlayerPonyRace(player).isDefault();
+        boolean isPony = !MineLPDelegate.getInstance().getPlayerPonyRace(player).isDefault();
 
         switch (animation) {
             case WOLOLO: {

@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.GemstoneItem;
+import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
 
@@ -43,7 +44,17 @@ public class PlayerCharmTracker implements Tickable, NbtSerialisable {
 
     @Override
     public void tick() {
-        armour.update(pony.getMaster().getInventory().armor.stream());
+        armour.update(getAll());
+    }
+
+    private Stream<ItemStack> getAll() {
+        if (!TrinketsDelegate.hasTrinkets()) {
+            return pony.getMaster().getInventory().armor.stream();
+        }
+        return Stream.concat(
+                TrinketsDelegate.getInstance().getEquipped(pony.getMaster(), TrinketsDelegate.NECKLACE),
+                pony.getMaster().getInventory().armor.stream()
+        );
     }
 
     public ItemTracker getArmour() {

@@ -201,7 +201,7 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
             }, 50);
         }
 
-        pony.findAllEntitiesInRange(10, e -> e instanceof MobEntity && !((MobEntity)e).hasStatusEffect(UEffects.CORRUPT_INFLUENCE)).forEach(e -> {
+        pony.findAllEntitiesInRange(10, e -> e instanceof MobEntity mob && !mob.hasStatusEffect(UEffects.CORRUPT_INFLUENCE)).forEach(e -> {
             ((MobEntity)e).addStatusEffect(new StatusEffectInstance(UEffects.CORRUPT_INFLUENCE, 1300, 1));
         });
     }

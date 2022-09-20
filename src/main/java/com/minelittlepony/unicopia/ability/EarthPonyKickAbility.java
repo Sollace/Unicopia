@@ -10,7 +10,7 @@ import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.data.tree.TreeType;
 import com.minelittlepony.unicopia.block.data.BlockDestructionManager;
-import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
@@ -54,7 +54,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
     @Override
     public double getCostEstimate(Pony player) {
-        double distance = MineLPConnector.getPlayerPonyRace(player.getMaster()).isDefault() ? 6 : -6;
+        double distance = MineLPDelegate.getInstance().getPlayerPonyRace(player.getMaster()).isDefault() ? 6 : -6;
 
         return RayTraceHelper.doTrace(player.getMaster(), distance, 1)
                 .getBlockPos()
@@ -65,7 +65,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     @Nullable
     @Override
     public Pos tryActivate(Pony player) {
-        double distance = MineLPConnector.getPlayerPonyRace(player.getMaster()).isDefault() ? 6 : -6;
+        double distance = MineLPDelegate.getInstance().getPlayerPonyRace(player.getMaster()).isDefault() ? 6 : -6;
 
         return RayTraceHelper.doTrace(player.getMaster(), distance, 1)
                 .getBlockPos()
@@ -76,7 +76,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
     private Pos getDefaultKickLocation(Pony player) {
         Vec3d kickVector = player.getMaster().getRotationVector().multiply(1, 0, 1);
-        if (!MineLPConnector.getPlayerPonyRace(player.getMaster()).isDefault()) {
+        if (!MineLPDelegate.getInstance().getPlayerPonyRace(player.getMaster()).isDefault()) {
             kickVector = kickVector.rotateY((float)Math.PI);
         }
         return new Pos(new BlockPos(player.getOriginVector().add(kickVector)));

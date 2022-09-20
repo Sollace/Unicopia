@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -23,9 +24,7 @@ import net.minecraft.item.DyeableItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 
 public class FriendshipBraceletItem extends WearableItem implements DyeableItem, GlowableItem {
@@ -115,15 +114,28 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
 
     public static boolean isComrade(Caster<?> caster, Entity entity) {
         if (entity instanceof LivingEntity) {
-            return caster.getMasterId().filter(id -> {
-                return isSignedBy(((LivingEntity)entity).getOffHandStack(), id)
-                        || isSignedBy(((LivingEntity)entity).getEquippedStack(EquipmentSlot.CHEST), id);
-            }).isPresent();
+            return caster.getMasterId()
+                    .filter(id -> getWornBangles((LivingEntity)entity)
+                            .anyMatch(stack -> isSignedBy(stack, id))
+                    )
+                    .isPresent();
         }
         return false;
     }
 
     public static Stream<Pony> getPartyMembers(Caster<?> caster, double radius) {
         return Pony.stream(caster.findAllEntitiesInRange(radius, entity -> isComrade(caster, entity)));
+    }
+
+    public static Stream<ItemStack> getWornBangles(LivingEntity entity) {
+        return Stream.concat(
+                TrinketsDelegate.getInstance().getEquipped(entity, TrinketsDelegate.MAINHAND),
+                TrinketsDelegate.getInstance().getEquipped(entity, TrinketsDelegate.OFFHAND)
+        ).filter(stack -> stack.getItem() == UItems.FRIENDSHIP_BRACELET);
+    }
+
+    public static Stream<ItemStack> getWornBangles(LivingEntity entity, Identifier slot) {
+        return TrinketsDelegate.getInstance().getEquipped(entity, slot)
+                .filter(stack -> stack.getItem() == UItems.FRIENDSHIP_BRACELET);
     }
 }

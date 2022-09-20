@@ -2,9 +2,9 @@ package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
-import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
-import com.minelittlepony.unicopia.item.GlowableItem;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
+import com.minelittlepony.unicopia.item.*;
+import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.Model;
@@ -24,13 +24,11 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Arm;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.*;
 
 public class BraceletFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
 
@@ -50,39 +48,41 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
 
     @Override
     public void render(MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch) {
-        ItemStack item = entity.getEquippedStack(EquipmentSlot.CHEST);
+        FriendshipBraceletItem.getWornBangles(entity, TrinketsDelegate.MAINHAND).findFirst().ifPresent(bangle -> {
+            renderBangleThirdPerson(bangle, stack, renderContext, lightUv, entity, limbDistance, limbAngle, tickDelta, age, headYaw, headPitch, entity.getMainArm());
+        });
+        FriendshipBraceletItem.getWornBangles(entity, TrinketsDelegate.OFFHAND).findFirst().ifPresent(bangle -> {
+            renderBangleThirdPerson(bangle, stack, renderContext, lightUv, entity, limbDistance, limbAngle, tickDelta, age, headYaw, headPitch, entity.getMainArm().getOpposite());
+        });
+    }
 
-        if (item.getItem() instanceof FriendshipBraceletItem) {
-            int j = ((DyeableItem)item.getItem()).getColor(item);
+    private void renderBangleThirdPerson(ItemStack item, MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch, Arm mainArm) {
+        int j = ((DyeableItem)item.getItem()).getColor(item);
 
-            boolean alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getModel().startsWith("slim");
+        boolean alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getModel().startsWith("slim");
 
-            BraceletModel model = alex ? alexModel : steveModel;
+        BraceletModel model = alex ? alexModel : steveModel;
+        boolean isLeft = mainArm == Arm.LEFT;
 
-            boolean isLeft = entity.getMainArm() == Arm.LEFT;
-
-            if (entity instanceof ArmorStandEntity) {
-                ModelPart arm = isLeft ? context.getModel().leftArm : context.getModel().rightArm;
-                arm.visible = true;
-                VertexConsumer consumer = renderContext.getBuffer(context.getModel().getLayer(context.getTexture(entity)));
-                arm.render(stack, consumer, lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
-            }
-
-            boolean glowing = ((GlowableItem)item.getItem()).isGlowing(item);
-
-            VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(TEXTURE), false, false);
-
-            model.setAngles(context.getModel());
-            model.setVisible(entity.getMainArm());
-            model.render(stack, consumer, glowing ? 0x0F00F0 : lightUv, OverlayTexture.DEFAULT_UV, Color.r(j), Color.g(j), Color.b(j), 1);
+        if (entity instanceof ArmorStandEntity) {
+            ModelPart arm = isLeft ? context.getModel().leftArm : context.getModel().rightArm;
+            arm.visible = true;
+            VertexConsumer consumer = renderContext.getBuffer(context.getModel().getLayer(context.getTexture(entity)));
+            arm.render(stack, consumer, lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
         }
+
+        boolean glowing = ((GlowableItem)item.getItem()).isGlowing(item);
+
+        VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(TEXTURE), false, false);
+
+        model.setAngles(context.getModel());
+        model.setVisible(mainArm);
+        model.render(stack, consumer, glowing ? 0x0F00F0 : lightUv, OverlayTexture.DEFAULT_UV, Color.r(j), Color.g(j), Color.b(j), 1);
     }
 
     @Override
     public void renderArm(MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, E entity, ModelPart armModel, Arm side) {
-        ItemStack item = entity.getEquippedStack(EquipmentSlot.CHEST);
-
-        if (item.getItem() instanceof FriendshipBraceletItem) {
+        FriendshipBraceletItem.getWornBangles(entity, side == entity.getMainArm() ? TrinketsDelegate.MAINHAND : TrinketsDelegate.OFFHAND).findFirst().ifPresent(item -> {
             int j = ((DyeableItem)item.getItem()).getColor(item);
 
             boolean alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getModel().startsWith("slim");
@@ -91,8 +91,7 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
 
             boolean glowing = ((GlowableItem)item.getItem()).isGlowing(item);
 
-
-            if (!MineLPConnector.getPlayerPonyRace((ClientPlayerEntity)entity).isDefault()) {
+            if (!MineLPDelegate.getInstance().getPlayerPonyRace((ClientPlayerEntity)entity).isDefault()) {
                 stack.translate(side == Arm.LEFT ? 0.06 : -0.06, 0.3, 0);
             } else {
                 stack.translate(0, -0.1, 0);
@@ -103,7 +102,7 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
             model.setAngles(context.getModel());
             model.setVisible(side);
             model.render(stack, consumer, glowing ? 0x0F00F0 : lightUv, OverlayTexture.DEFAULT_UV, Color.r(j), Color.g(j), Color.b(j), 1);
-        }
+        });
     }
 
     public static class BraceletModel extends Model {

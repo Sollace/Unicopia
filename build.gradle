@@ -39,6 +39,14 @@ repositories {
         name = 'minelp-release'
         url = 'https://repo.minelittlepony-mod.com/maven/release'
     }
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+    }
+    maven {
+        name = "Ladysnake Libs"
+        url = "https://ladysnake.jfrog.io/artifactory/mods"
+    }
 }
 
 dependencies {
@@ -55,6 +63,8 @@ dependencies {
     modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
     // implementation 'org.jetbrains:intellij-fernflower:1.2.1.16'
     modCompileOnly("net.caffienemc.sodium:sodium-fabric-mc1.19.2:0.4.4+build.18")
+
+    modCompileOnly "dev.emi:trinkets:3.4.0"
 }
 
 processResources {

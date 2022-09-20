@@ -1,26 +1,33 @@
 package com.minelittlepony.unicopia.client.minelittlepony;
 
+import java.util.Optional;
+
 import com.minelittlepony.api.model.IModel;
 import com.minelittlepony.api.model.ModelAttributes;
 import com.minelittlepony.api.model.fabric.PonyModelPrepareCallback;
 import com.minelittlepony.api.model.gear.IGear;
-import com.minelittlepony.unicopia.Owned;
-import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.client.MineLittlePony;
+import com.minelittlepony.client.render.LevitatingItemRenderer;
+import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.AnimationUtil;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
-public class Main implements ClientModInitializer {
+public class Main extends MineLPDelegate implements ClientModInitializer {
 
     private boolean hookErroring;
 
     @Override
     public void onInitializeClient() {
+        INSTANCE = this;
         PonyModelPrepareCallback.EVENT.register(this::onPonyModelPrepared);
         IGear.register(BangleGear::new);
         IGear.register(AmuletGear::new);
@@ -51,5 +58,40 @@ public class Main implements ClientModInitializer {
             Unicopia.LOGGER.error("Exception occured in MineLP hook:onPonyModelPrepared", t);
             hookErroring = true;
         }
+    }
+
+
+    @Override
+    public Race getPlayerPonyRace(PlayerEntity player) {
+        switch (MineLittlePony.getInstance().getManager().getPony(player).getRace(false)) {
+            case ALICORN:
+                return Race.ALICORN;
+            case CHANGELING:
+            case CHANGEDLING:
+                return Race.CHANGELING;
+            case ZEBRA:
+            case EARTH:
+                return Race.EARTH;
+            case GRYPHON:
+            case HIPPOGRIFF:
+            case PEGASUS:
+                return Race.PEGASUS;
+            case BATPONY:
+                return Race.BAT;
+            case SEAPONY:
+            case UNICORN:
+                return Race.UNICORN;
+            default:
+                return Race.HUMAN;
+        }
+    }
+
+    @Override
+    public Optional<VertexConsumer> getItemBuffer(VertexConsumerProvider vertexConsumers, Identifier texture) {
+        if (LevitatingItemRenderer.isEnabled()) {
+            return Optional.of(vertexConsumers.getBuffer(LevitatingItemRenderer.getRenderLayer(texture)));
+        }
+
+        return Optional.empty();
     }
 }

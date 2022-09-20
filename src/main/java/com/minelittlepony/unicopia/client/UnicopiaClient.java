@@ -11,7 +11,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.LanSettingsScreen;
 import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen;
-import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.container.*;
 import com.minelittlepony.unicopia.entity.player.PlayerCamera;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -41,7 +41,7 @@ public class UnicopiaClient implements ClientModInitializer {
     public static Race getPreferredRace() {
         if (!Unicopia.getConfig().ignoreMineLP.get()
                 && MinecraftClient.getInstance().player != null) {
-            Race race = MineLPConnector.getPlayerPonyRace();
+            Race race = MineLPDelegate.getInstance().getPlayerPonyRace();
 
             if (!race.isDefault()) {
                 return race;
