@@ -50,7 +50,8 @@
     "client.MixinMouse",
     "client.MixinPlayerEntityRenderer",
     "client.MixinTooltipComponent",
-    "client.MixinWorldRenderer"
+    "client.MixinWorldRenderer",
+    "client.sodium.MixinSodiumWorldRenderer"
   ],
   "injectors": {
     "defaultRequire": 1

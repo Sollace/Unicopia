@@ -53,6 +53,8 @@ dependencies {
     include "com.minelittlepony:kirin:${project.kirin_version}"
 
     modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
+    // implementation 'org.jetbrains:intellij-fernflower:1.2.1.16'
+    modCompileOnly("net.caffienemc.sodium:sodium-fabric-mc1.19.2:0.4.4+build.18")
 }
 
 processResources {

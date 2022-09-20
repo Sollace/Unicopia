@@ -18,7 +18,7 @@ import net.minecraft.client.render.BlockBreakingInfo;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.resource.SynchronousResourceReloader;
 
-@Mixin(WorldRenderer.class)
+@Mixin(value = WorldRenderer.class, priority = 1001)
 abstract class MixinWorldRenderer implements SynchronousResourceReloader, AutoCloseable, ClientBlockDestructionManager.Source {
 
     private final ClientBlockDestructionManager destructions = new ClientBlockDestructionManager();
