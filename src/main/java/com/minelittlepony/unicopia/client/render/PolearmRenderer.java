@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client.render;
 
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPConnector;
+
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.DynamicItemRenderer;
@@ -7,7 +9,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.item.UnclampedModelPredicateProvider;
 import net.minecraft.client.model.*;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.TridentEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -69,8 +70,9 @@ public class PolearmRenderer implements DynamicItemRenderer, UnclampedModelPredi
             matrices.scale(1, -1, -1);
             Identifier id = Registry.ITEM.getId(stack.getItem());
             Identifier texture = new Identifier(id.getNamespace(), "textures/entity/polearm/" + id.getPath() + ".png");
-            VertexConsumer vertexConsumer2 = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, model.getLayer(texture), false, stack.hasGlint());
-            model.render(matrices, vertexConsumer2, light, overlay, 1, 1, 1, 1);
+            model.render(matrices, MineLPConnector.getItemBuffer(vertexConsumers, texture).orElseGet(() -> {
+                return ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, model.getLayer(texture), false, stack.hasGlint());
+            }), light, overlay, 1, 1, 1, 1);
             matrices.pop();
         }
     }

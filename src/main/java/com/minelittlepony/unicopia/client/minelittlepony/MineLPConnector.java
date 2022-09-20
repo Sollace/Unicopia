@@ -1,11 +1,17 @@
 package com.minelittlepony.unicopia.client.minelittlepony;
 
+import java.util.Optional;
+
 import com.minelittlepony.client.MineLittlePony;
+import com.minelittlepony.client.render.LevitatingItemRenderer;
 import com.minelittlepony.unicopia.Race;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 
 public final class MineLPConnector {
     public static Race getPlayerPonyRace() {
@@ -38,5 +44,17 @@ public final class MineLPConnector {
             default:
                 return Race.HUMAN;
         }
+    }
+
+    public static Optional<VertexConsumer> getItemBuffer(VertexConsumerProvider vertexConsumers, Identifier texture) {
+        if (!FabricLoader.getInstance().isModLoaded("minelp")) {
+            return Optional.empty();
+        }
+
+        if (LevitatingItemRenderer.isEnabled()) {
+            return Optional.of(vertexConsumers.getBuffer(LevitatingItemRenderer.getRenderLayer(texture)));
+        }
+
+        return Optional.empty();
     }
 }
