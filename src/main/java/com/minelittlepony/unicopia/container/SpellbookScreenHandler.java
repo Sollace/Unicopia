@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.container.inventory.*;
 import com.minelittlepony.unicopia.item.UItems;
@@ -153,7 +152,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return EquinePredicates.IS_CASTER.test(player);
+        return player.isAlive();
     }
 
     @Override

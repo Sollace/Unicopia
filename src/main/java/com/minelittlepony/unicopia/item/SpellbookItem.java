@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.item;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.SpellbookEntity;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.util.Dispensable;
@@ -44,7 +43,7 @@ public class SpellbookItem extends BookItem implements Dispensable {
         @Nullable
         PlayerEntity player = context.getPlayer();
 
-        if (!context.getWorld().isClient && EquinePredicates.PLAYER_UNICORN.test(player)) {
+        if (!context.getWorld().isClient) {
             BlockPos pos = context.getBlockPos().offset(context.getSide());
 
             placeBook(context.getStack(), context.getWorld(), pos.getX(), pos.getY(), pos.getZ(), context.getPlayerYaw() + 180);

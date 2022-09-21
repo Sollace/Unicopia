@@ -222,7 +222,7 @@ public class SpellbookEntity extends MobEntity {
             return ActionResult.SUCCESS;
         }
 
-        if (isOpen() && EquinePredicates.PLAYER_UNICORN.test(player)) {
+        if (isOpen()) {
             setBored(false);
             player.openHandledScreen(new ExtendedScreenHandlerFactory() {
                 @Override

@@ -30,8 +30,8 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
     public void init(SpellbookScreen screen, Identifier pageId) {
         Bounds bounds = screen.getFrameBounds();
         int size = 32;
-        int x = screen.getX() + bounds.left + bounds.width / 4 - size + 10;
-        int y = screen.getY() + bounds.top + bounds.height / 2;
+        int x = screen.getX() + bounds.left + bounds.width / 4 - size + 5;
+        int y = screen.getY() + bounds.top + bounds.height / 2 + 3;
 
 
         screen.addDrawable(new SpellbookScreen.ImageButton(x, y, size, size))
