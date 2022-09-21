@@ -14,6 +14,7 @@ import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
+@SuppressWarnings("deprecation")
 public interface URecipes {
     RecipeType<SpellbookRecipe> SPELLBOOK = RecipeType.register("unicopia:spellbook");
 
