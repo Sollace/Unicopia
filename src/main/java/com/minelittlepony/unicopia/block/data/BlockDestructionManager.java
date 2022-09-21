@@ -30,21 +30,25 @@ public class BlockDestructionManager {
         return Suppliers.memoize(() -> new BlockDestructionManager(world));
     }
 
+    public static BlockDestructionManager of(World world) {
+        return ((BlockDestructionManager.Source)world).getDestructionManager();
+    }
+
     private BlockDestructionManager(World world) {
         this.chunks = WorldOverlay.getOverlay(world, ID, w -> new WorldOverlay<>(world, Destruction::new, this::sendUpdates));
     }
 
-    public int getBlockDestruction(BlockPos pos) {
+    public float getBlockDestruction(BlockPos pos) {
         Destruction destr = chunks.getState(pos);
         return destr == null ? UNSET_DAMAGE : destr.amount;
     }
 
-    public void setBlockDestruction(BlockPos pos, int amount) {
+    public void setBlockDestruction(BlockPos pos, float amount) {
         chunks.getOrCreateState(pos).set(amount);
         chunks.markDirty();
     }
 
-    public int damageBlock(BlockPos pos, int amount) {
+    public float damageBlock(BlockPos pos, float amount) {
         if (amount == 0) {
             return getBlockDestruction(pos);
         }
@@ -64,12 +68,12 @@ public class BlockDestructionManager {
     }
 
     private void sendUpdates(Long2ObjectMap<Destruction> destructions, List<ServerPlayerEntity> players) {
-        Long2ObjectOpenHashMap<Integer> values = new Long2ObjectOpenHashMap<>();
+        Long2ObjectOpenHashMap<Float> values = new Long2ObjectOpenHashMap<>();
 
         destructions.forEach((blockPos, item) -> {
             if (item.dirty) {
                 item.dirty = false;
-                values.put(blockPos.longValue(), (Integer)item.amount);
+                values.put(blockPos.longValue(), (Float)item.amount);
             }
         });
 
@@ -78,7 +82,7 @@ public class BlockDestructionManager {
         if (msg.toBuffer().writerIndex() > 1048576) {
             throw new IllegalStateException("Payload may not be larger than 1048576 bytes. Here's what we were trying to send: ["
                     + values.size() + "]\n"
-                    + Arrays.toString(values.values().stream().mapToInt(Integer::intValue).toArray()));
+                    + Arrays.toString(values.values().stream().mapToDouble(Float::doubleValue).toArray()));
         }
 
         players.forEach(player -> {
@@ -89,7 +93,7 @@ public class BlockDestructionManager {
     }
 
     private class Destruction implements WorldOverlay.State {
-        int amount = UNSET_DAMAGE;
+        float amount = UNSET_DAMAGE;
         int age = DESTRUCTION_COOLDOWN;
         boolean dirty;
 
@@ -105,7 +109,7 @@ public class BlockDestructionManager {
             return amount < 0 || age-- <= 0;
         }
 
-        void set(int amount) {
+        void set(float amount) {
             this.age = DESTRUCTION_COOLDOWN;
             this.amount = amount >= 0 && amount < MAX_DAMAGE ? amount : UNSET_DAMAGE;
             this.dirty = true;
@@ -113,13 +117,13 @@ public class BlockDestructionManager {
 
         @Override
         public void toNBT(NbtCompound compound) {
-            compound.putInt("destruction", amount);
+            compound.putFloat("destruction", amount);
             compound.putInt("age", age);
         }
 
         @Override
         public void fromNBT(NbtCompound compound) {
-            amount = compound.getInt("destruction");
+            amount = compound.getFloat("destruction");
             age = compound.getInt("age");
             dirty = true;
         }

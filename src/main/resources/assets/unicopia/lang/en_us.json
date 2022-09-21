@@ -455,8 +455,10 @@
   "death.attack.paradox": "%1$s imploded",
   "death.attack.food_poisoning": "%1$s died of food poisoning",
   "death.attack.food_poisoning.attacker": "%2$s poisoned %1$s to death",
-  "death.attack.back_hole": "%1$s was sucked into a black hole",
-  "death.attack.back_hole.attacker": "%1$s got sucked into %2$s's black hole",
+  "death.attack.black_hole": "%1$s was sucked into a black hole",
+  "death.attack.black_hole.attacker": "%1$s got sucked into %2$s's black hole",
+  "death.attack.kick": "%1$s was kicked really hard",
+  "death.attack.kick.attacker": "%2$s kicked %1$s really hard",
 
   "unicopia.subtitle.flap_wings": "Wing flaps",
   "unicopia.subtitle.wind_rush": "Wind gusts",

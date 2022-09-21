@@ -163,31 +163,37 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     }
 
     public static void spawnEffect(World w, BlockPos pos, double dist, double rad) {
-        BlockState state = w.getBlockState(pos);
-        BlockDestructionManager destr = ((BlockDestructionManager.Source)w).getDestructionManager();
+        if (w.getBlockState(pos.up()).isAir()) {
+            BlockState state = w.getBlockState(pos);
 
-        if (!state.isAir() && w.getBlockState(pos.up()).isAir()) {
-
-            double amount = (1 - dist / rad) * 9;
             float hardness = state.getHardness(w, pos);
             float scaledHardness = (1 - hardness / 70);
+            float damage = hardness < 0 ? 0 : MathHelper.clamp((int)((1 - dist / rad) * 9 * scaledHardness), 0, BlockDestructionManager.MAX_DAMAGE - 1);
 
-            int damage = hardness < 0 ? 0 : MathHelper.clamp((int)(amount * scaledHardness), 2, 9);
+            stompBlock(w, pos, damage);
+        }
+    }
 
-            if (destr.damageBlock(pos, damage) >= BlockDestructionManager.MAX_DAMAGE) {
-                w.breakBlock(pos, true);
+    public static void stompBlock(World w, BlockPos pos, float damage) {
+        BlockState state = w.getBlockState(pos);
 
-                if (w instanceof ServerWorld) {
-                    if (state.getMaterial() == Material.STONE && w.getRandom().nextInt(4) == 0) {
-                        ItemStack stack = UItems.PEBBLES.getDefaultStack();
-                        stack.setCount(1 + w.getRandom().nextInt(2));
-                        Block.dropStack(w, pos, stack);
-                        state.onStacksDropped((ServerWorld)w, pos, stack, true);
-                    }
+        if (state.isAir() || damage <= 0) {
+            return;
+        }
+
+        if (BlockDestructionManager.of(w).damageBlock(pos, damage) >= BlockDestructionManager.MAX_DAMAGE) {
+            w.breakBlock(pos, true);
+
+            if (w instanceof ServerWorld) {
+                if (state.getMaterial() == Material.STONE && w.getRandom().nextInt(4) == 0) {
+                    ItemStack stack = UItems.PEBBLES.getDefaultStack();
+                    stack.setCount(1 + w.getRandom().nextInt(2));
+                    Block.dropStack(w, pos, stack);
+                    state.onStacksDropped((ServerWorld)w, pos, stack, true);
                 }
-            } else {
-                w.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
             }
+        } else {
+            w.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
         }
     }
 

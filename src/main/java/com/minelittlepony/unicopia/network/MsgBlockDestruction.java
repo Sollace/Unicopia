@@ -13,21 +13,21 @@ import net.minecraft.entity.player.PlayerEntity;
  */
 public class MsgBlockDestruction implements Packet<PlayerEntity> {
 
-    private final Long2ObjectMap<Integer> destructions;
+    private final Long2ObjectMap<Float> destructions;
 
     MsgBlockDestruction(PacketByteBuf buffer) {
         destructions = new Long2ObjectOpenHashMap<>();
         int size = buffer.readInt();
         for (int i = 0; i < size; i++) {
-            destructions.put(buffer.readLong(), (Integer)buffer.readInt());
+            destructions.put(buffer.readLong(), (Float)buffer.readFloat());
         }
     }
 
-    public MsgBlockDestruction(Long2ObjectMap<Integer> destructions) {
+    public MsgBlockDestruction(Long2ObjectMap<Float> destructions) {
         this.destructions = destructions;
     }
 
-    public Long2ObjectMap<Integer> getDestructions() {
+    public Long2ObjectMap<Float> getDestructions() {
         return destructions;
     }
 
@@ -36,7 +36,7 @@ public class MsgBlockDestruction implements Packet<PlayerEntity> {
         buffer.writeInt(destructions.size());
         destructions.forEach((p, i) -> {
             buffer.writeLong(p);
-            buffer.writeInt(i);
+            buffer.writeFloat(i);
         });
     }
 

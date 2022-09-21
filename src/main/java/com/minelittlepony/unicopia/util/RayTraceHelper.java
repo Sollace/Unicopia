@@ -50,12 +50,12 @@ public class RayTraceHelper {
      * @return A Trace describing what was found.
      */
     public static Trace doTrace(Entity e, double distance, float tickDelta, Predicate<Entity> predicate) {
-        final Vec3d ray = e.getRotationVec(tickDelta).multiply(distance);
+        final Vec3d orientation = e.getRotationVec(tickDelta);
         final Vec3d start = e.getCameraPosVec(tickDelta);
 
-        final Box box = e.getBoundingBox().stretch(ray).expand(1);
+        final Box box = e.getBoundingBox().stretch(orientation.multiply(Math.abs(distance))).expand(10);
 
-        EntityHitResult pointedEntity = ProjectileUtil.raycast(e, start, start.add(ray), box, predicate, distance);
+        EntityHitResult pointedEntity = ProjectileUtil.raycast(e, start, start.add(orientation.multiply(distance)), box, predicate, Math.abs(distance));
 
         if (pointedEntity != null) {
             return new Trace(pointedEntity);
@@ -81,6 +81,14 @@ public class RayTraceHelper {
         public <T extends Entity> Optional<T> getEntity() {
             if (result != null && result.getType() == HitResult.Type.ENTITY) {
                 return Optional.of((T)((EntityHitResult)result).getEntity());
+            }
+            return Optional.empty();
+        }
+
+        @SuppressWarnings("unchecked")
+        public <T extends Entity> Optional<T> getEntity(Predicate<T> predicate) {
+            if (result != null && result.getType() == HitResult.Type.ENTITY) {
+                return Optional.of((T)((EntityHitResult)result).getEntity()).filter(predicate);
             }
             return Optional.empty();
         }

@@ -15,8 +15,7 @@ import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.util.PosHelper;
-import com.minelittlepony.unicopia.util.RayTraceHelper;
+import com.minelittlepony.unicopia.util.*;
 
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Block;
@@ -24,12 +23,15 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
 /**
@@ -62,16 +64,50 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                 .isPresent() ? 3 : 1;
     }
 
+    @Override
+    public boolean onQuickAction(Pony player, ActivationType type) {
+        if (type == ActivationType.TAP) {
+
+            if (!player.isClient()) {
+                Vec3d origin = player.getOriginVector();
+
+                Pos kickLocation = getDefaultKickLocation(player);
+                World w = player.getReferenceWorld();
+
+                for (var e : VecHelper.findInRange(player.getEntity(), w, kickLocation.vec(), 2, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
+                    if (e instanceof LivingEntity entity) {
+                        float calculatedStrength = 0.5F * (1 + player.getLevel().getScaled(9));
+                        entity.damage(MagicalDamageSource.KICK, player.getReferenceWorld().random.nextBetween(2, 10) + calculatedStrength);
+                        entity.takeKnockback(calculatedStrength, origin.x - entity.getX(), origin.z - entity.getZ());
+                        player.subtractEnergyCost(3);
+                        player.setAnimation(Animation.KICK);
+                        return true;
+                    }
+                }
+
+                BlockPos pos = kickLocation.pos();
+                EarthPonyStompAbility.stompBlock(w, pos, 10 * (1 + player.getLevel().getScaled(5)) * w.getBlockState(pos).calcBlockBreakingDelta(player.getMaster(), w, pos));
+                player.setAnimation(Animation.KICK);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     @Nullable
     @Override
     public Pos tryActivate(Pony player) {
-        double distance = MineLPDelegate.getInstance().getPlayerPonyRace(player.getMaster()).isDefault() ? 6 : -6;
-
-        return RayTraceHelper.doTrace(player.getMaster(), distance, 1)
+        return RayTraceHelper.doTrace(player.getMaster(), 6 * getKickDirection(player), 1)
                 .getBlockPos()
                 .filter(pos -> TreeType.at(pos, player.getReferenceWorld()) != TreeType.NONE)
                 .map(Pos::new)
                 .orElseGet(() -> getDefaultKickLocation(player));
+    }
+
+    private int getKickDirection(Pony player) {
+        return MineLPDelegate.getInstance().getPlayerPonyRace(player.getMaster()).isDefault() ? 1 : -1;
     }
 
     private Pos getDefaultKickLocation(Pony player) {
@@ -115,9 +151,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
         boolean harmed = player.getHealth() < player.getMaxHealth();
 
-        BlockDestructionManager destr = ((BlockDestructionManager.Source)player.world).getDestructionManager();
-
-        if (destr.getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
+        if (BlockDestructionManager.of(player.world).getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
             if (!harmed || player.world.random.nextInt(30) == 0) {
                 tree.traverse(player.world, pos, (w, state, p, recurseLevel) -> {
                     if (recurseLevel < 5) {
@@ -186,9 +220,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     }
 
     private void affectBlockChange(PlayerEntity player, BlockPos position) {
-        BlockDestructionManager destr = ((BlockDestructionManager.Source)player.world).getDestructionManager();
-
-        destr.damageBlock(position, 4);
+        BlockDestructionManager.of(player.world).damageBlock(position, 4);
 
         PosHelper.all(position, p -> {
             BlockState s = player.world.getBlockState(p);

@@ -21,6 +21,7 @@ public class MagicalDamageSource extends EntityDamageSource {
     public static final DamageSource FOOD_POISONING = mundane("food_poisoning");
     public static final DamageSource TRIBE_SWAP = mundane("tribe_swap");
     public static final DamageSource ZAP_APPLE = create("zap");
+    public static final DamageSource KICK = create("kick");
 
     public static DamageSource mundane(String type) {
         return new DamageSource(type) {};
