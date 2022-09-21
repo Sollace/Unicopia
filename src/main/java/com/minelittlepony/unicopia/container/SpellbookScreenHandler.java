@@ -249,7 +249,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
             if (!current.isEmpty() && ItemStack.canCombine(stack, current)) {
                 // abide by the slot's max item count when trying to insert stacks
-                int available = Math.min(Math.min(current.getMaxCount(), slot.getMaxItemCount()) - current.getCount(), stack.getCount());
+                int available = Math.min(Math.min(current.getMaxCount(), slot.getMaxItemCount(stack)) - current.getCount(), stack.getCount());
 
                 if (available > 0) {
                     current.increment(available);
