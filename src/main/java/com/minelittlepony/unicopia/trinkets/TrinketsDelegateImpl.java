@@ -9,14 +9,15 @@ import com.minelittlepony.unicopia.util.InventoryUtil;
 import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.*;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.event.GameEvent;
 
-class TrinketsDelegateImpl implements TrinketsDelegate {
-    static final TrinketsDelegateImpl INSTANCE = new TrinketsDelegateImpl();
+public class TrinketsDelegateImpl implements TrinketsDelegate {
+    public static final TrinketsDelegateImpl INSTANCE = new TrinketsDelegateImpl();
     // who tf designed this api?
 
     @Override
@@ -71,7 +72,7 @@ class TrinketsDelegateImpl implements TrinketsDelegate {
         );
     }
 
-    private Stream<TrinketInventory> getInventories(LivingEntity entity) {
+    public Stream<TrinketInventory> getInventories(LivingEntity entity) {
         return TrinketsApi.getTrinketComponent(entity)
                 .stream()
                 .map(component -> component.getInventory())
@@ -81,5 +82,41 @@ class TrinketsDelegateImpl implements TrinketsDelegate {
 
     private static Identifier getSlotId(SlotType slotType) {
         return new Identifier(slotType.getGroup(), slotType.getName());
+    }
+
+    public static int getMaxCount(ItemStack stack, SlotReference ref, int normal) {
+        Trinket trinket = TrinketsApi.getTrinket(stack.getItem());
+        if (trinket instanceof UnicopiaTrinket ut) {
+            return Math.min(
+                    normal,
+                    Math.min(
+                            stack.getMaxCount(),
+                            ut.getMaxCount(stack, ref)
+            ));
+        }
+        return normal;
+    }
+
+    public static boolean tryInsert(TrinketInventory inv, ItemStack stack, PlayerEntity user) {
+        int i = InventoryUtil.getOpenSlot(inv);
+        if (i == -1) {
+            return false;
+        }
+
+        SlotReference ref = new SlotReference(inv, i);
+        if (!TrinketSlot.canInsert(stack, ref, user)) {
+            return false;
+        }
+
+        Trinket trinket = TrinketsApi.getTrinket(stack.getItem());
+
+        SoundEvent soundEvent = stack.getEquipSound();
+        inv.setStack(i, stack.split(trinket instanceof UnicopiaTrinket ut ? ut.getMaxCount(stack, ref) : stack.getMaxCount()));
+        if (!stack.isEmpty() && soundEvent != null) {
+            user.emitGameEvent(GameEvent.EQUIP);
+            user.playSound(soundEvent, 1, 1);
+        }
+
+        return true;
     }
 }

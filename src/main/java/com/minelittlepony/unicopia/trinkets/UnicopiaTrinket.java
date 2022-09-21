@@ -35,7 +35,7 @@ public class UnicopiaTrinket implements Trinket {
     }
 
     // @Override
-    public int getMaxCount(ItemStack stack, SlotReference slot, LivingEntity entity) {
+    public int getMaxCount(ItemStack stack, SlotReference slot) {
         // https://github.com/emilyploszaj/trinkets/issues/215
         return 1;
     }

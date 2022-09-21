@@ -32,7 +32,11 @@
     "MixinShulkerEntity",
     "MixinTargetPredicate",
     "MixinWorld",
-    "MixinWorldChunk"
+    "MixinWorldChunk",
+    "trinkets.MixinTrinketSurvivalSlot",
+    "trinkets.MixinTrinketCreativeSlot",
+    "trinkets.MixinTrinketItem",
+    "trinkets.MixinScreenHandler"
   ],
   "client": [
     "client.MixinAnimalModel",
