@@ -39,6 +39,10 @@ public interface TrinketsDelegate {
         }
 
         entity.equipStack(eq, stack.split(1));
+        if (entity instanceof MobEntity mob) {
+            mob.setEquipmentDropChance(eq, 2.0f);
+            mob.setPersistent();
+        }
         return true;
     }
 

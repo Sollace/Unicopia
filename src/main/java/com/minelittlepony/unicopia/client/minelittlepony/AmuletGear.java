@@ -15,7 +15,6 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -32,8 +31,7 @@ class AmuletGear extends AmuletModel implements IGear {
 
     @Override
     public boolean canRender(IModel model, Entity entity) {
-        return entity instanceof LivingEntity living
-                && living.getEquippedStack(EquipmentSlot.CHEST).getItem() instanceof AmuletItem;
+        return entity instanceof LivingEntity living && !AmuletItem.getForEntity(living).isEmpty();
     }
 
     @Override
@@ -43,7 +41,7 @@ class AmuletGear extends AmuletModel implements IGear {
 
     @Override
     public <T extends Entity> Identifier getTexture(T entity, Context<T, ?> context) {
-        return textures.computeIfAbsent(Registry.ITEM.getId(((LivingEntity)entity).getEquippedStack(EquipmentSlot.CHEST).getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));
+        return textures.computeIfAbsent(Registry.ITEM.getId(AmuletItem.getForEntity((LivingEntity)entity).getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.minelittlepony.client.render.LevitatingItemRenderer;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.AnimationUtil;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -29,7 +30,8 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
     public void onInitializeClient() {
         INSTANCE = this;
         PonyModelPrepareCallback.EVENT.register(this::onPonyModelPrepared);
-        IGear.register(BangleGear::new);
+        IGear.register(() -> new BangleGear(TrinketsDelegate.MAINHAND));
+        IGear.register(() -> new BangleGear(TrinketsDelegate.OFFHAND));
         IGear.register(AmuletGear::new);
     }
 
