@@ -52,6 +52,16 @@ abstract class MixinScreenHandler {
         return sender.isEmpty() || (canApply(currentSlot) && (currentSlot.getStack().getCount() + sender.getCount()) <= currentSlot.getMaxItemCount(sender));
     }
 
+    @Redirect(method = "canInsertItemIntoSlot",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/item/ItemStack;getMaxCount()I"
+            )
+    )
+    private static int onCanInsertItemIntoSlot(ItemStack sender, @Nullable Slot slot) {
+        return canApply(slot) ? slot.getMaxItemCount(sender) : sender.getMaxCount();
+    }
+
     private static boolean canApply(Slot slot) {
         return slot instanceof TrinketSlot;
     }

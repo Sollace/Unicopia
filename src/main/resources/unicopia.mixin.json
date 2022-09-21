@@ -36,6 +36,7 @@
     "trinkets.MixinTrinketSurvivalSlot",
     "trinkets.MixinTrinketCreativeSlot",
     "trinkets.MixinTrinketItem",
+    "trinkets.MixinTrinketInventory",
     "trinkets.MixinScreenHandler"
   ],
   "client": [
