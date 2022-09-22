@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.trinkets;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import net.fabricmc.loader.api.FabricLoader;
@@ -48,11 +49,7 @@ public interface TrinketsDelegate {
     }
 
     default Set<Identifier> getAvailableTrinketSlots(LivingEntity entity, Set<Identifier> probedSlots) {
-        return Set.of();
-    }
-
-    default Stream<ItemStack> getEquipped(LivingEntity entity) {
-        return Stream.empty();
+        return probedSlots.stream().filter(slot -> getEquipped(entity, slot).count() == 0).collect(Collectors.toSet());
     }
 
     default Stream<ItemStack> getEquipped(LivingEntity entity, Identifier slot) {

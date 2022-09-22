@@ -57,7 +57,7 @@ public abstract class WearableItem extends Item implements Wearable {
         return pointer.getWorld().getEntitiesByClass(
                     LivingEntity.class,
                     new Box(pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING))),
-                    EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.Equipable(armor))
+                    EntityPredicates.EXCEPT_SPECTATOR
                 )
                 .stream()
                 .flatMap(entity -> TrinketsDelegate.getInstance()

@@ -51,11 +51,6 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
     }
 
     @Override
-    public Stream<ItemStack> getEquipped(LivingEntity entity) {
-        return getInventories(entity).flatMap(InventoryUtil::stream).filter(s -> !s.isEmpty());
-    }
-
-    @Override
     public Stream<ItemStack> getEquipped(LivingEntity entity, Identifier slot) {
         return getInventory(entity, slot).stream().flatMap(InventoryUtil::stream).filter(s -> !s.isEmpty());
     }
