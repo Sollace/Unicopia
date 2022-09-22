@@ -517,9 +517,11 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         Vec3d direction = entity.getRotationVec(1).normalize().multiply(thrustStrength);
 
-        velocity.x += direction.x;
-        velocity.z += direction.z;
-        velocity.y += (direction.y * 2.45 + Math.abs(direction.y) * 10) * getGravitySignum() - heavyness / 5F;
+        if (entity.getVelocity().horizontalLength() > 0.1) {
+            velocity.x += direction.x;
+            velocity.z += direction.z;
+            velocity.y += (direction.y * 2.45 + Math.abs(direction.y) * 10) * getGravitySignum() - heavyness / 5F;
+        }
 
         if (entity.isSneaking()) {
             if (!isGravityNegative()) {
@@ -531,6 +533,11 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         } else {
             velocity.y -= 0.1 * getGravitySignum();
         }
+
+        if (velocity.y < 0 && entity.getVelocity().horizontalLength() < 0.1) {
+            velocity.y *= 0.01;
+        }
+
     }
 
     private void applyTurbulance(MutableVector velocity) {
