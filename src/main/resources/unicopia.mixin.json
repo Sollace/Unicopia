@@ -35,7 +35,6 @@
     "MixinWorld",
     "MixinWorldChunk",
     "trinkets.MixinTrinketSurvivalSlot",
-    "trinkets.MixinTrinketCreativeSlot",
     "trinkets.MixinTrinketItem",
     "trinkets.MixinTrinketInventory",
     "trinkets.MixinScreenHandler"
@@ -57,7 +56,8 @@
     "client.MixinPlayerEntityRenderer",
     "client.MixinTooltipComponent",
     "client.MixinWorldRenderer",
-    "client.sodium.MixinSodiumWorldRenderer"
+    "client.sodium.MixinSodiumWorldRenderer",
+    "trinkets.MixinTrinketCreativeSlot"
   ],
   "injectors": {
     "defaultRequire": 1

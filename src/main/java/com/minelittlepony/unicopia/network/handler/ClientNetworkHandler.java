@@ -1,6 +1,11 @@
 package com.minelittlepony.unicopia.network.handler;
 
+import java.util.Map;
+
 import com.minelittlepony.unicopia.network.*;
+
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
 
 public interface ClientNetworkHandler {
 
@@ -15,4 +20,6 @@ public interface ClientNetworkHandler {
     void handleUnlockTraits(MsgUnlockTraits packet);
 
     void handleServerResources(MsgServerResources packet);
+
+    Map<Identifier, ?> readChapters(PacketByteBuf buf);
 }

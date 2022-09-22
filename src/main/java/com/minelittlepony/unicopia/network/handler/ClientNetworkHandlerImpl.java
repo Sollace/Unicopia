@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.network.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
 public class ClientNetworkHandlerImpl implements ClientNetworkHandler {
@@ -76,6 +77,11 @@ public class ClientNetworkHandlerImpl implements ClientNetworkHandler {
         for (Trait trait : packet.traits) {
             DiscoveryToast.show(client.getToastManager(), trait.getSprite());
         }
+    }
+
+    @Override
+    public Map<Identifier, ?> readChapters(PacketByteBuf buffer) {
+        return  buffer.readMap(PacketByteBuf::readIdentifier, ClientChapters::loadChapter);
     }
 
     @SuppressWarnings("unchecked")

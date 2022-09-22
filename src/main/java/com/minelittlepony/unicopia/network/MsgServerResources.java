@@ -5,12 +5,9 @@ import java.util.*;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.data.tree.TreeTypeLoader;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
-import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
 import com.minelittlepony.unicopia.container.SpellbookChapterLoader;
 import com.minelittlepony.unicopia.util.network.Packet;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
@@ -26,10 +23,9 @@ public class MsgServerResources implements Packet<PlayerEntity> {
         treeTypes = TreeTypeLoader.INSTANCE.getEntries();
     }
 
-    @Environment(EnvType.CLIENT)
     public MsgServerResources(PacketByteBuf buffer) {
         traits = buffer.readMap(PacketByteBuf::readIdentifier, SpellTraits::fromPacket);
-        chapters = buffer.readMap(PacketByteBuf::readIdentifier, ClientChapters::loadChapter);
+        chapters = InteractionManager.instance().getClientNetworkHandler().readChapters(buffer);
         treeTypes = buffer.readMap(PacketByteBuf::readIdentifier, TreeTypeLoader.TreeTypeDef::new);
     }
 
