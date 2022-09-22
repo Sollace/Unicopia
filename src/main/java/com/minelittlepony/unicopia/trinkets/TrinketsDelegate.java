@@ -9,6 +9,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 
 public interface TrinketsDelegate {
@@ -68,5 +69,9 @@ public interface TrinketsDelegate {
 
     default void registerTrinket(Item item) {
 
+    }
+
+    default boolean isTrinketSlot(Slot slot) {
+        return false;
     }
 }

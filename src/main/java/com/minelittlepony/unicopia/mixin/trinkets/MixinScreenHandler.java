@@ -5,7 +5,8 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import dev.emi.trinkets.TrinketSlot;
+import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -37,7 +38,7 @@ abstract class MixinScreenHandler {
     )
     // redirect slot.getMaxItemCount() to stack aware version
     protected int onGetMaxItemCount(Slot sender, ItemStack stack) {
-        return canApply(sender) ? sender.getMaxItemCount(stack) : sender.getMaxItemCount();
+        return TrinketsDelegate.getInstance().isTrinketSlot(sender) ? sender.getMaxItemCount(stack) : sender.getMaxItemCount();
     }
 
     @Redirect(method = "insertItem",
@@ -49,7 +50,7 @@ abstract class MixinScreenHandler {
     )
     // redirect "if (!itemStack.isEmpty() && ItemStack.canCombine(stack, itemStack))" -> "if (!canNotInsert(itemStack, slot) && ItemStack.canCombine(stack, itemStack))"
     protected boolean canNotInsert(ItemStack sender) {
-        return sender.isEmpty() || (canApply(currentSlot) && (currentSlot.getStack().getCount() + sender.getCount()) <= currentSlot.getMaxItemCount(sender));
+        return sender.isEmpty() || (TrinketsDelegate.getInstance().isTrinketSlot(currentSlot) && (currentSlot.getStack().getCount() + sender.getCount()) <= currentSlot.getMaxItemCount(sender));
     }
 
     @Redirect(method = "canInsertItemIntoSlot",
@@ -58,11 +59,7 @@ abstract class MixinScreenHandler {
                     target = "Lnet/minecraft/item/ItemStack;getMaxCount()I"
             )
     )
-    private static int onCanInsertItemIntoSlot(ItemStack sender, @Nullable Slot slot) {
-        return canApply(slot) ? slot.getMaxItemCount(sender) : sender.getMaxCount();
-    }
-
-    private static boolean canApply(Slot slot) {
-        return slot instanceof TrinketSlot;
+    private static int onGetMaxCount(ItemStack sender, @Nullable Slot slot) {
+        return TrinketsDelegate.getInstance().isTrinketSlot(slot) ? slot.getMaxItemCount(sender) : sender.getMaxCount();
     }
 }

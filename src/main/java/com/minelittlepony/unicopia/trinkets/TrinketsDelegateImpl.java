@@ -12,6 +12,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.event.GameEvent;
@@ -78,6 +79,11 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
                 .map(component -> component.getInventory())
                 .flatMap(groups -> groups.values().stream())
                 .flatMap(group -> group.values().stream());
+    }
+
+    @Override
+    public boolean isTrinketSlot(Slot slot) {
+        return slot instanceof TrinketSlot;
     }
 
     private static Identifier getSlotId(SlotType slotType) {
