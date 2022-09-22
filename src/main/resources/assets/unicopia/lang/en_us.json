@@ -281,7 +281,7 @@
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.pegasus": " - Flight and the ability to train to build endurace",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.pegasus": " - Use stored mana to perform a powerful rainboom",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.pegasus": " - Moves faster and takes less fall damage",
-  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.pegasus": " - Can eat vegitables and certain types of fish",
+  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.pegasus": " - Can eat vegetables and certain types of fish",
 
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.bat": " - Flight and the ability to train to build endurance",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.bat": " - Sees better in the night",
@@ -295,11 +295,11 @@
   "gui.unicopia.tribe_selection.confirm.bads": "but they...",
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.earth": " - Cannot fly",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.earth": " - Are weak to certain types of magic",
-  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.earth": " - Can only eat plants and vegitables",
+  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.earth": " - Can only eat plants and vegetables",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.unicorn": " - Cannot fly",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.unicorn": " - Are weak to brute force attacks",
-  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.unicorn": " - Can only eat plants and vegitables",
+  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.unicorn": " - Can only eat plants and vegetables",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.pegasus": " - Light weight makes them the weakest to brute force",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.pegasus": " - Must rest between flights to regain their strength",
