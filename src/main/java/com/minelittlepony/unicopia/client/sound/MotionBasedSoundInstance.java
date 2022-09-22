@@ -36,7 +36,7 @@ public class MotionBasedSoundInstance extends FadeOutSoundInstance {
         y = ((float)player.getY());
         z = ((float)this.player.getZ());
 
-        float f = (float)player.getVelocity().lengthSquared();
+        float f = (float)player.getVelocity().horizontalLength();
         if (f >= 1.0E-7D) {
            volume = MathHelper.clamp(f / 4F, 0, 1);
         } else {
@@ -54,6 +54,8 @@ public class MotionBasedSoundInstance extends FadeOutSoundInstance {
         } else {
            pitch = 1;
         }
+
+        setTargetVolume(volume);
 
         return true;
     }
