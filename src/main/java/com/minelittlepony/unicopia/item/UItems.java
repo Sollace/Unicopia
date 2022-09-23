@@ -78,12 +78,12 @@ public interface UItems {
 
     Item DRAGON_BREATH_SCROLL = register("dragon_breath_scroll", new DragonBreathScrollItem(new Item.Settings().rarity(Rarity.UNCOMMON).group(ItemGroup.TOOLS)));
 
-    Item WOODEN_POLEARM = register("wooden_polearm", new PolearmItem(ToolMaterials.WOOD, 3, -2.4F, 2, new Item.Settings().group(ItemGroup.COMBAT)));
-    Item STONE_POLEARM = register("stone_polearm", new PolearmItem(ToolMaterials.STONE, 3, -2.4F, 2, new Item.Settings().group(ItemGroup.COMBAT)));
-    Item IRON_POLEARM = register("iron_polearm", new PolearmItem(ToolMaterials.IRON, 3, -2.4F, 3, new Item.Settings().group(ItemGroup.COMBAT)));
-    Item GOLDEN_POLEARM = register("golden_polearm", new PolearmItem(ToolMaterials.GOLD, 3, -2.4F, 4, new Item.Settings().group(ItemGroup.COMBAT)));
-    Item DIAMOND_POLEARM = register("diamond_polearm", new PolearmItem(ToolMaterials.DIAMOND, 3, -2.4F, 5, new Item.Settings().group(ItemGroup.COMBAT)));
-    Item NETHERITE_POLEARM = register("netherite_polearm", new PolearmItem(ToolMaterials.NETHERITE, 3, -2.4F, 5, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
+    Item WOODEN_POLEARM = register("wooden_polearm", new PolearmItem(ToolMaterials.WOOD, 2, -3.6F, 2, new Item.Settings().group(ItemGroup.COMBAT)));
+    Item STONE_POLEARM = register("stone_polearm", new PolearmItem(ToolMaterials.STONE, 2, -3.6F, 2, new Item.Settings().group(ItemGroup.COMBAT)));
+    Item IRON_POLEARM = register("iron_polearm", new PolearmItem(ToolMaterials.IRON, 2, -3.6F, 3, new Item.Settings().group(ItemGroup.COMBAT)));
+    Item GOLDEN_POLEARM = register("golden_polearm", new PolearmItem(ToolMaterials.GOLD, 2, -3.6F, 4, new Item.Settings().group(ItemGroup.COMBAT)));
+    Item DIAMOND_POLEARM = register("diamond_polearm", new PolearmItem(ToolMaterials.DIAMOND, 2, -3.6F, 5, new Item.Settings().group(ItemGroup.COMBAT)));
+    Item NETHERITE_POLEARM = register("netherite_polearm", new PolearmItem(ToolMaterials.NETHERITE, 2, -3.6F, 5, new Item.Settings().group(ItemGroup.COMBAT).fireproof()));
 
     Item BUTTERFLY_SPAWN_EGG = register("butterfly_spawn_egg", new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xaaeeff, new Item.Settings().group(ItemGroup.MISC)));
     Item BUTTERFLY = register("butterfly", new Item(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.INSECTS)));
