@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "unicopia:wooden_polearm",
+    "unicopia:stone_polearm",
+    "unicopia:iron_polearm",
+    "unicopia:golden_polearm",
+    "unicopia:diamond_polearm",
+    "unicopia:netherite_polearm"
+  ]
+}

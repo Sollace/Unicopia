@@ -198,10 +198,10 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
 
     @Override
     public boolean handleAttack(Entity attacker) {
-        if (world instanceof ServerWorld) {
+        if (world instanceof ServerWorld serverWorld) {
             LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world);
             lightning.refreshPositionAfterTeleport(getX(), getY(), getZ());
-            attacker.onStruckByLightning((ServerWorld)world, lightning);
+            attacker.onStruckByLightning(serverWorld, lightning);
         }
         emitGameEvent(GameEvent.LIGHTNING_STRIKE);
         ParticleUtils.spawnParticle(world, UParticles.LIGHTNING_BOLT, getPos(), Vec3d.ZERO);

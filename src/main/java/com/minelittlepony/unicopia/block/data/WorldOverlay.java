@@ -6,6 +6,7 @@ import java.util.function.*;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.Tickable;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -19,7 +20,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
-public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState {
+public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState implements Tickable {
     private final World world;
 
     private final Long2ObjectMap<Chunk> chunks = new Long2ObjectOpenHashMap<>();
@@ -98,6 +99,7 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
         }
     }
 
+    @Override
     public void tick() {
         synchronized (locker) {
             chunks.long2ObjectEntrySet().removeIf(entry -> entry.getValue().tick());

@@ -18,11 +18,15 @@ public interface UTags {
 
     TagKey<Item> SHADES = item("shades");
 
+    TagKey<Item> POLEARMS = item("polearms");
+
     TagKey<Block> FRAGILE = block("fragile");
     TagKey<Block> INTERESTING = block("interesting");
 
     TagKey<Block> CRYSTAL_HEART_BASE = block("crystal_heart_base");
     TagKey<Block> CRYSTAL_HEART_ORNAMENT = block("crystal_heart_ornament");
+
+    TagKey<Block> POLEARM_MINEABLE = block("mineable/polearm");
 
     TagKey<EntityType<?>> TRANSFORMABLE_ENTITIES = entity("transformable");
 

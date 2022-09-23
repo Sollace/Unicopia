@@ -26,6 +26,7 @@
   "item.unicopia.rotten_apple": "Rotten Apple",
   "item.unicopia.cooked_zap_apple": "Cooked Zap Apple",
   "item.unicopia.zap_apple": "Zap Apple",
+  "item.unicopia.zap_bulb": "Unripened Zap Apple",
 
   "item.unicopia.empty_jar": "Glass Jar",
   "item.unicopia.filled_jar": "%s in a Jar",
@@ -87,6 +88,11 @@
   "item.unicopia.music_disc_funk.desc": "funk, just funk",
 
   "block.unicopia.rocks": "Rocks",
+  "block.unicopia.zapling": "Zapling",
+  "block.unicopia.zap_log": "Zap Log",
+  "block.unicopia.zap_leaves": "Zap Leaves",
+  "block.unicopia.zap_apple": "Zap Apple",
+  "block.unicopia.zap_bulb": "Unripened Zap Apple",
 
   "entity.unicopia.butterfly": "Butterfly",
   "entity.unicopia.twittermite": "Twittermite",

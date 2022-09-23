@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.entity.UEntityAttributes;
 
 import net.minecraft.block.*;
@@ -40,7 +41,7 @@ public class PolearmItem extends SwordItem {
 
     @Override
     public boolean isSuitableFor(BlockState state) {
-        return false;
+        return state.isIn(UTags.POLEARM_MINEABLE);
     }
 
     @Override

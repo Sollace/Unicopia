@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client;
 
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.client.particle.ChangelingMagicParticle;
 import com.minelittlepony.unicopia.client.particle.CloudsEscapingParticle;
 import com.minelittlepony.unicopia.client.particle.DiskParticle;
@@ -27,6 +28,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.color.world.BiomeColors;
+import net.minecraft.client.color.world.FoliageColors;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.SpriteProvider;
@@ -117,9 +120,20 @@ public interface URenderers {
         ColorProviderRegistry.ITEM.register((stack, i) -> {
             return i > 0 || !GemstoneItem.isEnchanted(stack) ? -1 : GemstoneItem.getSpellKey(stack).getColor();
         }, UItems.GEMSTONE);
+        ColorProviderRegistry.BLOCK.register((state, view, pos, color) -> {
+            if (view == null || pos == null) {
+                color = FoliageColors.getDefaultColor();
+            } else {
+                color = BiomeColors.getFoliageColor(view, pos);
+            }
+
+            return (color << 2) | ((color >> 4) & 0xFF);
+        }, UBlocks.ZAP_LEAVES);
 
         // for lava boats
         BlockRenderLayerMap.INSTANCE.putFluids(RenderLayers.getTranslucent(), Fluids.LAVA, Fluids.FLOWING_LAVA);
+
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayers.getTranslucent(), UBlocks.ZAP_BULB, UBlocks.ZAP_APPLE, UBlocks.ZAPLING);
     }
 
     static <T extends ParticleEffect> PendingParticleFactory<T> createFactory(ParticleSupplier<T> supplier) {

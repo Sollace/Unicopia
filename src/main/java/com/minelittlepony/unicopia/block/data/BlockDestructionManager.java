@@ -8,6 +8,8 @@ import com.google.common.base.Suppliers;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgBlockDestruction;
+import com.minelittlepony.unicopia.util.Tickable;
+
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.block.BlockState;
@@ -17,7 +19,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class BlockDestructionManager {
+public class BlockDestructionManager implements Tickable {
     private static final Identifier ID = Unicopia.id("destruction_manager");
 
     public static final int DESTRUCTION_COOLDOWN = 50;
@@ -63,6 +65,7 @@ public class BlockDestructionManager {
         }
     }
 
+    @Override
     public void tick() {
         chunks.tick();
     }

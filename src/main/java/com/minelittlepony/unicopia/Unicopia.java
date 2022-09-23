@@ -17,7 +17,9 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitLoader;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.block.UTreeGen;
 import com.minelittlepony.unicopia.block.data.BlockDestructionManager;
+import com.minelittlepony.unicopia.block.data.ZapAppleStageStore;
 import com.minelittlepony.unicopia.block.state.StateMapLoader;
 import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.container.SpellbookChapterLoader;
@@ -59,6 +61,7 @@ public class Unicopia implements ModInitializer {
 
         ServerTickEvents.END_WORLD_TICK.register(w -> {
             ((BlockDestructionManager.Source)w).getDestructionManager().tick();
+            ZapAppleStageStore.get(w).tick();
             if (SpellbookChapterLoader.DEBUG) {
                 SpellbookChapterLoader.INSTANCE.sendUpdate(w.getServer());
             }
@@ -78,6 +81,7 @@ public class Unicopia implements ModInitializer {
         SpellType.bootstrap();
         Abilities.bootstrap();
         UScreenHandlers.bootstrap();
+        UTreeGen.bootstrap();
     }
 
     public interface SidedAccess {
