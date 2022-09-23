@@ -362,7 +362,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
         if (isHanging()) {
             ((LivingEntityDuck)entity).setLeaningPitch(0);
-            if (!isClient() && (getSpecies() != Race.BAT || (ticksHanging++ > 40 && hangingPosition.filter(getOrigin()::equals).filter(this::canHangAt).isPresent()))) {
+            if (!isClient() && (getSpecies() != Race.BAT || (ticksHanging++ > 40 && hangingPosition.filter(getOrigin().down()::equals).filter(this::canHangAt).isEmpty()))) {
                 stopHanging();
             }
         } else {
