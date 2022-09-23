@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.network;
 
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.ActivationType;
@@ -29,9 +27,9 @@ public class MsgPlayerAbility<T extends Hit> implements Packet<ServerPlayerEntit
         type = ActivationType.of(buffer.readInt());
     }
 
-    public MsgPlayerAbility(Ability<T> power, @Nullable T data, ActivationType type) {
+    public MsgPlayerAbility(Ability<T> power, Optional<T> data, ActivationType type) {
         this.power = power;
-        this.data = Optional.ofNullable(data);
+        this.data = data;
         this.type = type;
     }
 
@@ -50,7 +48,7 @@ public class MsgPlayerAbility<T extends Hit> implements Packet<ServerPlayerEntit
         }
 
         if (type != ActivationType.NONE) {
-            power.onQuickAction(player, type);
+            power.onQuickAction(player, type, data);
         } else {
             data.filter(data -> power.canApply(player, data)).ifPresentOrElse(
                     data -> power.apply(player, data),

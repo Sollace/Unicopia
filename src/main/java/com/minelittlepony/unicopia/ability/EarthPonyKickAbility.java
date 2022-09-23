@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -65,29 +66,34 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     }
 
     @Override
-    public boolean onQuickAction(Pony player, ActivationType type) {
+    public Optional<Pos> prepareQuickAction(Pony player, ActivationType type) {
+        return Optional.of(getDefaultKickLocation(player));
+    }
+
+    @Override
+    public boolean onQuickAction(Pony player, ActivationType type, Optional<Pos> data) {
         if (type == ActivationType.TAP) {
 
             if (!player.isClient()) {
-                Vec3d origin = player.getOriginVector();
+                data.ifPresent(kickLocation -> {
+                    Vec3d origin = player.getOriginVector();
+                    World w = player.getReferenceWorld();
 
-                Pos kickLocation = getDefaultKickLocation(player);
-                World w = player.getReferenceWorld();
-
-                for (var e : VecHelper.findInRange(player.getEntity(), w, kickLocation.vec(), 2, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
-                    if (e instanceof LivingEntity entity) {
-                        float calculatedStrength = 0.5F * (1 + player.getLevel().getScaled(9));
-                        entity.damage(MagicalDamageSource.KICK, player.getReferenceWorld().random.nextBetween(2, 10) + calculatedStrength);
-                        entity.takeKnockback(calculatedStrength, origin.x - entity.getX(), origin.z - entity.getZ());
-                        player.subtractEnergyCost(3);
-                        player.setAnimation(Animation.KICK);
-                        return true;
+                    for (var e : VecHelper.findInRange(player.getEntity(), w, kickLocation.vec(), 2, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
+                        if (e instanceof LivingEntity entity) {
+                            float calculatedStrength = 0.5F * (1 + player.getLevel().getScaled(9));
+                            entity.damage(MagicalDamageSource.KICK, player.getReferenceWorld().random.nextBetween(2, 10) + calculatedStrength);
+                            entity.takeKnockback(calculatedStrength, origin.x - entity.getX(), origin.z - entity.getZ());
+                            player.subtractEnergyCost(3);
+                            player.setAnimation(Animation.KICK);
+                            return;
+                        }
                     }
-                }
 
-                BlockPos pos = kickLocation.pos();
-                EarthPonyStompAbility.stompBlock(w, pos, 10 * (1 + player.getLevel().getScaled(5)) * w.getBlockState(pos).calcBlockBreakingDelta(player.getMaster(), w, pos));
-                player.setAnimation(Animation.KICK);
+                    BlockPos pos = kickLocation.pos();
+                    EarthPonyStompAbility.stompBlock(w, pos, 10 * (1 + player.getLevel().getScaled(5)) * w.getBlockState(pos).calcBlockBreakingDelta(player.getMaster(), w, pos));
+                    player.setAnimation(Animation.KICK);
+                });
             }
 
             return true;
@@ -112,6 +118,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
     private Pos getDefaultKickLocation(Pony player) {
         Vec3d kickVector = player.getMaster().getRotationVector().multiply(1, 0, 1);
+        player.getMaster();
         if (!MineLPDelegate.getInstance().getPlayerPonyRace(player.getMaster()).isDefault()) {
             kickVector = kickVector.rotateY((float)Math.PI);
         }

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
@@ -33,8 +35,20 @@ public interface Ability<T extends Hit> {
      * <p>
      * @return True if the event has been handled.
      */
+    default boolean onQuickAction(Pony player, ActivationType type, Optional<T> data) {
+        return onQuickAction(player, type);
+    }
+
+    @Deprecated
     default boolean onQuickAction(Pony player, ActivationType type) {
         return false;
+    }
+
+    /**
+     * Called on the client to get any data required for the quick action.
+     */
+    default Optional<T> prepareQuickAction(Pony player, ActivationType type) {
+        return Optional.empty();
     }
 
     /**
@@ -54,14 +68,19 @@ public interface Ability<T extends Hit> {
      */
     boolean canUse(Race playerSpecies);
 
+    @Deprecated
+    @Nullable
+    T tryActivate(Pony player);
+
     /**
      * Called on the client to activate the ability.
      *
      * @param player    The player activating the ability
      * @return  Data to be sent, or null if activation failed
      */
-    @Nullable
-    T tryActivate(Pony player);
+    default Optional<T> prepare(Pony player) {
+        return Optional.ofNullable(tryActivate(player));
+    }
 
     Hit.Serializer<T> getSerializer();
 
