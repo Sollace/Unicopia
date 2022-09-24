@@ -16,6 +16,7 @@ import net.minecraft.item.Item.Settings;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
@@ -100,8 +101,6 @@ public interface UItems {
 
     Item SPELLBOOK = register("spellbook", new SpellbookItem(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).group(ItemGroup.TOOLS)));
 
-    Item ZAPLING = register("zapling", new BlockItem(UBlocks.ZAPLING, new Item.Settings().group(ItemGroup.DECORATIONS)));
-
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new AmuletItem(new FabricItemSettings()
             .maxCount(1)
             .maxDamage(890)
@@ -114,11 +113,15 @@ public interface UItems {
             .group(ItemGroup.DECORATIONS)));
 
     static <T extends Item> T register(String name, T item) {
+        return register(Unicopia.id(name), item);
+    }
+
+    static <T extends Item> T register(Identifier id, T item) {
         ITEMS.add(item);
         if (item instanceof BlockItem) {
             ((BlockItem)item).appendBlocks(Item.BLOCK_ITEMS, item);
         }
-        return Registry.register(Registry.ITEM, Unicopia.id(name), item);
+        return Registry.register(Registry.ITEM, id, item);
     }
 
     static MusicDiscItem register(String name, SoundEvent sound, int seconds) {

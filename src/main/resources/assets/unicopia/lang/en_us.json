@@ -89,10 +89,15 @@
 
   "block.unicopia.rocks": "Rocks",
   "block.unicopia.zapling": "Zapling",
-  "block.unicopia.zap_log": "Zap Log",
-  "block.unicopia.zap_leaves": "Zap Leaves",
+  "block.unicopia.zap_log": "Zap Apple Log",
+  "block.unicopia.zap_wood": "Zap Apple Wood",
+  "block.unicopia.stripped_zap_log": "Stripped Zap Apple Log",
+  "block.unicopia.stripped_zap_wood": "Stripped Zap Apple Wood",
+  "block.unicopia.zap_leaves": "Zap Apple Leaves",
   "block.unicopia.zap_apple": "Zap Apple",
   "block.unicopia.zap_bulb": "Unripened Zap Apple",
+  "block.unicopia.green_apple_leaves": "Granny Smith Leaves",
+  "block.unicopia.green_apple_sapling": "Granny Smith Sapling",
 
   "entity.unicopia.butterfly": "Butterfly",
   "entity.unicopia.twittermite": "Twittermite",

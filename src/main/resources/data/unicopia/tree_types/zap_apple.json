@@ -1,0 +1,6 @@
+{
+	"logs": [ "unicopia:zap_log" ],
+	"leaves": [ "unicopia:zap_leaves" ],
+	"wideTrunk": false,
+	"drops": []
+}

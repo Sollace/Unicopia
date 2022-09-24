@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "unicopia:block/stripped_zap_log_top",
+    "side": "unicopia:block/stripped_zap_log"
+  }
+}

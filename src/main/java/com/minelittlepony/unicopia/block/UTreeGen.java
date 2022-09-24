@@ -1,41 +1,48 @@
 package com.minelittlepony.unicopia.block;
 
-import net.fabricmc.fabric.api.biome.v1.*;
-import net.minecraft.tag.BiomeTags;
+import com.minelittlepony.unicopia.Unicopia;
+
+import net.minecraft.block.*;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.registry.*;
-import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.feature.*;
-import net.minecraft.world.gen.feature.size.TwoLayersFeatureSize;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
 import net.minecraft.world.gen.foliage.JungleFoliagePlacer;
-import net.minecraft.world.gen.stateprovider.BlockStateProvider;
+import net.minecraft.world.gen.trunk.StraightTrunkPlacer;
 import net.minecraft.world.gen.trunk.UpwardsBranchingTrunkPlacer;
 
 public interface UTreeGen {
-    RegistryEntry<ConfiguredFeature<TreeFeatureConfig, ?>> ZAP_APPLE_TREE = ConfiguredFeatures.register("unicopia:zap_apple_tree", Feature.TREE, new TreeFeatureConfig.Builder(
-            BlockStateProvider.of(UBlocks.ZAP_LOG),
-            new UpwardsBranchingTrunkPlacer(7, 2, 3,
-                    UniformIntProvider.create(3, 6), 0.3f,
+    Tree ZAP_APPLE_TREE = Tree.Builder.create(Unicopia.id("zap_apple_tree"), new UpwardsBranchingTrunkPlacer(
+                    7, 2, 3,
+                    UniformIntProvider.create(3, 6),
+                    0.3f,
                     UniformIntProvider.create(1, 3),
                     Registry.BLOCK.getOrCreateEntryList(BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH)
-            ),
-            BlockStateProvider.of(UBlocks.ZAP_LEAVES),
-            new JungleFoliagePlacer(
+            ), new JungleFoliagePlacer(
                     ConstantIntProvider.create(3),
                     ConstantIntProvider.create(2),
                     3
-            ),
-            new TwoLayersFeatureSize(6, 0, 16)
-        ).forceDirt()
-        .build()
-    );
-    RegistryEntry<PlacedFeature> TREES_ZAP = PlacedFeatures.register("unicopia:trees_zap", ZAP_APPLE_TREE,
-        VegetationPlacedFeatures.modifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(0, 0.01F, 1), UBlocks.ZAPLING)
-    );
+            )
+        )
+            .log(UBlocks.ZAP_LOG)
+            .leaves(UBlocks.ZAP_LEAVES)
+            .sapling(Unicopia.id("zapling"))
+            .biomes(Tree.Builder.IS_FOREST)
+            .count(0, 0.01F, 1)
+            .build();
+    Tree GREEN_APPLE_TREE = createAppleTree("green_apple", UBlocks.GREEN_APPLE_LEAVES);
 
-    static void bootstrap() {
-        BiomeModifications.addFeature(BiomeSelectors.foundInOverworld().and(BiomeSelectors.tag(BiomeTags.IS_FOREST)), GenerationStep.Feature.VEGETAL_DECORATION, TREES_ZAP.getKey().get());
+    static Tree createAppleTree(String name, Block leaves) {
+        return Tree.Builder.create(Unicopia.id(name + "_tree"),
+                new StraightTrunkPlacer(4, 6, 2),
+                new BlobFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), 3)
+            )
+                .log(Blocks.OAK_LOG)
+                .leaves(leaves)
+                .sapling(Unicopia.id(name + "_sapling"))
+                .build();
     }
+
+    static void bootstrap() { }
 }

@@ -3,8 +3,8 @@
 	"leaves": [ "minecraft:dark_oak_leaves" ],
 	"wideTrunk": true,
 	"drops": [
-		{ "weight": 1, "item": "unicopia:rottenn_apple" },
+		{ "weight": 1, "item": "unicopia:rotten_apple" },
 		{ "weight": 2, "item": "unicopia:sweet_apple" },
-		{ "weight": 5, "item": "unicopia:zap_apple" }
+		{ "weight": 5, "item": "minecraft:apple" }
 	]
 }

@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client;
 
-import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.block.*;
 import com.minelittlepony.unicopia.client.particle.ChangelingMagicParticle;
 import com.minelittlepony.unicopia.client.particle.CloudsEscapingParticle;
 import com.minelittlepony.unicopia.client.particle.DiskParticle;
@@ -27,7 +27,9 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry.Pendin
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
+import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.color.block.BlockColorProvider;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.color.world.FoliageColors;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
@@ -41,7 +43,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.DyeableItem;
+import net.minecraft.item.*;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.Identifier;
 
@@ -120,20 +122,27 @@ public interface URenderers {
         ColorProviderRegistry.ITEM.register((stack, i) -> {
             return i > 0 || !GemstoneItem.isEnchanted(stack) ? -1 : GemstoneItem.getSpellKey(stack).getColor();
         }, UItems.GEMSTONE);
-        ColorProviderRegistry.BLOCK.register((state, view, pos, color) -> {
+
+        BlockColorProvider tintedProvider = (state, view, pos, color) -> {
             if (view == null || pos == null) {
                 color = FoliageColors.getDefaultColor();
             } else {
                 color = BiomeColors.getFoliageColor(view, pos);
             }
 
-            return (color << 2) | ((color >> 4) & 0xFF);
-        }, UBlocks.ZAP_LEAVES);
+            return ((TintedBlock)state.getBlock()).getTint(state, view, pos, color);
+        };
 
+        ColorProviderRegistry.BLOCK.register(tintedProvider, TintedBlock.REGISTRY.stream().toArray(Block[]::new));
+        ColorProviderRegistry.ITEM.register((stack, i) -> {
+            Block block = Block.getBlockFromItem(stack.getItem());
+            return block instanceof TintedBlock ? tintedProvider.getColor(block.getDefaultState(), null, null, i) : FoliageColors.getDefaultColor();
+        }, TintedBlock.REGISTRY.stream().map(Block::asItem).filter(i -> i != Items.AIR).toArray(Item[]::new));
+
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayers.getTranslucent(), FruitBlock.REGISTRY.stream().toArray(FruitBlock[]::new));
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayers.getTranslucent(), Tree.REGISTRY.stream().flatMap(tree -> tree.sapling().stream()).toArray(Block[]::new));
         // for lava boats
         BlockRenderLayerMap.INSTANCE.putFluids(RenderLayers.getTranslucent(), Fluids.LAVA, Fluids.FLOWING_LAVA);
-
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayers.getTranslucent(), UBlocks.ZAP_BULB, UBlocks.ZAP_APPLE, UBlocks.ZAPLING);
     }
 
     static <T extends ParticleEffect> PendingParticleFactory<T> createFactory(ParticleSupplier<T> supplier) {

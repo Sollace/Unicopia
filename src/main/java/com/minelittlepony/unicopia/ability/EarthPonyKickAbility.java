@@ -29,6 +29,7 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -200,7 +201,9 @@ public class EarthPonyKickAbility implements Ability<Pos> {
             }, (world, state, position, recurse) -> {
                 affectBlockChange(player, position);
 
-                if (world.getBlockState(position.down()).isAir()) {
+                BlockState below = world.getBlockState(position.down());
+
+                if (below.isAir()) {
                     ItemStack stack = tree.pickRandomStack(state);
                     if (!stack.isEmpty()) {
                         world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, position, Block.getRawIdFromState(state));
@@ -211,6 +214,19 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                             position.getZ() + world.random.nextFloat(),
                             stack
                         ));
+                    }
+                } else if (below.getBlock() instanceof Buckable buckable) {
+                    List<ItemStack> stacks = buckable.onBucked((ServerWorld)world, state, pos);
+                    if (!stacks.isEmpty()) {
+                        world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, position, Block.getRawIdFromState(state));
+                        stacks.forEach(stack -> {
+                            capturedDrops.add(new ItemEntity(world,
+                                position.getX() + world.random.nextFloat(),
+                                position.getY() - 0.5,
+                                position.getZ() + world.random.nextFloat(),
+                                stack
+                            ));
+                        });
                     }
                 }
             });
@@ -253,5 +269,9 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                 }
             }
         }, PosHelper.HORIZONTAL);
+    }
+
+    public interface Buckable {
+        List<ItemStack> onBucked(ServerWorld world, BlockState state, BlockPos pos);
     }
 }

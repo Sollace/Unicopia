@@ -1,29 +1,24 @@
 package com.minelittlepony.unicopia.block;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.block.data.ZapAppleStageStore;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.particle.ParticleUtils;
-import com.minelittlepony.unicopia.particle.UParticles;
-
 import net.minecraft.block.*;
-import net.minecraft.entity.*;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.*;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.*;
 
-public class ZapAppleLeavesBlock extends LeavesBlock {
+public class ZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
     public static final EnumProperty<ZapAppleStageStore.Stage> STAGE = EnumProperty.of("stage", ZapAppleStageStore.Stage.class);
 
     ZapAppleLeavesBlock() {
@@ -118,7 +113,7 @@ public class ZapAppleLeavesBlock extends LeavesBlock {
 
     @Override
     public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-        triggerLightning(state, world, pos, player);
+        ZapBlock.triggerLightning(state, world, pos, player);
     }
 
     @Deprecated
@@ -149,9 +144,23 @@ public class ZapAppleLeavesBlock extends LeavesBlock {
         return state.get(STAGE) == ZapAppleStageStore.Stage.HIBERNATING;
     }
 
+    @Override
+    public int getTint(BlockState state, @Nullable BlockRenderView world, @Nullable BlockPos pos, int foliageColor) {
+
+        if (pos == null) {
+            return 0x4C7EFA;
+        }
+
+        return TintedBlock.blend(TintedBlock.rotate(foliageColor, 2), 0x0000FF, 0.3F);
+    }
+
     @Deprecated
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
+        if (state.get(PERSISTENT)) {
+            return Blocks.OAK_LEAVES.calcBlockBreakingDelta(Blocks.OAK_LEAVES.getDefaultState(), player, world, pos);
+        }
+
         float delta = super.calcBlockBreakingDelta(state, player, world, pos);
 
         if (Pony.of(player).getSpecies().canUseEarth()) {
@@ -164,25 +173,4 @@ public class ZapAppleLeavesBlock extends LeavesBlock {
 
         return MathHelper.clamp(delta, 0, 0.9F);
     }
-
-    public static void triggerLightning(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-        if (world instanceof ServerWorld serverWorld) {
-            Vec3d center = Vec3d.ofCenter(pos);
-            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world);
-            world.getOtherEntities(null, Box.from(center).expand(7)).forEach(other -> {
-                float dist = (float)other.getPos().distanceTo(center);
-                if (dist < 4) {
-                    other.onStruckByLightning(serverWorld, lightning);
-                } else {
-                    float damage = 3 / dist;
-                    if (damage > 1) {
-                        other.damage(DamageSource.LIGHTNING_BOLT, damage);
-                    }
-                }
-            });
-        }
-        world.emitGameEvent(GameEvent.LIGHTNING_STRIKE, pos, GameEvent.Emitter.of(state));
-        ParticleUtils.spawnParticle(world, UParticles.LIGHTNING_BOLT, Vec3d.ofCenter(pos), Vec3d.ZERO);
-    }
-
 }
