@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.block;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
@@ -19,8 +18,6 @@ public class FruitBlock extends Block implements Buckable {
     public static final int DEFAULT_FRUIT_SIZE = 8;
     public static final VoxelShape DEFAULT_SHAPE = createFruitShape(DEFAULT_FRUIT_SIZE);
 
-    public static final List<FruitBlock> REGISTRY = new ArrayList<>();
-
     private final Direction attachmentFace;
     private final Block stem;
     private final VoxelShape shape;
@@ -37,7 +34,6 @@ public class FruitBlock extends Block implements Buckable {
         this.attachmentFace = attachmentFace;
         this.stem = stem;
         this.shape = shape;
-        REGISTRY.add(this);
     }
 
     @Override

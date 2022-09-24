@@ -35,9 +35,7 @@ import net.minecraft.client.color.world.FoliageColors;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.SpriteProvider;
-import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
@@ -135,14 +133,12 @@ public interface URenderers {
 
         ColorProviderRegistry.BLOCK.register(tintedProvider, TintedBlock.REGISTRY.stream().toArray(Block[]::new));
         ColorProviderRegistry.ITEM.register((stack, i) -> {
-            Block block = Block.getBlockFromItem(stack.getItem());
-            return block instanceof TintedBlock ? tintedProvider.getColor(block.getDefaultState(), null, null, i) : FoliageColors.getDefaultColor();
+            return tintedProvider.getColor(Block.getBlockFromItem(stack.getItem()).getDefaultState(), null, null, i);
         }, TintedBlock.REGISTRY.stream().map(Block::asItem).filter(i -> i != Items.AIR).toArray(Item[]::new));
 
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayers.getTranslucent(), FruitBlock.REGISTRY.stream().toArray(FruitBlock[]::new));
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayers.getTranslucent(), Tree.REGISTRY.stream().flatMap(tree -> tree.sapling().stream()).toArray(Block[]::new));
+        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), UBlocks.TRANSLUCENT_BLOCKS.stream().toArray(Block[]::new));
         // for lava boats
-        BlockRenderLayerMap.INSTANCE.putFluids(RenderLayers.getTranslucent(), Fluids.LAVA, Fluids.FLOWING_LAVA);
+        BlockRenderLayerMap.INSTANCE.putFluids(RenderLayer.getTranslucent(), Fluids.LAVA, Fluids.FLOWING_LAVA);
     }
 
     static <T extends ParticleEffect> PendingParticleFactory<T> createFactory(ParticleSupplier<T> supplier) {

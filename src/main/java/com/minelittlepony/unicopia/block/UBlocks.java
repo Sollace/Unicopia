@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.block;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.item.UItems;
 
@@ -18,6 +21,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 
 public interface UBlocks {
+    List<Block> TRANSLUCENT_BLOCKS = new ArrayList<>();
+
     Block ROCKS = register("rocks", new RockCropBlock(FabricBlockSettings.of(
                 new FabricMaterialBuilder(MapColor.STONE_GRAY).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().build()
             )
@@ -29,10 +34,10 @@ public interface UBlocks {
     Block FROSTED_OBSIDIAN = register("frosted_obsidian", new FrostedObsidianBlock(FabricBlockSettings.copy(Blocks.OBSIDIAN).ticksRandomly()));
 
     Block ZAP_LOG = register("zap_log", new ZapAppleLogBlock(Blocks.OAK_LOG, MapColor.GRAY, MapColor.DEEPSLATE_GRAY), ItemGroup.MATERIALS);
-    Block ZAP_WOOD = register("zap_wood", new ZapBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.DEEPSLATE_GRAY).sounds(BlockSoundGroup.WOOD), Blocks.OAK_WOOD), ItemGroup.MATERIALS);
+    Block ZAP_WOOD = register("zap_wood", new ZapAppleLogBlock(Blocks.OAK_WOOD, MapColor.DEEPSLATE_GRAY, MapColor.DEEPSLATE_GRAY), ItemGroup.MATERIALS);
 
     Block STRIPPED_ZAP_LOG = register("stripped_zap_log", new ZapAppleLogBlock(Blocks.STRIPPED_OAK_LOG, MapColor.LIGHT_GRAY, MapColor.GRAY), ItemGroup.MATERIALS);
-    Block STRIPPED_ZAP_WOOD = register("stripped_zap_wood", new ZapBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.DEEPSLATE_GRAY).sounds(BlockSoundGroup.WOOD), Blocks.STRIPPED_OAK_WOOD), ItemGroup.MATERIALS);
+    Block STRIPPED_ZAP_WOOD = register("stripped_zap_wood", new ZapAppleLogBlock(Blocks.STRIPPED_OAK_WOOD, MapColor.GRAY, MapColor.GRAY), ItemGroup.MATERIALS);
 
     Block ZAP_LEAVES = register("zap_leaves", new ZapAppleLeavesBlock(), ItemGroup.DECORATIONS);
     Block ZAP_BULB = register("zap_bulb", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GRAY).strength(500, 1200).sounds(BlockSoundGroup.AZALEA_LEAVES), Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE));
@@ -44,6 +49,7 @@ public interface UBlocks {
             () -> UItems.GREEN_APPLE.getDefaultStack()
     ), ItemGroup.DECORATIONS);
     Block GREEN_APPLE = register("green_apple", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GREEN).sounds(BlockSoundGroup.WOOD), Direction.DOWN, GREEN_APPLE_LEAVES, FruitBlock.DEFAULT_SHAPE));
+    Block GREEN_APPLE_SPROUT = register("green_apple_sprout", new SproutBlock(0xE5FFFF88, () -> UItems.GREEN_APPLE_SEEDS, () -> UTreeGen.GREEN_APPLE_TREE.sapling().map(Block::getDefaultState).get()));
 
     static <T extends Block> T register(String name, T item) {
         return register(Unicopia.id(name), item);
@@ -61,6 +67,9 @@ public interface UBlocks {
     static <T extends Block> T register(Identifier id, T block) {
         if (block instanceof TintedBlock) {
             TintedBlock.REGISTRY.add(block);
+        }
+        if (block instanceof SaplingBlock || block instanceof SproutBlock || block instanceof FruitBlock) {
+            TRANSLUCENT_BLOCKS.add(block);
         }
         return Registry.register(Registry.BLOCK, id, block);
     }
