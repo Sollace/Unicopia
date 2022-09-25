@@ -13,11 +13,13 @@ import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
-import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
+import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.GlassesItem;
+import com.minelittlepony.unicopia.item.UItems;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
@@ -28,10 +30,10 @@ import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.Arm;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
@@ -65,6 +67,8 @@ public class UHud extends DrawableHelper {
 
     @Nullable
     private LoopingSoundInstance<PlayerEntity> heartbeatSound;
+    @Nullable
+    private LoopingSoundInstance<PlayerEntity> partySound;
 
     public void render(InGameHud hud, MatrixStack matrices, float tickDelta) {
 
@@ -210,7 +214,10 @@ public class UHud extends DrawableHelper {
 
         boolean hasEffect = client.player.hasStatusEffect(UEffects.SUN_BLINDNESS);
 
-        if (hasEffect || (pony.getSpecies() == Race.BAT && SunBlindnessStatusEffect.hasSunExposure(client.player))) {
+        ItemStack glasses = GlassesItem.getForEntity(client.player);
+        boolean hasSunglasses = glasses.getItem() == UItems.SUNGLASSES;
+
+        if (hasEffect || (!hasSunglasses && pony.getSpecies() == Race.BAT && SunBlindnessStatusEffect.hasSunExposure(client.player))) {
             float i = hasEffect ? (client.player.getStatusEffect(UEffects.SUN_BLINDNESS).getDuration() - tickDelta) / SunBlindnessStatusEffect.MAX_DURATION : 0;
 
             float pulse = (1 + (float)Math.sin(client.player.age / 108F)) * 0.25F;
@@ -235,13 +242,42 @@ public class UHud extends DrawableHelper {
             }
         }
 
+        if (hasSunglasses) {
+
+            if (glasses.hasCustomName() && "Cool Shades".equals(glasses.getName().getString())) {
+                final int delay = 7;
+                final int current = client.player.age / delay;
+                final int tint = DyeColor.byId(current % DyeColor.values().length).getSignColor();
+                fillGradient(matrices, 0, 0, scaledWidth, scaledHeight, 0x1F000000 | tint, 0x5F000000 | tint);
+
+                if (partySound == null || partySound.isDone()) {
+                    client.getSoundManager().play(
+                            partySound = new LoopingSoundInstance<>(client.player, player -> {
+                                return UItems.SUNGLASSES.isApplicable(player) || true;
+                            }, SoundEvents.MUSIC_DISC_PIGSTEP, 1, 1, client.world.random)
+                    );
+                } else if (partySound != null) {
+                    partySound.setMuted(false);
+                }
+            } else {
+                if (partySound != null) {
+                    partySound.setMuted(true);
+                }
+                fillGradient(matrices, 0, 0, scaledWidth, scaledHeight, 0x0F000088, 0xAF000000);
+            }
+        } else {
+            if (partySound != null) {
+                partySound.setMuted(true);
+            }
+        }
+
         float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();
 
         if (exhaustion > 0) {
             if (exhaustion > 0.5F && (heartbeatSound == null || heartbeatSound.isDone())) {
                 client.getSoundManager().play(
                         heartbeatSound = new LoopingSoundInstance<>(client.player, player -> {
-                            return Pony.of(player).getMagicalReserves().getExhaustion().getPercentFill() > 0.5F;
+                            return partySound != null && Pony.of(player).getMagicalReserves().getExhaustion().getPercentFill() > 0.5F;
                         }, USounds.ENTITY_PLAYER_HEARTBEAT, 1, 1, client.world.random)
                 );
             }

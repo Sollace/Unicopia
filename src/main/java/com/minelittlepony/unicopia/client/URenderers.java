@@ -65,6 +65,7 @@ public interface URenderers {
         AccessoryFeatureRenderer.register(WingsFeatureRenderer::new);
         AccessoryFeatureRenderer.register(IcarusWingsFeatureRenderer::new);
         AccessoryFeatureRenderer.register(BatWingsFeatureRenderer::new);
+        AccessoryFeatureRenderer.register(GlassesFeatureRenderer::new);
 
         EntityRendererRegistry.register(UEntities.THROWN_ITEM, FlyingItemEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.MUFFIN, FlyingItemEntityRenderer::new);

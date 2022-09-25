@@ -38,8 +38,8 @@ public abstract class WearableItem extends Item implements Wearable {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
         return TrinketsDelegate.getInstance().getAvailableTrinketSlots(player, TrinketsDelegate.ALL).stream()
-                .findAny()
                 .filter(slotId -> TrinketsDelegate.getInstance().equipStack(player, slotId, stack))
+                .findAny()
                 .map(slotId -> TypedActionResult.success(stack, world.isClient()))
                 .orElseGet(() -> TypedActionResult.fail(stack));
     }

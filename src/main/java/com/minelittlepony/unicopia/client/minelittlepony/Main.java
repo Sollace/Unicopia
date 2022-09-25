@@ -33,6 +33,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
         IGear.register(() -> new BangleGear(TrinketsDelegate.MAINHAND));
         IGear.register(() -> new BangleGear(TrinketsDelegate.OFFHAND));
         IGear.register(AmuletGear::new);
+        IGear.register(GlassesGear::new);
     }
 
     @SuppressWarnings("unchecked")

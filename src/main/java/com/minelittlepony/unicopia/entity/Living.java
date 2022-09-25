@@ -13,10 +13,12 @@ import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.block.data.DragonBreathStore;
+import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
+import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -28,6 +30,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -168,10 +171,20 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             }
         }
 
-        if (source instanceof MagicalDamageSource) {
+        if (source instanceof MagicalDamageSource magical) {
             Entity attacker = ((MagicalDamageSource)source).getSpell();
             if (attacker != null) {
                 this.attacker = attacker;
+            }
+
+            if (magical.breaksSunglasses()) {
+                ItemStack glasses = GlassesItem.getForEntity(entity);
+                if (glasses.getItem() == UItems.SUNGLASSES) {
+                    ItemStack broken = UItems.BROKEN_SUNGLASSES.getDefaultStack();
+                    broken.setNbt(glasses.getNbt());
+                    TrinketsDelegate.getInstance().setEquippedStack(entity, TrinketsDelegate.FACE, broken);
+                    entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.PLAYERS, 1, 1);
+                }
             }
         }
 

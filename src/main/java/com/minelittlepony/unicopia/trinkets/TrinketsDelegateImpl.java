@@ -40,6 +40,19 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
     }
 
     @Override
+    public void setEquippedStack(LivingEntity entity, Identifier slot, ItemStack stack) {
+        getInventory(entity, slot).ifPresent(inventory -> {
+            SoundEvent soundEvent = stack.getEquipSound();
+            inventory.clear();
+            inventory.setStack(0, stack);
+            if (soundEvent != null) {
+                entity.emitGameEvent(GameEvent.EQUIP);
+                entity.playSound(soundEvent, 1, 1);
+            }
+        });
+    }
+
+    @Override
     public Set<Identifier> getAvailableTrinketSlots(LivingEntity entity, Set<Identifier> probedSlots) {
         probedSlots = new HashSet<>(probedSlots);
         probedSlots.removeAll(getInventories(entity)

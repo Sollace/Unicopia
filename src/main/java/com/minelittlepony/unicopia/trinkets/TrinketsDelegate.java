@@ -17,8 +17,9 @@ public interface TrinketsDelegate {
     Identifier MAINHAND = new Identifier("hand:glove");
     Identifier OFFHAND = new Identifier("offhand:glove");
     Identifier NECKLACE = new Identifier("chest:necklace");
+    Identifier FACE = new Identifier("head:face");
 
-    Set<Identifier> ALL = new TreeSet<>(List.of(MAINHAND, OFFHAND, NECKLACE));
+    Set<Identifier> ALL = new TreeSet<>(List.of(MAINHAND, OFFHAND, NECKLACE, FACE));
 
     TrinketsDelegate EMPTY = new TrinketsDelegate() {};
 
@@ -48,12 +49,26 @@ public interface TrinketsDelegate {
         return true;
     }
 
+    default void setEquippedStack(LivingEntity entity, Identifier slot, ItemStack stack) {
+        EquipmentSlot eq = slot == FACE ? EquipmentSlot.HEAD
+                : slot == NECKLACE ? EquipmentSlot.CHEST
+                : slot == MAINHAND ? EquipmentSlot.CHEST
+                : slot == OFFHAND ? EquipmentSlot.OFFHAND
+                : null;
+        if (eq != null) {
+            entity.equipStack(eq, stack);
+        }
+    }
+
     default Set<Identifier> getAvailableTrinketSlots(LivingEntity entity, Set<Identifier> probedSlots) {
         return probedSlots.stream().filter(slot -> getEquipped(entity, slot).count() == 0).collect(Collectors.toSet());
     }
 
     default Stream<ItemStack> getEquipped(LivingEntity entity, Identifier slot) {
 
+        if (slot == FACE) {
+            return Stream.of(entity.getEquippedStack(EquipmentSlot.HEAD));
+        }
         if (slot == NECKLACE || slot == MAINHAND) {
             return Stream.of(entity.getEquippedStack(EquipmentSlot.CHEST));
         }

@@ -116,6 +116,9 @@ public interface UItems {
             .rarity(Rarity.RARE)
             .group(ItemGroup.DECORATIONS)));
 
+    GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1).group(ItemGroup.COMBAT)));
+    GlassesItem BROKEN_SUNGLASSES = register("broken_sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1).group(ItemGroup.COMBAT)));
+
     static <T extends Item> T register(String name, T item) {
         return register(Unicopia.id(name), item);
     }

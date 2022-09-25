@@ -65,7 +65,7 @@ public class RainboomAbilitySpell extends AbstractSpell {
         }
 
         source.findAllEntitiesInRange(rad).forEach(e -> {
-            e.damage(MagicalDamageSource.create("rainboom", source), 6);
+            e.damage(MagicalDamageSource.create("rainboom", source).setBreakSunglasses(), 6);
         });
         PosHelper.getAllInRegionMutable(source.getOrigin(), effect_range).forEach(pos -> {
             BlockState state = source.getReferenceWorld().getBlockState(pos);

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -63,7 +64,12 @@ public class SunBlindnessStatusEffect extends StatusEffect {
             return true;
         }
 
+
         if (entity.getEquippedStack(EquipmentSlot.HEAD).isIn(UTags.SHADES)) {
+            return false;
+        }
+
+        if (TrinketsDelegate.getInstance().getEquipped(entity, TrinketsDelegate.FACE).anyMatch(i -> i.isIn(UTags.SHADES))) {
             return false;
         }
 
