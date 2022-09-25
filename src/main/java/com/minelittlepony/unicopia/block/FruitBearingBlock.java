@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
 
 import net.minecraft.block.*;
 import net.minecraft.item.ItemStack;
@@ -21,7 +22,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 import net.minecraft.world.event.GameEvent;
 
-public class FruitBearingBlock extends LeavesBlock implements TintedBlock {
+public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Buckable {
     public static final IntProperty AGE = Properties.AGE_25;
     public static final int WITHER_AGE = 15;
     public static final EnumProperty<Stage> STAGE = EnumProperty.of("stage", Stage.class);
@@ -111,6 +112,18 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock {
         BlockState newState = super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 
         return newState;
+    }
+
+    @Override
+    public List<ItemStack> onBucked(ServerWorld world, BlockState state, BlockPos pos) {
+        world.setBlockState(pos, state.with(STAGE, Stage.IDLE).with(AGE, 0));
+
+        pos = pos.down();
+        state = world.getBlockState(pos);
+        if (state.isOf(fruit.get()) && state.getBlock() instanceof Buckable buckable) {
+            return buckable.onBucked(world, state, pos);
+        }
+        return List.of();
     }
 
     @Override

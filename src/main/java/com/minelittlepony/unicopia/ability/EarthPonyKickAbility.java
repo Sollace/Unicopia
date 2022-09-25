@@ -1,11 +1,10 @@
 package com.minelittlepony.unicopia.ability;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.collect.Lists;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
@@ -157,10 +156,8 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
         PlayerEntity player = iplayer.getMaster();
 
-        boolean harmed = player.getHealth() < player.getMaxHealth();
-
         if (BlockDestructionManager.of(player.world).getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
-            if (!harmed || player.world.random.nextInt(30) == 0) {
+            if (player.world.random.nextInt(30) == 0) {
                 tree.traverse(player.world, pos, (w, state, p, recurseLevel) -> {
                     if (recurseLevel < 5) {
                         w.breakBlock(p, true);
@@ -194,52 +191,55 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         TreeType tree = TreeType.at(pos, player.world);
 
         if (tree.countBlocks(player.world, pos) > 0) {
-            List<ItemEntity> capturedDrops = Lists.newArrayList();
+            List<ItemEntity> capturedDrops = new ArrayList<>();
 
             tree.traverse(player.world, pos, (world, state, position, recurse) -> {
                 affectBlockChange(player, position);
             }, (world, state, position, recurse) -> {
                 affectBlockChange(player, position);
-
-                BlockState below = world.getBlockState(position.down());
-
-                if (below.isAir()) {
-                    ItemStack stack = tree.pickRandomStack(state);
-                    if (!stack.isEmpty()) {
-                        world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, position, Block.getRawIdFromState(state));
-
-                        capturedDrops.add(new ItemEntity(world,
-                            position.getX() + world.random.nextFloat(),
-                            position.getY() - 0.5,
-                            position.getZ() + world.random.nextFloat(),
-                            stack
-                        ));
-                    }
-                } else if (below.getBlock() instanceof Buckable buckable) {
-                    List<ItemStack> stacks = buckable.onBucked((ServerWorld)world, state, pos);
-                    if (!stacks.isEmpty()) {
-                        world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, position, Block.getRawIdFromState(state));
-                        stacks.forEach(stack -> {
-                            capturedDrops.add(new ItemEntity(world,
-                                position.getX() + world.random.nextFloat(),
-                                position.getY() - 0.5,
-                                position.getZ() + world.random.nextFloat(),
-                                stack
-                            ));
-                        });
-                    }
+                List<ItemEntity> drops = buckBlock(tree, state, world, position)
+                        .filter(i -> !i.isEmpty())
+                        .map(stack -> createDrop(stack, position, world))
+                        .toList();
+                if (!drops.isEmpty()) {
+                    world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, position, Block.getRawIdFromState(state));
+                    capturedDrops.addAll(drops);
                 }
             });
 
-            capturedDrops.forEach(item -> {
-                item.setToDefaultPickupDelay();
-                player.world.spawnEntity(item);
-            });
+            capturedDrops.forEach(player.world::spawnEntity);
 
             return capturedDrops.size() / 3;
         }
 
         return 0;
+    }
+
+    private ItemEntity createDrop(ItemStack stack, BlockPos pos, World world) {
+        ItemEntity entity = new ItemEntity(world,
+            pos.getX() + world.random.nextFloat(),
+            pos.getY() - 0.5,
+            pos.getZ() + world.random.nextFloat(),
+            stack
+        );
+        entity.setToDefaultPickupDelay();
+        return entity;
+    }
+
+    private Stream<ItemStack> buckBlock(TreeType tree, BlockState treeState, World world, BlockPos position) {
+
+        if (treeState.getBlock() instanceof Buckable buckable) {
+            return buckable.onBucked((ServerWorld)world, treeState, position).stream();
+        }
+
+        BlockPos down = position.down();
+        BlockState below = world.getBlockState(down);
+
+        if (below.isAir()) {
+            return Stream.of(tree.pickRandomStack(treeState));
+        }
+
+        return Stream.empty();
     }
 
     private void affectBlockChange(PlayerEntity player, BlockPos position) {
@@ -249,23 +249,24 @@ public class EarthPonyKickAbility implements Ability<Pos> {
             BlockState s = player.world.getBlockState(p);
 
             if (s.getBlock() instanceof BeehiveBlock) {
-                BeehiveBlockEntity hive = (BeehiveBlockEntity)player.world.getBlockEntity(p);
-                if (hive != null) {
-                    hive.angerBees(player, s, BeehiveBlockEntity.BeeState.BEE_RELEASED);
+                if (player.world.getBlockEntity(p) instanceof BeehiveBlockEntity hive) {
+                    hive.angerBees(player, s, BeehiveBlockEntity.BeeState.EMERGENCY);
                 }
+
+                player.world.updateComparators(position, s.getBlock());
 
                 Box area = new Box(position).expand(8, 6, 8);
                 List<BeeEntity> nearbyBees = player.world.getNonSpectatingEntities(BeeEntity.class, area);
 
                 if (!nearbyBees.isEmpty()) {
-                   List<PlayerEntity> nearbyPlayers = player.world.getNonSpectatingEntities(PlayerEntity.class, area);
-                   int i = nearbyPlayers.size();
+                    List<PlayerEntity> nearbyPlayers = player.world.getNonSpectatingEntities(PlayerEntity.class, area);
+                    int i = nearbyPlayers.size();
 
-                   for (BeeEntity bee : nearbyBees) {
-                      if (bee.getTarget() == null) {
-                         bee.setTarget(nearbyPlayers.get(player.world.random.nextInt(i)));
-                      }
-                   }
+                    for (BeeEntity bee : nearbyBees) {
+                        if (bee.getTarget() == null) {
+                            bee.setTarget(nearbyPlayers.get(player.world.random.nextInt(i)));
+                        }
+                    }
                 }
             }
         }, PosHelper.HORIZONTAL);
