@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
 
+import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.block.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -29,10 +30,18 @@ public class FruitBlock extends Block implements Buckable {
     }
 
     public FruitBlock(Settings settings, Direction attachmentFace, Block stem, VoxelShape shape) {
+        this(settings, attachmentFace, stem, shape, true);
+    }
+
+    public FruitBlock(Settings settings, Direction attachmentFace, Block stem, VoxelShape shape, boolean flammable) {
         super(settings.nonOpaque().suffocates(UBlocks::never).blockVision(UBlocks::never));
         this.attachmentFace = attachmentFace;
         this.stem = stem;
         this.shape = shape;
+
+        if (flammable) {
+            FlammableBlockRegistry.getDefaultInstance().add(this, 20, 50);
+        }
     }
 
     @Override

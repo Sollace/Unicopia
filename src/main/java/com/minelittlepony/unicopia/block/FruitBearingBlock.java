@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
 
+import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.block.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -46,6 +47,7 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
         this.fruit = fruit;
         this.rottenFruitSupplier = rottenFruitSupplier;
         REGISTRY.add(this);
+        FlammableBlockRegistry.getDefaultInstance().add(this, 30, 60);
     }
 
     @Override
@@ -63,7 +65,7 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.randomTick(state, world, pos, random);
 
-        if (shouldDecay(state)) {
+        if (shouldDecay(state) || state.get(PERSISTENT)) {
             return;
         }
 

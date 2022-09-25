@@ -80,6 +80,7 @@ public interface UItems {
     Item ROCK_STEW = register("rock_stew", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.MUSHROOM_STEW)));
 
     Item GREEN_APPLE_SEEDS = register("green_apple_seeds", new AliasedBlockItem(UBlocks.GREEN_APPLE_SPROUT, new Item.Settings().group(ItemGroup.MATERIALS)));
+    Item SWEET_APPLE_SEEDS = register("sweet_apple_seeds", new AliasedBlockItem(UBlocks.SWEET_APPLE_SPROUT, new Item.Settings().group(ItemGroup.MATERIALS)));
 
     Item MUG = register("mug", new Item(new Settings().group(ItemGroup.MATERIALS).maxCount(16)));
     Item CIDER = register("cider", new DrinkableItem(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.CIDER).maxCount(1).recipeRemainder(MUG)));

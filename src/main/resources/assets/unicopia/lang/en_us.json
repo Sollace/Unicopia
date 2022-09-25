@@ -58,6 +58,7 @@
   "item.unicopia.weird_rock": "Weird Rock",
   "item.unicopia.rock_stew": "Rock Stew",
   "item.unicopia.green_apple_seeds": "Granny Smith Apple Seeds",
+  "item.unicopia.sweet_apple_seeds": "Sweet Apple Seeds",
 
   "item.unicopia.daffodil_daisy_sandwich": "Daffodil Daisy Sandwich",
   "item.unicopia.hay_burger": "Hay Burger",
@@ -97,9 +98,13 @@
   "block.unicopia.zap_leaves": "Zap Apple Leaves",
   "block.unicopia.zap_apple": "Zap Apple",
   "block.unicopia.zap_bulb": "Unripened Zap Apple",
+
   "block.unicopia.green_apple_leaves": "Granny Smith Leaves",
   "block.unicopia.green_apple_sapling": "Granny Smith Sapling",
   "block.unicopia.green_apple_sprout": "Granny Smith Sprout",
+  "block.unicopia.sweet_apple_leaves": "Sweet Apple Leaves",
+  "block.unicopia.sweet_apple_sapling": "Sweet Apple Sapling",
+  "block.unicopia.sweet_apple_sprout": "Sweet Apple Sprout",
 
   "entity.unicopia.butterfly": "Butterfly",
   "entity.unicopia.twittermite": "Twittermite",

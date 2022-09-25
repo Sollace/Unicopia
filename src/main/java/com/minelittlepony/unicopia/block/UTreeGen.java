@@ -32,6 +32,7 @@ public interface UTreeGen {
             .count(0, 0.01F, 1)
             .build();
     Tree GREEN_APPLE_TREE = createAppleTree("green_apple", UBlocks.GREEN_APPLE_LEAVES);
+    Tree SWEET_APPLE_TREE = createAppleTree("sweet_apple", UBlocks.SWEET_APPLE_LEAVES);
 
     static Tree createAppleTree(String name, Block leaves) {
         return Tree.Builder.create(Unicopia.id(name + "_tree"),
