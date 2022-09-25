@@ -1,7 +1,7 @@
 {
   "replace": false,
-  "values": [
-    "unicopia:zap_leaves",
+  "traits": "earth:2 life:1",
+  "items": [
     "unicopia:green_apple_leaves",
     "unicopia:sweet_apple_leaves",
     "unicopia:sour_apple_leaves"

@@ -47,6 +47,7 @@ public record Tree (
         private Optional<Predicate<BiomeSelectionContext>> selector = Optional.empty();
         private Optional<PlacementModifier> countModifier = Optional.empty();
         private Optional<Supplier<TreeFeatureConfig.Builder>> configSupplier = Optional.empty();
+        private Optional<TwoLayersFeatureSize> size = Optional.empty();
 
         private Builder(Identifier id, TrunkPlacer trunkPlacer, FoliagePlacer foliagePlacer) {
             this.id = id;
@@ -84,6 +85,11 @@ public record Tree (
             return this;
         }
 
+        public Builder farmingCondition(int yLevel, int sizeBelowY, int sizeAboveY) {
+            this.size = Optional.of(new TwoLayersFeatureSize(yLevel, Math.max(0, sizeBelowY), Math.max(0, sizeAboveY)));
+            return this;
+        }
+
         public Tree build() {
             RegistryEntry<ConfiguredFeature<TreeFeatureConfig, ?>> configuredFeature = ConfiguredFeatures.register(id.toString(), Feature.TREE, configSupplier.map(Supplier::get)
                     .orElseGet(() -> new TreeFeatureConfig.Builder(
@@ -91,7 +97,7 @@ public record Tree (
                         trunkPlacer,
                         BlockStateProvider.of(leavesType),
                         foliagePlacer,
-                        new TwoLayersFeatureSize(6, 0, 16)
+                        size.get()
                     ).forceDirt()).build());
 
             Optional<Block> sapling = saplingId.map(id -> UBlocks.register(id, new SaplingBlock(new SaplingGenerator() {

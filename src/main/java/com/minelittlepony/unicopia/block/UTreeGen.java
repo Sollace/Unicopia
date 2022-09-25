@@ -30,15 +30,18 @@ public interface UTreeGen {
             .sapling(Unicopia.id("zapling"))
             .biomes(Tree.Builder.IS_FOREST)
             .count(0, 0.01F, 1)
+            .farmingCondition(6, 0, 8)
             .build();
-    Tree GREEN_APPLE_TREE = createAppleTree("green_apple", UBlocks.GREEN_APPLE_LEAVES);
-    Tree SWEET_APPLE_TREE = createAppleTree("sweet_apple", UBlocks.SWEET_APPLE_LEAVES);
+    Tree GREEN_APPLE_TREE = createAppleTree("green_apple", UBlocks.GREEN_APPLE_LEAVES, 2);
+    Tree SWEET_APPLE_TREE = createAppleTree("sweet_apple", UBlocks.SWEET_APPLE_LEAVES, 3);
+    Tree SOUR_APPLE_TREE = createAppleTree("sour_apple", UBlocks.SOUR_APPLE_LEAVES, 5);
 
-    static Tree createAppleTree(String name, Block leaves) {
+    static Tree createAppleTree(String name, Block leaves, int preferredDensity) {
         return Tree.Builder.create(Unicopia.id(name + "_tree"),
                 new StraightTrunkPlacer(4, 6, 2),
                 new BlobFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), 3)
             )
+                .farmingCondition(1, preferredDensity - 2, preferredDensity)
                 .log(Blocks.OAK_LOG)
                 .leaves(leaves)
                 .sapling(Unicopia.id(name + "_sapling"))

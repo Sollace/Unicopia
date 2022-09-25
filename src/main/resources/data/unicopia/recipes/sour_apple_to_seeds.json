@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "unicopia:sour_apple" }
+  ],
+  "result": { "item": "unicopia:sour_apple_seeds", "count": 2 }
+}

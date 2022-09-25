@@ -2,6 +2,7 @@
   "replace": false,
   "traits": "earth:2 life:1 darkness:1",
   "items": [
+    "minecraft:dark_oak_leaves",
     "minecraft:dark_oak_planks",
     "minecraft:dark_oak_log",
     "minecraft:dark_oak_stairs",
