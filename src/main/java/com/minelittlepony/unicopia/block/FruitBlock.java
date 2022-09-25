@@ -7,26 +7,25 @@ import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
 import net.minecraft.block.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.*;
 
 public class FruitBlock extends Block implements Buckable {
-    public static final int DEFAULT_FRUIT_SIZE = 8;
-    public static final VoxelShape DEFAULT_SHAPE = createFruitShape(DEFAULT_FRUIT_SIZE);
+    public static final int DEFAULT_FRUIT_SIZE = 5;
+    public static final double DEFAULT_STEM_OFFSET = 2.6F;
+    public static final VoxelShape DEFAULT_SHAPE = createFruitShape(DEFAULT_STEM_OFFSET, DEFAULT_FRUIT_SIZE);
 
     private final Direction attachmentFace;
     private final Block stem;
     private final VoxelShape shape;
 
-    public static VoxelShape createFruitShape(int fruitSize) {
-        int min = (16 - fruitSize) / 2;
-        int max = 16 - min;
-
-        return VoxelShapes.cuboid(min / 16D, (max - fruitSize) / 16D, min / 16D, max / 16D, 1, max / 16D);
+    public static VoxelShape createFruitShape(double stemOffset, double fruitSize) {
+        final double min = (16 - fruitSize) * 0.5;
+        final double max = 16 - min;
+        final double top = 16 - stemOffset;
+        return createCuboidShape(min, top - fruitSize, min, max, top, max);
     }
 
     public FruitBlock(Settings settings, Direction attachmentFace, Block stem, VoxelShape shape) {
