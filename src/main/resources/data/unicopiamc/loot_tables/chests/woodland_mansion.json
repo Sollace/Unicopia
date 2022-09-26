@@ -37,6 +37,22 @@
             }
           ],
           "name": "unicopia:golden_wing"
+        },
+        {
+          "type": "minecraft:tag",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 2.0,
+                "max": 5.0,
+                "type": "minecraft:uniform"
+              }
+            }
+          ],
+          "expand": true,
+          "name": "unicopia:fresh_apples"
         }
       ]
     }
