@@ -319,7 +319,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         entity.fallDistance = 0;
 
-        if (type.isAvian()) {
+        if (type.isAvian() && pony.getSpecies() != Race.BAT) {
             applyThrust(velocity);
 
             if (entity.world.random.nextInt(9000) == 0) {
