@@ -6,6 +6,8 @@ import net.minecraft.entity.data.*;
 import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.*;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -20,6 +22,9 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
     private static final byte HAS_BURNER = 2;
     private static final byte BURNER_ACTIVE = 4;
     private static final TrackedData<Integer> FLAGS = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
+    private Vec3d prevVehicleVel = Vec3d.ZERO;
+    private Vec3d velocityBeforeTick = Vec3d.ZERO;
 
     public AirBalloonEntity(EntityType<? extends AirBalloonEntity> type, World world) {
         super(type, world);
@@ -48,7 +53,7 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
     }
 
     public boolean isBurnerActive() {
-        return getFlag((byte)(HAS_BURNER | BURNER_ACTIVE));
+        return getFlag((byte)(HAS_BURNER | BURNER_ACTIVE | HAS_BALLOON));
     }
 
     public void setBurnerActive(boolean burnerActive) {
@@ -65,15 +70,12 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
     }
 
     private boolean isAirworthy() {
-        return hasBalloon() && (!onGround || isBurnerActive());
+        return hasBalloon() && isBurnerActive();
     }
 
     @Override
     public void tick() {
-        this.setHasBalloon(true);
-        this.setHasBurner(true);
-        this.setBurnerActive(false);
-
+        prevVehicleVel = getVelocity();
         setAir(getMaxAir());
 
         if (isAirworthy()) {
@@ -81,9 +83,14 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
                     .add(getWind(world, getBlockPos()))
                     .normalize()
                     .multiply(0.2)
-                    .add(0, isBurnerActive() ? 0.09F : isTouchingWater() ? 0.02F : -0.06F, 0));
+                    .add(0, isBurnerActive() ? 0.00F : isTouchingWater() ? 0.02F : -0.06F, 0));
         } else {
-            addVelocity(0, isTouchingWater() ? 0.02F : -0.02F, 0);
+            addVelocity(0, -0.03, 0);
+
+            if (isSubmergedInWater()) {
+                double yy = getVelocity().y;
+                setVelocity(getVelocity().multiply(0.9, 0.4, 0.9).add(0, Math.abs(yy) / 2F, 0));
+            }
         }
 
         if (isLeashed()) {
@@ -96,60 +103,26 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
             }
         }
 
-        if (age % 20 < 10) {
-            if (getVelocity().y < 0.1) {
-                addVelocity(0, 0.01, 0);
-            }
-        } else {
-            if (getVelocity().y > -0.1) {
-                addVelocity(0, -0.01, 0);
-            }
-        }
+        super.tick();
 
-        //setVelocity(Vec3d.ZERO);
+        velocityBeforeTick = getVelocity();
+
         float weight = 0;
 
-        if (getVelocity().length() > 0) {
-            Box box = getBoundingBox();
-            for (var e : this.world.getOtherEntities(this, box.expand(1, 1.0E-7, 1))) {
-                Vec3d vel = e.getVelocity();
+        if (velocityBeforeTick.length() > 0.01 && !isSubmergedInWater()) {
+            Box box = getInteriorBoundingBox();
 
-                if (getVelocity().y > 0 && box.maxY > e.getBoundingBox().minY) {
-                    e.setPosition(e.getX(), box.maxY + 0.1, e.getZ());
-                }
-
-                if (!(e instanceof PlayerEntity)) {
-                    e.setVelocity(vel.multiply(0.3).add(getVelocity().multiply(0.786)));
-                }
-
-                e.setOnGround(true);
-
-                if (horizontalSpeed != 0) {
-                    e.distanceTraveled = 0;
-                    e.horizontalSpeed = 0;
-                    if (e instanceof LivingEntity l) {
-                        l.limbAngle = 0;
-                        l.limbDistance = 0;
-                    }
-                }
-
+            for (Entity e : world.getOtherEntities(this, box.expand(-0.2, 1, -0.2))) {
+                updatePassenger(e, box, !onGround);
                 weight++;
             }
 
-            Box balloonTopBox = getBoundingBox().offset(0.125, 11, 0).expand(2.25, 0, 2);
+            if (hasBalloon()) {
+                Box balloonBox = getBalloonBoundingBox();
 
-            for (var e : this.world.getOtherEntities(this, balloonTopBox.expand(1.0E-7))) {
-                Vec3d vel = e.getVelocity();
-
-                double yVel = vel.y + Math.max(balloonTopBox.maxY - e.getBoundingBox().minY, 0);
-                yVel /= 8;
-                yVel += 0.3;
-
-                e.setVelocity(vel.getX(), yVel, vel.getZ());
-                e.setVelocity(e.getVelocity().multiply(0.3).add(getVelocity().multiply(0.786)));
-                e.setOnGround(true);
-
-                Living.updateVelocity(e);
+                for (Entity e : world.getOtherEntities(this, balloonBox.expand(1.0E-7))) {
+                    updatePassenger(e, balloonBox, false);
+                }
             }
         }
 
@@ -159,27 +132,53 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
             }
             addVelocity(0, MathHelper.clamp(-weight / 10F, -1, isLeashed() ? 0.2F : 1), 0);
         }
+    }
 
-        super.tick();
+    private void updatePassenger(Entity e, Box box, boolean checkBasket) {
+        Vec3d pos = e.getPos();
+
+        double xx = checkBasket ? MathHelper.clamp(pos.x, box.minX, box.maxX) : pos.x;
+        double zz = checkBasket ? MathHelper.clamp(pos.z, box.minZ, box.maxZ) : pos.z;
+        double yy = pos.y;
+
+        Box entityBox = e.getBoundingBox();
+
+        if ((Math.abs(velocityBeforeTick.y) > 0.0001F && entityBox.minY < box.maxY)
+                || (entityBox.minY > box.maxY && entityBox.minY < box.maxY + 0.01)) {
+           yy = box.maxY - Math.signum(velocityBeforeTick.y) * 0.01;
+        }
+
+        if (xx != pos.x || zz != pos.z || yy != pos.y) {
+            e.setPos(xx + velocityBeforeTick.x, yy, zz + velocityBeforeTick.z);
+        }
+
+        Vec3d vel = e.getVelocity();
+        if (vel.lengthSquared() >= prevVehicleVel.lengthSquared()) {
+            vel = vel.subtract(prevVehicleVel);
+        }
+
+        e.setVelocity(vel.multiply(0.5).add(velocityBeforeTick.multiply(0.65)));
+
+        Living.updateVelocity(e);
+        if (e instanceof ServerPlayerEntity ply) {
+            ply.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(ply));
+        }
+
+        e.setOnGround(true);
+
+        if (horizontalSpeed != 0) {
+            e.distanceTraveled = 0;
+            e.horizontalSpeed = 0;
+            if (e instanceof LivingEntity l) {
+                l.limbAngle = 0;
+                l.limbDistance = 0;
+            }
+        }
     }
 
     @Override
     public void onPlayerCollision(PlayerEntity player) {
-        // TODO: check that this is still working correctly after adding Living.updateVelocity(i) in AirBalloonEntity.tick()
-        if (getVelocity().lengthSquared() > 0) {
-           // player.setVelocity(getVelocity().multiply(1.3));
-            player.setVelocity(player.getVelocity().multiply(0.3).add(getVelocity().multiply(
-                    getVelocity().y < 0 ? 0.828 : 0.728
-            )));
-
-            double diff = (getBoundingBox().maxY + getVelocity().y) - player.getBoundingBox().minY;
-
-            if (diff > 0) {
-                player.addVelocity(0, diff, 0);
-            }
-
-            Living.updateVelocity(player);
-        }
+      //  updatePassenger(player, getInteriorBoundingBox(), false);
     }
 
     @Override
@@ -203,7 +202,18 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
 
     @Override
     public Box getVisibilityBoundingBox() {
-        return getBoundingBox().expand(30, 100, 30);
+        if (hasBalloon()) {
+            return getBoundingBox().union(getBalloonBoundingBox());
+        }
+        return getBoundingBox();
+    }
+
+    protected Box getInteriorBoundingBox() {
+        return getBoundingBox().contract(0.7, 0, 0.7);
+    }
+
+    protected Box getBalloonBoundingBox() {
+        return getBoundingBox().offset(0.125, 11, 0).expand(2.25, 0, 2);
     }
 
     @Override
@@ -211,19 +221,26 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
 
         Box box = getBoundingBox().expand(0.3, 0, 0.3);
 
-        double wallheight = box.maxY + 1;
+        double wallheight = box.maxY + 0.7;
         double wallThickness = 0.7;
 
+
+        // front left (next to door)
         output.accept(VoxelShapes.cuboid(new Box(box.minX, box.minY, box.minZ, box.minX + wallThickness + 0.2, wallheight, box.minZ + wallThickness)));
+        // front right (next to door)
         output.accept(VoxelShapes.cuboid(new Box(box.maxX - wallThickness - 0.2, box.minY, box.minZ, box.maxX, wallheight, box.minZ + wallThickness)));
+
+        // back
         output.accept(VoxelShapes.cuboid(new Box(box.minX, box.minY, box.maxZ - wallThickness, box.maxX, wallheight, box.maxZ)));
 
-        output.accept(VoxelShapes.cuboid(new Box(box.minX, box.minY, box.minZ, box.minX + wallThickness, wallheight, box.maxZ)));
+        // left
         output.accept(VoxelShapes.cuboid(new Box(box.maxX - wallThickness, box.minY, box.minZ, box.maxX, wallheight, box.maxZ)));
+        // right
+        output.accept(VoxelShapes.cuboid(new Box(box.minX, box.minY, box.minZ, box.minX + wallThickness, wallheight, box.maxZ)));
 
         // top of balloon
         if (hasBalloon()) {
-            output.accept(VoxelShapes.cuboid(getBoundingBox().offset(0.125, 11, 0).expand(2.25, 0, 2)));
+            output.accept(VoxelShapes.cuboid(getBoundingBox().offset(0.125, 6, 0).expand(2.25, 3, 2)));
         }
     }
 
@@ -244,7 +261,7 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
     }
 
     static Vec3d getWind(World world, BlockPos pos) {
-        return Vec3d.ofCenter(pos).normalize().multiply(1, 0, 1).multiply(0.2);//.multiply((world.getRandom().nextFloat() - 0.5) * 0.2);
+        return Vec3d.ofCenter(pos).normalize().multiply(1, 0, 1).multiply(0.002);//.multiply((world.getRandom().nextFloat() - 0.5) * 0.2);
     }
 }
 
