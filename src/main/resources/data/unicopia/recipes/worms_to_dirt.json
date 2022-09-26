@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WX",
+    "XW"
+  ],
+  "key": {
+    "W": {
+      "item": "unicopia:wheat_worms"
+    },
+    "X": {
+      "item": "minecraft:sand"
+    }
+  },
+  "result": {
+    "item": "minecraft:dirt",
+    "count": 2
+  }
+}
