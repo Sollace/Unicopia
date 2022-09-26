@@ -30,7 +30,6 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -183,7 +182,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                     ItemStack broken = UItems.BROKEN_SUNGLASSES.getDefaultStack();
                     broken.setNbt(glasses.getNbt());
                     TrinketsDelegate.getInstance().setEquippedStack(entity, TrinketsDelegate.FACE, broken);
-                    entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.PLAYERS, 1, 1);
+                    playSound(SoundEvents.BLOCK_GLASS_BREAK, 1, 1);
                 }
             }
         }
@@ -231,5 +230,16 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Override
     public void fromNBT(NbtCompound compound) {
         enchants.fromNBT(compound);
+    }
+
+    public void updateVelocity() {
+        updateVelocity(entity);
+    }
+
+    public static void updateVelocity(Entity entity) {
+        entity.velocityModified = true;
+        //if (entity instanceof ServerPlayerEntity ply) {
+        //    ply.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(ply));
+        //}
     }
 }

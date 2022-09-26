@@ -12,12 +12,12 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.particle.ParticleSource;
+import com.minelittlepony.unicopia.util.SoundEmitter;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 /**
  * Interface for any magically capable entities that can cast or persist spells.
  */
-public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affine, ParticleSource {
+public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affine, ParticleSource, SoundEmitter {
 
     Physics getPhysics();
 
@@ -72,10 +72,6 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
             return getReferenceWorld().canPlayerModifyAt((PlayerEntity)getMaster(), pos);
         }
         return getReferenceWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
-    }
-
-    default void playSound(SoundEvent sound, float volume, float pitch) {
-        getReferenceWorld().playSound(null, getEntity().getX(), getEntity().getY(), getEntity().getZ(), sound, getEntity().getSoundCategory(), volume, pitch);
     }
 
     /**

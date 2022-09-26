@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.entity.behaviour;
 import java.util.function.BiFunction;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.SoundEmitter;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.RangedAttackMob;
@@ -35,9 +36,7 @@ public class RangedAttackBehaviour<T extends Entity & RangedAttackMob> extends E
             spit.setOwner(player.getMaster());
 
             if (!entity.isSilent()) {
-                entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
-                        sound, entity.getSoundCategory(), 1,
-                        1 + (entity.world.random.nextFloat() - entity.world.random.nextFloat()) * 0.2F);
+                SoundEmitter.playSoundAt(entity, sound, 1, 1 + (entity.world.random.nextFloat() - entity.world.random.nextFloat()) * 0.2F);
             }
 
             entity.world.spawnEntity(spit);
