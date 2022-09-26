@@ -263,7 +263,7 @@ public class UHud extends DrawableHelper {
                 if (partySound != null) {
                     partySound.setMuted(true);
                 }
-                fillGradient(matrices, 0, 0, scaledWidth, scaledHeight, 0x0F000088, 0xAF000000);
+                fillGradient(matrices, 0, 0, scaledWidth, scaledHeight, 0x0A000088, 0x7E000000);
             }
         } else {
             if (partySound != null) {
