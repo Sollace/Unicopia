@@ -27,12 +27,15 @@ public interface UTradeOffers {
             factories.add(buyForEmeralds(UItems.GEMSTONE, 1, 1, 30, 2, 0.05F));
         });
         TradeOfferHelper.registerVillagerOffers(VillagerProfession.LIBRARIAN, 1, factories -> {
-            factories.add(buyForEmeralds(UItems.GEMSTONE, 2, 1, 20, 1, 0.05F));
-            factories.add(buyForEmeralds(UItems.PEGASUS_FEATHER, 20, 5, 50, 3, 0.15F));
-            factories.add(buyForEmeralds(UItems.GRYPHON_FEATHER, 20, 3, 50, 2, 0.12F));
+            factories.add(buyForEmeralds(UItems.GEMSTONE, 2, 1, 2, 1, 0.05F));
+            factories.add(buyForEmeralds(UItems.PEGASUS_FEATHER, 7, 5, 50, 3, 0.15F));
+            factories.add(buyForEmeralds(UItems.GRYPHON_FEATHER, 4, 3, 50, 2, 0.12F));
         });
         TradeOfferHelper.registerVillagerOffers(VillagerProfession.CARTOGRAPHER, 1, factories -> {
             factories.add(buyForEmeralds(UItems.GEMSTONE, 3, 1, 20, 1, 0.05F));
+        });
+        TradeOfferHelper.registerVillagerOffers(VillagerProfession.FARMER, 2, factories -> {
+            factories.add(buy(Items.EMERALD, 4, UTags.APPLE_SEEDS, 2, 20, 1, 0.05F));
         });
 
         TradeOfferHelper.registerWanderingTraderOffers(1, factories -> {
@@ -51,6 +54,9 @@ public interface UTradeOffers {
             factories.add(buy(UItems.CRYSTAL_HEART, 1, UItems.MUSIC_DISC_CRUSADE, 1, 10, 6, 0.08F));
             factories.add(buy(UItems.PEGASUS_AMULET, 1, UItems.ALICORN_AMULET, 1, 2, 6, 0.05F));
         });
+        TradeOfferHelper.registerWanderingTraderOffers(3, factories -> {
+            factories.add(buyForEmeralds(UItems.FRIENDSHIP_BRACELET, 2, 1, 10, 7, 0.17F));
+        });
     }
 
     private static TradeOffers.Factory buyForEmeralds(Item item, int count, int returnCount, int maxUses, int experience, float priceChange) {
@@ -67,11 +73,6 @@ public interface UTradeOffers {
 
     private static TradeOffers.Factory buy(TagKey<Item> item, int count, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
         return (e, rng) -> new TradeOffer(new ItemStack(random(e, item, rng), count), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
-    }
-
-    @SuppressWarnings("unused")
-    private static TradeOffers.Factory buy(TagKey<Item> item, int count, TagKey<Item> returnItem, int returnCount, int maxUses, int experience, float priceChange) {
-        return (e, rng) -> new TradeOffer(new ItemStack(random(e, item, rng), count), new ItemStack(random(e, returnItem, rng), returnCount), maxUses, experience, priceChange);
     }
 
     private static TradeOffers.Factory buy(Item item, int count, TagKey<Item> returnItem, int returnCount, int maxUses, int experience, float priceChange) {
