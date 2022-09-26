@@ -18,7 +18,7 @@ public class CarryAbility implements Ability<Hit> {
 
     @Override
     public int getWarmupTime(Pony player) {
-        return 0;
+        return 5;
     }
 
     @Override
@@ -50,6 +50,17 @@ public class CarryAbility implements Ability<Hit> {
     @Override
     public Hit.Serializer<Hit> getSerializer() {
         return Hit.SERIALIZER;
+    }
+
+    @Override
+    public boolean onQuickAction(Pony player, ActivationType type) {
+
+        if (type == ActivationType.TAP && player.getPhysics().isFlying()) {
+            player.getPhysics().dashForward((float)player.getReferenceWorld().random.nextTriangular(1, 0.3F));
+            return true;
+        }
+
+        return false;
     }
 
     @Override

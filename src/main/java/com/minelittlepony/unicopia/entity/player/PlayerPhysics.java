@@ -587,6 +587,17 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         isFlyingSurvival = entity.getAbilities().flying;
     }
 
+    public void dashForward(float speed) {
+        if (pony.isClient()) {
+            return;
+        }
+
+        Vec3d orientation = entity.getRotationVec(1).multiply(speed);
+        entity.addVelocity(orientation.x, orientation.y, orientation.z);
+        pony.updateVelocity();
+        pony.playSound(USounds.ENTITY_PLAYER_PEGASUS_DASH, 1);
+    }
+
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);

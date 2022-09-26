@@ -3,11 +3,23 @@
     "category": "player",
     "subtitle": "unicopia.subtitle.flap_wings",
     "sounds": [
-       "unicopia:wing/wing0",
-       "unicopia:wing/wing1",
-       "unicopia:wing/wing2",
-       "unicopia:wing/wing3"
-     ]
+      "unicopia:wing/wing0",
+      "unicopia:wing/wing1",
+      "unicopia:wing/wing2",
+      "unicopia:wing/wing3"
+    ]
+  },
+  "entity.player.pegasus.dash": {
+    "category": "player",
+    "subtitle": "unicopia.subtitle.dash",
+    "sounds": [
+      "unicopia:woosh/woosh0",
+      "unicopia:woosh/woosh1",
+      "unicopia:woosh/woosh2",
+      "unicopia:woosh/woosh3",
+      "unicopia:woosh/woosh4",
+      "unicopia:woosh/woosh5"
+    ]
   },
   "item.magic.aura": {
     "category": "player",
@@ -92,15 +104,7 @@
       { "name": "unicopia:record/funk", "stream": true, "attenuation_distance": 21120}
     ]
   },
-
-
-
-
-
-
-
-
- "entity.player.changeling.transform": {
+  "entity.player.changeling.transform": {
     "sounds": [
       {
         "name": "entity.ravager.ambient",

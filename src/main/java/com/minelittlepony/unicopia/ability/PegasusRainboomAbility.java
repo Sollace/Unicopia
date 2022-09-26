@@ -58,6 +58,17 @@ public class PegasusRainboomAbility implements Ability<Hit> {
     }
 
     @Override
+    public boolean onQuickAction(Pony player, ActivationType type) {
+
+        if (type == ActivationType.TAP && player.getPhysics().isFlying()) {
+            player.getPhysics().dashForward((float)player.getReferenceWorld().random.nextTriangular(1, 0.3F));
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
     public void apply(Pony player, Hit data) {
 
         if (!player.getMaster().isCreative() && player.getMagicalReserves().getMana().getPercentFill() < 0.2F) {
