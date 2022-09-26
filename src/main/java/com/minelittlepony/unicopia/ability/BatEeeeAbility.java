@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
@@ -79,15 +80,16 @@ public class BatEeeeAbility implements Ability<Hit> {
         }
 
         int total = player.findAllEntitiesInRange(5).mapToInt(e -> {
-            if (e instanceof LivingEntity && !SpellType.SHIELD.isOn(e)) {
+            if (e instanceof LivingEntity living && !SpellType.SHIELD.isOn(e)) {
                 boolean isEarthPony = EquinePredicates.PLAYER_EARTH.test(e);
                 e.damage(MagicalDamageSource.create("eeee", player).setBreakSunglasses(), isEarthPony ? 0.1F : 0.3F);
 
                 Vec3d knockVec = origin.subtract(e.getPos());
-                ((LivingEntity) e).takeKnockback(isEarthPony ? 0.3F : 0.5F, knockVec.getX(), knockVec.getZ());
+                living.takeKnockback(isEarthPony ? 0.3F : 0.5F, knockVec.getX(), knockVec.getZ());
                 if (!isEarthPony) {
                     e.addVelocity(0, 0.1, 0);
                 }
+                Living.updateVelocity(e);
             }
             return 1;
         }).sum();

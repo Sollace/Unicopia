@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.ability.data.tree.TreeType;
 import com.minelittlepony.unicopia.block.data.BlockDestructionManager;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -84,6 +85,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                             float calculatedStrength = 0.5F * (1 + player.getLevel().getScaled(9));
                             entity.damage(MagicalDamageSource.KICK, player.getReferenceWorld().random.nextBetween(2, 10) + calculatedStrength);
                             entity.takeKnockback(calculatedStrength, origin.x - entity.getX(), origin.z - entity.getZ());
+                            Living.updateVelocity(entity);
                             player.subtractEnergyCost(3);
                             player.setAnimation(Animation.KICK);
                             return;

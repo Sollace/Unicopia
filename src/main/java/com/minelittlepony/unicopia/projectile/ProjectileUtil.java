@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.projectile;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.mixin.MixinPersistentProjectileEntity;
 
 import net.minecraft.entity.Entity;
@@ -50,6 +51,7 @@ public interface ProjectileUtil {
             Vec3d vel = throwable.getVelocity();
 
             throwable.addVelocity(heading.x - vel.x, heading.y - vel.y, heading.z - vel.z);
+            Living.updateVelocity(throwable);
         }
     }
 

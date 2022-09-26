@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.entity.IItemEntity;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
 import net.minecraft.block.Block;
@@ -89,12 +90,13 @@ public class FilledJarItem extends JarItem implements ChameleonItem {
 
             final float toRadians = (float)Math.PI / 180F;
 
-            if (entity instanceof LivingEntity) {
-                ((LivingEntity)entity).takeKnockback(
+            if (entity instanceof LivingEntity living) {
+                living.takeKnockback(
                         knockback / 2F,
                         MathHelper.sin(projectile.getYaw() * toRadians),
                        -MathHelper.cos(projectile.getYaw() * toRadians)
                );
+                Living.updateVelocity(living);
 
                 if (fire > 0) {
                     entity.setOnFireFor(fire * 4);

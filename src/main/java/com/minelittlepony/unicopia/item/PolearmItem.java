@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.UEntityAttributes;
 
 import net.minecraft.block.*;
@@ -12,8 +13,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.item.*;
-import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 public class PolearmItem extends SwordItem {
     protected static final UUID ATTACK_RANGE_MODIFIER_ID = UUID.fromString("A7B3659C-AA74-469C-963A-09A391DCAA0F");
@@ -57,11 +56,10 @@ public class PolearmItem extends SwordItem {
         boolean tooNear = target.distanceTo(attacker) <= 2;
         stack.damage(tooNear ? 4 : 1, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
         target.takeKnockback(0.15, attacker.getX() - target.getX(), attacker.getZ() - target.getZ());
+        Living.updateVelocity(target);
         if (tooNear) {
             attacker.takeKnockback(attacker.getRandom().nextTriangular(0.4, 0.2), target.getX() - attacker.getX(), target.getZ() - attacker.getZ());
-            if (attacker instanceof ServerPlayerEntity ply) {
-                ply.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(ply));
-            }
+            Living.updateVelocity(attacker);
         }
 
         return true;

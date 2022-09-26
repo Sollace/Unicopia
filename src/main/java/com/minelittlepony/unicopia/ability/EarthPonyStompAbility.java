@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.block.data.BlockDestructionManager;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
@@ -85,6 +86,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
         double downV = Math.sqrt(ppos.getSquaredDistance(pos)) * player.getPhysics().getGravitySignum();
         player.getMaster().addVelocity(0, -downV, 0);
+        player.updateVelocity();
     }
 
     @Override
@@ -138,6 +140,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                     }
 
                     i.damage(damage, (float)amount);
+                    Living.updateVelocity(i);
                 }
             });
 

@@ -148,6 +148,8 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
                 e.setVelocity(vel.getX(), yVel, vel.getZ());
                 e.setVelocity(e.getVelocity().multiply(0.3).add(getVelocity().multiply(0.786)));
                 e.setOnGround(true);
+
+                Living.updateVelocity(e);
             }
         }
 
@@ -163,6 +165,7 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
 
     @Override
     public void onPlayerCollision(PlayerEntity player) {
+        // TODO: check that this is still working correctly after adding Living.updateVelocity(i) in AirBalloonEntity.tick()
         if (getVelocity().lengthSquared() > 0) {
            // player.setVelocity(getVelocity().multiply(1.3));
             player.setVelocity(player.getVelocity().multiply(0.3).add(getVelocity().multiply(
@@ -174,6 +177,8 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
             if (diff > 0) {
                 player.addVelocity(0, diff, 0);
             }
+
+            Living.updateVelocity(player);
         }
     }
 

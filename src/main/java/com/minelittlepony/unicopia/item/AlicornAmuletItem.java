@@ -9,8 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.entity.IItemEntity;
-import com.minelittlepony.unicopia.entity.ItemImpl;
+import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.PlayerCharmTracker;
@@ -133,6 +132,7 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
 
         if (attachedTime > 120) {
             pony.getMaster().takeKnockback(1, 1, 1);
+            pony.updateVelocity();
         }
     }
 

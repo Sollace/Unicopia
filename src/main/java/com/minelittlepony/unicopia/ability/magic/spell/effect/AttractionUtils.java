@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 
@@ -37,6 +38,7 @@ public interface AttractionUtils {
                 center.y + yChange,
                 center.z
         );
+        Living.updateVelocity(target);
     }
 
     /**
