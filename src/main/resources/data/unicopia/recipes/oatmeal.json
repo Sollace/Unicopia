@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "unicopia:oats" },
+    { "item": "unicopia:oats" },
+    { "item": "unicopia:oats" },
+    { "item": "minecraft:milk_bucket" },
+    { "item": "minecraft:bowl" }
+  ],
+  "result": { "item": "unicopia:oatmeal" }
+}

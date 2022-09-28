@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.UUID;
 
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.block.data.DragonBreathStore;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,6 +30,9 @@ public class DragonBreathScrollItem extends Item {
 
         stack.split(1);
         if (!world.isClient) {
+            if (payload.getItem() == UItems.OATS) {
+                UCriteria.SEND_OATS.trigger(player);
+            }
             DragonBreathStore.get(world).put(stack.getName().getString(), payload.split(1));
         }
         player.playSound(SoundEvents.ITEM_FIRECHARGE_USE, 1, 1);

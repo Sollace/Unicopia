@@ -66,6 +66,10 @@ public interface UBlocks {
     Block SOUR_APPLE = register("sour_apple", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GREEN).sounds(BlockSoundGroup.WOOD), Direction.DOWN, SOUR_APPLE_LEAVES, FruitBlock.DEFAULT_SHAPE));
     Block SOUR_APPLE_SPROUT = register("sour_apple_sprout", new SproutBlock(0xE5FFCC88, () -> UItems.SOUR_APPLE_SEEDS, () -> UTreeGen.SOUR_APPLE_TREE.sapling().map(Block::getDefaultState).get()));
 
+    SegmentedCropBlock OATS = register("oats", SegmentedCropBlock.create(11, 5, AbstractBlock.Settings.copy(Blocks.WHEAT), () -> UItems.OAT_SEEDS, null, () -> UBlocks.OATS_STEM));
+    SegmentedCropBlock OATS_STEM = register("oats_stem", OATS.createNext(5));
+    SegmentedCropBlock OATS_CROWN = register("oats_crown", OATS_STEM.createNext(5));
+
     static <T extends Block> T register(String name, T item) {
         return register(Unicopia.id(name), item);
     }
@@ -83,7 +87,7 @@ public interface UBlocks {
         if (block instanceof TintedBlock) {
             TintedBlock.REGISTRY.add(block);
         }
-        if (block instanceof SaplingBlock || block instanceof SproutBlock || block instanceof FruitBlock) {
+        if (block instanceof SaplingBlock || block instanceof SproutBlock || block instanceof FruitBlock || block instanceof CropBlock) {
             TRANSLUCENT_BLOCKS.add(block);
         }
         return Registry.register(Registry.BLOCK, id, block);

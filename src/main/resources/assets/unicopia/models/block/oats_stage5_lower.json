@@ -1,0 +1,6 @@
+{
+    "parent": "block/crop",
+    "textures": {
+        "crop": "unicopia:block/oats_stage5_lower"
+    }
+}

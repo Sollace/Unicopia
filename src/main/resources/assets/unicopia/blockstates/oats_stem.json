@@ -1,0 +1,11 @@
+{
+    "variants": {
+        "age=0": { "model": "unicopia:block/oats_stage5_upper" },
+        "age=1": { "model": "unicopia:block/oats_stage6_upper" },
+        "age=2": { "model": "unicopia:block/oats_stage7_upper" },
+        "age=3": { "model": "unicopia:block/oats_stage8_upper" },
+        "age=4": { "model": "unicopia:block/oats_stage9_upper" },
+        "age=5": { "model": "unicopia:block/oats_stage10_lower" },
+        "age=6": { "model": "unicopia:block/oats_stage9_lower" }
+    }
+}

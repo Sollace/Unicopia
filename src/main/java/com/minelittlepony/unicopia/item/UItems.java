@@ -9,8 +9,6 @@ import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.toxin.UFoodComponents;
 
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -29,14 +27,7 @@ public interface UItems {
     Item SOUR_APPLE = register("sour_apple", AppleItem.registerTickCallback(new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE))));
 
     ZapAppleItem ZAP_APPLE = register("zap_apple", AppleItem.registerTickCallback(new ZapAppleItem(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.ZAP_APPLE))));
-    Item ZAP_BULB = register("zap_bulb", new Item(new Item.Settings().group(ItemGroup.FOOD).food(new FoodComponent.Builder()
-            .hunger(-2)
-            .saturationModifier(-0.8f)
-            .alwaysEdible()
-            .statusEffect(new StatusEffectInstance(StatusEffects.POISON, 100, 0), 0.6F)
-            .statusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 0), 0.6F)
-            .statusEffect(new StatusEffectInstance(StatusEffects.BAD_OMEN, 100, 0), 0.6F)
-            .build())));
+    Item ZAP_BULB = register("zap_bulb", new Item(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.ZAP_BULB)));
 
     Item ROTTEN_APPLE = register("rotten_apple", new RottenAppleItem(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)));
     Item COOKED_ZAP_APPLE = register("cooked_zap_apple", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.APPLE)));
@@ -67,6 +58,11 @@ public interface UItems {
 
     Item PEGASUS_FEATHER = register("pegasus_feather", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     Item GRYPHON_FEATHER = register("gryphon_feather", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+
+    Item OAT_SEEDS = register("oat_seeds", new AliasedBlockItem(UBlocks.OATS, new Item.Settings().group(ItemGroup.MATERIALS)));
+    Item OATS = register("oats", new Item(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.OATS)));
+    Item IMPORTED_OATS = register("imported_oats", new Item(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.IMPORTED_OATS)));
+    Item OATMEAL = register("oatmeal", new OatmealItem(new Item.Settings().recipeRemainder(Items.BOWL).maxCount(1).group(ItemGroup.FOOD).food(UFoodComponents.OATMEAL)));
 
     Item DAFFODIL_DAISY_SANDWICH = register("daffodil_daisy_sandwich", new Item(new Item.Settings().group(ItemGroup.FOOD).food(UFoodComponents.DAFODIL_DAISY_SANDWICH)));
     Item HAY_BURGER = register("hay_burger", new Item(new Item.Settings().group(ItemGroup.FOOD).maxCount(1).food(UFoodComponents.HAY_BURGER)));

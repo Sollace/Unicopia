@@ -70,8 +70,6 @@ public class GlassesFeatureRenderer<E extends LivingEntity> implements Accessory
         public void setAngles(LivingEntity entity, BipedEntityModel<?> biped) {
             root.getChild(EntityModelPartNames.HEAD).copyTransform(biped.head);
             root.getChild(EntityModelPartNames.HAT).copyTransform(biped.hat);
-
-            root.getChild(EntityModelPartNames.HAT).resetTransform();
         }
 
         @Override

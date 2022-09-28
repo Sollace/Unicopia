@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.block.data.DragonBreathStore;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
@@ -143,6 +144,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                     item.setPosition(randomPos);
                     item.world.spawnEntity(item);
                     entity.world.playSoundFromEntity(null, entity, SoundEvents.ITEM_FIRECHARGE_USE, entity.getSoundCategory(), 1, 1);
+
+                    if (stack.payload().getItem() == UItems.OATS && entity instanceof PlayerEntity player) {
+                        UCriteria.RECEIVE_OATS.trigger(player);
+                    }
                 });
             }
         }

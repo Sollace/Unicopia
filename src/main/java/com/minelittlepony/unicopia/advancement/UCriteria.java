@@ -17,6 +17,8 @@ public interface UCriteria {
     CustomEventCriterion.Trigger SCREECH_TWENTY_MOBS = CUSTOM_EVENT.createTrigger("screech_twenty_mobs");
     CustomEventCriterion.Trigger SHED_FEATHER = CUSTOM_EVENT.createTrigger("shed_feather");
     CustomEventCriterion.Trigger THROW_MUFFIN = CUSTOM_EVENT.createTrigger("throw_muffin");
+    CustomEventCriterion.Trigger SEND_OATS = CUSTOM_EVENT.createTrigger("send_oats");
+    CustomEventCriterion.Trigger RECEIVE_OATS = CUSTOM_EVENT.createTrigger("receive_oats");
 
     private static <T extends Criterion<?>> T register(T obj) {
         return MixinCriteria.register(obj);

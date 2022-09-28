@@ -1,0 +1,16 @@
+{
+    "variants": {
+        "age=0": { "model": "unicopia:block/oats_stage0" },
+        "age=1": { "model": "unicopia:block/oats_stage1" },
+        "age=2": { "model": "unicopia:block/oats_stage2" },
+        "age=3": { "model": "unicopia:block/oats_stage3" },
+        "age=4": { "model": "unicopia:block/oats_stage4" },
+        "age=5": { "model": "unicopia:block/oats_stage5_lower" },
+        "age=6": { "model": "unicopia:block/oats_stage6_lower" },
+        "age=7": { "model": "unicopia:block/oats_stage7_lower" },
+        "age=8": { "model": "unicopia:block/oats_stage8_lower" },
+        "age=9": { "model": "unicopia:block/oats_stage9_lower" },
+        "age=10": { "model": "unicopia:block/oats_stage9_lower" },
+        "age=11": { "model": "unicopia:block/oats_stage9_lower" }
+    }
+}

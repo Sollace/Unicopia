@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.block.data;
 import java.util.*;
 
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.item.UItems;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.util.Identifier;
@@ -79,6 +81,15 @@ public class DragonBreathStore extends PersistentState {
     }
 
     public void put(String recipient, ItemStack payload) {
+
+        if (payload.getItem() == UItems.OATS) {
+            ItemStack oats = UItems.IMPORTED_OATS.getDefaultStack();
+            oats.setNbt(payload.getNbt());
+            oats.setCount(payload.getCount());
+            put(recipient, oats);
+            return;
+        }
+
         synchronized (locker) {
             doPurge();
             if (peekEntries(recipient).stream().noneMatch(i -> {
