@@ -319,10 +319,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         entity.fallDistance = 0;
 
-        if (type.isAvian() && pony.getSpecies() != Race.BAT) {
+        if (type.isAvian()) {
             applyThrust(velocity);
 
-            if (entity.world.random.nextInt(9000) == 0) {
+            if (pony.getSpecies() != Race.BAT && entity.world.random.nextInt(9000) == 0) {
                 entity.dropItem(UItems.PEGASUS_FEATHER);
                 entity.playSound(USounds.ENTITY_PLAYER_PEGASUS_MOLT, 0.3F, 1);
                 UCriteria.SHED_FEATHER.trigger(entity);
