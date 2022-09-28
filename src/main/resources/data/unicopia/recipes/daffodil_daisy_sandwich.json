@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " # ",
+    "~~~",
+    " # "
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:bread"
+    },
+    "~": {
+      "tag": "minecraft:small_flowers"
+    }
+  },
+  "result": {
+    "item": "unicopia:daffodil_daisy_sandwich"
+  }
+}
