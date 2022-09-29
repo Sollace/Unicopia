@@ -84,6 +84,7 @@ public interface UItems {
     Item JUICE = register("juice", new DrinkableItem(new Item.Settings().group(ItemGroup.FOOD).recipeRemainder(Items.GLASS_BOTTLE).maxCount(1).food(UFoodComponents.JUICE)));
     Item BURNED_JUICE = register("burned_juice", new DrinkableItem(new Item.Settings().group(ItemGroup.FOOD).recipeRemainder(Items.GLASS_BOTTLE).maxCount(1).food(UFoodComponents.BURNED_JUICE)));
     Item APPLE_PIE = register("apple_pie", new BlockItem(UBlocks.APPLE_PIE, new Item.Settings().group(ItemGroup.FOOD).maxCount(1)));
+    Item APPLE_PIE_SLICE = register("apple_pie_slice", new Item(new Item.Settings().group(ItemGroup.FOOD).maxCount(16).food(UFoodComponents.PIE)));
 
     Item GOLDEN_FEATHER = register("golden_feather", new Item(new Item.Settings().rarity(Rarity.UNCOMMON).group(ItemGroup.MATERIALS)));
     Item GOLDEN_WING = register("golden_wing", new Item(new Item.Settings().rarity(Rarity.UNCOMMON).group(ItemGroup.MATERIALS)));

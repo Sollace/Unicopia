@@ -12,6 +12,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -45,9 +46,12 @@ public class PieBlock extends Block implements Waterloggable {
             };
     }
 
-    public PieBlock(Settings settings) {
+    private final ItemConvertible sliceItem;
+
+    public PieBlock(Settings settings, ItemConvertible sliceItem) {
         super(settings);
         setDefaultState(getDefaultState().with(STOMPED, false).with(WATERLOGGED, false));
+        this.sliceItem = sliceItem;
     }
 
     @Deprecated
@@ -62,6 +66,11 @@ public class PieBlock extends Block implements Waterloggable {
         ItemStack itemStack = player.getStackInHand(hand);
 
         if (world.isClient) {
+
+            if (itemStack.getItem() == Items.SHEARS) {
+                return ActionResult.SUCCESS;
+            }
+
             if (tryEat(world, pos, state, player).isAccepted()) {
                 return ActionResult.SUCCESS;
             }
@@ -69,6 +78,14 @@ public class PieBlock extends Block implements Waterloggable {
             if (itemStack.isEmpty()) {
                 return ActionResult.CONSUME;
             }
+        }
+
+        if (itemStack.getItem() == Items.SHEARS) {
+            SoundEmitter.playSoundAt(player, SoundEvents.BLOCK_BEEHIVE_SHEAR, SoundCategory.NEUTRAL, 1, 1);
+            removeSlice(world, pos, state, player);
+            SoundEmitter.playSoundAt(player, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.NEUTRAL, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+            Block.dropStack(world, pos, sliceItem.asItem().getDefaultStack());
+            return ActionResult.SUCCESS;
         }
 
         return tryEat(world, pos, state, player);
@@ -80,7 +97,7 @@ public class PieBlock extends Block implements Waterloggable {
         }
         player.incrementStat(Stats.EAT_CAKE_SLICE);
         player.getHungerManager().add(state.get(STOMPED) ? 1 : 2, 0.1f);
-        int bites = state.get(BITES);
+
         world.emitGameEvent(player, GameEvent.EAT, pos);
         SoundEmitter.playSoundAt(player, SoundEvents.ENTITY_GENERIC_EAT, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
         if (world instanceof World ww && (!player.canConsume(false) || world.getRandom().nextInt(10) == 0)) {
@@ -89,13 +106,19 @@ public class PieBlock extends Block implements Waterloggable {
             }, 5);
         }
 
+        removeSlice(world, pos, state, player);
+        return ActionResult.SUCCESS;
+    }
+
+    protected void removeSlice(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {
+        int bites = state.get(BITES);
+
         if (bites < MAX_BITES) {
             world.setBlockState(pos, state.with(BITES, bites + 1), Block.NOTIFY_ALL);
         } else {
             world.removeBlock(pos, false);
             world.emitGameEvent(player, GameEvent.BLOCK_DESTROY, pos);
         }
-        return ActionResult.SUCCESS;
     }
 
     @Override
