@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "bites=0": { "model": "unicopia:block/apple_pie" },
+        "bites=1": { "model": "unicopia:block/apple_pie_elbow" },
+        "bites=2": { "model": "unicopia:block/apple_pie_straight" },
+        "bites=3": { "model": "unicopia:block/apple_pie_corner" }
+    }
+}

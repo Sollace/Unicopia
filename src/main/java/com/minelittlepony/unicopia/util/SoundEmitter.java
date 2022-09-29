@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.util;
 import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public interface SoundEmitter {
@@ -21,7 +22,7 @@ public interface SoundEmitter {
     }
 
     default float getRandomPitch() {
-        return (float)getReferenceWorld().getRandom().nextTriangular(0.5F, 0.2F);
+        return getRandomPitch(getReferenceWorld().getRandom());
     }
 
     static void playSoundAt(Entity entity, SoundEvent sound, float pitch, float volume) {
@@ -30,5 +31,9 @@ public interface SoundEmitter {
 
     static void playSoundAt(Entity entity, SoundEvent sound, SoundCategory category, float pitch, float volume) {
         entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, category, volume, pitch);
+    }
+
+    static float getRandomPitch(Random rng) {
+        return (float)rng.nextTriangular(0.5F, 0.2F);
     }
 }

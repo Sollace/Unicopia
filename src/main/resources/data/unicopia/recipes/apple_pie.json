@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+  	"***",
+  	"###",
+  	"***"
+  ],
+  "key": {
+  	"#": {
+  		"tag": "unicopia:fresh_apples"
+  	},
+  	"*": {
+  		"item": "minecraft:wheat"
+  	}
+  },
+  "result": {
+  	"item": "unicopia:apple_pie"
+  }
+}

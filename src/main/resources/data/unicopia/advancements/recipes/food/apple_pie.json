@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "unicopia:hay_fries"
+      "unicopia:apple_pie"
     ]
   },
   "criteria": {
@@ -10,14 +10,14 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "item": "unicopia:oats" }
+          { "tag": [ "unicopia:fresh_apples" ] }
         ]
       }
     },
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "unicopia:hay_fries"
+        "recipe": "unicopia:apple_pie"
       }
     }
   },
