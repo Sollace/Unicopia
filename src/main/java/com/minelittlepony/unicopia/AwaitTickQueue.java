@@ -8,18 +8,18 @@ import net.minecraft.world.World;
 
 public class AwaitTickQueue {
     public static void scheduleTask(World reference, Consumer<World> task, int ticksLater) {
-        if (reference instanceof ServerWorld) {
+        if (reference instanceof ServerWorld serverWorld) {
             CompletableFuture.runAsync(() -> {
-                task.accept(reference);
-            }, CompletableFuture.delayedExecutor(ticksLater * 100, TimeUnit.MILLISECONDS, reference.getServer()));
+                task.accept(serverWorld);
+            }, CompletableFuture.delayedExecutor(ticksLater * 100, TimeUnit.MILLISECONDS, serverWorld.getServer()));
         }
     }
 
     public static void scheduleTask(World reference, Consumer<World> task) {
-        if (reference instanceof ServerWorld) {
+        if (reference instanceof ServerWorld serverWorld) {
             CompletableFuture.runAsync(() -> {
-                task.accept(reference);
-            }, reference.getServer());
+                task.accept(serverWorld);
+            }, serverWorld.getServer());
         }
     }
 }

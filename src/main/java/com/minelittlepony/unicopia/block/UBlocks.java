@@ -66,7 +66,7 @@ public interface UBlocks {
     Block SOUR_APPLE = register("sour_apple", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GREEN).sounds(BlockSoundGroup.WOOD), Direction.DOWN, SOUR_APPLE_LEAVES, FruitBlock.DEFAULT_SHAPE));
     Block SOUR_APPLE_SPROUT = register("sour_apple_sprout", new SproutBlock(0xE5FFCC88, () -> UItems.SOUR_APPLE_SEEDS, () -> UTreeGen.SOUR_APPLE_TREE.sapling().map(Block::getDefaultState).get()));
 
-    Block APPLE_PIE = register("apple_pie", new PieBlock(FabricBlockSettings.of(Material.CAKE, MapColor.ORANGE).strength(0.5F).sounds(BlockSoundGroup.WOOL)));
+    Block APPLE_PIE = register("apple_pie", new PieBlock(FabricBlockSettings.of(Material.CAKE, MapColor.ORANGE).strength(0.5F).sounds(BlockSoundGroup.WET_GRASS)));
 
     SegmentedCropBlock OATS = register("oats", SegmentedCropBlock.create(11, 5, AbstractBlock.Settings.copy(Blocks.WHEAT), () -> UItems.OAT_SEEDS, null, () -> UBlocks.OATS_STEM));
     SegmentedCropBlock OATS_STEM = register("oats_stem", OATS.createNext(5));

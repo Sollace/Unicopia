@@ -1,27 +1,37 @@
 package com.minelittlepony.unicopia.block;
 
+import com.minelittlepony.unicopia.AwaitTickQueue;
+import com.minelittlepony.unicopia.UGameEvents;
 import com.minelittlepony.unicopia.util.SoundEmitter;
 
 import net.minecraft.block.*;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.IntProperty;
+import net.minecraft.state.property.*;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.*;
 import net.minecraft.world.event.GameEvent;
 
-public class PieBlock extends Block {
+public class PieBlock extends Block implements Waterloggable {
     public static final int MAX_BITES = 3;
     public static final IntProperty BITES = IntProperty.of("bites", 0, MAX_BITES);
+    public static final BooleanProperty STOMPED = BooleanProperty.of("stomped");
+    public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+
     private static final VoxelShape[] SHAPES;
     static {
         final int PIE_HEIGHT = 5;
@@ -37,7 +47,7 @@ public class PieBlock extends Block {
 
     public PieBlock(Settings settings) {
         super(settings);
-        setDefaultState(getDefaultState().with(BITES, 0));
+        setDefaultState(getDefaultState().with(STOMPED, false).with(WATERLOGGED, false));
     }
 
     @Deprecated
@@ -69,10 +79,15 @@ public class PieBlock extends Block {
             return ActionResult.PASS;
         }
         player.incrementStat(Stats.EAT_CAKE_SLICE);
-        player.getHungerManager().add(2, 0.1f);
+        player.getHungerManager().add(state.get(STOMPED) ? 1 : 2, 0.1f);
         int bites = state.get(BITES);
         world.emitGameEvent(player, GameEvent.EAT, pos);
-        SoundEmitter.playSoundAt(player, SoundEvents.ENTITY_PLAYER_BURP, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+        SoundEmitter.playSoundAt(player, SoundEvents.ENTITY_GENERIC_EAT, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+        if (world instanceof World ww && (!player.canConsume(false) || world.getRandom().nextInt(10) == 0)) {
+            AwaitTickQueue.scheduleTask(ww, w -> {
+                SoundEmitter.playSoundAt(player, SoundEvents.ENTITY_PLAYER_BURP, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+            }, 5);
+        }
 
         if (bites < MAX_BITES) {
             world.setBlockState(pos, state.with(BITES, bites + 1), Block.NOTIFY_ALL);
@@ -83,11 +98,50 @@ public class PieBlock extends Block {
         return ActionResult.SUCCESS;
     }
 
+    @Override
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        if (state.get(STOMPED)) {
+            Vec3d center = Vec3d.ofCenter(pos);
+            world.addParticle(ParticleTypes.SNEEZE,
+                    random.nextTriangular(center.getX(), 0.9),
+                    random.nextTriangular(center.getY(), 0.9),
+                    random.nextTriangular(center.getZ(), 0.9),
+                    0,
+                    0,
+                    0
+            );
+        } else {
+            if (world.random.nextInt(10) == 0) {
+                Vec3d center = Vec3d.ofCenter(pos);
+                world.addParticle(ParticleTypes.SNEEZE,
+                        random.nextTriangular(center.getX(), 0.2),
+                        random.nextTriangular(center.getY(), 0.2),
+                        random.nextTriangular(center.getZ(), 0.2),
+                        0,
+                        0.01F,
+                        0
+                );
+            }
+        }
+    }
+
+    @Override
+    public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
+        if (!state.get(STOMPED)) {
+            world.setBlockState(pos, state.cycle(STOMPED));
+            world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
+            world.emitGameEvent(UGameEvents.PIE_STOMP, pos, GameEvent.Emitter.of(entity, state));
+        }
+    }
+
     @Deprecated
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
+        }
+        if (state.get(WATERLOGGED)) {
+            world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
@@ -95,12 +149,27 @@ public class PieBlock extends Block {
     @Deprecated
     @Override
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        return world.getBlockState(pos.down()).getMaterial().isSolid();
+        return world.getBlockState(pos.down()).isSideSolidFullSquare(world, pos, Direction.UP);
+    }
+
+    @Deprecated
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return super.getDefaultState().with(WATERLOGGED, ctx.getWorld().getFluidState(ctx.getBlockPos()).getFluid() == Fluids.WATER);
+    }
+
+    @Deprecated
+    @Override
+    public FluidState getFluidState(BlockState state) {
+        if (state.get(WATERLOGGED)) {
+            return Fluids.WATER.getStill(false);
+        }
+        return super.getFluidState(state);
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(BITES);
+        builder.add(BITES, STOMPED, WATERLOGGED);
     }
 
     @Override

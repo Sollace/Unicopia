@@ -72,6 +72,7 @@ public class Unicopia implements ModInitializer {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(StateMapLoader.INSTANCE);
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(SpellbookChapterLoader.INSTANCE);
 
+        UGameEvents.bootstrap();
         UBlocks.bootstrap();
         UItems.bootstrap();
         UPotions.bootstrap();
