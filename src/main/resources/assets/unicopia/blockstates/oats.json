@@ -10,7 +10,7 @@
         "age=7": { "model": "unicopia:block/oats_stage7_lower" },
         "age=8": { "model": "unicopia:block/oats_stage8_lower" },
         "age=9": { "model": "unicopia:block/oats_stage9_lower" },
-        "age=10": { "model": "unicopia:block/oats_stage9_lower" },
-        "age=11": { "model": "unicopia:block/oats_stage9_lower" }
+        "age=10": { "model": "unicopia:block/oats_stage10_lower" },
+        "age=11": { "model": "unicopia:block/oats_stage11_lower" }
     }
 }
