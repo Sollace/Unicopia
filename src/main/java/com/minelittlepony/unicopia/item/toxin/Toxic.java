@@ -3,77 +3,39 @@ package com.minelittlepony.unicopia.item.toxin;
 import java.util.*;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UTags;
-import com.minelittlepony.unicopia.entity.player.Pony;
-
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.text.Text;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
-public class Toxic {
-    private final UseAction action;
+public record Toxic (
+        Optional<UseAction> useAction,
+        Optional<FoodComponent> component,
+        Ailment.Set ailment
+    ) {
+    public static final Toxic EMPTY = new Toxic(Optional.empty(), Optional.empty(), Ailment.Set.EMPTY);
 
-    private final Optional<FoodComponent> component;
-
-    private final Ailment defaultAilment;
-    private final Map<Race, Ailment> ailments;
-
-    private final TagKey<Item> tag;
-
-    Toxic(UseAction action, Optional<FoodComponent> component, TagKey<Item> tag, Ailment defaultAilment, Map<Race, Ailment> ailments) {
-        this.action = action;
-        this.component = component;
-        this.tag = tag;
-        this.defaultAilment = defaultAilment;
-        this.ailments = ailments;
-    }
-
-    @SuppressWarnings("deprecation")
-    public boolean matches(Item item) {
-        return item.getRegistryEntry().isIn(tag);
-    }
-
-    public Optional<FoodComponent> getFoodComponent() {
-        return component;
-    }
-
-    public UseAction getUseAction(ItemStack stack) {
-        return action;
-    }
-
-    public Ailment getAilmentFor(PlayerEntity player) {
-        if (player == null) {
-            return defaultAilment;
-        }
-        return ailments.getOrDefault(Pony.of(player).getSpecies(), defaultAilment);
+    public void appendTooltip(PlayerEntity player, List<Text> tooltip, TooltipContext context) {
+        ailment.get(player).ifPresent(ailment -> ailment.appendTooltip(tooltip, context));
     }
 
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
-        if (entity instanceof PlayerEntity) {
-            getAilmentFor((PlayerEntity)entity).afflict((PlayerEntity)entity, stack);
-        }
-
+        ailment.get(entity).ifPresent(ailment -> ailment.effect().afflict((PlayerEntity)entity, stack));
         return stack;
     }
 
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        if (!Pony.of(player).getSpecies().hasIronGut()) {
-            return TypedActionResult.fail(player.getStackInHand(hand));
-        }
-        return null;
+    public static Toxic innert(Toxicity toxicity) {
+        return new Builder(Ailment.of(toxicity, Toxin.INNERT)).build();
     }
 
     public static class Builder {
         private final Ailment def;
-        private final Map<Race, Ailment> ailments = new HashMap<>();
-        private UseAction action = UseAction.EAT;
+        private final Map<Race, Ailment> overrides = new HashMap<>();
+        private Optional<UseAction> action = Optional.of(UseAction.EAT);
         private Optional<FoodComponent> component = Optional.empty();
 
         public Builder(Ailment def) {
@@ -81,7 +43,7 @@ public class Toxic {
         }
 
         public Builder action(UseAction action) {
-            this.action = action;
+            this.action = Optional.of(action);
             return this;
         }
 
@@ -91,12 +53,16 @@ public class Toxic {
         }
 
         public Builder with(Race race, Ailment ailment) {
-            ailments.put(race, ailment);
+            overrides.put(race, ailment);
             return this;
         }
 
-        public Toxic build(String name) {
-            return new Toxic(action, component, UTags.item(name), def, ailments);
+        public Toxic build() {
+            return new Toxic(action, component, Ailment.Set.of(def, overrides));
+        }
+
+        public Optional<Toxic> buildOptional() {
+            return Optional.of(build());
         }
     }
 }

@@ -29,7 +29,7 @@ public class DrinkableItem extends Item {
             stack.decrement(1);
         }
 
-        ((ToxicHolder)this).getToxic(stack).ifPresent(t -> t.finishUsing(stack, world, user));
+        ((ToxicHolder)this).getToxic(stack).finishUsing(stack, world, user);
 
         return stack.isEmpty() ? new ItemStack(getRecipeRemainder()) : stack;
     }

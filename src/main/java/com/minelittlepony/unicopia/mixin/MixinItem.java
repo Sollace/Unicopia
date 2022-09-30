@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.mixin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -14,11 +13,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.item.toxin.Toxic;
-import com.minelittlepony.unicopia.item.toxin.ToxicHolder;
-import com.minelittlepony.unicopia.item.toxin.Toxics;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.ItemImpl.GroundTickCallback;
+import com.minelittlepony.unicopia.item.toxin.*;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.FoodComponent;
@@ -36,41 +33,36 @@ abstract class MixinItem implements ToxicHolder, ItemImpl.TickableItem {
     @Shadow @Mutable
     private @Final FoodComponent foodComponent;
 
-    private List<ItemImpl.GroundTickCallback> tickCallbacks;
+    private final List<ItemImpl.GroundTickCallback> tickCallbacks = new ArrayList<>();
 
     @Override
     public List<GroundTickCallback> getCallbacks() {
-        if (tickCallbacks == null) {
-            tickCallbacks = new ArrayList<>();
-        }
         return tickCallbacks;
     }
 
     @Override
-    public Optional<Toxic> getToxic(ItemStack stack) {
+    public void clearFoodOverride() {
+        foodComponent = getOriginalFoodComponent();
+    }
+
+    @Override
+    public void setFoodOverride(FoodComponent component) {
+        if (getOriginalFoodComponent() == null) {
+            foodComponent = component;
+        }
+    }
+
+    @Override
+    public FoodComponent getOriginalFoodComponent() {
         if (!foodLoaded) {
             foodLoaded = true;
             originalFoodComponent = ((Item)(Object)this).getFoodComponent();
         }
-
-        foodComponent = originalFoodComponent;
-        Optional<Toxic> toxic = Toxics.REGISTRY.stream()
-                .filter(i -> i.matches((Item)(Object)this))
-                .map(t -> {
-            if (originalFoodComponent == null) {
-                t.getFoodComponent().ifPresent(s -> foodComponent = s);
-            }
-            return t;
-        }).findFirst();
-
-        if (!toxic.isPresent() && ((Item)(Object)this).getFoodComponent() != null) {
-            return Optional.of(Toxics.EDIBLE);
-        }
-        return toxic;
+        return originalFoodComponent;
     }
 
     @Inject(method = "finishUsing", at = @At("HEAD"), cancellable = true)
     private void finishUsing(ItemStack stack, World world, LivingEntity entity, CallbackInfoReturnable<ItemStack> info) {
-        getToxic(stack).ifPresent(t -> t.finishUsing(stack, world, entity));
+        getToxic(stack).finishUsing(stack, world, entity);
     }
 }

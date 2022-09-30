@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.item;
 import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.item.toxin.Toxic;
 import com.minelittlepony.unicopia.item.toxin.ToxicHolder;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -19,15 +20,13 @@ public interface UItemGroups {
         DefaultedList<ItemStack> defs = DefaultedList.of();
         UItems.ITEMS.stream()
                 .filter(item -> !(item instanceof ChameleonItem) || ((ChameleonItem)item).isFullyDisguised())
-                .forEach(item -> {
-                    item.appendStacks(ItemGroup.SEARCH, defs);
-                });
+                .forEach(item -> item.appendStacks(ItemGroup.SEARCH, defs));
         list.addAll(defs);
     }).icon(UItems.EMPTY_JAR::getDefaultStack).build();
     ItemGroup HORSE_FEED = FabricItemGroupBuilder.create(Unicopia.id("horsefeed")).appendItems(list -> {
         list.addAll(Registry.ITEM.stream()
                 .map(Item::getDefaultStack)
-                .filter(item -> item.getItem() instanceof ToxicHolder && ((ToxicHolder)item.getItem()).getToxic(item).isPresent())
+                .filter(item -> ((ToxicHolder)item.getItem()).getToxic(item) != Toxic.EMPTY)
                 .collect(Collectors.toList()));
     }).icon(UItems.ZAP_APPLE::getDefaultStack).build();
 

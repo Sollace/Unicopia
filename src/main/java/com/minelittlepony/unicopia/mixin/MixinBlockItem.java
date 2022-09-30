@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
+
 import com.minelittlepony.unicopia.item.toxin.ToxicHolder;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,14 +19,12 @@ abstract class MixinBlockItem extends Item implements ToxicHolder {
 
     @Override
     public UseAction getUseAction(ItemStack stack) {
-        return getToxic(stack)
-                .map(t -> t.getUseAction(stack))
-                .orElseGet(() -> super.getUseAction(stack));
+        return getToxic(stack).useAction().orElseGet(() -> super.getUseAction(stack));
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        return getToxic(player.getStackInHand(hand))
+        return getToxic(player.getStackInHand(hand)).ailment().get(player)
                 .map(t -> t.use(world, player, hand))
                 .orElseGet(() -> super.use(world, player, hand));
     }
