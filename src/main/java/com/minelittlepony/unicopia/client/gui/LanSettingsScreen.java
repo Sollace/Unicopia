@@ -6,7 +6,6 @@ import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.common.client.gui.element.Button;
-import com.minelittlepony.common.client.gui.element.Cycler;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.common.client.gui.element.Toggle;
 import com.minelittlepony.common.client.gui.packing.GridPacker;
@@ -15,9 +14,7 @@ import com.minelittlepony.common.client.gui.style.Style;
 import com.minelittlepony.unicopia.Config;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.util.RegistryIndexer;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -148,23 +145,5 @@ public class LanSettingsScreen extends GameGui {
     public static Style createStyle(Race race) {
         return new Style().setIcon(TribeButton.createSprite(race, 2, 2, 15))
                 .setTooltip(race.getTranslationKey(), 0, 10);
-    }
-
-    public static Cycler createRaceSelector(Screen screen) {
-        RegistryIndexer<Race> races = RegistryIndexer.of(Race.REGISTRY);
-        return new Cycler(screen.width / 2 + 110, 60, 20, 20) {
-            @Override
-            protected void renderForground(MatrixStack matrices, MinecraftClient mc, int mouseX, int mouseY, int foreColor) {
-                super.renderForground(matrices, mc, mouseX, mouseY, foreColor);
-                if (isMouseOver(mouseX, mouseY)) {
-                    renderToolTip(matrices, screen, mouseX, mouseY);
-                }
-            }
-        }.setStyles(Race.REGISTRY.stream().map(LanSettingsScreen::createStyle).toArray(Style[]::new)).onChange(i -> {
-            Unicopia.getConfig().preferredRace.set(races.valueOf(i));
-            Unicopia.getConfig().save();
-
-            return i;
-        }).setValue(races.indexOf(Unicopia.getConfig().preferredRace.get()));
     }
 }

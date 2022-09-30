@@ -22,7 +22,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.OpenToLanScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
-import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 
@@ -77,9 +76,6 @@ public class UnicopiaClient implements ClientModInitializer {
     }
 
     private void onScreenInit(Screen screen, ButtonList buttons) {
-        if (screen instanceof CreateWorldScreen) {
-            buttons.addButton(LanSettingsScreen.createRaceSelector(screen));
-        }
         if (screen instanceof OpenToLanScreen) {
             buttons.addButton(new Button(screen.width / 2 - 155, 130, 150, 20))
                     .onClick(b -> MinecraftClient.getInstance().setScreen(new LanSettingsScreen(screen)))
