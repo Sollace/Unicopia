@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "unicopia:apple_pie_slice" },
+    { "item": "unicopia:apple_pie_slice" },
+    { "item": "unicopia:apple_pie_slice" },
+    { "item": "unicopia:apple_pie_slice" }
+  ],
+  "result": {
+    "item": "unicopia:apple_pie"
+  }
+}

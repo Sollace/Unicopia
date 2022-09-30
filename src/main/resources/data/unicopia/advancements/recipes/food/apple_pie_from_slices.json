@@ -1,0 +1,30 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "unicopia:apple_pie_slice_to_apple_pie"
+    ]
+  },
+  "criteria": {
+    "has_ingredients": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "tag": [ "unicopia:apple_pie_slice" ] }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "unicopia:apple_pie_slice_to_apple_pie"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_ingredients",
+      "has_the_recipe"
+    ]
+  ]
+}
