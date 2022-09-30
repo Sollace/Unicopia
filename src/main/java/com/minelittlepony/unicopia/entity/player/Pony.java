@@ -59,6 +59,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
+import net.minecraft.world.GameMode;
 
 public class Pony extends Living<PlayerEntity> implements Transmittable, Copieable<Pony>, UpdateCallback {
 
@@ -107,6 +108,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     private int ticksInSun;
     private boolean hasShades;
+    private int ticksSunImmunity = 20;
 
     private Animation animation = Animation.NONE;
     private int animationMaxDuration;
@@ -221,6 +223,10 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         this.invisible = invisible;
     }
 
+    public boolean isSunImmune() {
+        return ticksSunImmunity > 0;
+    }
+
     @Override
     public Affinity getAffinity() {
         return getSpecies().getAffinity();
@@ -268,6 +274,15 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     public Interpolator getInterpolator() {
         return interpolator;
+    }
+
+    public void onSpawn() {
+        if (entity.world instanceof ServerWorld sw
+                && getSpecies() == Race.BAT
+                && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE
+                && SunBlindnessStatusEffect.isPositionExposedToSun(sw, getOrigin())) {
+            SpawnLocator.selectSpawnPosition(sw, entity);
+        }
     }
 
     @Override
@@ -355,6 +370,10 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     @Override
     public void tick() {
+        if (ticksSunImmunity > 0) {
+            ticksSunImmunity--;
+        }
+
         if (animationDuration >= 0 && --animationDuration <= 0) {
             setAnimation(Animation.NONE);
         }
@@ -618,6 +637,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         mana.getXp().set(oldPlayer.getMagicalReserves().getXp().get());
         advancementProgress.putAll(oldPlayer.getAdvancementProgress());
         setDirty();
+        onSpawn();
     }
 
     @Override

@@ -47,6 +47,10 @@ public class MsgRequestSpeciesChange implements Packet<ServerPlayerEntity> {
 
         if (force || player.getActualSpecies().isDefault() || (player.getActualSpecies() == worldDefaultRace && !player.isSpeciesPersisted())) {
             player.setSpecies(newRace.isPermitted(sender) ? newRace : worldDefaultRace);
+
+            if (force) {
+                player.onSpawn();
+            }
         }
 
         Channel.SERVER_PLAYER_CAPABILITIES.send(sender, new MsgPlayerCapabilities(true, player));
