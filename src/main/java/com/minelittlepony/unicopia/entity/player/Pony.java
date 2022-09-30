@@ -166,11 +166,11 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     @Override
     public Race getSpecies() {
-        if (getMaster() == null) {
-            return Race.HUMAN;
-        }
+        return getActualSpecies();
+    }
 
-        return Race.fromName(getMaster().getDataTracker().get(RACE), Race.HUMAN);
+    public Race getActualSpecies() {
+        return Race.fromName(entity.getDataTracker().get(RACE), Race.HUMAN);
     }
 
     @Override
@@ -285,7 +285,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             if (race != clientPreferredRace) {
                 clientPreferredRace = race;
 
-                if (race != getSpecies()) {
+                if (race != getActualSpecies()) {
                     Channel.CLIENT_REQUEST_SPECIES_CHANGE.send(new MsgRequestSpeciesChange(race));
                 }
             }
@@ -552,7 +552,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
-        compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
+        compound.putString("playerSpecies", Race.REGISTRY.getId(getActualSpecies()).toString());
         compound.putFloat("magicExhaustion", magicExhaustion);
         compound.putInt("ticksHanging", ticksHanging);
         NbtSerialisable.writeBlockPos("hangingPosition", hangingPosition, compound);
@@ -616,7 +616,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             oldPlayer.getSpellSlot().stream(true).filter(SpellPredicate.IS_PLACED).forEach(getSpellSlot()::put);
         }
         oldPlayer.getSpellSlot().put(null);
-        setSpecies(oldPlayer.getSpecies());
+        setSpecies(oldPlayer.getActualSpecies());
         getDiscoveries().copyFrom(oldPlayer.getDiscoveries());
         getCharms().equipSpell(Hand.MAIN_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.MAIN_HAND));
         getCharms().equipSpell(Hand.OFF_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.OFF_HAND));

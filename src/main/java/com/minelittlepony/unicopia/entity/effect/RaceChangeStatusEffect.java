@@ -75,7 +75,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
 
         int progression = ticks % (stage.ordinal() * STAGE_DURATION);
 
-        if (eq.getSpecies() == race || !race.isPermitted(entity instanceof PlayerEntity ? (PlayerEntity)entity : null)) {
+        if ((eq instanceof Pony pony ? pony.getActualSpecies() : eq.getSpecies()) == race || !race.isPermitted(entity instanceof PlayerEntity ? (PlayerEntity)entity : null)) {
             if (progression == 0 && entity instanceof PlayerEntity && stage == Stage.CRAWLING) {
                 ((PlayerEntity)entity).sendMessage(Stage.INITIAL.getMessage(race), true);
             }

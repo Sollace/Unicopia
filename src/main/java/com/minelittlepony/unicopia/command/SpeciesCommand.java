@@ -70,7 +70,7 @@ class SpeciesCommand {
     }
 
     static int get(ServerCommandSource source, PlayerEntity player, boolean isSelf) {
-        Race spec = Pony.of(player).getSpecies();
+        Race spec = Pony.of(player).getActualSpecies();
 
         String name = "commands.race.tell.";
         name += isSelf ? "self" : "other";

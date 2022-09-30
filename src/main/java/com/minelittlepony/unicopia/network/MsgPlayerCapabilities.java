@@ -42,7 +42,7 @@ public class MsgPlayerCapabilities implements Packet<PlayerEntity> {
 
     public MsgPlayerCapabilities(boolean full, Pony player) {
         playerId = player.getMaster().getUuid();
-        newRace = player.getSpecies();
+        newRace = player.getActualSpecies();
         compoundTag = full ? player.toNBT() : new NbtCompound();
     }
 
