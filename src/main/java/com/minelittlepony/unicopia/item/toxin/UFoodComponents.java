@@ -35,6 +35,10 @@ public interface UFoodComponents {
             .statusEffect(new StatusEffectInstance(StatusEffects.BAD_OMEN, 100, 0), 0.6F)
             .build();
 
+    FoodComponent LOVE_BOTTLE = builder(2, 0.125F).alwaysEdible().snack().build();
+    FoodComponent LOVE_MUG = builder(4, 0.125F).snack().build();
+    FoodComponent LOVE_BUCKET = builder(8, 0.125F).build();
+
     static FoodComponent.Builder builder(int hunger, float saturation) {
         return new FoodComponent.Builder()
                 .hunger(hunger)

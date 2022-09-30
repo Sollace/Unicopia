@@ -100,7 +100,9 @@ public interface Toxics {
             .with(Race.BAT, Ailment.INNERT)
     );
 
-    Toxic LOVE = register("love", new Toxic.Builder(Ailment.INNERT));
+    Toxic LOVE = register("love", new Toxic.Builder(Ailment.INNERT)
+            .with(Race.CHANGELING, of(Toxicity.SAFE, Toxin.LOVE_CONSUMPTION))
+    );
 
     static void bootstrap() {}
 

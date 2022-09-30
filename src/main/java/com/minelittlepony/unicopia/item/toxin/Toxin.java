@@ -40,6 +40,14 @@ public interface Toxin extends Affliction {
         player.getHungerManager().add(-food.getHunger()/2, -food.getSaturationModifier()/2);
     }).and(STRONG_NAUSEA).and(IF_NOT_PEACEFUL.then(WEAK_FOOD_POISONING.withChance(20))).and(WEAKNESS);
 
+    Toxin LOVE_CONSUMPTION = of(Text.literal("love"), (player, stack) -> {
+        player.heal(stack.isFood() ? stack.getItem().getFoodComponent().getHunger() : 1);
+        player.removeStatusEffect(StatusEffects.NAUSEA);
+        if (player.world.random.nextInt(10) == 0) {
+            player.removeStatusEffect(UEffects.FOOD_POISONING);
+        }
+    });
+
     default void appendTooltip(List<Text> tooltip) {
         tooltip.add(getName());
     }

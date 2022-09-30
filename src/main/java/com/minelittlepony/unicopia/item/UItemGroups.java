@@ -36,7 +36,7 @@ public interface UItemGroups {
     ItemGroup UNICORN_ITEMS = forTag("unicorn", UItems.SPELLBOOK::getDefaultStack);
     ItemGroup PEGASUS_ITEMS = forTag("pegasus", UItems.PEGASUS_FEATHER::getDefaultStack);
     ItemGroup BAT_PONY_ITEMS = forTag("bat_pony", UItems.SUNGLASSES::getDefaultStack);
-    ItemGroup CHANGELING_ITEMS = forTag("changeling", Items.SCULK_SHRIEKER::getDefaultStack);
+    ItemGroup CHANGELING_ITEMS = forTag("changeling", UItems.LOVE_BOTTLE::getDefaultStack);
 
     static ItemGroup forTag(String name, Supplier<ItemStack> icon) {
         TagKey<Item> key = UTags.item("groups/" + name);

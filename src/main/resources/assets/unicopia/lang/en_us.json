@@ -32,6 +32,10 @@
   "item.unicopia.cooked_zap_apple": "Cooked Zap Apple",
   "item.unicopia.zap_apple": "Zap Apple",
   "item.unicopia.zap_bulb": "Unripened Zap Apple",
+  
+  "item.unicopia.love_bottle": "Bottle o' Love",
+  "item.unicopia.love_bucket": "Love Bucket",
+  "item.unicopia.love_mug": "Mug o' Love",
 
   "item.unicopia.empty_jar": "Glass Jar",
   "item.unicopia.filled_jar": "%s in a Jar",

@@ -1,12 +1,11 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Supplier;
 
-import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.UTags;
-import com.minelittlepony.unicopia.entity.FloatingArtefactEntity;
-import com.minelittlepony.unicopia.entity.UEntities;
+import com.google.common.base.Suppliers;
+import com.minelittlepony.unicopia.*;
+import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.FloatingArtefactEntity.State;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
@@ -16,17 +15,11 @@ import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.EndRodBlock;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Saddleable;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.*;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
+import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -38,6 +31,28 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Artifact {
+    private static final Supplier<Map<Item, Item>> ITEM_MAP = Suppliers.memoize(() -> {
+        return Map.of(
+                Items.BUCKET, UItems.LOVE_BUCKET,
+                Items.GLASS_BOTTLE, UItems.LOVE_BOTTLE,
+                UItems.MUG, UItems.LOVE_MUG
+        );
+    });
+
+    private static boolean isFillable(ItemStack stack) {
+        return ITEM_MAP.get().containsKey(stack.getItem());
+    }
+
+    private static ItemStack fill(ItemStack stack) {
+        Item item = ITEM_MAP.get().getOrDefault(stack.getItem(), stack.getItem());
+        if (item == stack.getItem()) {
+            return stack;
+        }
+        ItemStack newStack = item.getDefaultStack();
+        newStack.setNbt(stack.getNbt());
+        newStack.setCount(stack.getCount());
+        return newStack;
+    }
 
     public CrystalHeartItem(Settings settings) {
         super(settings);
@@ -55,16 +70,16 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
             return ActionResult.FAIL;
         }
 
-        if (world instanceof ServerWorld) {
+        if (world instanceof ServerWorld serverWorld) {
 
-            FloatingArtefactEntity entity = UEntities.FLOATING_ARTEFACT.create((ServerWorld)world, context.getStack().getNbt(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, false, true);
+            FloatingArtefactEntity entity = UEntities.FLOATING_ARTEFACT.create(serverWorld, context.getStack().getNbt(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, false, true);
 
             if (entity == null) {
                 return ActionResult.FAIL;
             }
 
             entity.setStack(context.getStack().split(1));
-            ((ServerWorld)world).spawnEntityAndPassengers(entity);
+            serverWorld.spawnEntityAndPassengers(entity);
 
             entity.playSound(USounds.ENTITY_CRYSTAL_HEART_ACTIVATE, 0.75F, 0.8F);
         } else {
@@ -98,6 +113,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
             if (entity.world.getTime() % 80 == 0 && !entity.world.isClient) {
                 List<LivingEntity> inputs = new ArrayList<>();
                 List<LivingEntity> outputs = new ArrayList<>();
+                List<ItemEntity> containers = new ArrayList<>();
 
                 VecHelper.findInRange(entity, entity.world, entity.getPos(), 20, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(e -> !e.isRemoved() && (e instanceof PlayerEntity || e instanceof MobEntity))).forEach(e -> {
                     LivingEntity living = (LivingEntity)e;
@@ -112,8 +128,11 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                         inputs.add(living);
                     }
                 });
+                VecHelper.findInRange(entity, entity.world, entity.getPos(), 20, i -> {
+                    return i instanceof ItemEntity ie && isFillable(ie.getStack()) && PonyContainer.of(i).filter(p -> p.get().getSpecies() == Race.CHANGELING).isPresent();
+                }).forEach(i -> containers.add((ItemEntity)i));
 
-                int demand = outputs.size();
+                int demand = outputs.size() + containers.stream().mapToInt(i -> i.getStack().getCount()).sum();
                 int supply = inputs.size();
 
                 if (demand == 0 || supply == 0) {
@@ -141,6 +160,10 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                 outputs.forEach(output -> {
                     ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, output, 0.2F), entity, 1);
                     output.heal(gives);
+                });
+                containers.forEach(container -> {
+                    ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, container, 0.2F), entity, 1);
+                    container.setStack(fill(container.getStack()));
                 });
 
                 entity.addSpin(gives > 0 ? 20 : 10, 30);

@@ -25,11 +25,11 @@ public class DrinkableItem extends Item {
             serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         }
 
+        ((ToxicHolder)this).getToxic(stack).finishUsing(stack, world, user);
+
         if (user instanceof PlayerEntity && !((PlayerEntity)user).getAbilities().creativeMode) {
             stack.decrement(1);
         }
-
-        ((ToxicHolder)this).getToxic(stack).finishUsing(stack, world, user);
 
         return stack.isEmpty() ? new ItemStack(getRecipeRemainder()) : stack;
     }
