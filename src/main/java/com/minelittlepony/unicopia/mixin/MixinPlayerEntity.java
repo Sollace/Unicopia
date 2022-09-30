@@ -25,7 +25,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 @Mixin(PlayerEntity.class)
 abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<Pony>, PlayerEntityDuck {
@@ -60,14 +59,6 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
     @Inject(method = "createPlayerAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
     private static void onCreateAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {
         Pony.registerAttributes(info.getReturnValue());
-    }
-
-    @Inject(method = "eatFood(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/item/ItemStack;",
-            at = @At("HEAD"))
-    private void onEatFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> info) {
-        if (stack.isFood()) {
-            get().onEat(stack);
-        }
     }
 
     @Inject(method = "trySleep(Lnet/minecraft/util/math/BlockPos;)Lcom/mojang/datafixers/util/Either;",

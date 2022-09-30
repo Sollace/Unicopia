@@ -17,6 +17,7 @@ public interface UTags {
     TagKey<Item> MAGIC_FEATHERS = item("magic_feathers");
 
     TagKey<Item> SHADES = item("shades");
+    TagKey<Item> CHANGELING_EDIBLE = item("food_types/changeling_edible");
 
     TagKey<Item> POLEARMS = item("polearms");
     TagKey<Item> APPLE_SEEDS = item("apple_seeds");

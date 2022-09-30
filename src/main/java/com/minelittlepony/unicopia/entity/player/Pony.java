@@ -25,7 +25,6 @@ import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.item.toxin.Toxin;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgOtherPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgPlayerAnimationChange;
@@ -541,12 +540,6 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     @Override
     public boolean isEnemy(Affine other) {
         return getCharms().getArmour().contains(UItems.ALICORN_AMULET) || super.isEnemy(other);
-    }
-
-    public void onEat(ItemStack stack) {
-        if (getSpecies() == Race.CHANGELING) {
-            Toxin.LOVE_SICKNESS.afflict(getMaster(), stack);
-        }
     }
 
     @Override
