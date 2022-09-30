@@ -10,6 +10,11 @@
 
   "itemGroup.unicopia.items": "Unicopia - Misc.",
   "itemGroup.unicopia.horsefeed": "Unicopia - Horse Feed",
+  "itemGroup.unicopia.earth_pony": "Unicopia - Ponyville",
+  "itemGroup.unicopia.unicorn": "Unicopia - Canterlot",
+  "itemGroup.unicopia.pegasus": "Unicopia - Cloudsdale",
+  "itemGroup.unicopia.bat_pony": "Unicopia - Hollow Shades",
+  "itemGroup.unicopia.changeling": "Unicopia - Cheese Cliffs",
 
   "item.unicopia.friendship_bracelet": "Bangle of Comradery",
   "item.unicopia.friendship_bracelet.issuer": "Signed by %s",

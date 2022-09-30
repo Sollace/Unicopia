@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "#unicopia:food_types/raw_fish",
+    "#unicopia:food_types/cooked_fish",
+    "unicopia:rain_cloud_jar",
+    "unicopia:storm_cloud_jar",
+    "unicopia:lightning_jar",
+    "#unicopia:polearms",
+    "unicopia:pegasus_feather",
+    "unicopia:gryphon_feather",
+    "unicopia:golden_feather",
+    "unicopia:golden_wing"
+  ]
+}

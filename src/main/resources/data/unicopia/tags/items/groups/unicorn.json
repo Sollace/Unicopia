@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "unicopia:friendship_bracelet",
+    "unicopia:crystal_heart",
+    "unicopia:crystal_shard",
+    "unicopia:gemstone",
+    "unicopia:botched_gem",
+    "unicopia:dragon_breath_scroll",
+    "unicopia:spellbook",
+    "unicopia:pegasus_amulet",
+    "unicopia:alicorn_amulet"
+  ]
+}

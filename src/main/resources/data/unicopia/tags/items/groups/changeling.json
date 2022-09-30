@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#unicopia:food_types/cooked_meat",
+    "#unicopia:food_types/raw_meat",
+    "#unicopia:food_types/raw_insect",
+    "#unicopia:food_types/rotten_meat"
+  ]
+}
