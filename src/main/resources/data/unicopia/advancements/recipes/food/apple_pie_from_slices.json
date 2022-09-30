@@ -10,7 +10,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "tag": [ "unicopia:apple_pie_slice" ] }
+          { "tag": "unicopia:apple_pie_slice" }
         ]
       }
     },

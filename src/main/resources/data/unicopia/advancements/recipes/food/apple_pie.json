@@ -10,7 +10,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "tag": [ "unicopia:fresh_apples" ] }
+          { "tag": "unicopia:fresh_apples" }
         ]
       }
     },
