@@ -8,9 +8,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellTyp
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
-import com.minelittlepony.unicopia.util.RayTraceHelper;
+import com.minelittlepony.unicopia.util.TraceHelper;
 
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -94,9 +93,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
                 projectile.setHydrophobic();
 
                 if (spell instanceof HomingSpell) {
-                    RayTraceHelper.doTrace(player.getMaster(), 600, 1, EntityPredicates.EXCEPT_SPECTATOR).getEntity().filter(((HomingSpell)spell)::setTarget).ifPresent(target -> {
-                        projectile.setHomingTarget(target);
-                    });
+                    TraceHelper.findEntity(player.getMaster(), 600, 1).filter(((HomingSpell)spell)::setTarget).ifPresent(projectile::setHomingTarget);
                 }
             });
         }

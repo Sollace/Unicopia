@@ -60,8 +60,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     public double getCostEstimate(Pony player) {
         double distance = MineLPDelegate.getInstance().getPlayerPonyRace(player.getMaster()).isDefault() ? 6 : -6;
 
-        return RayTraceHelper.doTrace(player.getMaster(), distance, 1)
-                .getBlockPos()
+        return TraceHelper.findBlock(player.getMaster(), distance, 1)
                 .filter(pos -> TreeType.at(pos, player.getReferenceWorld()) != TreeType.NONE)
                 .isPresent() ? 3 : 1;
     }
@@ -107,8 +106,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     @Nullable
     @Override
     public Pos tryActivate(Pony player) {
-        return RayTraceHelper.doTrace(player.getMaster(), 6 * getKickDirection(player), 1)
-                .getBlockPos()
+        return TraceHelper.findBlock(player.getMaster(), 6 * getKickDirection(player), 1)
                 .filter(pos -> TreeType.at(pos, player.getReferenceWorld()) != TreeType.NONE)
                 .map(Pos::new)
                 .orElseGet(() -> getDefaultKickLocation(player));

@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.util.RayTraceHelper;
+import com.minelittlepony.unicopia.util.TraceHelper;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -26,7 +26,7 @@ public class MobBehaviour<T extends MobEntity> extends EntityBehaviour<T> {
     }
 
     protected LivingEntity findTarget(Pony player, T entity) {
-        return RayTraceHelper.<LivingEntity>findEntity(player.getEntity(), 6, 1,
+        return TraceHelper.<LivingEntity>findEntity(player.getEntity(), 6, 1,
                 e -> e instanceof LivingEntity && e != entity && !player.isOwnedBy(e))
                 .orElseGet(() -> getDummy(entity));
     }

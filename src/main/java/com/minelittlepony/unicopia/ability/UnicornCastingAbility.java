@@ -12,7 +12,7 @@ import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
-import com.minelittlepony.unicopia.util.RayTraceHelper;
+import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.item.ItemStack;
@@ -117,7 +117,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
                     } else {
                         player.setAnimation(Animation.ARMS_UP);
                         if (s instanceof HomingSpell homer) {
-                            RayTraceHelper.doTrace(player.getMaster(), homer.getRange(player), 1, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(EntityPredicates.VALID_ENTITY)).getEntity().ifPresent(homer::setTarget);
+                            TraceHelper.findEntity(player.getMaster(), homer.getRange(player), 1, EntityPredicates.VALID_ENTITY).ifPresent(homer::setTarget);
                         }
                         player.playSound(USounds.SPELL_CAST_SUCCESS, 0.05F, 2.2F);
                     }

@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.command;
 
 import java.util.function.Function;
 
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -20,7 +21,6 @@ import net.minecraft.command.argument.NbtCompoundArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.CommandManager;
@@ -77,7 +77,7 @@ public class DisguiseCommand {
     }
 
     static int disguise(ServerCommandSource source, PlayerEntity player, Entity entity) throws CommandSyntaxException {
-        if (entity == null || entity instanceof AbstractDecorationEntity) {
+        if (entity == null || !EquinePredicates.VALID_FOR_DISGUISE.test(entity)) {
             throw FAILED_EXCEPTION.create();
         }
 

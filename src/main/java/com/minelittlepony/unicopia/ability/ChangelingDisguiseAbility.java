@@ -3,21 +3,18 @@ package com.minelittlepony.unicopia.ability;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
-import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.util.RayTraceHelper;
+import com.minelittlepony.unicopia.util.Trace;
+
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 
 /**
@@ -42,16 +39,9 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
             return;
         }
 
-        RayTraceHelper.Trace trace = RayTraceHelper.doTrace(player, 10, 1, EntityPredicates.EXCEPT_SPECTATOR.and(e -> !(e instanceof LightningEntity)));
+        Trace trace = Trace.create(player, 10, 1, EquinePredicates.VALID_FOR_DISGUISE);
 
-        Entity looked = trace.getEntity().filter(e -> !(e instanceof AbstractDecorationEntity)).map(e -> {
-            return e instanceof PlayerEntity ? Pony.of((PlayerEntity)e)
-                    .getSpellSlot()
-                    .get(SpellPredicate.IS_DISGUISE, true)
-                    .map(AbstractDisguiseSpell::getDisguise)
-                    .map(EntityAppearance::getAppearance)
-                    .orElse(e) : e;
-        }).orElseGet(() -> trace.getBlockPos().map(pos -> {
+        Entity looked = trace.getEntity().map(AbstractDisguiseSpell::getAppearance).orElseGet(() -> trace.getBlockPos().map(pos -> {
             if (!iplayer.getReferenceWorld().isAir(pos)) {
                 return MixinFallingBlockEntity.createInstance(player.getEntityWorld(), 0, 0, 0, iplayer.getReferenceWorld().getBlockState(pos));
             }

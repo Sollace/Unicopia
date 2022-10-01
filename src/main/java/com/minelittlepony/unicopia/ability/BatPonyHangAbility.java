@@ -3,9 +3,8 @@ package com.minelittlepony.unicopia.ability;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Multi;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.util.RayTraceHelper;
+import com.minelittlepony.unicopia.util.TraceHelper;
 
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -41,7 +40,7 @@ public class BatPonyHangAbility implements Ability<Multi> {
             return new Multi(BlockPos.ZERO, 0);
         }
 
-        return RayTraceHelper.doTrace(player.getMaster(), 5, 1, EntityPredicates.EXCEPT_SPECTATOR).getBlockPos()
+        return TraceHelper.findBlock(player.getMaster(), 5, 1)
                 .map(BlockPos::down)
                 .filter(player::canHangAt)
                 .map(pos -> new Multi(pos, 1))

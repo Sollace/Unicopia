@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
@@ -12,15 +11,12 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
-import com.minelittlepony.unicopia.util.RayTraceHelper;
+import com.minelittlepony.unicopia.util.Trace;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -87,16 +83,14 @@ public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
 
         double maxDistance = 2 + (getTraits().get(Trait.FOCUS) - 50) * 8;
 
-        HitResult ray = RayTraceHelper.doTrace(caster.getEntity(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR).getResult();
-
-        if (ray.getType() == HitResult.Type.ENTITY) {
-            EntityHitResult result = (EntityHitResult)ray;
-            Optional.ofNullable(result.getEntity()).ifPresent(apply);
-        } else if (ray.getType() == HitResult.Type.BLOCK) {
-            if (caster.canModifyAt(((BlockHitResult)ray).getBlockPos())) {
-                createBlockEntity(caster.getReferenceWorld(), ((BlockHitResult)ray).getBlockPos(), apply);
-            }
-        }
+        Trace trace = Trace.create(caster.getEntity(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR);
+        trace.getEntity().ifPresentOrElse(apply, () -> {
+            trace.ifBlock(pos -> {
+                if (caster.canModifyAt(pos)) {
+                    createBlockEntity(caster.getReferenceWorld(), pos, apply);
+                }
+            });
+        });
     }
 
     static void createBlockEntity(World world, BlockPos bpos, @Nullable Consumer<Entity> apply) {

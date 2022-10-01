@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.Optional;
-
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.advancement.UCriteria;
@@ -10,7 +8,7 @@ import com.minelittlepony.unicopia.item.toxin.*;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.RayTraceHelper;
+import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.entity.Entity;
@@ -22,7 +20,6 @@ import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -44,14 +41,9 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-
-        Optional<Entity> entity = RayTraceHelper.doTrace(player, 5, 1, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(e -> canFeedTo(stack, e))).getEntity();
-
-        if (entity.isPresent()) {
-            return onFedTo(stack, player, entity.get());
-        }
-
-        return super.use(world, player, hand);
+        return TraceHelper.findEntity(player, 5, 1, e -> canFeedTo(stack, e))
+                .map(entity -> onFedTo(stack, player, entity))
+                .orElseGet(() -> super.use(world, player, hand));
     }
 
     @Override

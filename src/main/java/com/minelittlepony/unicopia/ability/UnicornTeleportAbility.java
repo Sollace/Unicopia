@@ -7,7 +7,8 @@ import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
-import com.minelittlepony.unicopia.util.RayTraceHelper;
+import com.minelittlepony.unicopia.util.Trace;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceBlock;
@@ -21,10 +22,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -72,55 +70,46 @@ public class UnicornTeleportAbility implements Ability<Pos> {
         }
 
         int maxDistance = player.getMaster().isCreative() ? 1000 : 100;
-        HitResult ray = RayTraceHelper.doTrace(player.getMaster(), maxDistance, 1, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR).getResult();
+
 
         World w = player.getReferenceWorld();
 
-        if (ray.getType() == HitResult.Type.MISS) {
-            return null;
-        }
+        Trace trace = Trace.create(player.getMaster(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR);
+        return trace.getBlockOrEntityPos().map(pos -> {
+            final BlockPos originalPos = pos;
 
-        BlockPos pos;
+            boolean airAbove = enterable(w, pos.up()) && enterable(w, pos.up(2));
 
-        if (ray.getType() == HitResult.Type.ENTITY) {
-            pos = new BlockPos(ray.getPos());
-        } else {
-            pos = ((BlockHitResult)ray).getBlockPos();
-        }
+            if (exception(w, pos, player.getMaster())) {
+                final BlockPos p = pos;
+                pos = trace.getSide().map(sideHit -> {
+                    if (player.getMaster().isSneaking()) {
+                        sideHit = sideHit.getOpposite();
+                    }
 
-        boolean airAbove = enterable(w, pos.up()) && enterable(w, pos.up(2));
-
-        if (exception(w, pos, player.getMaster()) && ray.getType() == HitResult.Type.BLOCK) {
-            Direction sideHit = ((BlockHitResult)ray).getSide();
-
-            if (player.getMaster().isSneaking()) {
-                sideHit = sideHit.getOpposite();
+                    return p.offset(sideHit);
+                }).orElse(pos);
             }
-
-            pos = pos.offset(sideHit);
-        }
-
-        if (enterable(w, pos.down())) {
-            pos = pos.down();
 
             if (enterable(w, pos.down())) {
-                if (!airAbove) {
-                    return null;
+                pos = pos.down();
+
+                if (enterable(w, pos.down())) {
+                    if (!airAbove) {
+                        return null;
+                    }
+
+                    pos = originalPos.up(2);
                 }
-
-                pos = new BlockPos(
-                        ray.getPos().getX(),
-                        pos.getY() + 2,
-                        ray.getPos().getZ());
             }
-        }
 
-        if ((!enterable(w, pos) && exception(w, pos, player.getMaster()))
-         || (!enterable(w, pos.up()) && exception(w, pos.up(), player.getMaster()))) {
-            return null;
-        }
+            if ((!enterable(w, pos) && exception(w, pos, player.getMaster()))
+             || (!enterable(w, pos.up()) && exception(w, pos.up(), player.getMaster()))) {
+                return null;
+            }
 
-        return new Pos(pos.getX(), pos.getY(), pos.getZ());
+            return new Pos(pos);
+        }).orElse(null);
     }
 
     @Override

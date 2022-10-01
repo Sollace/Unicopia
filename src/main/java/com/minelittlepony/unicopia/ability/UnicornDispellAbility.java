@@ -10,7 +10,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
-import com.minelittlepony.unicopia.util.RayTraceHelper;
+import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.text.Text;
@@ -83,13 +83,8 @@ public class UnicornDispellAbility implements Ability<Pos> {
 
     private Optional<Caster<?>> getTarget(Pony player) {
         int maxDistance = player.getMaster().isCreative() ? 1000 : 100;
-        return RayTraceHelper.doTrace(player.getMaster(), maxDistance, 1,
-                EquinePredicates.IS_PLACED_SPELL)
-                .getEntity()
-            .flatMap(Caster::of);
+        return TraceHelper.findEntity(player.getMaster(), maxDistance, 1, EquinePredicates.IS_PLACED_SPELL).flatMap(Caster::of);
     }
-
-
 
     @Override
     public void preApply(Pony player, AbilitySlot slot) {

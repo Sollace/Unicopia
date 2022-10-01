@@ -12,7 +12,7 @@ import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.RayTraceHelper;
+import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.Entity;
@@ -82,7 +82,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     protected List<LivingEntity> getTargets(Pony player) {
         List<Entity> list = VecHelper.findInRange(player.getMaster(), player.getReferenceWorld(), player.getOriginVector(), 3, this::canDrain);
 
-        RayTraceHelper.<LivingEntity>findEntity(player.getMaster(), 17, 1,
+        TraceHelper.<LivingEntity>findEntity(player.getMaster(), 17, 1,
                 looked -> looked instanceof LivingEntity && !list.contains(looked) && canDrain(looked))
             .ifPresent(list::add);
 

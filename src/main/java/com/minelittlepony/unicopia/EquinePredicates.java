@@ -7,9 +7,10 @@ import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
+import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.predicate.entity.EntityPredicates;
 
 public interface EquinePredicates {
     Predicate<Entity> IS_PLAYER = e -> e instanceof PlayerEntity;
@@ -27,6 +28,8 @@ public interface EquinePredicates {
     Predicate<Entity> IS_PLACED_SPELL = e -> e instanceof Caster && !e.isRemoved();
 
     Predicate<LivingEntity> HAS_WANT_IT_NEED_IT = e -> EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) > 0;
+
+    Predicate<Entity> VALID_FOR_DISGUISE = EntityPredicates.EXCEPT_SPECTATOR.and(e -> !(e instanceof LightningEntity || e instanceof AbstractDecorationEntity));
 
     static Predicate<Entity> ofRace(Race race) {
         return raceMatches(race::equals);
