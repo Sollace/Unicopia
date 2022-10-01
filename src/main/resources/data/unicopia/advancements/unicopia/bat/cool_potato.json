@@ -2,7 +2,7 @@
   "parent": "unicopia:unicopia/bat/praise_the_sun",
   "display": {
     "icon": {
-      "item": "minecraft:carved_pumpkin"
+      "item": "unicopia:sunglasses"
     },
     "title": {
       "translate": "advancements.unicopia.cool_potato.title"
