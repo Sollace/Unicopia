@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.block.data.ModificationType;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.particle.ParticleSource;
@@ -63,15 +64,24 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     }
 
     default boolean canModifyAt(BlockPos pos) {
+        return canModifyAt(pos, ModificationType.EITHER);
+    }
 
-        if (!canCastAt(Vec3d.ofCenter(pos))) {
-            return false;
+    default boolean canModifyAt(BlockPos pos, ModificationType mod) {
+
+        if (mod.checkPhysical()) {
+            if (getMaster() instanceof PlayerEntity player) {
+                if (!getReferenceWorld().canPlayerModifyAt(player, pos)) {
+                    return false;
+                }
+            } else {
+                if (!getReferenceWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+                    return false;
+                }
+            }
         }
 
-        if (getMaster() instanceof PlayerEntity) {
-            return getReferenceWorld().canPlayerModifyAt((PlayerEntity)getMaster(), pos);
-        }
-        return getReferenceWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
+        return !mod.checkMagical() || canCastAt(Vec3d.ofCenter(pos));
     }
 
     /**

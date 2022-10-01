@@ -19,6 +19,7 @@ public interface UCriteria {
     CustomEventCriterion.Trigger THROW_MUFFIN = CUSTOM_EVENT.createTrigger("throw_muffin");
     CustomEventCriterion.Trigger SEND_OATS = CUSTOM_EVENT.createTrigger("send_oats");
     CustomEventCriterion.Trigger RECEIVE_OATS = CUSTOM_EVENT.createTrigger("receive_oats");
+    CustomEventCriterion.Trigger BREAK_WINDOW = CUSTOM_EVENT.createTrigger("break_window");
 
     private static <T extends Criterion<?>> T register(T obj) {
         return MixinCriteria.register(obj);

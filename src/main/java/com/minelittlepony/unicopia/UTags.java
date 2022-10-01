@@ -22,6 +22,8 @@ public interface UTags {
     TagKey<Item> POLEARMS = item("polearms");
     TagKey<Item> APPLE_SEEDS = item("apple_seeds");
 
+    TagKey<Block> GLASS_PANES = block("glass_panes");
+    TagKey<Block> GLASS_BLOCKS = block("glass_blocks");
     TagKey<Block> FRAGILE = block("fragile");
     TagKey<Block> INTERESTING = block("interesting");
 

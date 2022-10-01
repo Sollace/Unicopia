@@ -1,12 +1,10 @@
 package com.minelittlepony.unicopia.entity.player;
 
-import com.minelittlepony.unicopia.FlightType;
-import com.minelittlepony.unicopia.InteractionManager;
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.block.data.ModificationType;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
@@ -14,6 +12,7 @@ import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
+import com.minelittlepony.unicopia.particle.*;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.*;
 
@@ -589,17 +588,22 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         Vec3d orientation = entity.getRotationVec(1).multiply(speed);
         entity.addVelocity(orientation.x, orientation.y, orientation.z);
 
-        int damage = TraceHelper.findBlocks(entity, speed + 4, 1, state -> state.isOf(Blocks.GLASS_PANE)).stream()
+        int damage = TraceHelper.findBlocks(entity, speed + 4, 1, state -> state.isIn(UTags.GLASS_PANES)).stream()
             .flatMap(pos -> BlockPos.streamOutwards(pos, 2, 2, 2))
             .filter(pos -> entity.world.getBlockState(pos).isOf(Blocks.GLASS_PANE))
             .reduce(0, (u, pos) -> {
-                entity.world.breakBlock(pos, true);
+                if (pony.canModifyAt(pos, ModificationType.PHYSICAL)) {
+                    entity.world.breakBlock(pos, true);
+                } else {
+                    ParticleUtils.spawnParticles(new MagicParticleEffect(0x00AAFF), entity.world, Vec3d.ofCenter(pos), 15);
+                }
                 return 1;
             }, Integer::sum);
 
         if (damage > 0) {
             pony.subtractEnergyCost(damage / 5F);
             entity.damage(DamageSource.FLY_INTO_WALL, Math.min(damage, entity.getHealth() - 1));
+            UCriteria.BREAK_WINDOW.trigger(entity);
         }
 
         pony.updateVelocity();
