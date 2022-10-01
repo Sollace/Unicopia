@@ -15,13 +15,9 @@ import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
-import com.minelittlepony.unicopia.util.Tickable;
-import com.minelittlepony.unicopia.util.AnimationUtil;
-import com.minelittlepony.unicopia.util.MutableVector;
+import com.minelittlepony.unicopia.util.*;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.block.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -35,9 +31,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 
 public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickable, Motion, NbtSerialisable {
     private static final int MAX_WALL_HIT_CALLDOWN = 30;
@@ -594,6 +588,20 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         Vec3d orientation = entity.getRotationVec(1).multiply(speed);
         entity.addVelocity(orientation.x, orientation.y, orientation.z);
+
+        int damage = TraceHelper.findBlocks(entity, speed + 4, 1, state -> state.isOf(Blocks.GLASS_PANE)).stream()
+            .flatMap(pos -> BlockPos.streamOutwards(pos, 2, 2, 2))
+            .filter(pos -> entity.world.getBlockState(pos).isOf(Blocks.GLASS_PANE))
+            .reduce(0, (u, pos) -> {
+                entity.world.breakBlock(pos, true);
+                return 1;
+            }, Integer::sum);
+
+        if (damage > 0) {
+            pony.subtractEnergyCost(damage / 5F);
+            entity.damage(DamageSource.FLY_INTO_WALL, Math.min(damage, entity.getHealth() - 1));
+        }
+
         pony.updateVelocity();
         pony.playSound(USounds.ENTITY_PLAYER_PEGASUS_DASH, 1);
     }
