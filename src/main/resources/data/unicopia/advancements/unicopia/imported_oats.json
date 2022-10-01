@@ -1,0 +1,35 @@
+{
+  "parent": "unicopia:unicopia/root",
+  "display": {
+    "icon": {
+      "item": "unicopia:imported_oats"
+    },
+    "title": {
+      "translate": "advancements.unicopia.imported_oats.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.imported_oats.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "send_oats": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "send_oats"
+      }
+    },
+    "receive_oats": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "receive_oats"
+      }
+    }
+  },
+  "requirements": [
+    [ "send_oats", "receive_oats" ]
+  ]
+}
