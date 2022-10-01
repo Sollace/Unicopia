@@ -88,6 +88,8 @@ public class ParticleHandle {
         int ATTR_RADIUS = 0;
         int ATTR_COLOR = 1;
         int ATTR_OPACITY = 2;
+        int ATTR_PITCH = 3;
+        int ATTR_YAW = 4;
 
         boolean isStillAlive();
 

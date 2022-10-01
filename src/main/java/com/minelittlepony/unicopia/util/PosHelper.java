@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.google.common.collect.Lists;
-import com.minelittlepony.unicopia.util.shape.Shape;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -65,12 +64,5 @@ public interface PosHelper {
                 return false;
             }
         }, false);
-    }
-
-    static Stream<BlockPos> getAllInRegionMutable(BlockPos origin, Shape shape) {
-        return BlockPos.stream(
-            origin.add(new BlockPos(shape.getLowerBound())),
-            origin.add(new BlockPos(shape.getUpperBound()))
-        ).filter(pos -> shape.isPointInside(Vec3d.of(pos.subtract(origin))));
     }
 }

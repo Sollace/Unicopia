@@ -31,8 +31,8 @@ public class IceSpell extends AbstractSpell {
             .with(Trait.ICE, 15)
             .build();
 
-    private final int rad = 3;
-    private final Shape outerRange = new Sphere(false, rad);
+    private static final int RADIUS = 3;
+    private static final Shape OUTER_RANGE = new Sphere(false, RADIUS);
 
     protected IceSpell(CustomisedSpellType<?> type) {
         super(type);
@@ -42,10 +42,10 @@ public class IceSpell extends AbstractSpell {
     public boolean tick(Caster<?> source, Situation situation) {
         boolean submerged = source.getEntity().isSubmergedInWater() || source.getEntity().isSubmergedIn(FluidTags.LAVA);
 
-        long blocksAffected = PosHelper.getAllInRegionMutable(source.getOrigin(), outerRange).filter(i -> {
+        long blocksAffected = OUTER_RANGE.offset(source.getOrigin()).getBlockPositions().filter(i -> {
             if (source.canModifyAt(i) && applyBlockSingle(source.getEntity(), source.getReferenceWorld(), i, situation)) {
 
-                if (submerged & source.getOrigin().isWithinDistance(i, rad - 1)) {
+                if (submerged & source.getOrigin().isWithinDistance(i, RADIUS - 1)) {
                     BlockState state = source.getReferenceWorld().getBlockState(i);
                     if (state.isIn(BlockTags.ICE) || state.isOf(Blocks.OBSIDIAN)) {
                         source.getReferenceWorld().setBlockState(i, Blocks.AIR.getDefaultState(), Block.NOTIFY_NEIGHBORS);

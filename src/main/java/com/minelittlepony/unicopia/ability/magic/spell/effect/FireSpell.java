@@ -13,7 +13,6 @@ import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -67,7 +66,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpel
             generateParticles(source);
         }
 
-        return PosHelper.getAllInRegionMutable(source.getOrigin(), new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER)))).reduce(false,
+        return new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER))).offset(source.getOrigin()).getBlockPositions().reduce(false,
                 (r, i) -> source.canModifyAt(i) && applyBlocks(source.getReferenceWorld(), i),
                 (a, b) -> a || b)
                 || applyEntities(null, source.getReferenceWorld(), source.getOriginVector());

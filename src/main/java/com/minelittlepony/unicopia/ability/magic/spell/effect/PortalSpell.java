@@ -13,7 +13,7 @@ import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.particle.*;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
-import com.minelittlepony.unicopia.util.shape.Sphere;
+import com.minelittlepony.unicopia.util.shape.*;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -32,6 +32,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
             .with(Trait.KNOWLEDGE, 1)
             .with(Trait.ORDER, 25)
             .build();
+    private static final Shape PARTICLE_AREA = new Sphere(true, 2, 1, 1, 0);
 
     private final EntityReference<Entity> teleportationTarget = new EntityReference<>();
 
@@ -41,6 +42,8 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
     private float pitch;
     private float yaw;
+
+    private PointGenerator particleArea = PARTICLE_AREA;
 
     protected PortalSpell(CustomisedSpellType<?> type) {
         super(type);
@@ -57,7 +60,6 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
         if (situation == Situation.GROUND) {
 
             if (source.isClient()) {
-
                 Vec3d origin = source.getOriginVector();
 
                 ParticleEffect effect = teleportationTarget.getPosition()
@@ -67,13 +69,13 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
                         })
                         .orElse(ParticleTypes.ELECTRIC_SPARK);
 
-                source.spawnParticles(origin, new Sphere(true, 2, 1, 1, 1), 1, pos -> {
+                source.spawnParticles(origin, particleArea, 5, pos -> {
                     source.addParticle(effect, pos, Vec3d.ZERO);
                 });
 
                 teleportationTarget.getPosition().ifPresentOrElse(position -> {
                     particleEffect.update(getUuid(), source, spawner -> {
-                        spawner.addParticle(new SphereParticleEffect(UParticles.DISK, getType().getColor(), 0.8F, 2, new Vec3d(pitch, yaw, 0)), source.getOriginVector(), Vec3d.ZERO);
+                        spawner.addParticle(new SphereParticleEffect(UParticles.DISK, getType().getColor(), 0.8F, 1.8F, new Vec3d(pitch, yaw, 0)), source.getOriginVector(), Vec3d.ZERO);
                     });
                 }, () -> {
                     particleEffect.destroy();
@@ -100,8 +102,6 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
                 entry.pitch = pitch;
                 entry.yaw = yaw;
             }
-
-
         }
 
         return !isDead();
@@ -160,6 +160,10 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
     public void setOrientation(float pitch, float yaw) {
         this.pitch = pitch;
         this.yaw = yaw;
+        particleArea = PARTICLE_AREA.rotate(
+            pitch * MathHelper.RADIANS_PER_DEGREE,
+            (180 - yaw) * MathHelper.RADIANS_PER_DEGREE
+        );
         setDirty();
     }
 
@@ -202,6 +206,10 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
         teleportationTarget.fromNBT(compound.getCompound("teleportationTarget"));
         pitch = compound.getFloat("pitch");
         yaw = compound.getFloat("yaw");
+        particleArea = PARTICLE_AREA.rotate(
+            pitch * MathHelper.RADIANS_PER_DEGREE,
+            (180 - yaw) * MathHelper.RADIANS_PER_DEGREE
+        );
     }
 
     @Override

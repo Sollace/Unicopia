@@ -75,6 +75,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
+
         if (situation == Situation.BODY) {
             if (!source.isClient()) {
 
@@ -174,7 +175,6 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     public Optional<Attachment> getParticleEffectAttachment(Caster<?> source) {
         return particlEffect.update(getUuid(), source, spawner -> {
-            source.getOriginVector().add(0, 5, 0);
             spawner.addParticle(new OrientedBillboardParticleEffect(UParticles.MAGIC_RUNES, pitch + 90, yaw), Vec3d.ZERO, Vec3d.ZERO);
         });
     }

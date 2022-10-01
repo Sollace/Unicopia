@@ -14,9 +14,6 @@ public class Cylinder implements Shape {
     private final double height;
     private final double rad;
 
-    private float yaw = 0;
-    private float pitch = 0;
-
     private final double volume;
 
     /**
@@ -69,41 +66,16 @@ public class Cylinder implements Shape {
     }
 
     @Override
-    public double getXOffset() {
-        return 0;
-    }
-
-    @Override
-    public double getYOffset() {
-        return 0;
-    }
-
-    @Override
-    public double getZOffset() {
-        return 0;
-    }
-
-    @Override
     public Vec3d computePoint(Random rand) {
         double y = MathHelper.nextDouble(rand, 0, height);
         double pheta = MathHelper.nextDouble(rand, 0, Math.PI * 2);
         double rho = hollow && Math.abs(y) != height/2 ? rad : MathHelper.nextDouble(rand, 0, rad);
 
-        return new Vec3d(rho * Math.cos(pheta) * stretchX, y, rho * Math.sin(pheta) * stretchZ)
-                .rotateY(yaw)
-                .rotateX(pitch);
-    }
-
-    @Override
-    public Cylinder setRotation(float u, float v) {
-        yaw = u;
-        pitch = v;
-        return this;
+        return new Vec3d(rho * Math.cos(pheta) * stretchX, y, rho * Math.sin(pheta) * stretchZ);
     }
 
     @Override
     public boolean isPointInside(Vec3d point) {
-        point = point.rotateY(-yaw).rotateX(-pitch);
         point = new Vec3d(point.x / stretchX, point.y, point.z / stretchZ);
         double y = Math.abs(point.y);
         if (y < height/2) {
@@ -115,15 +87,11 @@ public class Cylinder implements Shape {
 
     @Override
     public Vec3d getLowerBound() {
-        return new Vec3d(-rad * stretchX, 0, -rad * stretchZ)
-                .rotateY(yaw)
-                .rotateX(pitch);
+        return new Vec3d(-rad * stretchX, 0, -rad * stretchZ);
     }
 
     @Override
     public Vec3d getUpperBound() {
-        return new Vec3d(-rad * stretchX, height, -rad * stretchZ)
-                .rotateY(yaw)
-                .rotateX(pitch);
+        return new Vec3d(-rad * stretchX, height, -rad * stretchZ);
     }
 }

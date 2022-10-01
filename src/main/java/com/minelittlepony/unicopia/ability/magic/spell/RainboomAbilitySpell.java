@@ -8,7 +8,6 @@ import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -27,8 +26,8 @@ import net.minecraft.world.GameRules;
  */
 public class RainboomAbilitySpell extends AbstractSpell {
 
-    private final int rad = 5;
-    private final Shape effect_range = new Sphere(false, rad);
+    private static final int RADIUS = 5;
+    private static final Shape EFFECT_RANGE = new Sphere(false, RADIUS);
 
     private final ParticleHandle particlEffect = new ParticleHandle();
 
@@ -64,10 +63,10 @@ public class RainboomAbilitySpell extends AbstractSpell {
             return false;
         }
 
-        source.findAllEntitiesInRange(rad).forEach(e -> {
+        source.findAllEntitiesInRange(RADIUS).forEach(e -> {
             e.damage(MagicalDamageSource.create("rainboom", source).setBreakSunglasses(), 6);
         });
-        PosHelper.getAllInRegionMutable(source.getOrigin(), effect_range).forEach(pos -> {
+        EFFECT_RANGE.offset(source.getOrigin()).getBlockPositions().forEach(pos -> {
             BlockState state = source.getReferenceWorld().getBlockState(pos);
             if (state.isIn(UTags.FRAGILE) && canBreak(pos, owner)) {
                 owner.world.breakBlock(pos, true);

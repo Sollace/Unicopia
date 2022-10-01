@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.particle;
 
-import com.minelittlepony.unicopia.util.shape.Shape;
-import com.minelittlepony.unicopia.util.shape.Sphere;
+import com.minelittlepony.unicopia.util.shape.*;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleEffect;
@@ -12,30 +11,33 @@ import net.minecraft.world.World;
 /**
  * Utility for spawning particles.
  */
-public final class ParticleUtils {
+public interface ParticleUtils {
 
-    public static void spawnParticles(ParticleEffect effect, Entity entity, int count) {
-        double halfDist = Math.abs(entity.getStandingEyeHeight() / 1.5);
-        double middle = entity.getBoundingBox().minY + halfDist;
-
-        Shape shape = new Sphere(false, Math.abs((float)halfDist + entity.getWidth()));
-
-        shape.randomPoints(count, entity.world.random).forEach(point -> {
-            spawnParticle(entity.world, effect,
-                    entity.getX() + point.x,
-                    middle + point.y,
-                    entity.getZ() + point.z,
-                    0, 0, 0);
-        });
+    static PointGenerator getShapeFor(Entity entity) {
+        final double halfDist = Math.abs(entity.getStandingEyeHeight() / 1.5);
+        final double middle = entity.getBoundingBox().minY + halfDist;
+        return new Sphere(false, Math.abs((float)halfDist + entity.getWidth())).offset(new Vec3d(entity.getX(), middle, entity.getZ()));
     }
 
-    public static void spawnParticle(World world, ParticleEffect effect, Vec3d pos, Vec3d vel) {
+    static void spawnParticles(ParticleEffect effect, Entity entity, int count) {
+        spawnParticles(entity.world, getShapeFor(entity), effect, count);
+    }
+
+    static void spawnParticles(ParticleEffect effect, World world, Vec3d origin, int count) {
+        spawnParticles(world, Sphere.UNIT_SPHERE.offset(origin), effect, count);
+    }
+
+    static void spawnParticles(World world, PointGenerator points, ParticleEffect effect, int count) {
+        points.randomPoints(count, world.random).forEach(point -> spawnParticle(world, effect, point, Vec3d.ZERO));
+    }
+
+    static void spawnParticle(World world, ParticleEffect effect, Vec3d pos, Vec3d vel) {
         spawnParticle(world, effect, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
     }
 
-    public static void spawnParticle(World world, ParticleEffect effect, double x, double y, double z, double vX, double vY, double vZ) {
-        if (world instanceof ServerWorld) {
-            ((ServerWorld)world).spawnParticles(effect, x, y, z, 1, vX, vY, vZ, 0);
+    static void spawnParticle(World world, ParticleEffect effect, double x, double y, double z, double vX, double vY, double vZ) {
+        if (world instanceof ServerWorld sw) {
+            sw.spawnParticles(effect, x, y, z, 1, vX, vY, vZ, 0);
         } else {
             world.addParticle(effect, x, y, z, vX, vY, vZ);
         }

@@ -7,9 +7,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.google.common.collect.Streams;
-
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 
 /**
@@ -56,30 +54,16 @@ public interface PointGenerator {
         }, false);
     }
 
-    default PointGenerator union(PointGenerator other) {
-        final PointGenerator source = this;
-        return new PointGenerator() {
+    /**
+     * Returns a stream of block positions.
+     */
+    Stream<BlockPos> getBlockPositions();
 
-            @Override
-            public double getVolumeOfSpawnableSpace() {
-                return source.getVolumeOfSpawnableSpace() + other.getVolumeOfSpawnableSpace();
-            }
-
-            @Override
-            public Vec3d computePoint(Random rand) {
-                return source.computePoint(rand);
-            }
-
-            @Override
-            public Stream<Vec3d> randomPoints(int n, Random rand) {
-                double total = this.getVolumeOfSpawnableSpace();
-
-                return Streams.concat(
-                        source.randomPoints((int)(n * (source.getVolumeOfSpawnableSpace() / total)), rand),
-                        other.randomPoints((int)(n * (other.getVolumeOfSpawnableSpace() / total)), rand)
-                );
-            }
-        };
+    /**
+     * Returns a new point generator where all of its points are offset by the specified amount.
+     */
+    default PointGenerator offset(Vec3i offset) {
+        return offset(Vec3d.of(offset));
     }
 
     /**
@@ -99,6 +83,10 @@ public interface PointGenerator {
                 return source.computePoint(rand).add(offset);
             }
 
+            @Override
+            public Stream<BlockPos> getBlockPositions() {
+                return source.getBlockPositions().map(pos -> pos.add(offset.x, offset.y, offset.z));
+            }
         };
     }
 }

@@ -10,18 +10,15 @@ import net.minecraft.util.math.random.Random;
  */
 public class Line implements Shape {
 
-    double len;
+    private final double len;
 
-    double dX;
-    double dY;
-    double dZ;
+    private final double dX;
+    private final double dY;
+    private final double dZ;
 
-    double sX;
-    double sY;
-    double sZ;
-
-    private float yaw = 0;
-    private float pitch = 0;
+    private final double sX;
+    private final double sY;
+    private final double sZ;
 
     /**
      * Creates a line with a given length, starting point, and gradient represented
@@ -65,56 +62,23 @@ public class Line implements Shape {
     }
 
     @Override
-    public double getXOffset() {
-        return sX;
-    }
-
-    @Override
-    public double getYOffset() {
-        return sY;
-    }
-
-    @Override
-    public double getZOffset() {
-        return sZ;
-    }
-
-    @Override
     public Vec3d computePoint(Random rand) {
         double distance = MathHelper.nextDouble(rand, 0, len);
-        return new Vec3d(dX, dY, dZ)
-                .multiply(distance)
-                .add(sX, sY, sZ)
-                .rotateY(yaw)
-                .rotateX(pitch);
-    }
-
-    @Override
-    public Line setRotation(float u, float v) {
-        yaw = u;
-        pitch = v;
-        return this;
+        return new Vec3d(dX, dY, dZ).multiply(distance).add(sX, sY, sZ);
     }
 
     @Override
     public boolean isPointInside(Vec3d point) {
-        point = point.rotateY(-yaw).rotateX(-pitch);
-
         return point.x/dX == point.y/dY && point.x/dX == point.z/dZ;
     }
 
     @Override
     public Vec3d getLowerBound() {
-        return new Vec3d(sX, sY, sZ)
-                .rotateY(yaw)
-                .rotateX(pitch);
+        return new Vec3d(sX, sY, sZ);
     }
 
     @Override
     public Vec3d getUpperBound() {
-        return new Vec3d(sX + dX, sY + dY, sZ + dZ)
-                .multiply(len)
-                .rotateY(yaw)
-                .rotateX(pitch);
+        return new Vec3d(sX + dX, sY + dY, sZ + dZ).multiply(len);
     }
 }

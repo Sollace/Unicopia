@@ -88,7 +88,15 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
         if (key == ATTR_RADIUS) {
             targetSize = value.floatValue();
         }
+        if (key == ATTR_PITCH) {
+            rotation = new Quaternion(0, 0, 0, 1);
+            rotation.hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(value.floatValue()));
+        }
+        if (key == ATTR_YAW) {
+            rotation.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(180 - value.floatValue()));
+        }
     }
+
     @Override
     public float getScale(float tickDelta) {
        return MathHelper.lerp(tickDelta, prevBaseSize, baseSize) * super.getScale(tickDelta);

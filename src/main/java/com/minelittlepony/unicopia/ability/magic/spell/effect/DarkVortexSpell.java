@@ -16,7 +16,6 @@ import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.BlockState;
@@ -156,7 +155,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell 
 
             if (radius > 2) {
                 Vec3d origin = getOrigin(source);
-                PosHelper.getAllInRegionMutable(source.getOrigin(), new Sphere(false, radius)).forEach(i -> {
+                new Sphere(false, radius).offset(origin).getBlockPositions().forEach(i -> {
                     if (!canAffect(source, i)) {
                         return;
                     }
