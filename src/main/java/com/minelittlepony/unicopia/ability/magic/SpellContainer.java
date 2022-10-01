@@ -62,9 +62,16 @@ public interface SpellContainer {
      */
     boolean forEach(Function<Spell, Operation> action, boolean update);
 
+
+    /**
+     * Gets all active effects for this caster updating it if needed.
+     */
     Stream<Spell> stream(boolean update);
 
-    Stream<Spell> stream(@Nullable SpellPredicate<?> type, boolean update);
+    /**
+     * Gets all active effects for this caster that match the given type updating it if needed.
+     */
+    <T extends Spell> Stream<T> stream(@Nullable SpellPredicate<T> type, boolean update);
 
     /**
      * Removes all effects currently active in this slot.
