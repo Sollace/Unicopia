@@ -17,12 +17,15 @@ public class DiskParticle extends SphereParticle {
         rotation.hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion((float)effect.getOffset().y));
         rotation.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(90 - (float)effect.getOffset().x));
 
-        effect.setOffset(Vec3d.ZERO);
+        effect.setOffset(new Vec3d(0, 0.25, 0));
     }
 
     @Override
     protected void renderModel(MatrixStack matrices, VertexConsumer buffer, float scale, float tickDelta, int light) {
         matrices.multiply(rotation);
+        float thickness = 0.2F;
+        SphereModel.DISK.render(matrices, buffer, light, 1, scale, 1, 1, 1, 1);
+        matrices.translate(0, -thickness, 0);
         SphereModel.DISK.render(matrices, buffer, light, 1, scale, 1, 1, 1, 1);
     }
 }
