@@ -24,7 +24,9 @@ public record Toxic (
     }
 
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
-        ailment.get(entity).ifPresent(ailment -> ailment.effect().afflict((PlayerEntity)entity, stack));
+        if (entity instanceof PlayerEntity player) {
+            ailment.get(entity).ifPresent(ailment -> ailment.effect().afflict(player, stack));
+        }
         return stack;
     }
 
