@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia.util.shape;
 
 import java.util.stream.Stream;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.Random;
 
 /**
  *
@@ -44,5 +44,52 @@ public interface Shape extends PointGenerator {
             return this;
         }
         return new RotatedShape(this, pitch, yaw);
+    }
+
+    /**
+     * Returns a new point generator where all of its points are offset by the specified amount.
+     */
+    @Override
+    default Shape offset(Vec3i offset) {
+        return offset(Vec3d.of(offset));
+    }
+
+    /**
+     * Returns a new point generator where all of its points are offset by the specified amount.
+     */
+    @Override
+    default Shape offset(Vec3d offset) {
+        final Shape source = this;
+        return new Shape() {
+            @Override
+            public double getVolumeOfSpawnableSpace() {
+                return source.getVolumeOfSpawnableSpace();
+            }
+
+            @Override
+            public Vec3d computePoint(Random rand) {
+                return source.computePoint(rand).add(offset);
+            }
+
+            @Override
+            public Stream<BlockPos> getBlockPositions() {
+                return source.getBlockPositions().map(pos -> pos.add(offset.x, offset.y, offset.z));
+            }
+
+            @Override
+            public Vec3d getLowerBound() {
+                return source.getLowerBound().add(offset);
+            }
+
+            @Override
+            public Vec3d getUpperBound() {
+                return source.getLowerBound().add(offset);
+            }
+
+            @Override
+            public boolean isPointInside(Vec3d point) {
+                return source.isPointInside(point.subtract(offset));
+            }
+        };
     }
 }

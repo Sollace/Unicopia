@@ -30,7 +30,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -246,5 +248,11 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         //if (entity instanceof ServerPlayerEntity ply) {
         //    ply.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(ply));
         //}
+    }
+
+    public static void transmitPassengers(Entity entity) {
+        if (entity.world instanceof ServerWorld sw) {
+            sw.getChunkManager().sendToNearbyPlayers(entity, new EntityPassengersSetS2CPacket(entity));
+        }
     }
 }

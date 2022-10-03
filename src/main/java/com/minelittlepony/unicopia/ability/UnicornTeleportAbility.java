@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.Trace;
@@ -17,9 +18,7 @@ import net.minecraft.block.WallBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -142,10 +141,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             Entity mount = player.getVehicle();
 
             player.stopRiding();
-
-            if (mount instanceof ServerPlayerEntity) {
-                ((ServerPlayerEntity)player).networkHandler.sendPacket(new EntityPassengersSetS2CPacket(player));
-            }
+            Living.transmitPassengers(mount);
         }
 
         Vec3d offset = teleportee.getOriginVector().subtract(teleporter.getOriginVector());

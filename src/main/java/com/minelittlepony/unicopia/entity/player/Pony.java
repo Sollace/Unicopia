@@ -15,11 +15,13 @@ import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.EarthPonyStompAbility;
 import com.minelittlepony.unicopia.ability.magic.*;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.*;
+import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
@@ -52,7 +54,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -167,7 +168,13 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     @Override
     public Race getSpecies() {
-        return getActualSpecies();
+        return getSpellSlot()
+                .get(SpellPredicate.IS_MIMIC, true)
+                .map(AbstractDisguiseSpell::getDisguise)
+                .map(EntityAppearance::getAppearance)
+                .flatMap(Pony::of)
+                .map(Pony::getActualSpecies)
+                .orElse(getActualSpecies());
     }
 
     public Race getActualSpecies() {
@@ -318,10 +325,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
                     }
                 } else {
                     entity.stopRiding();
-
-                    if (ridee instanceof ServerPlayerEntity) {
-                        ((ServerPlayerEntity)ridee).networkHandler.sendPacket(new EntityPassengersSetS2CPacket(ridee));
-                    }
+                    Living.transmitPassengers(ridee);
                 }
             }
         }
@@ -567,7 +571,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         compound.putString("playerSpecies", Race.REGISTRY.getId(getActualSpecies()).toString());
         compound.putFloat("magicExhaustion", magicExhaustion);
         compound.putInt("ticksHanging", ticksHanging);
-        NbtSerialisable.writeBlockPos("hangingPosition", hangingPosition, compound);
+        BLOCK_POS.writeOptional("hangingPosition", compound, hangingPosition);
         compound.putInt("ticksInSun", ticksInSun);
         compound.putBoolean("hasShades", hasShades);
         compound.put("powers", powers.toNBT());
@@ -604,7 +608,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
         magicExhaustion = compound.getFloat("magicExhaustion");
         ticksHanging = compound.getInt("ticksHanging");
-        hangingPosition = NbtSerialisable.readBlockPos("hangingPosition", compound);
+        hangingPosition = NbtSerialisable.BLOCK_POS.readOptional("hangingPosition", compound);
         ticksInSun = compound.getInt("ticksInSun");
         hasShades = compound.getBoolean("hasShades");
 

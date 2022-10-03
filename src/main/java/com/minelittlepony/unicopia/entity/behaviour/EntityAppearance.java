@@ -42,6 +42,7 @@ import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.shape.VoxelShape;
 
 public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provider, FlightType.Provider, EntityCollisions.ComplexCollidable {
@@ -132,6 +133,9 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         entity = InteractionManager.instance().createPlayer(source.getEntity(), profile);
         entity.setCustomName(source.getMaster().getName());
         ((PlayerEntity)entity).readNbt(nbt.getCompound("playerNbt"));
+        if (nbt.contains("playerVisibleParts", NbtElement.BYTE_TYPE)) {
+            entity.getDataTracker().set(Disguise.PlayerAccess.getModelBitFlag(), nbt.getByte("playerVisibleParts"));
+        }
         entity.setUuid(UUID.randomUUID());
         entity.extinguish();
 
@@ -292,7 +296,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         String newId = compound.getString("entityId");
 
         String newPlayerName = null;
-        if (compound.contains("entity") && compound.getCompound("entity").contains("playerName")) {
+        if (compound.contains("entity", NbtElement.COMPOUND_TYPE) && compound.getCompound("entity").contains("playerName", NbtElement.STRING_TYPE)) {
             newPlayerName = compound.getCompound("entity").getString("playerName");
         }
 
@@ -303,12 +307,10 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
             remove();
         }
 
-        if (compound.contains("entity")) {
+        if (compound.contains("entity", NbtElement.COMPOUND_TYPE)) {
             entityId = newId;
 
             entityNbt = compound.getCompound("entity");
-
-            compound.getString("entityData");
 
             if (entity != null) {
                 try {
@@ -332,20 +334,16 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     private static NbtCompound encodeEntityToNBT(Entity entity) {
         NbtCompound entityNbt = new NbtCompound();
 
-        if (entity instanceof PlayerEntity) {
-            GameProfile profile = ((PlayerEntity)entity).getGameProfile();
+        if (entity instanceof PlayerEntity player) {
+            GameProfile profile = player.getGameProfile();
 
             entityNbt.putString("id", "player");
             if (profile.getId() != null) {
                 entityNbt.putUuid("playerId", profile.getId());
             }
             entityNbt.putString("playerName", profile.getName());
-
-            NbtCompound tag = new NbtCompound();
-
-            entity.writeNbt(tag);
-
-            entityNbt.put("playerNbt", tag);
+            entityNbt.putByte("playerVisibleParts", player.getDataTracker().get(Disguise.PlayerAccess.getModelBitFlag()));
+            entityNbt.put("playerNbt", player.writeNbt(new NbtCompound()));
         } else {
             entity.saveSelfNbt(entityNbt);
         }

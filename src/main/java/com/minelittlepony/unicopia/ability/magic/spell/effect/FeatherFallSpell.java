@@ -52,7 +52,7 @@ public class FeatherFallSpell extends AbstractSpell implements TimedSpell {
     public boolean tick(Caster<?> caster, Situation situation) {
         timer.tick();
 
-        if (timer.duration <= 0) {
+        if (timer.getTicksRemaining() <= 0) {
             return false;
         }
 
@@ -91,7 +91,7 @@ public class FeatherFallSpell extends AbstractSpell implements TimedSpell {
             ParticleUtils.spawnParticles(new MagicParticleEffect(getType().getColor()), target, 7);
         });
 
-        return caster.subtractEnergyCost(timer.duration % 50 == 0 ? getCostPerEntity() * targets.size() : 0);
+        return caster.subtractEnergyCost(timer.getTicksRemaining() % 50 == 0 ? getCostPerEntity() * targets.size() : 0);
     }
 
     protected double getCostPerEntity() {

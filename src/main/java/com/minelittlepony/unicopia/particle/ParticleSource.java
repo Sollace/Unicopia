@@ -39,6 +39,6 @@ public interface ParticleSource extends ParticleSpawner {
 
     @Override
     default void addParticle(ParticleEffect effect, Vec3d position, Vec3d velocity) {
-        getReferenceWorld().addParticle(effect, position.x, position.y, position.z, velocity.x, velocity.y, velocity.z);
+        ParticleUtils.spawnParticle(getReferenceWorld(), effect, position, velocity);
     }
 }

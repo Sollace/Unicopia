@@ -112,9 +112,9 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
         return !isDead() && !source.getMaster().isDead();
     }
 
-    static abstract class PlayerAccess extends PlayerEntity {
+    public static abstract class PlayerAccess extends PlayerEntity {
         public PlayerAccess() { super(null, null, 0, null, null); }
-        static TrackedData<Byte> getModelBitFlag() {
+        public static TrackedData<Byte> getModelBitFlag() {
             return PLAYER_MODEL_PARTS;
         }
     }

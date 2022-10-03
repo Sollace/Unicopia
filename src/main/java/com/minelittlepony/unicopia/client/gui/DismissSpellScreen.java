@@ -84,7 +84,7 @@ public class DismissSpellScreen extends GameGui {
         DrawableUtil.drawArc(matrices, 160, 1600, 0, DrawableUtil.TAU, 0x00000020, false);
 
         super.render(matrices, mouseX, mouseY, delta);
-        DrawableUtil.renderRaceIcon(matrices, pony.getActualSpecies(), 0, 0, 16);
+        DrawableUtil.renderRaceIcon(matrices, pony.getSpecies(), 0, 0, 16);
         matrices.pop();
 
         DrawableUtil.drawLine(matrices, mouseX, mouseY - 4, mouseX, mouseY + 4, 0xFFAAFF99);

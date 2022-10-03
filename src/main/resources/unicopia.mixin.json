@@ -15,6 +15,7 @@
     "MixinEntity",
     "MixinFallingBlock",
     "MixinFallingBlockEntity",
+    "MixinFlowableFluid",
     "MixinItem",
     "MixinItemEntity",
     "MixinLivingEntity",

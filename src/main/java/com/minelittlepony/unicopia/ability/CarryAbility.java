@@ -2,13 +2,12 @@ package com.minelittlepony.unicopia.ability;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.TraceHelper;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
 /**
@@ -76,9 +75,7 @@ public class CarryAbility implements Ability<Hit> {
             rider.startRiding(player, true);
         }
 
-        if (player instanceof ServerPlayerEntity) {
-            ((ServerPlayerEntity)player).networkHandler.sendPacket(new EntityPassengersSetS2CPacket(player));
-        }
+        Living.transmitPassengers(player);
     }
 
     @Override

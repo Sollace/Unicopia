@@ -4,11 +4,15 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import com.mojang.serialization.Codec;
+
 import net.minecraft.nbt.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public interface NbtSerialisable {
+    Serializer<BlockPos> BLOCK_POS = Serializer.of(NbtHelper::toBlockPos, NbtHelper::fromBlockPos);
+
     /**
      * Called to save this to nbt to persist state on file or to transmit over the network
      *
@@ -41,18 +45,28 @@ public interface NbtSerialisable {
         return new Vec3d(list.getDouble(0), list.getDouble(1), list.getDouble(2));
     }
 
-    static void writeBlockPos(String name, Optional<BlockPos> pos, NbtCompound nbt) {
-        pos.map(NbtHelper::fromBlockPos).ifPresent(p -> nbt.put(name, p));
+    static <T> T decode(Codec<T> codec, NbtElement nbt) {
+        return codec.decode(NbtOps.INSTANCE, nbt).result().get().getFirst();
     }
 
-    static Optional<BlockPos> readBlockPos(String name, NbtCompound nbt) {
-        return nbt.contains(name) ? Optional.ofNullable(NbtHelper.toBlockPos(nbt.getCompound(name))) : Optional.empty();
+    static <T> NbtElement encode(Codec<T> codec, T value) {
+        return codec.encodeStart(NbtOps.INSTANCE, value).result().get();
     }
 
     interface Serializer<T> {
         T read(NbtCompound compound);
 
         NbtCompound write(T t);
+
+        default Optional<T> readOptional(String name, NbtCompound compound) {
+            return compound.contains(name, NbtElement.COMPOUND_TYPE)
+                    ? Optional.ofNullable(read(compound.getCompound(name)))
+                    : Optional.empty();
+        }
+
+        default void writeOptional(String name, NbtCompound compound, Optional<T> t) {
+            t.map(this::write).ifPresent(tag -> compound.put(name, tag));
+        }
 
         default T read(NbtElement element) {
             return read((NbtCompound)element);

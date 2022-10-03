@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.block.data;
 import java.util.*;
 
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.ability.magic.CasterView;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -14,7 +15,7 @@ import net.minecraft.util.Util;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
-public class Ether extends PersistentState {
+public class Ether extends PersistentState implements CasterView {
     private static final Identifier ID = Unicopia.id("ether");
 
     public static Ether get(World world) {
@@ -24,6 +25,8 @@ public class Ether extends PersistentState {
     private final Map<Identifier, Set<Entry>> advertisingEndpoints = new HashMap<>();
 
     private final Object locker = new Object();
+
+    private final World world;
 
     Ether(World world, NbtCompound compound) {
         this(world);
@@ -41,7 +44,7 @@ public class Ether extends PersistentState {
     }
 
     Ether(World world) {
-
+        this.world = world;
     }
 
     @Override
@@ -114,6 +117,11 @@ public class Ether extends PersistentState {
         synchronized (locker) {
             return getEntries(spellType).stream().filter(e -> e.equals(uuid)).findFirst();
         }
+    }
+
+    @Override
+    public World getWorld() {
+        return world;
     }
 
     public class Entry implements NbtSerialisable {

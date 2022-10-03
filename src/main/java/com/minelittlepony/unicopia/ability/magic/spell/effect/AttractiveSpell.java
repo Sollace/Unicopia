@@ -37,7 +37,7 @@ public class AttractiveSpell extends ShieldSpell implements ProjectileSpell, Hom
     public boolean tick(Caster<?> caster, Situation situation) {
         timer.tick();
 
-        if (timer.duration <= 0) {
+        if (timer.getTicksRemaining() <= 0) {
             return false;
         }
 

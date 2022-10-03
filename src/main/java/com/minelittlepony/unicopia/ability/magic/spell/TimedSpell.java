@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
@@ -11,16 +12,17 @@ import net.minecraft.util.math.MathHelper;
 public interface TimedSpell extends Spell {
     Timer getTimer();
 
-    class Timer implements NbtSerialisable {
-        public int maxDuration;
-        public int duration;
-        public int prevDuration;
+    class Timer implements Tickable, NbtSerialisable {
+        private int maxDuration;
+        private int duration;
+        private int prevDuration;
 
         public Timer(int initial) {
             maxDuration = initial;
             duration = initial;
         }
 
+        @Override
         public void tick() {
             prevDuration = duration;
             duration--;

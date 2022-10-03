@@ -15,7 +15,6 @@ import net.minecraft.util.math.random.Random;
  *Interface for a 3d shape, used for spawning particles in a designated area (or anything else you need shapes for).
  */
 public interface PointGenerator {
-
     /**
      * Get the volume of space filled by this shape, or the surface area if hollow.
      *
@@ -72,7 +71,6 @@ public interface PointGenerator {
     default PointGenerator offset(Vec3d offset) {
         final PointGenerator source = this;
         return new PointGenerator() {
-
             @Override
             public double getVolumeOfSpawnableSpace() {
                 return source.getVolumeOfSpawnableSpace();

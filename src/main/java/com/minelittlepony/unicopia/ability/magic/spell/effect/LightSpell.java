@@ -48,7 +48,7 @@ public class LightSpell extends AbstractSpell implements TimedSpell {
 
         timer.tick();
 
-        if (timer.duration <= 0) {
+        if (timer.getTicksRemaining() <= 0) {
             return false;
         }
 

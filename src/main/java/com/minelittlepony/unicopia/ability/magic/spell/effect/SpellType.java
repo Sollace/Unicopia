@@ -11,7 +11,6 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
-import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.DispersableDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.RainboomAbilitySpell;
 import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
@@ -24,6 +23,7 @@ import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -39,7 +39,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<PlaceableSpell> PLACED_SPELL = register("placed", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, PlaceableSpell::new);
     public static final SpellType<ThrowableSpell> THROWN_SPELL = register("thrown", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, ThrowableSpell::new);
 
-    public static final SpellType<AbstractDisguiseSpell> CHANGELING_DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, SpellTraits.EMPTY, DispersableDisguiseSpell::new);
+    public static final SpellType<DispersableDisguiseSpell> CHANGELING_DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, SpellTraits.EMPTY, DispersableDisguiseSpell::new);
     public static final SpellType<RainboomAbilitySpell> RAINBOOM = register("rainboom", Affinity.GOOD, 0xBDBDF9, false, SpellTraits.EMPTY, RainboomAbilitySpell::new);
 
     public static final SpellType<IceSpell> FROST = register("frost", Affinity.GOOD, 0xEABBFF, true, IceSpell.DEFAULT_TRAITS, IceSpell::new);
@@ -62,6 +62,9 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<LightSpell> LIGHT = register("light", Affinity.GOOD, 0xEEFFAA, true, LightSpell.DEFAULT_TRAITS, LightSpell::new);
     public static final SpellType<DisplacementSpell> DISPLACEMENT = register("displacement", Affinity.NEUTRAL, 0x9900FF, true, PortalSpell.DEFAULT_TRAITS, DisplacementSpell::new);
     public static final SpellType<PortalSpell> PORTAL = register("portal", Affinity.GOOD, 0x99FFFF, true, PortalSpell.DEFAULT_TRAITS, PortalSpell::new);
+    public static final SpellType<MimicSpell> MIMIC = register("mimic", Affinity.GOOD, 0xFFFF00, true, SpellTraits.EMPTY, MimicSpell::new);
+    public static final SpellType<MindSwapSpell> MIND_SWAP = register("mind_swap", Affinity.BAD, 0xF9FF99, true, SpellTraits.EMPTY, MindSwapSpell::new);
+    public static final SpellType<HydrophobicSpell> HYDROPHOBIC = register("hydrophobic", Affinity.NEUTRAL, 0xF999FF, true, SpellTraits.EMPTY, s -> new HydrophobicSpell(s, FluidTags.WATER));
 
     public static void bootstrap() {}
 

@@ -169,6 +169,7 @@ public class EntityBehaviour<T extends Entity> {
         to.prevYaw = from.prevYaw;
         to.horizontalSpeed = from.horizontalSpeed;
         to.prevHorizontalSpeed = from.prevHorizontalSpeed;
+        to.fallDistance = 0;
         to.setOnGround(from.isOnGround());
         to.setInvulnerable(from.isInvulnerable() || (from instanceof PlayerEntity player && player.getAbilities().creativeMode));
 
