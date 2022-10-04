@@ -5,13 +5,16 @@ import java.util.Optional;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.util.AnimationUtil;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
@@ -25,6 +28,42 @@ public class PlayerPoser {
         float progress = pony.getAnimationProgress(MinecraftClient.getInstance().getTickDelta());
         Animation animation = pony.getAnimation();
         boolean isPony = !MineLPDelegate.getInstance().getPlayerPonyRace(player).isDefault();
+
+        ItemStack glasses = GlassesItem.getForEntity(player);
+
+        ModelPart head = model.getHead();
+
+        if (glasses.hasCustomName() && "Cool Shades".equals(glasses.getName().getString())) {
+
+            float duration = 15F;
+            float gap = duration / 3F;
+
+            float prog = (player.age % duration);
+            if (prog <= gap) {
+                prog = 0;
+            } else if (prog > (duration - gap)) {
+                prog = 1;
+            } else {
+                prog = (prog - gap) / (duration - 2 * gap);
+            }
+            prog *= Math.PI;
+
+            float bop = (float)Math.sin(prog) * 3F;
+            head.pitch += bop / 10F;
+
+            if (isPony) {
+                model.leftArm.roll -= bop / 50F;
+                model.rightArm.roll += bop / 50F;
+
+                model.leftLeg.roll -= bop / 30F;
+                model.leftLeg.pitch -= bop / 20F;
+                model.rightLeg.roll += bop / 30F;
+                model.rightLeg.pitch += bop / 20F;
+            } else {
+                model.leftArm.roll -= bop / 30F;
+                model.rightArm.roll += bop / 30F;
+            }
+        }
 
         switch (animation) {
             case WOLOLO: {
