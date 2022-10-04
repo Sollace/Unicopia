@@ -10,6 +10,7 @@ public interface USounds {
     SoundEvent ENTITY_PLAYER_BATPONY_SCREECH = register("entity.player.batpony.screech");
     SoundEvent ENTITY_PLAYER_REBOUND = register("entity.player.rebound");
     SoundEvent ENTITY_PLAYER_PEGASUS_WINGSFLAP = register("entity.player.pegasus.wingsflap");
+    SoundEvent ENTITY_PLAYER_PEGASUS_FLYING = register("entity.player.pegasus.flying");
     SoundEvent ENTITY_PLAYER_PEGASUS_DASH = register("entity.player.pegasus.dash");
     SoundEvent ENTITY_PLAYER_PEGASUS_MOLT = register("entity.player.pegasus.molt");
     SoundEvent ENTITY_PLAYER_CHANGELING_BUZZ = register("entity.player.changeling.buzz");

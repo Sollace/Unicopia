@@ -75,8 +75,10 @@ public class ClientInteractionManager extends InteractionManager {
                     PlayerPhysics physics = Pony.of(e).getPhysics();
                     return physics.isFlying() && physics.getFlightType() == FlightType.INSECTOID;
                 }, USounds.ENTITY_PLAYER_CHANGELING_BUZZ, 1F, 1F, Random.create(seed)));
-            } else if (type == SOUND_GLIDING && source instanceof PlayerEntity) {
+            } else if (type == SOUND_GLIDING && source instanceof PlayerEntity && isClientPlayer((PlayerEntity) source)) {
                 soundManager.play(new MotionBasedSoundInstance(SoundEvents.ITEM_ELYTRA_FLYING, (PlayerEntity)source, Random.create(seed)));
+            } else if (type == SOUND_GLIDING && source instanceof PlayerEntity) {
+                soundManager.play(new MotionBasedSoundInstance(USounds.ENTITY_PLAYER_PEGASUS_FLYING, (PlayerEntity)source, Random.create(seed)));
             } else if (type == SOUND_MAGIC_BEAM) {
                 soundManager.play(new LoopedEntityTrackingSoundInstance(USounds.SPELL_CAST_SHOOT, 0.3F, 1F, source, seed));
             }

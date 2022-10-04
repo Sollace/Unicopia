@@ -81,6 +81,12 @@ public abstract class FadeOutSoundInstance extends MovingSoundInstance {
         progress = 0;
     }
 
+    protected void setVolume(float vol){
+        sourceVolume = vol;
+        targetVolume = vol;
+        progress = 0;
+    }
+
     private float getLerpedVolume() {
         float delta = MinecraftClient.getInstance().getTickDelta();
         float interpolate = MathHelper.clamp(MathHelper.lerp(delta, prevProgress, progress) / transitionTicks, 0, 1);

@@ -21,6 +21,14 @@
       "unicopia:woosh/woosh5"
     ]
   },
+  "entity.player.pegasus.flying": {
+    "sounds": [
+      {
+        "name": "unicopia:wind/flying_loop",
+        "volume": 0.6
+      }
+    ]
+  },
   "item.magic.aura": {
     "category": "player",
     "subtitle": "unicopia.subtitle.magic_aura",
