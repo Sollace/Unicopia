@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.client.sound;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.MathHelper;
