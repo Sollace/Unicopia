@@ -86,7 +86,8 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
         if (!playedMoonEffect) {
             playedMoonEffect = true;
             markDirty();
-            world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_WOLF_HOWL, SoundCategory.BLOCKS, 1.5F, 0.9F, true);
+
+            world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_WOLF_HOWL, SoundCategory.BLOCKS, 1.5F, 0.3F, world.random.nextInt(1200));
         }
     }
 

@@ -41,6 +41,11 @@ public class ZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
     }
 
     @Override
+    public boolean hasRandomTicks(BlockState state) {
+        return true;
+    }
+
+    @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.randomTick(state, world, pos, random);
 
@@ -96,11 +101,9 @@ public class ZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
         }
 
         if (stage == ZapAppleStageStore.Stage.RIPE) {
-            store.playMoonEffect(pos);
-
             if (below.isOf(UBlocks.ZAP_BULB)) {
                 world.setBlockState(pos.down(), UBlocks.ZAP_APPLE.getDefaultState(), Block.NOTIFY_ALL);
-                store.triggerLightningStrike(pos);
+                store.playMoonEffect(pos);
             }
         }
 
