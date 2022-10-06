@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Supplier;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
@@ -32,12 +32,13 @@ import net.minecraft.world.WorldEvents;
  * An area-effect spell that summons the undead.
  */
 public class NecromancySpell extends AbstractAreaEffectSpell {
-    private final Weighted<EntityType<? extends LivingEntity>> spawnPool = new Weighted<EntityType<? extends LivingEntity>>()
+    private final Supplier<Optional<EntityType<? extends LivingEntity>>> spawnPool = new Weighted.Builder<EntityType<? extends LivingEntity>>()
             .put(7, EntityType.ZOMBIE)
             .put(4, EntityType.HUSK)
             .put(3, EntityType.DROWNED)
             .put(2, EntityType.ZOMBIFIED_PIGLIN)
-            .put(1, EntityType.ZOMBIE_VILLAGER);
+            .put(1, EntityType.ZOMBIE_VILLAGER)
+            .build();
 
     private final List<EntityReference<LivingEntity>> summonedEntities = new ArrayList<>();
 

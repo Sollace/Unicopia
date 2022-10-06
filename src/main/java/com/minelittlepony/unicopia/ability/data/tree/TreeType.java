@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -20,9 +19,9 @@ public interface TreeType {
     TreeType NONE = new TreeTypeImpl(
             Unicopia.id("none"),
             false,
-            new Weighted<Supplier<ItemStack>>(),
             Set.of(),
-            Set.of()
+            Set.of(),
+            Weighted.of()
     );
     Direction[] WIDE_DIRS = new Direction[] { Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST };
 

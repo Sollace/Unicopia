@@ -65,18 +65,13 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
             wideTrunk = buffer.readBoolean();
         }
 
-        private Weighted<Supplier<ItemStack>> getWeighted(Weighted<Supplier<ItemStack>> weighted) {
-            drops.forEach(drop -> drop.appendDrop(weighted));
-            return weighted;
-        }
-
         public TreeType toTreeType(Identifier id) {
             return new TreeTypeImpl(
                     id,
                     wideTrunk,
-                    getWeighted(new Weighted<Supplier<ItemStack>>()),
                     Objects.requireNonNull(logs, "TreeType must have logs"),
-                    Objects.requireNonNull(leaves, "TreeType must have leaves")
+                    Objects.requireNonNull(leaves, "TreeType must have leaves"),
+                    Weighted.of(weighted -> drops.forEach(drop -> drop.appendDrop(weighted)))
             );
         }
 
@@ -96,7 +91,7 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
                 item = buffer.readIdentifier();
             }
 
-            void appendDrop(Weighted<Supplier<ItemStack>> weighted) {
+            void appendDrop(Weighted.Builder<Supplier<ItemStack>> weighted) {
                 Registry.ITEM.getOrEmpty(item).ifPresent(item -> {
                     weighted.put(weight, item::getDefaultStack);
                 });

@@ -1,80 +1,86 @@
 package com.minelittlepony.unicopia.util;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.google.common.collect.Lists;
+import net.minecraft.util.Pair;
 
-public class Weighted<T> {
+public final class Weighted {
+    private static final Supplier<Optional<?>> EMPTY = Optional::empty;
 
-    private static final Random rand = new Random();
+    @SuppressWarnings("unchecked")
+    public static <T> Supplier<Optional<T>> of() {
+        return (Supplier<Optional<T>>)(Object)EMPTY;
+    }
 
-    private float totalWeight = 0;
-
-    private final List<Entry> entries = Lists.newArrayList();
-
-    public static <T> Weighted<T> of(Consumer<Weighted<T>> constructor) {
-        Weighted<T> result = new Weighted<>();
-
+    public static <T> Supplier<Optional<T>> of(Consumer<Weighted.Builder<T>> constructor) {
+        Weighted.Builder<T> result = new Weighted.Builder<>();
         constructor.accept(result);
-
-        return result;
+        return result.build();
     }
 
-    public Weighted<T> put(int weight, @NotNull T value) {
-        entries.add(new Entry(weight, value));
+    public final static class Builder<T> {
+        private static final Random RANDOM = new Random();
 
-        totalWeight += weight;
+        private float totalWeight = 0;
 
-        recalculate();
+        private final List<Pair<WeightedValue<T>, Range>> entries = new ArrayList<>();
 
-        return this;
-    }
-
-    private void recalculate() {
-        float rangeStart = 0;
-
-        for (Entry i : entries) {
-            i.min = rangeStart;
-            i.max = rangeStart + (i.weight/totalWeight);
-
-            rangeStart = i.max;
-        }
-    }
-
-    public Optional<T> get() {
-        if (entries.isEmpty()) {
-            return Optional.empty();
+        public Builder<T> putAll(Map<Integer, T> map) {
+            map.forEach(this::put);
+            return this;
         }
 
-        float random = rand.nextFloat();
+        public Builder<T> put(int weight, @NotNull T value) {
+            entries.add(new Pair<>(new WeightedValue<>(weight, value), new Range()));
 
-        return entries.stream()
-                .filter(i -> random >= i.min && random <= i.max)
-                .map(Entry::getResult)
-                .findFirst();
-    }
+            totalWeight += weight;
 
-    class Entry {
+            float rangeStart = 0;
 
-        final float weight;
+            for (var i : entries) {
+                rangeStart = i.getRight().set(rangeStart, (i.getLeft().weight() / totalWeight));
+            }
 
-        final T result;
-
-        float min;
-        float max;
-
-        Entry(int weight, T result) {
-            this.weight = weight;
-            this.result = result;
+            return this;
         }
 
-        T getResult() {
-            return result;
+        public Supplier<Optional<T>> build() {
+            if (entries.isEmpty()) {
+                return of();
+            }
+            if (entries.size() == 1) {
+                final var val = Optional.ofNullable(entries.get(0).getLeft().result());
+                return () -> val;
+            }
+            final var entries = new ArrayList<>(this.entries);
+            return () -> {
+                final float pointer = RANDOM.nextFloat();
+                return entries.stream()
+                        .filter(i -> i.getRight().isIn(pointer))
+                        .map(i -> i.getLeft().result())
+                        .findFirst();
+            };
+        }
+
+        private record WeightedValue<T> (float weight, T result) {}
+
+        private final class Range {
+            float min;
+            float max;
+
+            public boolean isIn(float pointer) {
+                return pointer >= min && pointer <= max;
+            }
+
+            public float set(float start, float size) {
+                min = start;
+                max = start + size;
+                return max;
+            }
         }
     }
 }
