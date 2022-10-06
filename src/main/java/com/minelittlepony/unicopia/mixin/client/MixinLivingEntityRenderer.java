@@ -37,7 +37,7 @@ abstract class MixinLivingEntityRenderer<T extends LivingEntity, M extends Entit
             int light,
             CallbackInfo into) {
         if (entity instanceof PlayerEntity player) {
-            PlayerPoser.INSTANCE.applyPosing(matrices, player, (BipedEntityModel<?>)getModel());
+            PlayerPoser.INSTANCE.applyPosing(matrices, player, (BipedEntityModel<?>)getModel(), PlayerPoser.Context.THIRD_PERSON);
         }
         if (entity instanceof MobEntity mob) {
             AnimalPoser.INSTANCE.applyPosing(matrices, mob, getModel());

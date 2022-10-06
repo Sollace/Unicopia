@@ -51,6 +51,6 @@ abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<AbstractCl
                 target = "Lnet/minecraft/client/render/entity/model/PlayerEntityModel;setAngles(Lnet/minecraft/entity/LivingEntity;FFFFF)V",
                 shift = Shift.AFTER))
     private void onPoseArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo info) {
-        PlayerPoser.INSTANCE.applyPosing(matrices, player, getModel());
+        PlayerPoser.INSTANCE.applyPosing(matrices, player, getModel(), arm == getModel().leftArm ? PlayerPoser.Context.FIRST_PERSON_LEFT : PlayerPoser.Context.FIRST_PERSON_RIGHT);
     }
 }

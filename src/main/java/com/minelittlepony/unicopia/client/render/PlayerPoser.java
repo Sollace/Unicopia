@@ -23,7 +23,10 @@ import net.minecraft.util.math.Vec3f;
 public class PlayerPoser {
     public static final PlayerPoser INSTANCE = new PlayerPoser();
 
-    public void applyPosing(MatrixStack matrices, PlayerEntity player, BipedEntityModel<?> model) {
+    private static final float HEAD_NOD_DURATION = 15F;
+    private static final float HEAD_NOD_GAP = HEAD_NOD_DURATION / 3F;
+
+    public void applyPosing(MatrixStack matrices, PlayerEntity player, BipedEntityModel<?> model, Context context) {
         Pony pony = Pony.of(player);
         float progress = pony.getAnimationProgress(MinecraftClient.getInstance().getTickDelta());
         Animation animation = pony.getAnimation();
@@ -34,34 +37,25 @@ public class PlayerPoser {
         ModelPart head = model.getHead();
 
         if (glasses.hasCustomName() && "Cool Shades".equals(glasses.getName().getString())) {
-
-            float duration = 15F;
-            float gap = duration / 3F;
-
-            float prog = (player.age % duration);
-            if (prog <= gap) {
-                prog = 0;
-            } else if (prog > (duration - gap)) {
-                prog = 1;
-            } else {
-                prog = (prog - gap) / (duration - 2 * gap);
-            }
-            prog *= Math.PI;
-
-            float bop = (float)Math.sin(prog) * 3F;
+            final float bop = AnimationUtil.beat(player.age, HEAD_NOD_DURATION, HEAD_NOD_GAP) * 3F;
             head.pitch += bop / 10F;
 
-            if (isPony) {
-                model.leftArm.roll -= bop / 50F;
-                model.rightArm.roll += bop / 50F;
+            float beat30 = bop / 30F;
 
-                model.leftLeg.roll -= bop / 30F;
-                model.leftLeg.pitch -= bop / 20F;
-                model.rightLeg.roll += bop / 30F;
-                model.rightLeg.pitch += bop / 20F;
+            if (isPony) {
+                float beat50 = bop / 50F;
+                float beat20 = bop / 20F;
+
+                model.leftArm.roll -= beat50;
+                model.rightArm.roll += beat50;
+
+                model.leftLeg.roll -= beat30;
+                model.leftLeg.pitch -= beat20;
+                model.rightLeg.roll += beat30;
+                model.rightLeg.pitch += beat20;
             } else {
-                model.leftArm.roll -= bop / 30F;
-                model.rightArm.roll += bop / 30F;
+                model.leftArm.roll -= beat30;
+                model.rightArm.roll += beat30;
             }
         }
 
@@ -250,5 +244,11 @@ public class PlayerPoser {
         public Optional<SoundEvent> getSound() {
             return sound;
         }
+    }
+
+    public enum Context {
+        FIRST_PERSON_LEFT,
+        FIRST_PERSON_RIGHT,
+        THIRD_PERSON
     }
 }
