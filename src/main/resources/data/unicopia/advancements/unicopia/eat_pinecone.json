@@ -1,0 +1,31 @@
+{
+  "parent": "unicopia:unicopia/root",
+  "display": {
+    "icon": {
+      "item": "unicopia:pinecone"
+    },
+    "title": {
+      "translate": "advancements.unicopia.eat_pinecone.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.eat_pinecone.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "eat_pinecone": {
+      "trigger": "minecraft:consume_item",
+      "item": {
+        "items": [
+          { "item": "unicopia:pinecone" }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [ "eat_pinecone" ]
+  ]
+}

@@ -104,6 +104,10 @@ public interface Toxics {
             .with(Race.CHANGELING, of(Toxicity.SAFE, Toxin.LOVE_CONSUMPTION))
     );
 
+    Toxic PINECONE = register("pinecone", new Toxic.Builder(of(Toxicity.SAFE, Toxin.healing(1)))
+            .with(Race.HUMAN, Ailment.INNERT)
+    );
+
     static void bootstrap() {}
 
     static Toxic register(String name, Toxic.Builder builder) {

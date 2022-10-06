@@ -69,6 +69,8 @@
   "item.unicopia.rock": "Rock",
   "item.unicopia.weird_rock": "Weird Rock",
   "item.unicopia.rock_stew": "Rock Stew",
+  "item.unicopia.pinecone": "Pinecone",
+  "item.unicopia.acorn": "Acorn",
   "item.unicopia.green_apple_seeds": "Granny Smith Apple Seeds",
   "item.unicopia.sweet_apple_seeds": "Sweet Apple Seeds",
   "item.unicopia.sour_apple_seeds": "Sour Apple Seeds",
@@ -572,6 +574,8 @@
   "advancements.unicopia.feed_trick_apple.description": "Feed a zap apple to a mob",
   "advancements.unicopia.eat_trick_apple.title": "Crunchy",
   "advancements.unicopia.eat_trick_apple.description": "Bite into a zap apple",
+  "advancements.unicopia.eat_pinecone.title": "Desperation",
+  "advancements.unicopia.eat_pinecone.description": "Eat a pinecone",
   "advancements.unicopia.imported_oats.title": "As Delicious As They Are Expensive",
   "advancements.unicopia.imported_oats.description": "Send of receive fancy imported oats",
 

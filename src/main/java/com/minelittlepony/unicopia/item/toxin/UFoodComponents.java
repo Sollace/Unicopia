@@ -39,6 +39,9 @@ public interface UFoodComponents {
     FoodComponent LOVE_MUG = builder(4, 0.125F).snack().build();
     FoodComponent LOVE_BUCKET = builder(8, 0.125F).build();
 
+    FoodComponent PINECONE = builder(0, 0.01F).snack().alwaysEdible().build();
+    FoodComponent ACORN = builder(1, 0.01F).snack().alwaysEdible().build();
+
     static FoodComponent.Builder builder(int hunger, float saturation) {
         return new FoodComponent.Builder()
                 .hunger(hunger)
