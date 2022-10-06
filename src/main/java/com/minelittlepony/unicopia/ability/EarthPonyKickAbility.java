@@ -236,7 +236,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         BlockState below = world.getBlockState(down);
 
         if (below.isAir()) {
-            return Stream.of(tree.pickRandomStack(treeState));
+            return Stream.of(tree.pickRandomStack(world.random, treeState));
         }
 
         return Stream.empty();

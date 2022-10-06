@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class TreeTypes {
@@ -62,12 +63,12 @@ public class TreeTypes {
             }
 
             @Override
-            public ItemStack pickRandomStack(BlockState state) {
+            public ItemStack pickRandomStack(Random random, BlockState state) {
                 TreeType type = get(state);
                 if (type == TreeType.NONE) {
                     type = get(Blocks.OAK_LOG.getDefaultState());
                 }
-                return type.pickRandomStack(state);
+                return type.pickRandomStack(random, state);
             }
 
             @Override

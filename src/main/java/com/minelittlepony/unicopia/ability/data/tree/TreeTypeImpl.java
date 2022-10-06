@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 
 public record TreeTypeImpl (
@@ -15,7 +16,8 @@ public record TreeTypeImpl (
         boolean wideTrunk,
         Set<Identifier> logs,
         Set<Identifier> leaves,
-        Supplier<Optional<Supplier<ItemStack>>> pool
+        Supplier<Optional<Supplier<ItemStack>>> pool,
+        int rarity
 ) implements TreeType {
     @Override
     public boolean isLeaves(BlockState state) {
@@ -33,8 +35,11 @@ public record TreeTypeImpl (
     }
 
     @Override
-    public ItemStack pickRandomStack(BlockState state) {
-        return pool.get().map(Supplier::get).orElse(ItemStack.EMPTY);
+    public ItemStack pickRandomStack(Random random, BlockState state) {
+        if (rarity <= 0 || random.nextInt(rarity) == 0) {
+            return pool.get().map(Supplier::get).orElse(ItemStack.EMPTY);
+        }
+        return ItemStack.EMPTY;
     }
 
     private static boolean findMatch(Set<Identifier> ids, BlockState state) {

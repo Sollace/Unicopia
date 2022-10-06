@@ -13,6 +13,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public interface TreeType {
@@ -21,7 +22,8 @@ public interface TreeType {
             false,
             Set.of(),
             Set.of(),
-            Weighted.of()
+            Weighted.of(),
+            0
     );
     Direction[] WIDE_DIRS = new Direction[] { Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST };
 
@@ -158,7 +160,7 @@ public interface TreeType {
         return isLeaves(state) || isLog(state);
     }
 
-    ItemStack pickRandomStack(BlockState state);
+    ItemStack pickRandomStack(Random random, BlockState state);
 
     boolean isWide();
 
@@ -186,8 +188,8 @@ public interface TreeType {
             }
 
             @Override
-            public ItemStack pickRandomStack(BlockState state) {
-                return (isLeaves(state) ? leaves : logs).pickRandomStack(state);
+            public ItemStack pickRandomStack(Random random, BlockState state) {
+                return (isLeaves(state) ? leaves : logs).pickRandomStack(random, state);
             }
 
             @Override
