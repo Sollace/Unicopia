@@ -32,7 +32,7 @@
   "item.unicopia.cooked_zap_apple": "Cooked Zap Apple",
   "item.unicopia.zap_apple": "Zap Apple",
   "item.unicopia.zap_bulb": "Unripened Zap Apple",
-  
+
   "item.unicopia.love_bottle": "Bottle o' Love",
   "item.unicopia.love_bucket": "Love Bucket",
   "item.unicopia.love_mug": "Mug o' Love",
@@ -61,7 +61,7 @@
   "item.unicopia.cider": "Cider",
   "item.unicopia.juice": "Juice",
   "item.unicopia.burned_juice": "Burned Juice",
-  
+
   "item.unicopia.sunglasses": "Sunglasses",
   "item.unicopia.broken_sunglasses": "Broken Sunglasses",
 
@@ -92,7 +92,7 @@
 
   "item.unicopia.alicorn_amulet": "Alicorn Amulet",
   "item.unicopia.alicorn_amulet.lore": "Time worn: %d",
-  
+
   "item.unicopia.wooden_polearm": "Wooden Polearm",
   "item.unicopia.stone_polearm": "Stone Polearm",
   "item.unicopia.iron_polearm": "Iron Polearm",
@@ -129,7 +129,7 @@
   "block.unicopia.sour_apple_leaves": "Sour Apple Leaves",
   "block.unicopia.sour_apple_sapling": "Sour Apple Sapling",
   "block.unicopia.sour_apple_sprout": "Sour Apple Sprout",
-  
+
   "block.unicopia.oats": "Oats",
 
   "entity.unicopia.butterfly": "Butterfly",
@@ -227,7 +227,7 @@
   "spell.unicopia.transformation": "Transmutation",
   "spell.unicopia.transformation.lore": "Transforms the target into something else",
   "spell.unicopia.feather_fall": "Feather Fall",
-  "spell.unicopia.feather_fall.lore": "Slowls the descent of the caster and surrounding allies",
+  "spell.unicopia.feather_fall.lore": "Slows the descent of the caster and surrounding allies",
   "spell.unicopia.catapult": "Catapult",
   "spell.unicopia.catapult.lore": "Grabs a nearby block or entity and throws it into the air",
 
