@@ -4,10 +4,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.CasterView;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
@@ -70,10 +70,10 @@ public class HydrophobicSpell extends AbstractSpell {
 
                     if (block instanceof FluidBlock) {
                         world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-                        storedFluidPositions.add(new Entry(pos, state.getFluidState()));
+                        storedFluidPositions.add(new Entry(pos, state));
                     } else if (state.contains(Properties.WATERLOGGED)) {
                         world.setBlockState(pos, state.cycle(Properties.WATERLOGGED), Block.NOTIFY_LISTENERS);
-                        storedFluidPositions.add(new Entry(pos, state.getFluidState()));
+                        storedFluidPositions.add(new Entry(pos, state));
                     }
                 }
             });
@@ -125,14 +125,14 @@ public class HydrophobicSpell extends AbstractSpell {
         return range;
     }
 
-    record Entry (BlockPos pos, FluidState fluidState) {
+    record Entry (BlockPos pos, BlockState blockState) {
         public static final Serializer<Entry> SERIALIZER = Serializer.of(compound -> new Entry(
             NbtSerialisable.BLOCK_POS.read(compound.getCompound("pos")),
-            NbtSerialisable.decode(FluidState.CODEC, compound.get("state"))
+            NbtSerialisable.decode(BlockState.CODEC, compound.get("blockState")).orElse(Blocks.AIR.getDefaultState())
         ), entry -> {
             NbtCompound compound = new NbtCompound();
             compound.put("pos", NbtSerialisable.BLOCK_POS.write(entry.pos));
-            compound.put("state", NbtSerialisable.encode(FluidState.CODEC, entry.fluidState));
+            compound.put("blockState", NbtSerialisable.encode(BlockState.CODEC, entry.blockState));
             return compound;
         });
 
@@ -140,23 +140,29 @@ public class HydrophobicSpell extends AbstractSpell {
             BlockState state = world.getBlockState(pos);
 
             if (state.isAir()) {
-                world.setBlockState(pos, Fluids.WATER.getDefaultState().getBlockState(), Block.NOTIFY_LISTENERS);
+                if (blockState.contains(Properties.WATERLOGGED)) {
+                    world.setBlockState(pos, blockState.getFluidState().getBlockState(), Block.NOTIFY_LISTENERS);
+                } else {
+                    world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+                }
             } else if (state.contains(Properties.WATERLOGGED)) {
-                world.setBlockState(pos, state.cycle(Properties.WATERLOGGED), Block.NOTIFY_LISTENERS);
+                world.setBlockState(pos, state.with(Properties.WATERLOGGED, true), Block.NOTIFY_LISTENERS);
             }
         }
     }
 
     public boolean blocksFlow(Caster<?> caster, BlockPos pos, FluidState fluid) {
-        if (fluid.isIn(affectedFluid) && pos.isWithinDistance(caster.getOrigin(), getRange(caster) + 1)) {
-            System.out.println("AHA!");
-        }
         return fluid.isIn(affectedFluid) && pos.isWithinDistance(caster.getOrigin(), getRange(caster) + 1);
     }
 
-    public static boolean blocksFluidFlow(World world, BlockPos pos, BlockState state, Fluid fluid) {
-        return Ether.get(world).findAllSpellsInRange(pos, 500, SpellType.HYDROPHOBIC).anyMatch(pair -> {
-            return pair.getValue().blocksFlow(pair.getKey(), pos, fluid.getDefaultState());
+    public static boolean blocksFluidFlow(CasterView world, BlockPos pos, FluidState state) {
+        String caller = new Exception().getStackTrace()[1].getClassName();
+        if (!"net.minecraft.fluid.FlowableFluid".contentEquals(caller)) {
+            System.out.println(caller);
+        }
+
+        return world.findAllSpellsInRange(pos, 500, SpellType.HYDROPHOBIC).anyMatch(pair -> {
+            return pair.getValue().blocksFlow(pair.getKey(), pos, state);
         });
     }
 }

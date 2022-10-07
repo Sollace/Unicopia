@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.nbt.*;
@@ -45,8 +46,8 @@ public interface NbtSerialisable {
         return new Vec3d(list.getDouble(0), list.getDouble(1), list.getDouble(2));
     }
 
-    static <T> T decode(Codec<T> codec, NbtElement nbt) {
-        return codec.decode(NbtOps.INSTANCE, nbt).result().get().getFirst();
+    static <T> Optional<T> decode(Codec<T> codec, NbtElement nbt) {
+        return codec.decode(NbtOps.INSTANCE, nbt).result().map(Pair::getFirst);
     }
 
     static <T> NbtElement encode(Codec<T> codec, T value) {

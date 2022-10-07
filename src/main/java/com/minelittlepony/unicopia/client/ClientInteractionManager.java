@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
@@ -8,6 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.ability.magic.CasterView;
+import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.client.gui.DismissSpellScreen;
 import com.minelittlepony.unicopia.client.sound.LoopedEntityTrackingSoundInstance;
 import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
@@ -32,14 +35,26 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class ClientInteractionManager extends InteractionManager {
 
     private final ClientNetworkHandler handler = new ClientNetworkHandlerImpl();
     private final MinecraftClient client = MinecraftClient.getInstance();
+
+    private final Optional<CasterView> clientWorld = Optional.of(() -> MinecraftClient.getInstance().world);
+
+    @Override
+    public Optional<CasterView> getCasterView(BlockView view) {
+        if (view instanceof ServerWorld world) {
+            return Optional.of(Ether.get(world));
+        }
+        return clientWorld;
+    }
 
     @Override
     public MinecraftSessionService getSessionService(World world) {
