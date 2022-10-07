@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.include.com.google.common.base.Objects;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -107,14 +108,18 @@ public interface Spell extends NbtSerialisable, Affine {
 
     @Nullable
     static Spell readNbt(@Nullable NbtCompound compound) {
-        if (compound != null && compound.contains("effect_id")) {
-            Spell effect = SpellType.getKey(compound).withTraits().create();
+        try {
+            if (compound != null && compound.contains("effect_id")) {
+                Spell effect = SpellType.getKey(compound).withTraits().create();
 
-            if (effect != null) {
-                effect.fromNBT(compound);
+                if (effect != null) {
+                    effect.fromNBT(compound);
+                }
+
+                return effect;
             }
-
-            return effect;
+        } catch (Exception e) {
+            Unicopia.LOGGER.fatal("Invalid spell nbt {}", e);
         }
 
         return null;
