@@ -166,13 +166,22 @@ public class SpellbookScreenHandler extends ScreenHandler {
                         .findFirst()
                         .filter(recipe -> result.shouldCraftRecipe(world, (ServerPlayerEntity)this.inventory.player, recipe))
                         .map(recipe -> recipe.craft(input))
-                        .orElse(input.getTraits().applyTo(UItems.BOTCHED_GEM.getDefaultStack())) : ItemStack.EMPTY;
+                        .orElseGet(this::getFallbackStack) : ItemStack.EMPTY;
                 outputSlot.setStack(resultStack);
 
                 setPreviousTrackedSlot(outputSlot.id, resultStack);
                 ((ServerPlayerEntity)this.inventory.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, nextRevision(), outputSlot.id, outputSlot.getStack()));
             }
         });
+    }
+
+    private ItemStack getFallbackStack() {
+        ItemStack gemStack = gemSlot.getStack();
+        if (gemStack.isOf(UItems.GEMSTONE) || gemStack.isOf(UItems.BOTCHED_GEM)) {
+            return input.getTraits().applyTo(UItems.BOTCHED_GEM.getDefaultStack());
+        }
+
+        return ItemStack.EMPTY;
     }
 
     @Override
