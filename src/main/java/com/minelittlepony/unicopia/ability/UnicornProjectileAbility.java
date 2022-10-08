@@ -80,7 +80,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
-        TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(Hand.MAIN_HAND);
+        TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(Hand.OFF_HAND);
 
         if (thrown.getResult() != ActionResult.FAIL) {
 
