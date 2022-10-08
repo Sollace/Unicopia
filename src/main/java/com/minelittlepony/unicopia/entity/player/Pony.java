@@ -330,7 +330,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             }
         }
 
-        magicExhaustion = burnFood(magicExhaustion);
+        magicExhaustion = ManaConsumptionUtil.burnFood(entity, magicExhaustion);
 
         powers.tick();
 
@@ -502,35 +502,8 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     protected void directTakeEnergy(double foodSubtract) {
         if (!entity.isCreative() && !entity.world.isClient) {
-
-            float currentMana = mana.getMana().get();
-            float foodManaRatio = 10;
-
-            if (currentMana >= foodSubtract * foodManaRatio) {
-                mana.getMana().set(currentMana - (float)foodSubtract * foodManaRatio);
-            } else {
-                mana.getMana().set(0);
-                foodSubtract -= currentMana / foodManaRatio;
-
-                magicExhaustion += foodSubtract;
-            }
+            magicExhaustion += ManaConsumptionUtil.consumeMana(mana.getMana(), foodSubtract);
         }
-    }
-
-    private float burnFood(float foodSubtract) {
-        int lostLevels = (int)Math.floor(foodSubtract);
-        if (lostLevels > 0) {
-            int food = entity.getHungerManager().getFoodLevel() - lostLevels;
-
-            if (food < 0) {
-                entity.getHungerManager().add(-entity.getHungerManager().getFoodLevel(), 0);
-                entity.damage(MagicalDamageSource.EXHAUSTION, -food/2);
-            } else {
-                entity.getHungerManager().add(-lostLevels, 0);
-            }
-        }
-
-        return foodSubtract - lostLevels;
     }
 
     @Override
