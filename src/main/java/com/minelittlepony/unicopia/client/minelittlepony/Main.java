@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class Main extends MineLPDelegate implements ClientModInitializer {
 
@@ -48,7 +49,10 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
 
                 if (pony.getMotion().isFlying()) {
                     model.getAttributes().wingAngle = MathHelper.clamp(pony.getMotion().getWingAngle() / 3 - (float)Math.PI * 0.7F, -3, 0);
-                    model.getAttributes().isHorizontal = true;
+
+                    Vec3d motion = entity.getVelocity();
+                    double zMotion = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
+                    model.getAttributes().isGoingFast |= zMotion > 0.4F;
                 }
                 model.getAttributes().isGoingFast |= pony.getMotion().isRainbooming();
 
