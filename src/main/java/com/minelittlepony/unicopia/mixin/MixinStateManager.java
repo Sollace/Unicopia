@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.minecraft.block.*;
+import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.state.State;
@@ -16,6 +17,9 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.StateManager.Factory;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.WorldAccess;
 
 @Mixin(StateManager.class)
 abstract class MixinStateManager<O, S extends State<O, S>> {
@@ -74,5 +78,22 @@ abstract class MixinBlockState extends AbstractBlock.AbstractBlockState {
             return (get(Properties.WATERLOGGED) ? Fluids.WATER : Fluids.EMPTY).getDefaultState();
         }
         return super.getFluidState();
+    }
+
+    @Override
+    public BlockState getStateForNeighborUpdate(Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+        BlockState newState = super.getStateForNeighborUpdate(direction, neighborState, world, pos, neighborPos);
+        if (newState.isAir()
+                && contains(Properties.WATERLOGGED)
+                && getBlock() instanceof TallSeagrassBlock
+                && contains(TallPlantBlock.HALF)
+                && get(TallPlantBlock.HALF) == DoubleBlockHalf.LOWER) {
+
+            BlockState above = world.getBlockState(pos.up());
+            if (above.isOf(getBlock())) {
+                return asBlockState();
+            }
+        }
+        return newState;
     }
 }
