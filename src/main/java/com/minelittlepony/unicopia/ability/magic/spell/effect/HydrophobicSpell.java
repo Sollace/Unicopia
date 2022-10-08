@@ -87,7 +87,7 @@ public class HydrophobicSpell extends AbstractSpell {
                 }
             });
 
-            if (source.getMaster().age % 200 == 0) {
+            if (source.getEntity().age % 200 == 0) {
                 source.playSound(SoundEvents.BLOCK_BEACON_AMBIENT, 0.5F);
             }
         }

@@ -23,11 +23,13 @@ public final class RenderLayers extends RenderLayer {
         .build(false));
 
     private static final Function<Integer, RenderLayer> MAGIC_COLORIN_FUNC = Util.memoize(color -> {
-        return of("magic_colored_" + color, VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
-                VertexFormat.DrawMode.QUADS, 256, true, true, MultiPhaseParameters.builder()
+        return of("magic_colored_" + color,
+                    VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
+                    VertexFormat.DrawMode.QUADS, 256, true, true,
+            MultiPhaseParameters.builder()
                 .shader(COLOR_SHADER)
                 .transparency(TRANSLUCENT_TRANSPARENCY)
-                .target(TRANSLUCENT_TARGET)
+               // .target(TRANSLUCENT_TARGET)
                 .texturing(solid(Color.r(color), Color.g(color), Color.b(color), 0.6F))
             .build(false));
     });

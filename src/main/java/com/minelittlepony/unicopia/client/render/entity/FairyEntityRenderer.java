@@ -3,8 +3,7 @@ package com.minelittlepony.unicopia.client.render.entity;
 import com.minelittlepony.unicopia.client.particle.SphereModel;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.entity.FairyEntity;
-
-import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
