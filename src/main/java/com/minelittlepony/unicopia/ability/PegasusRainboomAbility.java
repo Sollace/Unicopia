@@ -54,7 +54,7 @@ public class PegasusRainboomAbility implements Ability<Hit> {
 
     @Override
     public double getCostEstimate(Pony player) {
-        return player.getMagicalReserves().getMana().getMax() * 0.9F;
+        return 90F;
     }
 
     @Override
@@ -76,7 +76,7 @@ public class PegasusRainboomAbility implements Ability<Hit> {
         }
 
         if (player.getPhysics().isFlying() && !SpellType.RAINBOOM.isOn(player)) {
-            player.getMagicalReserves().getMana().multiply(0.1F);
+            player.subtractEnergyCost(9);
             player.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, player.getPhysics().getMotionAngle()), player.getOriginVector(), Vec3d.ZERO);
             SpellType.RAINBOOM.withTraits().apply(player);
         }

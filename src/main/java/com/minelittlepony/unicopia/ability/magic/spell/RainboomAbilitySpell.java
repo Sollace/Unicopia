@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
+import com.minelittlepony.unicopia.block.data.ModificationType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
@@ -13,11 +14,8 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.GameRules;
 
 /**
  * Internal.
@@ -54,7 +52,8 @@ public class RainboomAbilitySpell extends AbstractSpell {
             particlEffect.update(getUuid(), source, spawner -> {
                 spawner.addParticle(UParticles.RAINBOOM_TRAIL, source.getOriginVector(), Vec3d.ZERO);
             });
-            source.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, source.getPhysics().getMotionAngle()), source.getOriginVector(), Vec3d.ZERO);
+
+           // source.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, source.getPhysics().getMotionAngle()), source.getOriginVector(), Vec3d.ZERO);
         }
 
         LivingEntity owner = source.getMaster();
@@ -68,7 +67,7 @@ public class RainboomAbilitySpell extends AbstractSpell {
         });
         EFFECT_RANGE.translate(source.getOrigin()).getBlockPositions().forEach(pos -> {
             BlockState state = source.getReferenceWorld().getBlockState(pos);
-            if (state.isIn(UTags.FRAGILE) && canBreak(pos, owner)) {
+            if (state.isIn(UTags.FRAGILE) && source.canModifyAt(pos, ModificationType.PHYSICAL)) {
                 owner.world.breakBlock(pos, true);
             }
         });
@@ -81,20 +80,11 @@ public class RainboomAbilitySpell extends AbstractSpell {
         }
 
         source.getEntity().setVelocity(velocity);
-        if (source instanceof Pony) {
-            ((Pony)source).getMagicalReserves().getExhaustion().multiply(0.2F);
+        if (source instanceof Pony pony) {
+            pony.getMagicalReserves().getExhaustion().multiply(0.2F);
         }
 
         return !source.getEntity().isRemoved() && age++ < 90 + 7 * source.getLevel().getScaled(9);
-    }
-
-    private boolean canBreak(BlockPos pos, LivingEntity entity) {
-
-        if (entity instanceof PlayerEntity) {
-            return entity.world.canPlayerModifyAt((PlayerEntity)entity, pos);
-        }
-
-        return entity.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
     }
 
     @Override
