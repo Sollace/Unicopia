@@ -43,6 +43,7 @@ public interface Abilities {
 
     // pegasus / bat / alicorn / changeling
     Ability<?> CARRY = register(new CarryAbility(), "carry", AbilitySlot.PASSIVE);
+    Ability<?> TOGGLE_SLIGHT = register(new PegasusFlightToggleAbility(), "toggle_flight", AbilitySlot.TERTIARY);
 
     // changeling
     Ability<?> DISGUISE = register(new ChangelingDisguiseAbility(), "disguise", AbilitySlot.SECONDARY);
