@@ -34,7 +34,7 @@ public interface ParticleSource extends ParticleSpawner {
     }
 
     default void spawnParticles(Vec3d pos, PointGenerator area, int count, Consumer<Vec3d> particleSpawner) {
-        area.offset(pos).randomPoints(count, getReferenceWorld().random).forEach(particleSpawner);
+        area.translate(pos).randomPoints(count, getReferenceWorld().random).forEach(particleSpawner);
     }
 
     @Override

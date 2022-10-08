@@ -48,19 +48,20 @@ public class Sphere implements Shape {
     }
 
     @Override
-    public double getVolumeOfSpawnableSpace() {
+    public double getVolume() {
         return volume;
     }
 
     private double computeSpawnableSpace() {
-        if (hollow) {
-            if (stretch.x == stretch.y && stretch.y == stretch.z) {
-                double radius = rad * stretch.x;
-                return 4 * Math.PI * radius * radius;
-            }
-            return computeEllipsoidArea(rad, stretch);
+        if (!hollow) {
+            return computeEllipsoidVolume(rad, stretch);
         }
-        return computeEllipsoidVolume(rad, stretch);
+
+        if (stretch.x == stretch.y && stretch.y == stretch.z) {
+            double radius = rad * stretch.x;
+            return 4 * Math.PI * radius * radius;
+        }
+        return computeEllipsoidArea(rad, stretch);
     }
 
     @Override
@@ -75,7 +76,11 @@ public class Sphere implements Shape {
         double phi = MathHelper.nextDouble(rand, 0, Math.PI * 2);
         double theta = Math.asin(z / rad);
 
-        return new Vec3d(rad * Math.cos(theta) * Math.cos(phi) * stretch.x, rad * Math.cos(theta) * Math.sin(phi) * stretch.y, z * stretch.z);
+        return new Vec3d(
+                rad * Math.cos(theta) * Math.cos(phi) * stretch.x,
+                rad * Math.cos(theta) * Math.sin(phi) * stretch.y,
+                z * stretch.z
+        );
     }
 
     @Override
@@ -89,12 +94,12 @@ public class Sphere implements Shape {
 
     @Override
     public Vec3d getLowerBound() {
-        return new Vec3d(-rad * stretch.x, -rad * stretch.y, -rad * stretch.z);
+        return stretch.multiply(-rad);
     }
 
     @Override
     public Vec3d getUpperBound() {
-        return new Vec3d(rad * stretch.x, rad * stretch.y, rad * stretch.z);
+        return stretch.multiply(rad);
     }
 
     public static double computeEllipsoidArea(double rad, Vec3d stretch) {

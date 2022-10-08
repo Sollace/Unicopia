@@ -43,7 +43,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
     private float pitch;
     private float yaw;
 
-    private PointGenerator particleArea = PARTICLE_AREA;
+    private Shape particleArea = PARTICLE_AREA;
 
     protected PortalSpell(CustomisedSpellType<?> type) {
         super(type);

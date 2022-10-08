@@ -31,7 +31,7 @@ public class CloudsEscapingParticle extends GroundPoundParticle {
 
         double columnHeight = 1 + age / 30;
         new Sphere(true, columnHeight, 1, 1, 1)
-            .offset(center)
+            .translate(center)
             .randomPoints(random)
             .forEach(point -> {
                 ParticleUtils.spawnParticle(world, ParticleTypes.CLOUD, point, vel);

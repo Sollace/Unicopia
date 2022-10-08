@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.util.shape;
 
 import java.util.Spliterator;
 import java.util.Spliterators.AbstractSpliterator;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -16,34 +15,20 @@ import net.minecraft.util.math.random.Random;
  */
 public interface PointGenerator {
     /**
-     * Get the volume of space filled by this shape, or the surface area if hollow.
-     *
-     * @return double volume
-     */
-    double getVolumeOfSpawnableSpace();
-
-    /**
      * Computes a random coordinate that falls within this shape's designated area.
      */
     Vec3d computePoint(Random rand);
 
     /**
-     * Returns a sequence of random points dealed out to uniformly fill this shape's area.
-     */
-    default Stream<Vec3d> randomPoints(Random rand) {
-        return randomPoints((int)getVolumeOfSpawnableSpace(), rand);
-    }
-
-    /**
      * Returns a sequence of N random points.
      */
     default Stream<Vec3d> randomPoints(int n, Random rand) {
-        AtomicInteger atom = new AtomicInteger(n);
         return StreamSupport.stream(new AbstractSpliterator<Vec3d>(n, Spliterator.SIZED) {
+            private int index = n;
+
             @Override
             public boolean tryAdvance(Consumer<? super Vec3d> consumer) {
-
-                if (atom.decrementAndGet() >= 0) {
+                if (--index >= 0) {
                     consumer.accept(computePoint(rand));
                     return true;
                 }
@@ -54,37 +39,17 @@ public interface PointGenerator {
     }
 
     /**
-     * Returns a stream of block positions.
+     * Returns a new shape with after applying additional rotation.
      */
-    Stream<BlockPos> getBlockPositions();
-
-    /**
-     * Returns a new point generator where all of its points are offset by the specified amount.
-     */
-    default PointGenerator offset(Vec3i offset) {
-        return offset(Vec3d.of(offset));
+    default PointGenerator rotate(float pitch, float yaw) {
+        return pitch == 0 && yaw == 0 ? this : new RotatedPointGenerator(this, pitch, yaw);
     }
 
-    /**
-     * Returns a new point generator where all of its points are offset by the specified amount.
-     */
-    default PointGenerator offset(Vec3d offset) {
-        final PointGenerator source = this;
-        return new PointGenerator() {
-            @Override
-            public double getVolumeOfSpawnableSpace() {
-                return source.getVolumeOfSpawnableSpace();
-            }
+    default PointGenerator translate(Vec3i offset) {
+        return offset.equals(Vec3i.ZERO) ? this : translate(Vec3d.of(offset));
+    }
 
-            @Override
-            public Vec3d computePoint(Random rand) {
-                return source.computePoint(rand).add(offset);
-            }
-
-            @Override
-            public Stream<BlockPos> getBlockPositions() {
-                return source.getBlockPositions().map(pos -> pos.add(offset.x, offset.y, offset.z));
-            }
-        };
+    default PointGenerator translate(Vec3d offset) {
+        return offset.equals(Vec3d.ZERO) ? this : new TranslatedPointGenerator(this, offset);
     }
 }

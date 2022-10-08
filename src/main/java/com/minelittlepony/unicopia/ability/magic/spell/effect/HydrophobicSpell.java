@@ -51,7 +51,7 @@ public class HydrophobicSpell extends AbstractSpell {
         if (!source.isClient()) {
             World world = source.getReferenceWorld();
 
-            Shape area = new Sphere(false, getRange(source)).offset(source.getOriginVector());
+            Shape area = new Sphere(false, getRange(source)).translate(source.getOriginVector());
 
             storedFluidPositions.removeIf(entry -> {
                if (!area.isPointInside(Vec3d.ofCenter(entry.pos()))) {

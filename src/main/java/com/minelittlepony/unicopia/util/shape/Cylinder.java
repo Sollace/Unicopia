@@ -49,20 +49,21 @@ public class Cylinder implements Shape {
     }
 
     @Override
-    public double getVolumeOfSpawnableSpace() {
+    public double getVolume() {
         return volume;
     }
 
     private double computeSpawnableSpace() {
-        if (hollow) {
-            if (stretchX != stretchZ) {
-                double result = 3 * (stretchX + stretchZ);
-                result -= Math.sqrt((10 * stretchX * stretchZ) + 3 * ((stretchX * stretchX) + (stretchZ * stretchZ)));
-                return Math.PI * result;
-            }
-            return 2 * Math.PI * rad * stretchX * height;
+        if (!hollow) {
+            return Math.PI * (stretchX * rad * stretchZ * rad) * height;
         }
-        return Math.PI * (stretchX * rad * stretchZ * rad) * height;
+
+        if (stretchX != stretchZ) {
+            double result = 3 * (stretchX + stretchZ);
+            result -= Math.sqrt((10 * stretchX * stretchZ) + 3 * ((stretchX * stretchX) + (stretchZ * stretchZ)));
+            return Math.PI * result;
+        }
+        return 2 * Math.PI * rad * stretchX * height;
     }
 
     @Override

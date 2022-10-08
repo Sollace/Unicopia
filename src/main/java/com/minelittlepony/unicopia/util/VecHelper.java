@@ -12,6 +12,10 @@ import net.minecraft.world.EntityView;
 
 public interface VecHelper {
 
+    static Vec3d divide(Vec3d one, Vec3d two) {
+        return new Vec3d(one.x / two.x, one.y / two.y, one.z / two.z);
+    }
+
     static Vec3d supply(DoubleSupplier rng) {
         return new Vec3d(rng.getAsDouble(), rng.getAsDouble(), rng.getAsDouble());
     }

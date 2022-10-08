@@ -11,6 +11,13 @@ import net.minecraft.util.math.random.Random;
  */
 public interface Shape extends PointGenerator {
     /**
+     * Get the volume of space filled by this shape, or the surface area if hollow.
+     *
+     * @return double volume
+     */
+    double getVolume();
+
+    /**
      * Gets the lower bounds of the region occupied by this shape.
      */
     Vec3d getLowerBound();
@@ -28,7 +35,6 @@ public interface Shape extends PointGenerator {
     /**
      * Returns a stream of all block positions that fit inside this shape.
      */
-    @Override
     default Stream<BlockPos> getBlockPositions() {
         return BlockPos.stream(
             new BlockPos(getLowerBound()),
@@ -37,59 +43,27 @@ public interface Shape extends PointGenerator {
     }
 
     /**
+     * Returns a sequence of random points dealed out to uniformly fill this shape's area.
+     */
+    default Stream<Vec3d> randomPoints(Random rand) {
+        return randomPoints((int)getVolume(), rand);
+    }
+
+    /**
      * Returns a new shape with after applying additional rotation.
      */
+    @Override
     default Shape rotate(float pitch, float yaw) {
-        if (pitch == 0 && yaw == 0) {
-            return this;
-        }
-        return new RotatedShape(this, pitch, yaw);
+        return pitch == 0 && yaw == 0 ? this : new RotatedPointGenerator(this, pitch, yaw);
     }
 
-    /**
-     * Returns a new point generator where all of its points are offset by the specified amount.
-     */
     @Override
-    default Shape offset(Vec3i offset) {
-        return offset(Vec3d.of(offset));
+    default Shape translate(Vec3i offset) {
+        return offset.equals(Vec3i.ZERO) ? this : translate(Vec3d.of(offset));
     }
 
-    /**
-     * Returns a new point generator where all of its points are offset by the specified amount.
-     */
     @Override
-    default Shape offset(Vec3d offset) {
-        final Shape source = this;
-        return new Shape() {
-            @Override
-            public double getVolumeOfSpawnableSpace() {
-                return source.getVolumeOfSpawnableSpace();
-            }
-
-            @Override
-            public Vec3d computePoint(Random rand) {
-                return source.computePoint(rand).add(offset);
-            }
-
-            @Override
-            public Stream<BlockPos> getBlockPositions() {
-                return source.getBlockPositions().map(pos -> pos.add(offset.x, offset.y, offset.z));
-            }
-
-            @Override
-            public Vec3d getLowerBound() {
-                return source.getLowerBound().add(offset);
-            }
-
-            @Override
-            public Vec3d getUpperBound() {
-                return source.getLowerBound().add(offset);
-            }
-
-            @Override
-            public boolean isPointInside(Vec3d point) {
-                return source.isPointInside(point.subtract(offset));
-            }
-        };
+    default Shape translate(Vec3d offset) {
+        return offset.equals(Vec3d.ZERO) ? this : new TranslatedPointGenerator(this, offset);
     }
 }

@@ -66,7 +66,7 @@ public class RainboomAbilitySpell extends AbstractSpell {
         source.findAllEntitiesInRange(RADIUS).forEach(e -> {
             e.damage(MagicalDamageSource.create("rainboom", source).setBreakSunglasses(), 6);
         });
-        EFFECT_RANGE.offset(source.getOrigin()).getBlockPositions().forEach(pos -> {
+        EFFECT_RANGE.translate(source.getOrigin()).getBlockPositions().forEach(pos -> {
             BlockState state = source.getReferenceWorld().getBlockState(pos);
             if (state.isIn(UTags.FRAGILE) && canBreak(pos, owner)) {
                 owner.world.breakBlock(pos, true);

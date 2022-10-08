@@ -16,7 +16,7 @@ public interface ParticleUtils {
     static PointGenerator getShapeFor(Entity entity) {
         final double halfDist = Math.abs(entity.getStandingEyeHeight() / 1.5);
         final double middle = entity.getBoundingBox().minY + halfDist;
-        return new Sphere(false, Math.abs((float)halfDist + entity.getWidth())).offset(new Vec3d(entity.getX(), middle, entity.getZ()));
+        return new Sphere(false, Math.abs((float)halfDist + entity.getWidth())).translate(new Vec3d(entity.getX(), middle, entity.getZ()));
     }
 
     static void spawnParticles(ParticleEffect effect, Entity entity, int count) {
@@ -24,7 +24,7 @@ public interface ParticleUtils {
     }
 
     static void spawnParticles(ParticleEffect effect, World world, Vec3d origin, int count) {
-        spawnParticles(world, Sphere.UNIT_SPHERE.offset(origin), effect, count);
+        spawnParticles(world, Sphere.UNIT_SPHERE.translate(origin), effect, count);
     }
 
     static void spawnParticles(World world, PointGenerator points, ParticleEffect effect, int count) {

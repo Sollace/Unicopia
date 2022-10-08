@@ -155,7 +155,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell 
 
             if (radius > 2) {
                 Vec3d origin = getOrigin(source);
-                new Sphere(false, radius).offset(origin).getBlockPositions().forEach(i -> {
+                new Sphere(false, radius).translate(origin).getBlockPositions().forEach(i -> {
                     if (!canAffect(source, i)) {
                         return;
                     }

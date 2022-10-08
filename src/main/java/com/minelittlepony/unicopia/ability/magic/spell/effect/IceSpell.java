@@ -42,7 +42,7 @@ public class IceSpell extends AbstractSpell {
     public boolean tick(Caster<?> source, Situation situation) {
         boolean submerged = source.getEntity().isSubmergedInWater() || source.getEntity().isSubmergedIn(FluidTags.LAVA);
 
-        long blocksAffected = OUTER_RANGE.offset(source.getOrigin()).getBlockPositions().filter(i -> {
+        long blocksAffected = OUTER_RANGE.translate(source.getOrigin()).getBlockPositions().filter(i -> {
             if (source.canModifyAt(i) && applyBlockSingle(source.getEntity(), source.getReferenceWorld(), i, situation)) {
 
                 if (submerged & source.getOrigin().isWithinDistance(i, RADIUS - 1)) {
