@@ -25,6 +25,7 @@ import com.minelittlepony.unicopia.network.datasync.EffectSync;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -261,6 +262,12 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
                 discard();
             }
         }
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        super.remove(reason);
+        getSpellSlot().clear();
     }
 
     @Override
