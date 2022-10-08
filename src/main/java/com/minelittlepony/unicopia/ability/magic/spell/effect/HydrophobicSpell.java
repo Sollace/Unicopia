@@ -63,6 +63,7 @@ public class HydrophobicSpell extends AbstractSpell {
             });
 
             area.getBlockPositions().forEach(pos -> {
+                pos = new BlockPos(pos);
                 BlockState state = world.getBlockState(pos);
 
                 if (state.getFluidState().isIn(affectedFluid)) {
