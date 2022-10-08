@@ -277,7 +277,7 @@ public class UHud extends DrawableHelper {
             if (exhaustion > 0.5F && (heartbeatSound == null || heartbeatSound.isDone())) {
                 client.getSoundManager().play(
                         heartbeatSound = new LoopingSoundInstance<>(client.player, player -> {
-                            return partySound != null && Pony.of(player).getMagicalReserves().getExhaustion().getPercentFill() > 0.5F;
+                            return partySound == null && Pony.of(player).getMagicalReserves().getExhaustion().getPercentFill() > 0.5F;
                         }, USounds.ENTITY_PLAYER_HEARTBEAT, 1, 1, client.world.random)
                 );
             }
