@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.block.data.ModificationType;
+import com.minelittlepony.unicopia.block.data.WeatherConditions;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.*;
@@ -32,6 +33,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.Random;
 
 public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickable, Motion, NbtSerialisable {
     private static final int MAX_WALL_HIT_CALLDOWN = 30;
@@ -336,6 +338,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         if (entity.world.hasRain(entity.getBlockPos())) {
             applyTurbulance(velocity);
+        } else {
+            velocity.y += WeatherConditions.getUpdraft(new BlockPos.Mutable().set(entity.getBlockPos()), entity.world);
         }
 
         if (type.isAvian()) {
@@ -551,8 +555,16 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     private void applyTurbulance(MutableVector velocity) {
-        float glance = 360 * entity.world.random.nextFloat();
-        float forward = 0.015F * entity.world.random.nextFloat() *  entity.world.getRainGradient(1);
+
+        Vec3d wind = WeatherConditions.getAirflow(entity.getBlockPos(), entity.world).multiply(0.04);
+        velocity.x += wind.x;
+        velocity.y += wind.y;
+        velocity.z += wind.z;
+
+        Random rng = Random.create(entity.world.getTime());
+
+        float glance = 360 * rng.nextFloat();
+        float forward = 0.015F * rng.nextFloat() * entity.world.getRainGradient(1);
 
         if (entity.world.random.nextInt(30) == 0) {
             forward *= 10;
@@ -564,12 +576,12 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             forward *= 100;
         }
 
-        if (entity.world.isThundering() && entity.world.random.nextInt(60) == 0) {
+        if (entity.world.isThundering() && rng.nextInt(60) == 0) {
             velocity.y += forward * 3 * getGravitySignum();
         }
 
         if (forward >= 1) {
-            entity.world.playSound(null, entity.getBlockPos(), USounds.AMBIENT_WIND_GUST, SoundCategory.AMBIENT, 3, 1);
+            SoundEmitter.playSoundAt(entity, USounds.AMBIENT_WIND_GUST, SoundCategory.AMBIENT, 3, 1);
         }
 
         forward = Math.min(forward, 7);
