@@ -29,7 +29,7 @@ public interface SoundEmitter {
         playSoundAt(entity, sound, entity.getSoundCategory(), volume, pitch);
     }
 
-    static void playSoundAt(Entity entity, SoundEvent sound, SoundCategory category, float pitch, float volume) {
+    static void playSoundAt(Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
         entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, category, volume, pitch);
     }
 
