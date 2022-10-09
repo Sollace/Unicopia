@@ -153,9 +153,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (wasFlying) {
             entity.calculateDimensions();
         }
-
-        pony.setDirty();
-        entity.sendAbilitiesUpdate();
     }
 
     private double getHorizontalMotion() {
