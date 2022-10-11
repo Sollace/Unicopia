@@ -25,7 +25,7 @@ public interface SoundEmitter {
         return getRandomPitch(getReferenceWorld().getRandom());
     }
 
-    static void playSoundAt(Entity entity, SoundEvent sound, float pitch, float volume) {
+    static void playSoundAt(Entity entity, SoundEvent sound, float volume, float pitch) {
         playSoundAt(entity, sound, entity.getSoundCategory(), volume, pitch);
     }
 
