@@ -466,6 +466,7 @@
   "unicopia.options.whitelist": "Enable Whitelist",
   "unicopia.options.whitelist.race": "Allow %ss",
   "unicopia.options.whitelist.details": "* Select the races you wish to allow",
+  "unicopia.options.cheats": "Enable Cheats",
   "unicopia.options.client": "Client Settings",
   "unicopia.options.world": "World Settings",
   "unicopia.options.world.default_race": "Default Race: %s",

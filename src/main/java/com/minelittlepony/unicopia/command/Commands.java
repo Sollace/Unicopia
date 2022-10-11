@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.command;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
+import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.Unicopia;
 
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
@@ -17,13 +18,17 @@ public class Commands {
                 new EnumArgumentType.Serializer()
         );
         CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) -> {
-            SpeciesCommand.register(dispatcher);
             RacelistCommand.register(dispatcher);
-            GravityCommand.register(dispatcher);
-            DisguiseCommand.register(dispatcher);
-            TraitCommand.register(dispatcher);
             EmoteCommand.register(dispatcher);
-            ManaCommand.register(dispatcher);
+            if (Unicopia.getConfig().enableCheats.get()) {
+                SpeciesCommand.register(dispatcher);
+                GravityCommand.register(dispatcher);
+                DisguiseCommand.register(dispatcher);
+                if (Debug.DEBUG_COMMANDS) {
+                    TraitCommand.register(dispatcher);
+                    ManaCommand.register(dispatcher);
+                }
+            }
         });
         Object game = FabricLoader.getInstance().getGameInstance();
         if (game instanceof MinecraftServer) {

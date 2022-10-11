@@ -15,6 +15,8 @@ public class Config extends JsonConfig {
 
     public final Setting<Set<Race>> speciesWhiteList = value("server", "speciesWhiteList", new HashSet<>());
 
+    public final Setting<Boolean> enableCheats = value("server", "enableCheats", false);
+
     /*private final String preferredRaceComment =
             "The default preferred race. " +
             "This is the race a client requests when first joining a game. " +

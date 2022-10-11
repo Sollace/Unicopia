@@ -5,8 +5,8 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
+import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.container.SpellbookChapterLoader;
 
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -39,7 +39,7 @@ public class SpellbookChapterList {
     }
 
     public Chapter getCurrentChapter() {
-        if (SpellbookChapterLoader.DEBUG) {
+        if (Debug.DEBUG_SPELLBOOK_CHAPTERS) {
             ClientChapters.getChapters().forEach(chapter -> {
                 Optional.ofNullable(chapters.get(chapter.id())).flatMap(Chapter::content).ifPresent(old -> {
                     chapter.content().ifPresent(neu -> neu.copyStateFrom(old));

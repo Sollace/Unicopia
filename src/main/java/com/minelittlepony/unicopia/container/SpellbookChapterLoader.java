@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 
 import com.google.gson.*;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
+import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
@@ -30,7 +31,6 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Identifier ID = Unicopia.id("spellbook/chapters");
     private static final Executor EXECUTOR = CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS);
-    public static boolean DEBUG = false;
 
     public static final SpellbookChapterLoader INSTANCE = new SpellbookChapterLoader();
 
@@ -73,7 +73,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             LOGGER.error("Could not load spellbook chapters due to exception", e);
         }
 
-        if (DEBUG) {
+        if (Debug.DEBUG_SPELLBOOK_CHAPTERS) {
             CompletableFuture.runAsync(() -> {
                 try {
                     Util.waitAndApply(executor -> reload(CompletableFuture::completedFuture, manager, profiler, profiler, Util.getMainWorkerExecutor(), executor)).get();

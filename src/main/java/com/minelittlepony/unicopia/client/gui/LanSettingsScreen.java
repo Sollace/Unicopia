@@ -77,6 +77,13 @@ public class LanSettingsScreen extends GameGui {
 
         content.addButton(new Label(LEFT, row += 20)).getStyle().setText("unicopia.options.lan");
 
+        content.addButton(new Toggle(LEFT, row += 20, config.enableCheats.get()))
+            .onChange(v -> {
+                config.enableCheats.set(v);
+                return v;
+            })
+            .getStyle().setText("unicopia.options.cheats");
+
         Set<Race> whitelist = config.speciesWhiteList.get();
         boolean whitelistEnabled = (forceShowWhitelist || !whitelist.isEmpty()) && !forceHideWhitelist;
 

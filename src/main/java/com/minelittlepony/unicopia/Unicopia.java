@@ -62,7 +62,7 @@ public class Unicopia implements ModInitializer {
         ServerTickEvents.END_WORLD_TICK.register(w -> {
             ((BlockDestructionManager.Source)w).getDestructionManager().tick();
             ZapAppleStageStore.get(w).tick();
-            if (SpellbookChapterLoader.DEBUG) {
+            if (Debug.DEBUG_SPELLBOOK_CHAPTERS) {
                 SpellbookChapterLoader.INSTANCE.sendUpdate(w.getServer());
             }
         });

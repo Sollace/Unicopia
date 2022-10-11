@@ -8,6 +8,7 @@ import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
+import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
 import com.minelittlepony.unicopia.container.*;
@@ -139,7 +140,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
         drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight, 512, 256);
 
-        if (SpellbookChapterLoader.DEBUG) {
+        if (Debug.DEBUG_SPELLBOOK_CHAPTERS) {
             clearAndInit();
         }
 
