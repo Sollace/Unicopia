@@ -157,6 +157,125 @@
           "At the princess' behest",
           "- Starswirl the Bearded"
         ]
+      },
+      {
+        "title": "17th Trot '12",
+        "level": 6,
+        "elements": [
+          "It's rather surprising how quickly the weather starts to change around here. Everything in Catermoore is so very well controlled, with the spells we use to manage temperature and the pegasi assisting with the weather, we sometimes forget what wild seasons can be like.",
+          "But these Earth Ponies don't ave any of those luxuries. They have to deal with the weather as it comes."
+        ]
+      },
+      {
+        "title": "Frozen Lake",
+        "level": 6,
+        "elements": [
+          "Just this morning I was on the way to the stall when I passed the lake at the foot of this tower's hill and saw it was nearly completely frozen over. A few colts had taken to scating across it.",
+          "Luna asked if she could join them, but I didn't allow it. I couldn't say why at the time, but I had a bad feeling, like something was going to happen..."
+        ]
+      },
+      {
+        "title": "17th Trot '12",
+        "level": 19,
+        "elements": [
+          "Oh gods, of princesses. I. I don't know how to describe this. My hooves are shaking, I can barely breeze. I'm freezing cold and I can't stop thinking about what happened.",
+          "I knew there was somethign wrong. I b---knew it. I didn't know what it was at the time, but I'm extremely glad I didn't let Luna scate on that lake."
+        ]
+      },
+      {
+        "title": "Frozen Lake II",
+        "level": 19,
+        "elements": [
+          "Let me take a step back a bit to describe what happened. Do you remember the frozen lake and those colts that were skating on it?",
+          "Well, after that I went on to the market and I was looking at the strawberries in one of the stalls--Didn't get any, sadly they were forgotten in the confusion."
+        ]
+      },
+      {
+        "title": "Frozen Lake III",
+        "level": 19,
+        "elements": [
+          "Whilst I was debating the vendor about the price, I felt Luna tugging on my tunic and she asked me what was going on. I heard galloping and I saw ponies running by us. None of them stopped to explain, but I heard some very gruff words in old ponish.",
+          "They were heading in the direction of our tower so I set off after them."
+        ]
+      },
+      {
+        "title": "",
+        "level": 20,
+        "elements": [
+          "My immediate thoughts were 'was it a fire'? Was my lab in danger?",
+          "I tell you what, I wish that were the case. What I actually found was much, much, worse, and even thinking of it makes my blood run cold anew."
+        ]
+      },
+      {
+        "title": "Frozen Lake IV",
+        "level": 20,
+        "elements": [
+          "When we were getting near the lake from earlier, I saw a large crowd growing along its banks. Ladders and emergency equipment were out and scattered on the shoreline and a loud uproar had erupted about what to do.",
+          "Getting closer, though, I realised what had happened soon enough--and I made a beeline for for the water-- The ice was broken and the lake was freezing cold."
+        ]
+      },
+      {
+        "title": "",
+        "level": 20,
+        "elements": [
+          "I jumped in anyway, pulling my saddlebags open with my magic, and grabbed the last of the gems i had with my and cast the unfinished spell it had inside.",
+          "The waters receded away from me as I galloped down the slop and across the drying lake bed and dove to catch the colts that had fallen in."
+        ]
+      },
+      {
+        "title": "Frozen Lake V",
+        "level": 20,
+        "elements": [
+          "They were freezing and wet, even as the spell's effects worked to pull the water away from their coats, we carred them up to the shore and got them covered in blankets with hot drinks in their hooves.",
+          "The townponies insisted on giving me a blanket of my own, even though I hadn't - couldn't have- gotten wet."
+        ]
+      },
+      {
+        "title": "",
+        "level": 20,
+        "elements": [
+          "It was only much later, when the shock began to wear of and I was feeling my head start to pound that I remembered to cancel the spell.",
+          "Thank the princesses we got there in time.",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "18th Trot '12",
+        "level": 7,
+        "elements": [
+          "No sign of the colts this morning, I assume they won't be coming near this lake for a long while. The water had frozen again in the night and looked peaceful.",
+          "The unseasy feeling I had yesterday was gone today so I was able to relax on its banks with Luna. She didn't want to swim in this lake any more, and I don't blame her. I wouldn't either."
+        ]
+      },
+      {
+        "title": "Sandcastle",
+        "level": 7,
+        "elements": [
+          "Luna started a sand castle, and whilst she was busy with that I decided to sketch out the details of my new spell.",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "Water Repulsion",
+        "level": 20,
+        "elements": [
+          "By combining the abilities of a shield spell with that of the frost gem, the results are... Admittedly strange.",
+          "I'm calling this water repulsion because it does just that: It pushes water away from the caster.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/strength.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/ice.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 20,
+        "elements": [
+          { "recipe": "unicopia:spells/hydrophobic" },
+          "Requires:",
+          "- A frost gem\n- A protection gem\n- At least 6 focus trait",
+          "* By adding more focus you can extend the duration of the spell.",
+          "* Add the generosity trait to tie this spell to a location rather than a user."
+        ]
       }
     ]
   }
