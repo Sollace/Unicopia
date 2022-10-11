@@ -157,11 +157,6 @@ public class HydrophobicSpell extends AbstractSpell {
     }
 
     public static boolean blocksFluidFlow(CasterView world, BlockPos pos, FluidState state) {
-        String caller = new Exception().getStackTrace()[1].getClassName();
-        if (!"net.minecraft.fluid.FlowableFluid".contentEquals(caller)) {
-            System.out.println(caller);
-        }
-
         return world.findAllSpellsInRange(pos, 500, SpellType.HYDROPHOBIC).anyMatch(pair -> {
             return pair.getValue().blocksFlow(pair.getKey(), pos, state);
         });
