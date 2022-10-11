@@ -33,6 +33,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     private final int width;
 
     private boolean addLabels = true;
+    private boolean obfuscateResult;
 
     public IngredientTree(int x, int y, int width) {
         this.x = x + 4;
@@ -42,6 +43,11 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
 
     public IngredientTree noLabels() {
         addLabels = false;
+        return this;
+    }
+
+    public IngredientTree obfuscateResult(boolean obfuscateResult) {
+        this.obfuscateResult = obfuscateResult;
         return this;
     }
 
@@ -96,11 +102,11 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             int left = x + column * colWidth + 3 + (addLabels && row > 0 ? colWidth : 0);
             int top = y + row * rowHeight + 3;
 
-            container.addButton(new IngredientButton(left, top, colWidth, rowHeight, entry, !addLabels || ii == 0 ? "" : "+"));
+            container.addButton(new IngredientButton(left, top, colWidth, rowHeight, entry, !addLabels || ii == 0 ? "" : "+", false));
             ii++;
         }
         result.ifPresent(result -> {
-            container.addButton(new IngredientButton(x + width - 17, y + totalHeight / 3 - 2, colWidth, totalHeight, result, addLabels ? "=" : ""));
+            container.addButton(new IngredientButton(x + width - 17, y + totalHeight / 3 - 2, colWidth, totalHeight, result, addLabels ? "=" : "", obfuscateResult));
         });
 
         return totalHeight + 7;
@@ -110,13 +116,13 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         private final IngredientTree.Entry entry;
         private String label;
 
-        public IngredientButton(int x, int y, int width, int height, IngredientTree.Entry entry, String label) {
+        public IngredientButton(int x, int y, int width, int height, IngredientTree.Entry entry, String label, boolean obfuscated) {
             super(x, y, width, height);
             this.entry = entry;
             this.label = label;
             Tooltip tooltip = entry.getTooltip();
             if (tooltip != null) {
-                this.getStyle().setTooltip(tooltip);
+                this.getStyle().setTooltip(obfuscated ? Tooltip.of("???") : tooltip);
             }
         }
 

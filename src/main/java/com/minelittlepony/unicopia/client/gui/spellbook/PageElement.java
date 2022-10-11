@@ -129,11 +129,14 @@ interface PageElement extends Drawable {
             }
             MinecraftClient.getInstance().world.getRecipeManager().get(id).ifPresent(recipe -> {
                 if (recipe instanceof SpellbookRecipe spellRecipe) {
+
+                    boolean needsMoreXp = page.getLevel() < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < page.getLevel();
+
                     IngredientTree tree = new IngredientTree(
                             bounds().left + page().getBounds().left,
                             bounds().top + page().getBounds().top + y + 10,
                             page().getBounds().width - 20
-                    );
+                    ).obfuscateResult(needsMoreXp);
                     spellRecipe.buildCraftingTree(tree);
                     bounds.height = tree.build(container) - 10;
                 }
