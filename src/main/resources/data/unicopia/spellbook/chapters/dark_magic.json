@@ -279,6 +279,41 @@
           "Requires:",
           "- 1 gemstone\n- At least 18x knowledge trait\n- At least 10x chaos trait"
         ]
+      },
+      {
+        "title": "3rd Croptober '12",
+        "level": 14,
+        "elements": [
+          "The locks have been installed, and with the addition of some extra wardings, I'm feeling a little more at ease.",
+          "The motions at night have all but stopped, though I feel like I can almost hear it at times...",
+          "- Starswirl the Bearded"
+        ]
+      },
+      {
+        "title": "4th Cropt-",
+        "level": 15,
+        "elements": [
+          ""
+        ]
+      },
+      {
+        "title": "Mimic",
+        "level": 17,
+        "elements": [
+          "I've been able to tap into some of this strange creature's abilities. There's still a lot to figure out here, but for now I've merely distilled its essense into a gem.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/darkness.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 18,
+        "elements": [
+          { "recipe": "unicopia:spells/mimic" },
+          "Requires:",
+          "- A transmutation gem\nAt least 19x knowledge trait\n- At least 10x life trait\n- At least 4x chaos trait",
+          "* Add the focus trait to increase the effect's duration"
+        ]
       }
     ]
   }

@@ -272,7 +272,7 @@
         "elements": [
           { "recipe": "unicopia:spells/hydrophobic" },
           "Requires:",
-          "- A frost gem\n- A protection gem\n- At least 6 focus trait",
+          "- A gem with frost\n- A with protection\n- At least 6x focus trait",
           "* By adding more focus you can extend the duration of the spell.",
           "* Add the generosity trait to tie this spell to a location rather than a user."
         ]

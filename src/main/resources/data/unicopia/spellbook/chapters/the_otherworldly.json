@@ -99,6 +99,26 @@
           "Requires:",
           "- 1x gemstone\n- 1x displacement gem\n- 1x dark vortext gem\n- At least 18x knowledge trait\n- At least 20x chaos trait"
         ]
+      },
+      {
+        "title": "Mind Swap",
+        "level": 27,
+        "elements": [
+          "Continuing my predecessor's research into the abilities of the Changeling Spawn, I have enhanced his mimic spell by adding a chaotic twist.",
+          "Mind Swap extends the effects of mimic to cover two individuals, in effect swapping their bodies for a limited time.",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 28,
+        "elements": [
+          { "recipe": "unicopia:spells/mind_swap" },
+          "Requires:",
+          "- A mimic gem\nAt least 19x knowledge trait\n- At least 10x life trait\n- At least 40x chaos trait",
+          "* Add the focus trait to increase the effect's duration"
+        ]
       }
     ]
   }
