@@ -8,14 +8,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.minelittlepony.unicopia.block.data.WaterLoggingManager;
+
 import net.minecraft.block.*;
-import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.state.State;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.StateManager.Factory;
-import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -28,72 +27,46 @@ abstract class MixinStateManager<O, S extends State<O, S>> {
 
     @Inject(method = "getDefaultState", at = @At("RETURN"), cancellable = true)
     private void onGetDefaultState(CallbackInfoReturnable<S> info) {
-        if ((owner instanceof SeagrassBlock
-                || owner instanceof TallSeagrassBlock
-                || owner instanceof KelpBlock
-                || owner instanceof KelpPlantBlock
-               ) && info.getReturnValue().contains(Properties.WATERLOGGED)) {
-            info.setReturnValue(info.getReturnValue().with(Properties.WATERLOGGED, true));
-        }
+        WaterLoggingManager.<O, S>getInstance().getDefaultState(owner, info);
     }
 }
 
 @Mixin(StateManager.Builder.class)
-abstract class MixinStateManagerBuilder<O, S extends State<O, S>> {
+abstract class MixinStateManagerBuilder<O, S extends State<O, S>> implements WaterLoggingManager.StateBuilder {
     @Shadow
     private @Final O owner;
 
     @Shadow
     private @Final Map<String, Property<?>> namedProperties;
 
-    @SuppressWarnings("unchecked")
     @Inject(method = "build", at = @At("HEAD"))
     private void build(Function<O, S> defaultStateGetter, Factory<O, S> factory, CallbackInfoReturnable<StateManager<O, S>> info) {
-        if (owner instanceof SeagrassBlock
-         || owner instanceof TallSeagrassBlock
-         || owner instanceof KelpBlock
-         || owner instanceof KelpPlantBlock
-        ) {
-            if (!namedProperties.containsValue(Properties.WATERLOGGED)) {
-                ((StateManager.Builder<O, S>)(Object)this).add(Properties.WATERLOGGED);
-            }
+        WaterLoggingManager.<O, S>getInstance().appendProperties(owner, this);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void addIfNotPresent(Property<?> property) {
+        if (!namedProperties.containsValue(property)) {
+            ((StateManager.Builder<O, S>)(Object)this).add(property);
         }
     }
 }
 
-@Mixin(BlockState.class)
-abstract class MixinBlockState extends AbstractBlock.AbstractBlockState {
-    protected MixinBlockState() {
-        super(null, null, null);
+@Mixin(AbstractBlock.AbstractBlockState.class)
+abstract class MixinBlockState extends State<Block, BlockState> {
+    MixinBlockState() {super(null, null, null);}
+
+    @Shadow
+    protected abstract BlockState asBlockState();
+
+    @Inject(method = "getFluidState", at = @At("HEAD"), cancellable = true)
+    private void onGetFluidState(CallbackInfoReturnable<FluidState> info) {
+        WaterLoggingManager.<Block, BlockState>getInstance().getFluidState(owner, asBlockState(), info);
     }
 
-    @Override
-    public FluidState getFluidState() {
-        if (contains(Properties.WATERLOGGED) && (
-                getBlock() instanceof SeagrassBlock
-             || getBlock() instanceof TallSeagrassBlock
-             || getBlock() instanceof KelpBlock
-             || getBlock() instanceof KelpPlantBlock
-         )) {
-            return (get(Properties.WATERLOGGED) ? Fluids.WATER : Fluids.EMPTY).getDefaultState();
-        }
-        return super.getFluidState();
-    }
-
-    @Override
-    public BlockState getStateForNeighborUpdate(Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        BlockState newState = super.getStateForNeighborUpdate(direction, neighborState, world, pos, neighborPos);
-        if (newState.isAir()
-                && contains(Properties.WATERLOGGED)
-                && getBlock() instanceof TallSeagrassBlock
-                && contains(TallPlantBlock.HALF)
-                && get(TallPlantBlock.HALF) == DoubleBlockHalf.LOWER) {
-
-            BlockState above = world.getBlockState(pos.up());
-            if (above.isOf(getBlock())) {
-                return asBlockState();
-            }
-        }
-        return newState;
+    @Inject(method = "getStateForNeighborUpdate", at = @At("RETURN"), cancellable = true)
+    private void onGetStateForNeighborUpdate(Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos, CallbackInfoReturnable<BlockState> info) {
+        WaterLoggingManager.<Block, BlockState>getInstance().getUpdatedState(world, pos, asBlockState(), info);
     }
 }

@@ -27,6 +27,8 @@ public class Config extends JsonConfig {
             "The result will always be what is set by this config file.";*/
     public final Setting<Boolean> ignoreMineLP = value("client", "ignoreMineLP", false);
 
+    public final Setting<Boolean> disableWaterPlantsFix = value("compatibility", "disableWaterPlantsFix", false);
+
     public Config() {
         super(GamePaths.getConfigDirectory().resolve("unicopia.json"));
     }
