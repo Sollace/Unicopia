@@ -1,0 +1,30 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "unicopia:weather_vane"
+    ]
+  },
+  "criteria": {
+    "has_iron": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": [ "minecraft:iron_nugget", "minecraft:iron_ingot" ] }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "unicopia:weather_vane"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_iron",
+      "has_the_recipe"
+    ]
+  ]
+}

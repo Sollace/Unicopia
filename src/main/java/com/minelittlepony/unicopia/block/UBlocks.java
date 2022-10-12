@@ -42,6 +42,8 @@ public interface UBlocks {
     Block ZAP_BULB = register("zap_bulb", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GRAY).strength(500, 1200).sounds(BlockSoundGroup.AZALEA_LEAVES), Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false));
     Block ZAP_APPLE = register("zap_apple", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GRAY).sounds(BlockSoundGroup.AZALEA_LEAVES), Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false));
 
+    Block WEATHER_VANE = register("weather_vane", new WeatherVaneBlock(FabricBlockSettings.of(Material.METAL, MapColor.BLACK).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.METAL).nonOpaque()), ItemGroup.DECORATIONS);
+
     Block GREEN_APPLE_LEAVES = register("green_apple_leaves", new FruitBearingBlock(FabricBlockSettings.copy(Blocks.OAK_LEAVES),
             0xE5FFFF88,
             () -> UBlocks.GREEN_APPLE,
@@ -98,6 +100,9 @@ public interface UBlocks {
     static void bootstrap() {
         StrippableBlockRegistry.register(ZAP_LOG, STRIPPED_ZAP_LOG);
         StrippableBlockRegistry.register(ZAP_WOOD, STRIPPED_ZAP_WOOD);
+        TRANSLUCENT_BLOCKS.add(WEATHER_VANE);
+
+        UBlockEntities.bootstrap();
     }
 
     static boolean never(BlockState state, BlockView world, BlockPos pos) {

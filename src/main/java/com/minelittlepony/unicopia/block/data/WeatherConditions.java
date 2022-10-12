@@ -1,13 +1,19 @@
 package com.minelittlepony.unicopia.block.data;
 
+import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.util.Tickable;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.minecraft.world.Heightmap.Type;
+import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
-public class WeatherConditions {
+public class WeatherConditions extends PersistentState implements Tickable {
     public static final TwoDimensionalField HEIGHT_MAP_FIELD = (world, pos) -> {
         return world.getTopY(Type.WORLD_SURFACE_WG, pos.getX(), pos.getZ());
     };
@@ -29,16 +35,87 @@ public class WeatherConditions {
 
     public static final float MAX_UPDRAFT_HEIGHT = 20;
     public static final float MAX_TERRAIN_HEIGHT = 50;
+    public static final float MAX_WIND_HEIGHT = 70;
+
+    private static final Identifier ID = Unicopia.id("weather_conditions");
+
+    public static WeatherConditions get(World world) {
+        return WorldOverlay.getPersistableStorage(world, ID, WeatherConditions::new, WeatherConditions::new);
+    }
+
+    private final World world;
+
+    private float windYaw;
+    private float prevWindYaw;
+    private int interpolation;
+    private int maxInterpolation = 100;
+
+    private boolean prevDayState;
+
+    private WeatherConditions(World world, NbtCompound compound) {
+        this(world);
+        windYaw = compound.getFloat("windYaw");
+        prevWindYaw = compound.getFloat("prevWindYaw");
+        prevDayState = compound.getBoolean("prevDayState");
+        interpolation = compound.getInt("interpolation");
+        maxInterpolation = compound.getInt("maxInterpolation");
+    }
+
+    private WeatherConditions(World world) {
+        this.world = world;
+    }
+
+    @Override
+    public void tick() {
+        if (interpolation < maxInterpolation) {
+            interpolation++;
+            markDirty();
+        }
+
+        boolean isDay = world.isDay();
+        if (isDay != prevDayState
+            || world.random.nextInt(1200) == 0
+            || (world.isRaining() && world.random.nextInt(120) == 0)
+            || (world.isThundering() && world.random.nextInt(90) == 0)) {
+            prevDayState = isDay;
+            prevWindYaw = getWindYaw();
+            windYaw = world.random.nextFloat() * 360;
+            interpolation = 0;
+            maxInterpolation = world.isRaining() || world.isThundering() ? 50 : 100;
+            markDirty();
+        }
+    }
+
+    public float getWindYaw() {
+        return MathHelper.lerp(interpolation / (float)maxInterpolation, prevWindYaw, windYaw);
+    }
+
+    public Vec3d getWindDirection() {
+        return Vec3d.fromPolar(0, windYaw).normalize();
+    }
+
+    @Override
+    public NbtCompound writeNbt(NbtCompound compound) {
+        compound.putFloat("windYaw", windYaw);
+        compound.putFloat("prevWindYaw", prevWindYaw);
+        compound.putBoolean("prevDayState", prevDayState);
+        compound.putInt("interpolation", interpolation);
+        compound.putInt("maxInterpolation", maxInterpolation);
+        return compound;
+    }
 
     public static Vec3d getAirflow(BlockPos pos, World world) {
         BlockPos.Mutable probedPosition = new BlockPos.Mutable();
 
-        final float terrainFactor = Math.min(MAX_TERRAIN_HEIGHT, LOCAL_ALTITUDE_FIELD.getValue(world, probedPosition.set(pos))) / MAX_TERRAIN_HEIGHT;
+        final float localAltitude = LOCAL_ALTITUDE_FIELD.getValue(world, probedPosition.set(pos));
+        final float terrainFactor = Math.min(MAX_TERRAIN_HEIGHT, localAltitude) / MAX_TERRAIN_HEIGHT;
+        final float windFactor = Math.min(MAX_WIND_HEIGHT, localAltitude) / MAX_WIND_HEIGHT;
 
         Vec3d terrainGradient = LOCAL_ALTITUDE_FIELD.computeAverage(world, pos, probedPosition).multiply(1 - terrainFactor);
         Vec3d thermalGradient = THERMAL_FIELD.computeAverage(world, pos, probedPosition).multiply(terrainFactor);
+        Vec3d wind = get(world).getWindDirection().multiply(1 - windFactor);
 
-        return terrainGradient.add(thermalGradient).normalize().add(0, getUpdraft(probedPosition.set(pos), world), 0);
+        return terrainGradient.add(thermalGradient).add(wind).normalize().add(0, getUpdraft(probedPosition.set(pos), world), 0);
     }
 
     public static double getUpdraft(BlockPos.Mutable pos, World world) {

@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "": { "model": "unicopia:block/weather_vane" }
+    }
+}
