@@ -18,10 +18,10 @@
   "criteria": {
     "eat_pinecone": {
       "trigger": "minecraft:consume_item",
-      "item": {
-        "items": [
-          { "item": "unicopia:pinecone" }
-        ]
+      "conditions": {
+        "item": {
+          "items": [ "unicopia:pinecone" ]
+        }
       }
     }
   },
