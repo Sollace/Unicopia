@@ -112,7 +112,7 @@ public class WorldRenderDelegate {
         if (pony instanceof Caster<?>) {
             int fireTicks = owner.doesRenderOnFire() ? 1 : 0;
 
-            return ((Caster<?>)pony).getSpellSlot().get(SpellPredicate.IS_DISGUISE, true).map(effect -> {
+            return ((Caster<?>)pony).getSpellSlot().get(SpellPredicate.IS_DISGUISE, false).map(effect -> {
                 effect.update(pony, false);
 
                 EntityAppearance ve = effect.getDisguise();

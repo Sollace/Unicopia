@@ -59,11 +59,11 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
 
         LivingEntity owner = source.getMaster();
 
-        Entity entity = getDisguise().getOrCreate(source);
-
         if (owner == null) {
             return true;
         }
+
+        Entity entity = getDisguise().getOrCreate(source);
 
         if (entity == null) {
             owner.setInvisible(false);
