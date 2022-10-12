@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 /**
  * Dispells an active spell
@@ -32,7 +33,13 @@ public class UnicornDispellAbility implements Ability<Pos> {
 
     @Override
     public boolean canUse(Race race) {
-        return race.canCast();
+        return race.canCast() || race == Race.CHANGELING;
+    }
+
+    @Override
+    public Identifier getIcon(Pony player, boolean swap) {
+        Identifier id = Abilities.REGISTRY.getId(this);
+        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (player.getSpecies() == Race.CHANGELING ? "_changeling" : "") + ".png");
     }
 
     @Override
@@ -43,19 +50,21 @@ public class UnicornDispellAbility implements Ability<Pos> {
     @Override
     public boolean onQuickAction(Pony player, ActivationType type) {
 
-        if (type.getTapCount() > 1) {
-            player.setAnimation(Animation.WOLOLO, 10);
-            if (player.getSpellSlot().clear()) {
-                player.getMaster().sendMessage(Text.translatable("gui.unicopia.action.spells_cleared"), true);
-            } else {
-                player.getMaster().sendMessage(Text.translatable("gui.unicopia.action.no_spells_cleared"), true);
+        if (player.getSpecies() != Race.CHANGELING) {
+            if (type.getTapCount() > 1) {
+                player.setAnimation(Animation.WOLOLO, 10);
+                if (player.getSpellSlot().clear()) {
+                    player.getMaster().sendMessage(Text.translatable("gui.unicopia.action.spells_cleared"), true);
+                } else {
+                    player.getMaster().sendMessage(Text.translatable("gui.unicopia.action.no_spells_cleared"), true);
+                }
+                return true;
             }
-            return true;
-        }
 
-        if (type == ActivationType.TAP && player.isClient()) {
-            InteractionManager.instance().openScreen(InteractionManager.SCREEN_DISPELL_ABILITY);
-            return true;
+            if (type == ActivationType.TAP && player.isClient()) {
+                InteractionManager.instance().openScreen(InteractionManager.SCREEN_DISPELL_ABILITY);
+                return true;
+            }
         }
 
         return false;

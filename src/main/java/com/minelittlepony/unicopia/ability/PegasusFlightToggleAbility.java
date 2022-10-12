@@ -41,7 +41,10 @@ public class PegasusFlightToggleAbility implements Ability<Hit> {
     @Override
     public Identifier getIcon(Pony player, boolean swap) {
         Identifier id = Abilities.REGISTRY.getId(this);
-        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (player.getPhysics().isFlying() ? "_land" : "_takeoff") + ".png");
+        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath()
+            + (player.getPhysics().isFlying() ? "_land" : "_takeoff")
+            + (player.getSpecies() == Race.CHANGELING ? "_changeling" : "")
+            + ".png");
     }
 
     @Override

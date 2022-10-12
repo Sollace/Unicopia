@@ -47,7 +47,7 @@ public interface Abilities {
 
     // changeling
     Ability<?> DISGUISE = register(new ChangelingDisguiseAbility(), "disguise", AbilitySlot.SECONDARY);
-    Ability<?> FEED = register(new ChangelingFeedAbility(), "feed", AbilitySlot.TERTIARY);
+    Ability<?> FEED = register(new ChangelingFeedAbility(), "feed", AbilitySlot.SECONDARY);
 
     // bat
     Ability<?> HANG = register(new BatPonyHangAbility(), "hang", AbilitySlot.SECONDARY);
