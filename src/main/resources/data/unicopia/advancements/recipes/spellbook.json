@@ -10,7 +10,7 @@
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "items": [ "unicopia:gemstone" ] }
+          { "items": [ "unicopia:gemstone", "unicopia:botched_gem" ] }
         ]
       }
     },
