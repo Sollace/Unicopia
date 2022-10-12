@@ -118,10 +118,6 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
             if (diff > 0) {
                 if (pony.getLevel().canLevelUp()) {
                     xp.add(0.001F / pony.getLevel().get());
-                    if (xp.getPercentFill() >= 1) {
-                        xp.set(0);
-                        pony.getLevel().add(1);
-                    }
                 }
 
                 value = get() + diff / (1 + pony.getLevel().get());
