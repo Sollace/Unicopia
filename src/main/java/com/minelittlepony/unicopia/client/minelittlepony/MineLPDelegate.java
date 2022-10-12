@@ -18,6 +18,9 @@ public class MineLPDelegate {
     }
 
     public final Race getPlayerPonyRace() {
+        if (MinecraftClient.getInstance().player == null) {
+            return Race.HUMAN;
+        }
         return getPlayerPonyRace(MinecraftClient.getInstance().player);
     }
 
