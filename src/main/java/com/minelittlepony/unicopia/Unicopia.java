@@ -43,6 +43,7 @@ public class Unicopia implements ModInitializer {
     public static Config getConfig() {
         if (CONFIG == null) {
             CONFIG = new Config();
+            CONFIG.load();
         }
         return CONFIG;
     }
