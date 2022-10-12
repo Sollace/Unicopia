@@ -17,7 +17,7 @@ public class RegistryIndexer<T> {
     }
 
     public int size() {
-        return values.size();
+        return values.size() - 1;
     }
 
     public int indexOf(T value) {
@@ -45,7 +45,7 @@ public class RegistryIndexer<T> {
     }
 
     private int wrapIndex(int index) {
-        int sz = size();
+        int sz = values.size();
         while (index < 0) {
             index += sz;
         }
