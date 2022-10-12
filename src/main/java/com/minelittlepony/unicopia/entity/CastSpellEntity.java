@@ -66,7 +66,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
             return;
         }
 
-        if (!getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.GROUND_ENTITY)), true)) {
+        if (!getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.GROUND_ENTITY)), world.isClient)) {
             discard();
         }
     }

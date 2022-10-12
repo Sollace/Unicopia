@@ -301,7 +301,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
                 consumer.accept((ProjectileDelegate)spell);
             }
             return Operation.SKIP;
-        }, true);
+        }, world.isClient);
         if (getItem().getItem() instanceof ProjectileDelegate) {
             consumer.accept(((ProjectileDelegate)getItem().getItem()));
         }

@@ -103,7 +103,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Override
     public void tick() {
         try {
-            getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.BODY)), true);
+            getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.BODY)), entity.world.isClient);
         } catch (Exception e) {
             Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", getEntity(), e);
         }

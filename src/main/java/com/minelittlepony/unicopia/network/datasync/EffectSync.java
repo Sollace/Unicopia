@@ -66,7 +66,7 @@ public class EffectSync implements SpellContainer {
 
     @Override
     public boolean removeWhere(Predicate<Spell> test, boolean update) {
-        return reduce((initial, effect) -> {
+        return reduce(update, (initial, effect) -> {
             if (!test.test(effect)) {
                 return initial;
             }
@@ -77,7 +77,7 @@ public class EffectSync implements SpellContainer {
 
     @Override
     public boolean forEach(Function<Spell, Operation> test, boolean update) {
-        return reduce((initial, effect) -> {
+        return reduce(update, (initial, effect) -> {
             Operation op = test.apply(effect);
             if (op == Operation.REMOVE) {
                 spells.removeReference(effect);
@@ -122,11 +122,9 @@ public class EffectSync implements SpellContainer {
         return (Stream<T>)spells.getReferences().flatMap(s -> s.findMatches(type));
     }
 
-    public boolean reduce(Alteration alteration) {
-        spells.fromNbt(owner.getEntity().getDataTracker().get(param));
-
+    private boolean reduce(boolean update, Alteration alteration) {
         boolean initial = false;
-        for (Spell i : spells.getReferences().toList()) {
+        for (Spell i : read(null, update, false).toList()) {
             initial = alteration.apply(initial, i);
         }
 
