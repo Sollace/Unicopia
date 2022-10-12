@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.block;
 
-import com.minelittlepony.unicopia.AwaitTickQueue;
-import com.minelittlepony.unicopia.UGameEvents;
+import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.util.SoundEmitter;
 
 import net.minecraft.block.*;
@@ -81,7 +80,7 @@ public class PieBlock extends Block implements Waterloggable {
         }
 
         if (itemStack.getItem() == Items.SHEARS) {
-            SoundEmitter.playSoundAt(player, SoundEvents.BLOCK_BEEHIVE_SHEAR, SoundCategory.NEUTRAL, 1, 1);
+            SoundEmitter.playSoundAt(player, USounds.BLOCK_PIE_SLICE, SoundCategory.NEUTRAL, 1, 1);
             removeSlice(world, pos, state, player);
             SoundEmitter.playSoundAt(player, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.NEUTRAL, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
             Block.dropStack(world, pos, sliceItem.asItem().getDefaultStack());

@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia;
 
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -40,6 +41,9 @@ public interface USounds {
     SoundEvent ITEM_AMULET_CHARGING = register("item.amulet.charging");
     SoundEvent ITEM_AMULET_RECHARGE = register("item.amulet.recharge");
 
+    SoundEvent ITEM_DRAGON_BREATH_SCROLL_USE = SoundEvents.ITEM_FIRECHARGE_USE;
+    SoundEvent ITEM_DRAGON_BREATH_ARRIVE = SoundEvents.ITEM_FIRECHARGE_USE;
+
     SoundEvent ITEM_ICARUS_WINGS_PURIFY = register("item.icarus_wings.resonate");
     SoundEvent ITEM_ICARUS_WINGS_CORRUPT = register("item.icarus_wings.corrupted");
     SoundEvent ITEM_ICARUS_WINGS_WARN = register("item.icarus_wings.warn");
@@ -53,6 +57,9 @@ public interface USounds {
     SoundEvent ITEM_BRACELET_SIGN = register("item.bracelet.sign");
     SoundEvent ITEM_MAGIC_AURA = register("item.magic.aura");
 
+    SoundEvent BLOCK_WEATHER_VANE_ROTATE = SoundEvents.BLOCK_LANTERN_STEP;
+    SoundEvent BLOCK_PIE_SLICE = SoundEvents.BLOCK_BEEHIVE_SHEAR;
+
     SoundEvent SPELL_CAST_FAIL = register("spell.cast.fail");
     SoundEvent SPELL_CAST_SUCCESS = register("spell.cast.success");
     SoundEvent SPELL_CAST_SHOOT = register("spell.cast.shoot");
@@ -61,6 +68,12 @@ public interface USounds {
     SoundEvent SPELL_FIRE_BOLT_SHOOT = register("spell.fire.shoot.bolt");
     SoundEvent SPELL_SHIELD_BURN_PROJECTILE = register("spell.shield.projectile.burn");
     SoundEvent SPELL_TRANSFORM_TRANSMUTE_ENTITY = register("spell.transform.transmute.entity");
+
+    SoundEvent SPELL_AMBIENT = SoundEvents.BLOCK_BEACON_AMBIENT;
+    SoundEvent SPELL_MINDSWAP_SWAP = SoundEvents.ENTITY_ZOMBIE_INFECT;
+    SoundEvent SPELL_MINDSWAP_UNSWAP = SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE;
+
+    SoundEvent SPELL_DISPLACEMENT_TELEPORT = SoundEvents.ENTITY_HUSK_CONVERTED_TO_ZOMBIE;
 
     SoundEvent AMBIENT_DARK_VORTEX_MOOD = register("ambient.dark_vortex.mood");
     SoundEvent AMBIENT_DARK_VORTEX_ADDITIONS = register("ambient.dark_vortex.additions");

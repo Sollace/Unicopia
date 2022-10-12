@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
@@ -145,7 +146,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                     item.setStack(stack.payload());
                     item.setPosition(randomPos);
                     item.world.spawnEntity(item);
-                    entity.world.playSoundFromEntity(null, entity, SoundEvents.ITEM_FIRECHARGE_USE, entity.getSoundCategory(), 1, 1);
+                    entity.world.playSoundFromEntity(null, entity, USounds.ITEM_DRAGON_BREATH_ARRIVE, entity.getSoundCategory(), 1, 1);
 
                     if (stack.payload().getItem() == UItems.OATS && entity instanceof PlayerEntity player) {
                         UCriteria.RECEIVE_OATS.trigger(player);

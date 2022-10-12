@@ -2,13 +2,13 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.UUID;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.block.data.DragonBreathStore;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -35,7 +35,7 @@ public class DragonBreathScrollItem extends Item {
             }
             DragonBreathStore.get(world).put(stack.getName().getString(), payload.split(1));
         }
-        player.playSound(SoundEvents.ITEM_FIRECHARGE_USE, 1, 1);
+        player.playSound(USounds.ITEM_DRAGON_BREATH_SCROLL_USE, 1, 1);
         return TypedActionResult.consume(stack);
     }
 

@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.CasterView;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
@@ -16,7 +17,6 @@ import com.minelittlepony.unicopia.util.shape.*;
 import net.minecraft.block.*;
 import net.minecraft.fluid.*;
 import net.minecraft.nbt.*;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
@@ -88,7 +88,7 @@ public class HydrophobicSpell extends AbstractSpell {
             });
 
             if (source.getEntity().age % 200 == 0) {
-                source.playSound(SoundEvents.BLOCK_BEACON_AMBIENT, 0.5F);
+                source.playSound(USounds.SPELL_AMBIENT, 0.5F);
             }
         }
 

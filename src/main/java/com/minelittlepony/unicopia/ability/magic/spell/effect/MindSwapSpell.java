@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.Optional;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -13,7 +14,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.sound.SoundEvents;
 
 public class MindSwapSpell extends MimicSpell {
 
@@ -45,8 +45,8 @@ public class MindSwapSpell extends MimicSpell {
                 Caster<?> other = Caster.of(e).get();
                 other.getSpellSlot().removeIf(SpellType.MIMIC, true);
 
-                other.playSound(SoundEvents.ENTITY_ZOMBIE_INFECT, 1);
-                caster.playSound(SoundEvents.ENTITY_ZOMBIE_INFECT, 1);
+                other.playSound(USounds.SPELL_MINDSWAP_UNSWAP, 1);
+                caster.playSound(USounds.SPELL_MINDSWAP_UNSWAP, 1);
             });
         }
     }
@@ -71,8 +71,8 @@ public class MindSwapSpell extends MimicSpell {
                             a -> theirStoredInventory = Optional.of(a)
                     );
 
-                    other.playSound(SoundEvents.ENTITY_ZOMBIE_INFECT, 1);
-                    caster.playSound(SoundEvents.ENTITY_ZOMBIE_INFECT, 1);
+                    other.playSound(USounds.SPELL_MINDSWAP_SWAP, 1);
+                    caster.playSound(USounds.SPELL_MINDSWAP_SWAP, 1);
                 });
             }
 

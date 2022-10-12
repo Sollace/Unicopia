@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -10,7 +11,6 @@ import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
 public class DisplacementSpell extends AbstractSpell implements HomingSpell, PlaceableSpell.PlacementDelegate {
@@ -73,7 +73,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
         entity.teleport(pos.x, pos.y, pos.z);
         entity.setVelocity(vel);
         entity.setGlowing(false);
-        entity.playSound(SoundEvents.ENTITY_HUSK_CONVERTED_TO_ZOMBIE, 1, 1);
+        entity.playSound(USounds.SPELL_DISPLACEMENT_TELEPORT, 1, 1);
 
         float damage = getTraits().get(Trait.BLOOD);
         if (damage > 0) {
