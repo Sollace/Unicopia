@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.ability.magic.CasterView;
 import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyPlayerEntity;
-import com.minelittlepony.unicopia.entity.player.dummy.DummyServerPlayerEntity;
 import com.minelittlepony.unicopia.network.handler.ClientNetworkHandler;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
@@ -99,9 +98,6 @@ public class InteractionManager {
      */
     @NotNull
     public PlayerEntity createPlayer(World world, GameProfile profile) {
-        if (world instanceof ServerWorld) {
-            return new DummyServerPlayerEntity((ServerWorld)world, profile);
-        }
         return new DummyPlayerEntity(world, profile);
     }
 }

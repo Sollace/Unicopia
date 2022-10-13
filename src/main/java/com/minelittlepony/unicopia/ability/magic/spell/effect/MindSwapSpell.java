@@ -78,6 +78,8 @@ public class MindSwapSpell extends MimicSpell {
 
             if (counterpart.getId().isPresent() && counterpart.get(caster.getReferenceWorld()) == null) {
                 caster.getMaster().damage(DamageSource.MAGIC, Float.MAX_VALUE);
+                setDead();
+                return false;
             }
         }
 

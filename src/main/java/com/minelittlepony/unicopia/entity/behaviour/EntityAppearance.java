@@ -194,8 +194,6 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
             return;
         }
 
-        Caster.of(entity).ifPresent(c -> c.getSpellSlot().clear());
-
         if (entity instanceof LivingEntity) {
             ((LivingEntity) entity).getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER).clearModifiers();
         }
@@ -343,9 +341,13 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
             }
             entityNbt.putString("playerName", profile.getName());
             entityNbt.putByte("playerVisibleParts", player.getDataTracker().get(Disguise.PlayerAccess.getModelBitFlag()));
-            entityNbt.put("playerNbt", player.writeNbt(new NbtCompound()));
+
+            NbtCompound playerNbt = player.writeNbt(new NbtCompound());
+            playerNbt.remove("unicopia_caster");
+            entityNbt.put("playerNbt", playerNbt);
         } else {
             entity.saveSelfNbt(entityNbt);
+            entityNbt.remove("unicopia_caster");
         }
 
         return entityNbt;

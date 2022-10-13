@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -21,6 +22,11 @@ public class DummyPlayerEntity extends PlayerEntity implements Owned<PlayerEntit
 
     @Override
     protected void playEquipSound(ItemStack stack) {
+        /*noop*/
+    }
+
+    @Override
+    protected void onBlockCollision(BlockState state) {
         /*noop*/
     }
 
