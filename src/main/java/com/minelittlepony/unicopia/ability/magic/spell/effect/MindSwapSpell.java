@@ -48,6 +48,7 @@ public class MindSwapSpell extends MimicSpell {
                 other.playSound(USounds.SPELL_MINDSWAP_UNSWAP, 1);
                 caster.playSound(USounds.SPELL_MINDSWAP_UNSWAP, 1);
             });
+            counterpart.set(null);
         }
     }
 
@@ -78,6 +79,15 @@ public class MindSwapSpell extends MimicSpell {
 
             if (counterpart.getId().isPresent() && counterpart.get(caster.getReferenceWorld()) == null) {
                 caster.getMaster().damage(DamageSource.MAGIC, Float.MAX_VALUE);
+                setDead();
+                return false;
+            }
+
+            if (!caster.getEntity().isAlive()) {
+                counterpart.ifPresent(caster.getReferenceWorld(), e -> {
+                    e.damage(DamageSource.MAGIC, Float.MAX_VALUE);
+                });
+                onDestroyed(caster);
                 setDead();
                 return false;
             }
