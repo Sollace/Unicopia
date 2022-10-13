@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.player.PlayerDimensions;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -90,6 +91,10 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
 
         if (tick && !getDisguise().skipsUpdate()) {
             entity.tick();
+        }
+
+        if (!(owner instanceof PlayerEntity) && !((LivingEntityDuck)owner).isJumping()) {
+            owner.addVelocity(0, -0.09, 0);
         }
 
         behaviour.update(source, entity, this);
