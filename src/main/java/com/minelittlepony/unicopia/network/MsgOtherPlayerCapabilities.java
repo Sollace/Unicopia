@@ -15,8 +15,8 @@ public class MsgOtherPlayerCapabilities extends MsgPlayerCapabilities {
         super(buffer);
     }
 
-    public MsgOtherPlayerCapabilities(boolean full, Pony player) {
-        super(full, player);
+    public MsgOtherPlayerCapabilities(Pony player) {
+        super(player);
 
     }
 

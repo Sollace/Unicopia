@@ -88,7 +88,7 @@ public class InteractionManager {
      * Returns an implementation of PlayerEntity appropriate to the side being called on.
      */
     @NotNull
-    public PlayerEntity createPlayer(Entity observer, GameProfile profile) {
+    public final PlayerEntity createPlayer(Entity observer, GameProfile profile) {
         return createPlayer(observer.world, profile);
     }
 

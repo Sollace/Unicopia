@@ -239,16 +239,19 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         return getSpecies().getAffinity();
     }
 
+    @Override
     public void setDirty() {
         dirty = true;
     }
 
-    @Override
-    public void sendCapabilities(boolean full) {
+    private void sendCapabilities() {
+        if (!dirty) {
+            return;
+        }
         dirty = false;
 
         if (entity instanceof ServerPlayerEntity) {
-            MsgOtherPlayerCapabilities packet = new MsgOtherPlayerCapabilities(full, this);
+            MsgOtherPlayerCapabilities packet = new MsgOtherPlayerCapabilities(this);
             Channel.SERVER_PLAYER_CAPABILITIES.send((ServerPlayerEntity)entity, packet);
             Channel.SERVER_OTHER_PLAYER_CAPABILITIES.send(entity.world, packet);
         }
@@ -420,9 +423,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
         super.tick();
 
-        if (dirty) {
-            sendCapabilities(true);
-        }
+        sendCapabilities();
     }
 
     public Optional<Float> modifyDamage(DamageSource cause, float amount) {
@@ -541,6 +542,11 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
+        toSyncronisedNbt(compound);
+    }
+
+    @Override
+    public void toSyncronisedNbt(NbtCompound compound) {
         compound.putString("playerSpecies", Race.REGISTRY.getId(getActualSpecies()).toString());
         compound.putFloat("magicExhaustion", magicExhaustion);
         compound.putInt("ticksHanging", ticksHanging);
@@ -555,10 +561,6 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         compound.putInt("levels", levels.get());
         compound.putInt("corruption", corruption.get());
 
-        getSpellSlot().get(true).ifPresent(effect ->{
-            compound.put("effect", Spell.writeNbt(effect));
-        });
-
         NbtCompound progress = new NbtCompound();
         advancementProgress.forEach((key, count) -> {
             progress.putInt(key, count);
@@ -569,6 +571,11 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
+        fromSynchronizedNbt(compound);
+    }
+
+    @Override
+    public void fromSynchronizedNbt(NbtCompound compound) {
         speciesPersisted = true;
         setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
         powers.fromNBT(compound.getCompound("powers"));
@@ -584,10 +591,6 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         hangingPosition = NbtSerialisable.BLOCK_POS.readOptional("hangingPosition", compound);
         ticksInSun = compound.getInt("ticksInSun");
         hasShades = compound.getBoolean("hasShades");
-
-        if (compound.contains("effect")) {
-            getSpellSlot().put(Spell.readNbt(compound.getCompound("effect")));
-        }
 
         NbtCompound progress = compound.getCompound("advancementProgress");
         advancementProgress.clear();
@@ -624,8 +627,8 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
                 getCorruption().add(1);
             }
             getCorruption().add((int)spell.getTraits().getCorruption());
+            setDirty();
         }
-        setDirty();
     }
 
     public boolean isClientPlayer() {

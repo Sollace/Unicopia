@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.NbtCompound;
@@ -23,7 +24,7 @@ import net.minecraft.nbt.NbtCompound;
  *
  * @param <T> The owning entity
  */
-public class EffectSync implements SpellContainer {
+public class EffectSync implements SpellContainer, NbtSerialisable {
 
     private final NetworkedReferenceSet<Spell> spells;
 
@@ -136,6 +137,16 @@ public class EffectSync implements SpellContainer {
         if (spells.isDirty()) {
             owner.getEntity().getDataTracker().set(param, spells.toNbt());
         }
+    }
+
+    @Override
+    public void toNBT(NbtCompound compound) {
+        compound.put("spells", spells.toNbt());
+    }
+
+    @Override
+    public void fromNBT(NbtCompound compound) {
+        spells.fromNbt(compound.getCompound("spells"));
     }
 
     public interface UpdateCallback {

@@ -233,11 +233,13 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Override
     public void toNBT(NbtCompound compound) {
         enchants.toNBT(compound);
+        effectDelegate.toNBT(compound);
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         enchants.fromNBT(compound);
+        effectDelegate.fromNBT(compound);
     }
 
     public void updateVelocity() {

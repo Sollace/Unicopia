@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.network.Packet;
@@ -26,13 +25,10 @@ public class MsgPlayerCapabilities implements Packet<PlayerEntity> {
 
     protected final UUID playerId;
 
-    private final Race newRace;
-
     private final NbtCompound compoundTag;
 
     MsgPlayerCapabilities(PacketByteBuf buffer) {
         playerId = buffer.readUuid();
-        newRace = buffer.readRegistryValue(Race.REGISTRY);
         try (InputStream in = new ByteBufInputStream(buffer)) {
             compoundTag = NbtIo.readCompressed(in);
         } catch (IOException e) {
@@ -40,16 +36,15 @@ public class MsgPlayerCapabilities implements Packet<PlayerEntity> {
         }
     }
 
-    public MsgPlayerCapabilities(boolean full, Pony player) {
-        playerId = player.getMaster().getUuid();
-        newRace = player.getActualSpecies();
-        compoundTag = full ? player.toNBT() : new NbtCompound();
+    public MsgPlayerCapabilities(Pony player) {
+        playerId = player.getEntity().getUuid();
+        compoundTag = new NbtCompound();
+        player.toSyncronisedNbt(compoundTag);
     }
 
     @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeUuid(playerId);
-        buffer.writeRegistryValue(Race.REGISTRY, newRace);
         try (OutputStream out = new ByteBufOutputStream(buffer)) {
             NbtIo.writeCompressed(compoundTag, out);
         } catch (IOException e) {
@@ -63,11 +58,8 @@ public class MsgPlayerCapabilities implements Packet<PlayerEntity> {
             Unicopia.LOGGER.warn("Skipping capabilities for unknown player " + playerId.toString());
             return;
         }
-        if (compoundTag.isEmpty()) {
-            player.setSpecies(newRace);
-        } else {
-            player.fromNBT(compoundTag);
-        }
+
+        player.fromSynchronizedNbt(compoundTag);
     }
 
     protected Pony getRecipient(PlayerEntity sender) {

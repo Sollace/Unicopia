@@ -55,8 +55,8 @@ public class NetworkedReferenceSet<T> {
             }
         } finally {
             reading = false;
+            values.clear();
         }
-        values.clear();
         return dirty;
     }
 

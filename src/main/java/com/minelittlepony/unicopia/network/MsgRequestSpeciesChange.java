@@ -53,6 +53,6 @@ public class MsgRequestSpeciesChange implements Packet<ServerPlayerEntity> {
             }
         }
 
-        Channel.SERVER_PLAYER_CAPABILITIES.send(sender, new MsgPlayerCapabilities(true, player));
+        Channel.SERVER_PLAYER_CAPABILITIES.send(sender, new MsgPlayerCapabilities(player));
     }
 }
