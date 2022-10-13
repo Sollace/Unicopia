@@ -37,13 +37,12 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
         IGear.register(GlassesGear::new);
     }
 
-    @SuppressWarnings("unchecked")
     private void onPonyModelPrepared(Entity entity, IModel model, ModelAttributes.Mode mode) {
         if (hookErroring) return;
         try {
             if (entity instanceof PlayerEntity) {
-                if (entity instanceof Owned) {
-                    entity = ((Owned<PlayerEntity>)entity).getMaster();
+                if (entity instanceof Owned<?> o && o.getMaster() instanceof PlayerEntity master) {
+                    entity = master;
                 }
                 Pony pony = Pony.of((PlayerEntity)entity);
 
