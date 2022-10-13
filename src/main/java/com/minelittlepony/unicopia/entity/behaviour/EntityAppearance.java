@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.ButterflyEntity;
 import com.minelittlepony.unicopia.entity.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.player.PlayerDimensions;
@@ -39,6 +40,8 @@ import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.mob.VexEntity;
+import net.minecraft.entity.passive.AllayEntity;
+import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -224,6 +227,9 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                 || entity instanceof AmbientEntity
                 || entity instanceof EnderDragonEntity
                 || entity instanceof VexEntity
+                || entity instanceof AllayEntity
+                || entity instanceof BatEntity
+                || entity instanceof ButterflyEntity
                 || entity instanceof ShulkerBulletEntity
                 || entity instanceof Flutterer
                 || ProjectileUtil.isFlyingProjectile(entity)) {
