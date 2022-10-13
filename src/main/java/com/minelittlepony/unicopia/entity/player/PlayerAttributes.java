@@ -29,6 +29,12 @@ public class PlayerAttributes implements Tickable {
     public static final EntityAttributeModifier BAT_HANGING =
             new EntityAttributeModifier(UUID.fromString("a54f2595-521e-480b-b9d5-6e750577a564"), "Bat Pony Hanging", -2, Operation.MULTIPLY_TOTAL);
 
+    public static final UUID HEALTH_SWAPPING_MODIFIER_ID = UUID.fromString("7b93803e-4b25-11ed-951e-00155d43e0a2");
+
+    public static EntityAttributeModifier healthChange(float addition) {
+        return new EntityAttributeModifier(HEALTH_SWAPPING_MODIFIER_ID, "Health Swap", addition, Operation.ADDITION);
+    }
+
     private final Pony pony;
 
     public PlayerAttributes(Pony pony) {
