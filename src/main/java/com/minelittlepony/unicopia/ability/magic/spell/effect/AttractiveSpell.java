@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -120,6 +121,7 @@ public class AttractiveSpell extends ShieldSpell implements ProjectileSpell, Hom
             }
         }
         target.setVelocity(x, y, z);
+        Living.updateVelocity(target);
     }
 
     @Override

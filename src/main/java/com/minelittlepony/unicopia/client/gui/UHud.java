@@ -125,7 +125,7 @@ public class UHud extends DrawableHelper {
 
         matrices.pop();
 
-        if (pony.getSpecies().canCast()) {
+        if (pony.getActualSpecies().canCast()) {
             renderSpell(pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 15 - xDirection * 13, hudY + 3);
             renderSpell(pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 15 - xDirection * 2, hudY - 3);
         }

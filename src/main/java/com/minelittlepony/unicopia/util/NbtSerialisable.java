@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.util;
 
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.*;
 import java.util.stream.Stream;
 
 import com.mojang.datafixers.util.Pair;
@@ -54,6 +54,17 @@ public interface NbtSerialisable {
         return codec.encodeStart(NbtOps.INSTANCE, value).result().get();
     }
 
+    static NbtCompound subTag(String name, NbtCompound parent) {
+        NbtCompound child = new NbtCompound();
+        parent.put(name, child);
+        return child;
+    }
+
+    static NbtCompound subTag(String name, NbtCompound parent, Consumer<NbtCompound> writer) {
+        writer.accept(subTag(name, parent));
+        return parent;
+    }
+
     interface Serializer<T> {
         T read(NbtCompound compound);
 
@@ -81,6 +92,14 @@ public interface NbtSerialisable {
 
         default Stream<T> readAll(NbtList list) {
             return list.stream().map(this::read).filter(Objects::nonNull);
+        }
+
+        static <T extends NbtSerialisable> Serializer<T> of(Supplier<T> factory) {
+            return of(nbt -> {
+                T value = factory.get();
+                value.fromNBT(nbt);
+                return value;
+            }, value -> value.toNBT());
         }
 
         static <T> Serializer<T> of(Function<NbtCompound, T> read, Function<T, NbtCompound> write) {

@@ -348,13 +348,18 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
             entityNbt.putString("playerName", profile.getName());
             entityNbt.putByte("playerVisibleParts", player.getDataTracker().get(Disguise.PlayerAccess.getModelBitFlag()));
 
-            NbtCompound playerNbt = player.writeNbt(new NbtCompound());
-            playerNbt.remove("unicopia_caster");
-            entityNbt.put("playerNbt", playerNbt);
-        } else {
-            entity.saveSelfNbt(entityNbt);
-            entityNbt.remove("unicopia_caster");
+            return NbtSerialisable.subTag("playerNbt", entityNbt, playerNbt -> {
+                player.writeNbt(playerNbt);
+                playerNbt.remove("unicopia_caster");
+                Pony pony = Pony.of(player);
+                if (pony != null) {
+                    NbtSerialisable.subTag("unicopia_caster", playerNbt, pony::toSyncronisedNbt);
+                }
+            });
         }
+
+        entity.saveSelfNbt(entityNbt);
+        entityNbt.remove("unicopia_caster");
 
         return entityNbt;
     }
