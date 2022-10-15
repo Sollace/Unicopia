@@ -30,7 +30,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 
 @Mixin(LivingEntity.class)
-abstract class MixinLivingEntity extends Entity implements PonyContainer<Equine<?>>, LivingEntityDuck {
+abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
     @Shadow
     protected ItemStack activeItemStack;
     @Shadow

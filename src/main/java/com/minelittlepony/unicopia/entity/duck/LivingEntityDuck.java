@@ -1,9 +1,12 @@
 package com.minelittlepony.unicopia.entity.duck;
 
+import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.entity.PonyContainer;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 
-public interface LivingEntityDuck {
+public interface LivingEntityDuck extends PonyContainer<Equine<?>> {
     void updateItemUsage(Hand hand, ItemStack stack, int time);
 
     boolean isJumping();

@@ -6,18 +6,19 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.entity.duck.LavaAffine;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.data.*;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.TagKey;
 
 @Mixin(BoatEntity.class)
 abstract class MixinBoatEntity extends Entity implements LavaAffine {
-
     private static final TrackedData<Boolean> IS_LAVA_BOAT = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     MixinBoatEntity() { super(null, null); }
@@ -61,6 +62,9 @@ abstract class MixinBoatEntity extends Entity implements LavaAffine {
     @Override
     public void setLavaAffine(boolean lavaAffine) {
         dataTracker.set(IS_LAVA_BOAT, lavaAffine);
+        if (lavaAffine) {
+            ParticleUtils.spawnParticles(ParticleTypes.CLOUD, this, 10);
+        }
     }
 
     @Override
