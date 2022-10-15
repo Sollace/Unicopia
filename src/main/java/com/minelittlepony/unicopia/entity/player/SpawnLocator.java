@@ -48,6 +48,11 @@ public class SpawnLocator extends SpawnLocating {
             while (world.isAir(mutable) && mutable.getY() >= spawnPos.getY() - spawnRadius * 2 && !world.isOutOfHeightLimit(mutable)) {
                 mutable.move(0, -1, 0);
             }
+
+            if (!world.getFluidState(mutable).isEmpty()) {
+                continue;
+            }
+
             if (!world.isAir(mutable)) {
                 mutable.move(0, 1, 0);
             }
