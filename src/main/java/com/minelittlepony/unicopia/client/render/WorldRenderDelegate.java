@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.render;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.entity.Creature;
@@ -10,14 +11,14 @@ import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.behaviour.FallingBlockBehaviour;
+import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Model;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -25,10 +26,11 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -39,19 +41,47 @@ public class WorldRenderDelegate {
     private static final PassThroughVertexConsumer.Parameters MINION_OVERLAY = new PassThroughVertexConsumer.Parameters()
             .color((parent, r, g, b, a) -> parent.color((float)Math.random(), 0.6F, 1, a / 255F));
 
-    private boolean recurse;
+    private boolean recurseMinion;
+    private boolean recurseFrosting;
+
+    public boolean beforeEntityRender(EntityRenderDispatcher dispatcher, Entity entity,
+            double x, double y, double z, float yaw,
+            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+
+        if (!recurseFrosting && entity instanceof BoatEntity && entity instanceof LavaAffine affine && affine.isLavaAffine()) {
+            Identifier frostingTexture = Unicopia.id("textures/entity/" + EntityType.getId(entity.getType()).getPath() + "/frosting.png");
+
+            if (MinecraftClient.getInstance().getResourceManager().getResource(frostingTexture).isPresent()) {
+                recurseFrosting = true;
+
+                dispatcher.render(entity, x, y, z, yaw, tickDelta, matrices, vertices, light);
+                dispatcher.setRenderShadows(false);
+                dispatcher.render(entity, x, y, z, yaw, tickDelta, matrices, layer -> {
+                    return vertices.getBuffer(RenderLayers.getEntityTranslucent(frostingTexture));
+                }, light);
+                dispatcher.setRenderShadows(true);
+                recurseFrosting = false;
+                return true;
+            }
+        }
+
+        if (recurseFrosting) {
+            return false;
+        }
+
+        return Equine.of(entity).filter(eq -> onEntityRender(dispatcher, eq, x, y, z, yaw, tickDelta, matrices, vertices, light)).isPresent();
+    }
 
     public boolean onEntityRender(EntityRenderDispatcher dispatcher, Equine<?> pony,
             double x, double y, double z, float yaw,
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
 
-        if (!recurse && pony instanceof Creature && ((Creature)pony).isMinion()) {
-            recurse = true;
-
-            dispatcher.render(((Creature)pony).getEntity(), x, y, z, yaw, tickDelta, matrices, layer -> {
+        if (!recurseMinion && pony instanceof Creature creature && creature.isMinion()) {
+            recurseMinion = true;
+            dispatcher.render(creature.getEntity(), x, y, z, yaw, tickDelta, matrices, layer -> {
                 return PassThroughVertexConsumer.of(vertices.getBuffer(layer), MINION_OVERLAY);
             }, light);
-            recurse = false;
+            recurseMinion = false;
 
             return true;
         }
@@ -136,6 +166,10 @@ public class WorldRenderDelegate {
     }
 
     public void afterEntityRender(Equine<?> pony, MatrixStack matrices) {
+        if (recurseFrosting) {
+            return;
+        }
+
         if (pony instanceof ItemImpl || pony instanceof Living) {
             matrices.pop();
 

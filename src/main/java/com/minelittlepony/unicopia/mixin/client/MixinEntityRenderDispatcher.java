@@ -20,11 +20,9 @@ abstract class MixinEntityRenderDispatcher {
 
     @Inject(method = RENDER, at = @At("HEAD"), cancellable = true)
     private <E extends Entity> void beforeRender(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
-        Equine.of(entity).ifPresent(eq -> {
-            if (WorldRenderDelegate.INSTANCE.onEntityRender((EntityRenderDispatcher)(Object)this, eq, x, y, z, yaw, tickDelta, matrices, vertexConsumers, light)) {
-                info.cancel();
-            }
-        });
+        if (WorldRenderDelegate.INSTANCE.beforeEntityRender((EntityRenderDispatcher)(Object)this, entity, x, y, z, yaw, tickDelta, matrices, vertexConsumers, light)) {
+            info.cancel();
+        }
     }
 
     @Inject(method = RENDER, at = @At("RETURN"))
