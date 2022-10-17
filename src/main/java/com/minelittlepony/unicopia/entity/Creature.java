@@ -20,18 +20,15 @@ import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.ai.goal.GoalSelector;
+import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.SlimeEntity;
-import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.entity.mob.*;
+import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -120,13 +117,20 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
         if (entity.getType().getSpawnGroup() == SpawnGroup.MONSTER) {
             goals.add(3, new BreakHeartGoal((MobEntity)entity, targetter));
         }
-        if (entity instanceof PigEntity) {
-            eatMuffinGoal = new EatMuffinGoal((MobEntity)entity, targetter);
+        if (entity instanceof PigEntity pig) {
+            eatMuffinGoal = new EatMuffinGoal(pig, targetter);
             goals.add(3, eatMuffinGoal);
         }
 
         if (master.isPresent(getReferenceWorld())) {
             initMinionAi();
+        }
+
+        if (entity instanceof CreeperEntity mob) {
+            goals.add(1, new FleeEntityGoal<>(mob, LivingEntity.class, 10, 1.5, 1.9, AmuletSelectors.ALICORN_AMULET));
+        }
+        if (entity instanceof PassiveEntity mob) {
+            goals.add(1, new FleeEntityGoal<>(mob, LivingEntity.class, 10, 1.1, 1.7, AmuletSelectors.ALICORN_AMULET));
         }
     }
 

@@ -48,9 +48,6 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
 
     public AlicornAmuletItem(FabricItemSettings settings) {
         super(settings, 0, new AmuletItem.ModifiersBuilder()
-                .add(EntityAttributes.GENERIC_ARMOR, 9000)
-                .add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 9000)
-                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 9000)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 100)
                 .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 20)
             .build());
