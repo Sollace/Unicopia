@@ -66,7 +66,7 @@ public class CorruptInfluenceStatusEffect extends StatusEffect {
             if (!mob.isSilent()) {
                 mob.world.syncWorldEvent((PlayerEntity)null, WorldEvents.ZOMBIE_INFECTS_VILLAGER, mob.getBlockPos(), 0);
             }
-        } else if (entity.age % 20 == 0) {
+        } else if (entity.age % 2000 == 0) {
             entity.damage(MagicalDamageSource.ALICORN_AMULET, 2);
         }
 
