@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.util.network.S2CBroadcastPacketType;
 import com.minelittlepony.unicopia.util.network.S2CPacketType;
-import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.network.C2SPacketType;
 import com.minelittlepony.unicopia.util.network.SimpleNetworking;
@@ -38,8 +38,18 @@ public interface Channel {
 
     static void bootstrap() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            if (!Pony.of(handler.player).isSpeciesPersisted()) {
-                sender.sendPacket(SERVER_SELECT_TRIBE.getId(), new MsgTribeSelect(handler.player).toBuffer());
+            Pony pony = Pony.of(handler.player);
+            if (!pony.isSpeciesPersisted()) {
+                Race race = WorldTribeManager.forWorld(handler.player.getWorld()).getDefaultRace();
+                if (!race.isPermitted(handler.player)) {
+                    race = Race.HUMAN;
+                }
+                if (race.isUsable()) {
+                    pony.setSpecies(race);
+                    Unicopia.LOGGER.info("Setting {}'s race to {} due to host setting", handler.player.getDisplayName().getString(), Race.REGISTRY.getId(race).toString());
+                } else {
+                    sender.sendPacket(SERVER_SELECT_TRIBE.getId(), new MsgTribeSelect(handler.player).toBuffer());
+                }
             }
             sender.sendPacket(SERVER_RESOURCES_SEND.getId(), new MsgServerResources().toBuffer());
         });

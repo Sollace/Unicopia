@@ -1,17 +1,13 @@
 package com.minelittlepony.unicopia;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import com.google.gson.GsonBuilder;
 import com.minelittlepony.common.util.GamePaths;
 import com.minelittlepony.common.util.settings.*;
 
 public class Config extends com.minelittlepony.common.util.settings.Config {
-    private static final Adapter ADAPTER = new HeirarchicalJsonConfigAdapter(new GsonBuilder()
-            .registerTypeAdapter(Race.class, RegistryTypeAdapter.of(Race.REGISTRY))
-    );
-
-    public final Setting<Set<Race>> speciesWhiteList = value("server", "speciesWhiteList", Set.<Race>of())
+    public final Setting<Set<String>> speciesWhiteList = value("server", "speciesWhiteList", (Set<String>)new HashSet<String>())
             .addComment("A whitelist of races permitted on the server")
             .addComment("Races added to this list can be used by anyone,")
             .addComment("whilst any ones left off are not permitted")
@@ -35,6 +31,6 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
             .addComment("Turn this ON if you're using another mod that does something similar of if you encounter copatibility issues with other mods.");
 
     public Config() {
-        super(ADAPTER, GamePaths.getConfigDirectory().resolve("unicopia.json"));
+        super(HEIRARCHICAL_JSON_ADAPTER, GamePaths.getConfigDirectory().resolve("unicopia.json"));
     }
 }

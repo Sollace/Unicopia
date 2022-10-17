@@ -84,13 +84,13 @@ public class LanSettingsScreen extends GameGui {
             })
             .getStyle().setText("unicopia.options.cheats");
 
-        Set<Race> whitelist = config.speciesWhiteList.get();
+        Set<String> whitelist = config.speciesWhiteList.get();
         boolean whitelistEnabled = (forceShowWhitelist || !whitelist.isEmpty()) && !forceHideWhitelist;
 
         if (whitelist.isEmpty() && forceShowWhitelist) {
             for (Race r : Race.REGISTRY) {
                 if (!r.isDefault()) {
-                    whitelist.add(r);
+                    whitelist.add(r.getId().toString());
                 }
             }
         }
@@ -116,12 +116,12 @@ public class LanSettingsScreen extends GameGui {
                 if (!race.isDefault()) {
                     Bounds bound = WHITELIST_GRID_PACKER.next();
 
-                    Button button = content.addButton(new Toggle(LEFT + bound.left + 10, row + bound.top, whitelist.contains(race)))
+                    Button button = content.addButton(new Toggle(LEFT + bound.left + 10, row + bound.top, whitelist.contains(race.getId().toString())))
                         .onChange(v -> {
                             if (v) {
-                                whitelist.add(race);
+                                whitelist.add(race.getId().toString());
                             } else {
-                                whitelist.remove(race);
+                                whitelist.remove(race.getId().toString());
                             }
                             return v;
                         })

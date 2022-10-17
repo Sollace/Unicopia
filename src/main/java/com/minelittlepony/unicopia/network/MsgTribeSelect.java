@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.network;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
@@ -15,7 +14,7 @@ public class MsgTribeSelect implements Packet<PlayerEntity> {
     private final Set<Race> availableRaces;
 
     public MsgTribeSelect(PlayerEntity player) {
-        availableRaces = Race.REGISTRY.stream().filter(r -> r.isPermitted(player)).collect(Collectors.toSet());
+        availableRaces = Race.allPermitted(player);
     }
 
     public MsgTribeSelect(PacketByteBuf buffer) {

@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
@@ -30,7 +29,6 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgOtherPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgPlayerAnimationChange;
-import com.minelittlepony.unicopia.network.MsgRequestSpeciesChange;
 import com.minelittlepony.unicopia.network.datasync.Transmittable;
 import com.minelittlepony.unicopia.util.*;
 import com.minelittlepony.unicopia.network.datasync.EffectSync.UpdateCallback;
@@ -94,7 +92,6 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     private final Interpolator interpolator = new LinearInterpolator();
 
     private boolean dirty;
-    private boolean speciesSet;
     private boolean speciesPersisted;
 
     private Optional<BlockPos> hangingPosition = Optional.empty();
@@ -168,6 +165,10 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     @Override
     public Race getSpecies() {
+        if (UItems.ALICORN_AMULET.isApplicable(entity)) {
+            return Race.ALICORN;
+        }
+
         return getSpellSlot()
                 .get(SpellPredicate.IS_MIMIC, true)
                 .map(AbstractDisguiseSpell::getDisguise)
@@ -184,7 +185,6 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     @Override
     public void setSpecies(Race race) {
         race = race.validate(entity);
-        speciesSet = true;
         ticksInSun = 0;
         entity.getDataTracker().set(RACE, Race.REGISTRY.getId(race).toString());
 
@@ -297,19 +297,6 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     @Override
     public boolean beforeUpdate() {
-
-        if (isClientPlayer() && !speciesSet) {
-            Race race = UnicopiaClient.getPreferredRace();
-
-            if (race != clientPreferredRace) {
-                clientPreferredRace = race;
-
-                if (race != getActualSpecies()) {
-                    Channel.CLIENT_REQUEST_SPECIES_CHANGE.send(new MsgRequestSpeciesChange(race));
-                }
-            }
-        }
-
         if (isClient()) {
             if (entity.hasVehicle() && entity.isSneaking()) {
 
@@ -596,7 +583,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     @Override
     public void copyFrom(Pony oldPlayer) {
-        speciesPersisted = oldPlayer.speciesPersisted;
+        speciesPersisted = true;
         if (!oldPlayer.getEntity().isRemoved()) {
             oldPlayer.getSpellSlot().stream(true).forEach(getSpellSlot()::put);
         } else {

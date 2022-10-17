@@ -7,7 +7,6 @@ import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgRequestSpeciesChange;
 
@@ -46,33 +45,34 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
         block = addDrawable(new TextBlock(left, top += 7, pageWidth));
         block.getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.welcome.choice"));
         top += block.getBounds().height;
-
-        Race preference = UnicopiaClient.getPreferredRace();
-
         top += 30;
 
-        final int itemWidth = 70;
+        final int itemWidth = 70 + 10;
 
         List<Race> options = Race.REGISTRY.stream().filter(race -> !race.isDefault() && !race.isOp()).toList();
 
-        int totalWidth = options.size() * (itemWidth + 10) - 10;
+        int columns = Math.min(width / itemWidth, options.size());
 
-        int x = (width - totalWidth) / 2;
+        int x = (width - (columns * itemWidth)) / 2;
+        int y = top;
+
+        int column = 0;
+        int row = 0;
 
         for (Race race : options) {
-            addOption(race, x, top);
-            x += itemWidth + 10;
+            addOption(race, x + (column * itemWidth), y + (row * itemWidth));
+            column++;
+            if (column >= columns) {
+                column = 0;
+                row++;
+            }
         }
 
         top = height - 20;
-
-        if (!preference.isDefault()) {
-            addDrawable(new Label(width / 2, top).setCentered()).getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.preference", preference.getDisplayName().copy().formatted(Formatting.YELLOW)));
-        }
     }
 
-    private void addOption(Race race, int x, int top) {
-        addDrawableChild(new TribeButton(x, top, width, race)).onClick(b -> {
+    private void addOption(Race race, int x, int y) {
+        addDrawableChild(new TribeButton(x, y, width, race)).onClick(b -> {
             finished = true;
             client.setScreen(new TribeConfirmationScreen(result -> {
                 finished = false;

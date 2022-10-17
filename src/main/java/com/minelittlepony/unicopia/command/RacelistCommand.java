@@ -2,8 +2,7 @@ package com.minelittlepony.unicopia.command;
 
 import java.util.function.Function;
 
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.*;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
@@ -24,7 +23,7 @@ class RacelistCommand {
         builder.then(CommandManager.literal("allow")
                 .then(CommandManager.argument("race", raceArgument)
                 .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), Race.fromArgument(context, "race"), "allowed", race -> {
-                    boolean result = Unicopia.getConfig().speciesWhiteList.get().add(race);
+                    boolean result = Unicopia.getConfig().speciesWhiteList.get().add(race.getId().toString());
 
                     Unicopia.getConfig().save();
 
@@ -34,7 +33,7 @@ class RacelistCommand {
         builder.then(CommandManager.literal("disallow")
                 .then(CommandManager.argument("race", raceArgument)
                 .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), Race.fromArgument(context, "race"), "disallowed", race -> {
-                    boolean result = Unicopia.getConfig().speciesWhiteList.get().remove(race);
+                    boolean result = Unicopia.getConfig().speciesWhiteList.get().remove(race.getId().toString());
 
                     Unicopia.getConfig().save();
 

@@ -22,7 +22,9 @@ public class WorldTribeManager extends PersistentState {
     }
 
     public Race setDefaultRace(Race race) {
-        return defaultRace = race;
+        defaultRace = race;
+        markDirty();
+        return defaultRace;
     }
 
     @Override
