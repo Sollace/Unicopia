@@ -90,26 +90,26 @@
   "music_disc.crusade": {
     "category": "blocks",
     "sounds": [
-      { "name": "unicopia:record/crusade", "stream": true}
+      { "name": "unicopia:record/crusade", "stream": true, "attenuation_distance": 17 }
     ]
   },
   "music_disc.popular": {
     "category": "blocks",
     "sounds": [
-      { "name": "unicopia:record/popular", "stream": true}
+      { "name": "unicopia:record/popular", "stream": true, "attenuation_distance": 9 }
     ]
   },
   "music_disc.pet": {
     "category": "blocks",
     "stream": true,
     "sounds": [
-      { "name": "unicopia:record/pet", "stream": true}
+      { "name": "unicopia:record/pet", "stream": true, "attenuation_distance": 11 }
     ]
   },
   "music_disc.funk": {
     "category": "blocks",
     "sounds": [
-      { "name": "unicopia:record/funk", "stream": true, "attenuation_distance": 21120}
+      { "name": "unicopia:record/funk", "stream": true, "attenuation_distance": 30 }
     ]
   },
   "entity.player.changeling.transform": {
