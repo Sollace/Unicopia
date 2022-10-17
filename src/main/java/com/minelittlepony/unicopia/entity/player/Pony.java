@@ -298,11 +298,6 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     @Override
     public boolean beforeUpdate() {
 
-        if (!speciesSet && getReferenceWorld() instanceof ServerWorld) {
-            setSpecies(WorldTribeManager.forWorld((ServerWorld)getReferenceWorld()).getDefaultRace());
-            setDirty();
-        }
-
         if (isClientPlayer() && !speciesSet) {
             Race race = UnicopiaClient.getPreferredRace();
 

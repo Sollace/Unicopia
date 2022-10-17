@@ -9,7 +9,7 @@ import net.minecraft.world.dimension.DimensionTypes;
 
 public class WorldTribeManager extends PersistentState {
 
-    private Race defaultRace = Unicopia.getConfig().preferredRace.get();
+    private Race defaultRace = Race.HUMAN;
 
     public WorldTribeManager() {}
 
