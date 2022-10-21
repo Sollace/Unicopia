@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -8,6 +10,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.util.InventoryUtil;
+import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -66,17 +70,44 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
 
     @Override
     public int getPriority() {
-        return 0;
+        return requiredItems.isEmpty() ? 0 : -1;
     }
 
     @Override
     public boolean matches(SpellbookInventory inventory, World world) {
-        return material.test(inventory.getItemToModify()) && requiredTraits.test(inventory.getTraits());
+
+        if (!material.test(inventory.getItemToModify())) {
+            return false;
+        }
+
+        if (requiredItems.isEmpty()) {
+            return requiredTraits.test(inventory.getTraits());
+        }
+
+        var outstandingRequirements = new ArrayList<>(requiredItems);
+        var ingredients = InventoryUtil.slots(inventory)
+                .filter(slot -> !inventory.getStack(slot).isEmpty())
+                .map(slot -> Pair.of(slot, inventory.getStack(slot)))
+                .collect(Collectors.toList());
+
+        outstandingRequirements.removeIf(requirement -> {
+            var found = ingredients.stream().filter(pair -> requirement.test(pair.getSecond())).findAny();
+            found.ifPresent(ingredients::remove);
+            return found.isPresent();
+        });
+
+        if (!outstandingRequirements.isEmpty()) {
+            return false;
+        }
+
+        return requiredTraits.test(SpellTraits.union(
+            ingredients.stream().map(pair -> SpellTraits.of(pair.getSecond()).multiply(pair.getFirst())).toArray(SpellTraits[]::new)
+        ));
     }
 
     @Override
     public ItemStack craft(SpellbookInventory inventory) {
-        return output.copy();
+        return getOutput().copy();
     }
 
     @Override

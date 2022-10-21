@@ -102,17 +102,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             int left = x + column * colWidth + 3 + (addLabels && row > 0 ? colWidth : 0);
             int top = y + row * rowHeight + 3;
 
-            var button = container.addButton(new IngredientButton(left, top, colWidth, rowHeight, entry, !addLabels || ii == 0 ? "" : "+", false));
-
-            if (entry instanceof Traits traits) {
-                final Trait trait = traits.trait;
-                button.onClick(sender -> {
-                    if (MinecraftClient.getInstance().currentScreen instanceof SpellbookScreen spellbook) {
-                        spellbook.getState().setCurrentPageId(SpellbookChapterList.TRAIT_DEX_ID);
-                        spellbook.getTraitDex().pageTo(spellbook, trait);
-                    }
-                });
-            }
+            container.addButton(new IngredientButton(left, top, colWidth, rowHeight, entry, !addLabels || ii == 0 ? "" : "+", false)).onClick(sender -> entry.onClick());
 
             ii++;
         }
@@ -173,6 +163,8 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         void render(MatrixStack matrices, int mouseX, int mouseY, float tickDelta);
 
         Tooltip getTooltip();
+
+        void onClick();
     }
 
     class Stacks implements IngredientTree.Entry {
@@ -211,6 +203,11 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
                 }
                 return stacks[index].getTooltip(MinecraftClient.getInstance().player, TooltipContext.Default.NORMAL);
             };
+        }
+
+        @Override
+        public void onClick() {
+
         }
     }
 
@@ -275,6 +272,14 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         @Override
         public Tooltip getTooltip() {
             return Tooltip.of(ItemTraitsTooltipRenderer.isKnown(trait) ? trait.getTooltip() : trait.getObfuscatedTooltip(), 200);
+        }
+
+        @Override
+        public void onClick() {
+            if (MinecraftClient.getInstance().currentScreen instanceof SpellbookScreen spellbook) {
+                spellbook.getState().setCurrentPageId(SpellbookChapterList.TRAIT_DEX_ID);
+                spellbook.getTraitDex().pageTo(spellbook, trait);
+            }
         }
     }
 }
