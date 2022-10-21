@@ -1,11 +1,9 @@
 package com.minelittlepony.unicopia.client.gui.spellbook;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 
-import com.minelittlepony.common.client.gui.IViewRoot;
-import com.minelittlepony.common.client.gui.ScrollContainer;
+import com.minelittlepony.common.client.gui.*;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
@@ -20,6 +18,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -66,6 +65,21 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
             leftPage.scrollbar.scrollBy(leftPage.scrollbar.getVerticalScrollAmount());
             rightPage.scrollbar.scrollBy(rightPage.scrollbar.getVerticalScrollAmount());
         });
+    }
+
+    public void pageTo(SpellbookScreen screen, Trait trait) {
+        int page = Arrays.binarySearch(traits, trait);
+        if (page < 0) {
+            return;
+        }
+        page /= 2;
+        state = screen.getState().getState(SpellbookChapterList.TRAIT_DEX_ID);
+        state.setOffset(page);
+        leftPage.scrollbar.scrollBy(leftPage.scrollbar.getVerticalScrollAmount());
+        rightPage.scrollbar.scrollBy(rightPage.scrollbar.getVerticalScrollAmount());
+
+        GameGui.playSound(SoundEvents.ITEM_BOOK_PAGE_TURN);
+        screen.clearAndInit();
     }
 
     @Override

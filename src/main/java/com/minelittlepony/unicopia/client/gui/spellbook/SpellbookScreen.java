@@ -47,10 +47,11 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
 
     private final Chapter craftingChapter;
+    private final SpellbookTraitDexPageContent traitDex = new SpellbookTraitDexPageContent(this);
     private final SpellbookChapterList chapters = new SpellbookChapterList(this,
         craftingChapter = new Chapter(SpellbookChapterList.CRAFTING_ID, TabSide.LEFT, 0, 0, Optional.of(new SpellbookCraftingPageContent(this))),
         new Chapter(SpellbookChapterList.PROFILE_ID, TabSide.LEFT, 1, 0, Optional.of(new SpellbookProfilePageContent(this))),
-        new Chapter(SpellbookChapterList.TRAIT_DEX_ID, TabSide.LEFT, 3, 0, Optional.of(new SpellbookTraitDexPageContent(this)))
+        new Chapter(SpellbookChapterList.TRAIT_DEX_ID, TabSide.LEFT, 3, 0, Optional.of(traitDex))
     );
     private final SpellbookTabBar tabs = new SpellbookTabBar(this, chapters);
 
@@ -75,6 +76,10 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
     public SpellbookState getState() {
         return handler.getSpellbookState();
+    }
+
+    public SpellbookTraitDexPageContent getTraitDex() {
+        return traitDex;
     }
 
     public void addPageButtons(int buttonY, int prevX, int nextX, IntConsumer pageAction) {
@@ -223,6 +228,11 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
             return false;
         }) || super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    protected void clearAndInit() {
+        super.clearAndInit();
     }
 
     @Override
