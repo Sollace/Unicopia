@@ -10,6 +10,7 @@ import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.client.gui.*;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
 import com.minelittlepony.unicopia.container.*;
 import com.minelittlepony.unicopia.container.inventory.*;
@@ -182,7 +183,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
         RenderSystem.enableBlend();
 
         for (Slot slot : handler.slots) {
-            if (slot.isEnabled() && slot instanceof SpellbookSlot) {
+            if (slot.isEnabled() && slot instanceof SpellbookSlot p) {
                 drawTexture(matrices, slot.x - 8, slot.y - 8, 0, 0, 32, 32, 32, 32);
 
                 if (slot instanceof InputSlot) {
@@ -191,6 +192,13 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
                     drawTexture(matrices, slot.x, slot.y, 0, 0, 16, 16, 16, 16);
                     RenderSystem.setShaderColor(1, 1, 1, 1);
                     RenderSystem.setShaderTexture(0, SLOT);
+                }
+
+                if (!(p instanceof InventorySlot)) {
+                    float weight = p.getWeight();
+                    ItemTraitsTooltipRenderer.renderStackTraits(slot.getStack(), matrices, slot.x, slot.y, weight == 0 ? 1 : weight, delta, slot.id);
+                    RenderSystem.setShaderTexture(0, SLOT);
+                    RenderSystem.enableBlend();
                 }
             }
         }

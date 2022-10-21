@@ -15,7 +15,9 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.*;
+import net.minecraft.util.math.MathHelper;
 
 public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComponent {
 
@@ -76,28 +78,57 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
         return Text.empty();
     }
 
-    public static void renderTraitIcon(Trait trait, float value, MatrixStack matrices, int xx, int yy) {
+    public static void renderStackTraits(ItemStack stack, MatrixStack matrices, float x, float y, float weight, float delta, int seed) {
+        renderStackTraits(SpellTraits.of(stack), matrices, x, y, weight, delta, seed);
+    }
+
+    public static void renderStackTraits(SpellTraits traits, MatrixStack matrices, float x, float y, float weight, float delta, int seed) {
+        float time = MathHelper.cos((MinecraftClient.getInstance().player.age + delta + seed) / 2F) * 0.7F;
+
+        float angle = 0.7F + (time / 30F) % MathHelper.TAU;
+        float angleIncrement = MathHelper.TAU / traits.entries().size();
+        float r = 9 + 2 * MathHelper.sin(delta / 20F);
+
+        for (var entry : traits) {
+            if (isKnown(entry.getKey())) {
+                ItemTraitsTooltipRenderer.renderTraitIcon(entry.getKey(), entry.getValue() * weight, matrices,
+                        x + r * MathHelper.sin(angle),
+                        y + r * MathHelper.cos(angle)
+                );
+                angle += angleIncrement;
+            }
+        }
+    }
+
+    private static boolean isKnown(Trait trait) {
+        return MinecraftClient.getInstance().player == null
+            || Pony.of(MinecraftClient.getInstance().player).getDiscoveries().isKnown(trait);
+    }
+
+    public static void renderTraitIcon(Trait trait, float value, MatrixStack matrices, float xx, float yy) {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
 
         int size = 12;
 
-        if (MinecraftClient.getInstance().player != null) {
-            TraitDiscovery discoveries = Pony.of(MinecraftClient.getInstance().player).getDiscoveries();
-
-            if (!discoveries.isKnown(trait)) {
-                trait = Trait.values()[MinecraftClient.getInstance().player.getRandom().nextInt(Trait.all().size())];
-            }
+        if (!isKnown(trait)) {
+            trait = Trait.values()[MinecraftClient.getInstance().player.getRandom().nextInt(Trait.all().size())];
         }
 
         RenderSystem.setShaderTexture(0, trait.getSprite());
-        DrawableHelper.drawTexture(matrices, xx + 2, yy + 1, 0, 0, 0, size, size, size, size);
 
         matrices.push();
-        matrices.translate(xx + 9, yy + 3 + size / 2, itemRenderer.zOffset + 200.0F);
+        matrices.translate(xx, yy, itemRenderer.zOffset + 300.0F);
+
+        DrawableHelper.drawTexture(matrices, 2, 1, 0, 0, 0, size, size, size, size);
+
+        matrices.translate(9, 3 + size / 2, 0);
         matrices.scale(0.5F, 0.5F, 1);
+
+        String count = value > 99 ? "99+" : Math.round(value) == value ? (int)value + "" : ((Math.round(value * 10) / 10F) + "");
+
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        textRenderer.draw(value > 99 ? "99+" : Math.round(value) + "", 0, 0, 16777215, true, matrices.peek().getPositionMatrix(), immediate, false, 0, 15728880);
+        textRenderer.draw(count, 0, 0, 16777215, true, matrices.peek().getPositionMatrix(), immediate, false, 0, 15728880);
         immediate.draw();
         matrices.pop();
     }
