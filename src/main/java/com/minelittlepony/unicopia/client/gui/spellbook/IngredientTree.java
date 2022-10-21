@@ -102,7 +102,18 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             int left = x + column * colWidth + 3 + (addLabels && row > 0 ? colWidth : 0);
             int top = y + row * rowHeight + 3;
 
-            container.addButton(new IngredientButton(left, top, colWidth, rowHeight, entry, !addLabels || ii == 0 ? "" : "+", false));
+            var button = container.addButton(new IngredientButton(left, top, colWidth, rowHeight, entry, !addLabels || ii == 0 ? "" : "+", false));
+
+            if (entry instanceof Traits traits) {
+                final Trait trait = traits.trait;
+                button.onClick(sender -> {
+                    if (MinecraftClient.getInstance().currentScreen instanceof SpellbookScreen spellbook) {
+                        spellbook.getState().setCurrentPageId(SpellbookChapterList.TRAIT_DEX_ID);
+                        spellbook.getTraitDex().pageTo(spellbook, trait);
+                    }
+                });
+            }
+
             ii++;
         }
         result.ifPresent(result -> {
@@ -263,7 +274,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
 
         @Override
         public Tooltip getTooltip() {
-            return trait.getTooltip();
+            return Tooltip.of(ItemTraitsTooltipRenderer.isKnown(trait) ? trait.getTooltip() : trait.getObfuscatedTooltip(), 200);
         }
     }
 }

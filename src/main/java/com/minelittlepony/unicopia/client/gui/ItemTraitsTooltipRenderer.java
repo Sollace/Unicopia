@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -17,9 +18,11 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.*;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComponent {
+    private static final Identifier UNKNOWN = Unicopia.id("textures/gui/trait/unknown.png");
 
     private final SpellTraits traits;
 
@@ -100,7 +103,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
         }
     }
 
-    private static boolean isKnown(Trait trait) {
+    public static boolean isKnown(Trait trait) {
         return MinecraftClient.getInstance().player == null
             || Pony.of(MinecraftClient.getInstance().player).getDiscoveries().isKnown(trait);
     }
@@ -111,11 +114,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
 
         int size = 12;
 
-        if (!isKnown(trait)) {
-            trait = Trait.values()[MinecraftClient.getInstance().player.getRandom().nextInt(Trait.all().size())];
-        }
-
-        RenderSystem.setShaderTexture(0, trait.getSprite());
+        RenderSystem.setShaderTexture(0, isKnown(trait) ? trait.getSprite() : UNKNOWN);
 
         matrices.push();
         matrices.translate(xx, yy, itemRenderer.zOffset + 300.0F);

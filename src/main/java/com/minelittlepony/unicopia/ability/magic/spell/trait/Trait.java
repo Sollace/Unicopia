@@ -8,7 +8,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.minelittlepony.common.client.gui.Tooltip;
 import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.item.ItemStack;
@@ -65,10 +64,31 @@ public enum Trait {
     private final Identifier sprite;
     private final TraitGroup group;
 
+    private final Text tooltip;
+    private final Text obfuscatedTooltip;
+
     Trait(TraitGroup group) {
         this.id = Unicopia.id(name().toLowerCase());
         this.sprite = Unicopia.id("textures/gui/trait/" + name().toLowerCase() + ".png");
         this.group = group;
+
+        Formatting corruptionColor = getGroup().getCorruption() < -0.01F
+                ? Formatting.GREEN
+                : getGroup().getCorruption() > 0.25F
+                    ? Formatting.RED
+                    : Formatting.WHITE;
+
+        MutableText tooltipText = Text.translatable("gui.unicopia.trait.label",
+                            Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".name")
+                        ).formatted(Formatting.YELLOW)
+                        .append(Text.translatable("gui.unicopia.trait.group", getGroup().name().toLowerCase()).formatted(Formatting.ITALIC, Formatting.GRAY))
+                        .append(Text.literal("\n\n").formatted(Formatting.WHITE)
+                        .append(Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".description").formatted(Formatting.GRAY))
+                        .append("\n")
+                        .append(Text.translatable("gui.unicopia.trait.corruption", ItemStack.MODIFIER_FORMAT.format(getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor)));
+        this.tooltip = tooltipText;
+        this.obfuscatedTooltip = tooltipText.copy().formatted(Formatting.OBFUSCATED);
+
     }
 
     public Identifier getId() {
@@ -83,22 +103,12 @@ public enum Trait {
         return sprite;
     }
 
-    public Tooltip getTooltip() {
-        Formatting corruptionColor = getGroup().getCorruption() < -0.01F
-                ? Formatting.GREEN
-                : getGroup().getCorruption() > 0.25F
-                    ? Formatting.RED
-                    : Formatting.WHITE;
+    public Text getTooltip() {
+        return tooltip;
+    }
 
-        return Tooltip.of(
-                Text.translatable("gui.unicopia.trait.label",
-                        Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".name")
-                ).formatted(Formatting.YELLOW)
-                .append(Text.translatable("gui.unicopia.trait.group", getGroup().name().toLowerCase()).formatted(Formatting.ITALIC, Formatting.GRAY))
-                .append(Text.literal("\n\n").formatted(Formatting.WHITE)
-                .append(Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".description").formatted(Formatting.GRAY))
-                .append("\n")
-                .append(Text.translatable("gui.unicopia.trait.corruption", ItemStack.MODIFIER_FORMAT.format(getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor))), 200);
+    public Text getObfuscatedTooltip() {
+        return obfuscatedTooltip;
     }
 
     public static Collection<Trait> all() {
