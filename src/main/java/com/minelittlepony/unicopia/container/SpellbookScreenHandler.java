@@ -70,9 +70,9 @@ public class SpellbookScreenHandler extends ScreenHandler {
         inventory = inv;
         this.context = context;
 
-        List<int[]> grid = new ArrayList<>();
-        List<int[]> gemPos = new ArrayList<>();
-        SpellbookCraftingGrid.createGrid(grid, gemPos);
+        List<HexagonalCraftingGrid.Slot> grid = new ArrayList<>();
+        List<HexagonalCraftingGrid.Slot> gemPos = new ArrayList<>();
+        HexagonalCraftingGrid.create(34, 65, 3, grid, gemPos);
 
         MAX_INGREDIENTS = grid.size();
         GEM_SLOT_INDEX = MAX_INGREDIENTS;

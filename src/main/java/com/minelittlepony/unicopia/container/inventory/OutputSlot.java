@@ -19,14 +19,14 @@ public class OutputSlot extends CraftingResultSlot implements SpellbookSlot {
     private final PlayerEntity player;
     private final SpellbookInventory input;
 
-    private final int ring;
+    private final float weight;
 
-    public OutputSlot(SpellbookScreenHandler spellbookScreenHandler, PlayerEntity player, SpellbookInventory input, Inventory inventory, int index, int[] params) {
-        super(player, input, inventory, index, params[0], params[1]);
+    public OutputSlot(SpellbookScreenHandler spellbookScreenHandler, PlayerEntity player, SpellbookInventory input, Inventory inventory, int index, HexagonalCraftingGrid.Slot params) {
+        super(player, input, inventory, index, params.left(), params.top());
         handler = spellbookScreenHandler;
         this.player = player;
         this.input = input;
-        this.ring = params[2];
+        this.weight = params.weight();
     }
 
     @Override
@@ -40,8 +40,8 @@ public class OutputSlot extends CraftingResultSlot implements SpellbookSlot {
     }
 
     @Override
-    public int getRing() {
-        return ring;
+    public float getWeight() {
+        return weight;
     }
 
     @Override

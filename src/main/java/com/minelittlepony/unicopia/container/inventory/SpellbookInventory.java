@@ -29,24 +29,15 @@ public class SpellbookInventory extends CraftingInventory {
         return false;
     }
 
-    public int getRing(int slot) {
+    public float getFactor(int slot) {
         Slot s = handler.slots.get(slot);
-        return s instanceof SpellbookSlot ? ((SpellbookSlot)s).getRing() : 0;
+        return s instanceof SpellbookSlot ? ((SpellbookSlot)s).getWeight() : 0;
     }
 
     public SpellTraits getTraits() {
         return SpellTraits.union(InventoryUtil.slots(this)
-                .map(slot -> SpellTraits.of(getStack(slot)).multiply(getRingFactor(getRing(slot))))
+                .map(slot -> SpellTraits.of(getStack(slot)).multiply(getFactor(slot)))
                 .toArray(SpellTraits[]::new)
         );
-    }
-
-    public static float getRingFactor(int ring) {
-        switch (ring) {
-            case 1: return 1;
-            case 2: return 0.6F;
-            case 3: return 0.3F;
-            default: return 0;
-        }
     }
 }

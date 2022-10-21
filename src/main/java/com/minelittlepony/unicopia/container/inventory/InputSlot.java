@@ -7,12 +7,12 @@ import net.minecraft.screen.slot.Slot;
 
 public class InputSlot extends Slot implements SpellbookSlot {
     private final SpellbookScreenHandler handler;
-    private final int ring;
+    private final float weight;
 
-    public InputSlot(SpellbookScreenHandler handler, Inventory inventory, int index, int[] params) {
-        super(inventory, index, params[0], params[1]);
+    public InputSlot(SpellbookScreenHandler handler, Inventory inventory, int index, HexagonalCraftingGrid.Slot params) {
+        super(inventory, index, params.left(), params.top());
         this.handler = handler;
-        this.ring = params[2];
+        this.weight = params.weight();
     }
 
     @Override
@@ -21,8 +21,8 @@ public class InputSlot extends Slot implements SpellbookSlot {
     }
 
     @Override
-    public int getRing() {
-        return ring;
+    public float getWeight() {
+        return weight;
     }
 
     @Override
