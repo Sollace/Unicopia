@@ -18,7 +18,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.resource.SynchronousResourceReloader;
 
-@Mixin(GameRenderer.class)
+@Mixin(value = GameRenderer.class, priority = Integer.MAX_VALUE)
 abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceReloader {
 
     @Shadow
@@ -26,7 +26,10 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
 
     @ModifyConstant(
             method = "updateTargetedEntity",
-            constant = @Constant(doubleValue = 6)
+            constant = @Constant(doubleValue = 6),
+            require = 0
+            /* This injection is only here to fix reach distance in creative. If it fails, another mod is probably doing the same thing as us. */
+            // TODO: Find a better way of doing this
     )
     private double onUpdateTargetedEntity(double initial) {
         return Math.max(initial, client.interactionManager.getReachDistance());
