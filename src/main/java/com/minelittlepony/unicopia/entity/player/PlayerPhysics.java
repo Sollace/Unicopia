@@ -367,7 +367,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
     private void tickArtificialFlight(MutableVector velocity) {
         if (ticksInAir % 10 == 0 && !entity.world.isClient) {
-            ItemStack stack = entity.getEquippedStack(EquipmentSlot.CHEST);
+            ItemStack stack = AmuletItem.getForEntity(entity);
 
             int damageInterval = 20;
             int minDamage = 1;
