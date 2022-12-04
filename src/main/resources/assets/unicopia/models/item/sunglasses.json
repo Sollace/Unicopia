@@ -2,5 +2,12 @@
     "parent": "item/generated",
     "textures": {
         "layer0": "unicopia:item/sunglasses"
+    },
+    "display": {
+        "head": {
+            "rotation": [ 0, 180, 0 ],
+            "translation": [ 0, 13, 7],
+            "scale":[ 0, 1, 1]
+        }
     }
 }
