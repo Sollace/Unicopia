@@ -69,7 +69,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
 
     @Override
     public Race getPlayerPonyRace(PlayerEntity player) {
-        switch (MineLittlePony.getInstance().getManager().getPony(player).getRace(false)) {
+        switch (MineLittlePony.getInstance().getManager().getPony(player).getRace()) {
             case ALICORN:
                 return Race.ALICORN;
             case CHANGELING:
