@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.block.data.DragonBreathStore;
+import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
@@ -115,6 +116,11 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         if (landEvent != null && entity.isOnGround() && landedChanged()) {
             landEvent.run();
             landEvent = null;
+        }
+
+        if (entity.hasStatusEffect(UEffects.PARALYSIS) && entity.getVelocity().horizontalLengthSquared() > 0) {
+            entity.setVelocity(entity.getVelocity().multiply(0, 1, 0));
+            updateVelocity();
         }
 
         enchants.tick();
