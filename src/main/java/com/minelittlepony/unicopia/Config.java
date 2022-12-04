@@ -30,6 +30,10 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
             .addComment("Disables this mod's built in fix for making sea plants waterlogged")
             .addComment("Turn this ON if you're using another mod that does something similar of if you encounter copatibility issues with other mods.");
 
+    public final Setting<Boolean> disableButterflySpawning = value("compatibility", "disableButterflySpawning", false)
+            .addComment("Removes butterflies from spawning in your world")
+            .addComment("Turn this ON if you have another mod that adds butterflies.");
+
     public Config() {
         super(HEIRARCHICAL_JSON_ADAPTER, GamePaths.getConfigDirectory().resolve("unicopia.json"));
     }

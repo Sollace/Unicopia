@@ -62,18 +62,20 @@ public interface UEntities {
         FabricDefaultAttributeRegistry.register(TWITTERMITE, FairyEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(AIR_BALLOON, FlyingEntity.createMobAttributes());
 
-        final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()
-                .and(ctx -> ctx.getBiome().getPrecipitation() == Biome.Precipitation.RAIN);
+        if (!Unicopia.getConfig().disableButterflySpawning.get()) {
+            final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()
+                    .and(ctx -> ctx.getBiome().getPrecipitation() == Biome.Precipitation.RAIN);
 
-        BiomeModifications.addSpawn(butterflySpawnable.and(
-                    BiomeSelectors.tag(BiomeTags.IS_RIVER)
-                .or(BiomeSelectors.tag(BiomeTags.IS_FOREST))
-                .or(BiomeSelectors.tag(BiomeTags.IS_HILL))
-        ), SpawnGroup.AMBIENT, BUTTERFLY, 3, 3, 12);
-        BiomeModifications.addSpawn(butterflySpawnable.and(
-                    BiomeSelectors.tag(BiomeTags.IS_JUNGLE)
-                .or(BiomeSelectors.tag(BiomeTags.IS_MOUNTAIN))
-        ), SpawnGroup.AMBIENT, BUTTERFLY, 7, 5, 19);
+            BiomeModifications.addSpawn(butterflySpawnable.and(
+                        BiomeSelectors.tag(BiomeTags.IS_RIVER)
+                    .or(BiomeSelectors.tag(BiomeTags.IS_FOREST))
+                    .or(BiomeSelectors.tag(BiomeTags.IS_HILL))
+            ), SpawnGroup.AMBIENT, BUTTERFLY, 3, 3, 12);
+            BiomeModifications.addSpawn(butterflySpawnable.and(
+                        BiomeSelectors.tag(BiomeTags.IS_JUNGLE)
+                    .or(BiomeSelectors.tag(BiomeTags.IS_MOUNTAIN))
+            ), SpawnGroup.AMBIENT, BUTTERFLY, 7, 5, 19);
+        }
 
         UTradeOffers.bootstrap();
         EntityBehaviour.bootstrap();
