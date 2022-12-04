@@ -11,8 +11,8 @@ public final class Debug {
 
     static {
         Map<String, String> args = parseArguments(FabricLoader.getInstance().getLaunchArguments(true));
-        DEBUG_SPELLBOOK_CHAPTERS = "true".equalsIgnoreCase(args.getOrDefault("unicopia.debug.spellbookChapters", "false"));
-        DEBUG_COMMANDS = "true".equalsIgnoreCase(args.getOrDefault("unicopia.debug.commands", "false"));
+        DEBUG_SPELLBOOK_CHAPTERS = "true".equalsIgnoreCase(args.getOrDefault("--unicopia.debug.spellbookChapters", "false"));
+        DEBUG_COMMANDS = "true".equalsIgnoreCase(args.getOrDefault("--unicopia.debug.commands", "false"));
     }
 
     static Map<String, String> parseArguments(String[] args) {
