@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.item.toxin.UFoodComponents;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
@@ -150,6 +151,30 @@ public interface UItems {
         FuelRegistry.INSTANCE.add(DRAGON_BREATH_SCROLL, 20000);
         FuelRegistry.INSTANCE.add(BUTTERFLY, 2);
         FuelRegistry.INSTANCE.add(SPELLBOOK, 9000);
+
+
+        CompostingChanceRegistry.INSTANCE.add(GREEN_APPLE, 0.65F);
+        CompostingChanceRegistry.INSTANCE.add(SWEET_APPLE, 0.65F);
+        CompostingChanceRegistry.INSTANCE.add(SOUR_APPLE, 0.65F);
+        CompostingChanceRegistry.INSTANCE.add(ZAP_APPLE, 1F);
+        CompostingChanceRegistry.INSTANCE.add(ZAP_BULB, 1F);
+        CompostingChanceRegistry.INSTANCE.add(ROTTEN_APPLE, 0.8F);
+        CompostingChanceRegistry.INSTANCE.add(OAT_SEEDS, 0.3F);
+        CompostingChanceRegistry.INSTANCE.add(OATS, 0.1F);
+        CompostingChanceRegistry.INSTANCE.add(IMPORTED_OATS, 0.5F);
+        CompostingChanceRegistry.INSTANCE.add(DAFFODIL_DAISY_SANDWICH, 0.5F);
+        CompostingChanceRegistry.INSTANCE.add(HAY_BURGER, 0.5F);
+        CompostingChanceRegistry.INSTANCE.add(HAY_FRIES, 0.5F);
+        CompostingChanceRegistry.INSTANCE.add(WHEAT_WORMS, 0.8F);
+        CompostingChanceRegistry.INSTANCE.add(MUFFIN, 0.3F);
+        CompostingChanceRegistry.INSTANCE.add(PINECONE, 0.3F);
+        CompostingChanceRegistry.INSTANCE.add(ACORN, 0.3F);
+        CompostingChanceRegistry.INSTANCE.add(GREEN_APPLE_SEEDS, 0.3F);
+        CompostingChanceRegistry.INSTANCE.add(SWEET_APPLE_SEEDS, 0.3F);
+        CompostingChanceRegistry.INSTANCE.add(SOUR_APPLE_SEEDS, 0.3F);
+        CompostingChanceRegistry.INSTANCE.add(APPLE_PIE, 0.5F);
+        CompostingChanceRegistry.INSTANCE.add(APPLE_PIE_SLICE, 0.1F);
+        CompostingChanceRegistry.INSTANCE.add(BUTTERFLY, 0.1F);
 
         UEnchantments.bootstrap();
         URecipes.bootstrap();
