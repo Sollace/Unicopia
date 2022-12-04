@@ -21,6 +21,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldEvents;
 
@@ -51,8 +52,10 @@ public class FilledJarItem extends JarItem implements ChameleonItem {
     }
 
     @Override
-    public void onImpact(MagicProjectileEntity projectile, Entity entity) {
-        super.onImpact(projectile, entity);
+    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
+        super.onImpact(projectile, hit);
+
+        Entity entity = hit.getEntity();
 
         if (!entity.isAttackable() || !(projectile instanceof FlyingItemEntity)) {
             return;
@@ -121,7 +124,7 @@ public class FilledJarItem extends JarItem implements ChameleonItem {
     }
 
     @Override
-    protected void onImpact(MagicProjectileEntity projectile) {
+    public void onImpact(MagicProjectileEntity projectile) {
         ItemStack stack = getAppearanceStack(projectile.getStack());
         stack.damage(1, projectile.world.random, null);
         projectile.dropStack(stack);

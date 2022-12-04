@@ -9,10 +9,10 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.entity.Entity;
@@ -21,12 +21,13 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Util;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.world.World;
 
 /**
  * Transforms whatever entity it strikes into a random other entity.
  */
-public class TransformationSpell extends AbstractSpell implements ProjectileSpell {
+public class TransformationSpell extends AbstractSpell implements ProjectileDelegate.EntityHitListener {
     protected TransformationSpell(CustomisedSpellType<?> type) {
         super(type);
     }
@@ -37,10 +38,11 @@ public class TransformationSpell extends AbstractSpell implements ProjectileSpel
     }
 
     @Override
-    public void onImpact(MagicProjectileEntity projectile, Entity entity) {
+    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         if (projectile.world.isClient) {
             return;
         }
+        Entity entity = hit.getEntity();
         pickType(entity.getType(), entity.world).flatMap(type -> convert(entity, type)).ifPresentOrElse(e -> {
             entity.playSound(USounds.SPELL_TRANSFORM_TRANSMUTE_ENTITY, 1, 1);
         }, () -> {

@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -18,7 +17,6 @@ import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -29,6 +27,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.explosion.Explosion.DestructionType;
@@ -40,7 +40,7 @@ import net.minecraft.world.explosion.Explosion.DestructionType;
  *  - Garbage bin
  *  - Link with a teleportation spell to create a wormhole
  */
-public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell {
+public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelegate.BlockHitListener {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
             .with(Trait.CHAOS, 5)
             .with(Trait.KNOWLEDGE, 1)
@@ -58,8 +58,9 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell 
     }
 
     @Override
-    public void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
+    public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
         if (!projectile.isClient()) {
+            BlockPos pos = hit.getBlockPos();
             projectile.world.createExplosion(projectile, pos.getX(), pos.getY(), pos.getZ(), 3, DestructionType.NONE);
             toPlaceable().tick(projectile, Situation.BODY);
         }
@@ -212,8 +213,8 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileSpell 
 
             if (target instanceof MagicProjectileEntity projectile) {
                 Item item = projectile.getStack().getItem();
-                if (item instanceof ProjectileDelegate p && master != null) {
-                    p.onImpact(projectile, master);
+                if (item instanceof ProjectileDelegate.EntityHitListener p && master != null) {
+                    p.onImpact(projectile, new EntityHitResult(master));
                 }
             } else if (target instanceof PersistentProjectileEntity) {
                 if (master != null) {

@@ -6,12 +6,12 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -29,6 +29,8 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -37,7 +39,7 @@ import net.minecraft.world.explosion.Explosion.DestructionType;
 /**
  * Simple fire spell that triggers an effect when used on a block.
  */
-public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpell {
+public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDelegate.BlockHitListener, ProjectileDelegate.EntityHitListener {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
             .with(Trait.FIRE, 15)
             .build();
@@ -47,16 +49,18 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileSpel
     }
 
     @Override
-    public void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
+    public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
         if (!projectile.isClient()) {
-            projectile.getReferenceWorld().createExplosion(projectile.getEntity(), pos.getX(), pos.getY(), pos.getZ(), 2, DestructionType.DESTROY);
+            Vec3d pos = hit.getPos();
+            projectile.getReferenceWorld().createExplosion(projectile.getOwner(), pos.getX(), pos.getY(), pos.getZ(), 2, DestructionType.DESTROY);
         }
     }
 
     @Override
-    public void onImpact(MagicProjectileEntity projectile, Entity entity) {
+    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         if (!projectile.isClient()) {
-            projectile.getReferenceWorld().createExplosion(entity, entity.getX(), entity.getY(), entity.getZ(), 2, DestructionType.DESTROY);
+            Entity entity = hit.getEntity();
+            projectile.getReferenceWorld().createExplosion(projectile.getOwner(), entity.getX(), entity.getY(), entity.getZ(), 2, DestructionType.DESTROY);
         }
     }
 

@@ -3,18 +3,21 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.util.hit.EntityHitResult;
 
-public class FireBoltSpell extends AbstractSpell implements ProjectileSpell, HomingSpell {
+public class FireBoltSpell extends AbstractSpell implements HomingSpell,
+        ProjectileDelegate.ConfigurationListener, ProjectileDelegate.EntityHitListener {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
             .with(Trait.FOCUS, 10)
             .with(Trait.CHAOS, 1)
@@ -35,8 +38,8 @@ public class FireBoltSpell extends AbstractSpell implements ProjectileSpell, Hom
     }
 
     @Override
-    public void onImpact(MagicProjectileEntity projectile, Entity entity) {
-        entity.setOnFireFor(90);
+    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
+        hit.getEntity().setOnFireFor(90);
     }
 
     @Override

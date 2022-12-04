@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.item;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
-import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.SoundEmitter;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,7 +16,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-abstract class ProjectileItem extends Item implements ProjectileDelegate {
+abstract class ProjectileItem extends Item {
 
     private final float projectileDamage;
 

@@ -11,7 +11,6 @@ import net.minecraft.entity.Entity;
 public interface SpellPredicate<T extends Spell> extends Predicate<Spell> {
     SpellPredicate<IllusionarySpell> CAN_SUPPRESS = s -> s instanceof IllusionarySpell;
     SpellPredicate<PlaceableSpell> IS_PLACED = s -> s instanceof PlaceableSpell;
-    SpellPredicate<ProjectileSpell> HAS_PROJECTILE_EVENTS = s -> s instanceof ProjectileSpell;
     SpellPredicate<AbstractDisguiseSpell> IS_DISGUISE = s -> s instanceof AbstractDisguiseSpell;
     SpellPredicate<MimicSpell> IS_MIMIC = s -> s instanceof MimicSpell;
     SpellPredicate<ShieldSpell> IS_SHIELD_LIKE = spell -> spell instanceof ShieldSpell;

@@ -13,14 +13,12 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 
-public abstract class AbstractDelegatingSpell implements ProjectileSpell {
-    private static final Function<Object, ProjectileSpell> PROJECTILE_SPELL = a -> a instanceof ProjectileSpell p ? p : null;
-    private static final Function<Object, ProjectileDelegate> PROJECTILE_DELEGATE = a -> a instanceof ProjectileDelegate p ? p : null;
+public abstract class AbstractDelegatingSpell implements Spell,
+    ProjectileDelegate.ConfigurationListener, ProjectileDelegate.BlockHitListener, ProjectileDelegate.EntityHitListener {
 
     private boolean isDirty;
 
@@ -36,12 +34,12 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
 
     @Override
     public boolean equalsOrContains(UUID id) {
-        return ProjectileSpell.super.equalsOrContains(id) || getDelegates().stream().anyMatch(s -> s.equalsOrContains(id));
+        return Spell.super.equalsOrContains(id) || getDelegates().stream().anyMatch(s -> s.equalsOrContains(id));
     }
 
     @Override
     public Stream<Spell> findMatches(Predicate<Spell> predicate) {
-        return Stream.concat(ProjectileSpell.super.findMatches(predicate), getDelegates().stream().flatMap(s -> s.findMatches(predicate)));
+        return Stream.concat(Spell.super.findMatches(predicate), getDelegates().stream().flatMap(s -> s.findMatches(predicate)));
     }
 
     @Override
@@ -95,18 +93,18 @@ public abstract class AbstractDelegatingSpell implements ProjectileSpell {
     }
 
     @Override
-    public void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
-        getDelegates(PROJECTILE_DELEGATE).forEach(a -> a.onImpact(projectile, pos, state));
+    public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
+        getDelegates(BlockHitListener.PREDICATE).forEach(a -> a.onImpact(projectile, hit));
     }
 
     @Override
-    public void onImpact(MagicProjectileEntity projectile, Entity entity) {
-        getDelegates(PROJECTILE_DELEGATE).forEach(a -> a.onImpact(projectile, entity));
+    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
+        getDelegates(EntityHitListener.PREDICATE).forEach(a -> a.onImpact(projectile, hit));
     }
 
     @Override
     public void configureProjectile(MagicProjectileEntity projectile, Caster<?> caster) {
-        getDelegates(PROJECTILE_SPELL).forEach(a -> a.configureProjectile(projectile, caster));
+        getDelegates(ConfigurationListener.PREDICATE).forEach(a -> a.configureProjectile(projectile, caster));
     }
 
     @Override

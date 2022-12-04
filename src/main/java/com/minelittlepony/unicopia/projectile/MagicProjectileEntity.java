@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia.projectile;
 
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +12,6 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
-import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
@@ -273,7 +274,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
     protected void onBlockHit(BlockHitResult hit) {
         super.onBlockHit(hit);
 
-        forEachDelegates(effect -> effect.onImpact(this, hit.getBlockPos(), world.getBlockState(hit.getBlockPos())));
+        forEachDelegates(effect -> effect.onImpact(this, hit), ProjectileDelegate.BlockHitListener.PREDICATE);
     }
 
     @Override
@@ -291,20 +292,16 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Li
                 entity.damage(DamageSource.thrownProjectile(this, getOwner()), getThrowDamage());
             }
 
-            forEachDelegates(effect -> effect.onImpact(this, entity));
+            forEachDelegates(effect -> effect.onImpact(this, hit), ProjectileDelegate.EntityHitListener.PREDICATE);
         }
     }
 
-    protected void forEachDelegates(Consumer<ProjectileDelegate> consumer) {
+    protected <T extends ProjectileDelegate> void forEachDelegates(Consumer<T> consumer, Function<Object, T> predicate) {
         getSpellSlot().forEach(spell -> {
-            if (SpellPredicate.HAS_PROJECTILE_EVENTS.test(spell)) {
-                consumer.accept((ProjectileDelegate)spell);
-            }
+            Optional.ofNullable(predicate.apply(spell)).ifPresent(consumer);
             return Operation.SKIP;
         }, world.isClient);
-        if (getItem().getItem() instanceof ProjectileDelegate) {
-            consumer.accept(((ProjectileDelegate)getItem().getItem()));
-        }
+        Optional.ofNullable(predicate.apply(getItem().getItem())).ifPresent(consumer);
     }
 
     @Override

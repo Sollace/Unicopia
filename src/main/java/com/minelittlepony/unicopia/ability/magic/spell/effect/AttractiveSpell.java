@@ -9,16 +9,18 @@ import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class AttractiveSpell extends ShieldSpell implements ProjectileSpell, HomingSpell, TimedSpell {
+public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSpell, ProjectileDelegate.EntityHitListener {
 
     private final EntityReference<Entity> target = new EntityReference<>();
 
@@ -140,10 +142,10 @@ public class AttractiveSpell extends ShieldSpell implements ProjectileSpell, Hom
     }
 
     @Override
-    public void onImpact(MagicProjectileEntity projectile, Entity entity) {
+    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         if (!isDead() && getTraits().get(Trait.CHAOS) > 0) {
             setDead();
-            Caster.of(entity).ifPresent(getTypeAndTraits()::apply);
+            Caster.of(hit.getEntity()).ifPresent(getTypeAndTraits()::apply);
         }
     }
 

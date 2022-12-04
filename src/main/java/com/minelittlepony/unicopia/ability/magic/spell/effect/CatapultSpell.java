@@ -5,18 +5,19 @@ import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.ProjectileSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.Trace;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -24,7 +25,7 @@ import net.minecraft.world.World;
 /**
  * Picks up and throws an entity or block.
  */
-public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
+public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.BlockHitListener, ProjectileDelegate.EntityHitListener {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
             .with(Trait.FOCUS, 50)
             .with(Trait.KNOWLEDGE, 1)
@@ -40,16 +41,16 @@ public class CatapultSpell extends AbstractSpell implements ProjectileSpell {
     }
 
     @Override
-    public void onImpact(MagicProjectileEntity projectile, BlockPos pos, BlockState state) {
-        if (!projectile.isClient() && projectile.canModifyAt(pos)) {
-            createBlockEntity(projectile.world, pos, e -> apply(projectile, e));
+    public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
+        if (!projectile.isClient() && projectile.canModifyAt(hit.getBlockPos())) {
+            createBlockEntity(projectile.world, hit.getBlockPos(), e -> apply(projectile, e));
         }
     }
 
     @Override
-    public void onImpact(MagicProjectileEntity projectile, Entity entity) {
+    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         if (!projectile.isClient()) {
-            apply(projectile, entity);
+            apply(projectile, hit.getEntity());
         }
     }
 
