@@ -1,7 +1,10 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 
+import net.minecraft.entity.ai.FuzzyPositions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.SpawnLocating;
 import net.minecraft.server.world.ServerWorld;
@@ -9,6 +12,24 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 
 public class SpawnLocator extends SpawnLocating {
+
+    public static BlockPos findSafeSpawnLocation(ServerWorld world, int x, int z) {
+        return SpawnLocating.findOverworldSpawn(world, x, z);
+    }
+
+    public static Optional<BlockPos> fuzz(ServerWorld world, BlockPos pos, int horizontal, int vertical) {
+
+        for (int attempt = 0; attempt < 6; attempt++) {
+            BlockPos target = FuzzyPositions.localFuzz(world.random, horizontal, vertical);
+            target = findSafeSpawnLocation(world, target.getX(), target.getZ());
+
+            if (target != null) {
+                return Optional.of(target);
+            }
+        }
+
+        return Optional.empty();
+    }
 
     public static void selectSpawnPosition(ServerWorld world, PlayerEntity entity) {
         BlockPos spawnPos = world.getSpawnPos();
@@ -30,7 +51,7 @@ public class SpawnLocator extends SpawnLocating {
             int x = tile % (spawnRadius * 2 + 1);
             int z = tile / (spawnRadius * 2 + 1);
 
-            BlockPos candidatePos = findOverworldSpawn(world,
+            BlockPos candidatePos = findSafeSpawnLocation(world,
                     spawnPos.getX() + x - spawnRadius,
                     spawnPos.getZ() + z - spawnRadius
             );
