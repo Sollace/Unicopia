@@ -344,6 +344,9 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         entity.setVelocity(Vec3d.ZERO);
         entity.setSneaking(false);
         entity.stopFallFlying();
+        getPhysics().cancelFlight(true);
+
+        setDirty();
     }
 
     public boolean canHangAt(BlockPos pos) {
