@@ -29,7 +29,7 @@ repositories {
     mavenLocal()
     maven {
         name = 'modrinth'
-		url = "https://api.modrinth.com/maven"
+	url = "https://api.modrinth.com/maven"
 	}
     maven {
         name = 'modmenu'
