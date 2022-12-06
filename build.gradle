@@ -32,6 +32,12 @@ repositories {
         url = 'https://maven.terraformersmc.com/releases'
     }
     maven {
+        url "https://maven.jamieswhiteshirt.com/libs-release"
+        content {
+            includeGroup "com.jamieswhiteshirt"
+        }
+    }
+    maven {
         name = 'minelp'
         url = 'https://repo.minelittlepony-mod.com/maven/snapshot'
     }
@@ -59,6 +65,9 @@ dependencies {
 
     modApi "com.minelittlepony:kirin:${project.kirin_version}"
     include "com.minelittlepony:kirin:${project.kirin_version}"
+
+    modApi "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_attributes_version}"
+    include "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_attributes_version}"
 
     modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
     // implementation 'org.jetbrains:intellij-fernflower:1.2.1.16'

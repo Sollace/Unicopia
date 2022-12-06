@@ -24,17 +24,6 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
     @Shadow
     private @Final MinecraftClient client;
 
-    @ModifyConstant(
-            method = "updateTargetedEntity",
-            constant = @Constant(doubleValue = 6),
-            require = 0
-            /* This injection is only here to fix reach distance in creative. If it fails, another mod is probably doing the same thing as us. */
-            // TODO: Find a better way of doing this
-    )
-    private double onUpdateTargetedEntity(double initial) {
-        return Math.max(initial, client.interactionManager.getReachDistance());
-    }
-
     @Inject(method = "getFov(Lnet/minecraft/client/render/Camera;FZ)D",
             at = @At("RETURN"),
             cancellable = true)

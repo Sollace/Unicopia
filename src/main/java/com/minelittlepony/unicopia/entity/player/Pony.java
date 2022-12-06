@@ -123,7 +123,6 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     }
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
-        builder.add(UEntityAttributes.EXTENDED_REACH_DISTANCE);
         builder.add(UEntityAttributes.EXTRA_MINING_SPEED);
         builder.add(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
     }
@@ -264,10 +263,6 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     @Override
     public PlayerPhysics getPhysics() {
         return gravity;
-    }
-
-    public float getExtendedReach() {
-        return (float)entity.getAttributeInstance(UEntityAttributes.EXTENDED_REACH_DISTANCE).getValue();
     }
 
     public float getBlockBreakingSpeed() {

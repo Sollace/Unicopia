@@ -27,6 +27,7 @@ public class PolearmItem extends SwordItem {
         ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
         builder.putAll(super.getAttributeModifiers(EquipmentSlot.MAINHAND));
         builder.put(UEntityAttributes.EXTENDED_REACH_DISTANCE, new EntityAttributeModifier(ATTACK_RANGE_MODIFIER_ID, "Weapon modifier", attackRange, EntityAttributeModifier.Operation.ADDITION));
+        builder.put(UEntityAttributes.EXTENDED_ATTACK_DISTANCE, new EntityAttributeModifier(ATTACK_RANGE_MODIFIER_ID, "Weapon modifier", attackRange, EntityAttributeModifier.Operation.ADDITION));
         attributeModifiers = builder.build();
     }
 
