@@ -30,7 +30,7 @@ repositories {
     maven {
         name = 'modrinth'
 	url = "https://api.modrinth.com/maven"
-	}
+    }
     maven {
         name = 'modmenu'
         url = 'https://maven.terraformersmc.com/releases'
