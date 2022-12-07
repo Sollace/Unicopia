@@ -73,9 +73,9 @@ dependencies {
     modApi "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_attributes_version}"
     include "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_attributes_version}"
 
-    modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
-    // implementation 'org.jetbrains:intellij-fernflower:1.2.1.16'
-    modCompileOnly "maven.modrinth:sodium:mc1.19.2-0.4.4"
+    modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+    modApi "maven.modrinth:sodium:mc1.19.2-0.4.4"
+    compileOnly "org.joml:joml:1.10.4"
 
     modCompileOnly "dev.emi:trinkets:3.4.0"
 }
