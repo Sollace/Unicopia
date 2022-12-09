@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.entity.AmuletSelectors;
 
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -18,7 +18,7 @@ public class IcarusWingsFeatureRenderer<E extends LivingEntity> extends WingsFea
 
     @Override
     protected boolean canRender(E entity) {
-        return !super.canRender(entity) && UItems.PEGASUS_AMULET.isApplicable(entity);
+        return !super.canRender(entity) && AmuletSelectors.PEGASUS_AMULET.test(entity);
     }
 
     @Override

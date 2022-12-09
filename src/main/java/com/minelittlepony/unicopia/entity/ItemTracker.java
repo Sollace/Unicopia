@@ -1,10 +1,12 @@
 package com.minelittlepony.unicopia.entity;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -19,6 +21,26 @@ public class ItemTracker implements NbtSerialisable {
     public static final long DAYS = 24 * HOURS;
 
     private final Map<Trackable, Long> items = new HashMap<>();
+
+    public static Predicate<LivingEntity> wearing(Trackable charm, Predicate<Long> range) {
+        return e -> Living.getOrEmpty(e)
+                    .map(Living::getArmour)
+                    .map(a -> a.getTicks(charm))
+                    .filter(range)
+                    .isPresent();
+    }
+
+    public static Predicate<Long> between(long minTime, long maxTime) {
+        return before(maxTime).and(after(minTime));
+    }
+
+    public static Predicate<Long> before(long maxTime) {
+        return ticks -> ticks <= maxTime;
+    }
+
+    public static Predicate<Long> after(long maxTime) {
+        return ticks -> ticks <= maxTime;
+    }
 
     public void update(Living<?> living, Stream<ItemStack> stacks) {
         final Set<Trackable> found = new HashSet<>();

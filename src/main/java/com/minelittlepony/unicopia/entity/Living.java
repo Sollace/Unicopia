@@ -273,8 +273,12 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         updateVelocity(entity);
     }
 
+    public static Optional<Living<?>> getOrEmpty(LivingEntity entity) {
+        return PonyContainer.of(entity).map(a -> a instanceof Living ? (Living<?>)a.get() : null);
+    }
+
     public static Living<?> living(Entity entity) {
-        return PonyContainer.of(entity).map(a -> a instanceof Living ? (Living<?>)a.get() : null).orElse(null);
+        return entity instanceof LivingEntity ? getOrEmpty((LivingEntity)entity).orElse(null) : null;
     }
 
     public static void updateVelocity(Entity entity) {

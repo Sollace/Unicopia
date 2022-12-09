@@ -164,7 +164,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     @Override
     public Race getSpecies() {
-        if (UItems.ALICORN_AMULET.isApplicable(entity)) {
+        if (AmuletSelectors.ALICORN_AMULET.test(entity)) {
             return Race.ALICORN;
         }
 
@@ -504,7 +504,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     public Optional<Text> trySleep(BlockPos pos) {
 
-        if (UItems.ALICORN_AMULET.isApplicable(entity)) {
+        if (AmuletSelectors.ALICORN_AMULET.test(entity)) {
             return Optional.of(Text.translatable("block.unicopia.bed.not_tired"));
         }
 
