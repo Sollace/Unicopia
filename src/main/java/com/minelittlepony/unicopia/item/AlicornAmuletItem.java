@@ -37,12 +37,17 @@ import net.minecraft.world.World;
 
 public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.Charm, ItemImpl.ClingyItem, ItemImpl.GroundTickCallback {
     private static final float EFFECT_UPDATE_FREQUENCY = 1000000;
+    private static final UUID EFFECT_UUID = UUID.fromString("c0a870f5-99ef-4716-a23e-f320ee834b26");
+    private static final Map<EntityAttribute, Float> EFFECT_SCALES = Map.of(
+            EntityAttributes.GENERIC_ATTACK_DAMAGE, 0.2F,
+            EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.05F,
+            EntityAttributes.GENERIC_ATTACK_SPEED, 0.2F,
+            EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 0.001F,
+            EntityAttributes.GENERIC_ARMOR, 0.01F
+    );
 
     public AlicornAmuletItem(FabricItemSettings settings) {
-        super(settings, 0, new AmuletItem.ModifiersBuilder()
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 100)
-                .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 20)
-            .build());
+        super(settings, 0, ImmutableMultimap.of());
     }
 
     @Override
@@ -123,6 +128,10 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
             pony.getMaster().takeKnockback(1, 1, 1);
             pony.updateVelocity();
         }
+
+        EFFECT_SCALES.keySet().forEach(attribute -> {
+            pony.getMaster().getAttributeInstance(attribute).tryRemoveModifier(EFFECT_UUID);
+        });
     }
 
     @Override
@@ -171,6 +180,21 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
 
         if (attachedTicks == 1) {
             world.playSound(null, player.getBlockPos(), USounds.ITEM_ALICORN_AMULET_CURSE, SoundCategory.PLAYERS, 3, 1);
+        }
+
+        // every 1 second, update modifiers
+        if (attachedTicks % EFFECT_UPDATE_FREQUENCY == 0) {
+            EFFECT_SCALES.entrySet().forEach(attribute -> {
+                EntityAttributeInstance instance = player.getAttributeInstance(attribute.getKey());
+                EntityAttributeModifier modifier = instance.getModifier(EFFECT_UUID);
+                float desiredValue = attribute.getValue() * seconds;
+                if (!MathHelper.approximatelyEquals(desiredValue, modifier.getValue())) {
+                    if (modifier != null) {
+                        instance.removeModifier(modifier);
+                    }
+                    instance.addTemporaryModifier(new EntityAttributeModifier(EFFECT_UUID, "Alicorn Amulet Modifier", attribute.getValue() * seconds, EntityAttributeModifier.Operation.ADDITION));
+                }
+            });
         }
     }
 
