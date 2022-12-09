@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia;
 
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
@@ -196,6 +197,16 @@ public final class Race implements Affine {
 
     public static Set<Race> allPermitted(PlayerEntity player) {
         return REGISTRY.stream().filter(r -> r.isPermitted(player)).collect(Collectors.toSet());
+    }
+
+    public record Composite (Race physical, Race pseudo) {
+        public boolean includes(Race race) {
+            return physical == race || pseudo == race;
+        }
+
+        public boolean any(Predicate<Race> test) {
+            return test.test(physical) || test.test(pseudo);
+        }
     }
 }
 

@@ -36,9 +36,15 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
 
         screen.addDrawable(new SpellbookScreen.ImageButton(x, y, size, size))
             .getStyle()
-                .setIcon(TribeButton.createSprite(pony.getSpecies(), 0, 0, size))
+                .setIcon(TribeButton.createSprite(pony.getActualSpecies(), 0, 0, size))
                 .setTooltip(ProfileTooltip.get(pony));
 
+        if (pony.getSpecies() != pony.getActualSpecies()) {
+            int halfSize = size / 2;
+            screen.addDrawable(new SpellbookScreen.ImageButton(x + halfSize, y + halfSize, halfSize, halfSize))
+                .getStyle()
+                    .setIcon(TribeButton.createSprite(pony.getSpecies(), 0, 0, halfSize));
+        }
 
         float mainAngle = 90 * MathHelper.RADIANS_PER_DEGREE;
         float offAngle = 60 * MathHelper.RADIANS_PER_DEGREE;

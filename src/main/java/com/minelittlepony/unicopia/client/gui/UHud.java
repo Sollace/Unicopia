@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellTyp
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.minelittlepony.unicopia.client.sound.*;
+import com.minelittlepony.unicopia.entity.AmuletSelectors;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
@@ -125,7 +126,7 @@ public class UHud extends DrawableHelper {
 
         matrices.pop();
 
-        if (pony.getActualSpecies().canCast()) {
+        if (pony.getActualSpecies().canCast() || AmuletSelectors.ALICORN_AMULET.test(pony.getMaster())) {
             renderSpell(pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 15 - xDirection * 13, hudY + 3);
             renderSpell(pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 15 - xDirection * 2, hudY - 3);
         }
@@ -217,7 +218,7 @@ public class UHud extends DrawableHelper {
         ItemStack glasses = GlassesItem.getForEntity(client.player);
         boolean hasSunglasses = glasses.getItem() == UItems.SUNGLASSES;
 
-        if (hasEffect || (!hasSunglasses && pony.getSpecies() == Race.BAT && SunBlindnessStatusEffect.hasSunExposure(client.player))) {
+        if (hasEffect || (!hasSunglasses && pony.getObservedSpecies() == Race.BAT && SunBlindnessStatusEffect.hasSunExposure(client.player))) {
             float i = hasEffect ? (client.player.getStatusEffect(UEffects.SUN_BLINDNESS).getDuration() - tickDelta) / SunBlindnessStatusEffect.MAX_DURATION : 0;
 
             float pulse = (1 + (float)Math.sin(client.player.age / 108F)) * 0.25F;

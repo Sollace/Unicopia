@@ -56,7 +56,7 @@ public class SunBlindnessStatusEffect extends StatusEffect {
     public static boolean isSunImmune(LivingEntity entity) {
         return entity.hasStatusEffect(StatusEffects.BLINDNESS)
                 || entity.hasPortalCooldown()
-                || Pony.of(entity).map(pony -> pony.isSunImmune()).orElse(false);
+                || Pony.of(entity).filter(Pony::isSunImmune).isPresent();
     }
 
     public static boolean hasSunExposure(LivingEntity entity) {

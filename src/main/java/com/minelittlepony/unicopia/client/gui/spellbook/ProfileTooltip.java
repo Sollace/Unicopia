@@ -11,10 +11,11 @@ public class ProfileTooltip {
     public static Tooltip get(Pony pony) {
         return () -> {
             return List.of(
-                    Text.literal(String.format("Level %d ", pony.getLevel().get() + 1)).append(pony.getSpecies().getDisplayName()).formatted(pony.getSpecies().getAffinity().getColor()),
+                    Text.literal(String.format("Level %d ", pony.getLevel().get() + 1)).append(pony.getActualSpecies().getDisplayName()).formatted(pony.getSpecies().getAffinity().getColor()),
                     Text.literal(String.format("Mana: %d%%", (int)(pony.getMagicalReserves().getMana().getPercentFill() * 100))),
+                    Text.literal(String.format("Corruption: %d%%", (int)(pony.getCorruption().getScaled(100)))),
                     Text.literal(String.format("Experience: %d", (int)(pony.getMagicalReserves().getXp().getPercentFill() * 100))),
-                    Text.literal(String.format("Next level in: %d experience points", 100 - (int)(pony.getMagicalReserves().getXp().getPercentFill() * 100)))
+                    Text.literal(String.format("Next level in: %dxp", 100 - (int)(pony.getMagicalReserves().getXp().getPercentFill() * 100)))
             );
         };
     }

@@ -224,7 +224,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         }
 
         public Optional<Ability<?>> getAbility(long page) {
-            List<Ability<?>> found = Abilities.BY_SLOT_AND_RACE.apply(slot, player.getSpecies());
+            List<Ability<?>> found = Abilities.BY_SLOT_AND_COMPOSITE_RACE.apply(slot, player.getCompositeRace());
             if (found.isEmpty()) {
                 return Optional.empty();
             }
@@ -233,7 +233,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         }
 
         public long getMaxPage() {
-            return Abilities.BY_SLOT_AND_RACE.apply(slot, player.getSpecies()).size();
+            return Abilities.BY_SLOT_AND_COMPOSITE_RACE.apply(slot, player.getCompositeRace()).size();
         }
 
         protected synchronized Optional<Ability<?>> setActiveAbility(@Nullable Ability<?> power) {
@@ -249,7 +249,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
         protected synchronized Optional<Ability<?>> getActiveAbility() {
             return activeAbility.filter(ability -> {
-                return (!(ability == null || (triggered && warmup == 0 && cooldown == 0)) && ability.canUse(player.getSpecies()));
+                return (!(ability == null || (triggered && warmup == 0 && cooldown == 0)) && player.getCompositeRace().any(ability::canUse));
             });
         }
 

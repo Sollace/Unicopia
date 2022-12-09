@@ -181,6 +181,11 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
                 .orElse(getActualSpecies());
     }
 
+    public Race.Composite getCompositeRace() {
+        Race observed = getObservedSpecies();
+        return new Race.Composite(observed, AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN : observed);
+    }
+
     public Race getActualSpecies() {
         return Race.fromName(entity.getDataTracker().get(RACE), Race.HUMAN);
     }
@@ -287,7 +292,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     public void onSpawn() {
         if (entity.world instanceof ServerWorld sw
-                && getSpecies() == Race.BAT
+                && getObservedSpecies() == Race.BAT
                 && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE
                 && SunBlindnessStatusEffect.isPositionExposedToSun(sw, getOrigin())) {
             SpawnLocator.selectSpawnPosition(sw, entity);
@@ -371,14 +376,14 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
         if (isHanging()) {
             ((LivingEntityDuck)entity).setLeaningPitch(0);
-            if (!isClient() && (getSpecies() != Race.BAT || (ticksHanging++ > 2 && hangingPosition.filter(getOrigin().down()::equals).filter(this::canHangAt).isEmpty()))) {
+            if (!isClient() && (getObservedSpecies() != Race.BAT || (ticksHanging++ > 2 && hangingPosition.filter(getOrigin().down()::equals).filter(this::canHangAt).isEmpty()))) {
                 stopHanging();
             }
         } else {
             ticksHanging = 0;
         }
 
-        if (getSpecies() == Race.BAT && !entity.hasPortalCooldown()) {
+        if (getObservedSpecies() == Race.BAT && !entity.hasPortalCooldown()) {
             if (SunBlindnessStatusEffect.hasSunExposure(entity)) {
                 if (ticksInSun < 200) {
                     ticksInSun++;

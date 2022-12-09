@@ -37,7 +37,7 @@ public record Ailment (
     }
 
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        if (!Pony.of(player).getSpecies().hasIronGut()) {
+        if (!Pony.of(player).getObservedSpecies().hasIronGut()) {
             return TypedActionResult.fail(player.getStackInHand(hand));
         }
         return null;
@@ -52,7 +52,7 @@ public record Ailment (
             if (map.isEmpty()) {
                 return of(def);
             }
-            return entity -> Optional.of(entity instanceof PlayerEntity player ? map.getOrDefault(Pony.of(player).getSpecies(), def) : def);
+            return entity -> Optional.of(entity instanceof PlayerEntity player ? map.getOrDefault(Pony.of(player).getObservedSpecies(), def) : def);
         }
 
         static Ailment.Set of(Ailment ailment) {

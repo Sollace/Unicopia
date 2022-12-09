@@ -22,7 +22,7 @@ public class RacePredicatedAliasedBlockItem extends AliasedBlockItem {
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         Pony pony = Pony.of(context.getPlayer());
-        if (pony == null || !predicate.test(pony.getSpecies())) {
+        if (pony == null || !predicate.test(pony.getObservedSpecies())) {
             return ActionResult.FAIL;
         }
 

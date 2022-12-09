@@ -11,17 +11,16 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Registries;
 
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.*;
 import net.minecraft.util.registry.Registry;
 
 public interface Abilities {
     Registry<Ability<?>> REGISTRY = Registries.createSimple(Unicopia.id("abilities"));
     Map<AbilitySlot, Set<Ability<?>>> BY_SLOT = new EnumMap<>(AbilitySlot.class);
-    BiFunction<AbilitySlot, Race, List<Ability<?>>> BY_SLOT_AND_RACE = Util.memoize((slot, race) -> {
+    BiFunction<AbilitySlot, Race.Composite, List<Ability<?>>> BY_SLOT_AND_COMPOSITE_RACE = Util.memoize((slot, race) -> {
         return BY_SLOT.computeIfAbsent(slot, s -> new LinkedHashSet<>())
                 .stream()
-                .filter(a -> a.canUse(race))
+                .filter(a -> race.any(a::canUse))
                 .toList();
     });
 

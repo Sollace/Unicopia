@@ -218,7 +218,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             if ((entity.isOnGround() && entity.isSneaking())
                     || entity.isTouchingWater()
                     || entity.horizontalCollision
-                    || (entity.verticalCollision && (pony.getSpecies() != Race.BAT || velocity.y < 0))) {
+                    || (entity.verticalCollision && (pony.getObservedSpecies() != Race.BAT || velocity.y < 0))) {
 
                 if (entity.getAbilities().flying && entity.horizontalCollision) {
                     handleWallCollission(velocity);
@@ -251,7 +251,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         if (type.canFly()) {
             if (isFlying()) {
-                if (pony.getSpecies() == Race.BAT && entity.verticalCollision && pony.canHangAt(pony.getOrigin().up(2))) {
+                if (pony.getObservedSpecies() == Race.BAT && entity.verticalCollision && pony.canHangAt(pony.getOrigin().up(2))) {
                     EntityAttributeInstance attr = entity.getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
 
                     if (!attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
@@ -327,7 +327,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (type.isAvian()) {
             applyThrust(velocity);
 
-            if (pony.getSpecies() != Race.BAT && entity.world.random.nextInt(9000) == 0) {
+            if (pony.getObservedSpecies() != Race.BAT && entity.world.random.nextInt(9000) == 0) {
                 entity.dropItem(UItems.PEGASUS_FEATHER);
                 entity.playSound(USounds.ENTITY_PLAYER_PEGASUS_MOLT, 0.3F, 1);
                 UCriteria.SHED_FEATHER.trigger(entity);
