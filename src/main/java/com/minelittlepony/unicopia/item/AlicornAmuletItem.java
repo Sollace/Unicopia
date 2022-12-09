@@ -1,19 +1,14 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
+import java.util.*;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.minelittlepony.unicopia.Affinity;
-import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.*;
-import com.minelittlepony.unicopia.entity.effect.UEffects;
-import com.minelittlepony.unicopia.entity.player.MagicReserves;
-import com.minelittlepony.unicopia.entity.player.PlayerCharmTracker;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.entity.player.*;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
 import net.fabricmc.api.EnvType;
@@ -21,14 +16,11 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.Entity.RemovalReason;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
@@ -39,12 +31,12 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion.DestructionType;
 
 public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.Charm, ItemImpl.ClingyItem, ItemImpl.GroundTickCallback {
+    private static final float EFFECT_UPDATE_FREQUENCY = 1000000;
 
     public AlicornAmuletItem(FabricItemSettings settings) {
         super(settings, 0, new AmuletItem.ModifiersBuilder()
@@ -136,15 +128,13 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
 
-        if (!(entity instanceof PlayerEntity)) {
-            return;
-        }
-        if (world.isClient) {
+        if (!(entity instanceof PlayerEntity) || world.isClient) {
             return;
         }
 
         PlayerEntity player = (PlayerEntity)entity;
 
+        // if we're in the main hand, try to equip ourselves
         if (selected && !isApplicable(player) && world.random.nextInt(320) == 0) {
             use(world, player, Hand.MAIN_HAND);
             return;
@@ -156,10 +146,7 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
             return;
         }
 
-        float attachedTime = pony.getCharms().getArmour().getTicks(this);
-
-        MagicReserves reserves = pony.getMagicalReserves();
-
+        // healing effect
         if (player.getHealth() < player.getMaxHealth()) {
             player.heal(0.5F);
         } else if (player.canConsume(false)) {
@@ -168,39 +155,23 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
             player.removeStatusEffect(StatusEffects.NAUSEA);
         }
 
+        MagicReserves reserves = pony.getMagicalReserves();
+
+        // constantly increase exertion
         if (reserves.getExertion().get() < reserves.getExertion().getMax()) {
             reserves.getExertion().add(2);
         }
 
-        if (reserves.getEnergy().get() < 0.005F + (attachedTime / 1000000)) {
+        float attachedTicks = pony.getCharms().getArmour().getTicks(this);
+        float seconds = attachedTicks / EFFECT_UPDATE_FREQUENCY;
+
+        if (reserves.getEnergy().get() < 0.005F + seconds) {
             reserves.getEnergy().add(2);
         }
 
-        if (attachedTime == 1) {
+        if (attachedTicks == 1) {
             world.playSound(null, player.getBlockPos(), USounds.ITEM_ALICORN_AMULET_CURSE, SoundCategory.PLAYERS, 3, 1);
         }
-
-        // attempt to play 3 tricks every tick
-        Trick.ALL.stream().filter(trick -> trick.play(attachedTime, player)).limit(3).toList();
-
-        if (stack.getDamage() >= getMaxDamage() - 1) {
-            stack.damage(10, player, p -> p.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
-
-            player.damage(MagicalDamageSource.ALICORN_AMULET, player.getMaxHealth() - 0.01F);
-            player.getHungerManager().setFoodLevel(1);
-
-            Vec3d pos = player.getPos();
-
-            player.world.createExplosion(player, pos.x, pos.y, pos.z, 10, DestructionType.NONE);
-
-            AwaitTickQueue.scheduleTask(player.world, w -> {
-                w.createExplosion(player, pos.x, pos.y, pos.z, 6, DestructionType.BREAK);
-            }, 50);
-        }
-
-        pony.findAllEntitiesInRange(10, e -> e instanceof MobEntity mob && !mob.hasStatusEffect(UEffects.CORRUPT_INFLUENCE)).forEach(e -> {
-            ((MobEntity)e).addStatusEffect(new StatusEffectInstance(UEffects.CORRUPT_INFLUENCE, 1300, 1));
-        });
     }
 
     @Override
@@ -212,49 +183,5 @@ public class AlicornAmuletItem extends AmuletItem implements PlayerCharmTracker.
         }
 
         return ActionResult.PASS;
-    }
-
-    public static class Trick {
-        private static final List<Trick> ALL = new ArrayList<>();
-
-        public static final Trick SPOOK = new Trick(0, 1050, player -> player.world.playSound(null, player.getBlockPos(), USounds.ITEM_ALICORN_AMULET_HALLUCINATION, SoundCategory.PLAYERS, 3, 1));
-        public static final Trick WITHER = new Trick(20000, 100, player -> {
-            StatusEffectInstance effect = new StatusEffectInstance(player.world.random.nextInt(32000) == 0 ? StatusEffects.WITHER : StatusEffects.HUNGER, 300, 3);
-            effect.setPermanent(true);
-            player.addStatusEffect(effect);
-        });
-        public static final Trick POKE = new Trick(13000, 300, player -> player.damage(MagicalDamageSource.ALICORN_AMULET, 1F));
-        public static final Trick SPIN = new Trick(6000, 300, player -> player.setYaw(player.getYaw() + 180));
-        public static final Trick BUTTER_FINGERS = new Trick(1000, 300, player -> player.getInventory().dropSelectedItem(false));
-        public static final Trick MOVE = new Trick(3000, 300, player -> {
-            float amount = player.world.random.nextFloat() - 0.5F;
-            boolean sideways = player.world.random.nextBoolean();
-            player.addVelocity(sideways ? 0 : amount, 0, sideways ? amount : 0);
-        });
-        public static final Trick SWING = new Trick(2000, 100, player -> player.swingHand(Hand.MAIN_HAND));
-        public static final Trick BAD_JOO_JOO = new Trick(1000, 10, player -> {
-            if (!player.hasStatusEffect(StatusEffects.BAD_OMEN)) {
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.BAD_OMEN, 300, 3));
-            }
-        });
-
-        private final int minTime;
-        private final int chance;
-        private final Consumer<PlayerEntity> action;
-
-        public Trick(int minTime, int chance, Consumer<PlayerEntity> action) {
-            this.minTime = minTime;
-            this.chance = chance;
-            this.action = action;
-            ALL.add(this);
-        }
-
-        public boolean play(float ticks, PlayerEntity player) {
-            if (ticks > minTime && (chance <= 0 || player.world.random.nextInt(chance) == 0)) {
-                action.accept(player);
-                return true;
-            }
-            return false;
-        }
     }
 }
