@@ -117,7 +117,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
         this.mana = new ManaContainer(this);
         this.levels = new PlayerLevelStore(this, LEVEL, true, SoundEvents.ENTITY_PLAYER_LEVELUP);
         this.corruption = new PlayerLevelStore(this, CORRUPTION, false, SoundEvents.PARTICLE_SOUL_ESCAPE);
-        this.tickers = Lists.newArrayList(gravity, mana, attributes, charms);
+        this.tickers = Lists.newArrayList(gravity, mana, attributes);
 
         player.getDataTracker().startTracking(RACE, Race.DEFAULT_ID);
     }
@@ -516,7 +516,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
 
     @Override
     public boolean isEnemy(Affine other) {
-        return getCharms().getArmour().contains(UItems.ALICORN_AMULET) || super.isEnemy(other);
+        return getArmour().contains(UItems.ALICORN_AMULET) || super.isEnemy(other);
     }
 
     @Override

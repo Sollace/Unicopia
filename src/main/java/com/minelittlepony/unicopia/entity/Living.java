@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.entity;
 
 import java.util.Optional;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,6 +60,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     private final Enchantments enchants = new Enchantments(this);
 
+    private final ItemTracker armour = new ItemTracker();
+
     protected Living(T entity, TrackedData<NbtCompound> effect) {
         this.entity = entity;
         this.effectDelegate = new EffectSync(this, effect);
@@ -91,6 +94,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return enchants;
     }
 
+    public ItemTracker getArmour() {
+        return armour;
+    }
+
     @Override
     public void setMaster(T owner) {
     }
@@ -103,6 +110,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public void tick() {
+        armour.update(this, getArmourStacks());
+
         try {
             getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.BODY)), entity.world.isClient);
         } catch (Exception e) {
@@ -217,6 +226,16 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return Stream.of(entity.getStackInHand(Hand.MAIN_HAND), entity.getStackInHand(Hand.OFF_HAND));
     }
 
+    protected Stream<ItemStack> getArmourStacks() {
+        if (!TrinketsDelegate.hasTrinkets()) {
+            return StreamSupport.stream(entity.getArmorItems().spliterator(), false);
+        }
+        return Stream.concat(
+                TrinketsDelegate.getInstance().getEquipped(entity, TrinketsDelegate.NECKLACE),
+                StreamSupport.stream(entity.getArmorItems().spliterator(), false)
+        );
+    }
+
     protected void giveBackItem(ItemStack stack) {
         entity.dropStack(stack);
     }
@@ -240,16 +259,22 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     public void toNBT(NbtCompound compound) {
         enchants.toNBT(compound);
         effectDelegate.toNBT(compound);
+        compound.put("armour", armour.toNBT());
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         enchants.fromNBT(compound);
         effectDelegate.fromNBT(compound);
+        armour.fromNBT(compound.getCompound("armour"));
     }
 
     public void updateVelocity() {
         updateVelocity(entity);
+    }
+
+    public static Living<?> living(Entity entity) {
+        return PonyContainer.of(entity).map(a -> a instanceof Living ? (Living<?>)a.get() : null).orElse(null);
     }
 
     public static void updateVelocity(Entity entity) {
