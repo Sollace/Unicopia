@@ -168,6 +168,10 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             return Race.ALICORN;
         }
 
+        return getObservedSpecies();
+    }
+
+    public Race getObservedSpecies() {
         return getSpellSlot()
                 .get(SpellPredicate.IS_MIMIC, true)
                 .map(AbstractDisguiseSpell::getDisguise)

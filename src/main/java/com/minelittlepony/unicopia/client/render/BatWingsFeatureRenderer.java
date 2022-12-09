@@ -56,7 +56,7 @@ public class BatWingsFeatureRenderer<E extends LivingEntity> extends WingsFeatur
 
     @Override
     protected boolean canRender(E entity) {
-        return entity instanceof PlayerEntity && Pony.of((PlayerEntity)entity).getSpecies() == Race.BAT;
+        return entity instanceof PlayerEntity && Pony.of((PlayerEntity)entity).getObservedSpecies() == Race.BAT;
     }
 
     @Override

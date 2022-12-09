@@ -50,7 +50,7 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
     }
 
     protected boolean canRender(E entity) {
-        return entity instanceof PlayerEntity && Pony.of((PlayerEntity)entity).getSpecies().canInteractWithClouds();
+        return entity instanceof PlayerEntity && Pony.of((PlayerEntity)entity).getObservedSpecies().canInteractWithClouds();
     }
 
     protected Identifier getTexture(E entity) {
