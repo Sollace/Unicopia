@@ -8,20 +8,17 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
@@ -44,17 +41,6 @@ public class AmuletItem extends WearableItem {
         super(settings);
         this.maxEnergy = maxEnergy;
         this.modifiers = modifiers;
-    }
-
-    @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if (this == UItems.PEGASUS_AMULET
-                && entity.world.getTime() % 6 == 0
-                && entity instanceof LivingEntity
-                && ((LivingEntity) entity).getEquippedStack(EquipmentSlot.CHEST) == stack
-                && isApplicable((LivingEntity)entity)) {
-            ParticleUtils.spawnParticles(entity.world.getDimension().ultrawarm() ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.COMPOSTER, entity, 1);
-        }
     }
 
     @Override

@@ -110,7 +110,7 @@ public interface UItems {
 
     Item SPELLBOOK = register("spellbook", new SpellbookItem(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON).group(ItemGroup.TOOLS)));
 
-    AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new AmuletItem(new FabricItemSettings()
+    AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new FabricItemSettings()
             .maxCount(1)
             .maxDamage(890)
             .rarity(Rarity.UNCOMMON)
