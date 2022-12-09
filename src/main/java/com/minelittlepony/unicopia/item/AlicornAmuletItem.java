@@ -150,6 +150,10 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
         Living<?> living = Living.living(entity);
 
+        if (living == null) {
+            return;
+        }
+
         if (!living.getArmour().contains(this)) {
             return;
         }
