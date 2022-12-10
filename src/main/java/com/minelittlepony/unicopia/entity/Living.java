@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
+import com.minelittlepony.unicopia.network.datasync.Transmittable;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
@@ -41,7 +42,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T> {
+public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T>, Transmittable {
 
     protected final T entity;
 
@@ -256,16 +257,29 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     @Override
+    public void setDirty() {}
+
+    @Override
     public void toNBT(NbtCompound compound) {
         enchants.toNBT(compound);
         effectDelegate.toNBT(compound);
-        compound.put("armour", armour.toNBT());
+        toSyncronisedNbt(compound);
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         enchants.fromNBT(compound);
         effectDelegate.fromNBT(compound);
+        fromSynchronizedNbt(compound);
+    }
+
+    @Override
+    public void toSyncronisedNbt(NbtCompound compound) {
+        compound.put("armour", armour.toNBT());
+    }
+
+    @Override
+    public void fromSynchronizedNbt(NbtCompound compound) {
         armour.fromNBT(compound.getCompound("armour"));
     }
 

@@ -29,7 +29,6 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgOtherPlayerCapabilities;
 import com.minelittlepony.unicopia.network.MsgPlayerAnimationChange;
-import com.minelittlepony.unicopia.network.datasync.Transmittable;
 import com.minelittlepony.unicopia.util.*;
 import com.minelittlepony.unicopia.network.datasync.EffectSync.UpdateCallback;
 import com.minelittlepony.common.util.animation.LinearInterpolator;
@@ -60,7 +59,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 import net.minecraft.world.GameMode;
 
-public class Pony extends Living<PlayerEntity> implements Transmittable, Copieable<Pony>, UpdateCallback {
+public class Pony extends Living<PlayerEntity> implements Copieable<Pony>, UpdateCallback {
 
     private static final TrackedData<String> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
 
@@ -529,13 +528,8 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        toSyncronisedNbt(compound);
-    }
-
-    @Override
     public void toSyncronisedNbt(NbtCompound compound) {
+        super.toSyncronisedNbt(compound);
         compound.putString("playerSpecies", Race.REGISTRY.getId(getActualSpecies()).toString());
         compound.putFloat("magicExhaustion", magicExhaustion);
         compound.putInt("ticksHanging", ticksHanging);
@@ -558,13 +552,8 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        fromSynchronizedNbt(compound);
-    }
-
-    @Override
     public void fromSynchronizedNbt(NbtCompound compound) {
+        super.fromSynchronizedNbt(compound);
         speciesPersisted = true;
         setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
         powers.fromNBT(compound.getCompound("powers"));
@@ -597,6 +586,7 @@ public class Pony extends Living<PlayerEntity> implements Transmittable, Copieab
             oldPlayer.getSpellSlot().stream(true).filter(SpellPredicate.IS_PLACED).forEach(getSpellSlot()::put);
         }
         oldPlayer.getSpellSlot().put(null);
+        getArmour().copyFrom(oldPlayer.getArmour());
         setSpecies(oldPlayer.getActualSpecies());
         getDiscoveries().copyFrom(oldPlayer.getDiscoveries());
         getCharms().equipSpell(Hand.MAIN_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.MAIN_HAND));

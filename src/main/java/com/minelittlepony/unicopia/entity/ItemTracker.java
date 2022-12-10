@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.minelittlepony.unicopia.util.Copieable;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.entity.LivingEntity;
@@ -14,7 +15,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-public class ItemTracker implements NbtSerialisable {
+public class ItemTracker implements NbtSerialisable, Copieable<ItemTracker> {
     public static final long TICKS = 1;
     public static final long SECONDS = 20 * TICKS;
     public static final long HOURS = 1000 * TICKS;
@@ -92,6 +93,12 @@ public class ItemTracker implements NbtSerialisable {
             .map(id -> Map.entry(Registry.ITEM.get(id), compound.getLong(id.toString())))
             .filter(i -> i.getKey() instanceof Trackable && i.getValue() > 0)
             .forEach(item -> items.put((Trackable)item.getKey(), item.getValue()));
+    }
+
+    @Override
+    public void copyFrom(ItemTracker other) {
+        items.clear();
+        items.putAll(other.items);
     }
 
     public interface Trackable extends ItemConvertible {
