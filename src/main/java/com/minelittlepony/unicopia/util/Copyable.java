@@ -1,5 +1,5 @@
 package com.minelittlepony.unicopia.util;
 
-public interface Copieable<T extends Copieable<T>> {
+public interface Copyable<T extends Copyable<T>> {
     void copyFrom(T other);
 }

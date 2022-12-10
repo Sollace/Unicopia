@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
-import com.minelittlepony.unicopia.util.Copieable;
+import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.block.BlockRenderType;
@@ -19,7 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class EntityPhysics<T extends Entity> implements Physics, Copieable<EntityPhysics<T>>, Tickable {
+public class EntityPhysics<T extends Entity> implements Physics, Copyable<EntityPhysics<T>>, Tickable {
 
     private final TrackedData<Float> gravity;
 

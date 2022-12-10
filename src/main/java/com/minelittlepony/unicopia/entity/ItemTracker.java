@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import com.minelittlepony.unicopia.util.Copieable;
+import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.entity.LivingEntity;
@@ -15,7 +15,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-public class ItemTracker implements NbtSerialisable, Copieable<ItemTracker> {
+public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker> {
     public static final long TICKS = 1;
     public static final long SECONDS = 20 * TICKS;
     public static final long HOURS = 1000 * TICKS;

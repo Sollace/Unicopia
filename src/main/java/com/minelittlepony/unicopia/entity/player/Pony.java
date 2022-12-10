@@ -59,7 +59,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 import net.minecraft.world.GameMode;
 
-public class Pony extends Living<PlayerEntity> implements Copieable<Pony>, UpdateCallback {
+public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, UpdateCallback {
 
     private static final TrackedData<String> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
 
