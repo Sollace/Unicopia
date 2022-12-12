@@ -2,12 +2,14 @@ package com.minelittlepony.unicopia.mixin.client;
 
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.client.BatEyesApplicator;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
+import com.minelittlepony.unicopia.client.render.shader.ViewportShader;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
@@ -59,5 +61,20 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
         if (entity.hasStatusEffect(StatusEffects.NIGHT_VISION) && EquinePredicates.PLAYER_BAT.test(entity)) {
             info.setReturnValue(UnicopiaClient.getWorldBrightness(info.getReturnValueF()));
         }
+    }
+
+    @Inject(method = "render",
+            at = @At(
+                value = "INVOKE",
+                target = "net/minecraft/client/gl/Framebuffer.beginWrite(Z)V",
+                shift = Shift.BEFORE)
+    )
+    private void onBeforeFrameEnd(float tickDelta, long startTime, boolean tick, CallbackInfo info) {
+        ViewportShader.INSTANCE.render(tickDelta);
+    }
+
+    @Inject(method = "onResized", at = @At("HEAD"))
+    private void onResized(int width, int height, CallbackInfo info) {
+        ViewportShader.INSTANCE.onResized(width, height);
     }
 }
