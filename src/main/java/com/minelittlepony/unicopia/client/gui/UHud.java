@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.entity.AmuletSelectors;
+import com.minelittlepony.unicopia.entity.ItemTracker;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
@@ -291,6 +292,32 @@ public class UHud extends DrawableHelper {
             radius = 0.1F + radius * 0.1F;
 
             int alpha1 = (int)(MathHelper.clamp(exhaustion * radius * 2, 0, 1) * 205) << 24 & -16777216;
+            int alpha2 = 0;
+
+            int halfWidth = (int)(scaledWidth * radius);
+            int halfHeight = (int)(scaledHeight * radius);
+
+            fillGradient(matrices, 0, 0, scaledWidth, halfHeight, color | alpha1, color | alpha2);
+            fillGradient(matrices, 0, scaledHeight - halfHeight, scaledWidth, scaledHeight, color | alpha2, color | alpha1);
+
+            matrices.push();
+            matrices.translate(scaledWidth, 0, 0);
+            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90));
+
+            fillGradient(matrices, 0, 0, scaledHeight, halfWidth, color | alpha1, color | alpha2);
+            fillGradient(matrices, 0, scaledWidth - halfWidth, scaledHeight, scaledWidth, color | alpha2, color | alpha1);
+
+            matrices.pop();
+        }
+
+        if (UItems.ALICORN_AMULET.isApplicable(client.player)) {
+            int color = 0x000000;
+
+            long timer = pony.getArmour().getTicks(UItems.ALICORN_AMULET);
+
+            float radius = (float)timer / (5 * ItemTracker.DAYS);
+
+            int alpha1 = (int)(MathHelper.clamp(radius * 2, 0, 1) * 205) << 24 & -16777216;
             int alpha2 = 0;
 
             int halfWidth = (int)(scaledWidth * radius);

@@ -21,6 +21,15 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker> {
     public static final long HOURS = 1000 * TICKS;
     public static final long DAYS = 24 * HOURS;
 
+    public static String formatTicks(long ticks) {
+        long days = ticks / DAYS;
+        ticks %= DAYS;
+        long hours = ticks / HOURS;
+        ticks %= HOURS;
+        long seconds = ticks / SECONDS;
+        return String.format("%dd, %dh %ds", days, hours, seconds);
+    }
+
     private final Map<Trackable, Long> items = new HashMap<>();
 
     public static Predicate<LivingEntity> wearing(Trackable charm, Predicate<Long> range) {

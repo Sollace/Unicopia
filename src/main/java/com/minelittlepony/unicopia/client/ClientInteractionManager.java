@@ -12,9 +12,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.CasterView;
 import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.client.gui.DismissSpellScreen;
-import com.minelittlepony.unicopia.client.sound.LoopedEntityTrackingSoundInstance;
-import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
-import com.minelittlepony.unicopia.client.sound.MotionBasedSoundInstance;
+import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -36,6 +34,7 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
@@ -96,6 +95,8 @@ public class ClientInteractionManager extends InteractionManager {
                 soundManager.play(new MotionBasedSoundInstance(USounds.ENTITY_PLAYER_PEGASUS_FLYING, (PlayerEntity)source, Random.create(seed)));
             } else if (type == SOUND_MAGIC_BEAM) {
                 soundManager.play(new LoopedEntityTrackingSoundInstance(USounds.SPELL_CAST_SHOOT, 0.3F, 1F, source, seed));
+            } else if (type == 6) {
+                soundManager.play(new NonLoopingFadeOutSoundInstance(USounds.ENTITY_PLAYER_HEARTBEAT, SoundCategory.PLAYERS, 0.3F, Random.create(seed), 80L));
             }
         });
     }

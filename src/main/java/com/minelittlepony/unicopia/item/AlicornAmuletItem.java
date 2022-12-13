@@ -5,6 +5,7 @@ import java.util.*;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableMultimap;
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.player.*;
@@ -26,10 +27,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.StringHelper;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -54,9 +52,9 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         Pony iplayer = Pony.of(MinecraftClient.getInstance().player);
 
         if (iplayer != null) {
-            long attachedTime = iplayer.getArmour().getTicks(this);
-            if (attachedTime > 0) {
-                tooltip.add(Text.translatable(getTranslationKey() + ".lore", StringHelper.formatTicks((int)attachedTime)));
+            long ticks = iplayer.getArmour().getTicks(this);
+            if (ticks > 0) {
+                tooltip.add(Text.literal(ItemTracker.formatTicks(ticks).formatted(Formatting.GRAY)));
             }
         }
     }
@@ -123,6 +121,9 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         }
         wearer.getMaster().damage(MagicalDamageSource.ALICORN_AMULET, amount);
         wearer.getMaster().addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 1));
+        if (timeWorn > ItemTracker.HOURS) {
+            wearer.getMaster().addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 200, 3));
+        }
 
         if (attachedTime > 120) {
             wearer.getMaster().takeKnockback(1, 1, 1);
@@ -130,7 +131,12 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         }
 
         EFFECT_SCALES.keySet().forEach(attribute -> {
-            wearer.getMaster().getAttributeInstance(attribute).tryRemoveModifier(EFFECT_UUID);
+            EntityAttributeInstance instance = wearer.getMaster().getAttributeInstance(attribute);
+            @Nullable
+            EntityAttributeModifier modifier = instance.getModifier(EFFECT_UUID);
+            if (modifier != null) {
+                instance.removeModifier(modifier);
+            }
         });
     }
 
@@ -154,16 +160,17 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         }
 
         long attachedTicks = living.getArmour().getTicks(this);
+        boolean poweringUp = attachedTicks < (ItemTracker.DAYS * 4);
         boolean fullSecond = attachedTicks % ItemTracker.SECONDS == 0;
 
         if (entity instanceof PlayerEntity player) {
             // healing effect
-            if (player.getHealth() < player.getMaxHealth()) {
-                player.heal(0.5F);
-            } else if (player.canConsume(false)) {
-                player.getHungerManager().add(1, 0);
-            } else {
-                player.removeStatusEffect(StatusEffects.NAUSEA);
+            if (poweringUp) {
+                if (player.getHealth() < player.getMaxHealth()) {
+                    player.heal(0.5F);
+                } else if (player.canConsume(false)) {
+                    player.getHungerManager().add(1, 0);
+                }
             }
 
             Pony pony = (Pony)living;
@@ -175,13 +182,32 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                 reserves.getExertion().add(2);
             }
 
-            if (reserves.getEnergy().get() < reserves.getEnergy().getMax()) {
-                reserves.getEnergy().add(2);
+            if (fullSecond && world.random.nextInt(12) == 0) {
+                reserves.getEnergy().add(reserves.getEnergy().getMax() / 10F);
+                pony.getCorruption().add((int)MathHelper.clamp(attachedTicks / ItemTracker.HOURS, 1, pony.getCorruption().getMax()));
             }
 
-            if (fullSecond && world.random.nextInt(12) == 0) {
-                player.world.playSound(null, player.getBlockPos(), USounds.ITEM_ALICORN_AMULET_HALLUCINATION, SoundCategory.PLAYERS, 3, 1);
-                pony.getCorruption().add((int)MathHelper.clamp(attachedTicks / ItemTracker.HOURS, 1, pony.getCorruption().getMax()));
+            if (attachedTicks % ItemTracker.HOURS < 90 && world.random.nextInt(900) == 0) {
+                player.world.playSound(null, player.getBlockPos(), USounds.ITEM_ALICORN_AMULET_HALLUCINATION, SoundCategory.AMBIENT, 3, 1);
+            } else if (attachedTicks < 2 || (attachedTicks % (10 * ItemTracker.SECONDS) < 9 && world.random.nextInt(90) == 0)) {
+                if (attachedTicks % 5 == 0) {
+                    InteractionManager.INSTANCE.playLoopingSound(player, InteractionManager.SOUND_HEART_BEAT, 0);
+                }
+
+                reserves.getExertion().add(reserves.getExertion().getMax());
+                reserves.getEnergy().add(reserves.getEnergy().getMax() / 2F);
+                living.getMaster().removeStatusEffect(StatusEffects.WEAKNESS);
+                living.getMaster().removeStatusEffect(StatusEffects.NAUSEA);
+            }
+
+            if (!poweringUp) {
+                if (attachedTicks % 100 == 0) {
+                    player.getHungerManager().addExhaustion(90F);
+                    float healthDrop = MathHelper.clamp(player.getMaxHealth() - player.getHealth(), 2, 5);
+                    player.damage(MagicalDamageSource.ALICORN_AMULET, healthDrop);
+                }
+
+                return;
             }
         }
 
