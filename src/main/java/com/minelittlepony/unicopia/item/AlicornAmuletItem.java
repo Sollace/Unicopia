@@ -35,7 +35,6 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackable, ItemImpl.ClingyItem, ItemImpl.GroundTickCallback {
-    private static final float EFFECT_UPDATE_FREQUENCY = 1000000;
     private static final UUID EFFECT_UUID = UUID.fromString("c0a870f5-99ef-4716-a23e-f320ee834b26");
     private static final Map<EntityAttribute, Float> EFFECT_SCALES = Map.of(
             EntityAttributes.GENERIC_ATTACK_DAMAGE, 0.2F,
@@ -158,8 +157,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
             return;
         }
 
-        float attachedTicks = living.getArmour().getTicks(this);
-        float seconds = attachedTicks / EFFECT_UPDATE_FREQUENCY;
+        long attachedTicks = living.getArmour().getTicks(this);
 
         if (entity instanceof PlayerEntity player) {
             // healing effect
@@ -178,18 +176,20 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                 reserves.getExertion().add(2);
             }
 
-            if (reserves.getEnergy().get() < 0.005F + seconds) {
+            if (reserves.getEnergy().get() < reserves.getEnergy().getMax()) {
                 reserves.getEnergy().add(2);
             }
         }
 
         // every 1 second, update modifiers
-        if (attachedTicks % EFFECT_UPDATE_FREQUENCY == 0) {
+        if (attachedTicks % ItemTracker.SECONDS == 0) {
             EFFECT_SCALES.entrySet().forEach(attribute -> {
+                float seconds = (float)attachedTicks / ItemTracker.SECONDS;
                 EntityAttributeInstance instance = living.getMaster().getAttributeInstance(attribute.getKey());
+                @Nullable
                 EntityAttributeModifier modifier = instance.getModifier(EFFECT_UUID);
                 float desiredValue = attribute.getValue() * seconds;
-                if (!MathHelper.approximatelyEquals(desiredValue, modifier.getValue())) {
+                if (!MathHelper.approximatelyEquals(desiredValue, modifier == null ? 0 : modifier.getValue())) {
                     if (modifier != null) {
                         instance.removeModifier(modifier);
                     }
