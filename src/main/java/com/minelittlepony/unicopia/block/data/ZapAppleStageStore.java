@@ -79,7 +79,7 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
     }
 
     protected void onStageChanged() {
-        world.setRainGradient(0.5F);
+        //world.setRainGradient(0.5F);
     }
 
     public void playMoonEffect(BlockPos pos) {
