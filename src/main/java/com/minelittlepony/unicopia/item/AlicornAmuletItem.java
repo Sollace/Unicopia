@@ -149,15 +149,12 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
         Living<?> living = Living.living(entity);
 
-        if (living == null) {
-            return;
-        }
-
-        if (!living.getArmour().contains(this)) {
+        if (living == null || !living.getArmour().contains(this)) {
             return;
         }
 
         long attachedTicks = living.getArmour().getTicks(this);
+        boolean fullSecond = attachedTicks % ItemTracker.SECONDS == 0;
 
         if (entity instanceof PlayerEntity player) {
             // healing effect
@@ -169,7 +166,9 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                 player.removeStatusEffect(StatusEffects.NAUSEA);
             }
 
-            MagicReserves reserves = ((Pony)living).getMagicalReserves();
+            Pony pony = (Pony)living;
+
+            MagicReserves reserves = pony.getMagicalReserves();
 
             // constantly increase exertion
             if (reserves.getExertion().get() < reserves.getExertion().getMax()) {
@@ -179,10 +178,15 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
             if (reserves.getEnergy().get() < reserves.getEnergy().getMax()) {
                 reserves.getEnergy().add(2);
             }
+
+            if (fullSecond && world.random.nextInt(12) == 0) {
+                player.world.playSound(null, player.getBlockPos(), USounds.ITEM_ALICORN_AMULET_HALLUCINATION, SoundCategory.PLAYERS, 3, 1);
+                pony.getCorruption().add((int)MathHelper.clamp(attachedTicks / ItemTracker.HOURS, 1, pony.getCorruption().getMax()));
+            }
         }
 
         // every 1 second, update modifiers
-        if (attachedTicks % ItemTracker.SECONDS == 0) {
+        if (fullSecond) {
             EFFECT_SCALES.entrySet().forEach(attribute -> {
                 float seconds = (float)attachedTicks / ItemTracker.SECONDS;
                 EntityAttributeInstance instance = living.getMaster().getAttributeInstance(attribute.getKey());
