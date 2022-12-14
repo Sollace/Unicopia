@@ -251,16 +251,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         if (type.canFly()) {
             if (isFlying()) {
-                if (pony.getObservedSpecies() == Race.BAT && entity.verticalCollision && pony.canHangAt(pony.getOrigin().up(2))) {
-                    EntityAttributeInstance attr = entity.getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
-
-                    if (!attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
-                        attr.addPersistentModifier(PlayerAttributes.BAT_HANGING);
-                        entity.setVelocity(Vec3d.ZERO);
-                        return;
-                    }
-                }
-
                 ticksInAir++;
                 tickFlight(type, velocity);
 
