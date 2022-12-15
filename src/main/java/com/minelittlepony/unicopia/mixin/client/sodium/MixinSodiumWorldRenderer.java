@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.mixin.client.sodium;
 import java.util.SortedSet;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.*;
 import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
 
@@ -10,6 +11,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 
+@Pseudo
 @Mixin(targets = { "me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer" }, remap = false)
 abstract class MixinSodiumWorldRenderer {
     @ModifyVariable(method = "renderTileEntities", at = @At("HEAD"))
