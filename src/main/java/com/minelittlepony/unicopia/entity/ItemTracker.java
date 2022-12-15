@@ -22,12 +22,14 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker> {
     public static final long DAYS = 24 * HOURS;
 
     public static String formatTicks(long ticks) {
-        long days = ticks / DAYS;
-        ticks %= DAYS;
-        long hours = ticks / HOURS;
-        ticks %= HOURS;
+        long days = ticks / (SECONDS * 60 * 24);
+        ticks %= (SECONDS * 60 * 60 * 24);
+        long hours = ticks / (SECONDS * 60 * 60);
+        ticks %= (SECONDS * 60 * 60);
+        long minutes = ticks / (SECONDS * 60);
+        ticks %= (SECONDS * 60);
         long seconds = ticks / SECONDS;
-        return String.format("%dd, %dh %ds", days, hours, seconds);
+        return String.format("%dd, %dh %dm %ds", days, hours, minutes, seconds);
     }
 
     private final Map<Trackable, Long> items = new HashMap<>();
