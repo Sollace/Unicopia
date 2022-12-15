@@ -10,52 +10,17 @@
       "bonus_rolls": 0.0,
       "entries": [
         {
-          "type": "minecraft:alternatives",
-          "children": [
-            {
-              "type": "minecraft:item",
-              "conditions": [
-                {
-                  "block": "unicopia:oats_stem",
-                  "condition": "minecraft:block_state_property",
-                  "properties": {
-                    "age": "6"
-                  }
-                }
-              ],
-              "name": "unicopia:oats"
-            }
-          ]
-        }
-      ],
-      "rolls": 1.0
-    },
-    {
-      "bonus_rolls": 0.0,
-      "conditions": [
-        {
-          "block": "unicopia:oats_stem",
-          "condition": "minecraft:block_state_property",
-          "properties": {
-            "age": "6"
-          }
-        }
-      ],
-      "entries": [
-        {
           "type": "minecraft:item",
-          "functions": [
+          "conditions": [
             {
-              "enchantment": "minecraft:fortune",
-              "formula": "minecraft:binomial_with_bonus_count",
-              "function": "minecraft:apply_bonus",
-              "parameters": {
-                "extra": 3,
-                "probability": 0.5714286
+              "block": "unicopia:oats_stem",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "age": "6"
               }
             }
           ],
-          "name": "unicopia:oat_seeds"
+          "name": "unicopia:oats"
         }
       ],
       "rolls": 1.0

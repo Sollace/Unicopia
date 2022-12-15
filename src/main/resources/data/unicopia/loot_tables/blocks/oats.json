@@ -14,19 +14,6 @@
           "children": [
             {
               "type": "minecraft:item",
-              "conditions": [
-                {
-                  "block": "unicopia:oats",
-                  "condition": "minecraft:block_state_property",
-                  "properties": {
-                    "age": "11"
-                  }
-                }
-              ],
-              "name": "unicopia:oats"
-            },
-            {
-              "type": "minecraft:item",
               "name": "unicopia:oat_seeds"
             }
           ]
