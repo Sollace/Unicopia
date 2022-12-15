@@ -19,6 +19,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.*;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.attribute.*;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -67,6 +68,11 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
     @Override
     public boolean isClingy(ItemStack stack) {
         return true;
+    }
+
+    @Override
+    public boolean damage(DamageSource source) {
+        return source.isOutOfWorld();
     }
 
     @Override
