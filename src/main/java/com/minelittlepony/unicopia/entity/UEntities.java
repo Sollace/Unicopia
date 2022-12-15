@@ -15,9 +15,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 
 public interface UEntities {
@@ -80,5 +82,26 @@ public interface UEntities {
         UTradeOffers.bootstrap();
         EntityBehaviour.bootstrap();
         UEntityAttributes.bootstrap();
+        Paintings.bootstrap();
+    }
+
+    interface Paintings {
+        private static void register(String id, int width, int height) {
+            Registry.register(Registry.PAINTING_VARIANT, RegistryKey.of(Registry.PAINTING_VARIANT_KEY, Unicopia.id(id)), new PaintingVariant(16 * width, 16 * height));
+        }
+
+        static void bootstrap() {
+            register("bloom", 2, 1);
+            register("chicken", 2, 1);
+            register("bells", 2, 1);
+            register("crystal", 3, 3);
+            register("harmony", 3, 3);
+            register("equality", 2, 4);
+            register("solar", 2, 4);
+            register("platinum", 2, 4);
+            register("hurricane", 2, 4);
+            register("pudding", 2, 4);
+            register("equestria", 2, 4);
+        }
     }
 }
