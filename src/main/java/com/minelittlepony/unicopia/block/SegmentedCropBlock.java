@@ -103,8 +103,23 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
 
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        super.randomTick(state, world, pos, random);
-        propagateGrowth(world, pos, state);
+        BlockPos tip = getTip(world, pos);
+        BlockPos base = getRoot(world, pos);
+
+        if (base.getY() != pos.getY()) {
+            return;
+        }
+
+        if (world.getBaseLightLevel(tip, 0) >= 9) {
+            int age = getAge(state);
+            if (age < getMaxAge()) {
+                float moisture = CropBlock.getAvailableMoisture(world.getBlockState(base).getBlock(), world, base);
+                if (random.nextInt((int)(25F / moisture) + 1) == 0) {
+                    world.setBlockState(pos, withAge(age + 1), Block.NOTIFY_LISTENERS);
+                    propagateGrowth(world, pos, state);
+                }
+            }
+        }
     }
 
     private void propagateGrowth(World world, BlockPos pos, BlockState state) {
