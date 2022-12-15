@@ -128,6 +128,8 @@ public class SphereParticle extends Particle implements Attachment {
         float[] color = ColorHelper.changeSaturation(red, green, blue, 4);
         RenderSystem.setShaderColor(color[0], color[1], color[2], alpha / 3F);
         RenderSystem.disableCull();
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
 
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         VertexConsumer buffer = immediate.getBuffer(RenderLayers.getMagicNoColor());
@@ -151,7 +153,9 @@ public class SphereParticle extends Particle implements Attachment {
 
         prevRadius = radius;
 
+        RenderSystem.enableDepthTest();
         RenderSystem.enableCull();
+        RenderSystem.depthMask(true);
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShader(GameRenderer::getParticleShader);
     }
