@@ -407,6 +407,25 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             this.hasShades = hasShades;
         }
 
+        if (!isClient() && !UItems.ALICORN_AMULET.isApplicable(entity)) {
+            if (entity.age % (10 * ItemTracker.SECONDS) == 0) {
+                if (entity.world.random.nextInt(100) == 0) {
+                    corruption.add(-1);
+                    setDirty();
+                }
+
+                if (entity.getHealth() >= entity.getMaxHealth() - 1 && !entity.getHungerManager().isNotFull()) {
+                    corruption.add(-entity.world.random.nextInt(4));
+                    setDirty();
+                }
+            }
+
+            if (entity.hurtTime == 1) {
+                corruption.add(1);
+                setDirty();
+            }
+        }
+
         tickers.forEach(Tickable::tick);
 
         super.tick();
