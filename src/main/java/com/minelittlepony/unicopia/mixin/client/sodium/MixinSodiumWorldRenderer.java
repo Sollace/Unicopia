@@ -7,11 +7,10 @@ import org.spongepowered.asm.mixin.injection.*;
 import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 
-@Mixin(SodiumWorldRenderer.class)
+@Mixin(targets = { "me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer" }, remap = false)
 abstract class MixinSodiumWorldRenderer {
     @ModifyVariable(method = "renderTileEntities", at = @At("HEAD"))
     public Long2ObjectMap<SortedSet<BlockBreakingInfo>> modifyDestruction(Long2ObjectMap<SortedSet<BlockBreakingInfo>> blockBreakingProgressions) {

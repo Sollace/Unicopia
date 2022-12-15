@@ -22,41 +22,16 @@ loom {
 
 reckon {
     scopeFromProp()
-    stageFromProp('beta', 'rc', 'final')
+    stageFromProp 'beta', 'rc', 'final'
 }
 
 repositories {
     mavenLocal()
-    maven {
-        name = 'modrinth'
-        url = "https://api.modrinth.com/maven"
-    }
-    maven {
-        name = 'modmenu'
-        url = 'https://maven.terraformersmc.com/releases'
-    }
-    maven {
-        url "https://maven.jamieswhiteshirt.com/libs-release"
-        content {
-            includeGroup "com.jamieswhiteshirt"
-        }
-    }
-    maven {
-        name = 'minelp'
-        url = 'https://repo.minelittlepony-mod.com/maven/snapshot'
-    }
-    maven {
-        name = 'minelp-release'
-        url = 'https://repo.minelittlepony-mod.com/maven/release'
-    }
-    maven {
-        name = "TerraformersMC"
-        url = "https://maven.terraformersmc.com/"
-    }
-    maven {
-        name = "Ladysnake Libs"
-        url = "https://ladysnake.jfrog.io/artifactory/mods"
-    }
+    maven { name 'entity-reach-attributes'; url 'https://maven.jamieswhiteshirt.com/libs-release' }
+    maven { name 'trinkets'; url 'https://ladysnake.jfrog.io/artifactory/mods' }
+    maven { name 'mod-menu'; url 'https://maven.terraformersmc.com/' }
+    maven { name 'minelp'; url 'https://repo.minelittlepony-mod.com/maven/snapshot' }
+    maven { name 'minelp-release'; url 'https://repo.minelittlepony-mod.com/maven/release' }
 }
 
 dependencies {
@@ -74,9 +49,6 @@ dependencies {
     include "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_attributes_version}"
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modApi "maven.modrinth:sodium:mc1.19.2-0.4.4"
-    compileOnly "org.joml:joml:1.10.4"
-
     modCompileOnly "dev.emi:trinkets:3.4.0"
 }
 
