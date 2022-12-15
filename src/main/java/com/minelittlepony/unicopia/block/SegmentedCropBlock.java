@@ -16,6 +16,8 @@ import net.minecraft.world.*;
 
 public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
 
+    static final float BASE_GROWTH_CHANCE = /*1 in */ 50F /* chance, half the speed of regular crops */;
+
     private final ItemConvertible seeds;
 
     @Nullable
@@ -114,7 +116,7 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
             int age = getAge(state);
             if (age < getMaxAge()) {
                 float moisture = CropBlock.getAvailableMoisture(world.getBlockState(base).getBlock(), world, base);
-                if (random.nextInt((int)(25F / moisture) + 1) == 0) {
+                if (random.nextInt((int)(BASE_GROWTH_CHANCE / moisture) + 1) == 0) {
                     world.setBlockState(pos, withAge(age + 1), Block.NOTIFY_LISTENERS);
                     propagateGrowth(world, pos, state);
                 }
