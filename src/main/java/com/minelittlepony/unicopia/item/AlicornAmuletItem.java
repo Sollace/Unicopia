@@ -89,7 +89,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
     public void interactWithPlayer(IItemEntity item, PlayerEntity player) {
         ItemEntity entity = (ItemEntity)item;
 
-        if (!player.world.isClient && !entity.isRemoved()) {
+        if (!player.world.isClient && !entity.isRemoved() && !player.isCreative()) {
             if (player.getPos().distanceTo(entity.getPos()) < 0.5) {
                if (entity.world.random.nextInt(150) == 0) {
                    entity.setPickupDelay(0);
@@ -115,6 +115,11 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
     @Override
     public void onUnequipped(Living<?> wearer, long timeWorn) {
+
+        if (wearer.getMaster() instanceof PlayerEntity player && player.isCreative()) {
+            return;
+        }
+
         float attachedTime = timeWorn / 100F;
 
         LocalDifficulty difficulty = wearer.getReferenceWorld().getLocalDifficulty(wearer.getOrigin());
@@ -188,7 +193,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                 reserves.getExertion().add(2);
             }
 
-            if (fullSecond && world.random.nextInt(12) == 0) {
+            if (fullSecond && world.random.nextInt(12) == 0 && !pony.getMaster().isCreative()) {
                 reserves.getEnergy().add(reserves.getEnergy().getMax() / 10F);
                 pony.getCorruption().add((int)MathHelper.clamp(attachedTicks / ItemTracker.HOURS, 1, pony.getCorruption().getMax()));
             }
