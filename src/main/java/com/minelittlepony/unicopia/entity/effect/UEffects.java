@@ -4,7 +4,8 @@ import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public interface UEffects {
     StatusEffect FOOD_POISONING = register("food_poisoning", new FoodPoisoningStatusEffect(3484199));
@@ -13,7 +14,7 @@ public interface UEffects {
     StatusEffect PARALYSIS = register("paralysis", new StatusEffect(StatusEffectCategory.HARMFUL, 0) {});
 
     private static StatusEffect register(String name, StatusEffect effect) {
-        return Registry.register(Registry.STATUS_EFFECT, Unicopia.id(name), effect);
+        return Registry.register(Registries.STATUS_EFFECT, Unicopia.id(name), effect);
     }
 
     static void bootstrap() {}

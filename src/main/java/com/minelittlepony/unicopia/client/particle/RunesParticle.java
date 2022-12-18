@@ -2,6 +2,9 @@ package com.minelittlepony.unicopia.client.particle;
 
 import java.util.Optional;
 
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+
 import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -12,12 +15,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 
 public class RunesParticle extends OrientedBillboardParticle implements Attachment {
 
@@ -89,11 +89,13 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
             targetSize = value.floatValue();
         }
         if (key == ATTR_PITCH) {
-            rotation = new Quaternion(0, 0, 0, 1);
-            rotation.hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(value.floatValue()));
+            rotation = new Quaternionf(0, 0, 0, 1);
+            // TODO: Was hamiltonianProduct (CHECK!!!)
+            rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees(value.floatValue()));
         }
         if (key == ATTR_YAW) {
-            rotation.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(180 - value.floatValue()));
+            // TODO: Was hamiltonianProduct (CHECK!!!)
+            rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(180 - value.floatValue()));
         }
     }
 
@@ -129,27 +131,27 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
                 RenderSystem.setShaderTexture(0, TEXTURES[i]);
                 RenderSystem.setShaderColor(red, green, blue, alpha / ((float)(dim * 3) + 1));
 
-                Vec3f[] corners = new Vec3f[]{
-                        new Vec3f(-1, -1, 0),
-                        new Vec3f(-1,  1, 0),
-                        new Vec3f( 1,  1, 0),
-                        new Vec3f( 1, -1, 0)
+                Vector3f[] corners = new Vector3f[]{
+                        new Vector3f(-1, -1, 0),
+                        new Vector3f(-1,  1, 0),
+                        new Vector3f( 1,  1, 0),
+                        new Vector3f( 1, -1, 0)
                 };
                 float scale = getScale(tickDelta);
 
                 float ringSpeed = (i % 2 == 0 ? i : -1) * i;
 
-                Quaternion ringAngle = Vec3f.POSITIVE_Z.getDegreesQuaternion(angle * ringSpeed);
-                Quaternion ringFlip = Vec3f.POSITIVE_Y.getDegreesQuaternion(angle * ringSpeed * dim);
-                Quaternion ringRoll = Vec3f.POSITIVE_X.getDegreesQuaternion(angle * ringSpeed * dim);
+                Quaternionf ringAngle = RotationAxis.POSITIVE_Z.rotationDegrees(angle * ringSpeed);
+                Quaternionf ringFlip = RotationAxis.POSITIVE_Y.rotationDegrees(angle * ringSpeed * dim);
+                Quaternionf ringRoll = RotationAxis.POSITIVE_X.rotationDegrees(angle * ringSpeed * dim);
 
                 for(int k = 0; k < 4; ++k) {
-                   Vec3f corner = corners[k];
+                   Vector3f corner = corners[k];
                    corner.rotate(ringAngle);
                    corner.rotate(ringFlip);
                    corner.rotate(ringRoll);
                    corner.rotate(rotation);
-                   corner.scale(scale);
+                   corner.mul(scale);
                    corner.add(x, y + 0.001F, z);
                 }
 

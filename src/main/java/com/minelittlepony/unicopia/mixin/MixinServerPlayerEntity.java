@@ -15,7 +15,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 @Mixin(ServerPlayerEntity.class)
 abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHandlerListener, PonyContainer<Pony>, ServerPlayerEntityDuck {
-    MixinServerPlayerEntity() {super(null, null, 0, null, null);}
+    MixinServerPlayerEntity() {super(null, null, 0, null);}
 
     @Override
     @Accessor("inTeleportationState")

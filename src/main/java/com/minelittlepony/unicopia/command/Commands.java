@@ -23,7 +23,7 @@ public class Commands {
             if (Unicopia.getConfig().enableCheats.get()) {
                 SpeciesCommand.register(dispatcher);
                 GravityCommand.register(dispatcher);
-                DisguiseCommand.register(dispatcher);
+                DisguiseCommand.register(dispatcher, access);
                 if (Debug.DEBUG_COMMANDS) {
                     TraitCommand.register(dispatcher);
                     ManaCommand.register(dispatcher);

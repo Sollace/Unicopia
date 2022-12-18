@@ -31,7 +31,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.explosion.Explosion.DestructionType;
+import net.minecraft.world.World.ExplosionSourceType;
 
 /**
  * More powerful version of the vortex spell which creates a black hole.
@@ -61,7 +61,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
     public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
         if (!projectile.isClient()) {
             BlockPos pos = hit.getBlockPos();
-            projectile.world.createExplosion(projectile, pos.getX(), pos.getY(), pos.getZ(), 3, DestructionType.NONE);
+            projectile.world.createExplosion(projectile, pos.getX(), pos.getY(), pos.getZ(), 3, ExplosionSourceType.NONE);
             toPlaceable().tick(projectile, Situation.BODY);
         }
     }

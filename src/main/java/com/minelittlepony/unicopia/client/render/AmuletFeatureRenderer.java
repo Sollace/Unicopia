@@ -24,7 +24,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class AmuletFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
 
@@ -45,7 +45,7 @@ public class AmuletFeatureRenderer<E extends LivingEntity> implements AccessoryF
         ItemStack stack = AmuletItem.getForEntity(entity);
 
         if (!stack.isEmpty()) {
-            Identifier texture = textures.computeIfAbsent(Registry.ITEM.getId(stack.getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));
+            Identifier texture = textures.computeIfAbsent(Registries.ITEM.getId(stack.getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));
 
             VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(texture), false, false);
 

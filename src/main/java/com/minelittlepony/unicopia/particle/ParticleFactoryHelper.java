@@ -9,13 +9,14 @@ import net.minecraft.command.argument.ParticleEffectArgumentType;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.Vec3d;
 
 public interface ParticleFactoryHelper {
 
     @SuppressWarnings("unchecked")
     static <T extends ParticleEffect> Optional<T> read(StringReader reader) throws CommandSyntaxException {
-        return Optional.ofNullable((T)ParticleEffectArgumentType.readParameters(reader));
+        return Optional.ofNullable((T)ParticleEffectArgumentType.readParameters(reader, Registries.PARTICLE_TYPE.getReadOnlyWrapper()));
     }
 
     @SuppressWarnings("deprecation")

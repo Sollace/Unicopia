@@ -36,7 +36,7 @@ public class ClientNetworkHandlerImpl implements ClientNetworkHandler {
     @Override
     public void handleSpawnProjectile(MsgSpawnProjectile packet) {
         ClientWorld world = client.world;
-        Entity entity = packet.getEntityTypeId().create(world);
+        Entity entity = packet.getEntityType().create(world);
 
         entity.updateTrackedPosition(packet.getX(), packet.getY(), packet.getZ());
         entity.refreshPositionAfterTeleport(packet.getX(), packet.getY(), packet.getZ());

@@ -15,47 +15,47 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
-import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.EntitySummonArgumentType;
-import net.minecraft.command.argument.NbtCompoundArgumentType;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.command.argument.*;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.GameRules;
 
 public class DisguiseCommand {
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.disguise.notfound"));
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries) {
         dispatcher.register(CommandManager
             .literal("disguise")
             .requires(s -> s.hasPermissionLevel(2))
             .executes(context -> reveal(context.getSource(), context.getSource().getPlayer()))
             .then(
                 CommandManager.argument("target", EntityArgumentType.players())
-                .then(buildEntityDisguise(context -> EntityArgumentType.getPlayer(context, "target")))
+                .then(buildEntityDisguise(context -> EntityArgumentType.getPlayer(context, "target"), registries))
                 .then(buildPlayerDisguise(context -> EntityArgumentType.getPlayer(context, "target")))
             )
-            .then(buildEntityDisguise(context -> context.getSource().getPlayer()))
+            .then(buildEntityDisguise(context -> context.getSource().getPlayer(), registries))
             .then(buildPlayerDisguise(context -> context.getSource().getPlayer()))
         );
     }
 
-    private static ArgumentBuilder<ServerCommandSource, ?> buildEntityDisguise(Arg<ServerPlayerEntity> targetOp) {
-        return CommandManager.argument("entity", EntitySummonArgumentType.entitySummon())
+    private static ArgumentBuilder<ServerCommandSource, ?> buildEntityDisguise(Arg<ServerPlayerEntity> targetOp, CommandRegistryAccess registries) {
+        return CommandManager.argument("entity", RegistryEntryArgumentType.registryEntry(registries, RegistryKeys.ENTITY_TYPE))
                     .suggests(SuggestionProviders.SUMMONABLE_ENTITIES)
                     .executes(context -> disguise(
                         context.getSource(),
                         targetOp.apply(context),
                         loadEntity(context.getSource(),
-                            EntitySummonArgumentType.getEntitySummon(context, "entity"),
+                            RegistryEntryArgumentType.getSummonableEntityType(context, "entity"),
                             new NbtCompound())))
         .then(
                 CommandManager.argument("nbt", NbtCompoundArgumentType.nbtCompound())
@@ -63,7 +63,7 @@ public class DisguiseCommand {
                         context.getSource(),
                         targetOp.apply(context),
                         loadEntity(context.getSource(),
-                            EntitySummonArgumentType.getEntitySummon(context, "entity"),
+                            RegistryEntryArgumentType.getSummonableEntityType(context, "entity"),
                             NbtCompoundArgumentType.getNbtCompound(context, "nbt"))))
         );
     }
@@ -99,9 +99,9 @@ public class DisguiseCommand {
         return 0;
     }
 
-    static Entity loadEntity(ServerCommandSource source, Identifier id, NbtCompound nbt) {
+    static Entity loadEntity(ServerCommandSource source, RegistryEntry.Reference<EntityType<?>> entityType, NbtCompound nbt) {
         nbt = nbt.copy();
-        nbt.putString("id", id.toString());
+        nbt.putString("id", entityType.registryKey().getValue().toString());
         return EntityType.loadEntityWithPassengers(nbt, source.getWorld(), Function.identity());
     }
 

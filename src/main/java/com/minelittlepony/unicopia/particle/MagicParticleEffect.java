@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.particle;
 
 import java.util.Locale;
 
+import org.joml.Vector3f;
+
 import com.minelittlepony.common.util.Color;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -10,17 +12,16 @@ import net.minecraft.particle.AbstractDustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class MagicParticleEffect implements ParticleEffect {
-    public static final MagicParticleEffect UNICORN = new MagicParticleEffect(false, Vec3f.ZERO);
+    public static final MagicParticleEffect UNICORN = new MagicParticleEffect(false, new Vector3f());
     @SuppressWarnings("deprecation")
     public static final ParticleEffect.Factory<MagicParticleEffect> FACTORY = ParticleFactoryHelper.of(MagicParticleEffect::new, MagicParticleEffect::new);
 
     private final boolean tinted;
-    private final Vec3f color;
+    private final Vector3f color;
 
     protected MagicParticleEffect(ParticleType<MagicParticleEffect> particleType, StringReader reader) throws CommandSyntaxException {
         this(ParticleFactoryHelper.readBoolean(reader), AbstractDustParticleEffect.readColor(reader));
@@ -31,14 +32,14 @@ public class MagicParticleEffect implements ParticleEffect {
     }
 
     public MagicParticleEffect(int tint) {
-        this(true, new Vec3f(Color.r(tint), Color.g(tint), Color.b(tint)));
+        this(true, new Vector3f(Color.r(tint), Color.g(tint), Color.b(tint)));
     }
 
-    public MagicParticleEffect(Vec3f color) {
+    public MagicParticleEffect(Vector3f color) {
         this(true, color);
     }
 
-    protected MagicParticleEffect(boolean tint, Vec3f color) {
+    protected MagicParticleEffect(boolean tint, Vector3f color) {
         tinted = tint;
         this.color = color;
     }
@@ -47,7 +48,7 @@ public class MagicParticleEffect implements ParticleEffect {
         return tinted;
     }
 
-    public Vec3f getColor(Random random) {
+    public Vector3f getColor(Random random) {
         if (hasTint()) {
             return color;
         }
@@ -62,7 +63,7 @@ public class MagicParticleEffect implements ParticleEffect {
             r *= 3.9F;
         }
 
-        return new Vec3f(r, g, b);
+        return new Vector3f(r, g, b);
     }
 
     @Override
@@ -73,14 +74,14 @@ public class MagicParticleEffect implements ParticleEffect {
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeBoolean(tinted);
-        buf.writeFloat(color.getX());
-        buf.writeFloat(color.getY());
-        buf.writeFloat(color.getZ());
+        buf.writeFloat(color.x);
+        buf.writeFloat(color.y);
+        buf.writeFloat(color.z);
     }
 
     @Override
     public String asString() {
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f", Registry.PARTICLE_TYPE.getId(getType()), color.getX(), color.getY(), color.getZ());
+        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f", Registries.PARTICLE_TYPE.getId(getType()), color.x, color.y, color.z);
     }
 
 }

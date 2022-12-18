@@ -16,10 +16,9 @@ import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 
 import net.minecraft.nbt.*;
+import net.minecraft.registry.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 /**
@@ -204,7 +203,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         if (compound.contains("dimension", NbtElement.STRING_TYPE)) {
             Identifier id = Identifier.tryParse(compound.getString("dimension"));
             if (id != null) {
-                dimension = RegistryKey.of(Registry.WORLD_KEY, id);
+                dimension = RegistryKey.of(RegistryKeys.WORLD, id);
             }
         }
         if (compound.contains("castEntity")) {

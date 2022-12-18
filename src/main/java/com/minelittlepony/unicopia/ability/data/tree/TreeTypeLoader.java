@@ -17,7 +17,7 @@ import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
     private static final Identifier ID = Unicopia.id("data/tree_type");
@@ -96,7 +96,7 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
             }
 
             void appendDrop(Weighted.Builder<Supplier<ItemStack>> weighted) {
-                Registry.ITEM.getOrEmpty(item).ifPresent(item -> {
+                Registries.ITEM.getOrEmpty(item).ifPresent(item -> {
                     weighted.put(weight, item::getDefaultStack);
                 });
             }

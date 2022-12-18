@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.item.toxin;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.util.Registries;
 
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 import static com.minelittlepony.unicopia.item.toxin.Toxicity.*;
 import static com.minelittlepony.unicopia.item.toxin.Ailment.*;

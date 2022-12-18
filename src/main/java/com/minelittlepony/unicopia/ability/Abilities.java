@@ -12,7 +12,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Registries;
 
 import net.minecraft.util.*;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public interface Abilities {
     Registry<Ability<?>> REGISTRY = Registries.createSimple(Unicopia.id("abilities"));

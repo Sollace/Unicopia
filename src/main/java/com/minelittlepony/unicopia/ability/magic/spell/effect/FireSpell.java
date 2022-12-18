@@ -28,13 +28,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion.DestructionType;
+import net.minecraft.world.World.ExplosionSourceType;
 
 /**
  * Simple fire spell that triggers an effect when used on a block.
@@ -52,7 +52,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
     public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
         if (!projectile.isClient()) {
             Vec3d pos = hit.getPos();
-            projectile.getReferenceWorld().createExplosion(projectile.getOwner(), pos.getX(), pos.getY(), pos.getZ(), 2, DestructionType.DESTROY);
+            projectile.getReferenceWorld().createExplosion(projectile.getOwner(), pos.getX(), pos.getY(), pos.getZ(), 2, ExplosionSourceType.MOB);
         }
     }
 
@@ -60,7 +60,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         if (!projectile.isClient()) {
             Entity entity = hit.getEntity();
-            projectile.getReferenceWorld().createExplosion(projectile.getOwner(), entity.getX(), entity.getY(), entity.getZ(), 2, DestructionType.DESTROY);
+            projectile.getReferenceWorld().createExplosion(projectile.getOwner(), entity.getX(), entity.getY(), entity.getZ(), 2, ExplosionSourceType.MOB);
         }
     }
 

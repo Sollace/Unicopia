@@ -15,7 +15,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class AwkwardSpell extends AbstractSpell implements TimedSpell {
 
@@ -47,12 +47,12 @@ public class AwkwardSpell extends AbstractSpell implements TimedSpell {
         if (source.isClient()) {
             source.spawnParticles(new Sphere(false, (1 + source.getLevel().getScaled(8)) * 8), 10, pos -> {
 
-                List<Identifier> names = new ArrayList<>(Registry.PARTICLE_TYPE.getIds());
+                List<Identifier> names = new ArrayList<>(Registries.PARTICLE_TYPE.getIds());
 
                 int index = (int)MathHelper.nextDouble(source.getReferenceWorld().random, 0, names.size());
 
                 Identifier id = names.get(index);
-                ParticleType<?> type = Registry.PARTICLE_TYPE.get(id);
+                ParticleType<?> type = Registries.PARTICLE_TYPE.get(id);
 
                 if (type instanceof ParticleEffect && shouldSpawnParticle(type)) {
                     source.addParticle((ParticleEffect)type, pos, Vec3d.ZERO);

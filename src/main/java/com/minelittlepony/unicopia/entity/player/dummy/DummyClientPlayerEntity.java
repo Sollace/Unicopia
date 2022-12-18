@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.entity.player.dummy;
 
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,8 +14,6 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
-import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 
 public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implements Owned<PlayerEntity> {
@@ -27,7 +23,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
     private PlayerEntity owner;
 
     public DummyClientPlayerEntity(ClientWorld world, GameProfile profile) {
-        super(world, profile, null);
+        super(world, profile);
     }
 
     @Override
@@ -49,7 +45,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
             playerInfo = connection.getPlayerListEntry(getGameProfile().getId());
 
             if (playerInfo == null) {
-                playerInfo = new PlayerListEntry(new Packet().entry(), MinecraftClient.getInstance().getServicesSignatureVerifier(), false);
+                playerInfo = new PlayerListEntry(getGameProfile(), false);
             }
         }
 
@@ -75,19 +71,5 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
     @Override
     public void setMaster(PlayerEntity owner) {
         this.owner = owner;
-    }
-
-    private final class Packet extends PlayerListS2CPacket {
-        public Packet() {
-            super(PlayerListS2CPacket.Action.ADD_PLAYER, List.of());
-        }
-
-        PlayerListS2CPacket.Entry entry() {
-            return new PlayerListS2CPacket.Entry(
-                    getGameProfile(),
-                    0,
-                    GameMode.DEFAULT,
-                    Text.literal(getGameProfile().getName()), null);
-        }
     }
 }

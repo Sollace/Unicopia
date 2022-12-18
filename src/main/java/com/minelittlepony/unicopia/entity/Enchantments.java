@@ -20,7 +20,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class Enchantments implements NbtSerialisable, Tickable {
 
@@ -77,7 +77,7 @@ public class Enchantments implements NbtSerialisable, Tickable {
     public void toNBT(NbtCompound compound) {
         NbtList list = new NbtList();
         equippedEnchantments.forEach(enchant -> {
-            Identifier id = Registry.ENCHANTMENT.getId(enchant);
+            Identifier id = Registries.ENCHANTMENT.getId(enchant);
             if (id != null) {
                 list.add(NbtString.of(id.toString()));
             }
@@ -90,7 +90,7 @@ public class Enchantments implements NbtSerialisable, Tickable {
         equippedEnchantments.clear();
         if (compound.contains("enchants")) {
             compound.getList("enchants", 8).forEach(tag -> {
-                Registry.ENCHANTMENT.getOrEmpty(new Identifier(tag.asString())).ifPresent(equippedEnchantments::add);
+                Registries.ENCHANTMENT.getOrEmpty(new Identifier(tag.asString())).ifPresent(equippedEnchantments::add);
             });
         }
     }

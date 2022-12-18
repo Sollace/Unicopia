@@ -25,15 +25,12 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 
 public class WorldRenderDelegate {
     public static final WorldRenderDelegate INSTANCE = new WorldRenderDelegate();
@@ -119,8 +116,8 @@ public class WorldRenderDelegate {
 
         matrices.translate(x, y + owner.getHeight() / 2, z);
 
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(roll));
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(roll));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(roll));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(roll));
 
         if (pony instanceof Pony) {
             roll = ((Pony)pony).getCamera().calculateRoll();
@@ -128,9 +125,9 @@ public class WorldRenderDelegate {
                 roll -= 180;
             }
 
-            matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(yaw));
-            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(roll));
-            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(yaw));
+            matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(yaw));
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(roll));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
         }
 
         matrices.translate(-x, -y - owner.getHeight() / 2, -z);
@@ -205,7 +202,7 @@ public class WorldRenderDelegate {
                 matrices.translate(x, y, z);
 
                 matrices.multiply(direction.getRotationQuaternion());
-                matrices.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(90));
+                matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(90));
 
                 matrices.translate(-0.5, 0, -0.5);
 

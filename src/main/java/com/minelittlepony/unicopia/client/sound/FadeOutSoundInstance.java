@@ -98,6 +98,6 @@ public abstract class FadeOutSoundInstance extends MovingSoundInstance {
         if (muted) {
             return 0.001F;
         }
-        return getLerpedVolume() * sound.getVolume().get(field_38800);
+        return getLerpedVolume() * sound.getVolume().get(random);
     }
 }

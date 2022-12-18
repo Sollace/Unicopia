@@ -3,7 +3,8 @@ package com.minelittlepony.unicopia;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public interface USounds {
     SoundEvent AMBIENT_WIND_GUST = register("ambient.wind.gust");
@@ -88,7 +89,7 @@ public interface USounds {
 
     static SoundEvent register(String name) {
         Identifier id = Unicopia.id(name);
-        return Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(id));
+        return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));
     }
 
     static void bootstrap() {}

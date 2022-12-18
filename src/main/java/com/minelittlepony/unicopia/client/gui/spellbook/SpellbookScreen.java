@@ -292,7 +292,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 
             RenderSystem.setShaderColor(1, 1, 1, alpha);
             RenderSystem.defaultBlendFunc();
@@ -301,7 +301,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
                     GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
             if (getStyle().hasIcon()) {
-                getStyle().getIcon().render(matrices, x, y, mouseX, mouseY, tickDelta);
+                getStyle().getIcon().render(matrices, getX(), getY(), mouseX, mouseY, tickDelta);
             }
 
             RenderSystem.setShaderColor(1, 1, 1, 1);

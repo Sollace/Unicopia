@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
+
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
 
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vector4f;
 
 public class SphereModel {
     public static final SphereModel SPHERE = new SphereModel(40, 40, DrawableUtil.TAU);
@@ -35,9 +36,9 @@ public class SphereModel {
 
         Matrix4f model = matrices.peek().getPositionMatrix();
         for (Vector4f vertex : vertices) {
-            drawVert.set(vertex.getX() * radius, vertex.getY() * radius, vertex.getZ() * radius, vertex.getW());
-            drawVert.transform(model);
-            vertexWriter.vertex(drawVert.getX(), drawVert.getY(), drawVert.getZ(), r, g, b, a, 0, 0, overlay, light, 0, 0, 0);
+            drawVert.set(vertex.x * radius, vertex.y * radius, vertex.z * radius, vertex.w);
+            drawVert.mul(model);
+            vertexWriter.vertex(drawVert.x, drawVert.y, drawVert.z, r, g, b, a, 0, 0, overlay, light, 0, 0, 0);
         }
     }
 

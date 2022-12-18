@@ -14,7 +14,8 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.enchantment.EnchantmentTarget;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public interface UEnchantments {
 
@@ -81,6 +82,6 @@ public interface UEnchantments {
 
     static <T extends SimpleEnchantment> T register(String name, T enchantment) {
         REGISTRY.add(enchantment);
-        return Registry.register(Registry.ENCHANTMENT, Unicopia.id(name), enchantment);
+        return Registry.register(Registries.ENCHANTMENT, Unicopia.id(name), enchantment);
     }
 }

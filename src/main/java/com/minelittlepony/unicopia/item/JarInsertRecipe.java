@@ -3,13 +3,14 @@ package com.minelittlepony.unicopia.item;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
 public class JarInsertRecipe extends ItemCombinationRecipe {
 
-    public JarInsertRecipe(Identifier id) {
-        super(id);
+    public JarInsertRecipe(Identifier id, CraftingRecipeCategory category) {
+        super(id, category);
     }
 
     @Override

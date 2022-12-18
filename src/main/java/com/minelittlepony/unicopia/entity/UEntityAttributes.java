@@ -8,7 +8,8 @@ import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public interface UEntityAttributes {
     List<EntityAttribute> REGISTRY = new ArrayList<>();
@@ -20,7 +21,7 @@ public interface UEntityAttributes {
 
     private static EntityAttribute register(String name, EntityAttribute attribute) {
         REGISTRY.add(attribute);
-        return Registry.register(Registry.ATTRIBUTE, Unicopia.id(name), attribute);
+        return Registry.register(Registries.ATTRIBUTE, Unicopia.id(name), attribute);
     }
 
     static void bootstrap() {}

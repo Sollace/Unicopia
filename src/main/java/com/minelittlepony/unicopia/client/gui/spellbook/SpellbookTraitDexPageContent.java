@@ -128,7 +128,7 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
                     .sorted(Comparator.comparing(u -> knownItems.contains(u) ? 0 : 1))
                     .forEach(i -> {
                         DefaultedList<ItemStack> stacks = DefaultedList.of();
-                        i.appendStacks(ItemGroup.SEARCH, stacks);
+                        i.appendStacks(ItemGroups.SEARCH, stacks);
                         if (knownItems.contains(i)) {
                             tree.input(stacks);
                         } else {
@@ -205,14 +205,14 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
             RenderSystem.setShaderColor(1, 1, 1, 1);
             RenderSystem.setShaderTexture(0, SpellbookScreen.TEXTURE);
             RenderSystem.enableBlend();
-            drawTexture(matrices, x - 2, y - 8, 204, 219, 22, 32, 512, 256);
+            drawTexture(matrices, getX() - 2, getY() - 8, 204, 219, 22, 32, 512, 256);
 
             if (!active) {
-                drawTexture(matrices, x - 2, y - 1, 74, 223, 18, 18, 512, 256);
+                drawTexture(matrices, getX() - 2, getY() - 1, 74, 223, 18, 18, 512, 256);
             }
 
             if (discoveries.isUnread(trait)) {
-                drawTexture(matrices, x - 8, y - 8, 225, 219, 35, 32, 512, 256);
+                drawTexture(matrices, getX() - 8, getY() - 8, 225, 219, 35, 32, 512, 256);
             }
 
             super.renderButton(matrices, mouseX, mouseY, tickDelta);

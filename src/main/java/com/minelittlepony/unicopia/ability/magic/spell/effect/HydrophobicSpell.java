@@ -18,7 +18,7 @@ import net.minecraft.block.*;
 import net.minecraft.fluid.*;
 import net.minecraft.nbt.*;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;

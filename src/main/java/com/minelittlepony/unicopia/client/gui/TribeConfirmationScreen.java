@@ -3,12 +3,12 @@ package com.minelittlepony.unicopia.client.gui;
 import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.common.client.gui.GameGui;
+import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.unicopia.Race;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
@@ -33,8 +33,12 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
 
         int top = (height - columnHeight) / 2;
 
-        addDrawableChild(new ButtonWidget(width / 2 + 5, top + columnHeight + padding, 100, 20, Text.translatable("Join Tribe"), b -> callback.accept(true)));
-        addDrawableChild(new ButtonWidget(width / 2 - 105, top + columnHeight + padding, 100, 20, Text.translatable("Go Back"), b -> callback.accept(false)));
+        addDrawableChild(new Button(width / 2 + 5, top + columnHeight + padding, 100, 20))
+            .onClick(b -> callback.accept(true))
+            .getStyle().setText("Join Tribe");
+        addDrawableChild(new Button(width / 2 - 105, top + columnHeight + padding, 100, 20))
+            .onClick(b -> callback.accept(false))
+            .getStyle().setText("Go Back");
 
         addDrawable(new Label(width / 2, top - 30).setCentered()).getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.confirm", selection.getDisplayName().copy().formatted(Formatting.YELLOW)));
 

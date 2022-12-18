@@ -185,7 +185,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMove(PlayerEntity player, int index) {
         Slot sourceSlot = slots.get(index);
 
         if (sourceSlot == null || !sourceSlot.hasStack()) {

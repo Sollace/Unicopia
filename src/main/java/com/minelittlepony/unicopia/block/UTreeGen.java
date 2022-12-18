@@ -3,10 +3,10 @@ package com.minelittlepony.unicopia.block;
 import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.block.*;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
 import net.minecraft.world.gen.foliage.JungleFoliagePlacer;
 import net.minecraft.world.gen.trunk.StraightTrunkPlacer;
@@ -18,7 +18,7 @@ public interface UTreeGen {
                     UniformIntProvider.create(3, 6),
                     0.3f,
                     UniformIntProvider.create(1, 3),
-                    Registry.BLOCK.getOrCreateEntryList(BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH)
+                    Registries.BLOCK.getOrCreateEntryList(BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH)
             ), new JungleFoliagePlacer(
                     ConstantIntProvider.create(3),
                     ConstantIntProvider.create(2),

@@ -94,10 +94,10 @@ public class ViewportShader implements SynchronousResourceReloader, Identifiable
         }
     }
 
-    static class LoadedShader extends ShaderEffect {
+    static class LoadedShader extends PostEffectProcessor {
         private final Object2FloatMap<String> uniformValues = new Object2FloatOpenHashMap<>();
 
-        private Multimap<String, JsonEffectGlShader> programs;
+        private Multimap<String, JsonEffectShaderProgram> programs;
 
         private final Identifier id;
 
@@ -111,8 +111,8 @@ public class ViewportShader implements SynchronousResourceReloader, Identifiable
         }
 
         @Override
-        public PostProcessShader addPass(String programName, Framebuffer source, Framebuffer dest) throws IOException {
-            PostProcessShader pass = super.addPass(programName, source, dest);
+        public PostEffectPass addPass(String programName, Framebuffer source, Framebuffer dest) throws IOException {
+            PostEffectPass pass = super.addPass(programName, source, dest);
             if (programs == null) {
                programs = LinkedListMultimap.create();
             }

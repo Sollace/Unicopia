@@ -29,7 +29,7 @@ public class TribeButton extends Button {
 
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, TribeSelectionScreen.TEXTURE);
         RenderSystem.setShaderColor(1, 1, 1, alpha);
         RenderSystem.enableBlend();
@@ -41,18 +41,18 @@ public class TribeButton extends Button {
 
         MinecraftClient mc = MinecraftClient.getInstance();
 
-        drawTexture(matrices, x  - 3, y - 13, 0, 0, 76, 69);
+        drawTexture(matrices, getX()  - 3, getY() - 13, 0, 0, 76, 69);
         if (isHovered()) {
-            drawTexture(matrices, x  - 4, y - 14, 76, 0, 78, 71);
+            drawTexture(matrices, getX()  - 4, getY() - 14, 76, 0, 78, 71);
 
             if (hovered && screenWidth > 0) {
                 Identifier id = Race.REGISTRY.getId(race);
-                drawCenteredText(matrices, getFont(), Text.translatable("gui.unicopia.tribe_selection.describe." + id.getNamespace() + "." + id.getPath()), screenWidth / 2, y + height, 0xFFFFFFFF);
+                drawCenteredText(matrices, getFont(), Text.translatable("gui.unicopia.tribe_selection.describe." + id.getNamespace() + "." + id.getPath()), screenWidth / 2, getY() + height, 0xFFFFFFFF);
             }
         }
 
         if (getStyle().hasIcon()) {
-            getStyle().getIcon().render(matrices, x, y, mouseX, mouseY, partialTicks);
+            getStyle().getIcon().render(matrices, getX(), getY(), mouseX, mouseY, partialTicks);
         }
 
         int foreColor = getStyle().getColor();

@@ -5,8 +5,8 @@ import com.minelittlepony.unicopia.item.toxin.Toxics;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.*;
+import net.minecraft.registry.tag.TagKey;
 
 public interface UTags {
     TagKey<Item> APPLES = item("apples");
@@ -35,15 +35,15 @@ public interface UTags {
     TagKey<EntityType<?>> TRANSFORMABLE_ENTITIES = entity("transformable");
 
     static TagKey<Item> item(String name) {
-        return TagKey.of(Registry.ITEM_KEY, Unicopia.id(name));
+        return TagKey.of(RegistryKeys.ITEM, Unicopia.id(name));
     }
 
     static TagKey<Block> block(String name) {
-        return TagKey.of(Registry.BLOCK_KEY, Unicopia.id(name));
+        return TagKey.of(RegistryKeys.BLOCK, Unicopia.id(name));
     }
 
     static TagKey<EntityType<?>> entity(String name) {
-        return TagKey.of(Registry.ENTITY_TYPE_KEY, Unicopia.id(name));
+        return TagKey.of(RegistryKeys.ENTITY_TYPE, Unicopia.id(name));
     }
 
     static void bootstrap() {

@@ -25,10 +25,10 @@ public class TextBlock extends Label {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
-        int textY = (int)(y + MinecraftClient.getInstance().textRenderer.fontHeight/1.5F);
+        int textY = (int)(getY() + MinecraftClient.getInstance().textRenderer.fontHeight/1.5F);
 
         for (OrderedText line : getFont().wrapLines(getStyle().getText(), maxWidth)) {
-            getFont().drawWithShadow(matrices, line, x, textY, getStyle().getColor());
+            getFont().drawWithShadow(matrices, line, getX(), textY, getStyle().getColor());
             textY += getFont().fontHeight;
         }
     }

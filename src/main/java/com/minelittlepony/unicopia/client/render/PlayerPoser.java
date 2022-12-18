@@ -17,8 +17,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Arm;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.*;
 
 public class PlayerPoser {
     public static final PlayerPoser INSTANCE = new PlayerPoser();
@@ -200,7 +199,7 @@ public class PlayerPoser {
 
     private void rearUp(MatrixStack matrices, BipedEntityModel<?> model, float progress) {
         matrices.translate(0, 0, 0.5);
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-45 * progress));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-45 * progress));
         matrices.translate(0, 0, -0.5);
 
         float roll = progress / 2F;

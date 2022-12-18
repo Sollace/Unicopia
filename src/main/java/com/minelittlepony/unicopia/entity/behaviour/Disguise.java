@@ -118,7 +118,7 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
     }
 
     public static abstract class PlayerAccess extends PlayerEntity {
-        public PlayerAccess() { super(null, null, 0, null, null); }
+        public PlayerAccess() { super(null, null, 0, null); }
         public static TrackedData<Byte> getModelBitFlag() {
             return PLAYER_MODEL_PARTS;
         }

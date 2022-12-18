@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.util.network;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -15,7 +16,7 @@ public interface S2CPacketType<T extends Packet<? extends PlayerEntity>> {
         ServerPlayNetworking.send(recipient, getId(), packet.toBuffer());
     }
 
-    default net.minecraft.network.Packet<?> toPacket(T packet) {
+    default net.minecraft.network.Packet<ClientPlayPacketListener> toPacket(T packet) {
         return ServerPlayNetworking.createS2CPacket(getId(), packet.toBuffer());
     }
 }

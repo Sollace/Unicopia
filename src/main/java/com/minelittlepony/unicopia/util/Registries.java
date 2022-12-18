@@ -5,18 +5,20 @@ import java.util.stream.Stream;
 import com.mojang.serialization.Lifecycle;
 
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.*;
+import net.minecraft.registry.*;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.world.World;
 
 public interface Registries {
     static <T> Registry<T> createSimple(Identifier id) {
-        return FabricRegistryBuilder.from(new SimpleRegistry<T>(RegistryKey.ofRegistry(id), Lifecycle.stable(), null)).buildAndRegister();
+        return FabricRegistryBuilder.from(new SimpleRegistry<T>(RegistryKey.ofRegistry(id), Lifecycle.stable())).buildAndRegister();
     }
 
     static <T> Registry<T> createDefaulted(Identifier id, String def) {
-        return FabricRegistryBuilder.from(new DefaultedRegistry<T>(def, RegistryKey.ofRegistry(id), Lifecycle.stable(), null)).buildAndRegister();
+        return FabricRegistryBuilder.from(new SimpleDefaultedRegistry<T>(def, RegistryKey.ofRegistry(id), Lifecycle.stable(), true)).buildAndRegister();
     }
 
     static <T> RegistryEntryList<T> entriesForTag(World world, TagKey<T> key) {

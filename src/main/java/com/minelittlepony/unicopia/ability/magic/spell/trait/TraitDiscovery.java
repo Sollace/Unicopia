@@ -28,7 +28,7 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import net.minecraft.world.World;
 
 public class TraitDiscovery implements NbtSerialisable {
@@ -66,7 +66,7 @@ public class TraitDiscovery implements NbtSerialisable {
             return;
         }
         SpellTraits traits = SpellTraits.of(item);
-        items.put(Registry.ITEM.getId(item), traits);
+        items.put(Registries.ITEM.getId(item), traits);
         Set<Trait> newTraits = new HashSet<>();
         traits.entries().forEach(e -> {
             if (this.traits.add(e.getKey())) {
@@ -81,13 +81,13 @@ public class TraitDiscovery implements NbtSerialisable {
     }
 
     public SpellTraits getKnownTraits(Item item) {
-        return items.getOrDefault(Registry.ITEM.getId(item), SpellTraits.EMPTY);
+        return items.getOrDefault(Registries.ITEM.getId(item), SpellTraits.EMPTY);
     }
 
     public Stream<Item> getKnownItems(Trait trait) {
         return items.entrySet().stream()
                 .filter(entry -> entry.getValue().get(trait) > 0)
-                .flatMap(entry -> Registry.ITEM.getOrEmpty(entry.getKey()).stream());
+                .flatMap(entry -> Registries.ITEM.getOrEmpty(entry.getKey()).stream());
     }
 
     public boolean isUnread() {
@@ -143,7 +143,7 @@ public class TraitDiscovery implements NbtSerialisable {
 
     private Optional<SpellTraits> loadTraits(Identifier itemId, NbtCompound nbt) {
         if (!pony.isClient()) {
-            return Registry.ITEM.getOrEmpty(itemId)
+            return Registries.ITEM.getOrEmpty(itemId)
                     .flatMap(item -> Optional.of(SpellTraits.of(item)))
                     .filter(SpellTraits::isPresent)
                     .or(() -> SpellTraits.fromNbt(nbt));

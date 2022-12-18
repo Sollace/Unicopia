@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.util;
 
 import com.minelittlepony.common.client.gui.IField;
 
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public class RegistryIndexer<T> {
 

@@ -1,8 +1,5 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
-
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.SpellbookEntity;
 
@@ -10,6 +7,7 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.*;
 
 public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntity, SpellbookModel> {
     private static final Identifier TEXTURE = Unicopia.id("textures/entity/spellbook/normal.png");
@@ -38,11 +36,11 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
             float floatPosition = MathHelper.sin((entity.age + partialTicks + entity.getId()) / 20) * 0.04F;
 
             matrices.translate(0, floatPosition, 0);
-            matrices.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(60));
+            matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(60));
         } else {
             matrices.translate(-1.5F, 0.1F, 0.2F);
-            matrices.multiply(Vec3f.NEGATIVE_Z.getDegreesQuaternion(90));
-            matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(90));
+            matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(90));
+            matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(90));
         }
     }
 

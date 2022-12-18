@@ -36,9 +36,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 
 public class UHud extends DrawableHelper {
@@ -153,7 +151,7 @@ public class UHud extends DrawableHelper {
 
                     view.push();
                     view.translate(x, y, 0);
-                    view.multiply(new Quaternion(-9, xDirection * 45, 0, true));
+                    view.multiply(RotationAxis.POSITIVE_X.rotationDegrees(xDirection * 45));
                     InventoryScreen.drawEntity(0, 0, scale, 0, -20, client.player);
                     view.pop();
                     RenderSystem.applyModelViewMatrix();
@@ -235,7 +233,7 @@ public class UHud extends DrawableHelper {
             if (hasEffect) {
                 matrices.push();
                 matrices.translate(scaledWidth, 0, 0);
-                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90));
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 
                 fillGradient(matrices, 0, 0, scaledHeight, scaledWidth / 2, 0xFFFFFF | 0, 0xFFFFFF | alpha2);
                 fillGradient(matrices, 0, scaledWidth / 2, scaledHeight, scaledWidth, 0xFFFFFF | alpha2, 0xFFFFFF | 0);
@@ -302,7 +300,7 @@ public class UHud extends DrawableHelper {
 
             matrices.push();
             matrices.translate(scaledWidth, 0, 0);
-            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90));
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 
             fillGradient(matrices, 0, 0, scaledHeight, halfWidth, color | alpha1, color | alpha2);
             fillGradient(matrices, 0, scaledWidth - halfWidth, scaledHeight, scaledWidth, color | alpha2, color | alpha1);
@@ -328,7 +326,7 @@ public class UHud extends DrawableHelper {
 
             matrices.push();
             matrices.translate(scaledWidth, 0, 0);
-            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90));
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
 
             fillGradient(matrices, 0, 0, scaledHeight, halfWidth, color | alpha1, color | alpha2);
             fillGradient(matrices, 0, scaledWidth - halfWidth, scaledHeight, scaledWidth, color | alpha2, color | alpha1);
