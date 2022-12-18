@@ -6,7 +6,7 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.util.Registries;
+import com.minelittlepony.unicopia.util.RegistryUtils;
 
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.minecraft.entity.Entity;
@@ -80,7 +80,7 @@ public interface UTradeOffers {
     }
 
     private static Item random(Entity e, TagKey<Item> item, Random rng) {
-        return Registries.entriesForTag(e.world, item).getRandom(rng).get().value();
+        return RegistryUtils.entriesForTag(e.world, item).getRandom(rng).get().value();
     }
 
     static class JarredItemTradeOfferFactory implements TradeOffers.Factory {

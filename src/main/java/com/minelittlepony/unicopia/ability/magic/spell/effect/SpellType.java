@@ -19,7 +19,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.ThrowableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.util.Registries;
+import com.minelittlepony.unicopia.util.RegistryUtils;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -33,8 +33,8 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final Identifier EMPTY_ID = Unicopia.id("none");
     public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, SpellTraits.EMPTY, t -> null);
 
-    public static final Registry<SpellType<?>> REGISTRY = Registries.createSimple(Unicopia.id("spells"));
-    private static final Map<Affinity, Set<SpellType<?>>> BY_AFFINITY = new EnumMap<>(Affinity.class);
+    public static final Registry<SpellType<?>> REGISTRY = RegistryUtils.createSimple(Unicopia.id("spells"));
+    public static final Map<Affinity, Set<SpellType<?>>> BY_AFFINITY = new EnumMap<>(Affinity.class);
 
     public static final SpellType<PlaceableSpell> PLACED_SPELL = register("placed", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, PlaceableSpell::new);
     public static final SpellType<ThrowableSpell> THROWN_SPELL = register("thrown", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, ThrowableSpell::new);

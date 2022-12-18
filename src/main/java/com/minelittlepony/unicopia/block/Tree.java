@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import net.fabricmc.fabric.api.biome.v1.*;
+import net.fabricmc.fabric.api.event.registry.DynamicRegistrySetupCallback;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
 import net.minecraft.block.sapling.SaplingGenerator;
@@ -13,7 +14,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.BiomeTags;
-import net.minecraft.registry.entry.*;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.*;
 import net.minecraft.world.gen.feature.size.TwoLayersFeatureSize;
@@ -23,11 +23,35 @@ import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.trunk.TrunkPlacer;
 
 public record Tree (
-        RegistryEntry<ConfiguredFeature<TreeFeatureConfig, ?>> configuredFeature,
-        Optional<RegistryEntry<PlacedFeature>> placedFeature,
-        Optional<Block> sapling
+        Identifier id,
+        TreeFeatureConfig.Builder config,
+        RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureId,
+        Optional<RegistryKey<PlacedFeature>> placedFeatureId,
+        Optional<Block> sapling,
+        Optional<PlacementModifier> placement
     ) {
     public static final List<Tree> REGISTRY = new ArrayList<>();
+
+    private static void bootstrap() {
+        DynamicRegistrySetupCallback.EVENT.register(registries -> {
+            registries.getOptional(RegistryKeys.CONFIGURED_FEATURE).ifPresent(registry -> {
+                REGISTRY.forEach(tree -> {
+                    Registry.register(registry, tree.id(), new ConfiguredFeature<>(Feature.TREE, tree.config.build()));
+                });
+            });
+            registries.getOptional(RegistryKeys.PLACED_FEATURE).ifPresent(registry -> {
+                var reg = registries.asDynamicRegistryManager().createRegistryLookup().getOrThrow(RegistryKeys.CONFIGURED_FEATURE);
+                REGISTRY.stream().filter(tree -> tree.placedFeatureId().isPresent()).forEach(tree -> {
+                    var placedFeature = new PlacedFeature(reg.getOrThrow(tree.configuredFeatureId()),
+                            VegetationPlacedFeatures.modifiersWithWouldSurvive(tree.placement().orElseThrow(), tree.sapling().orElse(Blocks.OAK_SAPLING))
+                    );
+
+                    Registry.register(registry, tree.id, placedFeature);
+                });
+            });
+        });
+
+    }
 
     public static class Builder {
         public static final Predicate<BiomeSelectionContext> IS_FOREST = BiomeSelectors.foundInOverworld().and(BiomeSelectors.tag(BiomeTags.IS_FOREST));
@@ -92,31 +116,28 @@ public record Tree (
         }
 
         public Tree build() {
-            RegistryEntry<ConfiguredFeature<TreeFeatureConfig, ?>> configuredFeature = ConfiguredFeatures.register(id.toString(), Feature.TREE, configSupplier.map(Supplier::get)
+            RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureId = RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, id);
+            Tree tree = new Tree(id, configSupplier.map(Supplier::get)
                     .orElseGet(() -> new TreeFeatureConfig.Builder(
-                        BlockStateProvider.of(logType),
-                        trunkPlacer,
-                        BlockStateProvider.of(leavesType),
-                        foliagePlacer,
-                        size.get()
-                    ).forceDirt()).build());
-
-            Optional<Block> sapling = saplingId.map(id -> UBlocks.register(id, new SaplingBlock(new SaplingGenerator() {
+                            BlockStateProvider.of(logType),
+                            trunkPlacer,
+                            BlockStateProvider.of(leavesType),
+                            foliagePlacer,
+                            size.get()
+                        ).forceDirt()), configuredFeatureId, selector.map(selector -> {
+                RegistryKey<PlacedFeature> i = RegistryKey.of(RegistryKeys.PLACED_FEATURE, id);
+                BiomeModifications.addFeature(selector, GenerationStep.Feature.VEGETAL_DECORATION, i);
+                return i;
+            }), saplingId.map(id -> UBlocks.register(id, new SaplingBlock(new SaplingGenerator() {
                 @Override
-                protected RegistryEntry<? extends ConfiguredFeature<?, ?>> getTreeFeature(Random rng, boolean flowersNearby) {
-                    return configuredFeature;
+                protected RegistryKey<ConfiguredFeature<?, ?>> getTreeFeature(Random rng, boolean flowersNearby) {
+                    return configuredFeatureId;
                 }
-            }, FabricBlockSettings.copy(Blocks.OAK_SAPLING)), ItemGroup.DECORATIONS));
+            }, FabricBlockSettings.copy(Blocks.OAK_SAPLING)), ItemGroups.NATURAL)), countModifier);
 
-            Optional<RegistryEntry<PlacedFeature>> placedFeature = selector.map(selector -> {
-                var pf = PlacedFeatures.register(id.toString() + "_checked", configuredFeature,
-                    VegetationPlacedFeatures.modifiersWithWouldSurvive(countModifier.orElseThrow(), sapling.orElse(Blocks.OAK_SAPLING))
-                );
-                BiomeModifications.addFeature(selector, GenerationStep.Feature.VEGETAL_DECORATION, pf.getKey().get());
-                return pf;
-            });
-
-            Tree tree = new Tree(configuredFeature, placedFeature, sapling);
+            if (REGISTRY.isEmpty()) {
+                bootstrap();
+            }
 
             REGISTRY.add(tree);
             return tree;

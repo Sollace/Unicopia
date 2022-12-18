@@ -13,7 +13,7 @@ import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-import com.minelittlepony.unicopia.util.Registries;
+import com.minelittlepony.unicopia.util.RegistryUtils;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -66,7 +66,7 @@ public class TransformationSpell extends AbstractSpell implements ProjectileDele
 
     @SuppressWarnings("unchecked")
     private <T extends MobEntity> Optional<EntityType<T>> pickType(EntityType<?> except, World world) {
-        Set<EntityType<?>> options = Registries.valuesForTag(world, UTags.TRANSFORMABLE_ENTITIES).collect(Collectors.toSet());
+        Set<EntityType<?>> options = RegistryUtils.valuesForTag(world, UTags.TRANSFORMABLE_ENTITIES).collect(Collectors.toSet());
         if (except.getSpawnGroup() == SpawnGroup.MONSTER) {
             options.removeIf(t -> t.getSpawnGroup() == SpawnGroup.MONSTER);
         } else {

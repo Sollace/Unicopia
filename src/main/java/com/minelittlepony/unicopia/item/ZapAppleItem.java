@@ -1,15 +1,18 @@
 package com.minelittlepony.unicopia.item;
 
+import java.util.List;
+
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.group.MultiItem;
 import com.minelittlepony.unicopia.item.toxin.*;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.TraceHelper;
-import com.minelittlepony.unicopia.util.Registries;
+import com.minelittlepony.unicopia.util.RegistryUtils;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -24,7 +27,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
@@ -33,7 +35,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder {
+public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder, MultiItem {
     public ZapAppleItem(Settings settings) {
         super(settings);
     }
@@ -98,18 +100,15 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder {
     }
 
     @Override
-    public void appendStacks(ItemGroup tab, DefaultedList<ItemStack> items) {
-        super.appendStacks(tab, items);
-        if (tab.contains(getDefaultStack())) {
-            Unicopia.SIDE.getPony().map(Pony::getReferenceWorld)
-                    .stream()
-                    .flatMap(world -> Registries.valuesForTag(world, UTags.APPLES))
-                    .filter(a -> a != this).forEach(item -> {
-                ItemStack stack = new ItemStack(this);
-                stack.getOrCreateNbt().putString("appearance", Registries.ITEM.getId(item).toString());
-                items.add(stack);
-            });
-        }
+    public List<ItemStack> getDefaultStacks() {
+        return Unicopia.SIDE.getPony().map(Pony::getReferenceWorld)
+                .stream()
+                .flatMap(world -> RegistryUtils.valuesForTag(world, UTags.APPLES))
+                .filter(a -> a != this).map(item -> {
+            ItemStack stack = new ItemStack(this);
+            stack.getOrCreateNbt().putString("appearance", Registries.ITEM.getId(item).toString());
+            return stack;
+        }).toList();
     }
 
     @Override

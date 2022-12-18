@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.item.toxin;
 
 import com.minelittlepony.unicopia.*;
-import com.minelittlepony.unicopia.util.Registries;
+import com.minelittlepony.unicopia.util.RegistryUtils;
 
 import net.minecraft.registry.Registry;
 
@@ -10,7 +10,7 @@ import static com.minelittlepony.unicopia.item.toxin.Ailment.*;
 import static com.minelittlepony.unicopia.item.toxin.Toxin.*;
 
 public interface Toxics {
-    Registry<ToxicRegistryEntry> REGISTRY = Registries.createSimple(Unicopia.id("toxic"));
+    Registry<ToxicRegistryEntry> REGISTRY = RegistryUtils.createSimple(Unicopia.id("toxic"));
 
     Toxic SEVERE_INNERT = Toxic.innert(Toxicity.SEVERE);
 

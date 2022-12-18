@@ -9,7 +9,7 @@ import org.spongepowered.include.com.google.common.base.Objects;
 
 import com.google.common.base.Strings;
 import com.minelittlepony.unicopia.ability.magic.Affine;
-import com.minelittlepony.unicopia.util.Registries;
+import com.minelittlepony.unicopia.util.RegistryUtils;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
@@ -24,7 +24,7 @@ import net.minecraft.registry.RegistryKey;
 
 public final class Race implements Affine {
     public static final String DEFAULT_ID = "unicopia:human";
-    public static final Registry<Race> REGISTRY = Registries.createDefaulted(Unicopia.id("race"), DEFAULT_ID);
+    public static final Registry<Race> REGISTRY = RegistryUtils.createDefaulted(Unicopia.id("race"), DEFAULT_ID);
     public static final RegistryKey<? extends Registry<Race>> REGISTRY_KEY = REGISTRY.getKey();
     private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("race.unknown", id));
 

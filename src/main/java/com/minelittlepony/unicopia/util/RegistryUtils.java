@@ -12,7 +12,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.world.World;
 
-public interface Registries {
+public interface RegistryUtils {
     static <T> Registry<T> createSimple(Identifier id) {
         return FabricRegistryBuilder.from(new SimpleRegistry<T>(RegistryKey.ofRegistry(id), Lifecycle.stable())).buildAndRegister();
     }

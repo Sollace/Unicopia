@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Cha
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen.ImageButton;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
@@ -22,10 +23,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.DefaultedList;
 
 public class SpellbookTraitDexPageContent extends DrawableHelper implements SpellbookChapterList.Content, SpellbookScreen.RecipesChangedListener {
-
     private final Trait[] traits = Trait.values();
     private SpellbookState.PageState state = new SpellbookState.PageState();
 
@@ -127,8 +126,7 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
                 SpellTraits.getItems(trait)
                     .sorted(Comparator.comparing(u -> knownItems.contains(u) ? 0 : 1))
                     .forEach(i -> {
-                        DefaultedList<ItemStack> stacks = DefaultedList.of();
-                        i.appendStacks(ItemGroups.SEARCH, stacks);
+                        List<ItemStack> stacks = ItemGroupRegistry.getVariations(i);
                         if (knownItems.contains(i)) {
                             tree.input(stacks);
                         } else {

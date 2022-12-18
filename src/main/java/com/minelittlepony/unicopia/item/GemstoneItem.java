@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -14,11 +15,11 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.client.FlowingText;
 import com.minelittlepony.unicopia.entity.player.PlayerCharmTracker;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.group.MultiItem;
 
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -26,10 +27,9 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
-public class GemstoneItem extends Item {
+public class GemstoneItem extends Item implements MultiItem {
 
     public GemstoneItem(Settings settings) {
         super(settings);
@@ -90,17 +90,13 @@ public class GemstoneItem extends Item {
     }
 
     @Override
-    public void appendStacks(ItemGroup tab, DefaultedList<ItemStack> items) {
-        super.appendStacks(tab, items);
-        if (isIn(tab)) {
-            for (Affinity i : Affinity.VALUES) {
-                SpellType.byAffinity(i).forEach(type -> {
-                    if (type.isObtainable()) {
-                        items.add(enchant(getDefaultStack(), type, i));
-                    }
-                });
-            }
-        }
+    public List<ItemStack> getDefaultStacks() {
+        return Arrays.stream(Affinity.VALUES)
+            .flatMap(i -> SpellType.byAffinity(i).stream()
+                    .filter(type -> type.isObtainable())
+                    .map(type -> enchant(getDefaultStack(), type, i))
+            )
+            .toList();
     }
 
     @Override
