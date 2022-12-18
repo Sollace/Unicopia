@@ -94,14 +94,21 @@ public interface UEntities {
             register("bloom", 2, 1);
             register("chicken", 2, 1);
             register("bells", 2, 1);
+
             register("crystal", 3, 3);
             register("harmony", 3, 3);
+
             register("equality", 2, 4);
             register("solar", 2, 4);
+            register("lunar", 2, 4);
             register("platinum", 2, 4);
             register("hurricane", 2, 4);
             register("pudding", 2, 4);
+            register("terra", 2, 4);
             register("equestria", 2, 4);
+
+            register("blossom", 2, 3);
+            register("shadow", 2, 3);
         }
     }
 }
