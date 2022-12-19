@@ -44,7 +44,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
 
     private final EntityPhysics<LivingEntity> physics;
 
-    private final EntityReference<LivingEntity> master = new EntityReference<>();
+    private final EntityReference<LivingEntity> owner = new EntityReference<>();
 
     @Nullable
     private GoalSelector goals;
@@ -58,21 +58,21 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
     public Creature(LivingEntity entity) {
         super(entity, EFFECT);
         physics = new EntityPhysics<>(entity, GRAVITY);
-        entity.getDataTracker().startTracking(MASTER, master.toNBT());
+        entity.getDataTracker().startTracking(MASTER, owner.toNBT());
         entity.getDataTracker().startTracking(EATING, 0);
     }
 
     @Override
     public void setMaster(LivingEntity owner) {
-        master.set(owner);
-        entity.getDataTracker().set(MASTER, master.toNBT());
+        this.owner.set(owner);
+        entity.getDataTracker().set(MASTER, this.owner.toNBT());
         if (targets != null && owner != null) {
             initMinionAi();
         }
     }
 
     public boolean isMinion() {
-        return master.getId().isPresent();
+        return owner.getId().isPresent();
     }
 
     @Override
@@ -84,13 +84,13 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
     @NotNull
     public LivingEntity getMaster() {
         NbtCompound data = entity.getDataTracker().get(MASTER);
-        master.fromNBT(data);
-        return master.getOrEmpty(getReferenceWorld()).orElse(entity);
+        owner.fromNBT(data);
+        return owner.getOrEmpty(getReferenceWorld()).orElse(entity);
     }
 
     @Override
     public EntityReference<LivingEntity> getMasterReference() {
-        return master;
+        return owner;
     }
 
     public Optional<GoalSelector> getTargets() {
@@ -116,7 +116,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
             goals.add(3, eatMuffinGoal);
         }
 
-        if (master.isPresent(getReferenceWorld())) {
+        if (owner.isPresent(getReferenceWorld())) {
             initMinionAi();
         }
 
@@ -229,7 +229,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
         getSpellSlot().get(true).ifPresent(effect -> {
             compound.put("effect", Spell.writeNbt(effect));
         });
-        compound.put("master", master.toNBT());
+        compound.put("master", owner.toNBT());
         physics.toNBT(compound);
     }
 
@@ -240,8 +240,8 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
             getSpellSlot().put(Spell.readNbt(compound.getCompound("effect")));
         }
         if (compound.contains("master", NbtElement.COMPOUND_TYPE)) {
-            master.fromNBT(compound.getCompound("master"));
-            if (master.isPresent(getReferenceWorld()) && targets != null) {
+            owner.fromNBT(compound.getCompound("master"));
+            if (owner.isPresent(getReferenceWorld()) && targets != null) {
                 initMinionAi();
             }
         }

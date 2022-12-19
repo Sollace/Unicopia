@@ -297,6 +297,14 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return asEntity();
     }
 
+    /**
+     * @deprecated Pony cannot belong to other entities
+     */
+    @Override
+    @Deprecated
+    public void setMaster(@Nullable LivingEntity owner) {
+    }
+
     public void onSpawn() {
         if (entity.world instanceof ServerWorld sw
                 && getObservedSpecies() == Race.BAT

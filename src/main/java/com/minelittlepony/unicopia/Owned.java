@@ -22,16 +22,6 @@ public interface Owned<E extends Entity> {
     E getMaster();
 
     /**
-     * Gets the unique entity id of the entity that holds this object.
-     * <p>
-     * Since {@link Owned#getMaster()} will only return if the owner is loaded, use this to perform checks
-     * in the owner's absence.
-     */
-    default Optional<UUID> getMasterId() {
-        return Optional.of(getMaster()).map(Entity::getUuid);
-    }
-
-    /**
      * Updates the owner of this object.
      */
     void setMaster(@Nullable E owner);
@@ -43,6 +33,20 @@ public interface Owned<E extends Entity> {
      */
     default void setMaster(Owned<? extends E> sibling) {
         setMaster(sibling.getMaster());
+    }
+
+    default boolean hasMaster() {
+        return getMaster() != null;
+    }
+
+    /**
+     * Gets the unique entity id of the entity that holds this object.
+     * <p>
+     * Since {@link Owned#getMaster()} will only return if the owner is loaded, use this to perform checks
+     * in the owner's absence.
+     */
+    default Optional<UUID> getMasterId() {
+        return Optional.of(getMaster()).map(Entity::getUuid);
     }
 
     default boolean isOwnedBy(@Nullable Object owner) {

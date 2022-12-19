@@ -78,6 +78,11 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
     }
 
     @Override
+    public World getReferenceWorld() {
+        return WeaklyOwned.super.getReferenceWorld();
+    }
+
+    @Override
     public Entity getEntity() {
         return this;
     }
@@ -149,10 +154,5 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
     @Override
     public Packet<ClientPlayPacketListener> createSpawnPacket() {
         return Channel.SERVER_SPAWN_PROJECTILE.toPacket(new MsgSpawnProjectile(this));
-    }
-
-    @Override
-    public World getReferenceWorld() {
-        return WeaklyOwned.super.getReferenceWorld();
     }
 }

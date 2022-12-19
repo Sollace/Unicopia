@@ -35,6 +35,11 @@ public interface WeaklyOwned<E extends Entity> extends Owned<E> {
         }
     }
 
+    @Override
+    default void setMaster(E master) {
+        getMasterReference().set(master);
+    }
+
     default World getReferenceWorld() {
         return ((Entity)this).getEntityWorld();
     }
@@ -43,11 +48,6 @@ public interface WeaklyOwned<E extends Entity> extends Owned<E> {
     @Override
     default E getMaster() {
         return getMasterReference().get(getReferenceWorld());
-    }
-
-    @Override
-    default void setMaster(E master) {
-        getMasterReference().set(master);
     }
 
     @Override

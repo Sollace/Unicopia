@@ -87,7 +87,7 @@ public class WorldRenderDelegate {
             matrices.push();
 
             if (pony.getPhysics().isGravityNegative()) {
-                matrices.translate(0, -((ItemImpl) pony).getMaster().getHeight() * 1.1, 0);
+                matrices.translate(0, -((ItemImpl) pony).asEntity().getHeight() * 1.1, 0);
             }
 
             return false;

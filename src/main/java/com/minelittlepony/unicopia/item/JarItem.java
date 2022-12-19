@@ -39,7 +39,7 @@ public class JarItem extends ProjectileItem implements ItemImpl.GroundTickCallba
 
     @Override
     public ActionResult onGroundTick(IItemEntity item) {
-        ItemEntity entity = item.get().getMaster();
+        ItemEntity entity = item.get().asEntity();
 
         entity.setInvulnerable(true);
 

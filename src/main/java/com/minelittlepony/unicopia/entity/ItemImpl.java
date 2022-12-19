@@ -2,18 +2,12 @@ package com.minelittlepony.unicopia.entity;
 
 import java.util.List;
 
-import org.jetbrains.annotations.NotNull;
-
-import com.minelittlepony.unicopia.Owned;
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.MovementType;
+import net.minecraft.entity.*;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -28,7 +22,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
-public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
+public class ItemImpl implements Equine<ItemEntity> {
     private static final TrackedData<String> ITEM_RACE = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.STRING);
     static final TrackedData<Float> ITEM_GRAVITY = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
@@ -159,17 +153,6 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
     }
 
     @Override
-    public void setMaster(ItemEntity owner) {
-
-    }
-
-    @Override
-    @NotNull
-    public ItemEntity getMaster() {
-        return asEntity();
-    }
-
-    @Override
     public ItemEntity asEntity() {
         return entity;
     }
@@ -215,11 +198,11 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
         }
 
         default float getFollowDistance(IItemEntity entity) {
-            return 6 * (1 + EnchantmentHelper.getLevel(UEnchantments.CLINGY, entity.get().getMaster().getStack()));
+            return 6 * (1 + EnchantmentHelper.getLevel(UEnchantments.CLINGY, entity.get().asEntity().getStack()));
         }
 
         default float getFollowSpeed(IItemEntity entity) {
-            return Math.min(1, 0.02F * (1 + EnchantmentHelper.getLevel(UEnchantments.CLINGY, entity.get().getMaster().getStack())));
+            return Math.min(1, 0.02F * (1 + EnchantmentHelper.getLevel(UEnchantments.CLINGY, entity.get().asEntity().getStack())));
         }
 
         default void interactWithPlayer(IItemEntity entity, PlayerEntity player) {

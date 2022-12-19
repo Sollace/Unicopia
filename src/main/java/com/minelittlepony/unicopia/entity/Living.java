@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
@@ -97,16 +96,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     public ItemTracker getArmour() {
         return armour;
-    }
-
-    @Override
-    public void setMaster(LivingEntity owner) {
-    }
-
-    @Override
-    @NotNull
-    public LivingEntity getMaster() {
-        return asEntity();
     }
 
     /**

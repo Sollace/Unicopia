@@ -23,7 +23,7 @@ public class AppleItem {
     }
 
     private static ActionResult onGroundTick(IItemEntity item) {
-        ItemEntity entity = item.get().getMaster();
+        ItemEntity entity = item.get().asEntity();
 
         if (!entity.isRemoved() && item.getPickupDelay() == 0 && item.getAge() > 2030 && entity.world.random.nextInt(150) < 10) {
 
