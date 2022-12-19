@@ -53,7 +53,7 @@ public class HeavyProjectileItem extends ProjectileItem implements ProjectileDel
 
     @Override
     public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
-        if (projectile.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+        if (!projectile.world.isClient && projectile.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
             float damage = projectile instanceof FlyingItemEntity ? getProjectileDamage(((FlyingItemEntity)projectile).getStack()) : 0;
 
             if (damage > 0 && projectile.world.random.nextInt(90) == 0) {
