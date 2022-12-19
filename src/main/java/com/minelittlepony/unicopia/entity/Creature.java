@@ -32,7 +32,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
 
 public class Creature extends Living<LivingEntity> implements WeaklyOwned<LivingEntity> {
     private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
@@ -73,11 +72,6 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
 
     public boolean isMinion() {
         return owner.getId().isPresent();
-    }
-
-    @Override
-    public World asWorld() {
-        return super.asWorld();
     }
 
     @Override

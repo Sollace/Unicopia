@@ -21,7 +21,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
 
 /**
  * Interface for any magically capable entities that can cast or persist spells.
@@ -31,8 +30,7 @@ public interface Caster<E extends Entity> extends Owned<LivingEntity>,
         Affine,
         ParticleSource<E>,
         SoundEmitter<E>,
-        EntityConvertable<E>,
-        WorldConvertable {
+        EntityConvertable<E> {
 
     Physics getPhysics();
 
@@ -44,18 +42,6 @@ public interface Caster<E extends Entity> extends Owned<LivingEntity>,
      * @return False if the transaction has depleted the caster's reserves.
      */
     boolean subtractEnergyCost(double amount);
-
-    @Override
-    default World asWorld() {
-        return asEntity().world;
-    }
-
-    /**
-     * Returns true if we're executing on the client.
-     */
-    default boolean isClient() {
-        return asWorld().isClient();
-    }
 
     default boolean canModifyAt(BlockPos pos) {
         return canModifyAt(pos, ModificationType.EITHER);

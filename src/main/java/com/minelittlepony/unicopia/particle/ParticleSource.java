@@ -20,11 +20,11 @@ public interface ParticleSource<E extends Entity> extends ParticleSpawner, Entit
     }
 
     default void spawnParticles(Vec3d pos, PointGenerator area, int count, Consumer<Vec3d> particleSpawner) {
-        area.translate(pos).randomPoints(count, asEntity().world.random).forEach(particleSpawner);
+        area.translate(pos).randomPoints(count, asWorld().random).forEach(particleSpawner);
     }
 
     @Override
     default void addParticle(ParticleEffect effect, Vec3d position, Vec3d velocity) {
-        ParticleUtils.spawnParticle(asEntity().world, effect, position, velocity);
+        ParticleUtils.spawnParticle(asWorld(), effect, position, velocity);
     }
 }

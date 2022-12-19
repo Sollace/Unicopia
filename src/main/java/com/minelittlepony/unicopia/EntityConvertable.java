@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 /**
  * Interface for things that can be owned by an entity.
@@ -11,7 +12,7 @@ import net.minecraft.util.math.Vec3d;
  *
  * @param <E> The type of object that owns us.
  */
-public interface EntityConvertable<E extends Entity> {
+public interface EntityConvertable<E extends Entity> extends WorldConvertable {
     E asEntity();
 
     /**
@@ -25,5 +26,10 @@ public interface EntityConvertable<E extends Entity> {
      */
     default Vec3d getOriginVector() {
         return asEntity().getPos();
+    }
+
+    @Override
+    default World asWorld() {
+        return asEntity().world;
     }
 }
