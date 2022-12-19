@@ -17,7 +17,7 @@ public class WantItNeedItEnchantment extends SimpleEnchantment {
     @Override
     public void onUserTick(Living<?> user, int level) {
         if (user instanceof Creature && user.getReferenceWorld().random.nextInt(10) == 0) {
-            ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, user.getEntity(), 0.2F), user.getEntity(), 1);
+            ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, user.asEntity(), 0.2F), user.asEntity(), 1);
         }
     }
 }

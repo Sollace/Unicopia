@@ -17,7 +17,6 @@ import com.minelittlepony.unicopia.entity.ai.DynamicTargetGoal;
 import com.minelittlepony.unicopia.entity.ai.EatMuffinGoal;
 import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.goal.*;
@@ -92,11 +91,6 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
     @Override
     public EntityReference<LivingEntity> getMasterReference() {
         return master;
-    }
-
-    @Override
-    public Entity getEntity() {
-        return entity;
     }
 
     public Optional<GoalSelector> getTargets() {

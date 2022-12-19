@@ -29,7 +29,7 @@ public class MagicAuraSoundInstance extends FadeOutSoundInstance {
         y = pos.y;
         z = pos.z;
 
-        if (!living.getEntity().isRemoved() && data.isPresent()) {
+        if (!living.asEntity().isRemoved() && data.isPresent()) {
             float level = data.get().level;
             if (level != targetVolume) {
                 setTargetVolume(level);

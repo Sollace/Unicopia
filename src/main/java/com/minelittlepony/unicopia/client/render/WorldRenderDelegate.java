@@ -75,7 +75,7 @@ public class WorldRenderDelegate {
 
         if (!recurseMinion && pony instanceof Creature creature && creature.isMinion()) {
             recurseMinion = true;
-            dispatcher.render(creature.getEntity(), x, y, z, yaw, tickDelta, matrices, layer -> {
+            dispatcher.render(creature.asEntity(), x, y, z, yaw, tickDelta, matrices, layer -> {
                 return PassThroughVertexConsumer.of(vertices.getBuffer(layer), MINION_OVERLAY);
             }, light);
             recurseMinion = false;
@@ -106,7 +106,7 @@ public class WorldRenderDelegate {
 
         matrices.push();
 
-        Entity owner = pony.getEntity();
+        Entity owner = pony.asEntity();
 
         boolean negative = pony.getPhysics().isGravityNegative();
 

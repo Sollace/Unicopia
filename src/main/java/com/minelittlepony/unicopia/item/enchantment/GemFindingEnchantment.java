@@ -37,7 +37,7 @@ public class GemFindingEnchantment extends SimpleEnchantment {
     @Override
     public void onEquipped(Living<?> user) {
         if (user.isClient()) {
-            MinecraftClient.getInstance().getSoundManager().play(new MagicAuraSoundInstance(user.getEntity().getSoundCategory(), user, user.getReferenceWorld().getRandom()));
+            MinecraftClient.getInstance().getSoundManager().play(new MagicAuraSoundInstance(user.asEntity().getSoundCategory(), user, user.getReferenceWorld().getRandom()));
         }
     }
 

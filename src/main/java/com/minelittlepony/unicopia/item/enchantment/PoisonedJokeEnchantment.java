@@ -40,7 +40,7 @@ public class PoisonedJokeEnchantment extends SimpleEnchantment implements Identi
             return;
         }
 
-        int light = user.getReferenceWorld().getLightLevel(user.getEntity().getRootVehicle().getBlockPos());
+        int light = user.getReferenceWorld().getLightLevel(user.asEntity().getRootVehicle().getBlockPos());
         Random rng = user.getReferenceWorld().random;
         Data data = user.getEnchants().computeIfAbsent(this, Data::new);
 
@@ -50,7 +50,7 @@ public class PoisonedJokeEnchantment extends SimpleEnchantment implements Identi
 
             user.getReferenceWorld().playSoundFromEntity(
                     null,
-                    user.getEntity(),
+                    user.asEntity(),
                     sounds.get(rng.nextInt(sounds.size())), SoundCategory.HOSTILE,
                     0.5F + rng.nextFloat() * 0.5F,
                     0.5F + rng.nextFloat() * 0.5F

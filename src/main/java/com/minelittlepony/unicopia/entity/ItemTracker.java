@@ -4,11 +4,11 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -72,10 +72,10 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker> {
             return false;
         });
 
-        if (!(living.getEntity() instanceof PlayerEntity)) {
+        if (!(living instanceof Pony)) {
             foundStacks.forEach(stack -> {
                 if (getTicks((Trackable)stack.getItem()) == 1) {
-                    stack.inventoryTick(living.getReferenceWorld(), living.getEntity(), 0, false);
+                    stack.inventoryTick(living.getReferenceWorld(), living.asEntity(), 0, false);
                 }
             });
         }
