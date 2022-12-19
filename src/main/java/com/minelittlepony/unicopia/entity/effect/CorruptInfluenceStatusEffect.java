@@ -42,7 +42,7 @@ public class CorruptInfluenceStatusEffect extends StatusEffect {
             }
 
             if (nearby > 1) {
-                if (Equine.of(entity).filter(eq -> eq instanceof Owned<?> o && o.hasMaster()).isPresent()) {
+                if (Equine.of(entity).filter(eq -> eq instanceof Owned<?> o && o.getMaster() != null).isPresent()) {
                     return;
                 }
 
@@ -59,8 +59,8 @@ public class CorruptInfluenceStatusEffect extends StatusEffect {
             clone.copyPositionAndRotation(entity);
 
             Equine.of(clone).ifPresent(eq -> {
-                if (eq instanceof Owned) {
-                    ((Owned<Entity>)eq).setMaster(mob);
+                if (eq instanceof Owned.Mutable) {
+                    ((Owned.Mutable<Entity>)eq).setMaster(mob);
                 }
             });
             mob.world.spawnEntity(clone);

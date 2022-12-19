@@ -171,7 +171,7 @@ public class WorldRenderDelegate {
             matrices.pop();
 
             if (pony instanceof Living && pony.getPhysics().isGravityNegative()) {
-                flipAngles(((Living<?>)pony).getMaster());
+                flipAngles(pony.asEntity());
             }
         }
     }

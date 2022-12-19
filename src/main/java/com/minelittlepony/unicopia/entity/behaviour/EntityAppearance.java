@@ -134,7 +134,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         remove();
 
         entity = InteractionManager.instance().createPlayer(source.asEntity(), profile);
-        entity.setCustomName(source.getMaster().getName());
+        entity.setCustomName(source.asEntity().getName());
         ((PlayerEntity)entity).readNbt(nbt.getCompound("playerNbt"));
         if (nbt.contains("playerVisibleParts", NbtElement.BYTE_TYPE)) {
             entity.getDataTracker().set(Disguise.PlayerAccess.getModelBitFlag(), nbt.getByte("playerVisibleParts"));

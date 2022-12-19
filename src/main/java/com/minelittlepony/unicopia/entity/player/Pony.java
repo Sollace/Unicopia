@@ -288,21 +288,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return interpolator;
     }
 
-    /**
-     * @deprecated use asEntity()
-     */
     @Override
-    @Deprecated(forRemoval = true)
     public final LivingEntity getMaster() {
         return asEntity();
-    }
-
-    /**
-     * @deprecated Pony cannot belong to other entities
-     */
-    @Override
-    @Deprecated
-    public void setMaster(@Nullable LivingEntity owner) {
     }
 
     public void onSpawn() {

@@ -7,6 +7,7 @@ import java.util.function.Function;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
@@ -52,7 +53,7 @@ import net.minecraft.world.World;
  *
  * Can also carry a spell if needed.
  */
-public class MagicProjectileEntity extends ThrownItemEntity implements Caster<MagicProjectileEntity> {
+public class MagicProjectileEntity extends ThrownItemEntity implements Caster<MagicProjectileEntity>, Owned.Mutable<LivingEntity> {
     private static final TrackedData<Float> DAMAGE = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Float> GRAVITY = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);

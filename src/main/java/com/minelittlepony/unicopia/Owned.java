@@ -22,24 +22,6 @@ public interface Owned<E extends Entity> {
     E getMaster();
 
     /**
-     * Updates the owner of this object.
-     */
-    void setMaster(@Nullable E owner);
-
-    /**
-     * Updated the owner of this object to be the same as another.
-     *
-     * @param sibling
-     */
-    default void setMaster(Owned<? extends E> sibling) {
-        setMaster(sibling.getMaster());
-    }
-
-    default boolean hasMaster() {
-        return getMaster() != null;
-    }
-
-    /**
      * Gets the unique entity id of the entity that holds this object.
      * <p>
      * Since {@link Owned#getMaster()} will only return if the owner is loaded, use this to perform checks
@@ -57,5 +39,21 @@ public interface Owned<E extends Entity> {
 
     default boolean hasCommonOwner(Owned<?> sibling) {
         return getMasterId().isPresent() && getMasterId().equals(sibling.getMasterId());
+    }
+
+    interface Mutable<E extends Entity> {
+        /**
+         * Updates the owner of this object.
+         */
+        void setMaster(@Nullable E owner);
+
+        /**
+         * Updated the owner of this object to be the same as another.
+         *
+         * @param sibling
+         */
+        default void setMaster(Owned<? extends E> sibling) {
+            setMaster(sibling.getMaster());
+        }
     }
 }

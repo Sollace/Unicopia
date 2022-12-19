@@ -25,7 +25,8 @@ import net.minecraft.world.GameRules;
 /**
  * Interface for any magically capable entities that can cast or persist spells.
  */
-public interface Caster<E extends Entity> extends Owned<LivingEntity>,
+public interface Caster<E extends Entity> extends
+        Owned<LivingEntity>,
         Levelled,
         Affine,
         ParticleSource<E>,
@@ -42,6 +43,21 @@ public interface Caster<E extends Entity> extends Owned<LivingEntity>,
      * @return False if the transaction has depleted the caster's reserves.
      */
     boolean subtractEnergyCost(double amount);
+
+    /**
+     * Gets the entity who originally cast the currently active spell.
+     * @return
+     */
+    @Override
+    LivingEntity getMaster();
+
+    /**
+     * Gets the original caster responsible for this spell.
+     * If none is found, will return itself.
+     */
+    default Caster<?> getOriginatingCaster() {
+        return of(getMaster()).orElse(this);
+    }
 
     default boolean canModifyAt(BlockPos pos) {
         return canModifyAt(pos, ModificationType.EITHER);

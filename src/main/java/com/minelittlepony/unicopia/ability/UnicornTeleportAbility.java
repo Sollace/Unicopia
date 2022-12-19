@@ -16,7 +16,6 @@ import net.minecraft.block.FenceBlock;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.WallBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
@@ -127,9 +126,9 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             return;
         }
 
-        LivingEntity player = teleportee.getMaster();
+        Entity participant = teleportee.asEntity();
 
-        if (player == null) {
+        if (participant == null) {
             return;
         }
 
@@ -137,24 +136,24 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
         double distance = destination.distanceTo(teleportee) / 10;
 
-        if (player.hasVehicle()) {
-            Entity mount = player.getVehicle();
+        if (participant.hasVehicle()) {
+            Entity mount = participant.getVehicle();
 
-            player.stopRiding();
+            participant.stopRiding();
             Living.transmitPassengers(mount);
         }
 
         Vec3d offset = teleportee.getOriginVector().subtract(teleporter.getOriginVector());
 
-        player.teleport(
-                destination.x + offset.x + (player.getX() - Math.floor(player.getX())),
+        participant.teleport(
+                destination.x + offset.x + (participant.getX() - Math.floor(participant.getX())),
                 destination.y + offset.y,
-                destination.z + offset.z + (player.getZ() - Math.floor(player.getZ())));
+                destination.z + offset.z + (participant.getZ() - Math.floor(participant.getZ())));
         teleporter.subtractEnergyCost(distance);
 
-        player.fallDistance /= distance;
+        participant.fallDistance /= distance;
 
-        player.world.playSound(null, destination.pos(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
+        participant.world.playSound(null, destination.pos(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
     }
 
     private boolean enterable(World w, BlockPos pos) {

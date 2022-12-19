@@ -54,7 +54,7 @@ public class InfernoSpell extends FireSpell {
                     Vec3d vec = shape.computePoint(w.random).add(origin);
 
                     if (!applyBlocks(w, new BlockPos(vec))) {
-                        applyEntities(source.getMaster(), w, vec);
+                        applyEntities(source, vec);
                     }
                 }
             }

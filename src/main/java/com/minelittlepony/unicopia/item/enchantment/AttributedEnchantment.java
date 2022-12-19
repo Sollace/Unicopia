@@ -9,7 +9,6 @@ import com.minelittlepony.unicopia.entity.Living;
 
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -34,9 +33,8 @@ public class AttributedEnchantment extends SimpleEnchantment {
     @Override
     public void onUserTick(Living<?> user, int level) {
         if (shouldChangeModifiers(user, level)) {
-            LivingEntity entity = user.getMaster();
             modifiers.forEach((attr, modifierSupplier) -> {
-                EntityAttributeInstance instance = entity.getAttributeInstance(attr);
+                EntityAttributeInstance instance = user.asEntity().getAttributeInstance(attr);
 
                 EntityAttributeModifier modifier = modifierSupplier.get(user, level);
 
@@ -48,9 +46,8 @@ public class AttributedEnchantment extends SimpleEnchantment {
 
     @Override
     public void onUnequipped(Living<?> user) {
-        LivingEntity entity = user.getMaster();
         modifiers.forEach((attr, modifierSupplier) -> {
-            EntityAttributeInstance instance = entity.getAttributeInstance(attr);
+            EntityAttributeInstance instance = user.asEntity().getAttributeInstance(attr);
 
             instance.tryRemoveModifier(modifierSupplier.get(user, 1).getId());
         });

@@ -12,7 +12,7 @@ import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
 
@@ -51,11 +51,7 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
     public Optional<MagicProjectileEntity> throwProjectile(Caster<?> caster, float divergance) {
         World world = caster.asWorld();
 
-        LivingEntity entity = caster.getMaster();
-
-        if (entity == null) {
-            return Optional.empty();
-        }
+        Entity entity = caster.asEntity();
 
         caster.playSound(USounds.SPELL_CAST_SHOOT, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 

@@ -108,11 +108,11 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
         if (source instanceof Pony) {
             Pony player = (Pony)source;
 
-            source.getMaster().setInvisible(true);
+            source.asEntity().setInvisible(true);
             player.setInvisible(true);
 
-            if (entity instanceof Owned) {
-                ((Owned<LivingEntity>)entity).setMaster(player);
+            if (entity instanceof Owned.Mutable) {
+                ((Owned.Mutable<LivingEntity>)entity).setMaster(player);
             }
 
             if (entity instanceof PlayerEntity) {
@@ -120,7 +120,7 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
             }
         }
 
-        return !isDead() && !source.getMaster().isDead();
+        return !isDead() && !source.asEntity().isDead();
     }
 
     public static abstract class PlayerAccess extends PlayerEntity {

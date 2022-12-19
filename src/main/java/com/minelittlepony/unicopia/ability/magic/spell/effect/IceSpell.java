@@ -15,7 +15,6 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.particle.ParticleTypes;
@@ -67,21 +66,21 @@ public class IceSpell extends AbstractSpell {
 
         source.subtractEnergyCost(Math.min(10, blocksAffected));
 
-        return applyEntities(source.getMaster(), source.asWorld(), source.getOriginVector()) && situation == Situation.PROJECTILE;
+        return applyEntities(source, source.getOriginVector()) && situation == Situation.PROJECTILE;
     }
 
-    protected boolean applyEntities(LivingEntity owner, World world, Vec3d pos) {
-        return !VecHelper.findInRange(owner, world, pos, 3, i -> applyEntitySingle(owner, i)).isEmpty();
+    protected boolean applyEntities(Caster<?> source, Vec3d pos) {
+        return !VecHelper.findInRange(source.asEntity(), source.asWorld(), pos, 3, i -> applyEntitySingle(source, i)).isEmpty();
     }
 
-    protected boolean applyEntitySingle(LivingEntity owner, Entity e) {
+    protected boolean applyEntitySingle(Caster<?> source, Entity e) {
         if (e instanceof TntEntity) {
             e.remove(RemovalReason.DISCARDED);
             e.getEntityWorld().setBlockState(e.getBlockPos(), Blocks.TNT.getDefaultState());
         } else if (e.isOnFire()) {
             e.extinguish();
         } else {
-            e.damage(MagicalDamageSource.create("cold", owner), 2);
+            e.damage(MagicalDamageSource.create("cold", source.getMaster()), 2);
         }
 
         return true;

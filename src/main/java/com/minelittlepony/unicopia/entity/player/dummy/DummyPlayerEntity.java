@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class DummyPlayerEntity extends PlayerEntity implements Owned<PlayerEntity> {
+public class DummyPlayerEntity extends PlayerEntity implements Owned<PlayerEntity>, Owned.Mutable<PlayerEntity> {
 
     private PlayerEntity owner;
 

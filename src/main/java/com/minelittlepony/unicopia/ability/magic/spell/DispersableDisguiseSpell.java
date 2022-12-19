@@ -11,7 +11,6 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 
 /**
@@ -55,9 +54,8 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
             }
         }
 
-        LivingEntity owner = source.getMaster();
-
-        Entity entity = getDisguise().getAppearance();
+        Entity owner = source.asEntity();
+        Entity appearance = getDisguise().getAppearance();
 
         if (isSuppressed()) {
             suppressionCounter--;
@@ -67,9 +65,9 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
                 ((Pony)source).setInvisible(false);
             }
 
-            if (entity != null) {
-                entity.setInvisible(true);
-                entity.setPos(entity.getX(), Integer.MIN_VALUE, entity.getY());
+            if (appearance != null) {
+                appearance.setInvisible(true);
+                appearance.setPos(appearance.getX(), Integer.MIN_VALUE, appearance.getY());
             }
 
             return true;

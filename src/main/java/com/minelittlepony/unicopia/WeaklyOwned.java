@@ -16,28 +16,7 @@ import net.minecraft.entity.Entity;
  * @param <E> The type of object that owns us.
  */
 public interface WeaklyOwned<E extends Entity> extends Owned<E>, WorldConvertable {
-
     EntityReference<E> getMasterReference();
-
-    /**
-     * Updated the owner of this object to be the same as another.
-     *
-     * @param sibling
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    default void setMaster(Owned<? extends E> sibling) {
-        if (sibling instanceof WeaklyOwned) {
-            getMasterReference().copyFrom(((WeaklyOwned<E>)sibling).getMasterReference());
-        } else {
-            setMaster(sibling.getMaster());
-        }
-    }
-
-    @Override
-    default void setMaster(E master) {
-        getMasterReference().set(master);
-    }
 
     @Nullable
     @Override
@@ -48,5 +27,30 @@ public interface WeaklyOwned<E extends Entity> extends Owned<E>, WorldConvertabl
     @Override
     default Optional<UUID> getMasterId() {
         return getMasterReference().getId();
+    }
+
+    interface Mutable<E extends Entity> extends WeaklyOwned<E>, Owned.Mutable<E> {
+        @Override
+        EntityReference<E> getMasterReference();
+
+        /**
+         * Updated the owner of this object to be the same as another.
+         *
+         * @param sibling
+         */
+        @Override
+        @SuppressWarnings("unchecked")
+        default void setMaster(Owned<? extends E> sibling) {
+            if (sibling instanceof WeaklyOwned) {
+                getMasterReference().copyFrom(((WeaklyOwned<E>)sibling).getMasterReference());
+            } else {
+                setMaster(sibling.getMaster());
+            }
+        }
+
+        @Override
+        default void setMaster(E master) {
+            getMasterReference().set(master);
+        }
     }
 }

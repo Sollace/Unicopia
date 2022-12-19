@@ -116,7 +116,9 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
     @Override
     public void onUnequipped(Living<?> wearer, long timeWorn) {
 
-        if (wearer.getMaster() instanceof PlayerEntity player && player.isCreative()) {
+        LivingEntity entity = wearer.asEntity();
+
+        if (entity instanceof PlayerEntity player && player.isCreative()) {
             return;
         }
 
@@ -125,24 +127,24 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         LocalDifficulty difficulty = wearer.asWorld().getLocalDifficulty(wearer.getOrigin());
         float amount = attachedTime * (1 + difficulty.getClampedLocalDifficulty());
 
-        amount = Math.min(amount, wearer.getMaster().getMaxHealth());
+        amount = Math.min(amount, entity.getMaxHealth());
 
-        if (wearer.getMaster() instanceof PlayerEntity) {
-            ((PlayerEntity)wearer.getMaster()).getHungerManager().setFoodLevel(1);
+        if (entity instanceof PlayerEntity player) {
+            player.getHungerManager().setFoodLevel(1);
         }
-        wearer.getMaster().damage(MagicalDamageSource.ALICORN_AMULET, amount);
-        wearer.getMaster().addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 1));
+        entity.damage(MagicalDamageSource.ALICORN_AMULET, amount);
+        entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 1));
         if (timeWorn > ItemTracker.HOURS) {
-            wearer.getMaster().addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 200, 3));
+            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 200, 3));
         }
 
         if (attachedTime > 120) {
-            wearer.getMaster().takeKnockback(1, 1, 1);
+            entity.takeKnockback(1, 1, 1);
             wearer.updateVelocity();
         }
 
         EFFECT_SCALES.keySet().forEach(attribute -> {
-            EntityAttributeInstance instance = wearer.getMaster().getAttributeInstance(attribute);
+            EntityAttributeInstance instance = entity.getAttributeInstance(attribute);
             @Nullable
             EntityAttributeModifier modifier = instance.getModifier(EFFECT_UUID);
             if (modifier != null) {
@@ -207,8 +209,8 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
                 reserves.getExertion().add(reserves.getExertion().getMax());
                 reserves.getEnergy().add(reserves.getEnergy().getMax() / 2F);
-                living.getMaster().removeStatusEffect(StatusEffects.WEAKNESS);
-                living.getMaster().removeStatusEffect(StatusEffects.NAUSEA);
+                living.asEntity().removeStatusEffect(StatusEffects.WEAKNESS);
+                living.asEntity().removeStatusEffect(StatusEffects.NAUSEA);
             }
 
             if (!poweringUp) {
@@ -226,7 +228,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         if (fullSecond) {
             EFFECT_SCALES.entrySet().forEach(attribute -> {
                 float seconds = (float)attachedTicks / ItemTracker.SECONDS;
-                EntityAttributeInstance instance = living.getMaster().getAttributeInstance(attribute.getKey());
+                EntityAttributeInstance instance = living.asEntity().getAttributeInstance(attribute.getKey());
                 @Nullable
                 EntityAttributeModifier modifier = instance.getModifier(EFFECT_UUID);
                 float desiredValue = attribute.getValue() * seconds;

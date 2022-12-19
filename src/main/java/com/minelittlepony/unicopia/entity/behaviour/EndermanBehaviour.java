@@ -16,7 +16,7 @@ public class EndermanBehaviour extends EntityBehaviour<EndermanEntity> {
             entity.setTarget(null);
         }
 
-        ItemStack stack = source.getMaster().getStackInHand(Hand.MAIN_HAND);
+        ItemStack stack = source.asEntity().getStackInHand(Hand.MAIN_HAND);
         if (stack.getItem() instanceof BlockItem bi) {
             entity.setCarriedBlock(bi.getBlock().getDefaultState());
         } else {

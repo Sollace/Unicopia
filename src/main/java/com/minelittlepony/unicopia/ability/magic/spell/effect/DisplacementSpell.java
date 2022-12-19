@@ -30,26 +30,28 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        source.getMaster().setGlowing(true);
+        Caster<?> originator = source.getOriginatingCaster();
+
+        originator.asEntity().setGlowing(true);
 
         ticks--;
 
-        if (source.isClient()) {
+        if (originator.isClient()) {
             return !isDead() || ticks >= -10;
         }
 
         if (ticks == 0) {
-            target.ifPresent(source.asWorld(), target -> {
+            target.ifPresent(originator.asWorld(), target -> {
 
                 Vec3d destinationPos = target.getPos();
                 Vec3d destinationVel = target.getVelocity();
 
-                Vec3d sourcePos = source.getMaster().getPos();
-                Vec3d sourceVel = source.getMaster().getVelocity();
+                Vec3d sourcePos = originator.getOriginVector();
+                Vec3d sourceVel = originator.asEntity().getVelocity();
 
                 teleport(target, sourcePos, sourceVel);
-                teleport(source.getMaster(), destinationPos, destinationVel);
-                source.subtractEnergyCost(destinationPos.distanceTo(sourcePos) / 20F);
+                teleport(originator.asEntity(), destinationPos, destinationVel);
+                originator.subtractEnergyCost(destinationPos.distanceTo(sourcePos) / 20F);
             });
         }
 
@@ -94,7 +96,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
 
     @Override
     public void onDestroyed(Caster<?> caster) {
-        caster.getMaster().setGlowing(false);
+        caster.getOriginatingCaster().asEntity().setGlowing(false);
         target.ifPresent(caster.asWorld(), e -> e.setGlowing(false));
     }
 

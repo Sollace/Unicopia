@@ -13,7 +13,6 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.Block;
@@ -73,7 +72,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
         return new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER))).translate(source.getOrigin()).getBlockPositions().reduce(false,
                 (r, i) -> source.canModifyAt(i) && applyBlocks(source.asWorld(), i),
                 (a, b) -> a || b)
-                || applyEntities(null, source.asWorld(), source.getOriginVector());
+                || applyEntities(source, source.getOriginVector());
     }
 
     protected void generateParticles(Caster<?> source) {
@@ -124,17 +123,19 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
         return false;
     }
 
-    protected boolean applyEntities(@Nullable Entity owner, World world, Vec3d pos) {
-        return !VecHelper.findInRange(owner, world, pos, Math.max(0, 3 + getTraits().get(Trait.POWER)), i -> applyEntitySingle(owner, world, i)).isEmpty();
+    protected boolean applyEntities(Caster<?> source, Vec3d pos) {
+        return source.findAllEntitiesInRange(Math.max(0, 3 + getTraits().get(Trait.POWER)), i -> applyEntitySingle(source, i)).count() > 0;
     }
 
-    protected boolean applyEntitySingle(@Nullable Entity owner, World world, Entity e) {
-        if ((!e.equals(owner) ||
-                (owner instanceof PlayerEntity && !EquinePredicates.PLAYER_UNICORN.test(owner))) && !(e instanceof ItemEntity)
+    protected boolean applyEntitySingle(Caster<?> source, Entity e) {
+        LivingEntity master = source.getMaster();
+
+        if ((!(e.equals(source.asEntity()) || e.equals(master)) ||
+                (master instanceof PlayerEntity && !EquinePredicates.PLAYER_UNICORN.test(master))) && !(e instanceof ItemEntity)
         && !(e instanceof Caster<?>)) {
             e.setOnFireFor(60);
-            e.damage(getDamageCause(e, (LivingEntity)owner), 0.1f);
-            playEffect(world, e.getBlockPos());
+            e.damage(getDamageCause(e, master), 0.1f);
+            playEffect(source.asWorld(), e.getBlockPos());
             return true;
         }
 

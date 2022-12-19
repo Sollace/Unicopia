@@ -34,10 +34,12 @@ public class MindSwapSpell extends MimicSpell {
         super.onDestroyed(caster);
         if (initialized && !caster.isClient()) {
             counterpart.ifPresent(caster.asWorld(), e -> {
-                EntitySwap.ALL.accept(e, caster.getMaster());
+                LivingEntity master = caster.getMaster();
+
+                EntitySwap.ALL.accept(e, master);
                 Inventory.swapInventories(
                         e, myStoredInventory.or(() -> Inventory.of(e)),
-                        caster.getMaster(), theirStoredInventory.or(() -> Inventory.of(caster.getMaster())),
+                        master, theirStoredInventory.or(() -> Inventory.of(master)),
                         a -> {},
                         a -> {}
                 );
@@ -60,13 +62,15 @@ public class MindSwapSpell extends MimicSpell {
                 initialized = true;
                 setDirty();
                 counterpart.ifPresent(caster.asWorld(), e -> {
+                    LivingEntity master = caster.getMaster();
+
                     setDisguise(e);
                     Caster<?> other = Caster.of(e).get();
-                    SpellType.MIMIC.withTraits().apply(other).setDisguise(caster.getMaster());
+                    SpellType.MIMIC.withTraits().apply(other).setDisguise(master);
 
-                    EntitySwap.ALL.accept(caster.getMaster(), e);
+                    EntitySwap.ALL.accept(master, e);
                     Inventory.swapInventories(
-                            caster.getMaster(), Inventory.of(caster.getMaster()),
+                            master, Inventory.of(master),
                             e, Inventory.of(e),
                             a -> myStoredInventory = Optional.of(a),
                             a -> theirStoredInventory = Optional.of(a)
@@ -78,7 +82,7 @@ public class MindSwapSpell extends MimicSpell {
             }
 
             if (counterpart.getId().isPresent() && counterpart.get(caster.asWorld()) == null) {
-                caster.getMaster().damage(DamageSource.MAGIC, Float.MAX_VALUE);
+                caster.getOriginatingCaster().asEntity().damage(DamageSource.MAGIC, Float.MAX_VALUE);
                 setDead();
                 return false;
             }

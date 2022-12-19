@@ -53,7 +53,7 @@ public class Enchantments implements NbtSerialisable, Tickable {
     @Override
     public void tick() {
         UEnchantments.REGISTRY.forEach(ench -> {
-            int level = EnchantmentHelper.getEquipmentLevel(ench, entity.getMaster());
+            int level = EnchantmentHelper.getEquipmentLevel(ench, entity.asEntity());
 
             boolean active = level > 0;
 

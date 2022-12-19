@@ -46,8 +46,8 @@ public class ClientNetworkHandlerImpl implements ClientNetworkHandler {
         entity.setId(packet.getId());
         entity.setUuid(packet.getUuid());
 
-        if (entity instanceof Owned) {
-            ((Owned<Entity>) entity).setMaster(world.getEntityById(packet.getEntityData()));
+        if (entity instanceof Owned.Mutable) {
+            ((Owned.Mutable<Entity>) entity).setMaster(world.getEntityById(packet.getEntityData()));
         }
 
         if (entity.getType() == UEntities.MAGIC_BEAM) {

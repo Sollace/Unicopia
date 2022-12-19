@@ -14,9 +14,7 @@ import com.minelittlepony.unicopia.util.Weighted;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -142,7 +140,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
         minion.equipStack(EquipmentSlot.HEAD, Items.IRON_HELMET.getDefaultStack());
 
         Equine.of(minion).filter(eq -> eq instanceof Creature).ifPresent(eq -> {
-            ((Creature)eq).setMaster(source);
+            ((Creature)eq).setMaster(source.getMaster());
         });
 
         source.asWorld().spawnEntity(minion);

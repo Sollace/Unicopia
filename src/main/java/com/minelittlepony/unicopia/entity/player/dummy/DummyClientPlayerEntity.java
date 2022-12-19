@@ -16,7 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.GameMode;
 
-public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implements Owned<PlayerEntity> {
+public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implements Owned<PlayerEntity>, Owned.Mutable<PlayerEntity> {
 
     private PlayerListEntry playerInfo;
 

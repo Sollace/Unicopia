@@ -12,7 +12,6 @@ import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.Vec3d;
 
@@ -55,19 +54,13 @@ public class RainboomAbilitySpell extends AbstractSpell {
            // source.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, source.getPhysics().getMotionAngle()), source.getOriginVector(), Vec3d.ZERO);
         }
 
-        LivingEntity owner = source.getMaster();
-
-        if (owner == null) {
-            return false;
-        }
-
         source.findAllEntitiesInRange(RADIUS).forEach(e -> {
             e.damage(MagicalDamageSource.create("rainboom", source).setBreakSunglasses(), 6);
         });
         EFFECT_RANGE.translate(source.getOrigin()).getBlockPositions().forEach(pos -> {
             BlockState state = source.asWorld().getBlockState(pos);
             if (state.isIn(UTags.FRAGILE) && source.canModifyAt(pos, ModificationType.PHYSICAL)) {
-                owner.world.breakBlock(pos, true);
+                source.asWorld().breakBlock(pos, true);
             }
         });
 

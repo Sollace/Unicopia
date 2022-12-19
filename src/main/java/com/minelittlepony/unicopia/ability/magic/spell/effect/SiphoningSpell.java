@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -107,6 +109,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
     }
 
     private void collectHealth(Caster<?> source) {
+        @Nullable
         LivingEntity owner = source.getMaster();
         float maxHealthGain = owner == null ? 0 : owner.getMaxHealth() - owner.getHealth();
 
