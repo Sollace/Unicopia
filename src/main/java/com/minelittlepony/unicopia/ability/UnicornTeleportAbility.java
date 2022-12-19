@@ -71,7 +71,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
         int maxDistance = player.asEntity().isCreative() ? 1000 : 100;
 
 
-        World w = player.getReferenceWorld();
+        World w = player.asWorld();
 
         Trace trace = Trace.create(player.asEntity(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR);
         return trace.getBlockOrEntityPos().map(pos -> {
@@ -133,7 +133,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             return;
         }
 
-        teleportee.getReferenceWorld().playSound(null, teleportee.getOrigin(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
+        teleportee.asWorld().playSound(null, teleportee.getOrigin(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
 
         double distance = destination.distanceTo(teleportee) / 10;
 

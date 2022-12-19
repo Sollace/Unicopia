@@ -51,7 +51,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
     @Override
     public boolean apply(Caster<?> caster) {
-        setOrientation(caster.getEntity().getPitch(), caster.getEntity().getYaw());
+        setOrientation(caster.asEntity().getPitch(), caster.asEntity().getYaw());
         return toPlaceable().apply(caster);
     }
 
@@ -82,11 +82,11 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
                 });
             } else {
                 teleportationTarget.getId().ifPresent(id -> {
-                    if (Ether.get(source.getReferenceWorld()).getEntry(getType(), id).isEmpty()) {
+                    if (Ether.get(source.asWorld()).getEntry(getType(), id).isEmpty()) {
                         Unicopia.LOGGER.debug("Lost sibling, breaking connection to " + id);
                         teleportationTarget.set(null);
                         setDirty();
-                        source.getReferenceWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, source.getOrigin(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
+                        source.asWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, source.getOrigin(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
                     }
                 });
 
@@ -98,7 +98,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
             if (!publishedPosition) {
                 publishedPosition = true;
-                Ether.Entry entry = Ether.get(source.getReferenceWorld()).put(getType(), source);
+                Ether.Entry entry = Ether.get(source.asWorld()).put(getType(), source);
                 entry.pitch = pitch;
                 entry.yaw = yaw;
             }
@@ -140,10 +140,10 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
             return;
         }
 
-        Ether ether = Ether.get(source.getReferenceWorld());
+        Ether ether = Ether.get(source.asWorld());
         ether.getEntries(getType())
             .stream()
-            .filter(entry -> entry.isAvailable() && !entry.entity.referenceEquals(source.getEntity()) && entry.entity.getId().isPresent())
+            .filter(entry -> entry.isAvailable() && !entry.entity.referenceEquals(source.asEntity()) && entry.entity.getId().isPresent())
             .findAny()
             .ifPresent(entry -> {
                 entry.setTaken(true);
@@ -153,7 +153,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
     }
 
     private Optional<Ether.Entry> getTarget(Caster<?> source) {
-        return teleportationTarget.getId().flatMap(id -> Ether.get(source.getReferenceWorld()).getEntry(getType(), id));
+        return teleportationTarget.getId().flatMap(id -> Ether.get(source.asWorld()).getEntry(getType(), id));
     }
 
     @Override
@@ -185,8 +185,8 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
     @Override
     public void onDestroyed(Caster<?> caster) {
-        Ether ether = Ether.get(caster.getReferenceWorld());
-        ether.remove(getType(), caster.getEntity().getUuid());
+        Ether ether = Ether.get(caster.asWorld());
+        ether.remove(getType(), caster.asEntity().getUuid());
         getTarget(caster).ifPresent(e -> e.setTaken(false));
     }
 

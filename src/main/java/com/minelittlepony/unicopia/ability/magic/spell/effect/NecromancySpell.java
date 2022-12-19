@@ -56,24 +56,24 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
             return false;
         }
 
-        boolean rainy = source.getReferenceWorld().hasRain(source.getOrigin());
+        boolean rainy = source.asWorld().hasRain(source.getOrigin());
 
         if (source.isClient()) {
             source.spawnParticles(new Sphere(true, radius * 2), rainy ? 98 : 125, pos -> {
                 BlockPos bpos = new BlockPos(pos);
 
-                if (!source.getReferenceWorld().isAir(bpos.down())) {
-                    source.addParticle(source.getReferenceWorld().hasRain(bpos) ? ParticleTypes.SMOKE : ParticleTypes.FLAME, pos, Vec3d.ZERO);
+                if (!source.asWorld().isAir(bpos.down())) {
+                    source.addParticle(source.asWorld().hasRain(bpos) ? ParticleTypes.SMOKE : ParticleTypes.FLAME, pos, Vec3d.ZERO);
                 }
             });
             return true;
         }
 
-        if (source.getReferenceWorld().getDifficulty() == Difficulty.PEACEFUL) {
+        if (source.asWorld().getDifficulty() == Difficulty.PEACEFUL) {
             return true;
         }
 
-        summonedEntities.removeIf(ref -> ref.getOrEmpty(source.getReferenceWorld()).filter(e -> {
+        summonedEntities.removeIf(ref -> ref.getOrEmpty(source.asWorld()).filter(e -> {
             if (e.getPos().distanceTo(source.getOriginVector()) > radius * 2) {
                 e.world.sendEntityStatus(e, (byte)60);
                 e.discard();
@@ -82,13 +82,13 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
             return true;
         }).isEmpty());
 
-        float additional = source.getReferenceWorld().getLocalDifficulty(source.getOrigin()).getLocalDifficulty() + getTraits().get(Trait.CHAOS, 0, 10);
+        float additional = source.asWorld().getLocalDifficulty(source.getOrigin()).getLocalDifficulty() + getTraits().get(Trait.CHAOS, 0, 10);
 
         setDirty();
         if (--spawnCountdown > 0 && !summonedEntities.isEmpty()) {
             return true;
         }
-        spawnCountdown = 1200 + source.getReferenceWorld().random.nextInt(rainy ? 2000 : 1000);
+        spawnCountdown = 1200 + source.asWorld().random.nextInt(rainy ? 2000 : 1000);
 
         if (summonedEntities.size() > 10 + additional) {
             return true;
@@ -97,11 +97,11 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
         Shape affectRegion = new Sphere(false, radius);
 
         for (int i = 0; i < 10; i++) {
-            Vec3d pos = affectRegion.computePoint(source.getReferenceWorld().random).add(source.getOriginVector());
+            Vec3d pos = affectRegion.computePoint(source.asWorld().random).add(source.getOriginVector());
 
             BlockPos loc = new BlockPos(pos);
 
-            if (source.getReferenceWorld().isAir(loc.up()) && !source.getReferenceWorld().isAir(loc)) {
+            if (source.asWorld().isAir(loc.up()) && !source.asWorld().isAir(loc)) {
                 spawnPool.get().ifPresent(type -> {
                     spawnMonster(source, pos, type);
                 });
@@ -118,7 +118,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
         }
         LivingEntity master = caster.getMaster();
         summonedEntities.forEach(ref -> {
-            ref.ifPresent(caster.getReferenceWorld(), e -> {
+            ref.ifPresent(caster.asWorld(), e -> {
                 if (master != null) {
                     master.applyDamageEffects(master, e);
                 }
@@ -129,14 +129,14 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
     }
 
     protected void spawnMonster(Caster<?> source, Vec3d pos, EntityType<? extends LivingEntity> type) {
-        LivingEntity minion = type.create(source.getReferenceWorld());
+        LivingEntity minion = type.create(source.asWorld());
 
         source.subtractEnergyCost(3);
 
         minion.updatePositionAndAngles(pos.x, pos.y, pos.z, 0, 0);
         minion.setVelocity(0, 0.3, 0);
 
-        source.getReferenceWorld().syncWorldEvent(WorldEvents.DRAGON_BREATH_CLOUD_SPAWNS, minion.getBlockPos(), 0);
+        source.asWorld().syncWorldEvent(WorldEvents.DRAGON_BREATH_CLOUD_SPAWNS, minion.getBlockPos(), 0);
         source.playSound(SoundEvents.BLOCK_BELL_USE, 1, 0.3F);
         source.spawnParticles(ParticleTypes.LARGE_SMOKE, 10);
         minion.equipStack(EquipmentSlot.HEAD, Items.IRON_HELMET.getDefaultStack());
@@ -145,7 +145,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
             ((Creature)eq).setMaster(source);
         });
 
-        source.getReferenceWorld().spawnEntity(minion);
+        source.asWorld().spawnEntity(minion);
         summonedEntities.add(new EntityReference<>(minion));
         setDirty();
     }

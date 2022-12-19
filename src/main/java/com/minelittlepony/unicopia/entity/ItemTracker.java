@@ -75,7 +75,7 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker> {
         if (!(living instanceof Pony)) {
             foundStacks.forEach(stack -> {
                 if (getTicks((Trackable)stack.getItem()) == 1) {
-                    stack.inventoryTick(living.getReferenceWorld(), living.asEntity(), 0, false);
+                    stack.inventoryTick(living.asWorld(), living.asEntity(), 0, false);
                 }
             });
         }

@@ -136,7 +136,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             this.animationMaxDuration = animationDuration;
 
             if (!isClient()) {
-                Channel.SERVER_PLAYER_ANIMATION_CHANGE.send(getReferenceWorld(), new MsgPlayerAnimationChange(this, animation, animationDuration));
+                Channel.SERVER_PLAYER_ANIMATION_CHANGE.send(asWorld(), new MsgPlayerAnimationChange(this, animation, animationDuration));
             }
 
             animation.getSound().ifPresent(sound -> {
@@ -369,14 +369,14 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public boolean canHangAt(BlockPos pos) {
-        if (!getReferenceWorld().isAir(pos) || !getReferenceWorld().isAir(pos.down())) {
+        if (!asWorld().isAir(pos) || !asWorld().isAir(pos.down())) {
             return false;
         }
 
         pos = pos.up();
-        BlockState state = getReferenceWorld().getBlockState(pos);
+        BlockState state = asWorld().getBlockState(pos);
 
-        return state.isSolidSurface(getReferenceWorld(), pos, entity, Direction.DOWN);
+        return state.isSolidSurface(asWorld(), pos, entity, Direction.DOWN);
     }
 
     @Override

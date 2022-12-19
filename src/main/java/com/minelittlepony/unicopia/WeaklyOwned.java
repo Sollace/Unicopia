@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.entity.EntityReference;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.world.World;
 
 /**
  * Interface for things that can be weakly owned (by an entity).
@@ -16,7 +15,7 @@ import net.minecraft.world.World;
  *
  * @param <E> The type of object that owns us.
  */
-public interface WeaklyOwned<E extends Entity> extends Owned<E> {
+public interface WeaklyOwned<E extends Entity> extends Owned<E>, WorldConvertable {
 
     EntityReference<E> getMasterReference();
 
@@ -40,14 +39,10 @@ public interface WeaklyOwned<E extends Entity> extends Owned<E> {
         getMasterReference().set(master);
     }
 
-    default World getReferenceWorld() {
-        return ((Entity)this).getEntityWorld();
-    }
-
     @Nullable
     @Override
     default E getMaster() {
-        return getMasterReference().get(getReferenceWorld());
+        return getMasterReference().get(asWorld());
     }
 
     @Override

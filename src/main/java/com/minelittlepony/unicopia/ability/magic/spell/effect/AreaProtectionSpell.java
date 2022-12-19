@@ -38,14 +38,14 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
             Vec3d origin = source.getOriginVector();
 
             source.spawnParticles(origin, new Sphere(true, radius), (int)(radius * 6), pos -> {
-                if (!source.getReferenceWorld().isAir(new BlockPos(pos))) {
+                if (!source.asWorld().isAir(new BlockPos(pos))) {
                     source.addParticle(new MagicParticleEffect(getType().getColor()), pos, Vec3d.ZERO);
                 }
             });
         }
 
         source.findAllSpellsInRange(radius, e -> isValidTarget(source, e)).filter(caster -> !caster.hasCommonOwner(source)).forEach(caster -> {
-            caster.getEntity().kill();
+            caster.asEntity().kill();
         });
 
         return !isDead();
@@ -65,7 +65,7 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
     }
 
     public boolean blocksMagicFor(Caster<?> source, Caster<?> other, Vec3d position) {
-        return !FriendshipBraceletItem.isComrade(other, other.getEntity())
+        return !FriendshipBraceletItem.isComrade(other, other.asEntity())
                 && source.getOriginVector().distanceTo(position) <= getDrawDropOffRange(source);
     }
 

@@ -79,7 +79,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
             if (!source.isClient()) {
 
                 if (dimension == null) {
-                    dimension = source.getReferenceWorld().getRegistryKey();
+                    dimension = source.asWorld().getRegistryKey();
                     setDirty();
                 }
 
@@ -93,7 +93,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         }
 
         if (situation == Situation.GROUND_ENTITY) {
-            if (!source.isClient() && Ether.get(source.getReferenceWorld()).getEntry(getType(), source).isEmpty()) {
+            if (!source.isClient() && Ether.get(source.asWorld()).getEntry(getType(), source).isEmpty()) {
                 setDead();
                 return false;
             }
@@ -119,9 +119,9 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     }
 
     private void spawnPlacedEntity(Caster<?> source) {
-        CastSpellEntity entity = UEntities.CAST_SPELL.create(source.getReferenceWorld());
+        CastSpellEntity entity = UEntities.CAST_SPELL.create(source.asWorld());
         Vec3d pos = castEntity.getPosition().orElse(source.getOriginVector());
-        entity.updatePositionAndAngles(pos.x, pos.y, pos.z, source.getEntity().getYaw(), source.getEntity().getPitch());
+        entity.updatePositionAndAngles(pos.x, pos.y, pos.z, source.asEntity().getYaw(), source.asEntity().getPitch());
         PlaceableSpell copy = spell.toPlaceable();
         if (spell instanceof PlacementDelegate delegate) {
             delegate.onPlaced(source, copy, entity);
@@ -157,8 +157,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
                 castEntity.set(null);
             });
 
-            if (source.getEntity() instanceof CastSpellEntity spellcast) {
-                Ether.get(source.getReferenceWorld()).remove(getType(), source);
+            if (source.asEntity() instanceof CastSpellEntity spellcast) {
+                Ether.get(source.asWorld()).remove(getType(), source);
             }
         }
         super.onDestroyed(source);
@@ -180,7 +180,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     protected Optional<World> getWorld(Caster<?> source) {
         return Optional.ofNullable(dimension)
-                .map(dim -> source.getReferenceWorld().getServer().getWorld(dim));
+                .map(dim -> source.asWorld().getServer().getWorld(dim));
     }
 
     @Override

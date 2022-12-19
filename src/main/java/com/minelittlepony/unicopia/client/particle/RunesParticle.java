@@ -166,7 +166,7 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
     public void tick() {
         super.tick();
 
-        link.flatMap(Link::get).map(Caster::getEntity).ifPresentOrElse(e -> {
+        link.flatMap(Link::get).map(Caster::asEntity).ifPresentOrElse(e -> {
             if (getAlphaScale() >= 0.9F) {
                 if (stasisAge < 0) {
                     stasisAge = age;

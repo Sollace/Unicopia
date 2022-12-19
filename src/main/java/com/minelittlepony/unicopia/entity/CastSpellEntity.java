@@ -23,7 +23,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
-public class CastSpellEntity extends LightEmittingEntity implements Caster<LivingEntity>, WeaklyOwned<LivingEntity> {
+public class CastSpellEntity extends LightEmittingEntity implements Caster<CastSpellEntity>, WeaklyOwned<LivingEntity> {
     private static final TrackedData<Float> GRAVITY = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 
@@ -78,12 +78,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<Livin
     }
 
     @Override
-    public World getReferenceWorld() {
-        return WeaklyOwned.super.getReferenceWorld();
-    }
-
-    @Override
-    public Entity getEntity() {
+    public CastSpellEntity asEntity() {
         return this;
     }
 

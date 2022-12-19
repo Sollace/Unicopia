@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
-import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -8,7 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 
 public class PlayerBehaviour extends EntityBehaviour<PlayerEntity> {
     @Override
-    public void update(Caster<?> source, PlayerEntity entity, Disguise spell) {
+    public void update(Living<?> source, PlayerEntity entity, Disguise spell) {
         if (source instanceof Pony pony) {
             PlayerEntity pFrom = pony.asEntity();
 
@@ -22,14 +22,15 @@ public class PlayerBehaviour extends EntityBehaviour<PlayerEntity> {
             ((PlayerEntityDuck)entity).callUpdateCapeAngles();
         }
 
-        if (source.getEntity().getPose() != entity.getPose()) {
-            entity.setPose(source.getEntity().getPose());
+        if (source.asEntity().getPose() != entity.getPose()) {
+            entity.setPose(source.asEntity().getPose());
         }
-        if (source.getEntity().isSwimming() != entity.isSwimming()) {
-            entity.setSwimming(source.getEntity().isSwimming());
+        if (source.asEntity().isSwimming() != entity.isSwimming()) {
+            entity.setSwimming(source.asEntity().isSwimming());
         }
-        if (source.getEntity() instanceof LivingEntityDuck duck) {
-            duck.copyLeaningAnglesFrom(((LivingEntityDuck)source.getEntity()));
+        if (source.asEntity() instanceof LivingEntityDuck duck) {
+            // TODO: CopyAngles
+            duck.copyLeaningAnglesFrom(((LivingEntityDuck)entity));
         }
     }
 }

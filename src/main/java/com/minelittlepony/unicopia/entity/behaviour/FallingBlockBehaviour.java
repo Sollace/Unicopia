@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlock;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
@@ -41,8 +42,8 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
 
     @Override
     public void onImpact(Caster<?> source, FallingBlockEntity entity, float distance, float damageMultiplier, DamageSource cause) {
-        if (source.getEntity().fallDistance > 3) {
-            entity.fallDistance = source.getEntity().fallDistance;
+        if (source.asEntity().fallDistance > 3) {
+            entity.fallDistance = source.asEntity().fallDistance;
             entity.handleFallDamage(distance, damageMultiplier, cause);
 
             BlockState state = entity.getBlockState();
@@ -85,7 +86,7 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
     }
 
     @Override
-    public void update(Caster<?> source, FallingBlockEntity entity, Disguise spell) {
+    public void update(Living<?> source, FallingBlockEntity entity, Disguise spell) {
 
         BlockState state = entity.getBlockState();
         if (state.contains(Properties.WATERLOGGED)) {
@@ -101,7 +102,7 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
         EntityAppearance disguise = spell.getDisguise();
         List<Entity> attachments = disguise.getAttachments();
         if (attachments.size() > 0) {
-            copyBaseAttributes(source.getMaster(), attachments.get(0), UP);
+            copyBaseAttributes(source.asEntity(), attachments.get(0), UP);
         }
 
         BlockEntity be = disguise.getBlockEntity();

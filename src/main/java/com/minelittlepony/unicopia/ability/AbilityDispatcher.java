@@ -202,7 +202,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
                 return;
             }
 
-            if (ability.canActivate(player.getReferenceWorld(), player)) {
+            if (ability.canActivate(player.asWorld(), player)) {
                 triggered = true;
                 setCooldown(ability.getCooldownTime(player));
 

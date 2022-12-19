@@ -30,7 +30,7 @@ public class InfernoSpell extends FireSpell {
             generateParticles(source);
         }
 
-        World w = source.getReferenceWorld();
+        World w = source.asWorld();
 
         if (!w.isClient) {
             float radius = 4 + (source.getLevel().getScaled(4) * 4);

@@ -43,7 +43,7 @@ public class MsgRequestSpeciesChange implements Packet<ServerPlayerEntity> {
     public void handle(ServerPlayerEntity sender) {
         Pony player = Pony.of(sender);
 
-        Race worldDefaultRace = WorldTribeManager.forWorld((ServerWorld)player.getReferenceWorld()).getDefaultRace();
+        Race worldDefaultRace = WorldTribeManager.forWorld((ServerWorld)player.asWorld()).getDefaultRace();
 
         if (force || player.getActualSpecies().isDefault() || (player.getActualSpecies() == worldDefaultRace && !player.isSpeciesPersisted())) {
             player.setSpecies(newRace.isPermitted(sender) ? newRace : worldDefaultRace);

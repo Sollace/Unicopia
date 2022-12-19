@@ -54,18 +54,18 @@ public class BatEeeeAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
-        Random rng = player.getReferenceWorld().random;
+        Random rng = player.asWorld().random;
         int count = 1 + rng.nextInt(10);
 
         for (int i = 0; i < count; i++) {
-            player.getReferenceWorld().playSound(null, player.getOrigin(), USounds.ENTITY_PLAYER_BATPONY_SCREECH, SoundCategory.PLAYERS,
+            player.asWorld().playSound(null, player.getOrigin(), USounds.ENTITY_PLAYER_BATPONY_SCREECH, SoundCategory.PLAYERS,
                     0.9F + (rng.nextFloat() - 0.5F) / 2F,
                     1.6F + (rng.nextFloat() - 0.5F)
             );
         }
-        AwaitTickQueue.scheduleTask(player.getReferenceWorld(), w -> {
+        AwaitTickQueue.scheduleTask(player.asWorld(), w -> {
             for (int i = 0; i < count; i++) {
-                player.getReferenceWorld().playSound(null, player.getOrigin(), USounds.ENTITY_PLAYER_BATPONY_SCREECH, SoundCategory.PLAYERS,
+                player.asWorld().playSound(null, player.getOrigin(), USounds.ENTITY_PLAYER_BATPONY_SCREECH, SoundCategory.PLAYERS,
                         0.9F + (rng.nextFloat() - 0.5F) / 2F,
                         1.6F + (rng.nextFloat() - 0.5F)
                 );

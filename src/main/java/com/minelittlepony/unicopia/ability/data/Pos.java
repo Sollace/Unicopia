@@ -47,6 +47,6 @@ public class Pos extends Hit {
     }
 
     public double distanceTo(Caster<?> caster) {
-        return Math.sqrt(caster.getEntity().squaredDistanceTo(x, y, z));
+        return Math.sqrt(caster.asEntity().squaredDistanceTo(x, y, z));
     }
 }

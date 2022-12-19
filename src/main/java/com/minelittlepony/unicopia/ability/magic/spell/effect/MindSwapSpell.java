@@ -33,7 +33,7 @@ public class MindSwapSpell extends MimicSpell {
     public void onDestroyed(Caster<?> caster) {
         super.onDestroyed(caster);
         if (initialized && !caster.isClient()) {
-            counterpart.ifPresent(caster.getReferenceWorld(), e -> {
+            counterpart.ifPresent(caster.asWorld(), e -> {
                 EntitySwap.ALL.accept(e, caster.getMaster());
                 Inventory.swapInventories(
                         e, myStoredInventory.or(() -> Inventory.of(e)),
@@ -59,7 +59,7 @@ public class MindSwapSpell extends MimicSpell {
             if (!initialized) {
                 initialized = true;
                 setDirty();
-                counterpart.ifPresent(caster.getReferenceWorld(), e -> {
+                counterpart.ifPresent(caster.asWorld(), e -> {
                     setDisguise(e);
                     Caster<?> other = Caster.of(e).get();
                     SpellType.MIMIC.withTraits().apply(other).setDisguise(caster.getMaster());
@@ -77,14 +77,14 @@ public class MindSwapSpell extends MimicSpell {
                 });
             }
 
-            if (counterpart.getId().isPresent() && counterpart.get(caster.getReferenceWorld()) == null) {
+            if (counterpart.getId().isPresent() && counterpart.get(caster.asWorld()) == null) {
                 caster.getMaster().damage(DamageSource.MAGIC, Float.MAX_VALUE);
                 setDead();
                 return false;
             }
 
-            if (!caster.getEntity().isAlive()) {
-                counterpart.ifPresent(caster.getReferenceWorld(), e -> {
+            if (!caster.asEntity().isAlive()) {
+                counterpart.ifPresent(caster.asWorld(), e -> {
                     e.damage(DamageSource.MAGIC, Float.MAX_VALUE);
                 });
                 onDestroyed(caster);

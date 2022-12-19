@@ -80,7 +80,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     protected List<LivingEntity> getTargets(Pony player) {
-        List<Entity> list = VecHelper.findInRange(player.asEntity(), player.getReferenceWorld(), player.getOriginVector(), 3, this::canDrain);
+        List<Entity> list = VecHelper.findInRange(player.asEntity(), player.asWorld(), player.getOriginVector(), 3, this::canDrain);
 
         TraceHelper.<LivingEntity>findEntity(player.asEntity(), 17, 1,
                 looked -> looked instanceof LivingEntity && !list.contains(looked) && canDrain(looked))
@@ -162,7 +162,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
 
     @Override
     public void postApply(Pony player, AbilitySlot slot) {
-        if (player.getReferenceWorld().random.nextInt(10) == 0) {
+        if (player.asWorld().random.nextInt(10) == 0) {
             player.spawnParticles(ParticleTypes.HEART, 1);
         }
     }

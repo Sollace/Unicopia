@@ -61,7 +61,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         double distance = MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isDefault() ? 6 : -6;
 
         return TraceHelper.findBlock(player.asEntity(), distance, 1)
-                .filter(pos -> TreeType.at(pos, player.getReferenceWorld()) != TreeType.NONE)
+                .filter(pos -> TreeType.at(pos, player.asWorld()) != TreeType.NONE)
                 .isPresent() ? 3 : 1;
     }
 
@@ -77,12 +77,12 @@ public class EarthPonyKickAbility implements Ability<Pos> {
             if (!player.isClient()) {
                 data.ifPresent(kickLocation -> {
                     Vec3d origin = player.getOriginVector();
-                    World w = player.getReferenceWorld();
+                    World w = player.asWorld();
 
                     for (var e : VecHelper.findInRange(player.asEntity(), w, kickLocation.vec(), 2, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
                         if (e instanceof LivingEntity entity) {
                             float calculatedStrength = 0.5F * (1 + player.getLevel().getScaled(9));
-                            entity.damage(MagicalDamageSource.KICK, player.getReferenceWorld().random.nextBetween(2, 10) + calculatedStrength);
+                            entity.damage(MagicalDamageSource.KICK, player.asWorld().random.nextBetween(2, 10) + calculatedStrength);
                             entity.takeKnockback(calculatedStrength, origin.x - entity.getX(), origin.z - entity.getZ());
                             Living.updateVelocity(entity);
                             player.subtractEnergyCost(3);
@@ -107,7 +107,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     @Override
     public Pos tryActivate(Pony player) {
         return TraceHelper.findBlock(player.asEntity(), 6 * getKickDirection(player), 1)
-                .filter(pos -> TreeType.at(pos, player.getReferenceWorld()) != TreeType.NONE)
+                .filter(pos -> TreeType.at(pos, player.asWorld()) != TreeType.NONE)
                 .map(Pos::new)
                 .orElseGet(() -> getDefaultKickLocation(player));
     }
@@ -128,10 +128,10 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     @Override
     public boolean canApply(Pony player, Pos data) {
         BlockPos pos = data.pos();
-        TreeType tree = TreeType.at(pos, player.getReferenceWorld());
+        TreeType tree = TreeType.at(pos, player.asWorld());
 
-        return tree == TreeType.NONE || tree.findBase(player.getReferenceWorld(), pos)
-                .map(base -> tree.countBlocks(player.getReferenceWorld(), pos) > 0)
+        return tree == TreeType.NONE || tree.findBase(player.asWorld(), pos)
+                .map(base -> tree.countBlocks(player.asWorld(), pos) > 0)
                 .orElse(false);
     }
 
@@ -143,7 +143,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     @Override
     public void apply(Pony iplayer, Pos data) {
         BlockPos pos = data.pos();
-        TreeType tree = TreeType.at(pos, iplayer.getReferenceWorld());
+        TreeType tree = TreeType.at(pos, iplayer.asWorld());
 
         iplayer.setAnimation(Animation.KICK);
         iplayer.subtractEnergyCost(tree == TreeType.NONE ? 1 : 3);
@@ -151,7 +151,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         if (tree == TreeType.NONE) {
             return;
         } else {
-            ParticleUtils.spawnParticle(iplayer.getReferenceWorld(), UParticles.GROUND_POUND, data.vec(), Vec3d.ZERO);
+            ParticleUtils.spawnParticle(iplayer.asWorld(), UParticles.GROUND_POUND, data.vec(), Vec3d.ZERO);
         }
 
         PlayerEntity player = iplayer.asEntity();

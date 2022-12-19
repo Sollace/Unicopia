@@ -87,7 +87,7 @@ public class Ether extends PersistentState implements CasterView {
     }
 
     public void remove(SpellType<?> spellType, Caster<?> caster) {
-        remove(spellType, caster.getEntity().getUuid());
+        remove(spellType, caster.asEntity().getUuid());
     }
 
     public Set<Entry> getEntries(SpellType<?> spellType) {
@@ -109,7 +109,7 @@ public class Ether extends PersistentState implements CasterView {
 
     public Optional<Entry> getEntry(SpellType<?> spellType, Caster<?> caster) {
         synchronized (locker) {
-            return getEntries(spellType).stream().filter(e -> e.entity.referenceEquals(caster.getEntity())).findFirst();
+            return getEntries(spellType).stream().filter(e -> e.entity.referenceEquals(caster.asEntity())).findFirst();
         }
     }
 
@@ -137,7 +137,7 @@ public class Ether extends PersistentState implements CasterView {
         }
 
         public Entry(Caster<?> caster) {
-            entity = new EntityReference<>(caster.getEntity());
+            entity = new EntityReference<>(caster.asEntity());
         }
 
         boolean isAlive() {

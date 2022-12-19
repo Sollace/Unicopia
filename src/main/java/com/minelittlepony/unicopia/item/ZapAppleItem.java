@@ -101,7 +101,7 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder, Mu
 
     @Override
     public List<ItemStack> getDefaultStacks() {
-        return Unicopia.SIDE.getPony().map(Pony::getReferenceWorld)
+        return Unicopia.SIDE.getPony().map(Pony::asWorld)
                 .stream()
                 .flatMap(world -> RegistryUtils.valuesForTag(world, UTags.APPLES))
                 .filter(a -> a != this).map(item -> {

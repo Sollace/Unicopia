@@ -133,7 +133,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     private synchronized void createPlayer(NbtCompound nbt, GameProfile profile, Caster<?> source) {
         remove();
 
-        entity = InteractionManager.instance().createPlayer(source.getEntity(), profile);
+        entity = InteractionManager.instance().createPlayer(source.asEntity(), profile);
         entity.setCustomName(source.getMaster().getName());
         ((PlayerEntity)entity).readNbt(nbt.getCompound("playerNbt"));
         if (nbt.contains("playerVisibleParts", NbtElement.BYTE_TYPE)) {
@@ -164,7 +164,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                             ), p -> createPlayer(nbt, p, source));
             } else {
                 if (source.isClient()) {
-                    entity = EntityType.fromNbt(nbt).map(type -> type.create(source.getReferenceWorld())).orElse(null);
+                    entity = EntityType.fromNbt(nbt).map(type -> type.create(source.asWorld())).orElse(null);
                     if (entity != null) {
                         try {
                             entity.readNbt(nbt);
@@ -174,7 +174,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                         entity = EntityBehaviour.forEntity(entity).onCreate(entity, this, true);
                     }
                 } else {
-                    entity = EntityType.loadEntityWithPassengers(nbt, source.getReferenceWorld(), e -> {
+                    entity = EntityType.loadEntityWithPassengers(nbt, source.asWorld(), e -> {
                         return EntityBehaviour.forEntity(e).onCreate(e, this, true);
                     });
                 }
@@ -191,7 +191,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     }
 
     private void onEntityLoaded(Caster<?> source) {
-        source.getEntity().calculateDimensions();
+        source.asEntity().calculateDimensions();
 
         if (entity == null) {
             return;
@@ -202,7 +202,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         }
 
         if (source.isClient()) {
-            source.getReferenceWorld().spawnEntity(entity);
+            source.asWorld().spawnEntity(entity);
         }
     }
 

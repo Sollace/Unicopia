@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.InteractionManager;
-import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.Living;
 
 import net.minecraft.entity.passive.BeeEntity;
 
@@ -16,8 +16,8 @@ public class BeeBehaviour extends EntityBehaviour<BeeEntity> {
     }
 
     @Override
-    public void update(Caster<?> source, BeeEntity entity, Disguise spell) {
-        if (source.getMaster().isSneaking()) {
+    public void update(Living<?> source, BeeEntity entity, Disguise spell) {
+        if (source.asEntity().isSneaking()) {
             entity.setAngerTime(10);
         } else {
             entity.setAngerTime(0);

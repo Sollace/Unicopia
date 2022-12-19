@@ -49,7 +49,7 @@ public class AwkwardSpell extends AbstractSpell implements TimedSpell {
 
                 List<Identifier> names = new ArrayList<>(Registries.PARTICLE_TYPE.getIds());
 
-                int index = (int)MathHelper.nextDouble(source.getReferenceWorld().random, 0, names.size());
+                int index = (int)MathHelper.nextDouble(source.asWorld().random, 0, names.size());
 
                 Identifier id = names.get(index);
                 ParticleType<?> type = Registries.PARTICLE_TYPE.get(id);

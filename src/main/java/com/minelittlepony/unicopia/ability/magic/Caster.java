@@ -6,8 +6,7 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.Owned;
+import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.block.data.ModificationType;
 import com.minelittlepony.unicopia.entity.Physics;
@@ -27,38 +26,35 @@ import net.minecraft.world.World;
 /**
  * Interface for any magically capable entities that can cast or persist spells.
  */
-public interface Caster<E extends LivingEntity> extends Owned<LivingEntity>, Levelled, Affine, ParticleSource, SoundEmitter {
+public interface Caster<E extends Entity> extends Owned<LivingEntity>,
+        Levelled,
+        Affine,
+        ParticleSource<E>,
+        SoundEmitter<E>,
+        EntityConvertable<E>,
+        WorldConvertable {
 
     Physics getPhysics();
 
     SpellContainer getSpellSlot();
 
     /**
-     * Gets the entity directly responsible for casting.
+     * Removes the desired amount of mana or health from this caster in exchange for a spell's benefits.
+     * <p>
+     * @return False if the transaction has depleted the caster's reserves.
      */
-    @Override
-    Entity getEntity();
+    boolean subtractEnergyCost(double amount);
 
-    /**
-     * Gets the minecraft world
-     */
     @Override
-    default World getReferenceWorld() {
-        return getEntity().getEntityWorld();
+    default World asWorld() {
+        return asEntity().world;
     }
 
     /**
      * Returns true if we're executing on the client.
      */
     default boolean isClient() {
-        return getReferenceWorld().isClient();
-    }
-
-    /**
-     * Gets the center position where this caster is located.
-     */
-    default BlockPos getOrigin() {
-        return getEntity().getBlockPos();
+        return asWorld().isClient();
     }
 
     default boolean canModifyAt(BlockPos pos) {
@@ -69,11 +65,11 @@ public interface Caster<E extends LivingEntity> extends Owned<LivingEntity>, Lev
 
         if (mod.checkPhysical()) {
             if (getMaster() instanceof PlayerEntity player) {
-                if (!getReferenceWorld().canPlayerModifyAt(player, pos)) {
+                if (!asWorld().canPlayerModifyAt(player, pos)) {
                     return false;
                 }
             } else {
-                if (!getReferenceWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+                if (!asWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                     return false;
                 }
             }
@@ -81,13 +77,6 @@ public interface Caster<E extends LivingEntity> extends Owned<LivingEntity>, Lev
 
         return !mod.checkMagical() || canCastAt(Vec3d.ofCenter(pos));
     }
-
-    /**
-     * Removes the desired amount of mana or health from this caster in exchange for a spell's benefits.
-     * <p>
-     * @return False if the transaction has depleted the caster's reserves.
-     */
-    boolean subtractEnergyCost(double amount);
 
     default Stream<Caster<?>> findAllSpellsInRange(double radius) {
         return findAllSpellsInRange(radius, null);
@@ -98,7 +87,7 @@ public interface Caster<E extends LivingEntity> extends Owned<LivingEntity>, Lev
     }
 
     default Stream<Entity> findAllEntitiesInRange(double radius, @Nullable Predicate<Entity> test) {
-        return VecHelper.findInRange(getEntity(), getReferenceWorld(), getOriginVector(), radius, test).stream();
+        return VecHelper.findInRange(asEntity(), asWorld(), getOriginVector(), radius, test).stream();
     }
 
     default Stream<Entity> findAllEntitiesInRange(double radius) {

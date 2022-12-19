@@ -84,7 +84,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
     private void thrustDownwards(Pony player) {
         BlockPos ppos = player.getOrigin();
-        BlockPos pos = PosHelper.findSolidGroundAt(player.getReferenceWorld(), ppos, player.getPhysics().getGravitySignum());
+        BlockPos pos = PosHelper.findSolidGroundAt(player.asWorld(), ppos, player.getPhysics().getGravitySignum());
 
         double downV = Math.sqrt(ppos.getSquaredDistance(pos)) * player.getPhysics().getGravitySignum();
         player.asEntity().addVelocity(0, -downV, 0);
@@ -104,7 +104,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
             float heavyness = 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, player);
 
-            iplayer.getReferenceWorld().getOtherEntities(player, areaOfEffect.offset(iplayer.getOriginVector())).forEach(i -> {
+            iplayer.asWorld().getOtherEntities(player, areaOfEffect.offset(iplayer.getOriginVector())).forEach(i -> {
                 double dist = Math.sqrt(center.getSquaredDistance(i.getBlockPos()));
 
                 if (dist <= rad + 3) {

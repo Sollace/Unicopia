@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
-import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinShulkerEntity;
 
@@ -14,7 +14,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class ShulkerBehaviour extends EntityBehaviour<ShulkerEntity> {
     @Override
-    public void update(Caster<?> source, ShulkerEntity shulker, Disguise spell) {
+    public void update(Living<?> source, ShulkerEntity shulker, Disguise spell) {
         shulker.setYaw(0);
         shulker.prevBodyYaw = 0;
         shulker.bodyYaw = 0;
@@ -27,11 +27,11 @@ public class ShulkerBehaviour extends EntityBehaviour<ShulkerEntity> {
         boolean noGravity = !shulker.isOnGround() && !shulker.world.isAir(pos)
                 && (attachmentFace == Direction.UP || attachmentFace.getAxis() != Axis.Y);
 
-        source.getEntity().setNoGravity(noGravity);
-        if (noGravity && source.getEntity().isSneaking()) {
-            Vec3d vel = source.getEntity().getVelocity();
+        source.asEntity().setNoGravity(noGravity);
+        if (noGravity && source.asEntity().isSneaking()) {
+            Vec3d vel = source.asEntity().getVelocity();
             if (vel.y > 0) {
-                source.getEntity().setVelocity(vel.multiply(1, 0.8, 1));
+                source.asEntity().setVelocity(vel.multiply(1, 0.8, 1));
             }
         }
     }

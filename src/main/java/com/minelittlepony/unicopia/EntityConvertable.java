@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Interface for things that can be owned by an entity.
@@ -11,4 +13,17 @@ import net.minecraft.entity.Entity;
  */
 public interface EntityConvertable<E extends Entity> {
     E asEntity();
+
+    /**
+     * Gets the center position where this caster is located.
+     */
+    default BlockPos getOrigin() {
+        return asEntity().getBlockPos();
+    }
+    /**
+     * Gets the center position where this caster is located.
+     */
+    default Vec3d getOriginVector() {
+        return asEntity().getPos();
+    }
 }

@@ -1,22 +1,22 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
-import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.Living;
 
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 
 public class WaterCreatureBehaviour extends EntityBehaviour<WaterCreatureEntity> {
     @Override
-    public void update(Caster<?> source, WaterCreatureEntity entity, Disguise spell) {
+    public void update(Living<?> source, WaterCreatureEntity entity, Disguise spell) {
 
-        if (source.getEntity().isInsideWaterOrBubbleColumn()) {
-            source.getEntity().setAir(source.getEntity().getAir() - 1);
-            if (source.getEntity().getAir() == -20) {
-                source.getEntity().setAir(0);
-                source.getEntity().damage(DamageSource.DRYOUT, 2);
+        if (source.asEntity().isInsideWaterOrBubbleColumn()) {
+            source.asEntity().setAir(source.asEntity().getAir() - 1);
+            if (source.asEntity().getAir() == -20) {
+                source.asEntity().setAir(0);
+                source.asEntity().damage(DamageSource.DRYOUT, 2);
             }
         } else {
-            source.getEntity().setAir(300);
+            source.asEntity().setAir(300);
         }
 
     }

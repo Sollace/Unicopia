@@ -31,9 +31,9 @@ public class ScorchSpell extends FireSpell implements ProjectileDelegate.Configu
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        BlockPos pos = PosHelper.findSolidGroundAt(source.getReferenceWorld(), source.getOrigin(), source.getPhysics().getGravitySignum());
+        BlockPos pos = PosHelper.findSolidGroundAt(source.asWorld(), source.getOrigin(), source.getPhysics().getGravitySignum());
 
-        if (source.canModifyAt(pos) && StateMaps.FIRE_AFFECTED.convert(source.getReferenceWorld(), pos)) {
+        if (source.canModifyAt(pos) && StateMaps.FIRE_AFFECTED.convert(source.asWorld(), pos)) {
             source.spawnParticles(new Sphere(false, Math.max(1, getTraits().get(Trait.POWER))), 5, p -> {
                 source.addParticle(ParticleTypes.SMOKE, PosHelper.offset(p, pos), Vec3d.ZERO);
             });

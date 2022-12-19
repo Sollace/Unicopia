@@ -57,7 +57,7 @@ public class FireBoltSpell extends AbstractSpell implements HomingSpell,
             return true;
         }
 
-        if (getTraits().get(Trait.FOCUS) >= 50 && !target.isPresent(caster.getReferenceWorld())) {
+        if (getTraits().get(Trait.FOCUS) >= 50 && !target.isPresent(caster.asWorld())) {
             target.set(caster.findAllEntitiesInRange(
                 getTraits().get(Trait.FOCUS) - 49,
                 EntityPredicates.VALID_LIVING_ENTITY.and(TargetSelecter.notOwnerOrFriend(this, caster))
@@ -66,10 +66,10 @@ public class FireBoltSpell extends AbstractSpell implements HomingSpell,
 
         for (int i = 0; i < getNumberOfBalls(caster); i++) {
             getTypeAndTraits().create().toThrowable().throwProjectile(caster, 2).ifPresent(c -> {
-                target.ifPresent(caster.getReferenceWorld(), c::setHomingTarget);
+                target.ifPresent(caster.asWorld(), c::setHomingTarget);
             });
 
-            caster.playSound(USounds.SPELL_FIRE_BOLT_SHOOT, 0.7F, 0.4F / (caster.getReferenceWorld().random.nextFloat() * 0.4F + 0.8F));
+            caster.playSound(USounds.SPELL_FIRE_BOLT_SHOOT, 0.7F, 0.4F / (caster.asWorld().random.nextFloat() * 0.4F + 0.8F));
         }
         return false;
     }
@@ -83,7 +83,7 @@ public class FireBoltSpell extends AbstractSpell implements HomingSpell,
     }
 
     protected int getNumberOfBalls(Caster<?> caster) {
-        return 1 + caster.getReferenceWorld().random.nextInt(3) + (int)getTraits().get(Trait.EARTH) * 3;
+        return 1 + caster.asWorld().random.nextInt(3) + (int)getTraits().get(Trait.EARTH) * 3;
     }
 
     @Override

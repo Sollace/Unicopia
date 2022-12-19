@@ -113,8 +113,8 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
 
     @SuppressWarnings("unchecked")
     private <T extends Spell> Stream<T> read(@Nullable SpellPredicate<T> type, boolean synchronize, boolean sendUpdate) {
-        if (synchronize && spells.fromNbt(owner.getEntity().getDataTracker().get(param)) && sendUpdate) {
-            owner.getEntity().getDataTracker().set(param, spells.toNbt());
+        if (synchronize && spells.fromNbt(owner.asEntity().getDataTracker().get(param)) && sendUpdate) {
+            owner.asEntity().getDataTracker().set(param, spells.toNbt());
         }
 
         if (type == null) {
@@ -135,7 +135,7 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
 
     private void write() {
         if (spells.isDirty()) {
-            owner.getEntity().getDataTracker().set(param, spells.toNbt());
+            owner.asEntity().getDataTracker().set(param, spells.toNbt());
         }
     }
 

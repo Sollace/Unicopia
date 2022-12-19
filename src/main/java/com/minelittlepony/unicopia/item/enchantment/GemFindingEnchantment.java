@@ -23,7 +23,7 @@ public class GemFindingEnchantment extends SimpleEnchantment {
 
         BlockPos origin = user.getOrigin();
 
-        double volume = BlockPos.findClosest(origin, radius, radius, pos -> user.getReferenceWorld().getBlockState(pos).isIn(UTags.INTERESTING))
+        double volume = BlockPos.findClosest(origin, radius, radius, pos -> user.asWorld().getBlockState(pos).isIn(UTags.INTERESTING))
             .map(p -> user.getOriginVector().squaredDistanceTo(p.getX(), p.getY(), p.getZ()))
             .map(find -> (1 - (Math.sqrt(find) / radius)))
             .orElse(-1D);
@@ -37,7 +37,7 @@ public class GemFindingEnchantment extends SimpleEnchantment {
     @Override
     public void onEquipped(Living<?> user) {
         if (user.isClient()) {
-            MinecraftClient.getInstance().getSoundManager().play(new MagicAuraSoundInstance(user.asEntity().getSoundCategory(), user, user.getReferenceWorld().getRandom()));
+            MinecraftClient.getInstance().getSoundManager().play(new MagicAuraSoundInstance(user.asEntity().getSoundCategory(), user, user.asWorld().getRandom()));
         }
     }
 

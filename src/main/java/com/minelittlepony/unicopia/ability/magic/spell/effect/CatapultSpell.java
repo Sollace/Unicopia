@@ -65,14 +65,14 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
     }
 
     protected void apply(Caster<?> caster, Entity e) {
-        Vec3d vel = caster.getEntity().getVelocity();
+        Vec3d vel = caster.asEntity().getVelocity();
         if (Math.abs(e.getVelocity().y) > 0.5) {
-            e.setVelocity(caster.getEntity().getVelocity());
+            e.setVelocity(caster.asEntity().getVelocity());
         } else {
             e.addVelocity(
-                ((caster.getReferenceWorld().random.nextFloat() * HORIZONTAL_VARIANCE) - HORIZONTAL_VARIANCE + vel.x * 0.8F) * 0.1F,
+                ((caster.asWorld().random.nextFloat() * HORIZONTAL_VARIANCE) - HORIZONTAL_VARIANCE + vel.x * 0.8F) * 0.1F,
                 0.1F + (getTraits().get(Trait.STRENGTH, -MAX_STRENGTH, MAX_STRENGTH) - 40) / 16D,
-                ((caster.getReferenceWorld().random.nextFloat() * HORIZONTAL_VARIANCE) - HORIZONTAL_VARIANCE + vel.z * 0.8F) * 0.1F
+                ((caster.asWorld().random.nextFloat() * HORIZONTAL_VARIANCE) - HORIZONTAL_VARIANCE + vel.z * 0.8F) * 0.1F
             );
         }
     }
@@ -84,11 +84,11 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
 
         double maxDistance = 2 + (getTraits().get(Trait.FOCUS) - 50) * 8;
 
-        Trace trace = Trace.create(caster.getEntity(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR);
+        Trace trace = Trace.create(caster.asEntity(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR);
         trace.getEntity().ifPresentOrElse(apply, () -> {
             trace.ifBlock(pos -> {
                 if (caster.canModifyAt(pos)) {
-                    createBlockEntity(caster.getReferenceWorld(), pos, apply);
+                    createBlockEntity(caster.asWorld(), pos, apply);
                 }
             });
         });

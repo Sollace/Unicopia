@@ -36,7 +36,7 @@ public class MagicalDamageSource extends EntityDamageSource {
     }
 
     public static MagicalDamageSource create(String type, Caster<?> caster) {
-        return new MagicalDamageSource(type, caster.getMaster(), caster.getEntity(), false, false);
+        return new MagicalDamageSource(type, caster.getMaster(), caster.asEntity(), false, false);
     }
 
     private Entity spell;

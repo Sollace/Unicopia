@@ -68,7 +68,7 @@ public class PlayerCamera extends MotionCompositor {
             return 0;
         }
 
-        float energyAddition = (player.getReferenceWorld().random.nextInt(maxE) - maxE/2) / 100F;
+        float energyAddition = (player.asWorld().random.nextInt(maxE) - maxE/2) / 100F;
 
         if (Math.abs(energyAddition) <= 0.001) {
             return 0;

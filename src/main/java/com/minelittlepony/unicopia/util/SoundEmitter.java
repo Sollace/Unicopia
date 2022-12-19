@@ -1,20 +1,16 @@
 package com.minelittlepony.unicopia.util;
 
+import com.minelittlepony.unicopia.EntityConvertable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
 
-public interface SoundEmitter {
-
-    World getReferenceWorld();
-
-    Entity getEntity();
-
+public interface SoundEmitter<E extends Entity> extends EntityConvertable<E> {
 
     default void playSound(SoundEvent sound, float volume, float pitch) {
-        playSoundAt(getEntity(), sound, volume, pitch);
+        playSoundAt(asEntity(), sound, volume, pitch);
     }
 
     default void playSound(SoundEvent sound, float volume) {
@@ -22,7 +18,7 @@ public interface SoundEmitter {
     }
 
     default float getRandomPitch() {
-        return getRandomPitch(getReferenceWorld().getRandom());
+        return getRandomPitch(asEntity().world.getRandom());
     }
 
     static void playSoundAt(Entity entity, SoundEvent sound, float volume, float pitch) {

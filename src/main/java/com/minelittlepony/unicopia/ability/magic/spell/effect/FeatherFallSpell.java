@@ -67,8 +67,8 @@ public class FeatherFallSpell extends AbstractSpell implements TimedSpell {
         final float strength = 1F / (getTraits().get(Trait.STRENGTH, 2, 9) / targets.size());
         final float generosity = getTraits().get(Trait.GENEROSITY, 1, MAX_GENEROSITY_FACTOR) / MAX_GENEROSITY_FACTOR;
 
-        Entity entity = caster.getEntity();
-        Vec3d masterVelocity = caster.getEntity().getVelocity().multiply(0.1);
+        Entity entity = caster.asEntity();
+        Vec3d masterVelocity = entity.getVelocity().multiply(0.1);
         targets.forEach(target -> {
             if (target.getVelocity().y < 0) {
 
@@ -84,7 +84,7 @@ public class FeatherFallSpell extends AbstractSpell implements TimedSpell {
                     ((PlayerEntity)target).getAbilities().flying = false;
                 }
                 target.setVelocity(target.getVelocity().multiply(1, delta, 1));
-                if (situation == Situation.PROJECTILE && target != caster.getEntity()) {
+                if (situation == Situation.PROJECTILE && target != entity) {
                     target.addVelocity(masterVelocity.x, 0, masterVelocity.z);
                 }
             }
@@ -114,8 +114,7 @@ public class FeatherFallSpell extends AbstractSpell implements TimedSpell {
     }
 
     protected Stream<Entity> getTargets(Caster<?> caster) {
-        Entity owner = caster.getEntity();// , EquinePredicates.IS_PLAYER
-        return Stream.concat(Stream.of(owner), caster.findAllEntitiesInRange(getEffectRange()).sorted((a, b) -> {
+        return Stream.concat(Stream.of(caster.asEntity()), caster.findAllEntitiesInRange(getEffectRange()).sorted((a, b) -> {
             return Integer.compare(
                     FriendshipBraceletItem.isComrade(caster, a) ? 1 : 0,
                     FriendshipBraceletItem.isComrade(caster, b) ? 1 : 0

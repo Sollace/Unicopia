@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.RegistryUtils;
@@ -45,7 +46,7 @@ public class EntityBehaviour<T extends Entity> {
      * <br>
      * We use this to add entity-specific behaviours.
      */
-    public void update(Caster<?> source, T entity, Disguise spell) {
+    public void update(Living<?> source, T entity, Disguise spell) {
         if (source instanceof Pony) {
             update((Pony)source, entity, spell);
         }
@@ -249,7 +250,7 @@ public class EntityBehaviour<T extends Entity> {
     }
 
     protected boolean isSneakingOnGround(Caster<?> source) {
-        Entity e = source.getEntity();
+        Entity e = source.asEntity();
         return e.isSneaking() && (e.isOnGround() && !(e instanceof PlayerEntity player && player.getAbilities().flying));
     }
 

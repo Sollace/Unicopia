@@ -105,6 +105,11 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
     }
 
     @Override
+    public World asWorld() {
+        return world;
+    }
+
+    @Override
     public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         return false;
     }

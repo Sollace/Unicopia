@@ -22,13 +22,13 @@ import net.minecraft.world.World;
 public class ParticleHandle {
     private final Map<String, Attachment> loadedEffects = new WeakHashMap<>();
 
-    public Optional<Attachment> update(UUID id, ParticleSource source, Consumer<ParticleSpawner> constructor) {
+    public Optional<Attachment> update(UUID id, ParticleSource<?> source, Consumer<ParticleSpawner> constructor) {
         return update(id, "prime", source, constructor);
     }
 
-    public Optional<Attachment> update(UUID id, String partName, ParticleSource source, Consumer<ParticleSpawner> constructor) {
+    public Optional<Attachment> update(UUID id, String partName, ParticleSource<?> source, Consumer<ParticleSpawner> constructor) {
         return get(partName).or(() -> {
-            if (source.getReferenceWorld().isClient) {
+            if (source.asEntity().world.isClient) {
                 new ClientHandle().addParticle(id, partName, source, constructor);
             }
             return get(partName);
@@ -50,7 +50,7 @@ public class ParticleHandle {
         private Particle pp;
 
         @Environment(EnvType.CLIENT)
-        private void addParticle(UUID id, String partName, ParticleSource source, Consumer<ParticleSpawner> constructor) {
+        private void addParticle(UUID id, String partName, ParticleSource<?> source, Consumer<ParticleSpawner> constructor) {
             SPAWNED_PARTICLES.values().removeIf(set -> {
                 set.values().removeIf(particle -> particle.get() == null);
                 return set.isEmpty();
@@ -110,7 +110,7 @@ public class ParticleHandle {
         }
 
         public Optional<Caster<?>> get() {
-            caster = caster.filter(r -> r.get() != null && r.get().getSpellSlot().contains(effect) && r.get().getEntity().isAlive());
+            caster = caster.filter(r -> r.get() != null && r.get().getSpellSlot().contains(effect) && r.get().asEntity().isAlive());
             return caster.map(WeakReference::get);
         }
     }

@@ -47,8 +47,8 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
         setDirty();
 
         Vec3d pos = caster.getOriginVector();
-        if (target.isPresent(caster.getReferenceWorld()) && target.get(caster.getReferenceWorld()).distanceTo(caster.getEntity()) > getDrawDropOffRange(caster)) {
-            target.get(caster.getReferenceWorld()).requestTeleport(pos.x, pos.y, pos.z);
+        if (target.isPresent(caster.asWorld()) && target.get(caster.asWorld()).distanceTo(caster.asEntity()) > getDrawDropOffRange(caster)) {
+            target.get(caster.asWorld()).requestTeleport(pos.x, pos.y, pos.z);
         }
 
         return super.tick(caster, situation);
@@ -60,7 +60,7 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
 
         source.spawnParticles(getOrigin(source), new Sphere(false, range), 7, p -> {
             source.addParticle(
-                    new FollowingParticleEffect(UParticles.HEALTH_DRAIN, source.getEntity(), 0.4F)
+                    new FollowingParticleEffect(UParticles.HEALTH_DRAIN, source.asEntity(), 0.4F)
                         .withChild(new MagicParticleEffect(getType().getColor())),
                     p,
                     Vec3d.ZERO
@@ -92,8 +92,8 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
             force *= AttractionUtils.getForceAdjustment(target);
         }
 
-        if (!isGood && source.getReferenceWorld().random.nextInt(4500) == 0) {
-            source.getEntity().damage(MagicalDamageSource.create("vortex"), 4);
+        if (!isGood && source.asWorld().random.nextInt(4500) == 0) {
+            source.asEntity().damage(MagicalDamageSource.create("vortex"), 4);
         }
 
         AttractionUtils.applyForce(getOrigin(source), target, -force, 0, false);
@@ -138,7 +138,7 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
 
     @Override
     public void onDestroyed(Caster<?> caster) {
-        target.getOrEmpty(caster.getReferenceWorld()).ifPresent(target -> target.setGlowing(false));
+        target.getOrEmpty(caster.asWorld()).ifPresent(target -> target.setGlowing(false));
     }
 
     @Override

@@ -65,25 +65,25 @@ public class RainboomAbilitySpell extends AbstractSpell {
             e.damage(MagicalDamageSource.create("rainboom", source).setBreakSunglasses(), 6);
         });
         EFFECT_RANGE.translate(source.getOrigin()).getBlockPositions().forEach(pos -> {
-            BlockState state = source.getReferenceWorld().getBlockState(pos);
+            BlockState state = source.asWorld().getBlockState(pos);
             if (state.isIn(UTags.FRAGILE) && source.canModifyAt(pos, ModificationType.PHYSICAL)) {
                 owner.world.breakBlock(pos, true);
             }
         });
 
-        Vec3d motion = source.getEntity().getRotationVec(1).multiply(1.5);
-        Vec3d velocity = source.getEntity().getVelocity().add(motion);
+        Vec3d motion = source.asEntity().getRotationVec(1).multiply(1.5);
+        Vec3d velocity = source.asEntity().getVelocity().add(motion);
 
         while (velocity.length() > 3) {
             velocity = velocity.multiply(0.6);
         }
 
-        source.getEntity().setVelocity(velocity);
+        source.asEntity().setVelocity(velocity);
         if (source instanceof Pony pony) {
             pony.getMagicalReserves().getExhaustion().multiply(0.2F);
         }
 
-        return !source.getEntity().isRemoved() && age++ < 90 + 7 * source.getLevel().getScaled(9);
+        return !source.asEntity().isRemoved() && age++ < 90 + 7 * source.getLevel().getScaled(9);
     }
 
     @Override

@@ -42,8 +42,8 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
         Trace trace = Trace.create(player, 10, 1, EquinePredicates.VALID_FOR_DISGUISE);
 
         Entity looked = trace.getEntity().map(AbstractDisguiseSpell::getAppearance).orElseGet(() -> trace.getBlockPos().map(pos -> {
-            if (!iplayer.getReferenceWorld().isAir(pos)) {
-                return MixinFallingBlockEntity.createInstance(player.getEntityWorld(), 0, 0, 0, iplayer.getReferenceWorld().getBlockState(pos));
+            if (!iplayer.asWorld().isAir(pos)) {
+                return MixinFallingBlockEntity.createInstance(player.getEntityWorld(), 0, 0, 0, iplayer.asWorld().getBlockState(pos));
             }
             return null;
         }).orElse(null));

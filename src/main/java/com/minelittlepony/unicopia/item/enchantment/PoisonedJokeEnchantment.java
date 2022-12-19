@@ -36,19 +36,19 @@ public class PoisonedJokeEnchantment extends SimpleEnchantment implements Identi
 
     @Override
     public void onUserTick(Living<?> user, int level) {
-        if (sounds.isEmpty() || user.getReferenceWorld().isClient) {
+        if (sounds.isEmpty() || user.asWorld().isClient) {
             return;
         }
 
-        int light = user.getReferenceWorld().getLightLevel(user.asEntity().getRootVehicle().getBlockPos());
-        Random rng = user.getReferenceWorld().random;
+        int light = user.asWorld().getLightLevel(user.asEntity().getRootVehicle().getBlockPos());
+        Random rng = user.asWorld().random;
         Data data = user.getEnchants().computeIfAbsent(this, Data::new);
 
         data.level -= rng.nextFloat() * 0.8F;
         if (rng.nextInt(Math.max(1, (light * 9) + (int)data.level)) == 0) {
             data.level = rng.nextInt(5000);
 
-            user.getReferenceWorld().playSoundFromEntity(
+            user.asWorld().playSoundFromEntity(
                     null,
                     user.asEntity(),
                     sounds.get(rng.nextInt(sounds.size())), SoundCategory.HOSTILE,

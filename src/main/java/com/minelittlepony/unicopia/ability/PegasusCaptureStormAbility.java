@@ -60,7 +60,7 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
     @Override
     public void apply(Pony player, Hit data) {
 
-        World w = player.getReferenceWorld();
+        World w = player.asWorld();
         ItemStack stack = player.asEntity().getStackInHand(Hand.MAIN_HAND);
         boolean thundering = w.isThundering();
 

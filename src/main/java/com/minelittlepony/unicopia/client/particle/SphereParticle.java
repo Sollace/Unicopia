@@ -101,7 +101,7 @@ public class SphereParticle extends Particle implements Attachment {
         super.tick();
 
         if (link.isPresent()) {
-            link.flatMap(Link::get).map(Caster::getEntity).ifPresentOrElse(e -> {
+            link.flatMap(Link::get).map(Caster::asEntity).ifPresentOrElse(e -> {
                 Vec3d offset = parameters.getOffset();
                 setPos(e.getX() + offset.getX(), e.getY() + offset.getY(), e.getZ() + offset.getZ());
 

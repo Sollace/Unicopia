@@ -40,24 +40,24 @@ public class IceSpell extends AbstractSpell {
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        boolean submerged = source.getEntity().isSubmergedInWater() || source.getEntity().isSubmergedIn(FluidTags.LAVA);
+        boolean submerged = source.asEntity().isSubmergedInWater() || source.asEntity().isSubmergedIn(FluidTags.LAVA);
 
         long blocksAffected = OUTER_RANGE.translate(source.getOrigin()).getBlockPositions().filter(i -> {
-            if (source.canModifyAt(i) && applyBlockSingle(source.getEntity(), source.getReferenceWorld(), i, situation)) {
+            if (source.canModifyAt(i) && applyBlockSingle(source.asEntity(), source.asWorld(), i, situation)) {
 
                 if (submerged & source.getOrigin().isWithinDistance(i, RADIUS - 1)) {
-                    BlockState state = source.getReferenceWorld().getBlockState(i);
+                    BlockState state = source.asWorld().getBlockState(i);
                     if (state.isIn(BlockTags.ICE) || state.isOf(Blocks.OBSIDIAN)) {
-                        source.getReferenceWorld().setBlockState(i, Blocks.AIR.getDefaultState(), Block.NOTIFY_NEIGHBORS);
+                        source.asWorld().setBlockState(i, Blocks.AIR.getDefaultState(), Block.NOTIFY_NEIGHBORS);
                     } else if (!state.getFluidState().isEmpty()) {
-                        source.getReferenceWorld().setBlockState(i, state.with(Properties.WATERLOGGED, false), Block.NOTIFY_NEIGHBORS);
+                        source.asWorld().setBlockState(i, state.with(Properties.WATERLOGGED, false), Block.NOTIFY_NEIGHBORS);
                     }
                 }
 
-                ParticleUtils.spawnParticle(source.getReferenceWorld(), ParticleTypes.SPLASH, new Vec3d(
-                        i.getX() + source.getReferenceWorld().random.nextFloat(),
+                ParticleUtils.spawnParticle(source.asWorld(), ParticleTypes.SPLASH, new Vec3d(
+                        i.getX() + source.asWorld().random.nextFloat(),
                         i.getY() + 1,
-                        i.getZ() + source.getReferenceWorld().random.nextFloat()), Vec3d.ZERO);
+                        i.getZ() + source.asWorld().random.nextFloat()), Vec3d.ZERO);
 
                 return true;
             }
@@ -67,7 +67,7 @@ public class IceSpell extends AbstractSpell {
 
         source.subtractEnergyCost(Math.min(10, blocksAffected));
 
-        return applyEntities(source.getMaster(), source.getReferenceWorld(), source.getOriginVector()) && situation == Situation.PROJECTILE;
+        return applyEntities(source.getMaster(), source.asWorld(), source.getOriginVector()) && situation == Situation.PROJECTILE;
     }
 
     protected boolean applyEntities(LivingEntity owner, World world, Vec3d pos) {

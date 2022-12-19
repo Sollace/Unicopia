@@ -28,8 +28,8 @@ public abstract class AbstractDisguiseSpell extends AbstractSpell implements Dis
 
     @Override
     public void onDestroyed(Caster<?> caster) {
-        caster.getEntity().calculateDimensions();
-        caster.getEntity().setInvisible(false);
+        caster.asEntity().calculateDimensions();
+        caster.asEntity().setInvisible(false);
         if (caster instanceof Pony) {
             ((Pony) caster).setInvisible(false);
         }

@@ -39,7 +39,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
         }
 
         if (ticks == 0) {
-            target.ifPresent(source.getReferenceWorld(), target -> {
+            target.ifPresent(source.asWorld(), target -> {
 
                 Vec3d destinationPos = target.getPos();
                 Vec3d destinationVel = target.getVelocity();
@@ -95,7 +95,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
     @Override
     public void onDestroyed(Caster<?> caster) {
         caster.getMaster().setGlowing(false);
-        target.ifPresent(caster.getReferenceWorld(), e -> e.setGlowing(false));
+        target.ifPresent(caster.asWorld(), e -> e.setGlowing(false));
     }
 
     @Override

@@ -52,7 +52,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
     public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
         if (!projectile.isClient()) {
             Vec3d pos = hit.getPos();
-            projectile.getReferenceWorld().createExplosion(projectile.getOwner(), pos.getX(), pos.getY(), pos.getZ(), 2, ExplosionSourceType.MOB);
+            projectile.asWorld().createExplosion(projectile.getOwner(), pos.getX(), pos.getY(), pos.getZ(), 2, ExplosionSourceType.MOB);
         }
     }
 
@@ -60,7 +60,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         if (!projectile.isClient()) {
             Entity entity = hit.getEntity();
-            projectile.getReferenceWorld().createExplosion(projectile.getOwner(), entity.getX(), entity.getY(), entity.getZ(), 2, ExplosionSourceType.MOB);
+            projectile.asWorld().createExplosion(projectile.getOwner(), entity.getX(), entity.getY(), entity.getZ(), 2, ExplosionSourceType.MOB);
         }
     }
 
@@ -71,9 +71,9 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
         }
 
         return new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER))).translate(source.getOrigin()).getBlockPositions().reduce(false,
-                (r, i) -> source.canModifyAt(i) && applyBlocks(source.getReferenceWorld(), i),
+                (r, i) -> source.canModifyAt(i) && applyBlocks(source.asWorld(), i),
                 (a, b) -> a || b)
-                || applyEntities(null, source.getReferenceWorld(), source.getOriginVector());
+                || applyEntities(null, source.asWorld(), source.getOriginVector());
     }
 
     protected void generateParticles(Caster<?> source) {

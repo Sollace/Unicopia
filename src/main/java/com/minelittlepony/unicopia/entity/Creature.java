@@ -76,8 +76,8 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
     }
 
     @Override
-    public World getReferenceWorld() {
-        return super.getReferenceWorld();
+    public World asWorld() {
+        return super.asWorld();
     }
 
     @Override
@@ -85,7 +85,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
     public LivingEntity getMaster() {
         NbtCompound data = entity.getDataTracker().get(MASTER);
         owner.fromNBT(data);
-        return owner.getOrEmpty(getReferenceWorld()).orElse(entity);
+        return owner.getOrEmpty(asWorld()).orElse(entity);
     }
 
     @Override
@@ -116,7 +116,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
             goals.add(3, eatMuffinGoal);
         }
 
-        if (owner.isPresent(getReferenceWorld())) {
+        if (owner.isPresent(asWorld())) {
             initMinionAi();
         }
 
@@ -241,7 +241,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned<Living
         }
         if (compound.contains("master", NbtElement.COMPOUND_TYPE)) {
             owner.fromNBT(compound.getCompound("master"));
-            if (owner.isPresent(getReferenceWorld()) && targets != null) {
+            if (owner.isPresent(asWorld()) && targets != null) {
                 initMinionAi();
             }
         }

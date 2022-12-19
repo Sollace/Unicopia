@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.player.PlayerDimensions;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -56,9 +57,14 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
     }
 
     @SuppressWarnings("unchecked")
-    default boolean update(Caster<?> source, boolean tick) {
+    default boolean update(Caster<?> caster, boolean tick) {
 
-        LivingEntity owner = source.getMaster();
+        if (!(caster instanceof Living)) {
+            return false;
+        }
+
+        Living<?> source = (Living<?>)caster;
+        LivingEntity owner = source.asEntity();
 
         if (owner == null) {
             return true;

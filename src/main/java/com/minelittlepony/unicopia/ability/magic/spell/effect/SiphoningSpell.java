@@ -55,7 +55,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
             int direction = isFriendlyTogether(source) ? 1 : -1;
 
             source.spawnParticles(new Sphere(true, radius, 1, 0, 1), 1, pos -> {
-                if (!source.getReferenceWorld().isAir(new BlockPos(pos).down())) {
+                if (!source.asWorld().isAir(new BlockPos(pos).down())) {
 
                     double dist = pos.distanceTo(source.getOriginVector());
                     Vec3d velocity = pos.subtract(source.getOriginVector()).normalize().multiply(direction * dist);
@@ -64,7 +64,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
                 }
             });
         } else {
-            if (source.getReferenceWorld().getTime() % 10 != 0) {
+            if (source.asWorld().getTime() % 10 != 0) {
                 return true;
             }
 
@@ -78,7 +78,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
     }
 
     private Stream<LivingEntity> getTargets(Caster<?> source) {
-        return VecHelper.findInRange(null, source.getReferenceWorld(), source.getOriginVector(), 4 + source.getLevel().getScaled(6), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(e -> e instanceof LivingEntity))
+        return VecHelper.findInRange(null, source.asWorld(), source.getOriginVector(), 4 + source.getLevel().getScaled(6), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(e -> e instanceof LivingEntity))
                 .stream()
                 .map(e -> (LivingEntity)e);
     }
@@ -92,7 +92,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
             source.subtractEnergyCost(0.2F);
 
             if (ticksUpset > 0 || maxHealthGain <= 0) {
-                if (source.getReferenceWorld().random.nextInt(3000) == 0) {
+                if (source.asWorld().random.nextInt(3000) == 0) {
                     setDead();
                 } else {
                     e.damage(damage, e.getHealth() / 4);

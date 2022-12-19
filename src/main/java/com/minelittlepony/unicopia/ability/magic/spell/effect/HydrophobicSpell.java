@@ -50,7 +50,7 @@ public class HydrophobicSpell extends AbstractSpell {
     public boolean tick(Caster<?> source, Situation situation) {
 
         if (!source.isClient()) {
-            World world = source.getReferenceWorld();
+            World world = source.asWorld();
 
             Shape area = new Sphere(false, getRange(source)).translate(source.getOriginVector());
 
@@ -83,12 +83,12 @@ public class HydrophobicSpell extends AbstractSpell {
             source.subtractEnergyCost(storedFluidPositions.isEmpty() ? 0.001F : 0.02F);
             source.spawnParticles(new Sphere(true, getRange(source)), 10, pos -> {
                 BlockPos bp = new BlockPos(pos);
-                if (source.getReferenceWorld().getFluidState(bp.up()).isIn(affectedFluid)) {
+                if (source.asWorld().getFluidState(bp.up()).isIn(affectedFluid)) {
                     source.addParticle(UParticles.RAIN_DROPS, pos, Vec3d.ZERO);
                 }
             });
 
-            if (source.getEntity().age % 200 == 0) {
+            if (source.asEntity().age % 200 == 0) {
                 source.playSound(USounds.SPELL_AMBIENT, 0.5F);
             }
         }
@@ -99,7 +99,7 @@ public class HydrophobicSpell extends AbstractSpell {
     @Override
     public void onDestroyed(Caster<?> caster) {
         storedFluidPositions.removeIf(entry -> {
-            entry.restore(caster.getReferenceWorld());
+            entry.restore(caster.asWorld());
             return true;
          });
     }

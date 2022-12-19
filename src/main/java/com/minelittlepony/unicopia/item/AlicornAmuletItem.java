@@ -122,7 +122,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
         float attachedTime = timeWorn / 100F;
 
-        LocalDifficulty difficulty = wearer.getReferenceWorld().getLocalDifficulty(wearer.getOrigin());
+        LocalDifficulty difficulty = wearer.asWorld().getLocalDifficulty(wearer.getOrigin());
         float amount = attachedTime * (1 + difficulty.getClampedLocalDifficulty());
 
         amount = Math.min(amount, wearer.getMaster().getMaxHealth());

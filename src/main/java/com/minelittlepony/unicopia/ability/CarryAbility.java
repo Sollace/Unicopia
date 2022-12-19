@@ -55,7 +55,7 @@ public class CarryAbility implements Ability<Hit> {
     public boolean onQuickAction(Pony player, ActivationType type) {
 
         if (type == ActivationType.TAP && player.getPhysics().isFlying()) {
-            player.getPhysics().dashForward((float)player.getReferenceWorld().random.nextTriangular(1, 0.3F));
+            player.getPhysics().dashForward((float)player.asWorld().random.nextTriangular(1, 0.3F));
             return true;
         }
 
@@ -65,7 +65,7 @@ public class CarryAbility implements Ability<Hit> {
     @Override
     public void apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.asEntity();
-        LivingEntity rider = findRider(player, iplayer.getReferenceWorld());
+        LivingEntity rider = findRider(player, iplayer.asWorld());
 
         if (player.hasPassengers()) {
             player.removeAllPassengers();

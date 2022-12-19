@@ -61,7 +61,7 @@ public class PegasusRainboomAbility implements Ability<Hit> {
     public boolean onQuickAction(Pony player, ActivationType type) {
 
         if (type == ActivationType.TAP && player.getPhysics().isFlying() && player.getMagicalReserves().getMana().get() > 40) {
-            player.getPhysics().dashForward((float)player.getReferenceWorld().random.nextTriangular(2.5F, 0.3F));
+            player.getPhysics().dashForward((float)player.asWorld().random.nextTriangular(2.5F, 0.3F));
             player.subtractEnergyCost(4);
             return true;
         }

@@ -30,7 +30,7 @@ class PlayerLevelStore implements Levelled.LevelStore {
             if (upgradeMana) {
                 pony.getMagicalReserves().getMana().add(pony.getMagicalReserves().getMana().getMax() / 2);
             }
-            pony.getReferenceWorld().playSound(null, pony.getOrigin(), levelUpSound, SoundCategory.PLAYERS, 1, 2);
+            pony.asWorld().playSound(null, pony.getOrigin(), levelUpSound, SoundCategory.PLAYERS, 1, 2);
         }
         Levelled.LevelStore.super.add(levels);
     }

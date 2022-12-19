@@ -98,15 +98,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return armour;
     }
 
-    /**
-     * @deprecated use asEntity()
-     */
-    @Deprecated(forRemoval = true)
-    @Override
-    public final Entity getEntity() {
-        return asEntity();
-    }
-
     @Override
     public final T asEntity() {
         return entity;
