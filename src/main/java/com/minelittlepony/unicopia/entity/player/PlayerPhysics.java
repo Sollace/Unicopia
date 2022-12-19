@@ -33,6 +33,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.event.GameEvent;
 
 public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickable, Motion, NbtSerialisable {
     private static final int MAX_WALL_HIT_CALLDOWN = 30;
@@ -260,6 +261,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     ticksToGlide = MAX_TICKS_TO_GLIDE;
                     if (!SpellPredicate.IS_DISGUISE.isOn(pony)) {
                         entity.playSound(type.getWingFlapSound(), 0.25F, 1);
+                        entity.world.emitGameEvent(entity, GameEvent.ELYTRA_GLIDE, entity.getPos());
                     }
                 } else {
                     strafe *= 0.28;
@@ -508,6 +510,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             flapping = false;
             if (!SpellPredicate.IS_DISGUISE.isOn(pony)) {
                 entity.playSound(getFlightType().getWingFlapSound(), 0.5F, 1);
+                entity.world.emitGameEvent(entity, GameEvent.ELYTRA_GLIDE, entity.getPos());
             }
             thrustScale = 1;
         }
