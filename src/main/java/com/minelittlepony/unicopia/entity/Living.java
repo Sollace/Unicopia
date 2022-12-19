@@ -54,7 +54,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     private Runnable landEvent;
 
     @Nullable
-    private Entity attacker;
+    private Caster<?> attacker;
 
     private int invinsibilityTicks;
 
@@ -175,21 +175,19 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Nullable
     @Override
-    public final Entity getAttacker() {
+    public final Caster<?> getAttacker() {
         return attacker;
     }
 
     @Override
     public Optional<Boolean> onDamage(DamageSource source, float amount) {
 
-        if (source == DamageSource.LIGHTNING_BOLT) {
-            if (invinsibilityTicks > 0 || tryCaptureLightning()) {
-                return Optional.of(false);
-            }
+        if (source == DamageSource.LIGHTNING_BOLT && (invinsibilityTicks > 0 || tryCaptureLightning())) {
+            return Optional.of(false);
         }
 
         if (source instanceof MagicalDamageSource magical) {
-            Entity attacker = ((MagicalDamageSource)source).getSpell();
+            Caster<?> attacker = ((MagicalDamageSource)source).getSpell();
             if (attacker != null) {
                 this.attacker = attacker;
             }

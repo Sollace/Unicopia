@@ -36,18 +36,19 @@ public class MagicalDamageSource extends EntityDamageSource {
     }
 
     public static MagicalDamageSource create(String type, Caster<?> caster) {
-        return new MagicalDamageSource(type, caster.getMaster(), caster.asEntity(), false, false);
+        return new MagicalDamageSource(type, caster.getMaster(), caster, false, false);
     }
 
-    private Entity spell;
+    @Nullable
+    private Caster<?> spell;
 
     private boolean breakSunglasses;
 
-    protected MagicalDamageSource(String type, @Nullable Entity spell, boolean direct, boolean unblockable) {
+    protected MagicalDamageSource(String type, @Nullable Caster<?> spell, boolean direct, boolean unblockable) {
         this(type, null, spell, direct, unblockable);
     }
 
-    protected MagicalDamageSource(String type, @Nullable Entity source, @Nullable Entity spell, boolean direct, boolean unblockable) {
+    protected MagicalDamageSource(String type, @Nullable Entity source, @Nullable Caster<?> spell, boolean direct, boolean unblockable) {
         super(type, source);
         this.spell = spell;
         setUsesMagic();
@@ -69,7 +70,7 @@ public class MagicalDamageSource extends EntityDamageSource {
     }
 
     @Nullable
-    public Entity getSpell() {
+    public Caster<?> getSpell() {
         return spell;
     }
 

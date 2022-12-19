@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
@@ -24,7 +25,8 @@ public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, Pro
     /**
      * Gets the last magical entity to attack us.
      */
-    Entity getAttacker();
+    @Nullable
+    Caster<?> getAttacker();
 
     /**
      * Returns true if this player is fully invisible.

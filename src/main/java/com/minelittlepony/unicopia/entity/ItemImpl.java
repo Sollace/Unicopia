@@ -2,7 +2,10 @@ package com.minelittlepony.unicopia.entity;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.*;
+import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -39,8 +42,9 @@ public class ItemImpl implements Equine<ItemEntity> {
         owner.getDataTracker().startTracking(ITEM_RACE, Race.REGISTRY.getId(Race.HUMAN).toString());
     }
 
+    @Nullable
     @Override
-    public Entity getAttacker() {
+    public Caster<?> getAttacker() {
         return null;
     }
 
