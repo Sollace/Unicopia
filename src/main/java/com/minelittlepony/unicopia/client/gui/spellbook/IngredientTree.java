@@ -112,7 +112,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         return totalHeight + 7;
     }
 
-    class IngredientButton extends Button {
+    static class IngredientButton extends Button {
         private final IngredientTree.Entry entry;
         private String label;
 
@@ -154,7 +154,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         void onClick();
     }
 
-    class Stacks implements IngredientTree.Entry {
+    static class Stacks implements IngredientTree.Entry {
         private int ticker;
         protected int index;
         protected final ItemStack[] stacks;
@@ -198,7 +198,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         }
     }
 
-    class HiddenStacks extends Stacks {
+    static class HiddenStacks extends Stacks {
         HiddenStacks(ItemStack[] stacks) {
             super(stacks);
         }
@@ -242,7 +242,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         }
     }
 
-    class Traits implements IngredientTree.Entry {
+    static class Traits implements IngredientTree.Entry {
         private final Trait trait;
         private final float value;
 
