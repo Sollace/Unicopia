@@ -2,8 +2,7 @@ package com.minelittlepony.unicopia.mixin;
 
 import java.util.Optional;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
@@ -133,6 +132,7 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
         get().tick();
     }
 
+    @Dynamic("Compiler-generated class-init() method")
     @Inject(method = "<clinit>()V", at = @At("RETURN"), remap = false)
     private static void clinit(CallbackInfo info) {
         Creature.boostrap();

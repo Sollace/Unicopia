@@ -1,11 +1,9 @@
 package com.minelittlepony.unicopia.item.group;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import com.google.common.cache.*;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 
@@ -16,20 +14,14 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
 
 public interface ItemGroupRegistry {
-    LoadingCache<Item, List<ItemStack>> STACK_VARIANCES_CACHE = CacheBuilder.newBuilder()
-            .expireAfterAccess(30, TimeUnit.SECONDS)
-            .build(CacheLoader.from(i -> {
-                if (i instanceof MultiItem m) {
-                    return m.getDefaultStacks();
-                }
-                return ItemGroups.SEARCH.getSearchTabStacks().stream().filter(s -> s.getItem() == i).toList();
-            }));
+    Map<ItemGroup, Set<Item>> REGISTRY = new HashMap<>();
 
     static List<ItemStack> getVariations(Item item) {
-        return STACK_VARIANCES_CACHE.getUnchecked(item);
+        if (item instanceof MultiItem) {
+            return ((MultiItem)item).getDefaultStacks();
+        }
+        return List.of(item.getDefaultStack());
     }
-
-    Map<ItemGroup, Set<Item>> REGISTRY = new HashMap<>();
 
     static <T extends Item> T register(T item, ItemGroup group) {
         REGISTRY.computeIfAbsent(group, g -> new HashSet<>()).add(item);

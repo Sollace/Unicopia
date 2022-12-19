@@ -41,7 +41,7 @@ abstract class MixinWorldRenderer implements SynchronousResourceReloader, AutoCl
             + "Lnet/minecraft/client/render/Camera;"
             + "Lnet/minecraft/client/render/GameRenderer;"
             + "Lnet/minecraft/client/render/LightmapTextureManager;"
-            + "Lnet/minecraft/util/math/Matrix4f;"
+            + "Lorg/joml/Matrix4f;"
             + ")V",
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/render/WorldRenderer;blockBreakingProgressions:Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;")
     )

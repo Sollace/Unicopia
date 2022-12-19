@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
+import com.minelittlepony.unicopia.item.group.UItemGroups;
 import com.minelittlepony.unicopia.item.toxin.UFoodComponents;
 
 import net.minecraft.item.*;

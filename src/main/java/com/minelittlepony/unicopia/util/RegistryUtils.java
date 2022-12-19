@@ -18,7 +18,7 @@ public interface RegistryUtils {
     }
 
     static <T> Registry<T> createDefaulted(Identifier id, String def) {
-        return FabricRegistryBuilder.from(new SimpleDefaultedRegistry<T>(def, RegistryKey.ofRegistry(id), Lifecycle.stable(), true)).buildAndRegister();
+        return FabricRegistryBuilder.from(new SimpleDefaultedRegistry<T>(def, RegistryKey.ofRegistry(id), Lifecycle.stable(), false)).buildAndRegister();
     }
 
     static <T> RegistryEntryList<T> entriesForTag(World world, TagKey<T> key) {
