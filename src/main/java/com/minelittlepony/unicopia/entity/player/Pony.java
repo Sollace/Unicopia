@@ -38,8 +38,7 @@ import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.damage.DamageSource;
@@ -289,6 +288,24 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return interpolator;
     }
 
+    /**
+     * @deprecated use asEntity()
+     */
+    @Deprecated(forRemoval = true)
+    @Override
+    public final Entity getEntity() {
+        return asEntity();
+    }
+
+    /**
+     * @deprecated use asEntity()
+     */
+    @Override
+    @Deprecated(forRemoval = true)
+    public final LivingEntity getMaster() {
+        return asEntity();
+    }
+
     public void onSpawn() {
         if (entity.world instanceof ServerWorld sw
                 && getObservedSpecies() == Race.BAT
@@ -360,7 +377,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         pos = pos.up();
         BlockState state = getReferenceWorld().getBlockState(pos);
 
-        return state.isSolidSurface(getReferenceWorld(), pos, getEntity(), Direction.DOWN);
+        return state.isSolidSurface(getReferenceWorld(), pos, entity, Direction.DOWN);
     }
 
     @Override
@@ -393,7 +410,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                         entity.addStatusEffect(new StatusEffectInstance(UEffects.SUN_BLINDNESS, SunBlindnessStatusEffect.MAX_DURATION, 1, true, false));
                         UCriteria.LOOK_INTO_SUN.trigger(entity);
                     } else if (isClientPlayer()) {
-                        InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING, getEntity().getId());
+                        InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING, entity.getId());
                     }
                 }
             } else if (ticksInSun > 0) {
@@ -599,7 +616,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void copyFrom(Pony oldPlayer) {
         speciesPersisted = true;
-        if (!oldPlayer.getEntity().isRemoved()) {
+        if (!oldPlayer.asEntity().isRemoved()) {
             oldPlayer.getSpellSlot().stream(true).forEach(getSpellSlot()::put);
         } else {
             oldPlayer.getSpellSlot().stream(true).filter(SpellPredicate.IS_PLACED).forEach(getSpellSlot()::put);
@@ -630,7 +647,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public boolean isClientPlayer() {
-        return InteractionManager.instance().isClientPlayer(getMaster());
+        return InteractionManager.instance().isClientPlayer(asEntity());
     }
 
     @SuppressWarnings("unchecked")

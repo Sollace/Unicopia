@@ -64,7 +64,7 @@ public class CarryAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony iplayer, Hit data) {
-        PlayerEntity player = iplayer.getMaster();
+        PlayerEntity player = iplayer.asEntity();
         LivingEntity rider = findRider(player, iplayer.getReferenceWorld());
 
         if (player.hasPassengers()) {

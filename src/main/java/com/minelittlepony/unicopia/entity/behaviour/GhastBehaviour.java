@@ -13,7 +13,7 @@ public class GhastBehaviour extends MobBehaviour<GhastEntity> {
     public void update(Pony player, GhastEntity entity, Disguise spell) {
 
         if (player.sneakingChanged()) {
-            boolean sneaking = player.getMaster().isSneaking();
+            boolean sneaking = player.asEntity().isSneaking();
             entity.setShooting(sneaking);
             entity.setTarget(sneaking ? findTarget(player, entity) : null);
 
@@ -26,9 +26,9 @@ public class GhastBehaviour extends MobBehaviour<GhastEntity> {
                     entity.world.syncWorldEvent(null, WorldEvents.GHAST_SHOOTS, entity.getBlockPos(), 0);
                 }
 
-                Vec3d rot = player.getEntity().getRotationVec(1);
+                Vec3d rot = player.asEntity().getRotationVec(1);
 
-                FireballEntity proj = new FireballEntity(entity.world, player.getMaster(),
+                FireballEntity proj = new FireballEntity(entity.world, player.asEntity(),
                         rot.getX(),
                         rot.getY(),
                         rot.getZ(),

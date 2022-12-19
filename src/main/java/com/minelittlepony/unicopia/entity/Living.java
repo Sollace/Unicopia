@@ -100,12 +100,17 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     @Override
-    public void setMaster(T owner) {
+    public void setMaster(LivingEntity owner) {
     }
 
     @Override
     @NotNull
-    public T getMaster() {
+    public LivingEntity getMaster() {
+        return asEntity();
+    }
+
+    @Override
+    public final T asEntity() {
         return entity;
     }
 

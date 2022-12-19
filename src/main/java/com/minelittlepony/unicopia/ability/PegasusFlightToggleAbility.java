@@ -30,7 +30,7 @@ public class PegasusFlightToggleAbility implements Ability<Hit> {
     @Nullable
     @Override
     public Hit tryActivate(Pony player) {
-        return player.getMaster().isCreative() ? null : Hit.INSTANCE;
+        return player.asEntity().isCreative() ? null : Hit.INSTANCE;
     }
 
     @Override
@@ -54,15 +54,15 @@ public class PegasusFlightToggleAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
-        if (player.getMaster().isCreative()) {
+        if (player.asEntity().isCreative()) {
             return;
         }
 
         player.subtractEnergyCost(1);
 
         if (!player.getPhysics().isFlying()) {
-            player.getEntity().addVelocity(0, player.getPhysics().getGravitySignum() * 0.7F, 0);
-            Living.updateVelocity(player.getEntity());
+            player.asEntity().addVelocity(0, player.getPhysics().getGravitySignum() * 0.7F, 0);
+            Living.updateVelocity(player.asEntity());
             player.getPhysics().startFlying(true);
         } else {
             player.getPhysics().cancelFlight(true);

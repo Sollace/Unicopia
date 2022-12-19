@@ -40,7 +40,7 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
     @Override
     public Hit tryActivate(Pony player) {
 
-        if (!player.getMaster().isCreative() && player.getMagicalReserves().getMana().getPercentFill() < 0.2F) {
+        if (!player.asEntity().isCreative() && player.getMagicalReserves().getMana().getPercentFill() < 0.2F) {
             return null;
         }
 
@@ -61,7 +61,7 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
     public void apply(Pony player, Hit data) {
 
         World w = player.getReferenceWorld();
-        ItemStack stack = player.getMaster().getStackInHand(Hand.MAIN_HAND);
+        ItemStack stack = player.asEntity().getStackInHand(Hand.MAIN_HAND);
         boolean thundering = w.isThundering();
 
         if (stack.getItem() != UItems.EMPTY_JAR) {
@@ -73,12 +73,12 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
         } else if (player.getOrigin().getY() < 120) {
             tell(player, "ability.unicopia.too_low");
         } else {
-            if (!player.getMaster().getAbilities().creativeMode) {
+            if (!player.asEntity().getAbilities().creativeMode) {
                 stack.decrement(1);
             }
 
             if (thundering && w.random.nextBoolean()) {
-                player.getMaster().giveItemStack(UItems.STORM_CLOUD_JAR.getDefaultStack());
+                player.asEntity().giveItemStack(UItems.STORM_CLOUD_JAR.getDefaultStack());
 
                 if (w instanceof ServerWorld) {
                     ServerWorldProperties props = (ServerWorldProperties)w.getLevelProperties();
@@ -91,7 +91,7 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
                     ((ServerWorld)w).getServer().getPlayerManager().sendToDimension(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, w.getRainGradient(1)), w.getRegistryKey());
                 }
             } else {
-                player.getMaster().giveItemStack(UItems.RAIN_CLOUD_JAR.getDefaultStack());
+                player.asEntity().giveItemStack(UItems.RAIN_CLOUD_JAR.getDefaultStack());
 
                 if (w instanceof ServerWorld) {
                     ServerWorldProperties props = (ServerWorldProperties)w.getLevelProperties();
@@ -109,7 +109,7 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
     }
 
     private void tell(Pony player, String translation) {
-        player.getMaster().sendMessage(Text.translatable(translation), true);
+        player.asEntity().sendMessage(Text.translatable(translation), true);
     }
 
     @Override

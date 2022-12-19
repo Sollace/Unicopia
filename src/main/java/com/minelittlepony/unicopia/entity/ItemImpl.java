@@ -32,14 +32,14 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
     private static final TrackedData<String> ITEM_RACE = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.STRING);
     static final TrackedData<Float> ITEM_GRAVITY = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
-    private final ItemEntity owner;
+    private final ItemEntity entity;
 
     private final ItemPhysics physics;
 
     private Race serverRace;
 
     public ItemImpl(ItemEntity owner) {
-        this.owner = owner;
+        this.entity = owner;
         this.physics = new ItemPhysics(owner);
         owner.getDataTracker().startTracking(ITEM_GRAVITY, 1F);
         owner.getDataTracker().startTracking(ITEM_RACE, Race.REGISTRY.getId(Race.HUMAN).toString());
@@ -53,7 +53,7 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
     @Override
     public boolean beforeUpdate() {
 
-        if (!owner.world.isClient) {
+        if (!entity.world.isClient) {
             Race race = getSpecies();
             if (race != serverRace) {
                 serverRace = race;
@@ -62,8 +62,8 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
             }
         }
 
-        ItemStack stack = owner.getStack();
-        IItemEntity i = (IItemEntity)owner;
+        ItemStack stack = entity.getStack();
+        IItemEntity i = (IItemEntity)entity;
 
         if (!stack.isEmpty()) {
 
@@ -71,26 +71,26 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
             ClingyItem clingy = item instanceof ClingyItem ? (ClingyItem)item : ClingyItem.DEFAULT;
 
             if (clingy.isClingy(stack)) {
-                Random rng = owner.world.random;
+                Random rng = entity.world.random;
 
-                owner.world.addParticle(clingy.getParticleEffect((IItemEntity)owner),
-                        owner.getX() + rng.nextFloat() - 0.5,
-                        owner.getY() + rng.nextFloat() - 0.5,
-                        owner.getZ() + rng.nextFloat() - 0.5,
+                entity.world.addParticle(clingy.getParticleEffect((IItemEntity)entity),
+                        entity.getX() + rng.nextFloat() - 0.5,
+                        entity.getY() + rng.nextFloat() - 0.5,
+                        entity.getZ() + rng.nextFloat() - 0.5,
                         0, 0, 0
                 );
 
-                Vec3d position = owner.getPos();
-                VecHelper.findInRange(owner, owner.world, owner.getPos(), clingy.getFollowDistance(i), e -> e instanceof PlayerEntity)
+                Vec3d position = entity.getPos();
+                VecHelper.findInRange(entity, entity.world, entity.getPos(), clingy.getFollowDistance(i), e -> e instanceof PlayerEntity)
                     .stream()
                     .sorted((a, b) -> (int)(a.getPos().distanceTo(position) - b.getPos().distanceTo(position)))
                     .findFirst()
                     .ifPresent(player -> {
-                        double distance = player.getPos().distanceTo(owner.getPos());
+                        double distance = player.getPos().distanceTo(entity.getPos());
 
-                        owner.move(MovementType.SELF,  player.getPos().subtract(owner.getPos()).multiply(distance < 0.3 ? 1 : clingy.getFollowSpeed(i)));
-                        if (owner.horizontalCollision) {
-                            owner.move(MovementType.SELF, new Vec3d(0, owner.verticalCollision ? -0.3 : 0.3, 0));
+                        entity.move(MovementType.SELF,  player.getPos().subtract(entity.getPos()).multiply(distance < 0.3 ? 1 : clingy.getFollowSpeed(i)));
+                        if (entity.horizontalCollision) {
+                            entity.move(MovementType.SELF, new Vec3d(0, entity.verticalCollision ? -0.3 : 0.3, 0));
                         }
 
                         clingy.interactWithPlayer(i, (PlayerEntity)player);
@@ -98,19 +98,19 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
             }
 
             if (stack.isIn(UTags.FALLS_SLOWLY)) {
-                if (!owner.isOnGround() && Math.signum(owner.getVelocity().y) != getPhysics().getGravitySignum()) {
-                    double ticks = ((Entity)owner).age;
+                if (!entity.isOnGround() && Math.signum(entity.getVelocity().y) != getPhysics().getGravitySignum()) {
+                    double ticks = ((Entity)entity).age;
                     double shift = Math.sin(ticks / 9D) / 9D;
                     double rise = -Math.cos(ticks / 9D) * getPhysics().getGravitySignum();
 
-                    owner.prevYaw = owner.prevYaw;
-                    owner.setYaw(owner.getYaw() + 0.3F);
+                    entity.prevYaw = entity.prevYaw;
+                    entity.setYaw(entity.getYaw() + 0.3F);
 
-                    owner.setVelocity(
-                            owner.getVelocity()
+                    entity.setVelocity(
+                            entity.getVelocity()
                                 .multiply(0.25, 0, 0.25)
                                 .add(0, rise, 0)
-                                .add(owner.getRotationVec(1)).normalize().multiply(shift)
+                                .add(entity.getRotationVec(1)).normalize().multiply(shift)
                     );
                 }
             }
@@ -136,12 +136,12 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
 
     @Override
     public Race getSpecies() {
-        return Race.fromName(owner.getDataTracker().get(ITEM_RACE), Race.HUMAN);
+        return Race.fromName(entity.getDataTracker().get(ITEM_RACE), Race.HUMAN);
     }
 
     @Override
     public void setSpecies(Race race) {
-        owner.getDataTracker().set(ITEM_RACE, Race.REGISTRY.getId(race).toString());
+        entity.getDataTracker().set(ITEM_RACE, Race.REGISTRY.getId(race).toString());
     }
 
     @Override
@@ -166,7 +166,12 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
     @Override
     @NotNull
     public ItemEntity getMaster() {
-        return owner;
+        return asEntity();
+    }
+
+    @Override
+    public ItemEntity asEntity() {
+        return entity;
     }
 
     public static <T extends Item> T registerTickCallback(T item, GroundTickCallback callback) {

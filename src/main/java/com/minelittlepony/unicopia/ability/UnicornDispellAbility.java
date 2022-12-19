@@ -54,9 +54,9 @@ public class UnicornDispellAbility implements Ability<Pos> {
             if (type.getTapCount() > 1) {
                 player.setAnimation(Animation.WOLOLO, 10);
                 if (player.getSpellSlot().clear()) {
-                    player.getMaster().sendMessage(Text.translatable("gui.unicopia.action.spells_cleared"), true);
+                    player.asEntity().sendMessage(Text.translatable("gui.unicopia.action.spells_cleared"), true);
                 } else {
-                    player.getMaster().sendMessage(Text.translatable("gui.unicopia.action.no_spells_cleared"), true);
+                    player.asEntity().sendMessage(Text.translatable("gui.unicopia.action.no_spells_cleared"), true);
                 }
                 return true;
             }
@@ -85,14 +85,14 @@ public class UnicornDispellAbility implements Ability<Pos> {
     @Override
     public void apply(Pony player, Pos data) {
         player.setAnimation(Animation.WOLOLO);
-        Caster.stream(VecHelper.findInRange(player.getEntity(), player.getReferenceWorld(), data.vec(), 3, EquinePredicates.IS_PLACED_SPELL).stream()).forEach(target -> {
+        Caster.stream(VecHelper.findInRange(player.asEntity(), player.getReferenceWorld(), data.vec(), 3, EquinePredicates.IS_PLACED_SPELL).stream()).forEach(target -> {
             target.getSpellSlot().clear();
         });
     }
 
     private Optional<Caster<?>> getTarget(Pony player) {
-        int maxDistance = player.getMaster().isCreative() ? 1000 : 100;
-        return TraceHelper.findEntity(player.getMaster(), maxDistance, 1, EquinePredicates.IS_PLACED_SPELL).flatMap(Caster::of);
+        int maxDistance = player.asEntity().isCreative() ? 1000 : 100;
+        return TraceHelper.findEntity(player.asEntity(), maxDistance, 1, EquinePredicates.IS_PLACED_SPELL).flatMap(Caster::of);
     }
 
     @Override

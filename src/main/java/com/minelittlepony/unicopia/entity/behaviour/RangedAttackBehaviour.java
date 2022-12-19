@@ -30,10 +30,10 @@ public class RangedAttackBehaviour<T extends Entity & RangedAttackMob> extends E
 
             ProjectileEntity spit = projectileSupplier.apply(entity.world, entity);
 
-            Vec3d rot = player.getEntity().getRotationVec(1);
+            Vec3d rot = player.asEntity().getRotationVec(1);
 
             spit.setVelocity(rot.getX(), rot.getY(), rot.getZ(), 1.5F, 3);
-            spit.setOwner(player.getMaster());
+            spit.setOwner(player.asEntity());
 
             if (!entity.isSilent()) {
                 SoundEmitter.playSoundAt(entity, sound, 1, 1 + (entity.world.random.nextFloat() - entity.world.random.nextFloat()) * 0.2F);

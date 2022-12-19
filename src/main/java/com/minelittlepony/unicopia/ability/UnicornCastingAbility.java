@@ -96,7 +96,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
                 if (amount < 0) {
                     AmuletItem.consumeEnergy(stack, amount);
                     player.getMagicalReserves().getMana().add(amount * player.getMagicalReserves().getMana().getMax());
-                    player.getReferenceWorld().playSoundFromEntity(null, player.getMaster(), USounds.ITEM_AMULET_RECHARGE, SoundCategory.PLAYERS, 1, 1);
+                    player.getReferenceWorld().playSoundFromEntity(null, player.asEntity(), USounds.ITEM_AMULET_RECHARGE, SoundCategory.PLAYERS, 1, 1);
                 }
             }
         } else {
@@ -117,7 +117,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
                     } else {
                         player.setAnimation(Animation.ARMS_UP);
                         if (s instanceof HomingSpell homer) {
-                            TraceHelper.findEntity(player.getMaster(), homer.getRange(player), 1, EntityPredicates.VALID_ENTITY).ifPresent(homer::setTarget);
+                            TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EntityPredicates.VALID_ENTITY).ifPresent(homer::setTarget);
                         }
                         player.playSound(USounds.SPELL_CAST_SUCCESS, 0.05F, 2.2F);
                     }
@@ -130,7 +130,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
 
     private TypedActionResult<ItemStack> getAmulet(Pony player) {
 
-        ItemStack stack = player.getMaster().getStackInHand(Hand.MAIN_HAND);
+        ItemStack stack = player.asEntity().getStackInHand(Hand.MAIN_HAND);
 
         if (stack.getItem() instanceof AmuletItem) {
             if (((AmuletItem)stack.getItem()).isChargable()) {
@@ -148,7 +148,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
         player.getMagicalReserves().getExhaustion().multiply(3.3F);
 
         if (getAmulet(player).getResult() == ActionResult.CONSUME) {
-            Vec3d eyes = player.getMaster().getCameraPosVec(1);
+            Vec3d eyes = player.asEntity().getCameraPosVec(1);
 
             float i = player.getAbilities().getStat(slot).getFillProgress();
 

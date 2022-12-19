@@ -67,7 +67,9 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     @Nullable
     @Override
     public Hit tryActivate(Pony player) {
-        if (!player.getMaster().isOnGround() && player.getMaster().getVelocity().y * player.getPhysics().getGravitySignum() < 0 && !player.getMaster().getAbilities().flying) {
+        if (!player.asEntity().isOnGround()
+                && player.asEntity().getVelocity().y * player.getPhysics().getGravitySignum() < 0
+                && !player.asEntity().getAbilities().flying) {
             thrustDownwards(player);
             return Hit.INSTANCE;
         }
@@ -85,13 +87,13 @@ public class EarthPonyStompAbility implements Ability<Hit> {
         BlockPos pos = PosHelper.findSolidGroundAt(player.getReferenceWorld(), ppos, player.getPhysics().getGravitySignum());
 
         double downV = Math.sqrt(ppos.getSquaredDistance(pos)) * player.getPhysics().getGravitySignum();
-        player.getMaster().addVelocity(0, -downV, 0);
+        player.asEntity().addVelocity(0, -downV, 0);
         player.updateVelocity();
     }
 
     @Override
     public void apply(Pony iplayer, Hit data) {
-        PlayerEntity player = iplayer.getMaster();
+        PlayerEntity player = iplayer.asEntity();
 
         iplayer.setAnimation(Animation.STOMP, 10);
 

@@ -75,8 +75,8 @@ public class BatEeeeAbility implements Ability<Hit> {
         Vec3d origin = player.getOriginVector();
 
         if (rng.nextInt(20000) == 0) {
-            player.getMaster().damage(MagicalDamageSource.create("eeee", player).setBreakSunglasses(), 0.1F);
-            UCriteria.SCREECH_SELF.trigger(player.getMaster());
+            player.asEntity().damage(MagicalDamageSource.create("eeee", player).setBreakSunglasses(), 0.1F);
+            UCriteria.SCREECH_SELF.trigger(player.asEntity());
         }
 
         int total = player.findAllEntitiesInRange(5).mapToInt(e -> {
@@ -95,7 +95,7 @@ public class BatEeeeAbility implements Ability<Hit> {
         }).sum();
 
         if (total >= 20) {
-            UCriteria.SCREECH_TWENTY_MOBS.trigger(player.getMaster());
+            UCriteria.SCREECH_TWENTY_MOBS.trigger(player.asEntity());
         }
     }
 

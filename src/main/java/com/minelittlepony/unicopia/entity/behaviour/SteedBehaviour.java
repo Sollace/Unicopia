@@ -8,7 +8,7 @@ public class SteedBehaviour<T extends AbstractHorseEntity> extends EntityBehavio
 
     @Override
     public void update(Pony player, T horse, Disguise spell) {
-        boolean angry = !player.getEntity().isOnGround() && player.getMaster().isSprinting();
+        boolean angry = !player.asEntity().isOnGround() && player.asEntity().isSprinting();
         boolean sneaking = isSneakingOnGround(player);
 
         angry |= sneaking;

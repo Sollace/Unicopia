@@ -25,7 +25,7 @@ public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
             BlockState state = entity.world.getBlockState(pos);
             boolean grass = state.isOf(Blocks.GRASS_BLOCK);
 
-            if (player.getMaster().isSneaking()) {
+            if (player.asEntity().isSneaking()) {
                 if (grass && entity.world.isClient && entity.isSheared()) {
                     entity.handleStatus((byte)10);
                 }
@@ -38,11 +38,11 @@ public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
                 } else if (!entity.isSheared()) {
                     ItemStack dropType = new ItemStack(MixinSheepEntity.getDrops().get(entity.getColor()).asItem());
 
-                    player.getMaster().playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1, 1);
+                    player.asEntity().playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1, 1);
                     entity.setSheared(true);
 
                     Random rng = entity.world.random;
-                    PlayerInventory inv = player.getMaster().getInventory();
+                    PlayerInventory inv = player.asEntity().getInventory();
 
                     int dropAmount = rng.nextInt(3);
                     int slot;

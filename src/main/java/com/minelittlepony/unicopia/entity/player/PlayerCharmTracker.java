@@ -35,16 +35,16 @@ public class PlayerCharmTracker implements NbtSerialisable {
     }
 
     public TypedActionResult<CustomisedSpellType<?>> getSpellInHand(Hand hand) {
-        return Streams.stream(pony.getMaster().getHandItems())
+        return Streams.stream(pony.asEntity().getHandItems())
                 .filter(GemstoneItem::isEnchanted)
-                .map(stack -> GemstoneItem.consumeSpell(stack, pony.getMaster(), null))
+                .map(stack -> GemstoneItem.consumeSpell(stack, pony.asEntity(), null))
                 .findFirst()
                 .orElse(getEquippedSpell(hand).toAction());
     }
 
     public void equipSpell(Hand hand, CustomisedSpellType<?> spell) {
         handSpells[hand.ordinal()] = spell;
-        pony.getMaster().playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.25F, 1.75F);
+        pony.asEntity().playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.25F, 1.75F);
         pony.setDirty();
     }
 

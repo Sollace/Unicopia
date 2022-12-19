@@ -36,7 +36,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
 
     @Override
     public Pos tryActivate(Pony player) {
-        return TraceHelper.findBlock(player.getMaster(), 3, 1).map(Pos::new).orElse(null);
+        return TraceHelper.findBlock(player.asEntity(), 3, 1).map(Pos::new).orElse(null);
     }
 
     @Override

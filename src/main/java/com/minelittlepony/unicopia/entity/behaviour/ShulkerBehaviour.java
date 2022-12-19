@@ -40,8 +40,8 @@ public class ShulkerBehaviour extends EntityBehaviour<ShulkerEntity> {
     protected void update(Pony player, ShulkerEntity shulker, Disguise spell) {
         float peekAmount = 30;
 
-        double speed = !player.getEntity().isSneaking() ? 0.29 : 0;
-        speed += Math.sqrt(player.getEntity().getVelocity().horizontalLengthSquared()) * 2;
+        double speed = !player.asEntity().isSneaking() ? 0.29 : 0;
+        speed += Math.sqrt(player.asEntity().getVelocity().horizontalLengthSquared()) * 2;
 
         peekAmount = (float)MathHelper.clamp(speed, 0, 1);
         peekAmount = player.getInterpolator().interpolate("peek", peekAmount, 5);

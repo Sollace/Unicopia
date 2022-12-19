@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 /**
  * Interface for any magically capable entities that can cast or persist spells.
  */
-public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affine, ParticleSource, SoundEmitter {
+public interface Caster<E extends LivingEntity> extends Owned<LivingEntity>, Levelled, Affine, ParticleSource, SoundEmitter {
 
     Physics getPhysics();
 
@@ -37,9 +37,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
      * Gets the entity directly responsible for casting.
      */
     @Override
-    default Entity getEntity() {
-        return getMaster();
-    }
+    Entity getEntity();
 
     /**
      * Gets the minecraft world

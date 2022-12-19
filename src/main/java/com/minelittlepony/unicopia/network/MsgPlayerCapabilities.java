@@ -37,7 +37,7 @@ public class MsgPlayerCapabilities implements Packet<PlayerEntity> {
     }
 
     public MsgPlayerCapabilities(Pony player) {
-        playerId = player.getEntity().getUuid();
+        playerId = player.asEntity().getUuid();
         compoundTag = new NbtCompound();
         player.toSyncronisedNbt(compoundTag);
     }

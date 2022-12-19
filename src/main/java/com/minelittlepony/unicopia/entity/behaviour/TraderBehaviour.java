@@ -8,7 +8,7 @@ import net.minecraft.sound.SoundEvents;
 public class TraderBehaviour extends EntityBehaviour<MerchantEntity> {
     @Override
     public void update(Pony pony, MerchantEntity entity, Disguise spell) {
-        if (pony.sneakingChanged() && pony.getMaster().isSneaking()) {
+        if (pony.sneakingChanged() && pony.asEntity().isSneaking()) {
             entity.setHeadRollingTimeLeft(40);
 
             if (!entity.world.isClient()) {

@@ -55,7 +55,7 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
      * Calculates the maximum radius of the shield. aka The area of effect.
      */
     public double getDrawDropOffRange(Caster<?> source) {
-        float multiplier = source instanceof Pony pony && pony.getMaster().isSneaking() ? 1 : 2;
+        float multiplier = source instanceof Pony pony && pony.asEntity().isSneaking() ? 1 : 2;
         float min = 4 + getTraits().get(Trait.POWER);
         double range = (min + (source.getLevel().getScaled(4) * 2)) / multiplier;
         if (source instanceof Pony && range > 2) {

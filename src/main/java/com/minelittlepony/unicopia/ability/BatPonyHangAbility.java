@@ -40,7 +40,7 @@ public class BatPonyHangAbility implements Ability<Multi> {
             return new Multi(BlockPos.ZERO, 0);
         }
 
-        return TraceHelper.findBlock(player.getMaster(), 5, 1)
+        return TraceHelper.findBlock(player.asEntity(), 5, 1)
                 .map(BlockPos::down)
                 .filter(player::canHangAt)
                 .map(pos -> new Multi(pos, 1))

@@ -9,9 +9,9 @@ public class HoppingBehaviour extends EntityBehaviour<LivingEntity> {
     @Override
     public void update(Pony player, LivingEntity entity, Disguise spell) {
 
-        if (player.getEntity().isOnGround()) {
-            if (player.getEntity().getVelocity().horizontalLengthSquared() > 0.01) {
-                player.getMaster().jump();
+        if (player.asEntity().isOnGround()) {
+            if (player.asEntity().getVelocity().horizontalLengthSquared() > 0.01) {
+                player.asEntity().jump();
                 startJump(entity);
             }
         } else if (player.landedChanged()) {

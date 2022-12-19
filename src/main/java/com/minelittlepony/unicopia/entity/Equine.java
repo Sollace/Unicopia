@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
@@ -13,7 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.ProjectileEntity;
 
-public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, ProjectileImpactListener {
+public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, ProjectileImpactListener, EntityConvertable<T> {
     Race getSpecies();
 
     Physics getPhysics();

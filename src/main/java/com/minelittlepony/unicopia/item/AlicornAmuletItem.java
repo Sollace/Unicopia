@@ -193,7 +193,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                 reserves.getExertion().add(2);
             }
 
-            if (fullSecond && world.random.nextInt(12) == 0 && !pony.getMaster().isCreative()) {
+            if (fullSecond && world.random.nextInt(12) == 0 && !pony.asEntity().isCreative()) {
                 reserves.getEnergy().add(reserves.getEnergy().getMax() / 10F);
                 pony.getCorruption().add((int)MathHelper.clamp(attachedTicks / ItemTracker.HOURS, 1, pony.getCorruption().getMax()));
             }

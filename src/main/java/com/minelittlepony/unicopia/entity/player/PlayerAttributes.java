@@ -43,7 +43,7 @@ public class PlayerAttributes implements Tickable {
 
     @Override
     public void tick() {
-        PlayerEntity entity = pony.getMaster();
+        PlayerEntity entity = pony.asEntity();
         Race race = pony.getSpecies();
 
         toggleAttribute(entity, EntityAttributes.GENERIC_ATTACK_DAMAGE, EARTH_PONY_STRENGTH, race.canUseEarth());

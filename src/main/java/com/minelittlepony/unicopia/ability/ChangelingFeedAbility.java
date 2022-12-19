@@ -61,7 +61,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     private boolean canFeed(Pony player) {
-        return player.getMaster().getHealth() < player.getMaster().getMaxHealth() || player.getMaster().canConsume(false);
+        return player.asEntity().getHealth() < player.asEntity().getMaxHealth() || player.asEntity().canConsume(false);
     }
 
     private boolean canDrain(Entity e) {
@@ -80,9 +80,9 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     protected List<LivingEntity> getTargets(Pony player) {
-        List<Entity> list = VecHelper.findInRange(player.getMaster(), player.getReferenceWorld(), player.getOriginVector(), 3, this::canDrain);
+        List<Entity> list = VecHelper.findInRange(player.asEntity(), player.getReferenceWorld(), player.getOriginVector(), 3, this::canDrain);
 
-        TraceHelper.<LivingEntity>findEntity(player.getMaster(), 17, 1,
+        TraceHelper.<LivingEntity>findEntity(player.asEntity(), 17, 1,
                 looked -> looked instanceof LivingEntity && !list.contains(looked) && canDrain(looked))
             .ifPresent(list::add);
 
@@ -96,7 +96,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony iplayer, Hit data) {
-        PlayerEntity player = iplayer.getMaster();
+        PlayerEntity player = iplayer.asEntity();
 
         float maximumHealthGain = player.getMaxHealth() - player.getHealth();
         int maximumFoodGain = player.canConsume(false) ? (20 - player.getHungerManager().getFoodLevel()) : 0;

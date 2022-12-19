@@ -137,12 +137,12 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
         BarInst(TrackedData<Float> marker, float max, float initial) {
             this.marker = marker;
             this.max = max;
-            pony.getMaster().getDataTracker().startTracking(marker, initial);
+            pony.asEntity().getDataTracker().startTracking(marker, initial);
         }
 
         @Override
         public float get() {
-            return pony.getMaster().getDataTracker().get(marker);
+            return pony.asEntity().getDataTracker().get(marker);
         }
 
         @Override
@@ -156,7 +156,7 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
         }
 
         private void load(float value) {
-            pony.getMaster().getDataTracker().set(marker, value);
+            pony.asEntity().getDataTracker().set(marker, value);
         }
 
         @Override

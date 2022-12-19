@@ -212,7 +212,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
                     if (data.isPresent()) {
                         Channel.CLIENT_PLAYER_ABILITY.send(new MsgPlayerAbility<>(ability, data, ActivationType.NONE));
                     } else {
-                        player.getEntity().playSound(USounds.GUI_ABILITY_FAIL, 1, 1);
+                        player.asEntity().playSound(USounds.GUI_ABILITY_FAIL, 1, 1);
                         setCooldown(0);
                     }
                 }

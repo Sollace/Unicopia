@@ -93,7 +93,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
                 projectile.setHydrophobic();
 
                 if (spell instanceof HomingSpell) {
-                    TraceHelper.findEntity(player.getMaster(), 600, 1).filter(((HomingSpell)spell)::setTarget).ifPresent(projectile::setHomingTarget);
+                    TraceHelper.findEntity(player.asEntity(), 600, 1).filter(((HomingSpell)spell)::setTarget).ifPresent(projectile::setHomingTarget);
                 }
             });
         }

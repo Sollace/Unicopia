@@ -25,7 +25,7 @@ public class MsgPlayerAnimationChange implements Packet<PlayerEntity> {
     }
 
     public MsgPlayerAnimationChange(Pony player, Animation animation, int duration) {
-        this.playerId = player.getEntity().getUuid();
+        this.playerId = player.asEntity().getUuid();
         this.animation = animation;
         this.duration = duration;
     }

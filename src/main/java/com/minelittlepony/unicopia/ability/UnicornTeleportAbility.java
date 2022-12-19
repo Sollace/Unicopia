@@ -68,21 +68,21 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             return null;
         }
 
-        int maxDistance = player.getMaster().isCreative() ? 1000 : 100;
+        int maxDistance = player.asEntity().isCreative() ? 1000 : 100;
 
 
         World w = player.getReferenceWorld();
 
-        Trace trace = Trace.create(player.getMaster(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR);
+        Trace trace = Trace.create(player.asEntity(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR);
         return trace.getBlockOrEntityPos().map(pos -> {
             final BlockPos originalPos = pos;
 
             boolean airAbove = enterable(w, pos.up()) && enterable(w, pos.up(2));
 
-            if (exception(w, pos, player.getMaster())) {
+            if (exception(w, pos, player.asEntity())) {
                 final BlockPos p = pos;
                 pos = trace.getSide().map(sideHit -> {
-                    if (player.getMaster().isSneaking()) {
+                    if (player.asEntity().isSneaking()) {
                         sideHit = sideHit.getOpposite();
                     }
 
@@ -102,8 +102,8 @@ public class UnicornTeleportAbility implements Ability<Pos> {
                 }
             }
 
-            if ((!enterable(w, pos) && exception(w, pos, player.getMaster()))
-             || (!enterable(w, pos.up()) && exception(w, pos.up(), player.getMaster()))) {
+            if ((!enterable(w, pos) && exception(w, pos, player.asEntity()))
+             || (!enterable(w, pos.up()) && exception(w, pos.up(), player.asEntity()))) {
                 return null;
             }
 

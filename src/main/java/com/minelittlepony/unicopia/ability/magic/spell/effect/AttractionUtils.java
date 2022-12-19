@@ -51,7 +51,7 @@ public interface AttractionUtils {
             if (pony.getSpecies().canUseEarth()) {
                 force /= 2;
 
-                if (pony.getMaster().isSneaking()) {
+                if (pony.asEntity().isSneaking()) {
                     force /= 6;
                 }
             } else if (pony.getSpecies().canFly()) {

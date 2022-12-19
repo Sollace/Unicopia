@@ -58,9 +58,9 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
     @Override
     public double getCostEstimate(Pony player) {
-        double distance = MineLPDelegate.getInstance().getPlayerPonyRace(player.getMaster()).isDefault() ? 6 : -6;
+        double distance = MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isDefault() ? 6 : -6;
 
-        return TraceHelper.findBlock(player.getMaster(), distance, 1)
+        return TraceHelper.findBlock(player.asEntity(), distance, 1)
                 .filter(pos -> TreeType.at(pos, player.getReferenceWorld()) != TreeType.NONE)
                 .isPresent() ? 3 : 1;
     }
@@ -79,7 +79,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                     Vec3d origin = player.getOriginVector();
                     World w = player.getReferenceWorld();
 
-                    for (var e : VecHelper.findInRange(player.getEntity(), w, kickLocation.vec(), 2, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
+                    for (var e : VecHelper.findInRange(player.asEntity(), w, kickLocation.vec(), 2, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
                         if (e instanceof LivingEntity entity) {
                             float calculatedStrength = 0.5F * (1 + player.getLevel().getScaled(9));
                             entity.damage(MagicalDamageSource.KICK, player.getReferenceWorld().random.nextBetween(2, 10) + calculatedStrength);
@@ -92,7 +92,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                     }
 
                     BlockPos pos = kickLocation.pos();
-                    EarthPonyStompAbility.stompBlock(w, pos, 10 * (1 + player.getLevel().getScaled(5)) * w.getBlockState(pos).calcBlockBreakingDelta(player.getMaster(), w, pos));
+                    EarthPonyStompAbility.stompBlock(w, pos, 10 * (1 + player.getLevel().getScaled(5)) * w.getBlockState(pos).calcBlockBreakingDelta(player.asEntity(), w, pos));
                     player.setAnimation(Animation.KICK);
                 });
             }
@@ -106,20 +106,20 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     @Nullable
     @Override
     public Pos tryActivate(Pony player) {
-        return TraceHelper.findBlock(player.getMaster(), 6 * getKickDirection(player), 1)
+        return TraceHelper.findBlock(player.asEntity(), 6 * getKickDirection(player), 1)
                 .filter(pos -> TreeType.at(pos, player.getReferenceWorld()) != TreeType.NONE)
                 .map(Pos::new)
                 .orElseGet(() -> getDefaultKickLocation(player));
     }
 
     private int getKickDirection(Pony player) {
-        return MineLPDelegate.getInstance().getPlayerPonyRace(player.getMaster()).isDefault() ? 1 : -1;
+        return MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isDefault() ? 1 : -1;
     }
 
     private Pos getDefaultKickLocation(Pony player) {
-        Vec3d kickVector = player.getMaster().getRotationVector().multiply(1, 0, 1);
-        player.getMaster();
-        if (!MineLPDelegate.getInstance().getPlayerPonyRace(player.getMaster()).isDefault()) {
+        Vec3d kickVector = player.asEntity().getRotationVector().multiply(1, 0, 1);
+
+        if (!MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isDefault()) {
             kickVector = kickVector.rotateY((float)Math.PI);
         }
         return new Pos(new BlockPos(player.getOriginVector().add(kickVector)));
@@ -154,7 +154,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
             ParticleUtils.spawnParticle(iplayer.getReferenceWorld(), UParticles.GROUND_POUND, data.vec(), Vec3d.ZERO);
         }
 
-        PlayerEntity player = iplayer.getMaster();
+        PlayerEntity player = iplayer.asEntity();
 
         if (BlockDestructionManager.of(player.world).getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
             if (player.world.random.nextInt(30) == 0) {

@@ -40,7 +40,7 @@ public class BlazeBehaviour extends EntityBehaviour<BlazeEntity> {
         int fireballsFired = tag.getInt("fireballsFired");
 
         if (player.sneakingChanged()) {
-            boolean sneaking = player.getMaster().isSneaking();
+            boolean sneaking = player.asEntity().isSneaking();
 
             if (sneaking) {
                 firing = true;
@@ -70,10 +70,10 @@ public class BlazeBehaviour extends EntityBehaviour<BlazeEntity> {
                     entity.world.syncWorldEvent(null, WorldEvents.BLAZE_SHOOTS, entity.getBlockPos(), 0);
                 }
 
-                Vec3d rot = player.getEntity().getRotationVec(1);
+                Vec3d rot = player.asEntity().getRotationVec(1);
 
                 for (int i = 0; i < 1; ++i) {
-                   SmallFireballEntity proj = new SmallFireballEntity(entity.world, player.getMaster(),
+                   SmallFireballEntity proj = new SmallFireballEntity(entity.world, player.asEntity(),
                            rot.getX() + entity.getRandom().nextGaussian(),
                            rot.getY(),
                            rot.getZ() + entity.getRandom().nextGaussian()

@@ -36,7 +36,7 @@ public class PegasusRainboomAbility implements Ability<Hit> {
     @Override
     public Hit tryActivate(Pony player) {
 
-        if (!player.getMaster().isCreative() && player.getMagicalReserves().getMana().getPercentFill() < 0.2F) {
+        if (!player.asEntity().isCreative() && player.getMagicalReserves().getMana().getPercentFill() < 0.2F) {
             return null;
         }
 

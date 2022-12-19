@@ -68,7 +68,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private final Pony pony;
 
     public PlayerPhysics(Pony pony) {
-        super(pony.getMaster(), Creature.GRAVITY);
+        super(pony.asEntity(), Creature.GRAVITY);
         this.pony = pony;
         dimensions = new PlayerDimensions(pony, this);
     }
@@ -104,7 +104,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         if (isFlying()) {
             if (getFlightType() == FlightType.INSECTOID) {
-                spreadAmount += Math.sin(pony.getEntity().age * 4F) * 8;
+                spreadAmount += Math.sin(pony.asEntity().age * 4F) * 8;
             } else {
                 if (isGliding()) {
                     spreadAmount += 2.5F;

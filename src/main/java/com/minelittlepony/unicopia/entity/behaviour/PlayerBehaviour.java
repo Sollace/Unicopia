@@ -10,7 +10,7 @@ public class PlayerBehaviour extends EntityBehaviour<PlayerEntity> {
     @Override
     public void update(Caster<?> source, PlayerEntity entity, Disguise spell) {
         if (source instanceof Pony pony) {
-            PlayerEntity pFrom = pony.getMaster();
+            PlayerEntity pFrom = pony.asEntity();
 
             entity.capeX = pFrom.capeX;
             entity.capeY = pFrom.capeY;

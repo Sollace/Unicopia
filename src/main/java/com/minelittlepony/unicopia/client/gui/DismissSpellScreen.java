@@ -65,7 +65,7 @@ public class DismissSpellScreen extends GameGui {
                 Vec3d cartesian = relativePos
                         .normalize()
                         .multiply(minimalDistance + relativePos.length())
-                        .rotateY((pony.getEntity().getYaw() - 180) * MathHelper.RADIANS_PER_DEGREE);
+                        .rotateY((pony.asEntity().getYaw() - 180) * MathHelper.RADIANS_PER_DEGREE);
                 addDrawableChild(new Entry(placeable).ofCartesian(cartesian));
             });
         });
