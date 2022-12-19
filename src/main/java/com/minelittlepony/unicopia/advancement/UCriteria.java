@@ -1,12 +1,10 @@
 package com.minelittlepony.unicopia.advancement;
 
-import com.minelittlepony.unicopia.mixin.MixinCriteria;
-
-import net.minecraft.advancement.criterion.Criterion;
+import net.minecraft.advancement.criterion.Criteria;
 
 public interface UCriteria {
-    CustomEventCriterion CUSTOM_EVENT = register(new CustomEventCriterion());
-    RaceChangeCriterion PLAYER_CHANGE_RACE = register(new RaceChangeCriterion());
+    CustomEventCriterion CUSTOM_EVENT = Criteria.register(new CustomEventCriterion());
+    RaceChangeCriterion PLAYER_CHANGE_RACE = Criteria.register(new RaceChangeCriterion());
 
     CustomEventCriterion.Trigger LOOK_INTO_SUN = CUSTOM_EVENT.createTrigger("look_into_sun");
     CustomEventCriterion.Trigger WEAR_SHADES = CUSTOM_EVENT.createTrigger("wear_shades");
@@ -20,10 +18,6 @@ public interface UCriteria {
     CustomEventCriterion.Trigger SEND_OATS = CUSTOM_EVENT.createTrigger("send_oats");
     CustomEventCriterion.Trigger RECEIVE_OATS = CUSTOM_EVENT.createTrigger("receive_oats");
     CustomEventCriterion.Trigger BREAK_WINDOW = CUSTOM_EVENT.createTrigger("break_window");
-
-    private static <T extends Criterion<?>> T register(T obj) {
-        return MixinCriteria.register(obj);
-    }
 
     static void bootstrap() { }
 }

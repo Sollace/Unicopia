@@ -10,7 +10,6 @@
     "MixinBlockItem",
     "MixinBoatEntity",
     "MixinBrain",
-    "MixinCriteria",
     "MixinDamageSource",
     "MixinEntity",
     "MixinFallingBlock",

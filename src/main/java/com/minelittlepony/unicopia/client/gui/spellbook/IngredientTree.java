@@ -15,7 +15,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -23,7 +22,6 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.text.Text;
 
 class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     private final List<IngredientTree.Entry> entries = new ArrayList<>();
@@ -134,29 +132,17 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             RenderSystem.setShaderTexture(0, SpellbookScreen.SLOT);
             RenderSystem.enableBlend();
 
-            drawTexture(matrices, x - 8, y - 10, 0, 0, 32, 32, 32, 32);
+            drawTexture(matrices, getX() - 8, getY() - 10, 0, 0, 32, 32, 32, 32);
 
             RenderSystem.disableBlend();
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
             MinecraftClient.getInstance().textRenderer.draw(matrices, label,
-                    x - MinecraftClient.getInstance().textRenderer.getWidth(label) / 2 - 3,
-                    y + 4,
+                    getX() - MinecraftClient.getInstance().textRenderer.getWidth(label) / 2 - 3,
+                    getY() + 4,
                     0
             );
-            entry.render(matrices, x, y, tickDelta);
-        }
-
-        @Override
-        public void renderToolTip(MatrixStack matrices, Screen parent, int mouseX, int mouseY) {
-            if (visible) {
-                getStyle().getTooltip().ifPresent(tooltip -> {
-                    List<Text> lines = tooltip.getLines();
-                    if (!lines.isEmpty()) {
-                        parent.renderTooltip(matrices, tooltip.getLines(), mouseX + getStyle().toolTipX, mouseY + getStyle().toolTipY);
-                    }
-                });
-            }
+            entry.render(matrices, getX(), getY(), tickDelta);
         }
     }
 

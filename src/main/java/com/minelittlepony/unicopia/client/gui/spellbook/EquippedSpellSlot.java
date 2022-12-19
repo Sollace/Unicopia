@@ -56,7 +56,6 @@ public class EquippedSpellSlot extends Button {
         }
         if (isHovered()) {
             HandledScreen.drawSlotHighlight(matrices, getX(), getY(), 0);
-            this.onPress();
         }
     }
 
