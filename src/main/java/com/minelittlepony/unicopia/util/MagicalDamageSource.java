@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -15,17 +14,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 
 public class MagicalDamageSource extends EntityDamageSource {
-
     public static final DamageSource EXHAUSTION = new MagicalDamageSource("magical_exhaustion", null, true, true);
     public static final DamageSource ALICORN_AMULET = new MagicalDamageSource("alicorn_amulet", null, true, true);
-    public static final DamageSource FOOD_POISONING = mundane("food_poisoning");
-    public static final DamageSource TRIBE_SWAP = mundane("tribe_swap");
+    public static final DamageSource FOOD_POISONING = new DamageSource("food_poisoning");
+    public static final DamageSource TRIBE_SWAP = new DamageSource("tribe_swap");
     public static final DamageSource ZAP_APPLE = create("zap");
     public static final DamageSource KICK = create("kick");
-
-    public static DamageSource mundane(String type) {
-        return new DamageSource(type) {};
-    }
+    public static final DamageSource SUN = new DamageSource("sun").setBypassesArmor().setFire();
+    public static final DamageSource SUNLIGHT = new DamageSource("sunlight").setBypassesArmor().setFire();
+    public static final DamageSource PETRIFIED = new DamageSource("petrified").setBypassesArmor().setFire();
 
     public static MagicalDamageSource create(String type) {
         return new MagicalDamageSource(type, null, null, false, false);
@@ -84,21 +81,22 @@ public class MagicalDamageSource extends EntityDamageSource {
 
         @Nullable
         Entity attacker = source != null ? source : target.getPrimeAdversary();
-
-        if (attacker != null) {
-            if (attacker == target) {
-                basic += ".self";
-            } else {
-                basic += ".attacker";
-                params.add(attacker.getDisplayName());
-            }
-        }
-
         ItemStack item = attacker instanceof LivingEntity ? ((LivingEntity)attacker).getMainHandStack() : ItemStack.EMPTY;
 
-        if (!item.isEmpty() && item.hasCustomName()) {
+        if (attacker == target) {
+            basic += ".self";
+
+            if (!item.isEmpty() && item.hasCustomName()) {
+                basic += ".item";
+                params.add(item.toHoverableText());
+            }
+        } else if (!item.isEmpty() && item.hasCustomName()) {
             basic += ".item";
+            params.add(attacker.getDisplayName());
             params.add(item.toHoverableText());
+        } else if (attacker != null) {
+            basic += ".player";
+            params.add(attacker.getDisplayName());
         }
 
         return Text.translatable(basic, params.toArray());

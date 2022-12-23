@@ -6,11 +6,11 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
+import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectCategory;
@@ -37,8 +37,8 @@ public class SunBlindnessStatusEffect extends StatusEffect {
         if (entity.age % 15 == 0) {
             if (!hasSunExposure(entity)) {
                 entity.setStatusEffect(new StatusEffectInstance(this, (int)(state.getDuration() * 0.8F), Math.max(1, amplifier - 1), true, false), entity);
-            } else if (amplifier > 1) {
-                entity.damage(DamageSource.IN_FIRE, amplifier / 20F);
+            } else {
+                entity.damage(amplifier == 2 ? MagicalDamageSource.SUN : MagicalDamageSource.SUNLIGHT, amplifier / 5F);
             }
         }
     }
