@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.client.gui;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
@@ -224,21 +223,21 @@ public class UHud extends DrawableHelper {
 
             float strength = MathHelper.clamp(pulse + i, 0.3F, 1F);
 
-            int alpha1 = (int)(strength * 205) << 24 & -16777216;
+            int alpha1 = (int)(strength * 205);
             int alpha2 = (int)(alpha1 * 0.6F);
-
-            fillGradient(matrices, 0, 0, scaledWidth, scaledHeight / 2, 0xFFFFFF | alpha1, 0xFFFFFF | alpha2);
-            fillGradient(matrices, 0, scaledHeight / 2, scaledWidth, scaledHeight, 0xFFFFFF | alpha2, 0xFFFFFF | alpha1);
+            int color = 0xFFFFFF;
 
             if (hasEffect) {
-                matrices.push();
-                matrices.translate(scaledWidth, 0, 0);
-                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
-
-                fillGradient(matrices, 0, 0, scaledHeight, scaledWidth / 2, 0xFFFFFF | 0, 0xFFFFFF | alpha2);
-                fillGradient(matrices, 0, scaledWidth / 2, scaledHeight, scaledWidth, 0xFFFFFF | alpha2, 0xFFFFFF | 0);
-
-                matrices.pop();
+                GradientUtil.fillRadialGradient(matrices, 0, 0, scaledWidth, scaledHeight,
+                        color | (alpha1 << 24),
+                        color | (alpha2 << 24),
+                        getZOffset(), 1);
+            } else {
+                GradientUtil.fillVerticalGradient(matrices, 0, 0, scaledHeight / 2, scaledWidth, scaledHeight,
+                        color | (alpha1 << 24),
+                        color | (alpha2 << 24),
+                        color | (alpha1 << 24),
+                        getZOffset());
             }
         }
 
@@ -271,7 +270,12 @@ public class UHud extends DrawableHelper {
             }
         }
 
-        float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();
+        if (UItems.ALICORN_AMULET.isApplicable(client.player)) {
+            float radius = (float)pony.getArmour().getTicks(UItems.ALICORN_AMULET) / (5 * ItemTracker.DAYS);
+            renderVignette(matrices, 0x000000, radius, radius, scaledWidth, scaledHeight);
+        }
+
+        float exhaustion = MathHelper.clamp(pony.getMagicalReserves().getExhaustion().getPercentFill(), 0, 0.6F);
 
         if (exhaustion > 0) {
             if (exhaustion > 0.5F && (heartbeatSound == null || heartbeatSound.isDone())) {
@@ -282,58 +286,28 @@ public class UHud extends DrawableHelper {
                 );
             }
 
-            int color = 0x880000;
-
             float rate = exhaustion > 0.5F ? 2.5F : 7F;
-
             float radius = (1 + (float)Math.sin(client.player.age / rate)) / 2F;
-            radius = 0.1F + radius * 0.1F;
 
-            int alpha1 = (int)(MathHelper.clamp(exhaustion * radius * 2, 0, 1) * 205) << 24 & -16777216;
-            int alpha2 = 0;
-
-            int halfWidth = (int)(scaledWidth * radius);
-            int halfHeight = (int)(scaledHeight * radius);
-
-            fillGradient(matrices, 0, 0, scaledWidth, halfHeight, color | alpha1, color | alpha2);
-            fillGradient(matrices, 0, scaledHeight - halfHeight, scaledWidth, scaledHeight, color | alpha2, color | alpha1);
-
-            matrices.push();
-            matrices.translate(scaledWidth, 0, 0);
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
-
-            fillGradient(matrices, 0, 0, scaledHeight, halfWidth, color | alpha1, color | alpha2);
-            fillGradient(matrices, 0, scaledWidth - halfWidth, scaledHeight, scaledWidth, color | alpha2, color | alpha1);
-
-            matrices.pop();
-        }
-
-        if (UItems.ALICORN_AMULET.isApplicable(client.player)) {
-            int color = 0x000000;
-
-            long timer = pony.getArmour().getTicks(UItems.ALICORN_AMULET);
-
-            float radius = (float)timer / (5 * ItemTracker.DAYS);
-
-            int alpha1 = (int)(MathHelper.clamp(radius * 2, 0, 1) * 205) << 24 & -16777216;
-            int alpha2 = 0;
-
-            int halfWidth = (int)(scaledWidth * radius);
-            int halfHeight = (int)(scaledHeight * radius);
-
-            fillGradient(matrices, 0, 0, scaledWidth, halfHeight, color | alpha1, color | alpha2);
-            fillGradient(matrices, 0, scaledHeight - halfHeight, scaledWidth, scaledHeight, color | alpha2, color | alpha1);
-
-            matrices.push();
-            matrices.translate(scaledWidth, 0, 0);
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
-
-            fillGradient(matrices, 0, 0, scaledHeight, halfWidth, color | alpha1, color | alpha2);
-            fillGradient(matrices, 0, scaledWidth - halfWidth, scaledHeight, scaledWidth, color | alpha2, color | alpha1);
-
-            matrices.pop();
+            renderVignette(matrices, 0x880000, exhaustion * radius, 0.1F + radius * 0.3F, scaledWidth, scaledHeight);
         }
     }
+
+    private void renderVignette(MatrixStack matrices, int color, float alpha, float radius, int scaledWidth, int scaledHeight) {
+        if (radius <= 0) {
+            return;
+        }
+
+        color &= 0xFFFFFF;
+        float alpha2 = MathHelper.clamp(radius - 1, 0, 1) * 255;
+        float alpha1 = Math.max(alpha2, MathHelper.clamp(alpha * 2, 0, 1) * 205);
+        GradientUtil.fillRadialGradient(matrices, 0, 0, scaledWidth, scaledHeight,
+                color | (int)alpha1 << 24,
+                color | (int)alpha2 << 24,
+                getZOffset(), Math.min(1, radius));
+    }
+
+
 
     public void setMessage(Text message) {
         this.message = message;
