@@ -492,6 +492,7 @@
   "unicopia.race.bat.alt": "Bat Ponies",
 
   "death.attack.generic.and_also": "%1$s and %2$s",
+  "death.attack.generic.whilst_flying": "%1$s whilst flying",
   "death.attack.tribe_swap": "%1$s was reborn into a different tribe",
   "death.attack.sun": "%1$s stared into the sun",
   "death.attack.sun.player": "%1$s stared into the sun whilst fighting %2$s",
@@ -525,6 +526,10 @@
   "death.attack.black_hole.player": "%1$s got sucked into %2$s's black hole",
   "death.attack.kick": "%1$s was kicked really hard",
   "death.attack.kick.player": "%2$s kicked %1$s really hard",
+  "death.attack.fall.pegasus": "%1$s forgot they could fly",
+  "death.attack.fall.pegasus.player": "%1$s forgot they could fly and hit the ground too hard whilst trying to escape %2$s",
+  "death.attack.stalagmite.pegasus": "%1$s tried to perch on a stalagmite",
+  "death.attack.stalagmite.pegasus.player": "%1$s flew into a stalagmite whilst fighting %2$s",
 
   "unicopia.subtitle.flap_wings": "Wing flaps",
   "unicopia.subtitle.dash": "Pony Dashes",

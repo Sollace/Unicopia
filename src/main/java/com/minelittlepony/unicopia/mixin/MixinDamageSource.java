@@ -6,6 +6,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.entity.player.Pony;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -25,6 +27,14 @@ abstract class MixinDamageSource {
             }
 
             info.setReturnValue(Text.translatable("death.attack." + self.getName() + ".player", entity.getDisplayName(), attacker.asEntity().getDisplayName()));
+        });
+
+        DamageSource self = (DamageSource)(Object)this;
+
+        Pony.of(entity).filter(e -> e.getSpecies().canFly()).ifPresent(pony -> {
+            if (pony.getPhysics().isFlying()) {
+                info.setReturnValue(Text.translatable("death.attack.generic.whilst_flying", info.getReturnValue()));
+            }
         });
     }
 }

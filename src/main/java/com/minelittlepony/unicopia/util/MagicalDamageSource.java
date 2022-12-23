@@ -5,6 +5,7 @@ import java.util.*;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -99,6 +100,13 @@ public class MagicalDamageSource extends EntityDamageSource {
             params.add(attacker.getDisplayName());
         }
 
-        return Text.translatable(basic, params.toArray());
+        Text message = Text.translatable(basic, params.toArray());
+        return Pony.of(target).filter(e -> e.getSpecies().canFly()).map(pony -> {
+
+            if (pony.getPhysics().isFlying()) {
+                return Text.translatable("death.attack.generic.whilst_flying", message);
+            }
+            return message;
+        }).orElse(message);
     }
 }
