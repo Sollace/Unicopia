@@ -34,10 +34,10 @@ public class SunBlindnessStatusEffect extends StatusEffect {
             return;
         }
 
-        if (!hasSunExposure(entity)) {
-            entity.setStatusEffect(new StatusEffectInstance(this, (int)(state.getDuration() * 0.8F), amplifier, true, false), entity);
-        } else {
-            if (entity.age % 15 == 0) {
+        if (entity.age % 15 == 0) {
+            if (!hasSunExposure(entity)) {
+                entity.setStatusEffect(new StatusEffectInstance(this, (int)(state.getDuration() * 0.8F), Math.max(1, amplifier - 1), true, false), entity);
+            } else if (amplifier > 1) {
                 entity.damage(DamageSource.IN_FIRE, amplifier / 20F);
             }
         }

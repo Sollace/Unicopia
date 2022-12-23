@@ -13,8 +13,6 @@ import com.minelittlepony.unicopia.ability.magic.CasterView;
 import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.client.gui.DismissSpellScreen;
 import com.minelittlepony.unicopia.client.sound.*;
-import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
-import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyClientPlayerEntity;

@@ -54,6 +54,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.*;
 import net.minecraft.world.GameMode;
 
@@ -69,6 +70,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     static final TrackedData<Float> XP = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Integer> LEVEL = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
     static final TrackedData<Integer> CORRUPTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
+    static final int INITIAL_SUN_IMMUNITY = 20;
 
     private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 
@@ -103,7 +106,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     private int ticksInSun;
     private boolean hasShades;
-    private int ticksSunImmunity = 20;
+    private int ticksSunImmunity = INITIAL_SUN_IMMUNITY;
 
     private Animation animation = Animation.NONE;
     private int animationMaxDuration;
@@ -300,6 +303,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 && SunBlindnessStatusEffect.isPositionExposedToSun(sw, getOrigin())) {
             SpawnLocator.selectSpawnPosition(sw, entity);
         }
+        ticksSunImmunity = INITIAL_SUN_IMMUNITY;
     }
 
     @Override
@@ -383,6 +387,39 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         if (getObservedSpecies() == Race.BAT && !entity.hasPortalCooldown()) {
+            boolean hasShades = entity.getEquippedStack(EquipmentSlot.HEAD).isIn(UTags.SHADES);
+            if (!this.hasShades && hasShades && getObservedSpecies() == Race.BAT) {
+                UCriteria.WEAR_SHADES.trigger(entity);
+            }
+            this.hasShades = hasShades;
+
+            if (!hasShades && ticksSunImmunity <= 0) {
+                float skyAngle = ((entity.world.getSkyAngle(1) + 0.25F) % 1F) * 2;
+                float playerAngle = (-entity.getPitch(1) / 90F) / 2F;
+                float playerYaw = MathHelper.wrapDegrees(entity.getHeadYaw());
+
+                if (playerYaw > 0) {
+                    playerAngle = 1 - playerAngle;
+                }
+
+                playerYaw = Math.abs(playerYaw);
+
+                if (skyAngle < 1
+                    && (playerYaw > 89 && playerYaw < 92 || (playerAngle > 0.45F && playerAngle < 0.55F))
+                    && playerAngle > (skyAngle - 0.04F) && playerAngle < (skyAngle + 0.04F)) {
+
+                    if (entity.raycast(100, 1, true).getType() == Type.MISS) {
+                        if (!isClient()) {
+                            entity.addStatusEffect(new StatusEffectInstance(UEffects.SUN_BLINDNESS, SunBlindnessStatusEffect.MAX_DURATION, 2, true, false));
+                            UCriteria.LOOK_INTO_SUN.trigger(entity);
+                        } else if (isClientPlayer()) {
+                            InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING, entity.getId());
+                        }
+
+                    }
+                }
+            }
+
             if (SunBlindnessStatusEffect.hasSunExposure(entity)) {
                 if (ticksInSun < 200) {
                     ticksInSun++;
@@ -391,7 +428,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 if (ticksInSun == 1) {
                     if (!isClient()) {
                         entity.addStatusEffect(new StatusEffectInstance(UEffects.SUN_BLINDNESS, SunBlindnessStatusEffect.MAX_DURATION, 1, true, false));
-                        UCriteria.LOOK_INTO_SUN.trigger(entity);
                     } else if (isClientPlayer()) {
                         InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING, entity.getId());
                     }
@@ -399,12 +435,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             } else if (ticksInSun > 0) {
                 ticksInSun--;
             }
-
-            boolean hasShades = entity.getEquippedStack(EquipmentSlot.HEAD).isIn(UTags.SHADES);
-            if (!this.hasShades && hasShades) {
-                UCriteria.WEAR_SHADES.trigger(entity);
-            }
-            this.hasShades = hasShades;
         }
 
         if (!isClient() && !UItems.ALICORN_AMULET.isApplicable(entity)) {
