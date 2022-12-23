@@ -40,7 +40,6 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -65,6 +64,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     static final TrackedData<Float> ENERGY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> EXHAUSTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> EXERTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    static final TrackedData<Optional<BlockPos>> HANGING_POSITION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
     static final TrackedData<Float> MANA = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> XP = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Integer> LEVEL = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -92,7 +92,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private boolean dirty;
     private boolean speciesPersisted;
 
-    private Optional<BlockPos> hangingPosition = Optional.empty();
     private int ticksHanging;
 
     private float magicExhaustion = 0;
@@ -118,6 +117,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         this.tickers = Lists.newArrayList(gravity, mana, attributes);
 
         player.getDataTracker().startTracking(RACE, Race.DEFAULT_ID);
+        player.getDataTracker().startTracking(HANGING_POSITION, Optional.empty());
     }
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
@@ -329,31 +329,27 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return false;
     }
 
+    public Optional<BlockPos> getHangingPosition() {
+        return entity.getDataTracker().get(HANGING_POSITION);
+    }
+
     public boolean isHanging() {
-        return entity.getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER).hasModifier(PlayerAttributes.BAT_HANGING);
+        return getHangingPosition().isPresent();
     }
 
     public void stopHanging() {
-        entity.getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER).removeModifier(PlayerAttributes.BAT_HANGING);
+        entity.getDataTracker().set(HANGING_POSITION, Optional.empty());
         entity.calculateDimensions();
         ticksHanging = 0;
-        hangingPosition = Optional.empty();
     }
 
     public void startHanging(BlockPos pos) {
-        hangingPosition = Optional.of(pos);
-        EntityAttributeInstance attr = entity.getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
-
-        if (!attr.hasModifier(PlayerAttributes.BAT_HANGING)) {
-            attr.addPersistentModifier(PlayerAttributes.BAT_HANGING);
-        }
+        entity.getDataTracker().set(HANGING_POSITION, Optional.of(pos));
         entity.teleport(pos.getX() + 0.5, pos.getY() - 1, pos.getZ() + 0.5);
         entity.setVelocity(Vec3d.ZERO);
         entity.setSneaking(false);
         entity.stopFallFlying();
         getPhysics().cancelFlight(true);
-
-        setDirty();
     }
 
     public boolean canHangAt(BlockPos pos) {
@@ -379,7 +375,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         if (isHanging()) {
             ((LivingEntityDuck)entity).setLeaningPitch(0);
-            if (!isClient() && (getObservedSpecies() != Race.BAT || (ticksHanging++ > 2 && hangingPosition.filter(getOrigin().down()::equals).filter(this::canHangAt).isEmpty()))) {
+            if (!isClient() && (getObservedSpecies() != Race.BAT || (ticksHanging++ > 2 && getHangingPosition().filter(getOrigin().down()::equals).filter(this::canHangAt).isEmpty()))) {
                 stopHanging();
             }
         } else {
@@ -450,6 +446,13 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             }
         }
         return Optional.empty();
+    }
+
+    public void onDropItem(ItemEntity itemDropped) {
+        Equine.of(itemDropped).ifPresent(eq -> {
+            eq.setSpecies(getSpecies());
+            eq.getPhysics().setBaseGravityModifier(gravity.getPersistantGravityModifier());
+        });
     }
 
     public Optional<Float> onImpact(float distance, float damageMultiplier, DamageSource cause) {
@@ -556,7 +559,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         compound.putString("playerSpecies", Race.REGISTRY.getId(getActualSpecies()).toString());
         compound.putFloat("magicExhaustion", magicExhaustion);
         compound.putInt("ticksHanging", ticksHanging);
-        BLOCK_POS.writeOptional("hangingPosition", compound, hangingPosition);
+        BLOCK_POS.writeOptional("hangingPosition", compound, getHangingPosition());
         compound.putInt("ticksInSun", ticksInSun);
         compound.putBoolean("hasShades", hasShades);
         compound.put("powers", powers.toNBT());
@@ -589,7 +592,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         magicExhaustion = compound.getFloat("magicExhaustion");
         ticksHanging = compound.getInt("ticksHanging");
-        hangingPosition = NbtSerialisable.BLOCK_POS.readOptional("hangingPosition", compound);
+        entity.getDataTracker().set(HANGING_POSITION, NbtSerialisable.BLOCK_POS.readOptional("hangingPosition", compound));
         ticksInSun = compound.getInt("ticksInSun");
         hasShades = compound.getBoolean("hasShades");
 

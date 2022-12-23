@@ -79,6 +79,19 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         return dimensions;
     }
 
+    public final float getPersistantGravityModifier() {
+        return super.getGravityModifier();
+    }
+
+    @Override
+    public float getGravityModifier() {
+        float modifier = getPersistantGravityModifier();
+        if (pony.isHanging()) {
+            modifier *= -0.05F;
+        }
+        return modifier;
+    }
+
     @Override
     public boolean isFlying() {
         return isFlyingSurvival && !entity.isFallFlying() && !entity.hasVehicle();
