@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.ability.magic.CasterView;
 import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.client.gui.DismissSpellScreen;
 import com.minelittlepony.unicopia.client.sound.*;
+import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -73,7 +74,7 @@ public class ClientInteractionManager extends InteractionManager {
 
             if (type == SOUND_EARS_RINGING && source instanceof LivingEntity) {
                 soundManager.play(new LoopingSoundInstance<>((LivingEntity)source,
-                        createTicker(100).and(e -> e.hasStatusEffect(UEffects.SUN_BLINDNESS)),
+                        createTicker(100).and(e -> !e.isRemoved()),
                         USounds.ENTITY_PLAYER_EARS_RINGING, 0.01F, 2, Random.create(seed)).setFadeIn()
                 );
             } else if (type == SOUND_BEE && source instanceof BeeEntity) {
