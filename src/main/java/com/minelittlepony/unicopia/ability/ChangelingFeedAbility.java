@@ -27,6 +27,7 @@ import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundEvents;
 
 /**
  * Changeling ability to restore health from mobs
@@ -61,7 +62,8 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     private boolean canFeed(Pony player) {
-        return player.asEntity().getHealth() < player.asEntity().getMaxHealth() || player.asEntity().canConsume(false);
+        return player.asEntity().getHealth() < player.asEntity().getMaxHealth()
+            || player.asEntity().canConsume(false);
     }
 
     private boolean canDrain(Entity e) {
@@ -96,6 +98,10 @@ public class ChangelingFeedAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony iplayer, Hit data) {
+        if (!canFeed(iplayer)) {
+            return;
+        }
+
         PlayerEntity player = iplayer.asEntity();
 
         float maximumHealthGain = player.getMaxHealth() - player.getHealth();
@@ -113,12 +119,17 @@ public class ChangelingFeedAbility implements Ability<Hit> {
 
             if (foodAmount > 0) {
                 healAmount -= foodAmount;
-                player.getHungerManager().add(foodAmount, 0.125f);
             }
+            player.getHungerManager().add(Math.max(1, foodAmount), 0.125f);
 
-            if (healAmount > 0) {
-                player.heal(Math.min(healAmount, maximumHealthGain));
-            }
+            player.heal(Math.max(1, Math.min(healAmount, maximumHealthGain)));
+        }
+
+
+        if (!canFeed(iplayer)) {
+            iplayer.playSound(SoundEvents.ENTITY_PLAYER_BURP, 1, (float)player.world.random.nextTriangular(1F, 0.2F));
+        } else {
+            iplayer.playSound(SoundEvents.ENTITY_GENERIC_DRINK, 0.1F, iplayer.getRandomPitch());
         }
     }
 
