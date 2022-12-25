@@ -1,14 +1,15 @@
 package com.minelittlepony.unicopia.entity;
 
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Preconditions;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
@@ -17,6 +18,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.block.data.DragonBreathStore;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
@@ -24,8 +26,7 @@ import com.minelittlepony.unicopia.network.datasync.Transmittable;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.VecHelper;
+import com.minelittlepony.unicopia.util.*;
 
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
@@ -62,9 +63,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     private int invinsibilityTicks;
 
-    private final Enchantments enchants = new Enchantments(this);
+    private final List<Tickable> tickers = new ArrayList<>();
 
-    private final ItemTracker armour = new ItemTracker();
+    private final Enchantments enchants = addTicker(new Enchantments(this));
+    private final ItemTracker armour = addTicker(new ItemTracker(this));
 
     protected Living(T entity, TrackedData<NbtCompound> effect) {
         this.entity = entity;
@@ -72,6 +74,11 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
         entity.getDataTracker().startTracking(effect, new NbtCompound());
         entity.getDataTracker().startTracking(CARRIER_ID, Optional.empty());
+    }
+
+    public <Q extends Tickable> Q addTicker(Q tickable) {
+        tickers.add(Preconditions.checkNotNull(tickable, "tickable"));
+        return tickable;
     }
 
     public boolean isInvisible() {
@@ -135,7 +142,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public void tick() {
-        armour.update(this, getArmourStacks());
+        tickers.forEach(Tickable::tick);
 
         try {
             getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.BODY)), entity.world.isClient);
@@ -157,11 +164,15 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             updateVelocity();
         }
 
-        enchants.tick();
+
+
+        updateDragonBreath();
 
         prevSneaking = entity.isSneaking();
         prevLanded = entity.isOnGround();
+    }
 
+    private void updateDragonBreath() {
         if (!entity.world.isClient && (entity instanceof PlayerEntity || entity.hasCustomName())) {
 
             Vec3d targetPos = entity.getRotationVector().multiply(2).add(entity.getEyePos());

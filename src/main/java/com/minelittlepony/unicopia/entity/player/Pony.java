@@ -11,8 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.*;
-import com.minelittlepony.unicopia.ability.AbilityDispatcher;
-import com.minelittlepony.unicopia.ability.EarthPonyStompAbility;
+import com.minelittlepony.unicopia.ability.*;
 import com.minelittlepony.unicopia.ability.magic.*;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -32,7 +31,6 @@ import com.minelittlepony.unicopia.network.MsgPlayerAnimationChange;
 import com.minelittlepony.unicopia.util.*;
 import com.minelittlepony.unicopia.network.datasync.EffectSync.UpdateCallback;
 import com.minelittlepony.common.util.animation.LinearInterpolator;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
@@ -54,12 +52,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.*;
 import net.minecraft.world.GameMode;
 
 public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, UpdateCallback {
-
     private static final TrackedData<String> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
 
     static final TrackedData<Float> ENERGY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -76,9 +72,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 
     private final AbilityDispatcher powers = new AbilityDispatcher(this);
-    private final PlayerPhysics gravity = new PlayerPhysics(this);
+    private final PlayerPhysics gravity = addTicker(new PlayerPhysics(this));
     private final PlayerCharmTracker charms = new PlayerCharmTracker(this);
-    private final PlayerAttributes attributes = new PlayerAttributes(this);
     private final PlayerCamera camera = new PlayerCamera(this);
     private final TraitDiscovery discoveries = new TraitDiscovery(this);
 
@@ -88,8 +83,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private final PlayerLevelStore levels;
     private final PlayerLevelStore corruption;
 
-    private final List<Tickable> tickers;
-
     private final Interpolator interpolator = new LinearInterpolator();
 
     private boolean dirty;
@@ -98,9 +91,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private int ticksHanging;
 
     private float magicExhaustion = 0;
-
-    @Nullable
-    private Race clientPreferredRace;
 
     private int ticksInSun;
     private boolean hasShades;
@@ -112,13 +102,17 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public Pony(PlayerEntity player) {
         super(player, EFFECT);
-        this.mana = new ManaContainer(this);
+        this.mana = addTicker(new ManaContainer(this));
         this.levels = new PlayerLevelStore(this, LEVEL, true, SoundEvents.ENTITY_PLAYER_LEVELUP);
         this.corruption = new PlayerLevelStore(this, CORRUPTION, false, SoundEvents.PARTICLE_SOUL_ESCAPE);
-        this.tickers = Lists.newArrayList(gravity, mana, attributes);
 
         player.getDataTracker().startTracking(RACE, Race.DEFAULT_ID);
         player.getDataTracker().startTracking(HANGING_POSITION, Optional.empty());
+
+        addTicker(this::updateAnimations);
+        addTicker(this::updateBatPonyAbilities);
+        addTicker(this::updateCorruptionDecay);
+        addTicker(new PlayerAttributes(this));
     }
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
@@ -299,21 +293,24 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         if (isClient()) {
             if (entity.hasVehicle() && entity.isSneaking()) {
 
-                Entity ridee = entity.getVehicle();
+                Entity vehicle = entity.getVehicle();
 
-                if (ridee instanceof Trap) {
-                    if (((Trap)ridee).attemptDismount(entity)) {
+                if (vehicle instanceof Trap) {
+                    if (((Trap)vehicle).attemptDismount(entity)) {
                         entity.stopRiding();
+                        entity.refreshPositionAfterTeleport(vehicle.getPos());
+                        Living.transmitPassengers(vehicle);
                     } else {
                         entity.setSneaking(false);
                     }
                 } else {
                     entity.stopRiding();
-                    Living.transmitPassengers(ridee);
+                    entity.refreshPositionAfterTeleport(vehicle.getPos());
+                    Living.transmitPassengers(vehicle);
                 }
             }
         }
-
+        
         magicExhaustion = ManaConsumptionUtil.burnFood(entity, magicExhaustion);
 
         powers.tick();
@@ -355,14 +352,15 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return state.isSolidSurface(asWorld(), pos, entity, Direction.DOWN);
     }
 
-    @Override
-    public void tick() {
-        if (ticksSunImmunity > 0) {
-            ticksSunImmunity--;
-        }
-
+    private void updateAnimations() {
         if (animationDuration >= 0 && --animationDuration <= 0) {
             setAnimation(Animation.NONE);
+        }
+    }
+
+    private void updateBatPonyAbilities() {
+        if (ticksSunImmunity > 0) {
+            ticksSunImmunity--;
         }
 
         if (isHanging()) {
@@ -381,30 +379,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             }
             this.hasShades = hasShades;
 
-            if (!hasShades && ticksSunImmunity <= 0) {
-                float skyAngle = ((entity.world.getSkyAngle(1) + 0.25F) % 1F) * 2;
-                float playerAngle = (-entity.getPitch(1) / 90F) / 2F;
-                float playerYaw = MathHelper.wrapDegrees(entity.getHeadYaw());
-
-                if (playerYaw > 0) {
-                    playerAngle = 1 - playerAngle;
-                }
-
-                playerYaw = Math.abs(playerYaw);
-
-                if (skyAngle < 1
-                    && (playerYaw > 89 && playerYaw < 92 || (playerAngle > 0.45F && playerAngle < 0.55F))
-                    && playerAngle > (skyAngle - 0.04F) && playerAngle < (skyAngle + 0.04F)) {
-
-                    if (entity.raycast(100, 1, true).getType() == Type.MISS) {
-                        if (!isClient()) {
-                            entity.addStatusEffect(new StatusEffectInstance(UEffects.SUN_BLINDNESS, SunBlindnessStatusEffect.MAX_DURATION, 2, true, false));
-                            UCriteria.LOOK_INTO_SUN.trigger(entity);
-                        } else if (isClientPlayer()) {
-                            InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING, entity.getId());
-                        }
-
-                    }
+            if (!hasShades && ticksSunImmunity <= 0 && MeteorlogicalUtil.isLookingIntoSun(asWorld(), entity)) {
+                if (!isClient()) {
+                    entity.addStatusEffect(new StatusEffectInstance(UEffects.SUN_BLINDNESS, SunBlindnessStatusEffect.MAX_DURATION, 2, true, false));
+                    UCriteria.LOOK_INTO_SUN.trigger(entity);
+                } else if (isClientPlayer()) {
+                    InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING, entity.getId());
                 }
             }
 
@@ -424,7 +404,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 ticksInSun--;
             }
         }
+    }
 
+    private void updateCorruptionDecay() {
         if (!isClient() && !UItems.ALICORN_AMULET.isApplicable(entity)) {
             if (entity.age % (10 * ItemTracker.SECONDS) == 0) {
                 if (entity.world.random.nextInt(100) == 0) {
@@ -443,11 +425,11 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 setDirty();
             }
         }
+    }
 
-        tickers.forEach(Tickable::tick);
-
+    @Override
+    public void tick() {
         super.tick();
-
         sendCapabilities();
     }
 

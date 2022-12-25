@@ -45,10 +45,8 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     private final EntityReference<LivingEntity> owner = new EntityReference<>();
 
-    @Nullable
-    private GoalSelector goals;
-    @Nullable
-    private GoalSelector targets;
+    private Optional<GoalSelector> goals = Optional.empty();
+    private Optional<GoalSelector> targets = Optional.empty();
 
     private int eatTimer;
     @Nullable
@@ -59,14 +57,17 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         physics = new EntityPhysics<>(entity, GRAVITY);
         entity.getDataTracker().startTracking(MASTER, owner.toNBT());
         entity.getDataTracker().startTracking(EATING, 0);
+
+        addTicker(physics);
+        addTicker(this::updateConsumption);
     }
 
     @Override
     public void setMaster(LivingEntity owner) {
         this.owner.set(owner);
         entity.getDataTracker().set(MASTER, this.owner.toNBT());
-        if (targets != null && owner != null) {
-            initMinionAi();
+        if (owner != null) {
+            targets.ifPresent(this::initMinionAi);
         }
     }
 
@@ -88,16 +89,16 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     }
 
     public Optional<GoalSelector> getTargets() {
-        return Optional.ofNullable(targets);
+        return targets;
     }
 
     public Optional<GoalSelector> getGoals() {
-        return Optional.ofNullable(goals);
+        return goals;
     }
 
     public void initAi(GoalSelector goals, GoalSelector targets) {
-        this.goals = goals;
-        this.targets = targets;
+        this.goals = Optional.of(goals);
+        this.targets = Optional.of(targets);
 
         DynamicTargetGoal targetter = new DynamicTargetGoal((MobEntity)entity);
         targets.add(1, targetter);
@@ -111,7 +112,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         }
 
         if (owner.isPresent(asWorld())) {
-            initMinionAi();
+            initMinionAi(targets);
         }
 
         if (entity instanceof CreeperEntity mob) {
@@ -122,7 +123,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         }
     }
 
-    private void initMinionAi() {
+    private void initMinionAi(GoalSelector targets) {
         Predicate<LivingEntity> filter = TargetSelecter.<LivingEntity>notOwnerOrFriend(this, this).and(e -> {
             return Equine.of(e)
                     .filter(eq -> eq instanceof Creature)
@@ -147,11 +148,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         return false;
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-        physics.tick();
-
+    private void updateConsumption() {
         if (isClient()) {
             eatTimer = entity.getDataTracker().get(EATING);
         } else if (eatMuffinGoal != null) {
@@ -240,8 +237,8 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         }
         if (compound.contains("master", NbtElement.COMPOUND_TYPE)) {
             owner.fromNBT(compound.getCompound("master"));
-            if (owner.isPresent(asWorld()) && targets != null) {
-                initMinionAi();
+            if (owner.isPresent(asWorld())) {
+                targets.ifPresent(this::initMinionAi);
             }
         }
         physics.fromNBT(compound);

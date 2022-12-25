@@ -5,8 +5,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.util.Copyable;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.*;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemConvertible;
@@ -15,7 +14,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
 
-public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker> {
+public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tickable {
     public static final long TICKS = 1;
     public static final long SECONDS = 20 * TICKS;
     public static final long HOURS = 1000 * TICKS;
@@ -52,6 +51,17 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker> {
 
     public static Predicate<Long> after(long maxTime) {
         return ticks -> ticks <= maxTime;
+    }
+
+    private final Living<?> living;
+
+    public ItemTracker(Living<?> living) {
+        this.living = living;
+    }
+
+    @Override
+    public void tick() {
+        update(living, living.getArmourStacks());
     }
 
     public void update(Living<?> living, Stream<ItemStack> stacks) {
