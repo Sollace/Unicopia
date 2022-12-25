@@ -73,6 +73,7 @@ public class CarryAbility implements Ability<Hit> {
 
         if (rider != null) {
             rider.startRiding(player, true);
+            Living.getOrEmpty(rider).ifPresent(living -> living.setCarrier(player));
         }
 
         Living.transmitPassengers(player);

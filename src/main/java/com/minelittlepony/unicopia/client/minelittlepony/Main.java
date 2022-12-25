@@ -33,6 +33,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
         PonyModelPrepareCallback.EVENT.register(this::onPonyModelPrepared);
         IGear.register(() -> new BangleGear(TrinketsDelegate.MAINHAND));
         IGear.register(() -> new BangleGear(TrinketsDelegate.OFFHAND));
+        IGear.register(() -> new HeldEntityGear());
         IGear.register(AmuletGear::new);
         IGear.register(GlassesGear::new);
     }
@@ -54,6 +55,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
                     model.getAttributes().isGoingFast |= zMotion > 0.4F;
                 }
                 model.getAttributes().isGoingFast |= pony.getMotion().isRainbooming();
+                model.getAttributes().isGoingFast &= !pony.getEntityInArms().isPresent();
 
                 if (pony.getAnimation() == Animation.SPREAD_WINGS) {
                     model.getAttributes().wingAngle = -AnimationUtil.seeSitSaw(pony.getAnimationProgress(1), 1.5F) * (float)Math.PI / 1.2F;

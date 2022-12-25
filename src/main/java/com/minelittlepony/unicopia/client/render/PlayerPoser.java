@@ -188,6 +188,22 @@ public class PlayerPoser {
             default:
         }
 
+        if (pony.getEntityInArms().isPresent()) {
+            if (isPony && pony.getPhysics().isFlying()) {
+                model.leftLeg.pitch = 1;
+                model.rightLeg.pitch = 1;
+                model.leftLeg.yaw = 0.3F;
+                model.rightLeg.yaw = -0.3F;
+            } else {
+                model.leftArm.pitch = -1;
+                model.rightArm.pitch = -1;
+            }
+            model.leftArm.yaw = -0.3F;
+            model.rightArm.yaw = 0.3F;
+            model.leftArm.roll = 0;
+            model.rightArm.roll = 0;
+        }
+
         if (model instanceof PlayerEntityModel<?> m) {
             m.leftSleeve.copyTransform(m.leftArm);
             m.rightSleeve.copyTransform(m.rightArm);

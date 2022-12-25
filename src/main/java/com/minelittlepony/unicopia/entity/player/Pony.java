@@ -451,6 +451,30 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         sendCapabilities();
     }
 
+    public Optional<Living<?>> getEntityInArms() {
+        return Living.getOrEmpty(entity.getFirstPassenger()).filter(Living::isBeingCarried);
+    }
+
+    @Override
+    public boolean onUpdatePassengerPosition(Entity passender, Entity.PositionUpdater positionUpdater) {
+        Entity passenger = entity.getFirstPassenger();
+        if (Living.getOrEmpty(passenger).filter(Living::isBeingCarried).isPresent()) {
+
+            Vec3d carryPosition = new Vec3d(0, 0, entity.getWidth());
+
+            float leanAmount = ((LivingEntityDuck)entity).getLeaningPitch();
+            carryPosition = carryPosition.rotateX(-leanAmount * MathHelper.PI / 4F)
+                    .add(new Vec3d(0, -0.5F, 0).multiply(leanAmount));
+
+            carryPosition = carryPosition.rotateY(-entity.getBodyYaw() * MathHelper.RADIANS_PER_DEGREE);
+
+            carryPosition = entity.getPos().add(carryPosition);
+            positionUpdater.accept(passenger, carryPosition.x, carryPosition.y, carryPosition.z);
+            return true;
+        }
+        return false;
+    }
+
     public Optional<Float> modifyDamage(DamageSource cause, float amount) {
 
         if (!cause.isUnblockable() && !cause.isMagic() && !cause.isFire() && !cause.isOutOfWorld()

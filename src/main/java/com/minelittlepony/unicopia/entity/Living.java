@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -28,7 +29,7 @@ import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
@@ -42,6 +43,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T>, Transmittable {
+    private static final TrackedData<Optional<UUID>> CARRIER_ID = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 
     protected final T entity;
 
@@ -69,6 +71,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         this.effectDelegate = new EffectSync(this, effect);
 
         entity.getDataTracker().startTracking(effect, new NbtCompound());
+        entity.getDataTracker().startTracking(CARRIER_ID, Optional.empty());
     }
 
     public boolean isInvisible() {
@@ -111,6 +114,23 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Override
     public final T asEntity() {
         return entity;
+    }
+
+    public Optional<UUID> getCarrierId() {
+        return entity.getDataTracker().get(CARRIER_ID);
+    }
+
+    public void setCarrier(UUID carrier) {
+        entity.getDataTracker().set(CARRIER_ID, Optional.ofNullable(carrier));
+    }
+
+    public void setCarrier(Entity carrier) {
+        entity.getDataTracker().set(CARRIER_ID, Optional.ofNullable(carrier).map(Entity::getUuid));
+    }
+
+    public boolean isBeingCarried() {
+        Entity vehicle = entity.getVehicle();
+        return vehicle != null && getCarrierId().filter(vehicle.getUuid()::equals).isPresent();
     }
 
     @Override
@@ -174,6 +194,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 });
             }
         }
+    }
+
+    public boolean onUpdatePassengerPosition(Entity passender, Entity.PositionUpdater positionUpdater) {
+        return false;
     }
 
     public void onJump() {
@@ -275,11 +299,13 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Override
     public void toSyncronisedNbt(NbtCompound compound) {
         compound.put("armour", armour.toNBT());
+        getCarrierId().ifPresent(id -> compound.putUuid("carrier", id));
     }
 
     @Override
     public void fromSynchronizedNbt(NbtCompound compound) {
         armour.fromNBT(compound.getCompound("armour"));
+        setCarrier(compound.containsUuid("carrier") ? compound.getUuid("carrier") : null);
     }
 
     public void updateVelocity() {
@@ -292,6 +318,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     public static Living<?> living(Entity entity) {
         return getOrEmpty(entity).orElse(null);
+    }
+
+    public static <E extends LivingEntity> Living<E> living(E entity) {
+        return Equine.<E, Living<E>>of(entity, e -> e instanceof Living<?>).orElse(null);
     }
 
     public static void updateVelocity(Entity entity) {

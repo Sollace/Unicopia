@@ -104,6 +104,10 @@ public class WorldRenderDelegate {
             double x, double y, double z, float yaw,
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 
+        if (pony.isBeingCarried() && !(pony instanceof Pony && ((Pony)pony).isClientPlayer())) {
+            return true;
+        }
+
         matrices.push();
 
         Entity owner = pony.asEntity();
