@@ -1,11 +1,15 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.List;
+import java.util.stream.StreamSupport;
+
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.TraceHelper;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
@@ -68,7 +72,11 @@ public class CarryAbility implements Ability<Hit> {
         LivingEntity rider = findRider(player, iplayer.asWorld());
 
         if (player.hasPassengers()) {
+            List<Entity> passengers = StreamSupport.stream(player.getPassengersDeep().spliterator(), false).toList();
             player.removeAllPassengers();
+            for (Entity passenger : passengers) {
+                passenger.refreshPositionAfterTeleport(player.getPos());
+            }
         }
 
         if (rider != null) {
