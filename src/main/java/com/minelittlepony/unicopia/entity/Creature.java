@@ -143,6 +143,11 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     }
 
     @Override
+    public boolean beforeUpdate() {
+        return false;
+    }
+
+    @Override
     public void tick() {
         super.tick();
         physics.tick();

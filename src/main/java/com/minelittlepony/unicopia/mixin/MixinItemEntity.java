@@ -6,8 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.minelittlepony.unicopia.entity.IItemEntity;
-import com.minelittlepony.unicopia.entity.ItemImpl;
+import com.minelittlepony.unicopia.entity.*;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -21,14 +20,14 @@ abstract class MixinItemEntity extends Entity implements IItemEntity {
     private MixinItemEntity() { super(null, null); }
 
     @Override
-    public ItemImpl create() {
+    public Equine<?> create() {
         return new ItemImpl((ItemEntity)(Object)this);
     }
 
     @Override
     public ItemImpl get() {
         if (caster == null) {
-            caster = create();
+            caster = (ItemImpl)create();
         }
         return caster;
     }

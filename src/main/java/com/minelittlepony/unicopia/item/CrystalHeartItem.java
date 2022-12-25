@@ -129,7 +129,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                     }
                 });
                 VecHelper.findInRange(entity, entity.world, entity.getPos(), 20, i -> {
-                    return i instanceof ItemEntity ie && isFillable(ie.getStack()) && PonyContainer.of(i).filter(p -> p.get().getSpecies() == Race.CHANGELING).isPresent();
+                    return i instanceof ItemEntity ie && isFillable(ie.getStack()) && Equine.of(i).filter(p -> p.getSpecies() == Race.CHANGELING).isPresent();
                 }).forEach(i -> containers.add((ItemEntity)i));
 
                 int demand = outputs.size() + containers.stream().mapToInt(i -> i.getStack().getCount()).sum();

@@ -9,8 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.block.data.ModificationType;
-import com.minelittlepony.unicopia.entity.Physics;
-import com.minelittlepony.unicopia.entity.PonyContainer;
+import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.particle.ParticleSource;
 import com.minelittlepony.unicopia.util.SoundEmitter;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -120,9 +119,6 @@ public interface Caster<E extends Entity> extends
             return Optional.of((Caster<?>)entity);
         }
 
-        return PonyContainer.of(entity)
-                .map(PonyContainer::get)
-                .filter(c -> c instanceof Caster<?>)
-                .map(c -> (Caster<?>)c);
+        return Equine.<Entity, Caster<?>>of(entity, c -> c instanceof Caster<?>);
     }
 }

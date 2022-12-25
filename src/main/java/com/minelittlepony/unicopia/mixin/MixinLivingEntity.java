@@ -29,7 +29,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 
 @Mixin(LivingEntity.class)
-abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
+abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equine.Container<Living<?>> {
     @Shadow
     protected ItemStack activeItemStack;
     @Shadow
@@ -51,11 +51,11 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
     }
 
     @Override
-    public Equine<?> get() {
+    public Living<?> get() {
         if (caster == null) {
             caster = create();
         }
-        return caster;
+        return (Living<?>)caster;
     }
 
     @Override

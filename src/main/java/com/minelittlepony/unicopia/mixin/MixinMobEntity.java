@@ -17,7 +17,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.world.World;
 
 @Mixin(MobEntity.class)
-abstract class MixinMobEntity extends LivingEntity implements PonyContainer<Equine<?>> {
+abstract class MixinMobEntity extends LivingEntity implements Equine.Container<Creature> {
     private MixinMobEntity() { super(null, null); }
 
     @Shadow
@@ -27,14 +27,12 @@ abstract class MixinMobEntity extends LivingEntity implements PonyContainer<Equi
 
     @Inject(method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V", at = @At("RETURN"))
     private void init(EntityType<? extends MobEntity> entityType, World world, CallbackInfo info) {
-        ((Creature)get()).initAi(goalSelector, targetSelector);
+        get().initAi(goalSelector, targetSelector);
     }
 
     @Inject(method = "tickNewAi", at = @At("HEAD"))
     public void beforeTickAi(CallbackInfo into) {
-        Equine<?> eq = Equine.of(this).orElse(null);
-
-        if (eq instanceof Living<?> && eq.getPhysics().isGravityNegative()) {
+        if (get().getPhysics().isGravityNegative()) {
             ((RotatedView)world).pushRotation((int)getY());
         }
     }

@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
-public interface IItemEntity extends PonyContainer<ItemImpl> {
+public interface IItemEntity extends Equine.Container<ItemImpl> {
 
     int getAge();
 

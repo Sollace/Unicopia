@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.Entity;
@@ -24,7 +24,7 @@ abstract class MixinDamageSource {
         if (self.isFromFalling()) {
             info.setReturnValue(new DamageSource(self.name + ".pegasus").getDeathMessage(entity));
         } else {
-            Equine.of(entity).map(Equine::getAttacker).ifPresent(attacker -> {
+            Living.getOrEmpty(entity).map(Living::getAttacker).ifPresent(attacker -> {
                 Entity prime = entity.getPrimeAdversary();
                 if (prime != null && !attacker.isOwnedBy(prime)) {
                     info.setReturnValue(Text.translatable("death.attack.generic.and_also", info.getReturnValue(), attacker.asEntity().getDisplayName()));

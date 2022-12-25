@@ -102,8 +102,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Nullable
     private Race clientPreferredRace;
 
-    private boolean invisible = false;
-
     private int ticksInSun;
     private boolean hasShades;
     private int ticksSunImmunity = INITIAL_SUN_IMMUNITY;
@@ -225,18 +223,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return corruption;
     }
 
-    @Override
-    public boolean isInvisible() {
-        return invisible && SpellPredicate.IS_DISGUISE.isOn(this);
-    }
-
     public boolean isSpeciesPersisted() {
         return speciesPersisted;
-    }
-
-    @Override
-    public void setInvisible(boolean invisible) {
-        this.invisible = invisible;
     }
 
     public boolean isSunImmune() {
@@ -673,7 +661,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @SuppressWarnings("unchecked")
     @Nullable
     public static Pony of(@Nullable PlayerEntity player) {
-        return player == null ? null : ((PonyContainer<Pony>)player).get();
+        return player == null ? null : ((Container<Pony>)player).get();
     }
 
     public static Stream<Pony> stream(Stream<Entity> entities) {
@@ -681,9 +669,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public static Optional<Pony> of(Entity entity) {
-        return entity instanceof PlayerEntity
-                ? PonyContainer.of(entity).map(a -> (Pony)a.get())
-                : Optional.empty();
+        return Equine.<Entity, Pony>of(entity, a -> a instanceof Pony);
     }
 
     public static boolean equal(GameProfile one, GameProfile two) {

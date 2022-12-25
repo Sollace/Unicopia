@@ -53,6 +53,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Nullable
     private Runnable landEvent;
 
+    private boolean invisible = false;
+
     @Nullable
     private Caster<?> attacker;
 
@@ -67,6 +69,14 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         this.effectDelegate = new EffectSync(this, effect);
 
         entity.getDataTracker().startTracking(effect, new NbtCompound());
+    }
+
+    public boolean isInvisible() {
+        return invisible && SpellPredicate.IS_DISGUISE.isOn(this);
+    }
+
+    public void setInvisible(boolean invisible) {
+        this.invisible = invisible;
     }
 
     public void waitForFall(Runnable action) {
@@ -166,7 +176,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         }
     }
 
-    @Override
     public void onJump() {
         if (getPhysics().isGravityNegative()) {
             entity.setVelocity(entity.getVelocity().multiply(1, -1, 1));
@@ -174,12 +183,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     @Nullable
-    @Override
     public final Caster<?> getAttacker() {
         return attacker;
     }
 
-    @Override
     public Optional<Boolean> onDamage(DamageSource source, float amount) {
 
         if (source == DamageSource.LIGHTNING_BOLT && (invinsibilityTicks > 0 || tryCaptureLightning())) {
@@ -280,7 +287,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public static Optional<Living<?>> getOrEmpty(Entity entity) {
-        return PonyContainer.of(entity).map(PonyContainer::get).map(a -> a instanceof Living ? (Living<?>)a : null);
+        return Equine.of(entity, a -> a instanceof Living);
     }
 
     public static Living<?> living(Entity entity) {
