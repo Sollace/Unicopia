@@ -165,6 +165,14 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         }
 
 
+        if (isBeingCarried()) {
+            Pony carrier = Pony.of(entity.getVehicle()).orElse(null);
+            if (!carrier.getCompositeRace().any(Abilities.CARRY::canUse)) {
+                entity.stopRiding();
+                entity.refreshPositionAfterTeleport(carrier.getOriginVector());
+                Living.transmitPassengers(carrier.asEntity());
+            }
+        }
 
         updateDragonBreath();
 
