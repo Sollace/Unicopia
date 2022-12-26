@@ -12,7 +12,6 @@ public enum TraitGroup {
         this.corruption = corruption;
     }
 
-    // TODO: implement corruption mechanics
     public float getCorruption() {
         return corruption;
     }

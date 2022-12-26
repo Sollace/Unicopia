@@ -16,7 +16,6 @@ public class DiskParticle extends SphereParticle {
     public DiskParticle(SphereParticleEffect effect, ClientWorld w, double x, double y, double z, double rX, double rY, double rZ) {
         super(effect, w, x, y, z, 0, 0, 0);
 
-        // TODO: was hamiltonianProduct (check this!!!)
         rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees((float)effect.getOffset().y));
         rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(90 - (float)effect.getOffset().x));
 

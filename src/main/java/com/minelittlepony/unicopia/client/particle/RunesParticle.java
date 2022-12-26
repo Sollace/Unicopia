@@ -90,11 +90,9 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
         }
         if (key == ATTR_PITCH) {
             rotation = new Quaternionf(0, 0, 0, 1);
-            // TODO: Was hamiltonianProduct (CHECK!!!)
             rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees(value.floatValue()));
         }
         if (key == ATTR_YAW) {
-            // TODO: Was hamiltonianProduct (CHECK!!!)
             rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(180 - value.floatValue()));
         }
     }

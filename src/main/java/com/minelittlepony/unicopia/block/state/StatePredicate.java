@@ -12,6 +12,7 @@ import com.google.common.base.Predicates;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
 import net.minecraft.block.*;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
@@ -118,8 +119,7 @@ public abstract class StatePredicate implements Predicate<BlockState> {
     }
 
     static boolean isOre(BlockState s) {
-        // TODO: Use ConventionalBlockTags.ORES
-        return s.getBlock() instanceof ExperienceDroppingBlock && !(s.getBlock() instanceof SculkBlock);
+        return s.isIn(ConventionalBlockTags.ORES);
     }
 
     static boolean isWater(BlockState s) {
