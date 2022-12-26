@@ -11,11 +11,9 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-import com.minelittlepony.unicopia.util.Trace;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -60,7 +58,7 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
             return true;
         }
 
-        getTarget(caster, e -> apply(caster, e));
+        getTypeAndTraits().create().toThrowable().throwProjectile(caster);
         return false;
     }
 
@@ -75,23 +73,6 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
                 ((caster.asWorld().random.nextFloat() * HORIZONTAL_VARIANCE) - HORIZONTAL_VARIANCE + vel.z * 0.8F) * 0.1F
             );
         }
-    }
-
-    protected void getTarget(Caster<?> caster, Consumer<Entity> apply) {
-        if (caster.isClient()) {
-            return;
-        }
-
-        double maxDistance = 2 + (getTraits().get(Trait.FOCUS) - 50) * 8;
-
-        Trace trace = Trace.create(caster.asEntity(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR);
-        trace.getEntity().ifPresentOrElse(apply, () -> {
-            trace.ifBlock(pos -> {
-                if (caster.canModifyAt(pos)) {
-                    createBlockEntity(caster.asWorld(), pos, apply);
-                }
-            });
-        });
     }
 
     static void createBlockEntity(World world, BlockPos bpos, @Nullable Consumer<Entity> apply) {

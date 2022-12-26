@@ -256,7 +256,6 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     @Override
     protected void onCollision(HitResult result) {
         if (!isRemoved()) {
-            discard();
             super.onCollision(result);
 
             if (!world.isClient()) {
