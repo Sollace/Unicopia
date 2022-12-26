@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.*;
 
 import net.minecraft.entity.LivingEntity;
@@ -14,7 +15,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
 
-public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tickable {
+public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tickable, TrinketsDelegate.Inventory {
     public static final long TICKS = 1;
     public static final long SECONDS = 20 * TICKS;
     public static final long HOURS = 1000 * TICKS;
@@ -60,11 +61,16 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
     }
 
     @Override
+    public LivingEntity asEntity() {
+        return living.asEntity();
+    }
+
+    @Override
     public void tick() {
         update(living, living.getArmourStacks());
     }
 
-    public void update(Living<?> living, Stream<ItemStack> stacks) {
+    private void update(Living<?> living, Stream<ItemStack> stacks) {
         final Set<Trackable> found = new HashSet<>();
         final Set<ItemStack> foundStacks = new HashSet<>();
         stacks.forEach(stack -> {

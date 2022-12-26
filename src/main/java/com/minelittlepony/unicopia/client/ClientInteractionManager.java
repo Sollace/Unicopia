@@ -94,7 +94,7 @@ public class ClientInteractionManager extends InteractionManager {
                 soundManager.play(new MotionBasedSoundInstance(USounds.ENTITY_PLAYER_PEGASUS_FLYING, (PlayerEntity)source, Random.create(seed)));
             } else if (type == SOUND_MAGIC_BEAM) {
                 soundManager.play(new LoopedEntityTrackingSoundInstance(USounds.SPELL_CAST_SHOOT, 0.3F, 1F, source, seed));
-            } else if (type == 6) {
+            } else if (type == SOUND_HEART_BEAT) {
                 soundManager.play(new NonLoopingFadeOutSoundInstance(USounds.ENTITY_PLAYER_HEARTBEAT, SoundCategory.PLAYERS, 0.3F, Random.create(seed), 80L));
             }
         });

@@ -8,7 +8,9 @@ import com.google.common.collect.ImmutableMultimap;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.*;
+import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.*;
+import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
 import net.fabricmc.api.EnvType;
@@ -16,6 +18,8 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.attribute.*;
@@ -166,19 +170,19 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
             return;
         }
 
-        Living<?> living = Living.living(entity);
+        final Living<?> living = Living.living(entity);
 
         if (living == null || !living.getArmour().contains(this)) {
             return;
         }
 
-        long attachedTicks = living.getArmour().getTicks(this);
-        boolean poweringUp = attachedTicks < (ItemTracker.DAYS * 4);
-        boolean fullSecond = attachedTicks % ItemTracker.SECONDS == 0;
+        final long attachedTicks = living.getArmour().getTicks(this);
+        final long daysAttached = attachedTicks / ItemTracker.DAYS;
+        final boolean fullSecond = attachedTicks % ItemTracker.SECONDS == 0;
 
         if (entity instanceof PlayerEntity player) {
             // healing effect
-            if (poweringUp) {
+            if (daysAttached <= 4) {
                 if (player.getHealth() < player.getMaxHealth()) {
                     player.heal(0.5F);
                 } else if (player.canConsume(false)) {
@@ -188,6 +192,28 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
             Pony pony = (Pony)living;
 
+            // butterfingers effects
+            if (daysAttached >= 2) {
+                if (pony.asWorld().random.nextInt(200) == 0 && !pony.asEntity().hasStatusEffect(UEffects.BUTTER_FINGERS)) {
+                    pony.asEntity().addStatusEffect(new StatusEffectInstance(UEffects.CORRUPT_INFLUENCE, 2100, 1));
+                }
+
+                pony.findAllEntitiesInRange(10, e -> e instanceof LivingEntity && !((LivingEntity)e).hasStatusEffect(UEffects.CORRUPT_INFLUENCE)).forEach(e -> {
+                    ((LivingEntity)e).addStatusEffect(new StatusEffectInstance(UEffects.CORRUPT_INFLUENCE, 100, 1));
+                });
+            }
+
+            // bind to the player after 3 days
+            if (daysAttached >= 3 && !pony.asEntity().isCreative()) {
+                stack = living.getArmour().getEquippedStack(TrinketsDelegate.NECKLACE);
+                if (stack.getItem() == this && !EnchantmentHelper.hasBindingCurse(stack)) {
+                    pony.playSound(USounds.ITEM_ALICORN_AMULET_HALLUCINATION, 3, 1);
+                    stack = stack.copy();
+                    stack.addEnchantment(Enchantments.BINDING_CURSE, 1);
+                    pony.getArmour().equipStack(TrinketsDelegate.NECKLACE, stack);
+                }
+            }
+
             MagicReserves reserves = pony.getMagicalReserves();
 
             // constantly increase exertion
@@ -195,13 +221,15 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                 reserves.getExertion().add(2);
             }
 
+            // gradual corruption accumulation
             if (fullSecond && world.random.nextInt(12) == 0 && !pony.asEntity().isCreative()) {
                 reserves.getEnergy().add(reserves.getEnergy().getMax() / 10F);
                 pony.getCorruption().add((int)MathHelper.clamp(attachedTicks / ItemTracker.HOURS, 1, pony.getCorruption().getMax()));
             }
 
+            // ambient effects
             if (attachedTicks % ItemTracker.HOURS < 90 && world.random.nextInt(900) == 0) {
-                player.world.playSound(null, player.getBlockPos(), USounds.ITEM_ALICORN_AMULET_HALLUCINATION, SoundCategory.AMBIENT, 3, 1);
+                pony.playSound(USounds.ITEM_ALICORN_AMULET_HALLUCINATION, 3, 1);
             } else if (attachedTicks < 2 || (attachedTicks % (10 * ItemTracker.SECONDS) < 9 && world.random.nextInt(90) == 0)) {
                 if (attachedTicks % 5 == 0) {
                     InteractionManager.INSTANCE.playLoopingSound(player, InteractionManager.SOUND_HEART_BEAT, 0);
@@ -213,7 +241,8 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                 living.asEntity().removeStatusEffect(StatusEffects.NAUSEA);
             }
 
-            if (!poweringUp) {
+            // damage effect after 4 days
+            if (daysAttached >= 4) {
                 if (attachedTicks % 100 == 0) {
                     player.getHungerManager().addExhaustion(90F);
                     float healthDrop = MathHelper.clamp(player.getMaxHealth() - player.getHealth(), 2, 5);

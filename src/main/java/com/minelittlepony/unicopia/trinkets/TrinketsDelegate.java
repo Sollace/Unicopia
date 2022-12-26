@@ -4,6 +4,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.minelittlepony.unicopia.EntityConvertable;
+
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -85,5 +87,20 @@ public interface TrinketsDelegate {
 
     default boolean isTrinketSlot(Slot slot) {
         return false;
+    }
+
+    interface Inventory extends EntityConvertable<LivingEntity> {
+
+        default Stream<ItemStack> getEquippedStacks(Identifier slot) {
+            return TrinketsDelegate.getInstance().getEquipped(asEntity(), slot);
+        }
+
+        default ItemStack getEquippedStack(Identifier slot) {
+            return getEquippedStacks(slot).findFirst().orElse(ItemStack.EMPTY);
+        }
+
+        default void equipStack(Identifier slot, ItemStack stack) {
+            TrinketsDelegate.getInstance().setEquippedStack(asEntity(), slot, stack);
+        }
     }
 }
