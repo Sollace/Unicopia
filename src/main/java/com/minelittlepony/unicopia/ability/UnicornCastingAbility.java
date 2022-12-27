@@ -73,7 +73,8 @@ public class UnicornCastingAbility implements Ability<Hit> {
             return Math.min(manaLevel, ((AmuletItem)amulet.getValue().getItem()).getChargeRemainder(amulet.getValue()));
         }
 
-        TypedActionResult<CustomisedSpellType<?>> spell = player.getCharms().getSpellInHand(Hand.MAIN_HAND);
+        Hand hand = player.asEntity().isSneaking() ? Hand.OFF_HAND : Hand.MAIN_HAND;
+        TypedActionResult<CustomisedSpellType<?>> spell = player.getCharms().getSpellInHand(hand);
 
         return !spell.getResult().isAccepted() || spell.getValue().isOn(player) ? 2 : 4;
     }
@@ -100,7 +101,8 @@ public class UnicornCastingAbility implements Ability<Hit> {
                 }
             }
         } else {
-            TypedActionResult<CustomisedSpellType<?>> newSpell = player.getCharms().getSpellInHand(Hand.MAIN_HAND);
+            Hand hand = player.asEntity().isSneaking() ? Hand.OFF_HAND : Hand.MAIN_HAND;
+            TypedActionResult<CustomisedSpellType<?>> newSpell = player.getCharms().getSpellInHand(hand);
 
             if (newSpell.getResult() != ActionResult.FAIL) {
                 CustomisedSpellType<?> spell = newSpell.getValue();

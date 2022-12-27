@@ -12,7 +12,6 @@ import com.minelittlepony.unicopia.util.TraceHelper;
 
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 
 /**
@@ -22,13 +21,6 @@ import net.minecraft.util.TypedActionResult;
  * 2. If the player is holding a gem, consumes it and casts whatever spell is contained within onto a projectile.
  */
 public class UnicornProjectileAbility implements Ability<Hit> {
-
-    @Override
-    public Identifier getIcon(Pony player, boolean swap) {
-        Identifier id = Abilities.REGISTRY.getId(this);
-        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (swap ? "_focused" : "_unfocused") + ".png");
-    }
-
     @Override
     public int getWarmupTime(Pony player) {
         return 8;
@@ -63,7 +55,8 @@ public class UnicornProjectileAbility implements Ability<Hit> {
     public boolean onQuickAction(Pony player, ActivationType type) {
         if (type == ActivationType.DOUBLE_TAP) {
             if (!player.isClient()) {
-                TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(Hand.OFF_HAND);
+                Hand hand = player.asEntity().isSneaking() ? Hand.MAIN_HAND : Hand.OFF_HAND;
+                TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(hand);
 
                 if (thrown.getResult() != ActionResult.FAIL) {
                     thrown.getValue().create().toThrowable().throwProjectile(player).ifPresent(projectile -> {
@@ -80,11 +73,10 @@ public class UnicornProjectileAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
-        TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(Hand.OFF_HAND);
+        Hand hand = player.asEntity().isSneaking() ? Hand.MAIN_HAND : Hand.OFF_HAND;
+        TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(hand);
 
         if (thrown.getResult() != ActionResult.FAIL) {
-
-
             Spell spell = thrown.getValue().create();
 
             spell.toThrowable().throwProjectile(player).ifPresent(projectile -> {

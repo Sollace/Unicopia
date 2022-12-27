@@ -4,14 +4,12 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.*;
-import com.minelittlepony.unicopia.ability.AbilityDispatcher;
-import com.minelittlepony.unicopia.ability.AbilitySlot;
+import com.minelittlepony.unicopia.ability.*;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.entity.AmuletSelectors;
 import com.minelittlepony.unicopia.entity.ItemTracker;
@@ -21,6 +19,9 @@ import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.GlStateManager.DstFactor;
+import com.mojang.blaze3d.platform.GlStateManager.SrcFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
@@ -120,13 +121,36 @@ public class UHud extends DrawableHelper {
         boolean swap = client.options.sneakKey.isPressed();
 
         slots.forEach(slot -> slot.renderBackground(matrices, abilities, swap, tickDelta));
+
+        if (pony.getObservedSpecies().canCast()) {
+
+            Ability<?> ability = pony.getAbilities().getStat(AbilitySlot.PRIMARY)
+                    .getAbility(Unicopia.getConfig().hudPage.get())
+                    .orElse(null);
+
+            if (ability == Abilities.CAST || ability == Abilities.SHOOT) {
+                matrices.push();
+                matrices.translate(PRIMARY_SLOT_SIZE / 2F, PRIMARY_SLOT_SIZE / 2F, 0);
+                boolean first = ability == Abilities.CAST;
+                if (pony.asEntity().isSneaking()) {
+                    first = !first;
+                }
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(first ? 37 : 63));
+                matrices.translate(-23, 0, 0);
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-26));
+                matrices.scale(0.8F, 0.8F, 1);
+                UHud.drawTexture(matrices, 0, 0, 3, 120, 15, 7, 128, 128);
+                matrices.pop();
+            }
+        }
+
         slots.forEach(slot -> slot.renderLabel(matrices, abilities, tickDelta));
 
         matrices.pop();
 
-        if (pony.getActualSpecies().canCast() || AmuletSelectors.ALICORN_AMULET.test(pony.asEntity())) {
-            renderSpell(pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 15 - xDirection * 13, hudY + 3);
-            renderSpell(pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 15 - xDirection * 2, hudY - 3);
+        if (pony.getObservedSpecies().canCast()) {
+            renderSpell(pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 10 - xDirection * 13, hudY + 2);
+            renderSpell(pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 8 - xDirection * 2, hudY - 6);
         }
 
         RenderSystem.disableBlend();
