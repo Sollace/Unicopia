@@ -22,6 +22,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
@@ -94,6 +95,8 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
     public boolean tick(Caster<?> source, Situation situation) {
 
         if (situation == Situation.PROJECTILE) {
+
+            source.spawnParticles(ParticleTypes.BUBBLE, 2);
             return true;
         }
 
