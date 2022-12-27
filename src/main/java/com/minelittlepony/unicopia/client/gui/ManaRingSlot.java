@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.client.gui;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
-import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
@@ -33,7 +33,7 @@ class ManaRingSlot extends Slot {
             renderRing(matrices, 13, 9, 0, mana.getXp(), 0x88880099, tickDelta);
 
             double cost = abilities.getStats().stream()
-                    .mapToDouble(s -> s.getCost(KeyBindingsHandler.INSTANCE.page))
+                    .mapToDouble(s -> s.getCost(Unicopia.getConfig().hudPage.get()))
                     .reduce(Double::sum)
                     .getAsDouble();
 

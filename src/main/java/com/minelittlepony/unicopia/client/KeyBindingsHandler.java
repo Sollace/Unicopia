@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
@@ -34,8 +35,6 @@ public class KeyBindingsHandler {
 
     private final Binding pageDown = register(GLFW.GLFW_KEY_PAGE_DOWN, "hud_page_dn");
     private final Binding pageUp = register(GLFW.GLFW_KEY_PAGE_UP, "hud_page_up");
-
-    public long page = 0;
 
     private final Set<KeyBinding> pressed = new HashSet<>();
 
@@ -68,7 +67,7 @@ public class KeyBindingsHandler {
         AbilityDispatcher abilities = iplayer.getAbilities();
         long maxPage = abilities.getMaxPage();
 
-        page = MathHelper.clamp(page, 0, maxPage);
+        long page = MathHelper.clamp(Unicopia.getConfig().hudPage.get(), 0, maxPage);
 
         if (page > 0 && pageDown.getState() == PressedState.PRESSED) {
             changePage(client, maxPage, -1);
@@ -103,7 +102,9 @@ public class KeyBindingsHandler {
     }
 
     private void changePage(MinecraftClient client, long max, int sigma) {
+        int page = Unicopia.getConfig().hudPage.get();
         page += sigma;
+        Unicopia.getConfig().hudPage.set(page);
         client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.75F + (0.25F * sigma)));
         UHud.INSTANCE.setMessage(Text.translatable("gui.unicopia.page_num", page + 1, max + 1));
     }

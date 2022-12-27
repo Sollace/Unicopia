@@ -26,6 +26,9 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
             .addComment("If true Mine Little Pony will not be considered when determining the race to use")
             .addComment("The result will always be what is set by this config file.");
 
+    public final Setting<Integer> hudPage = value("client", "hudActivePage", 0)
+            .addComment("The page of abilities currently visible in the HUD. You can change this in-game using the PG_UP and PG_DWN keys (configurable)");
+
     public final Setting<Boolean> disableWaterPlantsFix = value("compatibility", "disableWaterPlantsFix", false)
             .addComment("Disables this mod's built in fix for making sea plants waterlogged")
             .addComment("Turn this ON if you're using another mod that does something similar of if you encounter copatibility issues with other mods.");

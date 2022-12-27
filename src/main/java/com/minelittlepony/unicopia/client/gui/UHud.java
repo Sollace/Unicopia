@@ -321,7 +321,7 @@ public class UHud extends DrawableHelper {
     }
 
     void renderAbilityIcon(MatrixStack matrices, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
-        stat.getAbility(KeyBindingsHandler.INSTANCE.page).ifPresent(ability -> {
+        stat.getAbility(Unicopia.getConfig().hudPage.get()).ifPresent(ability -> {
             RenderSystem.setShaderTexture(0, ability.getIcon(Pony.of(client.player), client.options.sneakKey.isPressed()));
             drawTexture(matrices, x, y, 0, 0, frameWidth, frameHeight, u, v);
             RenderSystem.setShaderTexture(0, HUD_TEXTURE);
