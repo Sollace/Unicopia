@@ -310,7 +310,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 }
             }
         }
-        
+
         magicExhaustion = ManaConsumptionUtil.burnFood(entity, magicExhaustion);
 
         powers.tick();

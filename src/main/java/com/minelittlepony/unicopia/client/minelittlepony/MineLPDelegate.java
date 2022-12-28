@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.Race;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -25,6 +26,10 @@ public class MineLPDelegate {
     }
 
     public Race getPlayerPonyRace(PlayerEntity player) {
+        return Race.HUMAN;
+    }
+
+    public Race getRace(Entity entity) {
         return Race.HUMAN;
     }
 

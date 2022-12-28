@@ -2,11 +2,10 @@ package com.minelittlepony.unicopia.client.minelittlepony;
 
 import java.util.Optional;
 
-import com.minelittlepony.api.model.IModel;
-import com.minelittlepony.api.model.ModelAttributes;
+import com.minelittlepony.api.model.*;
 import com.minelittlepony.api.model.fabric.PonyModelPrepareCallback;
 import com.minelittlepony.api.model.gear.IGear;
-import com.minelittlepony.client.MineLittlePony;
+import com.minelittlepony.api.pony.IPony;
 import com.minelittlepony.client.render.LevitatingItemRenderer;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
@@ -33,7 +32,8 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
         PonyModelPrepareCallback.EVENT.register(this::onPonyModelPrepared);
         IGear.register(() -> new BangleGear(TrinketsDelegate.MAINHAND));
         IGear.register(() -> new BangleGear(TrinketsDelegate.OFFHAND));
-        IGear.register(() -> new HeldEntityGear());
+        IGear.register(HeldEntityGear::new);
+        IGear.register(WingsGear::new);
         IGear.register(AmuletGear::new);
         IGear.register(GlassesGear::new);
     }
@@ -48,7 +48,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
                 Pony pony = Pony.of((PlayerEntity)entity);
 
                 if (pony.getMotion().isFlying()) {
-                    model.getAttributes().wingAngle = MathHelper.clamp(pony.getMotion().getWingAngle() / 3 - (float)Math.PI * 0.7F, -3, 0);
+                    model.getAttributes().wingAngle = MathHelper.clamp(pony.getMotion().getWingAngle() / 3F - (float)Math.PI * 0.4F, -2, 0);
 
                     Vec3d motion = entity.getVelocity();
                     double zMotion = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
@@ -71,7 +71,16 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
 
     @Override
     public Race getPlayerPonyRace(PlayerEntity player) {
-        switch (MineLittlePony.getInstance().getManager().getPony(player).race()) {
+        return toUnicopiaRace(IPony.getManager().getPony(player).race());
+    }
+
+    @Override
+    public Race getRace(Entity entity) {
+        return IPony.getManager().getPony(entity).map(IPony::race).map(Main::toUnicopiaRace).orElse(Race.HUMAN);
+    }
+
+    private static Race toUnicopiaRace(com.minelittlepony.api.pony.meta.Race race) {
+        switch (race) {
             case ALICORN:
                 return Race.ALICORN;
             case CHANGELING:
