@@ -10,7 +10,6 @@ import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyPlayerEntity;
 import com.minelittlepony.unicopia.network.handler.ClientNetworkHandler;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -40,14 +39,6 @@ public class InteractionManager {
             return Optional.of(Ether.get(world));
         }
         return Optional.empty();
-    }
-
-    public MinecraftSessionService getSessionService(World world) {
-        if (world instanceof ServerWorld) {
-            return ((ServerWorld)world).getServer().getSessionService();
-        }
-
-        throw new NullPointerException("Cannot get session service");
     }
 
     /**

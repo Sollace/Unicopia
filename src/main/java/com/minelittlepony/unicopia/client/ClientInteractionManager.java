@@ -19,7 +19,6 @@ import com.minelittlepony.unicopia.entity.player.dummy.DummyClientPlayerEntity;
 import com.minelittlepony.unicopia.network.handler.ClientNetworkHandler;
 import com.minelittlepony.unicopia.network.handler.ClientNetworkHandlerImpl;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.AggressiveBeeSoundInstance;
@@ -52,11 +51,6 @@ public class ClientInteractionManager extends InteractionManager {
             return Optional.of(Ether.get(world));
         }
         return clientWorld;
-    }
-
-    @Override
-    public MinecraftSessionService getSessionService(World world) {
-        return MinecraftClient.getInstance().getSessionService();
     }
 
     @Override
