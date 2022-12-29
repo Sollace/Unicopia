@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.util.network.Packet;
+import com.sollace.fabwork.api.packets.Packet;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;

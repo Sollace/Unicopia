@@ -146,7 +146,7 @@ public class DismissSpellScreen extends GameGui {
             if (isMouseOver(relativeMouseX, relativeMouseY)) {
                 remove(this);
                 pony.getSpellSlot().removeIf(spell -> spell == this.spell, true);
-                Channel.REMOVE_SPELL.send(new MsgRemoveSpell(spell));
+                Channel.REMOVE_SPELL.sendToServer(new MsgRemoveSpell(spell));
                 playClickEffect();
                 return true;
             }

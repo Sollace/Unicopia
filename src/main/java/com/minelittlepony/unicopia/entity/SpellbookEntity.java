@@ -58,7 +58,7 @@ public class SpellbookEntity extends MobEntity {
                     if (player instanceof ServerPlayerEntity recipient
                             && player.currentScreenHandler instanceof SpellbookScreenHandler book
                             && getUuid().equals(book.entityId)) {
-                        Channel.SERVER_SPELLBOOK_UPDATE.send(recipient, new MsgSpellbookStateChanged<>(player.currentScreenHandler.syncId, state));
+                        Channel.SERVER_SPELLBOOK_UPDATE.sendToPlayer(new MsgSpellbookStateChanged<>(player.currentScreenHandler.syncId, state), recipient);
                     }
                 });
             });

@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.InteractionManager;
-import com.minelittlepony.unicopia.util.network.Packet;
+import com.sollace.fabwork.api.packets.Packet;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;

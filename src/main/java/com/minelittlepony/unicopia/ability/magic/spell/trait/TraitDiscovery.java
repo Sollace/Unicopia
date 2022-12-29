@@ -52,7 +52,7 @@ public class TraitDiscovery implements NbtSerialisable {
 
     @Environment(EnvType.CLIENT)
     public void markRead(Trait trait) {
-        Channel.MARK_TRAIT_READ.send(new MsgMarkTraitRead(Set.of(trait)));
+        Channel.MARK_TRAIT_READ.sendToServer(new MsgMarkTraitRead(Set.of(trait)));
     }
 
     public void markRead(Set<Trait> traits) {
@@ -76,7 +76,7 @@ public class TraitDiscovery implements NbtSerialisable {
         unreadTraits.addAll(newTraits);
         pony.setDirty();
         if (!newTraits.isEmpty() && !pony.asWorld().isClient) {
-            Channel.UNLOCK_TRAITS.send((ServerPlayerEntity)pony.asEntity(), new MsgUnlockTraits(newTraits));
+            Channel.UNLOCK_TRAITS.sendToPlayer(new MsgUnlockTraits(newTraits), (ServerPlayerEntity)pony.asEntity());
         }
     }
 

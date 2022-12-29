@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.util.network.Packet;
+import com.sollace.fabwork.api.packets.Packet;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.entity.player.PlayerEntity;

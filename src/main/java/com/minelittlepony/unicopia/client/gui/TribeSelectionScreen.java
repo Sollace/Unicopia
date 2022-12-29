@@ -78,7 +78,7 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
                 finished = false;
 
                 if (result) {
-                    Channel.CLIENT_REQUEST_SPECIES_CHANGE.send(new MsgRequestSpeciesChange(race, true));
+                    Channel.CLIENT_REQUEST_SPECIES_CHANGE.sendToServer(new MsgRequestSpeciesChange(race, true));
                     finish();
                 } else {
                     client.setScreen(this);

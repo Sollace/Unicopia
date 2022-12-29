@@ -131,7 +131,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             this.animationMaxDuration = animationDuration;
 
             if (!isClient()) {
-                Channel.SERVER_PLAYER_ANIMATION_CHANGE.send(asWorld(), new MsgPlayerAnimationChange(this, animation, animationDuration));
+                Channel.SERVER_PLAYER_ANIMATION_CHANGE.sendToAllPlayers(new MsgPlayerAnimationChange(this, animation, animationDuration), asWorld());
             }
 
             animation.getSound().ifPresent(sound -> {
@@ -243,8 +243,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         if (entity instanceof ServerPlayerEntity) {
             MsgOtherPlayerCapabilities packet = new MsgOtherPlayerCapabilities(this);
-            Channel.SERVER_PLAYER_CAPABILITIES.send((ServerPlayerEntity)entity, packet);
-            Channel.SERVER_OTHER_PLAYER_CAPABILITIES.send(entity.world, packet);
+            Channel.SERVER_PLAYER_CAPABILITIES.sendToPlayer(packet, (ServerPlayerEntity)entity);
+            Channel.SERVER_OTHER_PLAYER_CAPABILITIES.sendToSurroundingPlayers(packet, entity);
         }
     }
 

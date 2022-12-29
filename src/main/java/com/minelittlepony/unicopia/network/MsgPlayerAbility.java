@@ -7,7 +7,7 @@ import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.ActivationType;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.util.network.Packet;
+import com.sollace.fabwork.api.packets.Packet;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -52,7 +52,7 @@ public class MsgPlayerAbility<T extends Hit> implements Packet<ServerPlayerEntit
         } else {
             data.filter(data -> power.canApply(player, data)).ifPresentOrElse(
                     data -> power.apply(player, data),
-                    () -> Channel.CANCEL_PLAYER_ABILITY.send(sender, new MsgCancelPlayerAbility())
+                    () -> Channel.CANCEL_PLAYER_ABILITY.sendToPlayer(new MsgCancelPlayerAbility(), sender)
             );
         }
     }

@@ -46,7 +46,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
     private <T extends Hit> boolean triggerQuickAction(Ability<T> ability, ActivationType pressType) {
         Optional<T> data = ability.prepareQuickAction(player, pressType);
         if (ability.onQuickAction(player, pressType, data)) {
-            Channel.CLIENT_PLAYER_ABILITY.send(new MsgPlayerAbility<>(ability, data, pressType));
+            Channel.CLIENT_PLAYER_ABILITY.sendToServer(new MsgPlayerAbility<>(ability, data, pressType));
             return true;
         }
         return false;
@@ -209,7 +209,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
                     Optional<T> data = ability.prepare(player);
 
                     if (data.isPresent()) {
-                        Channel.CLIENT_PLAYER_ABILITY.send(new MsgPlayerAbility<>(ability, data, ActivationType.NONE));
+                        Channel.CLIENT_PLAYER_ABILITY.sendToServer(new MsgPlayerAbility<>(ability, data, ActivationType.NONE));
                     } else {
                         player.asEntity().playSound(USounds.GUI_ABILITY_FAIL, 1, 1);
                         setCooldown(0);

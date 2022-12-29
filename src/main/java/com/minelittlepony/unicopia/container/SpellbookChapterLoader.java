@@ -55,9 +55,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             dirty = false;
             MsgServerResources msg = new MsgServerResources();
             server.getWorlds().forEach(world -> {
-                world.getPlayers().forEach(player -> {
-                    Channel.SERVER_RESOURCES_SEND.send(player, msg);
-                });
+                Channel.SERVER_RESOURCES_SEND.sendToAllPlayers(msg, world);
             });
         }
     }

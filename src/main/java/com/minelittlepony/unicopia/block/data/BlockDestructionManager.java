@@ -90,7 +90,7 @@ public class BlockDestructionManager implements Tickable {
 
         players.forEach(player -> {
             if (player instanceof ServerPlayerEntity) {
-                Channel.SERVER_BLOCK_DESTRUCTION.send(player, msg);
+                Channel.SERVER_BLOCK_DESTRUCTION.sendToPlayer(msg, player);
             }
         });
     }

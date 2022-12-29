@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.network;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.util.network.Packet;
+import com.sollace.fabwork.api.packets.Packet;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -53,6 +53,6 @@ public class MsgRequestSpeciesChange implements Packet<ServerPlayerEntity> {
             }
         }
 
-        Channel.SERVER_PLAYER_CAPABILITIES.send(sender, new MsgPlayerCapabilities(player));
+        Channel.SERVER_PLAYER_CAPABILITIES.sendToPlayer(new MsgPlayerCapabilities(player), sender);
     }
 }

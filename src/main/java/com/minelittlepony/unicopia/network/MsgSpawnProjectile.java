@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
-import com.minelittlepony.unicopia.util.network.Packet;
+import com.sollace.fabwork.api.packets.Packet;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;

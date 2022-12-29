@@ -70,7 +70,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             return chapters.getCurrentChapter() == craftingChapter;
         });
         handler.getSpellbookState().setSynchronizer(state -> {
-            Channel.CLIENT_SPELLBOOK_UPDATE.send(new MsgSpellbookStateChanged<ServerPlayerEntity>(handler.syncId, state));
+            Channel.CLIENT_SPELLBOOK_UPDATE.sendToServer(new MsgSpellbookStateChanged<ServerPlayerEntity>(handler.syncId, state));
         });
     }
 
