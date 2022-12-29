@@ -8,7 +8,7 @@ import org.joml.Vector4f;
 import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.client.FlowingText;
-import com.minelittlepony.unicopia.client.particle.SphereModel;
+import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.Channel;

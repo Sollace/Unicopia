@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.particle;
 
 import org.joml.Quaternionf;
 
+import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
 
 import net.minecraft.client.render.VertexConsumer;
