@@ -61,6 +61,12 @@ dependencies {
     modApi "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_attributes_version}"
     include "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_attributes_version}"
 
+    // provides networking and mod handshaking.
+    //   https://github.com/Sollace/Fabwork
+    // > gradlew build publishToMavenLocal
+    modApi "com.sollace:fabwork:${project.fabwork_version}"
+    include "com.sollace:fabwork:${project.fabwork_version}"
+
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
     modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
 }
