@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.jetbrains.annotations.NotNull;
@@ -8,12 +9,13 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.ability.magic.CasterView;
 import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyPlayerEntity;
-import com.minelittlepony.unicopia.network.handler.ClientNetworkHandler;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
@@ -41,11 +43,8 @@ public class InteractionManager {
         return Optional.empty();
     }
 
-    /**
-     * Returns the client network handler, or throws if called on the server.
-     */
-    public ClientNetworkHandler getClientNetworkHandler() {
-        throw new NullPointerException("Client network handler called by the server");
+    public Map<Identifier, ?> readChapters(PacketByteBuf buf) {
+        throw new RuntimeException("Method not supported");
     }
 
     /**

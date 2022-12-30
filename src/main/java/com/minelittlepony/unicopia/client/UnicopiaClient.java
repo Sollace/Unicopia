@@ -16,6 +16,8 @@ import com.minelittlepony.unicopia.client.render.shader.ViewportShader;
 import com.minelittlepony.unicopia.container.*;
 import com.minelittlepony.unicopia.entity.player.PlayerCamera;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.handler.ClientNetworkHandlerImpl;
+
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
@@ -60,6 +62,7 @@ public class UnicopiaClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         InteractionManager.INSTANCE = new ClientInteractionManager();
+        new ClientNetworkHandlerImpl();
 
         KeyBindingsHandler.bootstrap();
         URenderers.bootstrap();

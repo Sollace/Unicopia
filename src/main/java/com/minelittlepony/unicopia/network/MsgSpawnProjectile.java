@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.network;
 
 import java.util.Optional;
 
-import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.sollace.fabwork.api.packets.Packet;
 
@@ -30,9 +29,6 @@ public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Packet<P
         write(buffer);
     }
 
-
     @Override
-    public void handle(PlayerEntity sender) {
-        InteractionManager.instance().getClientNetworkHandler().handleSpawnProjectile(this);
-    }
+    public void handle(PlayerEntity sender) {}
 }

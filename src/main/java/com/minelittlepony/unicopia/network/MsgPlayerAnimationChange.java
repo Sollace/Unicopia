@@ -13,21 +13,18 @@ import net.minecraft.network.PacketByteBuf;
 /**
  * Sent to the client when a player's animation changes.
  */
-public class MsgPlayerAnimationChange implements Packet<PlayerEntity> {
-    private final UUID playerId;
-    private final Animation animation;
-    private final int duration;
+public record MsgPlayerAnimationChange (
+        UUID playerId,
+        Animation animation,
+        int duration
+    ) implements Packet<PlayerEntity> {
 
     MsgPlayerAnimationChange(PacketByteBuf buffer) {
-        playerId = buffer.readUuid();
-        animation = Animation.values()[buffer.readInt()];
-        duration = buffer.readInt();
+        this(buffer.readUuid(), buffer.readEnumConstant(Animation.class), buffer.readInt());
     }
 
     public MsgPlayerAnimationChange(Pony player, Animation animation, int duration) {
-        this.playerId = player.asEntity().getUuid();
-        this.animation = animation;
-        this.duration = duration;
+        this(player.asEntity().getUuid(), animation, duration);
     }
 
     @Override

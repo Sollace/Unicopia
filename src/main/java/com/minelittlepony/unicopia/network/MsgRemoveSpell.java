@@ -12,15 +12,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 /**
  * Sent to the server when a player activates an ability.
  */
-public class MsgRemoveSpell implements Packet<ServerPlayerEntity> {
-    private final UUID id;
-
+public record MsgRemoveSpell (UUID id) implements Packet<ServerPlayerEntity> {
     MsgRemoveSpell(PacketByteBuf buffer) {
-        id = buffer.readUuid();
+        this(buffer.readUuid());
     }
 
     public MsgRemoveSpell(Spell spell) {
-        id = spell.getUuid();
+        this(spell.getUuid());
     }
 
     @Override

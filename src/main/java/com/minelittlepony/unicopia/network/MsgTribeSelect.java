@@ -3,30 +3,19 @@ package com.minelittlepony.unicopia.network;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.sollace.fabwork.api.packets.Packet;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 
-public class MsgTribeSelect implements Packet<PlayerEntity> {
-    private final Set<Race> availableRaces;
-
-    public MsgTribeSelect(PlayerEntity player) {
-        availableRaces = Race.allPermitted(player);
-    }
-
+public record MsgTribeSelect (Set<Race> availableRaces) implements Packet<PlayerEntity> {
     public MsgTribeSelect(PacketByteBuf buffer) {
+        this(new HashSet<>());
         int len = buffer.readInt();
-        availableRaces = new HashSet<>();
         while (len-- > 0) {
             availableRaces.add(buffer.readRegistryValue(Race.REGISTRY));
         }
-    }
-
-    public Set<Race> getRaces() {
-        return availableRaces;
     }
 
     @Override
@@ -36,7 +25,5 @@ public class MsgTribeSelect implements Packet<PlayerEntity> {
     }
 
     @Override
-    public void handle(PlayerEntity sender) {
-        InteractionManager.instance().getClientNetworkHandler().handleTribeScreen(this);
-    }
+    public void handle(PlayerEntity sender) {}
 }

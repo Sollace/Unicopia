@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -12,12 +13,11 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.CasterView;
 import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.client.gui.DismissSpellScreen;
+import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
 import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyClientPlayerEntity;
-import com.minelittlepony.unicopia.network.handler.ClientNetworkHandler;
-import com.minelittlepony.unicopia.network.handler.ClientNetworkHandlerImpl;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.client.MinecraftClient;
@@ -31,16 +31,17 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class ClientInteractionManager extends InteractionManager {
 
-    private final ClientNetworkHandler handler = new ClientNetworkHandlerImpl();
     private final MinecraftClient client = MinecraftClient.getInstance();
 
     private final Optional<CasterView> clientWorld = Optional.of(() -> MinecraftClient.getInstance().world);
@@ -54,9 +55,8 @@ public class ClientInteractionManager extends InteractionManager {
     }
 
     @Override
-    @Nullable
-    public ClientNetworkHandler getClientNetworkHandler() {
-        return handler;
+    public Map<Identifier, ?> readChapters(PacketByteBuf buffer) {
+        return  buffer.readMap(PacketByteBuf::readIdentifier, ClientChapters::loadChapter);
     }
 
     @Override

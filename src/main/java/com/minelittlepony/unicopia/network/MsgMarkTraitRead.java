@@ -10,19 +10,13 @@ import com.sollace.fabwork.api.packets.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class MsgMarkTraitRead implements Packet<ServerPlayerEntity> {
-
-    public final Set<Trait> traits = new HashSet<>();
-
+public record MsgMarkTraitRead (Set<Trait> traits) implements Packet<ServerPlayerEntity> {
     MsgMarkTraitRead(PacketByteBuf buffer) {
+        this(new HashSet<>());
         int length = buffer.readInt();
         for (int i = 0; i < length; i++) {
             Trait.fromId(buffer.readIdentifier()).ifPresent(traits::add);
         }
-    }
-
-    public MsgMarkTraitRead(Set<Trait> traits) {
-        this.traits.addAll(traits);
     }
 
     @Override

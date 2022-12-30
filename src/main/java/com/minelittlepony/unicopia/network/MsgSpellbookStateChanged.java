@@ -12,19 +12,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
  * Received by the server when a player changes their opened spellbook's state
  * Received by the client when another player changes the shared spellbook's state
  */
-public class MsgSpellbookStateChanged<T extends PlayerEntity> implements Packet<T> {
-
-    private final int syncId;
-    private final SpellbookState state;
-
-    public MsgSpellbookStateChanged(int syncId, SpellbookState state) {
-        this.syncId = syncId;
-        this.state = state;
-    }
+public record MsgSpellbookStateChanged<T extends PlayerEntity> (
+        int syncId,
+        SpellbookState state
+    ) implements Packet<T> {
 
     public MsgSpellbookStateChanged(PacketByteBuf buffer) {
-        syncId = buffer.readInt();
-        state = new SpellbookState().fromPacket(buffer);
+        this(buffer.readInt(), new SpellbookState().fromPacket(buffer));
     }
 
     @Override
@@ -35,7 +29,6 @@ public class MsgSpellbookStateChanged<T extends PlayerEntity> implements Packet<
 
     @Override
     public void handle(T sender) {
-
         if (sender.currentScreenHandler.syncId != syncId) {
             return;
         }

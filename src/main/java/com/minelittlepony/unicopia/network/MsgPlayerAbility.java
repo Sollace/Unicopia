@@ -15,22 +15,20 @@ import net.minecraft.server.network.ServerPlayerEntity;
 /**
  * Sent to the server when a player activates an ability.
  */
-public class MsgPlayerAbility<T extends Hit> implements Packet<ServerPlayerEntity> {
-    private final Ability<T> power;
-    private final Optional<T> data;
-    private final ActivationType type;
+public record MsgPlayerAbility<T extends Hit> (
+        Ability<T> power,
+        Optional<T> data,
+        ActivationType type
+    ) implements Packet<ServerPlayerEntity> {
 
     @SuppressWarnings("unchecked")
-    MsgPlayerAbility(PacketByteBuf buffer) {
-        power = (Ability<T>) Abilities.REGISTRY.get(buffer.readIdentifier());
-        data = buffer.readOptional(power.getSerializer()::fromBuffer);
-        type = ActivationType.of(buffer.readInt());
-    }
-
-    public MsgPlayerAbility(Ability<T> power, Optional<T> data, ActivationType type) {
-        this.power = power;
-        this.data = data;
-        this.type = type;
+    static <T extends Hit> MsgPlayerAbility<T> read(PacketByteBuf buffer) {
+        Ability<T> power = (Ability<T>) Abilities.REGISTRY.get(buffer.readIdentifier());
+        return new MsgPlayerAbility<>(
+            power,
+            buffer.readOptional(power.getSerializer()::fromBuffer),
+            ActivationType.of(buffer.readInt())
+        );
     }
 
     @Override

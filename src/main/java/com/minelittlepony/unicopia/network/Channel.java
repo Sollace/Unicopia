@@ -9,7 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public interface Channel {
-    C2SPacketType<MsgPlayerAbility<?>> CLIENT_PLAYER_ABILITY = SimpleNetworking.clientToServer(Unicopia.id("player_ability"), MsgPlayerAbility::new);
+    C2SPacketType<MsgPlayerAbility<?>> CLIENT_PLAYER_ABILITY = SimpleNetworking.clientToServer(Unicopia.id("player_ability"), MsgPlayerAbility::read);
     C2SPacketType<MsgRequestSpeciesChange> CLIENT_REQUEST_SPECIES_CHANGE = SimpleNetworking.clientToServer(Unicopia.id("request_capabilities"), MsgRequestSpeciesChange::new);
     C2SPacketType<MsgMarkTraitRead> MARK_TRAIT_READ = SimpleNetworking.clientToServer(Unicopia.id("mark_trait_read"), MsgMarkTraitRead::new);
     C2SPacketType<MsgRemoveSpell> REMOVE_SPELL = SimpleNetworking.clientToServer(Unicopia.id("remove_spell"), MsgRemoveSpell::new);
@@ -17,7 +17,7 @@ public interface Channel {
     S2CPacketType<MsgPlayerCapabilities> SERVER_PLAYER_CAPABILITIES = SimpleNetworking.serverToClient(Unicopia.id("player_capabilities"), MsgPlayerCapabilities::new);
     S2CPacketType<MsgSpawnProjectile> SERVER_SPAWN_PROJECTILE = SimpleNetworking.serverToClient(Unicopia.id("projectile_entity"), MsgSpawnProjectile::new);
     S2CPacketType<MsgBlockDestruction> SERVER_BLOCK_DESTRUCTION = SimpleNetworking.serverToClient(Unicopia.id("block_destruction"), MsgBlockDestruction::new);
-    S2CPacketType<MsgCancelPlayerAbility> CANCEL_PLAYER_ABILITY = SimpleNetworking.serverToClient(Unicopia.id("player_ability_cancel"), MsgCancelPlayerAbility::new);
+    S2CPacketType<MsgCancelPlayerAbility> CANCEL_PLAYER_ABILITY = SimpleNetworking.serverToClient(Unicopia.id("player_ability_cancel"), MsgCancelPlayerAbility::read);
     S2CPacketType<MsgUnlockTraits> UNLOCK_TRAITS = SimpleNetworking.serverToClient(Unicopia.id("unlock_traits"), MsgUnlockTraits::new);
 
     S2CPacketType<MsgTribeSelect> SERVER_SELECT_TRIBE = SimpleNetworking.serverToClient(Unicopia.id("select_tribe"), MsgTribeSelect::new);
@@ -42,7 +42,7 @@ public interface Channel {
                     pony.setSpecies(race);
                     Unicopia.LOGGER.info("Setting {}'s race to {} due to host setting", handler.player.getDisplayName().getString(), Race.REGISTRY.getId(race).toString());
                 } else {
-                    sender.sendPacket(SERVER_SELECT_TRIBE.id(), new MsgTribeSelect(handler.player).toBuffer());
+                    sender.sendPacket(SERVER_SELECT_TRIBE.id(), new MsgTribeSelect(Race.allPermitted(handler.player)).toBuffer());
                 }
             }
             sender.sendPacket(SERVER_RESOURCES_SEND.id(), new MsgServerResources().toBuffer());

@@ -20,21 +20,27 @@ import com.minelittlepony.unicopia.network.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
-public class ClientNetworkHandlerImpl implements ClientNetworkHandler {
-
+public class ClientNetworkHandlerImpl {
     private final MinecraftClient client = MinecraftClient.getInstance();
 
-    @Override
-    public void handleTribeScreen(MsgTribeSelect packet) {
-        client.setScreen(new TribeSelectionScreen(packet.getRaces()));
+    public ClientNetworkHandlerImpl() {
+        Channel.SERVER_SELECT_TRIBE.receiver().addPersistentListener(this::handleTribeScreen);
+        Channel.SERVER_SPAWN_PROJECTILE.receiver().addPersistentListener(this::handleSpawnProjectile);
+        Channel.SERVER_BLOCK_DESTRUCTION.receiver().addPersistentListener(this::handleBlockDestruction);
+        Channel.CANCEL_PLAYER_ABILITY.receiver().addPersistentListener(this::handleCancelAbility);
+        Channel.UNLOCK_TRAITS.receiver().addPersistentListener(this::handleUnlockTraits);
+        Channel.SERVER_RESOURCES_SEND.receiver().addPersistentListener(this::handleServerResources);
+    }
+
+    private void handleTribeScreen(PlayerEntity sender, MsgTribeSelect packet) {
+        client.setScreen(new TribeSelectionScreen(packet.availableRaces()));
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    public void handleSpawnProjectile(MsgSpawnProjectile packet) {
+    private void handleSpawnProjectile(PlayerEntity sender, MsgSpawnProjectile packet) {
         ClientWorld world = client.world;
         Entity entity = packet.getEntityType().create(world);
 
@@ -57,38 +63,29 @@ public class ClientNetworkHandlerImpl implements ClientNetworkHandler {
         world.addEntity(packet.getId(), entity);
     }
 
-    @Override
-    public void handleBlockDestruction(MsgBlockDestruction packet) {
+    private void handleBlockDestruction(PlayerEntity sender, MsgBlockDestruction packet) {
         ClientBlockDestructionManager destr = ((ClientBlockDestructionManager.Source)client.worldRenderer).getDestructionManager();
 
-        packet.getDestructions().forEach((i, d) -> {
+        packet.destructions().forEach((i, d) -> {
             destr.setBlockDestruction(i, d);
         });
     }
 
-    @Override
-    public void handleCancelAbility(MsgCancelPlayerAbility packet) {
+    private void handleCancelAbility(PlayerEntity sender, MsgCancelPlayerAbility packet) {
         client.player.playSound(USounds.GUI_ABILITY_FAIL, 1, 1);
         Pony.of(client.player).getAbilities().getStats().forEach(s -> s.setCooldown(0));
     }
 
-    @Override
-    public void handleUnlockTraits(MsgUnlockTraits packet) {
-        for (Trait trait : packet.traits) {
+    private void handleUnlockTraits(PlayerEntity sender, MsgUnlockTraits packet) {
+        for (Trait trait : packet.traits()) {
             DiscoveryToast.show(client.getToastManager(), trait.getSprite());
         }
     }
 
-    @Override
-    public Map<Identifier, ?> readChapters(PacketByteBuf buffer) {
-        return  buffer.readMap(PacketByteBuf::readIdentifier, ClientChapters::loadChapter);
-    }
-
     @SuppressWarnings("unchecked")
-    @Override
-    public void handleServerResources(MsgServerResources packet) {
-        SpellTraits.load(packet.traits);
-        ClientChapters.load((Map<Identifier, Chapter>)packet.chapters);
-        TreeTypes.load(packet.treeTypes);
+    private void handleServerResources(PlayerEntity sender, MsgServerResources packet) {
+        SpellTraits.load(packet.traits());
+        ClientChapters.load((Map<Identifier, Chapter>)packet.chapters());
+        TreeTypes.load(packet.treeTypes());
     }
 }

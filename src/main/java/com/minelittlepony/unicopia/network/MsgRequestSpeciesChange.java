@@ -14,23 +14,13 @@ import net.minecraft.server.world.ServerWorld;
  * <p>
  * The server responds back with the accepted capabilities and the race the client should use (if the preferred was not permitted)
  */
-public class MsgRequestSpeciesChange implements Packet<ServerPlayerEntity> {
-
-    private final boolean force;
-    private final Race newRace;
+public record MsgRequestSpeciesChange (
+        boolean force,
+        Race newRace
+    ) implements Packet<ServerPlayerEntity> {
 
     MsgRequestSpeciesChange(PacketByteBuf buffer) {
-        force = buffer.readBoolean();
-        newRace = buffer.readRegistryValue(Race.REGISTRY);
-    }
-
-    public MsgRequestSpeciesChange(Race newRace) {
-        this(newRace, false);
-    }
-
-    public MsgRequestSpeciesChange(Race newRace, boolean force) {
-        this.newRace = newRace;
-        this.force = force;
+        this(buffer.readBoolean(), buffer.readRegistryValue(Race.REGISTRY));
     }
 
     @Override

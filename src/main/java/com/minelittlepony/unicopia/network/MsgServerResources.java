@@ -12,21 +12,25 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
-public class MsgServerResources implements Packet<PlayerEntity> {
-    public final Map<Identifier, SpellTraits> traits;
-    public final Map<Identifier, ?> chapters;
-    public final Map<Identifier, TreeTypeLoader.TreeTypeDef> treeTypes;
-
+public record MsgServerResources (
+        Map<Identifier, SpellTraits> traits,
+        Map<Identifier, ?> chapters,
+        Map<Identifier, TreeTypeLoader.TreeTypeDef> treeTypes
+    ) implements Packet<PlayerEntity> {
     public MsgServerResources() {
-        traits = SpellTraits.all();
-        chapters = SpellbookChapterLoader.INSTANCE.getChapters();
-        treeTypes = TreeTypeLoader.INSTANCE.getEntries();
+        this(
+            SpellTraits.all(),
+            SpellbookChapterLoader.INSTANCE.getChapters(),
+            TreeTypeLoader.INSTANCE.getEntries()
+        );
     }
 
     public MsgServerResources(PacketByteBuf buffer) {
-        traits = buffer.readMap(PacketByteBuf::readIdentifier, SpellTraits::fromPacket);
-        chapters = InteractionManager.instance().getClientNetworkHandler().readChapters(buffer);
-        treeTypes = buffer.readMap(PacketByteBuf::readIdentifier, TreeTypeLoader.TreeTypeDef::new);
+        this(
+            buffer.readMap(PacketByteBuf::readIdentifier, SpellTraits::fromPacket),
+            InteractionManager.instance().readChapters(buffer),
+            buffer.readMap(PacketByteBuf::readIdentifier, TreeTypeLoader.TreeTypeDef::new)
+        );
     }
 
     @Override
@@ -37,7 +41,5 @@ public class MsgServerResources implements Packet<PlayerEntity> {
     }
 
     @Override
-    public void handle(PlayerEntity sender) {
-        InteractionManager.instance().getClientNetworkHandler().handleServerResources(this);
-    }
+    public void handle(PlayerEntity sender) { }
 }

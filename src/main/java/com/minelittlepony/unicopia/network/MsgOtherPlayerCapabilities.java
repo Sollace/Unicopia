@@ -17,7 +17,6 @@ public class MsgOtherPlayerCapabilities extends MsgPlayerCapabilities {
 
     public MsgOtherPlayerCapabilities(Pony player) {
         super(player);
-
     }
 
     @Override
