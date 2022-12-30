@@ -7,7 +7,7 @@ import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.ActivationType;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.sollace.fabwork.api.packets.Packet;
+import com.sollace.fabwork.api.packets.HandledPacket;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,7 +19,7 @@ public record MsgPlayerAbility<T extends Hit> (
         Ability<T> power,
         Optional<T> data,
         ActivationType type
-    ) implements Packet<ServerPlayerEntity> {
+    ) implements HandledPacket<ServerPlayerEntity> {
 
     @SuppressWarnings("unchecked")
     static <T extends Hit> MsgPlayerAbility<T> read(PacketByteBuf buffer) {

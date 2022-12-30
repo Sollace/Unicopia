@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.container.SpellbookState;
-import com.sollace.fabwork.api.packets.Packet;
+import com.sollace.fabwork.api.packets.HandledPacket;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
@@ -15,7 +15,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public record MsgSpellbookStateChanged<T extends PlayerEntity> (
         int syncId,
         SpellbookState state
-    ) implements Packet<T> {
+    ) implements HandledPacket<T> {
 
     public MsgSpellbookStateChanged(PacketByteBuf buffer) {
         this(buffer.readInt(), new SpellbookState().fromPacket(buffer));

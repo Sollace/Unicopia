@@ -23,7 +23,4 @@ public record MsgTribeSelect (Set<Race> availableRaces) implements Packet<Player
         buffer.writeInt(availableRaces.size());
         availableRaces.forEach(race -> buffer.writeRegistryValue(Race.REGISTRY, race));
     }
-
-    @Override
-    public void handle(PlayerEntity sender) {}
 }

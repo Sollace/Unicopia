@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.sollace.fabwork.api.packets.Packet;
+import com.sollace.fabwork.api.packets.HandledPacket;
 
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
@@ -21,7 +21,7 @@ import net.minecraft.nbt.NbtIo;
  * <p>
  * Also used by the server to notify a race change.
  */
-public class MsgPlayerCapabilities implements Packet<PlayerEntity> {
+public class MsgPlayerCapabilities implements HandledPacket<PlayerEntity> {
 
     protected final UUID playerId;
 

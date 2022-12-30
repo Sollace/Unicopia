@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.network;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.WorldTribeManager;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.sollace.fabwork.api.packets.Packet;
+import com.sollace.fabwork.api.packets.HandledPacket;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,7 +17,7 @@ import net.minecraft.server.world.ServerWorld;
 public record MsgRequestSpeciesChange (
         boolean force,
         Race newRace
-    ) implements Packet<ServerPlayerEntity> {
+    ) implements HandledPacket<ServerPlayerEntity> {
 
     MsgRequestSpeciesChange(PacketByteBuf buffer) {
         this(buffer.readBoolean(), buffer.readRegistryValue(Race.REGISTRY));

@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.sollace.fabwork.api.packets.Packet;
+import com.sollace.fabwork.api.packets.HandledPacket;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -12,7 +12,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 /**
  * Sent to the server when a player activates an ability.
  */
-public record MsgRemoveSpell (UUID id) implements Packet<ServerPlayerEntity> {
+public record MsgRemoveSpell (UUID id) implements HandledPacket<ServerPlayerEntity> {
     MsgRemoveSpell(PacketByteBuf buffer) {
         this(buffer.readUuid());
     }

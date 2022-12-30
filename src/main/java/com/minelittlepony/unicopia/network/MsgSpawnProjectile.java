@@ -28,7 +28,4 @@ public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Packet<P
     public void toBuffer(PacketByteBuf buffer) {
         write(buffer);
     }
-
-    @Override
-    public void handle(PlayerEntity sender) {}
 }

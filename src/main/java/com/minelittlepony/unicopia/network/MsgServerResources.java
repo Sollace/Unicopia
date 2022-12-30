@@ -39,7 +39,4 @@ public record MsgServerResources (
         buffer.writeMap(chapters, PacketByteBuf::writeIdentifier, (r, v) -> ((SpellbookChapterLoader.Chapter)v).write(r));
         buffer.writeMap(treeTypes, PacketByteBuf::writeIdentifier, (r, v) -> v.write(r));
     }
-
-    @Override
-    public void handle(PlayerEntity sender) { }
 }

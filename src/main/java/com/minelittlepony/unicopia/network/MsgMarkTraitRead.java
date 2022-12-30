@@ -5,12 +5,12 @@ import java.util.Set;
 
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.sollace.fabwork.api.packets.Packet;
+import com.sollace.fabwork.api.packets.HandledPacket;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public record MsgMarkTraitRead (Set<Trait> traits) implements Packet<ServerPlayerEntity> {
+public record MsgMarkTraitRead (Set<Trait> traits) implements HandledPacket<ServerPlayerEntity> {
     MsgMarkTraitRead(PacketByteBuf buffer) {
         this(new HashSet<>());
         int length = buffer.readInt();

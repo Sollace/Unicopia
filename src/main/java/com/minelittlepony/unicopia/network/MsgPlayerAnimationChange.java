@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.sollace.fabwork.api.packets.Packet;
+import com.sollace.fabwork.api.packets.HandledPacket;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,7 +17,7 @@ public record MsgPlayerAnimationChange (
         UUID playerId,
         Animation animation,
         int duration
-    ) implements Packet<PlayerEntity> {
+    ) implements HandledPacket<PlayerEntity> {
 
     MsgPlayerAnimationChange(PacketByteBuf buffer) {
         this(buffer.readUuid(), buffer.readEnumConstant(Animation.class), buffer.readInt());

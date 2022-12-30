@@ -27,7 +27,4 @@ public record MsgBlockDestruction (Long2ObjectMap<Float> destructions) implement
             buffer.writeFloat(i);
         });
     }
-
-    @Override
-    public void handle(PlayerEntity sender) {}
 }

@@ -27,7 +27,4 @@ public record MsgUnlockTraits (Set<Trait> traits) implements Packet<PlayerEntity
         buffer.writeInt(traits.size());
         traits.forEach(trait -> buffer.writeIdentifier(trait.getId()));
     }
-
-    @Override
-    public void handle(PlayerEntity sender) { }
 }

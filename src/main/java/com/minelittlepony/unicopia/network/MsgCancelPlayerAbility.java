@@ -16,7 +16,4 @@ public final class MsgCancelPlayerAbility implements Packet<PlayerEntity> {
 
     @Override
     public void toBuffer(PacketByteBuf buffer) { }
-
-    @Override
-    public void handle(PlayerEntity sender) { }
 }
