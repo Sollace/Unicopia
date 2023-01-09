@@ -1,9 +1,14 @@
 package com.minelittlepony.unicopia.client.render;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.minelittlepony.unicopia.client.FirstPersonRendererOverrides.ArmRenderer;
+
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
@@ -39,6 +44,14 @@ public class AccessoryFeatureRenderer<
         features.forEach(feature -> feature.renderArm(matrices, vertexConsumers, light, entity, arm, side));
     }
 
+    public boolean beforeRenderArms(ArmRenderer sender, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, int light) {
+        boolean cancelled = false;
+        for (var feature : features) {
+            cancelled |= feature.beforeRenderArms(sender, tickDelta, matrices, vertexConsumers, entity, light);
+        }
+        return cancelled;
+    }
+
     public interface FeatureFactory<T extends LivingEntity> {
         Feature<T> create(FeatureRendererContext<T, ? extends BipedEntityModel<T>> context);
     }
@@ -46,7 +59,10 @@ public class AccessoryFeatureRenderer<
     public interface Feature<T extends LivingEntity> {
         void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch);
 
-        default void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, ModelPart arm, Arm side) {
+        default void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, ModelPart arm, Arm side) {}
+
+        default boolean beforeRenderArms(ArmRenderer sender, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, int light) {
+            return false;
         }
     }
 
@@ -54,5 +70,14 @@ public class AccessoryFeatureRenderer<
             T extends LivingEntity,
             M extends BipedEntityModel<T>> {
         AccessoryFeatureRenderer<T, M> getAccessories();
+        @SuppressWarnings("unchecked")
+        @Nullable
+        static <T extends LivingEntity, M extends BipedEntityModel<T>> FeatureRoot<T, M> of(T entity) {
+            var renderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity);
+            if (renderer instanceof FeatureRoot) {
+                return (FeatureRoot<T, M>)renderer;
+            }
+            return null;
+        }
     }
 }

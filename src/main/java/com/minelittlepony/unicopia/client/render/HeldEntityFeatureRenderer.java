@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client.render;
 
+import com.minelittlepony.unicopia.client.FirstPersonRendererOverrides.ArmRenderer;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
@@ -20,7 +21,10 @@ import net.minecraft.util.math.*;
 
 public class HeldEntityFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
 
+    private final FeatureRendererContext<E, ? extends BipedEntityModel<E>> context;
+
     public HeldEntityFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
+        this.context = context;
     }
 
     @Override
@@ -47,23 +51,37 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
 
     @Override
     public void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, E entity, ModelPart arm, Arm side) {
-        Pony.of(entity).flatMap(Pony::getEntityInArms).ifPresent(passenger -> {
-            float tickDelta = MinecraftClient.getInstance().getTickDelta();
 
+    }
+
+    @Override
+    public boolean beforeRenderArms(ArmRenderer sender, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, E entity, int light) {
+        return Pony.of(entity).flatMap(Pony::getEntityInArms).filter(passenger -> {
+            float swingProgress = entity.getHandSwingProgress(MinecraftClient.getInstance().getTickDelta());
+            float f = -0.4f * MathHelper.sin(MathHelper.sqrt(swingProgress) * (float)Math.PI);
+            float g = 0.2f * MathHelper.sin(MathHelper.sqrt(swingProgress) * ((float)Math.PI * 2));
+            float h = -0.2f * MathHelper.sin(swingProgress * (float)Math.PI);
             matrices.push();
-            matrices.translate(0.8F, 0.4F, -0.1F);
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-60 - 13));
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-30));
-            matrices.translate(0, 0, -0.2F);
+            matrices.translate(f, g, h);
+            matrices.translate(0, -1.3F, -1.3F);
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(13));
             if (!(passenger instanceof Pony)) {
                 matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
             }
-            matrices.translate(-passenger.asEntity().getWidth() / 16F, 0.3F, 0);
 
             renderCarriedEntity(passenger.asEntity(), matrices, vertexConsumers, light, tickDelta);
             matrices.pop();
-        });
+
+            float equipProgress = 1 - sender.getEquipProgress(tickDelta);
+
+            matrices.push();
+            sender.invokeRenderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, swingProgress, Arm.LEFT);
+            matrices.pop();
+            matrices.push();
+            sender.invokeRenderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, swingProgress, Arm.RIGHT);
+            matrices.pop();
+            return true;
+        }).isPresent();
     }
 
     private void renderCarriedEntity(LivingEntity p, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float tickDelta) {

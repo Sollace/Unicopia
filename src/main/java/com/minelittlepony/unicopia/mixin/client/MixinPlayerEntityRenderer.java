@@ -21,14 +21,17 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Arm;
 
 @Mixin(PlayerEntityRenderer.class)
-abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
+abstract class MixinPlayerEntityRenderer
+        extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>
+        implements FeatureRoot<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
     @Nullable
     private AccessoryFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> accessories;
 
     MixinPlayerEntityRenderer() { super(null, null, 0); }
 
+    @Override
     @SuppressWarnings("unchecked")
-    private AccessoryFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> getAccessories() {
+    public AccessoryFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> getAccessories() {
         if (accessories == null) {
             accessories = features.stream()
                 .filter(a -> a instanceof FeatureRoot)

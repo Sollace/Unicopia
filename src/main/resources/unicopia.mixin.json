@@ -47,6 +47,7 @@
     "client.MixinCamera",
     "client.MixinEntityRenderDispatcher",
     "client.MixinGameRenderer",
+    "client.MixinHeldItemRenderer",
     "client.MixinInGameHud",
     "client.MixinInGameHud$HeartType",
     "client.MixinItem",
