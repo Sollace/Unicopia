@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "#c:mushrooms", "required": false },
+    { "id": "#c:saplings", "required": false }
+  ]
+}

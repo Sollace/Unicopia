@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "unicopia:oat_seeds",
+    "unicopia:green_apple_seeds",
+    "unicopia:sweet_apple_seeds",
+    "unicopia:sour_apple_seeds"
+  ]
+}

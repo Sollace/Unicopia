@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:rotten_flesh",
+    { "id": "c:rotten_meat", "required": false }
+  ]
+}

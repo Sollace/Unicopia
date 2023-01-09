@@ -1,6 +1,6 @@
 {
   "replace": false,
   "values": [
-    "minecraft:rotten_flesh"
+    "#c:rotten_meats"
   ]
 }

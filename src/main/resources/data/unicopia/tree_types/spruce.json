@@ -4,7 +4,7 @@
 	"wideTrunk": true,
 	"rarity": 3,
 	"drops": [
-		{ "weight": 1, "item": "unicopia:pinecone" },
-		{ "weight": 4, "item": "unicopia:stick" }
+		{ "weight": 1, "tag": "c:pinecones" },
+		{ "weight": 4, "tag": "c:sticks" }
 	]
 }

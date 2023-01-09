@@ -1,18 +1,11 @@
 {
   "replace": false,
   "values": [
-    "minecraft:coal_ore",
-    "minecraft:iron_ore",
-    "minecraft:gold_ore",
-    "minecraft:emerald_ore",
-    "minecraft:lapis_ore",
-    "minecraft:diamond_ore",
-    "minecraft:nether_gold_ore",
-    "minecraft:nether_quartz_ore",
     "minecraft:sea_lantern",
     "minecraft:ender_chest",
     "minecraft:end_portal_frame",
     "minecraft:jukebox",
-    "minecraft:spawner"
+    "minecraft:spawner",
+    "#c:ores"
   ]
 }

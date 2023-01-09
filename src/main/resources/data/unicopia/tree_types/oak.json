@@ -4,7 +4,7 @@
 	"rarity": 3,
 	"drops": [
 		{ "weight": 1, "item": "unicopia:rotten_apple" },
-		{ "weight": 2, "item": "unicopia:acorn" },
-		{ "weight": 3, "item": "minecraft:stick" }
+		{ "weight": 2, "tag": "c:acorns" },
+		{ "weight": 3, "tag": "c:stick" }
 	]
 }

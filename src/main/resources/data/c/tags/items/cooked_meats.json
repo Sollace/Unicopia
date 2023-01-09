@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:cooked_porkchop",
+    "minecraft:cooked_beef",
+    "minecraft:cooked_mutton",
+    "minecraft:cooked_rabbit",
+    "minecraft:rabbit_stew",
+    "minecraft:cooked_chicken",
+    { "id": "#c:cooked_meat", "required": false },
+    { "id": "#c:fried_chickens", "required": false },
+    { "id": "#c:hamburgers", "required": false },
+    { "id": "#c:pork_and_beanss", "required": false },
+    { "id": "#c:pork_and_beans", "required": false },
+    { "id": "#c:pork_jerkies", "required": false },
+    { "id": "#c:protein", "required": false }
+  ]
+}

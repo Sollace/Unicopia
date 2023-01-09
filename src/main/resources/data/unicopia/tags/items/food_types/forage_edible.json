@@ -10,6 +10,7 @@
     "minecraft:dandelion",
     "minecraft:tall_grass",
     "minecraft:hay_block",
-    "minecraft:wheat"
+    "minecraft:wheat",
+    "#c:foraging/edibles"
   ]
 }
