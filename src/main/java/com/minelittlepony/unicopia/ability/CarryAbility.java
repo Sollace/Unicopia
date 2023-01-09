@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.StreamSupport;
 
 import com.minelittlepony.unicopia.Race;
@@ -76,6 +77,10 @@ public class CarryAbility implements Ability<Hit> {
             player.removeAllPassengers();
             for (Entity passenger : passengers) {
                 passenger.refreshPositionAfterTeleport(player.getPos());
+                Living<?> l = Living.living(passenger);
+                if (l != null) {
+                    l.setCarrier((UUID)null);
+                }
             }
         }
 

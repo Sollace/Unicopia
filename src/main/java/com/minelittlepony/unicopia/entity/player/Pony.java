@@ -1,10 +1,6 @@
 package com.minelittlepony.unicopia.entity.player;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
@@ -297,6 +293,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
                 if (vehicle instanceof Trap) {
                     if (((Trap)vehicle).attemptDismount(entity)) {
+                        setCarrier((UUID)null);
                         entity.stopRiding();
                         entity.refreshPositionAfterTeleport(vehicle.getPos());
                         Living.transmitPassengers(vehicle);
@@ -304,6 +301,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                         entity.setSneaking(false);
                     }
                 } else {
+                    setCarrier((UUID)null);
                     entity.stopRiding();
                     entity.refreshPositionAfterTeleport(vehicle.getPos());
                     Living.transmitPassengers(vehicle);

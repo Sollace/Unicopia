@@ -150,6 +150,15 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", entity, e);
         }
 
+        if (!(entity instanceof PlayerEntity)) {
+            if (!entity.hasVehicle() && getCarrierId().isPresent() && !asWorld().isClient && entity.age % 10 == 0) {
+                UUID carrierId = getCarrierId().get();
+                Entity carrier = ((ServerWorld)asWorld()).getEntity(carrierId);
+                asEntity().startRiding(carrier, true);
+                Living.transmitPassengers(carrier);
+            }
+        }
+
         if (invinsibilityTicks > 0) {
             invinsibilityTicks--;
         }

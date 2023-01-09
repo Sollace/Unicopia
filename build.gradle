@@ -40,8 +40,8 @@ repositories {
     maven { name 'entity-reach-attributes'; url 'https://maven.jamieswhiteshirt.com/libs-release' }
     maven { name 'trinkets'; url 'https://ladysnake.jfrog.io/artifactory/mods' }
     maven { name 'mod-menu'; url 'https://maven.terraformersmc.com/' }
-    maven { name 'minelp'; url 'https://repo.minelittlepony-mod.com/maven/snapshot' }
-    maven { name 'minelp-release'; url 'https://repo.minelittlepony-mod.com/maven/release' }
+    maven { name 'minelp-snapshot'; url 'https://repo.minelittlepony-mod.com/maven/snapshot' }
+    maven { name 'minelp-releases'; url 'https://repo.minelittlepony-mod.com/maven/release' }
 }
 
 dependencies {
