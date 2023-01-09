@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.google.common.base.Suppliers;
@@ -31,6 +32,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Artifact {
+    static final Predicate<Entity> TARGET_PREDICATE = EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(EntityPredicates.VALID_ENTITY).and(e -> (e instanceof PlayerEntity || e instanceof MobEntity));
     private static final Supplier<Map<Item, Item>> ITEM_MAP = Suppliers.memoize(() -> {
         return Map.of(
                 Items.BUCKET, UItems.LOVE_BUCKET,
@@ -115,7 +117,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                 List<LivingEntity> outputs = new ArrayList<>();
                 List<ItemEntity> containers = new ArrayList<>();
 
-                VecHelper.findInRange(entity, entity.world, entity.getPos(), 20, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(e -> !e.isRemoved() && (e instanceof PlayerEntity || e instanceof MobEntity))).forEach(e -> {
+                VecHelper.findInRange(entity, entity.world, entity.getPos(), 20, TARGET_PREDICATE).forEach(e -> {
                     LivingEntity living = (LivingEntity)e;
 
                     if (e instanceof PlayerEntity

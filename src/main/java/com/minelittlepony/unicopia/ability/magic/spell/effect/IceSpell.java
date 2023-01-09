@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.List;
+
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -70,10 +72,13 @@ public class IceSpell extends AbstractSpell {
     }
 
     protected boolean applyEntities(Caster<?> source, Vec3d pos) {
-        return !VecHelper.findInRange(source.asEntity(), source.asWorld(), pos, 3, i -> applyEntitySingle(source, i)).isEmpty();
+        List<Entity> entities = VecHelper.findInRange(source.asEntity(), source.asWorld(), pos, 3);
+        entities.forEach(entity -> applyEntitySingle(source, entity));
+        return !entities.isEmpty();
+
     }
 
-    protected boolean applyEntitySingle(Caster<?> source, Entity e) {
+    protected void applyEntitySingle(Caster<?> source, Entity e) {
         if (e instanceof TntEntity) {
             e.remove(RemovalReason.DISCARDED);
             e.getEntityWorld().setBlockState(e.getBlockPos(), Blocks.TNT.getDefaultState());
@@ -82,8 +87,6 @@ public class IceSpell extends AbstractSpell {
         } else {
             e.damage(MagicalDamageSource.create("cold", source.getMaster()), 2);
         }
-
-        return true;
     }
 
     private boolean applyBlockSingle(Entity owner, World world, BlockPos pos, Situation situation) {

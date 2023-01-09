@@ -32,4 +32,9 @@ public interface VecHelper {
         double diameter = radius * 2;
         return w.getOtherEntities(origin, Box.of(pos, diameter, diameter, diameter), predicate == null ? inRange(pos, radius) : inRange(pos, radius).and(predicate));
     }
+
+    static List<Entity> findInRange(@Nullable Entity origin, EntityView w, Vec3d pos, double radius) {
+        double diameter = radius * 2;
+        return w.getOtherEntities(origin, Box.of(pos, diameter, diameter, diameter), inRange(pos, radius));
+    }
 }

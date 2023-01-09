@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,6 +21,7 @@ import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,6 +35,7 @@ import net.minecraft.util.math.Vec3d;
  * A spell that pulls health from other entities and delivers it to the caster.
  */
 public class SiphoningSpell extends AbstractAreaEffectSpell {
+    static final Predicate<Entity> TARGET_PREDICATE = EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(EntityPredicates.VALID_LIVING_ENTITY);
 
     private int ticksUpset;
 
@@ -80,9 +83,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
     }
 
     private Stream<LivingEntity> getTargets(Caster<?> source) {
-        return VecHelper.findInRange(null, source.asWorld(), source.getOriginVector(), 4 + source.getLevel().getScaled(6), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(e -> e instanceof LivingEntity))
-                .stream()
-                .map(e -> (LivingEntity)e);
+        return VecHelper.findInRange(null, source.asWorld(), source.getOriginVector(), 4 + source.getLevel().getScaled(6), TARGET_PREDICATE).stream().map(e -> (LivingEntity)e);
     }
 
     private void distributeHealth(Caster<?> source) {
