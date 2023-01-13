@@ -1,9 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.trait;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -68,8 +65,8 @@ public enum Trait {
     private final Text obfuscatedTooltip;
 
     Trait(TraitGroup group) {
-        this.id = Unicopia.id(name().toLowerCase());
-        this.sprite = Unicopia.id("textures/gui/trait/" + name().toLowerCase() + ".png");
+        this.id = Unicopia.id(name().toLowerCase(Locale.ROOT));
+        this.sprite = Unicopia.id("textures/gui/trait/" + name().toLowerCase(Locale.ROOT) + ".png");
         this.group = group;
 
         Formatting corruptionColor = getGroup().getCorruption() < -0.01F
@@ -81,7 +78,7 @@ public enum Trait {
         MutableText tooltipText = Text.translatable("gui.unicopia.trait.label",
                             Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".name")
                         ).formatted(Formatting.YELLOW)
-                        .append(Text.translatable("gui.unicopia.trait.group", getGroup().name().toLowerCase()).formatted(Formatting.ITALIC, Formatting.GRAY))
+                        .append(Text.translatable("gui.unicopia.trait.group", getGroup().name().toLowerCase(Locale.ROOT)).formatted(Formatting.ITALIC, Formatting.GRAY))
                         .append(Text.literal("\n\n").formatted(Formatting.WHITE)
                         .append(Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".description").formatted(Formatting.GRAY))
                         .append("\n")
