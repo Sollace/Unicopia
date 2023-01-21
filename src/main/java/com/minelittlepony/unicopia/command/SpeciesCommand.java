@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.command;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -9,6 +10,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.CommandManager.RegistrationEnvironment;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -17,8 +19,16 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.GameRules;
 
 class SpeciesCommand {
-    static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+    static void register(CommandDispatcher<ServerCommandSource> dispatcher, RegistrationEnvironment environment) {
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager.literal("race");
+
+        if (environment.dedicated) {
+            if (Unicopia.getConfig().enableCheats.get()) {
+                builder = builder.requires(source -> source.hasPermissionLevel(2));
+            } else {
+                builder = builder.requires(source -> source.hasPermissionLevel(4));
+            }
+        }
 
         RegistryKeyArgumentType<Race> raceArgument = Race.argument();
 

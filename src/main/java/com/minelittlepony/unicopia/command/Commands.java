@@ -20,8 +20,10 @@ public class Commands {
         CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) -> {
             RacelistCommand.register(dispatcher);
             EmoteCommand.register(dispatcher);
+            if (Unicopia.getConfig().enableCheats.get() || environment.dedicated) {
+                SpeciesCommand.register(dispatcher, environment);
+            }
             if (Unicopia.getConfig().enableCheats.get()) {
-                SpeciesCommand.register(dispatcher);
                 GravityCommand.register(dispatcher);
                 DisguiseCommand.register(dispatcher, access);
                 if (Debug.DEBUG_COMMANDS) {
