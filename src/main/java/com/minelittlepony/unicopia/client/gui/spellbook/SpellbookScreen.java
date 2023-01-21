@@ -134,6 +134,9 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
+        if (getState().isDirty()) {
+            clearAndInit();
+        }
         super.render(matrices, mouseX, mouseY, partialTicks);
         drawMouseoverTooltip(matrices, mouseX, mouseY);
     }

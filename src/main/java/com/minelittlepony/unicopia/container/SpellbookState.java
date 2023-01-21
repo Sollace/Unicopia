@@ -15,7 +15,15 @@ import net.minecraft.util.math.MathHelper;
 public class SpellbookState extends Synchronizable<SpellbookState> implements NbtSerialisable {
     private Optional<Identifier> currentPageId = Optional.empty();
 
+    private boolean dirty;
+
     private final Map<Identifier, PageState> states = new HashMap<>();
+
+    public boolean isDirty() {
+        boolean isDirty = dirty;
+        dirty = false;
+        return isDirty;
+    }
 
     public Optional<Identifier> getCurrentPageId() {
         return currentPageId;
@@ -34,6 +42,7 @@ public class SpellbookState extends Synchronizable<SpellbookState> implements Nb
     public void copyFrom(SpellbookState state) {
         currentPageId = state.currentPageId;
         state.states.forEach((id, page) -> getState(id).copyFrom(page));
+        dirty = true;
     }
 
     public void toPacket(PacketByteBuf buf) {
