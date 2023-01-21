@@ -90,8 +90,9 @@ public class BatEeeeAbility implements Ability<Hit> {
                     e.addVelocity(0, 0.1, 0);
                 }
                 Living.updateVelocity(e);
+                return 1;
             }
-            return 1;
+            return 0;
         }).sum();
 
         if (total >= 20) {
