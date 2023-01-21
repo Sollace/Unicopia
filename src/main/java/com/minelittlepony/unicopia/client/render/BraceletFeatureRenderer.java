@@ -91,7 +91,7 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
 
             boolean glowing = ((GlowableItem)item.getItem()).isGlowing(item);
 
-            if (!MineLPDelegate.getInstance().getPlayerPonyRace((ClientPlayerEntity)entity).isDefault()) {
+            if (MineLPDelegate.getInstance().getPlayerPonyRace((ClientPlayerEntity)entity).isEquine()) {
                 stack.translate(side == Arm.LEFT ? 0.06 : -0.06, 0.3, 0);
             } else {
                 stack.translate(0, -0.1, 0);

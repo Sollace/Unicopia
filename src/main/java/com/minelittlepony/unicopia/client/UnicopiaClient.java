@@ -47,7 +47,7 @@ public class UnicopiaClient implements ClientModInitializer {
                 && MinecraftClient.getInstance().player != null) {
             Race race = MineLPDelegate.getInstance().getPlayerPonyRace();
 
-            if (!race.isDefault()) {
+            if (race.isEquine()) {
                 return race;
             }
         }

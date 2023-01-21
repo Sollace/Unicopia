@@ -20,11 +20,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.math.*;
 
 public class HeldEntityFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
-
-    private final FeatureRendererContext<E, ? extends BipedEntityModel<E>> context;
-
     public HeldEntityFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
-        this.context = context;
     }
 
     @Override
@@ -106,7 +102,7 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
         float passengerHeight = passenger.asEntity().getHeight() / 2F;
         float carrierHeight = entity.asEntity().getHeight() / 5F;
 
-        if (entity instanceof Pony pony && !MineLPDelegate.getInstance().getPlayerPonyRace(pony.asEntity()).isDefault() && pony.getPhysics().isFlying()) {
+        if (entity instanceof Pony pony && MineLPDelegate.getInstance().getPlayerPonyRace(pony.asEntity()).isEquine() && pony.getPhysics().isFlying()) {
             return new Vec3d(0,
                     -passenger.asEntity().getHeight() - passengerHeight,
                     0

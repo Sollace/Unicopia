@@ -303,7 +303,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         entity.setVelocity(velocity.toImmutable());
 
         if (isFlying() && !entity.isFallFlying() && !pony.isHanging() && pony.isClient()) {
-            if (MineLPDelegate.getInstance().getPlayerPonyRace(entity).isDefault() && getHorizontalMotion() > 0.03) {
+            if (MineLPDelegate.getInstance().getPlayerPonyRace(entity).isEquine() && getHorizontalMotion() > 0.03) {
                 float pitch = ((LivingEntityDuck)entity).getLeaningPitch();
                 if (pitch < 1) {
                     if (pitch < 0.9F) {

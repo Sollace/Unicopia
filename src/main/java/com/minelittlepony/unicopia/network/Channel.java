@@ -33,16 +33,16 @@ public interface Channel {
     static void bootstrap() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             Pony pony = Pony.of(handler.player);
-            if (!pony.isSpeciesPersisted()) {
+            if (pony.getActualSpecies() == Race.UNSET) {
                 Race race = WorldTribeManager.forWorld(handler.player.getWorld()).getDefaultRace();
                 if (!race.isPermitted(handler.player)) {
-                    race = Race.HUMAN;
+                    race = Race.UNSET;
                 }
-                if (race.isUsable()) {
+                if (race.isUnset()) {
+                    sender.sendPacket(SERVER_SELECT_TRIBE.id(), new MsgTribeSelect(Race.allPermitted(handler.player)).toBuffer());
+                } else {
                     pony.setSpecies(race);
                     Unicopia.LOGGER.info("Setting {}'s race to {} due to host setting", handler.player.getDisplayName().getString(), Race.REGISTRY.getId(race).toString());
-                } else {
-                    sender.sendPacket(SERVER_SELECT_TRIBE.id(), new MsgTribeSelect(Race.allPermitted(handler.player)).toBuffer());
                 }
             }
             sender.sendPacket(SERVER_RESOURCES_SEND.id(), new MsgServerResources().toBuffer());

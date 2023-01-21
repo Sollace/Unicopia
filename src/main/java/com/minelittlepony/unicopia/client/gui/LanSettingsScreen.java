@@ -89,7 +89,7 @@ public class LanSettingsScreen extends GameGui {
 
         if (whitelist.isEmpty() && forceShowWhitelist) {
             for (Race r : Race.REGISTRY) {
-                if (!r.isDefault()) {
+                if (!r.isUnset()) {
                     whitelist.add(r.getId().toString());
                 }
             }
@@ -113,7 +113,7 @@ public class LanSettingsScreen extends GameGui {
             WHITELIST_GRID_PACKER.start();
 
             for (Race race : Race.REGISTRY) {
-                if (!race.isDefault()) {
+                if (!race.isUnset()) {
                     Bounds bound = WHITELIST_GRID_PACKER.next();
 
                     Button button = content.addButton(new Toggle(LEFT + bound.left + 10, row + bound.top, whitelist.contains(race.getId().toString())))

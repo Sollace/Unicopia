@@ -58,7 +58,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
     @Override
     public double getCostEstimate(Pony player) {
-        double distance = MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isDefault() ? 6 : -6;
+        double distance = MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isHuman() ? 6 : -6;
 
         return TraceHelper.findBlock(player.asEntity(), distance, 1)
                 .filter(pos -> TreeType.at(pos, player.asWorld()) != TreeType.NONE)
@@ -113,13 +113,13 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     }
 
     private int getKickDirection(Pony player) {
-        return MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isDefault() ? 1 : -1;
+        return MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isHuman() ? 1 : -1;
     }
 
     private Pos getDefaultKickLocation(Pony player) {
         Vec3d kickVector = player.asEntity().getRotationVector().multiply(1, 0, 1);
 
-        if (!MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isDefault()) {
+        if (MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isEquine()) {
             kickVector = kickVector.rotateY((float)Math.PI);
         }
         return new Pos(new BlockPos(player.getOriginVector().add(kickVector)));

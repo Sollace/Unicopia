@@ -82,7 +82,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private final Interpolator interpolator = new LinearInterpolator();
 
     private boolean dirty;
-    private boolean speciesPersisted;
 
     private int ticksHanging;
 
@@ -211,10 +210,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public LevelStore getCorruption() {
         return corruption;
-    }
-
-    public boolean isSpeciesPersisted() {
-        return speciesPersisted;
     }
 
     public boolean isSunImmune() {
@@ -602,7 +597,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void fromSynchronizedNbt(NbtCompound compound) {
         super.fromSynchronizedNbt(compound);
-        speciesPersisted = true;
         setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
         powers.fromNBT(compound.getCompound("powers"));
         gravity.fromNBT(compound.getCompound("gravity"));
@@ -627,7 +621,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public void copyFrom(Pony oldPlayer) {
-        speciesPersisted = true;
         if (!oldPlayer.asEntity().isRemoved()) {
             oldPlayer.getSpellSlot().stream(true).forEach(getSpellSlot()::put);
         } else {

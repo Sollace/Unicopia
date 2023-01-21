@@ -29,7 +29,7 @@ public class PlayerPoser {
         Pony pony = Pony.of(player);
         float progress = pony.getAnimationProgress(MinecraftClient.getInstance().getTickDelta());
         Animation animation = pony.getAnimation();
-        boolean isPony = !MineLPDelegate.getInstance().getPlayerPonyRace(player).isDefault();
+        boolean isPony = MineLPDelegate.getInstance().getPlayerPonyRace(player).isEquine();
 
         ItemStack glasses = GlassesItem.getForEntity(player);
 

@@ -89,7 +89,7 @@ class SpeciesCommand {
 
         boolean first = true;
         for (Race i : Race.REGISTRY) {
-            if (!i.isDefault() && i.isPermitted(player)) {
+            if (!i.isUnset() && i.isPermitted(player)) {
                 message.append(Text.literal((!first ? "\n" : "") + " - "));
                 message.append(i.getDisplayName());
                 first = false;

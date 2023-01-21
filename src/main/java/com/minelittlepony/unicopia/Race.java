@@ -23,7 +23,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 
 public final class Race implements Affine {
-    public static final String DEFAULT_ID = "unicopia:human";
+    public static final String DEFAULT_ID = "unicopia:unset";
     public static final Registry<Race> REGISTRY = RegistryUtils.createDefaulted(Unicopia.id("race"), DEFAULT_ID);
     public static final RegistryKey<? extends Registry<Race>> REGISTRY_KEY = REGISTRY.getKey();
     private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("race.unknown", id));
@@ -44,6 +44,7 @@ public final class Race implements Affine {
      * The default, unset race.
      * This is used if there are no other races.
      */
+    public static final Race UNSET = register("unset", false, FlightType.NONE, false);
     public static final Race HUMAN = register("human", false, FlightType.NONE, false);
     public static final Race EARTH = register("earth", false, FlightType.NONE, true);
     public static final Race UNICORN = register("unicorn", true, FlightType.NONE, false);
@@ -70,15 +71,19 @@ public final class Race implements Affine {
     }
 
     public boolean hasIronGut() {
-        return isUsable() && this != CHANGELING;
+        return !isHuman() && this != CHANGELING;
     }
 
-    public boolean isUsable() {
-        return !isDefault();
+    public boolean isUnset() {
+        return this == UNSET;
     }
 
-    public boolean isDefault() {
-        return this == HUMAN;
+    public boolean isEquine() {
+        return !isHuman();
+    }
+
+    public boolean isHuman() {
+        return this == UNSET || this == HUMAN;
     }
 
     public boolean isOp() {
@@ -135,7 +140,7 @@ public final class Race implements Affine {
 
         Set<String> whitelist = Unicopia.getConfig().speciesWhiteList.get();
 
-        return isDefault()
+        return isUnset()
                 || whitelist.isEmpty()
                 || whitelist.contains(getId().toString());
     }
