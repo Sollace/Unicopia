@@ -90,6 +90,7 @@ public class ParticleHandle {
         int ATTR_OPACITY = 2;
         int ATTR_PITCH = 3;
         int ATTR_YAW = 4;
+        int ATTR_BOUND = 5;
 
         boolean isStillAlive();
 

@@ -27,6 +27,8 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
 
     private Optional<Link> link = Optional.empty();
 
+    private boolean bound;
+
     public RainbowTrailParticle(DefaultParticleType effect, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
         segments.add(new Segment(new Vec3d(x, y, z)));
@@ -55,7 +57,9 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
 
     @Override
     public void setAttribute(int key, Number value) {
-
+        if (key == Attachment.ATTR_COLOR) {
+            bound = value.intValue() == 1;
+        }
     }
 
     @Override
@@ -96,7 +100,7 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
         if (link.isPresent()) {
             age = 0;
             link.flatMap(Link::get).ifPresent(this::follow);
-        } else if (!dead) {
+        } else if (!dead && !bound) {
             follow(Pony.of(MinecraftClient.getInstance().player));
         }
 

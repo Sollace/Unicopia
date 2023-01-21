@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
 import com.minelittlepony.unicopia.block.data.ModificationType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
+import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Shape;
@@ -46,11 +47,13 @@ public class RainboomAbilitySpell extends AbstractSpell {
             return false;
         }
 
-        if (source.isClient()) {
-            particlEffect.update(getUuid(), source, spawner -> {
-                spawner.addParticle(UParticles.RAINBOOM_TRAIL, source.getOriginVector(), Vec3d.ZERO);
-            });
+        particlEffect.update(getUuid(), source, spawner -> {
+            spawner.addParticle(UParticles.RAINBOOM_TRAIL, source.getOriginVector(), Vec3d.ZERO);
+        }).ifPresent(attachment -> {
+            attachment.setAttribute(Attachment.ATTR_BOUND, 1);
+        });
 
+        if (source.isClient()) {
            // source.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, source.getPhysics().getMotionAngle()), source.getOriginVector(), Vec3d.ZERO);
         }
 
