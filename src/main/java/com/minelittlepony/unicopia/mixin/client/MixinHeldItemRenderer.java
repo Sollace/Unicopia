@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.mixin.client;
 
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Invoker;
@@ -46,7 +47,8 @@ abstract class MixinHeldItemRenderer implements FirstPersonRendererOverrides.Arm
         method = "renderItem(FLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;Lnet/minecraft/client/network/ClientPlayerEntity;I)V",
         at = @At(
             value = "FIELD",
-            target = "net/minecraft/client/render/item/HeldItemRenderer$HandRenderType.renderMainHand",
+            target = "net/minecraft/client/render/item/HeldItemRenderer$HandRenderType.renderMainHand:Z",
+            opcode = Opcodes.GETFIELD,
             shift = Shift.BEFORE
         ),
         cancellable = true)
