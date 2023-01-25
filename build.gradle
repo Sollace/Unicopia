@@ -55,15 +55,9 @@ dependencies {
     modApi "com.minelittlepony:kirin:${project.kirin_version}"
     include "com.minelittlepony:kirin:${project.kirin_version}"
 
-   // For reach-entity-attributes have not updated to 1.19.3.
-   //  Until then, clone from https://github.com/Sollace/reach-entity-attributes and run:
-   // >  gradlew build publishToMavenLocal
     modApi "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_attributes_version}"
     include "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_attributes_version}"
 
-    // provides networking and mod handshaking.
-    //   https://github.com/Sollace/Fabwork
-    // > gradlew build publishToMavenLocal
     modApi "com.sollace:fabwork:${project.fabwork_version}"
     include "com.sollace:fabwork:${project.fabwork_version}"
 
