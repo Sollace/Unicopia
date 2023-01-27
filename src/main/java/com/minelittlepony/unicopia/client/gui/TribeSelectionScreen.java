@@ -20,11 +20,16 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
 
     final Set<Race> allowedRaces;
 
+    final Text journeyText;
+    final Text choiceText;
+
     private boolean finished;
 
-    public TribeSelectionScreen(Set<Race> allowedRaces) {
-        super(Text.translatable("gui.unicopia.tribe_selection"));
+    public TribeSelectionScreen(Set<Race> allowedRaces, String baseString) {
+        super(Text.translatable(baseString));
         this.allowedRaces = allowedRaces;
+        this.journeyText = Text.translatable(baseString + ".journey");
+        this.choiceText = Text.translatable(baseString + ".choice");
     }
 
     @Override
@@ -39,11 +44,11 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
         top += height / 8;
 
         TextBlock block = addDrawable(new TextBlock(left, top += 10, pageWidth));
-        block.getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.welcome.journey"));
+        block.getStyle().setText(journeyText);
         top += block.getBounds().height;
 
         block = addDrawable(new TextBlock(left, top += 7, pageWidth));
-        block.getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.welcome.choice"));
+        block.getStyle().setText(choiceText);
         top += block.getBounds().height;
         top += 30;
 

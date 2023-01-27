@@ -36,7 +36,7 @@ public class ClientNetworkHandlerImpl {
     }
 
     private void handleTribeScreen(PlayerEntity sender, MsgTribeSelect packet) {
-        client.setScreen(new TribeSelectionScreen(packet.availableRaces()));
+        client.setScreen(new TribeSelectionScreen(packet.availableRaces(), packet.serverMessage()));
     }
 
     @SuppressWarnings("unchecked")

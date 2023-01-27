@@ -309,10 +309,12 @@
   "gui.unicopia": "Unicopia...",
   "gui.unicopia.page_num": "%d of %d",
 
-  "gui.unicopia.tribe_selection": "Select Your Tribe",
+  "respawn.reason.joined_new_tribe": "%1$s was reborn as a %2$s",
+
   "gui.unicopia.tribe_selection.respawn": "You have died.",
   "gui.unicopia.tribe_selection.respawn.journey": "But the end is not all, for at the end of every end is another beginning.",
-  "gui.unicopia.tribe_selection.welcome": "Welcome to Equestria!",
+  "gui.unicopia.tribe_selection.respawn.choice": "Choose wisely, for the choice you make now will change the world around you and the paths you may take.",
+  "gui.unicopia.tribe_selection.welcome": "elect Your Tribe",
   "gui.unicopia.tribe_selection.welcome.journey": "A journey into magic and adventure awaits, traveller! But before you go, you must select your path.",
   "gui.unicopia.tribe_selection.welcome.choice": "Choose wisely, for the choice you make now will change the world around you and the paths you may take.",
   "gui.unicopia.tribe_selection.preference": "Your current preferred tribe is set to %s.",

@@ -636,7 +636,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             oldPlayer.getSpellSlot().stream(true).forEach(getSpellSlot()::put);
         } else {
             if (forcedSwap) {
-                Channel.SERVER_SELECT_TRIBE.sendToPlayer(new MsgTribeSelect(Race.allPermitted(entity), Text.translatable("gui.unicopia.tribe_selection.respawn")), (ServerPlayerEntity)entity);
+                Channel.SERVER_SELECT_TRIBE.sendToPlayer(new MsgTribeSelect(Race.allPermitted(entity), "gui.unicopia.tribe_selection.respawn"), (ServerPlayerEntity)entity);
             } else {
                 oldPlayer.getSpellSlot().stream(true).filter(SpellPredicate.IS_PLACED).forEach(getSpellSlot()::put);
             }

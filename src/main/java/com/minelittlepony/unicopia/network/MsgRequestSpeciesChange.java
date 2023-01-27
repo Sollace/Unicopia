@@ -1,13 +1,13 @@
 package com.minelittlepony.unicopia.network;
 
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.WorldTribeManager;
+import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.sollace.fabwork.api.packets.HandledPacket;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.*;
 
 /**
  * Sent to the server when a client wants to request a species change.
@@ -37,6 +37,15 @@ public record MsgRequestSpeciesChange (
             player.setSpecies(newRace.isPermitted(sender) ? newRace : WorldTribeManager.forWorld((ServerWorld)player.asWorld()).getDefaultRace());
 
             if (force) {
+                if (sender.world.getGameRules().getBoolean(UGameRules.ANNOUNCE_TRIBE_JOINS)) {
+                    Text message = Text.translatable("respawn.reason.joined_new_tribe",
+                            sender.getDisplayName(),
+                            player.getActualSpecies().getDisplayName(), player.getActualSpecies().getAltDisplayName());
+                    sender.world.getPlayers().forEach(p -> {
+                        ((ServerPlayerEntity)p).sendMessageToClient(message, false);
+                    });
+                }
+
                 player.onSpawn();
             }
         }

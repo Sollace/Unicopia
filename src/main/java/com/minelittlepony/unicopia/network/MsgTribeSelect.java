@@ -8,19 +8,18 @@ import com.sollace.fabwork.api.packets.Packet;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.Text;
 
-public record MsgTribeSelect (Set<Race> availableRaces, Text serverMessage) implements Packet<PlayerEntity> {
+public record MsgTribeSelect (Set<Race> availableRaces, String serverMessage) implements Packet<PlayerEntity> {
     public MsgTribeSelect(PacketByteBuf buffer) {
         this(
             buffer.readCollection(HashSet::new, buf -> buf.readRegistryValue(Race.REGISTRY)),
-            buffer.readText()
+            buffer.readString()
         );
     }
 
     @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeCollection(availableRaces, (buf, race) -> buf.writeRegistryValue(Race.REGISTRY, race));
-        buffer.writeText(serverMessage);
+        buffer.writeString(serverMessage);
     }
 }
