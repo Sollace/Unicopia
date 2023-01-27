@@ -1,5 +1,9 @@
 package com.minelittlepony.unicopia.command;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
@@ -36,39 +40,33 @@ class GravityCommand {
     }
 
     static int get(ServerCommandSource source, PlayerEntity player, boolean isSelf) throws CommandSyntaxException {
-        String translationKey = "commands.gravity.get";
-
-        Pony iplayer = Pony.of(player);
-
-        float gravity = iplayer.getPhysics().getGravityModifier();
-
-        if (source.getPlayer() == player) {
-            player.sendMessage(Text.translatable(translationKey, gravity), false);
-        } else {
-            source.sendFeedback(Text.translatable(translationKey + ".other", player.getName(), gravity), true);
-        }
-
+        sendFeedback(source, player, "get", false, Pony.of(player).getPhysics().getGravityModifier());
         return 0;
     }
 
     static int set(ServerCommandSource source, PlayerEntity player, float gravity, boolean isSelf) {
-        String translationKey = "commands.gravity.set";
 
         Pony iplayer = Pony.of(player);
 
         iplayer.getPhysics().setBaseGravityModifier(gravity);
         iplayer.setDirty();
 
+        sendFeedback(source, player, "set", true, gravity);
+        return 0;
+    }
+
+
+    static void sendFeedback(ServerCommandSource source, PlayerEntity player, String key, boolean notifyTarget, Object...arguments) {
+        String translationKey = "commands.gravity." + key;
+
         if (source.getEntity() == player) {
-            source.sendFeedback(Text.translatable("commands.gamemode.success.self", gravity), true);
+            source.sendFeedback(Text.translatable(translationKey + ".self", arguments), true);
         } else {
-            if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendMessage(Text.translatable(translationKey, gravity));
+            if (notifyTarget && source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
+                player.sendMessage(Text.translatable(translationKey, arguments));
             }
 
-            source.sendFeedback(Text.translatable(translationKey + ".other", player.getName(), gravity), true);
+            source.sendFeedback(Text.translatable(translationKey + ".other", Streams.concat(Stream.of(player.getDisplayName()), Arrays.stream(arguments)).toArray()), true);
         }
-
-        return 0;
     }
 }

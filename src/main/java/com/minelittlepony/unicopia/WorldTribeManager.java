@@ -2,14 +2,11 @@ package com.minelittlepony.unicopia;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.PersistentState;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.dimension.DimensionTypes;
 
 public class WorldTribeManager extends PersistentState {
 
-    private Race defaultRace = Race.HUMAN;
+    private Race defaultRace = Race.UNSET;
 
     public WorldTribeManager() {}
 
@@ -33,14 +30,7 @@ public class WorldTribeManager extends PersistentState {
         return tag;
     }
 
-    public static String nameFor(RegistryEntry<DimensionType> dimension) {
-        if (dimension.matchesKey(DimensionTypes.THE_END)) {
-            return "unicopia:tribes_end";
-        }
-        return "unicopia:tribes";
-    }
-
     public static WorldTribeManager forWorld(ServerWorld world) {
-        return world.getPersistentStateManager().getOrCreate(WorldTribeManager::new, WorldTribeManager::new, nameFor(world.getDimensionEntry()));
+        return world.getPersistentStateManager().getOrCreate(WorldTribeManager::new, WorldTribeManager::new, "unicopia:tribes");
     }
 }

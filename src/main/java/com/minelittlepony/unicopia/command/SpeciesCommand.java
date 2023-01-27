@@ -64,11 +64,11 @@ class SpeciesCommand {
             pony.setSpecies(race);
             pony.setDirty();
 
-            if (!isSelf) {
-                source.sendFeedback(Text.translatable("commands.race.success.other", player.getName(), race.getDisplayName()), true);
+            if (player == source.getPlayer()) {
+                source.sendFeedback(Text.translatable("commands.race.success.self", player.getName(), race.getDisplayName()), true);
             } else {
                 if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                    player.sendMessage(Text.translatable("commands.race.success.self"), false);
+                    player.sendMessage(Text.translatable("commands.race.success.other"), false);
                 }
                 source.sendFeedback(Text.translatable("commands.race.success.otherself", player.getName(), race.getDisplayName()), true);
             }

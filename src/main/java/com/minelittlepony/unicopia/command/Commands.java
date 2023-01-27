@@ -22,6 +22,7 @@ public class Commands {
             EmoteCommand.register(dispatcher);
             if (Unicopia.getConfig().enableCheats.get() || environment.dedicated) {
                 SpeciesCommand.register(dispatcher, environment);
+                WorldTribeCommand.register(dispatcher);
             }
             if (Unicopia.getConfig().enableCheats.get()) {
                 GravityCommand.register(dispatcher);
@@ -32,9 +33,9 @@ public class Commands {
                 }
             }
         });
-        Object game = FabricLoader.getInstance().getGameInstance();
-        if (game instanceof MinecraftServer) {
-            ((MinecraftServer)game).setFlightEnabled(true);
+
+        if (FabricLoader.getInstance().getGameInstance() instanceof MinecraftServer server) {
+            server.setFlightEnabled(true);
         }
     }
 }

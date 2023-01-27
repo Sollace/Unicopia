@@ -448,6 +448,9 @@
   "commands.racelist.disallowed": "Removed %1$s from the whitelist.",
   "commands.racelist.disallowed.failed": "%1$s is not on the whitelist.",
 
+  "commands.worldtribe.success.get": "Default race for all new players is currently set to: %s",
+  "commands.worldtribe.success.set": "Set default race for new players is now set to: %s",
+
   "commands.disguise.usage": "/disguise <player> <entity> [nbt]",
   "commands.disguise.notfound": "The entity id '%s' does not exist.",
   "commands.disguise.removed": "Your disguise has been removed.",
@@ -478,6 +481,8 @@
   "unicopia.options.world.default_race": "Default Race: %s",
   "unicopia.options.lan": "Multiplayer (LAN) Settings",
 
+  "unicopia.race.unset": "Unset",
+  "unicopia.race.unset.alt": "Unset",
   "unicopia.race.human": "Human",
   "unicopia.race.human.alt": "Humans",
   "unicopia.race.earth": "Earth Pony",
@@ -530,7 +535,7 @@
   "death.attack.kick.player": "%2$s kicked %1$s really hard",
   "death.attack.stalagmite.pegasus": "%1$s tried to perch on a stalagmite",
   "death.attack.stalagmite.pegasus.player": "%1$s flew into a stalagmite whilst fighting %2$s",
-  
+
   "death.fell.accident.ladder.pegasus": "%1$s forgot they could fly and fell off a ladder",
   "death.fell.accident.vines.pegasus": "%1$s forgot they could fly and fell off some vines",
   "death.fell.accident.weeping_vines.pegasus": "%1$s forgot they could fly and fell off some weeping vines",
