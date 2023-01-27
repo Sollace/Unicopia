@@ -65,12 +65,12 @@ class SpeciesCommand {
             pony.setDirty();
 
             if (player == source.getPlayer()) {
-                source.sendFeedback(Text.translatable("commands.race.success.self", player.getName(), race.getDisplayName()), true);
+                source.sendFeedback(Text.translatable("commands.race.success.self", race.getDisplayName()), true);
             } else {
                 if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                    player.sendMessage(Text.translatable("commands.race.success.other"), false);
+                    player.sendMessage(Text.translatable("commands.race.success", race.getDisplayName()), false);
                 }
-                source.sendFeedback(Text.translatable("commands.race.success.otherself", player.getName(), race.getDisplayName()), true);
+                source.sendFeedback(Text.translatable("commands.race.success.other", player.getName(), race.getDisplayName()), true);
             }
         } else if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
             player.sendMessage(Text.translatable("commands.race.permission"), false);
@@ -114,9 +114,17 @@ class SpeciesCommand {
     static int describe(PlayerEntity player, Race species) {
         Identifier id = Race.REGISTRY.getId(species);
 
-        player.sendMessage(Text.translatable(String.format("commands.race.describe.%s.%s.1", id.getNamespace(), id.getPath())).styled(s -> s.withColor(Formatting.YELLOW)), false);
-        player.sendMessage(Text.translatable(String.format("commands.race.describe.%s.%s.2", id.getNamespace(), id.getPath())), false);
-        player.sendMessage(Text.translatable(String.format("commands.race.describe.%s.%s.3", id.getNamespace(), id.getPath())).styled(s -> s.withColor(Formatting.RED)), false);
+        for (String category : new String[] { "goods", "bads" }) {
+            player.sendMessage(Text.translatable(
+                    String.format("gui.unicopia.tribe_selection.confirm.%s.%d.%s.%s", category),
+                    species.getAltDisplayName()
+            ), false);
+            for (int i = 1; i < 5; i++) {
+                String line = String.format("gui.unicopia.tribe_selection.confirm.%s.%d.%s.%s", category, i, id.getNamespace(), id.getPath());
+
+                player.sendMessage(Text.translatable(line).styled(s -> s.withColor(category.equals("goods") ? Formatting.YELLOW : Formatting.RED)), false);
+            }
+        }
 
         return 0;
     }

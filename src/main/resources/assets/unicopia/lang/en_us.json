@@ -310,6 +310,8 @@
   "gui.unicopia.page_num": "%d of %d",
 
   "gui.unicopia.tribe_selection": "Select Your Tribe",
+  "gui.unicopia.tribe_selection.respawn": "You have died.",
+  "gui.unicopia.tribe_selection.respawn.journey": "But the end is not all, for at the end of every end is another beginning.",
   "gui.unicopia.tribe_selection.welcome": "Welcome to Equestria!",
   "gui.unicopia.tribe_selection.welcome.journey": "A journey into magic and adventure awaits, traveller! But before you go, you must select your path.",
   "gui.unicopia.tribe_selection.welcome.choice": "Choose wisely, for the choice you make now will change the world around you and the paths you may take.",
@@ -326,17 +328,23 @@
   "gui.unicopia.tribe_selection.confirm": "You have selected %s",
   "gui.unicopia.tribe_selection.confirm.goods": "%s enjoy the following perks:",
 
+  "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.human": " - Are omnivores and can eat all types of food except for love",
+  "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.human": " - Opposable thumbs",
+  "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.human": " - Walking upright",
+  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.human": "",
+
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.earth": " - Stronger knockback and resistance to magic",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.earth": " - Have extra weight makes them effective against magic and brute force",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.earth": " - A special connection to the earth that makes farming 10,000% more effective!",
+  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.earth": " - Cute floppy pony ears",
 
-  "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.unicorn": " - Able to teleport and cast powerful spells",
+  "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.unicorn": " - Teleportation and magic spells",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.unicorn": " - Research and craft magical artefacts that enhance their abilities",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.unicorn": " - Can use magic to detect or reveal nearby changelings",
   "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.unicorn": " - Have pointy sticks on their heads",
 
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.pegasus": " - Flight and the ability to train to build endurace",
-  "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.pegasus": " - Use stored mana to perform a powerful rainboom",
+  "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.pegasus": " - Use stored mana to dash in short bursts or build it up to perform a powerful rainboom",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.pegasus": " - Moves faster and takes less fall damage",
   "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.pegasus": " - Can eat vegetables and certain types of fish",
 
@@ -350,6 +358,12 @@
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.changeling": " - Is carnivorous. Can eat anything that doesn't make them sick",
 
   "gui.unicopia.tribe_selection.confirm.bads": "but they...",
+  
+  "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.human": " - Have no magical abilities what-so-ever",
+  "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.human": " - Need an Elytra to fly",
+  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.human": " - Must grow food the old fashioned way, through hard work and manual labour",
+  "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.human": " - No floppy ears",
+
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.earth": " - Cannot fly",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.earth": " - Are weak to certain types of magic",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.earth": " - Can only eat plants and vegetables",
@@ -360,6 +374,8 @@
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.pegasus": " - Light weight makes them the weakest to brute force",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.pegasus": " - Must rest between flights to regain their strength",
+  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.pegasus": " - Cannot use magic without aid from others",
+  "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.pegasus": "",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.bat": " - Light weight makes them weak to brute force attacks.",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.bat": " - Must rest between flights to regain their strength",
@@ -367,8 +383,9 @@
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.bat": " - Is carnivorous. Can eat anything that doesn't make them sick",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.changeling": " - Are always starving",
-  "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.changeling": " - Require love, collected from ponies or other hostile mobs to subsidise their diet",
-  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.changeling": " - Becomes sick from eating regular food and must eat love hasten a cure",
+  "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.changeling": " - Requires love, collected from ponies or other hostile mobs to subsidise their diet",
+  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.changeling": " - Becomes sick from eating regular food and must eat love to hasten a cure",
+  "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.changeling": "",
 
   "gui.unicopia.spellbook.page.inventory": "Inventory",
   "gui.unicopia.spellbook.page.recipes": "Recipes",
@@ -397,8 +414,8 @@
   "enchantment.unicopia.poisoned_joke": "Poisoned Joke",
   "enchantment.unicopia.stressed": "Stressed",
 
-  "commands.race.success.self": "Your race has been updated",
-  "commands.race.success.otherself": "%1$s changed race to %2$s",
+  "commands.race.success.self": "Set own race to %1$s",
+  "commands.race.success": "%1$s changed race to %2$s",
   "commands.race.success.other": "Changed %1$s's race to %2$s",
   "commands.race.usage": "/race <get|set|list|describe> [player] <species>",
   "commands.race.list": "The available races are:",
@@ -410,38 +427,7 @@
   "commands.race.tell.other": "%s is a ",
   "commands.race.tell.other.alt": "%s is an ",
 
-  "commands.race.describe.title": "%s",
-  "commands.race.describe.unicopia.human.1": "This is a default race with no abilities.",
-  "commands.race.describe.unicopia.human.2": "If you have this, it means there are no other races available.",
-  "commands.race.describe.unicopia.human.3": "It has no special abilities.",
-
-  "commands.race.describe.unicopia.earth.1": "Earth Ponies can grow crops using mana and punch trees for apples (yeeeeeeehaaaaawwwwwwwwwww)",
-  "commands.race.describe.unicopia.earth.2": "Their offensive ability is to kick down whilst jumping for a deafening ground smash.",
-  "commands.race.describe.unicopia.earth.3": "They are strong but slow.",
-
-  "commands.race.describe.unicopia.unicorn.1": "Unicorns are the primary magic users. They can teleport and cast powerful spells.",
-  "commands.race.describe.unicopia.unicorn.2": "Their defensive features a powerful shield powered by their mana.",
-  "commands.race.describe.unicopia.unicorn.3": "They are prone to tiring quickly.",
-
-  "commands.race.describe.unicopia.pegasus.1": "Pegasi are the masters of the skies.",
-  "commands.race.describe.unicopia.pegasus.2": "They live mostly in the air and are the only species with the ability to mould and harness cloud materials for their homes.",
-  "commands.race.describe.unicopia.pegasus.3": "They are fast and light but easy to knock down.",
-
-  "commands.race.describe.unicopia.alicorn.1": "Praise the sun!",
-  "commands.race.describe.unicopia.alicorn.2": "Alicorns have all abilities of the other races.",
-  "commands.race.describe.unicopia.alicorn.3": "Only available to CREATIVE mode players.",
-
-  "commands.race.describe.unicopia.changeling.1": "Beware the changeling, for they can appear when least expected.",
-  "commands.race.describe.unicopia.changeling.2": "Changelings can fly but but do not interact with clouds.",
-  "commands.race.describe.unicopia.changeling.3": "They have to feed on mobs and other players to eat.",
-
-  "commands.race.describe.unicopia.bat.1": "I am the night! EEEEEEEEEEEEE!!!",
-  "commands.race.describe.unicopia.bat.2": "Bat Ponies can fly but but do not interact with clouds.",
-  "commands.race.describe.unicopia.bat.3": "They love mangoes. Give them one, and they will follow you forever.",
-
-  "commands.racelist.usage": "/racelist <allow|disallow> <species>",
   "commands.racelist.illegal": "The default race %s cannot be used with this command.",
-
   "commands.racelist.allowed": "Added %1$s to the whitelist.",
   "commands.racelist.allowed.failed": "%1$s is already whitelisted.",
 
