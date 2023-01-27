@@ -18,7 +18,7 @@ public class MagicalDamageSource extends EntityDamageSource {
     public static final DamageSource EXHAUSTION = new MagicalDamageSource("magical_exhaustion", null, true, true);
     public static final DamageSource ALICORN_AMULET = new MagicalDamageSource("alicorn_amulet", null, true, true);
     public static final DamageSource FOOD_POISONING = new DamageSource("food_poisoning");
-    public static final DamageSource TRIBE_SWAP = new DamageSource("tribe_swap");
+    public static final DamageSource TRIBE_SWAP = new DamageSource("tribe_swap").setOutOfWorld().setUnblockable();
     public static final DamageSource ZAP_APPLE = create("zap");
     public static final DamageSource KICK = create("kick");
     public static final DamageSource SUN = new DamageSource("sun").setBypassesArmor().setFire();

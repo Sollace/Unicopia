@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgMarkTraitRead;
 import com.minelittlepony.unicopia.network.MsgUnlockTraits;
+import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.fabricmc.api.EnvType;
@@ -31,7 +32,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
 import net.minecraft.world.World;
 
-public class TraitDiscovery implements NbtSerialisable {
+public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery> {
     private final Set<Trait> unreadTraits = new HashSet<>();
 
     private final Set<Trait> traits = new HashSet<>();
@@ -152,7 +153,8 @@ public class TraitDiscovery implements NbtSerialisable {
         return SpellTraits.fromNbt(nbt);
     }
 
-    public void copyFrom(TraitDiscovery old) {
+    @Override
+    public void copyFrom(TraitDiscovery old, boolean alive) {
         clear();
         unreadTraits.addAll(old.unreadTraits);
         traits.addAll(old.traits);

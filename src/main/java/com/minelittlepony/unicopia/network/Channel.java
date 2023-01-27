@@ -7,6 +7,7 @@ import com.sollace.fabwork.api.packets.*;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 
 public interface Channel {
     C2SPacketType<MsgPlayerAbility<?>> CLIENT_PLAYER_ABILITY = SimpleNetworking.clientToServer(Unicopia.id("player_ability"), MsgPlayerAbility::read);
@@ -39,7 +40,7 @@ public interface Channel {
                     race = Race.UNSET;
                 }
                 if (race.isUnset()) {
-                    sender.sendPacket(SERVER_SELECT_TRIBE.id(), new MsgTribeSelect(Race.allPermitted(handler.player)).toBuffer());
+                    sender.sendPacket(SERVER_SELECT_TRIBE.id(), new MsgTribeSelect(Race.allPermitted(handler.player), Text.translatable("gui.unicopia.tribe_selection.journey")).toBuffer());
                 } else {
                     pony.setSpecies(race);
                     Unicopia.LOGGER.info("Setting {}'s race to {} due to host setting", handler.player.getDisplayName().getString(), Race.REGISTRY.getId(race).toString());

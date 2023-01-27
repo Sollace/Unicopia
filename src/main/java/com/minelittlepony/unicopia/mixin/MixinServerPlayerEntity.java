@@ -24,7 +24,7 @@ abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHan
     @SuppressWarnings("unchecked")
     @Inject(method = "copyFrom(Lnet/minecraft/server/network/ServerPlayerEntity;Z)V", at = @At("HEAD"))
     private void onCopyFrom(ServerPlayerEntity oldPlayer, boolean alive, CallbackInfo info) {
-        get().copyFrom(((Equine.Container<Pony>)oldPlayer).get());
+        get().copyFrom(((Equine.Container<Pony>)oldPlayer).get(), alive);
     }
 
 }

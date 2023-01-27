@@ -84,6 +84,7 @@ public class Unicopia implements ModInitializer {
         Abilities.bootstrap();
         UScreenHandlers.bootstrap();
         UTreeGen.bootstrap();
+        UGameRules.bootstrap();
     }
 
     public interface SidedAccess {

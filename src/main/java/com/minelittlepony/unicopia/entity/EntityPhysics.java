@@ -151,8 +151,10 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
     }
 
     @Override
-    public void copyFrom(EntityPhysics<T> other) {
-        setBaseGravityModifier(other.getBaseGravityModifier());
+    public void copyFrom(EntityPhysics<T> other, boolean alive) {
+        if (alive) {
+            setBaseGravityModifier(other.getBaseGravityModifier());
+        }
     }
 
     @Override

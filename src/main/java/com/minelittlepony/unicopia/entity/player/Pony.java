@@ -21,10 +21,8 @@ import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.network.Channel;
-import com.minelittlepony.unicopia.network.MsgOtherPlayerCapabilities;
-import com.minelittlepony.unicopia.network.MsgPlayerAnimationChange;
 import com.minelittlepony.unicopia.util.*;
+import com.minelittlepony.unicopia.network.*;
 import com.minelittlepony.unicopia.network.datasync.EffectSync.UpdateCallback;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.common.util.animation.LinearInterpolator;
@@ -81,6 +79,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private final PlayerLevelStore corruption;
 
     private final Interpolator interpolator = new LinearInterpolator();
+
+    private Race respawnRace = Race.UNSET;
 
     private boolean dirty;
 
@@ -149,6 +149,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public Map<String, Integer> getAdvancementProgress() {
         return advancementProgress;
+    }
+
+    public void setRespawnRace(Race race) {
+        respawnRace = race;
     }
 
     @Override
@@ -621,21 +625,41 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     @Override
-    public void copyFrom(Pony oldPlayer) {
-        if (!oldPlayer.asEntity().isRemoved()) {
+    public void copyFrom(Pony oldPlayer, boolean alive) {
+
+        boolean forcedSwap = !alive
+                && entity instanceof ServerPlayerEntity
+                && entity.world.getGameRules().getBoolean(UGameRules.SWAP_TRIBE_ON_DEATH)
+                && oldPlayer.asEntity().getDamageTracker().getMostRecentDamage().getDamageSource() != MagicalDamageSource.TRIBE_SWAP;
+
+        if (alive) {
             oldPlayer.getSpellSlot().stream(true).forEach(getSpellSlot()::put);
         } else {
-            oldPlayer.getSpellSlot().stream(true).filter(SpellPredicate.IS_PLACED).forEach(getSpellSlot()::put);
+            if (forcedSwap) {
+                Channel.SERVER_SELECT_TRIBE.sendToPlayer(new MsgTribeSelect(Race.allPermitted(entity), Text.translatable("gui.unicopia.tribe_selection.respawn")), (ServerPlayerEntity)entity);
+            } else {
+                oldPlayer.getSpellSlot().stream(true).filter(SpellPredicate.IS_PLACED).forEach(getSpellSlot()::put);
+            }
         }
+
         oldPlayer.getSpellSlot().put(null);
-        getArmour().copyFrom(oldPlayer.getArmour());
-        setSpecies(oldPlayer.getActualSpecies());
-        getDiscoveries().copyFrom(oldPlayer.getDiscoveries());
-        getCharms().equipSpell(Hand.MAIN_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.MAIN_HAND));
-        getCharms().equipSpell(Hand.OFF_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.OFF_HAND));
-        corruption.set(oldPlayer.getCorruption().get());
-        levels.set(oldPlayer.getLevel().get());
-        mana.getXp().set(oldPlayer.getMagicalReserves().getXp().get());
+        setSpecies(oldPlayer.respawnRace != Race.UNSET && !alive ? oldPlayer.respawnRace : oldPlayer.getActualSpecies());
+        getDiscoveries().copyFrom(oldPlayer.getDiscoveries(), alive);
+        getPhysics().copyFrom(oldPlayer.getPhysics(), alive);
+        if (!forcedSwap) {
+            getArmour().copyFrom(oldPlayer.getArmour(), alive);
+            getCharms().equipSpell(Hand.MAIN_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.MAIN_HAND));
+            getCharms().equipSpell(Hand.OFF_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.OFF_HAND));
+            corruption.set(oldPlayer.getCorruption().get());
+            levels.set(oldPlayer.getLevel().get());
+            mana.getXp().set(oldPlayer.getMagicalReserves().getXp().get());
+        } else {
+            mana.getEnergy().set(0.6F);
+            mana.getExhaustion().set(0);
+            mana.getExertion().set(0);
+        }
+
+
         advancementProgress.putAll(oldPlayer.getAdvancementProgress());
         setDirty();
         onSpawn();

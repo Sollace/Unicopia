@@ -123,9 +123,11 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
     }
 
     @Override
-    public void copyFrom(ItemTracker other) {
+    public void copyFrom(ItemTracker other, boolean alive) {
         items.clear();
-        items.putAll(other.items);
+        if (alive) {
+            items.putAll(other.items);
+        }
     }
 
     public interface Trackable extends ItemConvertible {

@@ -70,6 +70,10 @@ public class RaceChangeStatusEffect extends StatusEffect {
             return;
         }
 
+        if (eq instanceof Pony pony) {
+            pony.setRespawnRace(race);
+        }
+
         int ticks = Math.max(0, MAX_DURATION - state.getDuration());
 
         Stage stage = Stage.forDuration(ticks / STAGE_DURATION);
@@ -80,23 +84,20 @@ public class RaceChangeStatusEffect extends StatusEffect {
 
         int progression = ticks % (stage.ordinal() * STAGE_DURATION);
 
-        if ((eq instanceof Pony pony ? pony.getActualSpecies() : eq.getSpecies()) == race || !race.isPermitted(entity instanceof PlayerEntity ? (PlayerEntity)entity : null)) {
-            if (progression == 0 && entity instanceof PlayerEntity && stage == Stage.CRAWLING) {
-                ((PlayerEntity)entity).sendMessage(Stage.INITIAL.getMessage(race), true);
+        if ((eq instanceof Pony pony ? pony.getActualSpecies() : eq.getSpecies()) == race || !race.isPermitted(entity instanceof PlayerEntity player ? player : null)) {
+            if (progression == 0 && entity instanceof PlayerEntity player && stage == Stage.CRAWLING) {
+                player.sendMessage(Stage.INITIAL.getMessage(race), true);
             }
             return;
         }
 
-        if (progression == 0) {
-            if (stage != Stage.DEATH && entity instanceof PlayerEntity) {
-                ((PlayerEntity)entity).sendMessage(stage.getMessage(race), true);
-            }
+        if (progression == 0 && stage != Stage.DEATH && entity instanceof PlayerEntity player) {
+            player.sendMessage(stage.getMessage(race), true);
         }
 
         entity.setHealth(1);
 
-        if (entity instanceof PlayerEntity) {
-            Pony pony  = (Pony)eq;
+        if (eq instanceof Pony pony) {
             MagicReserves magic = pony.getMagicalReserves();
             magic.getExertion().add(50);
             magic.getEnergy().add(3);
@@ -108,8 +109,6 @@ public class RaceChangeStatusEffect extends StatusEffect {
         }
 
         if (stage == Stage.DEATH) {
-
-            eq.setSpecies(race);
             if (eq instanceof Caster) {
                 ((Caster<?>)eq).getSpellSlot().clear();
             }
@@ -119,11 +118,10 @@ public class RaceChangeStatusEffect extends StatusEffect {
                 magic.getEnergy().set(0.6F);
                 magic.getExhaustion().set(0);
                 magic.getExertion().set(0);
-                pony.setDirty();
+                entity.damage(MagicalDamageSource.TRIBE_SWAP, Float.MAX_VALUE);
+            } else {
+                eq.setSpecies(race);
             }
-
-            entity.damage(MagicalDamageSource.TRIBE_SWAP, Float.MAX_VALUE);
-            entity.setHealth(0);
         }
     }
 
