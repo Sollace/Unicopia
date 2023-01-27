@@ -70,10 +70,6 @@ public class RaceChangeStatusEffect extends StatusEffect {
             return;
         }
 
-        if (eq instanceof Pony pony) {
-            pony.setRespawnRace(race);
-        }
-
         int ticks = Math.max(0, MAX_DURATION - state.getDuration());
 
         Stage stage = Stage.forDuration(ticks / STAGE_DURATION);
@@ -99,6 +95,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
 
         if (eq instanceof Pony pony) {
             MagicReserves magic = pony.getMagicalReserves();
+            pony.setRespawnRace(race);
             magic.getExertion().add(50);
             magic.getEnergy().add(3);
             magic.getExhaustion().add(3);

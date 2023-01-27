@@ -630,7 +630,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         boolean forcedSwap = !alive
                 && entity instanceof ServerPlayerEntity
                 && entity.world.getGameRules().getBoolean(UGameRules.SWAP_TRIBE_ON_DEATH)
-                && oldPlayer.asEntity().getDamageTracker().getMostRecentDamage().getDamageSource() != MagicalDamageSource.TRIBE_SWAP;
+                && oldPlayer.respawnRace == Race.UNSET;
 
         if (alive) {
             oldPlayer.getSpellSlot().stream(true).forEach(getSpellSlot()::put);
