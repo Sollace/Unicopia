@@ -11,7 +11,7 @@ public interface ToxicHolder {
     }
 
     default Toxic getDefaultToxic() {
-        return getOriginalFoodComponent() == null ? Toxic.EMPTY : Toxics.FORAGE_EDIBLE;
+        return getOriginalFoodComponent() == null ? Toxic.EMPTY : Toxics.EDIBLE;
     }
 
     default void clearFoodOverride() {}

@@ -14,6 +14,10 @@ public interface Toxics {
 
     Toxic SEVERE_INNERT = Toxic.innert(Toxicity.SEVERE);
 
+    Toxic EDIBLE = register("edible", new Toxic.Builder(Ailment.INNERT)
+            .with(Race.CHANGELING, of(FAIR, LOVE_SICKNESS))
+    );
+
     Toxic FORAGE_EDIBLE = register("forage_edible", new Toxic.Builder(Ailment.INNERT)
             .food(UFoodComponents.RANDOM_FOLIAGE)
             .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
