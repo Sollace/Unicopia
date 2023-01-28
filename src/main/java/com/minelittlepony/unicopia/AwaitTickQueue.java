@@ -6,8 +6,8 @@ import java.util.function.Consumer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
-public class AwaitTickQueue {
-    public static void scheduleTask(World reference, Consumer<World> task, int ticksLater) {
+public interface AwaitTickQueue {
+    static void scheduleTask(World reference, Consumer<World> task, int ticksLater) {
         if (reference instanceof ServerWorld serverWorld) {
             CompletableFuture.runAsync(() -> {
                 task.accept(serverWorld);
@@ -15,11 +15,11 @@ public class AwaitTickQueue {
         }
     }
 
-    public static void scheduleTask(World reference, Consumer<World> task) {
+    static void scheduleTask(World reference, Consumer<World> task) {
         if (reference instanceof ServerWorld serverWorld) {
             CompletableFuture.runAsync(() -> {
                 task.accept(serverWorld);
-            }, serverWorld.getServer());
+            }, CompletableFuture.delayedExecutor(1, TimeUnit.MILLISECONDS, serverWorld.getServer()));
         }
     }
 }
