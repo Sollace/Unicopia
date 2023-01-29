@@ -177,7 +177,7 @@ public class ButterflyEntity extends AmbientEntity {
             }
 
             if (world.getBlockState(below).isAir()
-                || !world.getOtherEntities(this, getBoundingBox().expand(7), this::isAggressor).isEmpty()
+                || !world.getOtherEntities(this, getBoundingBox().expand(3), this::isAggressor).isEmpty()
                 || (ticksResting++ > MAX_REST_TICKS || world.random.nextInt(500) == 0)
                 || world.hasRain(below)) {
                 setResting(false);
@@ -212,7 +212,7 @@ public class ButterflyEntity extends AmbientEntity {
     }
 
     private boolean canBreed() {
-        return age > BREEDING_INTERVAL && breedingCooldown <= 0 && isResting() && world.getOtherEntities(this, getBoundingBox().expand(20), i -> {
+        return age > BREEDING_INTERVAL && breedingCooldown <= 0 && isResting() && world.getOtherEntities(this, getBoundingBox().expand(2), i -> {
             return i instanceof ButterflyEntity && i.getType() == getType() && ((ButterflyEntity)i).isResting();
         }).size() == 1;
     }
