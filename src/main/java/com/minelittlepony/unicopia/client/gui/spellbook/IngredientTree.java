@@ -9,6 +9,7 @@ import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
+import com.minelittlepony.unicopia.client.render.PassThroughVertexConsumer;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -198,6 +199,10 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     }
 
     static class HiddenStacks extends Stacks {
+        private static final PassThroughVertexConsumer.Parameters FIXTURE = new PassThroughVertexConsumer.Parameters().color((parent, r, g, b, a) -> {
+            parent.color(0, 0, 0, a);
+        });
+
         HiddenStacks(ItemStack[] stacks) {
             super(stacks);
         }
@@ -223,15 +228,20 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             if (bl) {
                 DiffuseLighting.disableGuiDepthLighting();
             }
-            itemRenderer.renderItem(stacks[index], ModelTransformation.Mode.GUI, false, new MatrixStack(), immediate, 0, OverlayTexture.DEFAULT_UV, model);
-            immediate.draw();
+            RenderSystem.disableDepthTest();
+            try {
+                itemRenderer.renderItem(stacks[index], ModelTransformation.Mode.GUI, false, new MatrixStack(), layer -> PassThroughVertexConsumer.of(immediate.getBuffer(layer), FIXTURE), 0, OverlayTexture.DEFAULT_UV, model);
+                immediate.draw();
+            } catch (Exception e) {
+                // Sodium
+            }
+
             RenderSystem.enableDepthTest();
             if (bl) {
                 DiffuseLighting.enableGuiDepthLighting();
             }
             matrixStack.pop();
             RenderSystem.applyModelViewMatrix();
-
             RenderSystem.setShaderColor(1, 1, 1, 1);
         }
 
