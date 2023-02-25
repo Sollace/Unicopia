@@ -75,7 +75,7 @@ class WingsGear implements IGear {
 
     @Override
     public void render(MatrixStack stack, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha, UUID interpolatorId) {
-        model.getWings().renderPart(stack, consumer, light, overlay, red, green, blue, alpha, interpolatorId);
+        model.getWings().renderPart(stack, consumer, light, overlay, red, green, blue, alpha, model.getAttributes());
     }
 
     static class Model extends PegasusModel<LivingEntity> {
