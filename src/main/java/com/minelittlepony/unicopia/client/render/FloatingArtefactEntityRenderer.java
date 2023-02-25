@@ -14,7 +14,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3f;
 
 public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtefactEntity> {
 
@@ -38,14 +38,14 @@ public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtef
 
         final float variance = 0.25F;
         final float verticalOffset = entity.getVerticalOffset(timeDelta);
-        final float modelScaleY = model.getTransformation().getTransformation(ModelTransformation.Mode.GROUND).scale.y;
+        final float modelScaleY = model.getTransformation().getTransformation(ModelTransformation.Mode.GROUND).scale.getY();
 
         float scale = 1.6F;
 
         transforms.push();
         transforms.scale(scale, scale, scale);
         transforms.translate(0, verticalOffset + variance * modelScaleY, 0);
-        transforms.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getRotation(timeDelta)));
+        transforms.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(entity.getRotation(timeDelta)));
 
         itemRenderer.renderItem(stack, ModelTransformation.Mode.GROUND, false, transforms, renderContext, lightUv, OverlayTexture.DEFAULT_UV, model);
 

@@ -5,20 +5,23 @@ import java.util.stream.Stream;
 import com.mojang.serialization.Lifecycle;
 
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.registry.*;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.util.registry.DefaultedRegistry;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryList;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.World;
 
 public interface RegistryUtils {
     static <T> Registry<T> createSimple(Identifier id) {
-        return FabricRegistryBuilder.from(new SimpleRegistry<T>(RegistryKey.ofRegistry(id), Lifecycle.stable())).buildAndRegister();
+        return FabricRegistryBuilder.from(new SimpleRegistry<T>(RegistryKey.ofRegistry(id), Lifecycle.stable(), null)).buildAndRegister();
     }
 
     static <T> Registry<T> createDefaulted(Identifier id, String def) {
-        return FabricRegistryBuilder.from(new SimpleDefaultedRegistry<T>(def, RegistryKey.ofRegistry(id), Lifecycle.stable(), false)).buildAndRegister();
+        return FabricRegistryBuilder.from(new DefaultedRegistry<T>(def, RegistryKey.ofRegistry(id), Lifecycle.stable(), null)).buildAndRegister();
     }
 
     static <T> RegistryEntryList<T> entriesForTag(World world, TagKey<T> key) {

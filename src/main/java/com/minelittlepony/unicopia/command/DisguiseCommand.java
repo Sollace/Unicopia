@@ -22,8 +22,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -49,13 +48,13 @@ public class DisguiseCommand {
     }
 
     private static ArgumentBuilder<ServerCommandSource, ?> buildEntityDisguise(Arg<ServerPlayerEntity> targetOp, CommandRegistryAccess registries) {
-        return CommandManager.argument("entity", RegistryEntryArgumentType.registryEntry(registries, RegistryKeys.ENTITY_TYPE))
+        return CommandManager.argument("entity", EntitySummonArgumentType.entitySummon())
                     .suggests(SuggestionProviders.SUMMONABLE_ENTITIES)
                     .executes(context -> disguise(
                         context.getSource(),
                         targetOp.apply(context),
                         loadEntity(context.getSource(),
-                            RegistryEntryArgumentType.getSummonableEntityType(context, "entity"),
+                            EntitySummonArgumentType.getEntitySummon(context, "entity"),
                             new NbtCompound())))
         .then(
                 CommandManager.argument("nbt", NbtCompoundArgumentType.nbtCompound())
@@ -63,7 +62,7 @@ public class DisguiseCommand {
                         context.getSource(),
                         targetOp.apply(context),
                         loadEntity(context.getSource(),
-                            RegistryEntryArgumentType.getSummonableEntityType(context, "entity"),
+                            EntitySummonArgumentType.getEntitySummon(context, "entity"),
                             NbtCompoundArgumentType.getNbtCompound(context, "nbt"))))
         );
     }
@@ -99,9 +98,9 @@ public class DisguiseCommand {
         return 0;
     }
 
-    static Entity loadEntity(ServerCommandSource source, RegistryEntry.Reference<EntityType<?>> entityType, NbtCompound nbt) {
+    static Entity loadEntity(ServerCommandSource source, Identifier entityType, NbtCompound nbt) {
         nbt = nbt.copy();
-        nbt.putString("id", entityType.registryKey().getValue().toString());
+        nbt.putString("id", entityType.toString());
         return EntityType.loadEntityWithPassengers(nbt, source.getWorld(), Function.identity());
     }
 

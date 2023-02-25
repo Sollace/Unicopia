@@ -31,7 +31,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -106,7 +106,7 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder, Mu
                 .flatMap(world -> RegistryUtils.valuesForTag(world, UTags.APPLES))
                 .filter(a -> a != this).map(item -> {
             ItemStack stack = new ItemStack(this);
-            stack.getOrCreateNbt().putString("appearance", Registries.ITEM.getId(item).toString());
+            stack.getOrCreateNbt().putString("appearance", Registry.ITEM.getId(item).toString());
             return stack;
         }).toList();
     }

@@ -3,8 +3,6 @@ package com.minelittlepony.unicopia.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joml.Vector4f;
-
 import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.client.FlowingText;
@@ -155,27 +153,27 @@ public class DismissSpellScreen extends GameGui {
 
         @Override
         public boolean isMouseOver(double mouseX, double mouseY) {
-            return squareDistance(mouseX, mouseY, x, y) < 75;
+            return squareDistance(mouseX, mouseY, getX(), getY()) < 75;
         }
 
         @Override
         public void render(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
-            copy.set(x, y, z, w);
-            copy.mul(matrices.peek().getPositionMatrix());
+            copy.set(getX(), getY(), getZ(), getW());
+            copy.transform(matrices.peek().getPositionMatrix());
 
             var type = actualSpell.getType().withTraits(actualSpell.getTraits());
 
-            DrawableUtil.drawLine(matrices, 0, 0, (int)x, (int)y, 0xFFAAFF99);
+            DrawableUtil.drawLine(matrices, 0, 0, (int)getX(), (int)getY(), 0xFFAAFF99);
             DrawableUtil.renderItemIcon(actualSpell.isDead() ? UItems.BOTCHED_GEM.getDefaultStack() : type.getDefaultStack(),
-                    copy.x - 8 + copy.z / 20F,
-                    copy.y - 8 + copy.z / 20F,
+                    copy.getX() - 8 + copy.getZ() / 20F,
+                    copy.getY() - 8 + copy.getZ() / 20F,
                     1
             );
 
             int color = actualSpell.getType().getColor() << 2;
 
             matrices.push();
-            matrices.translate(x, y, 0);
+            matrices.translate(getX(), getY(), 0);
 
             DrawableUtil.drawArc(matrices, 7, 8, 0, DrawableUtil.TAU, color | 0x00000088, false);
 
@@ -223,7 +221,7 @@ public class DismissSpellScreen extends GameGui {
     }
 
     static void playClickEffect() {
-        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK.value(), 6, 0.3F));
+        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 6, 0.3F));
     }
 
     static double squareDistance(double x1, double y1, double x2, double y2) {

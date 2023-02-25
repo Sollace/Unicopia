@@ -22,7 +22,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 public class PoisonedJokeEnchantment extends SimpleEnchantment implements IdentifiableResourceReloadListener {
     private static final Identifier ID = Unicopia.id("data/poisoned_joke_sounds");
@@ -84,7 +84,7 @@ public class PoisonedJokeEnchantment extends SimpleEnchantment implements Identi
     }
 
     private Stream<SoundEvent> findSound(Identifier id) {
-        return Registries.SOUND_EVENT.getOrEmpty(id).map(Stream::of).orElseGet(() -> {
+        return Registry.SOUND_EVENT.getOrEmpty(id).map(Stream::of).orElseGet(() -> {
             Unicopia.LOGGER.warn("Could not find sound with id {}", id);
             return Stream.empty();
         });

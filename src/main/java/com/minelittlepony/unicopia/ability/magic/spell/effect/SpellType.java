@@ -26,8 +26,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.tag.FluidTags;
 
 public final class SpellType<T extends Spell> implements Affine, SpellPredicate<T> {
     public static final Identifier EMPTY_ID = Unicopia.id("none");

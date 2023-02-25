@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.joml.Vector4f;
-
 import com.minelittlepony.common.client.gui.*;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
@@ -22,6 +20,7 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.util.math.Vector4f;
 
 class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     private final List<IngredientTree.Entry> entries = new ArrayList<>();
@@ -174,8 +173,8 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             }
 
             Vector4f pos = new Vector4f(x, y, 0, 1);
-            pos.mul(matrices.peek().getPositionMatrix());
-            drawItem((int)pos.x, (int)pos.y);
+            pos.transform(matrices.peek().getPositionMatrix());
+            drawItem((int)pos.getX(), (int)pos.getY());
         }
 
         protected void drawItem(int x, int y) {
@@ -188,7 +187,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
                 if (stacks[index].isEmpty()) {
                     return List.of();
                 }
-                return stacks[index].getTooltip(MinecraftClient.getInstance().player, TooltipContext.Default.BASIC);
+                return stacks[index].getTooltip(MinecraftClient.getInstance().player, TooltipContext.Default.NORMAL);
             };
         }
 

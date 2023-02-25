@@ -4,8 +4,7 @@ import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 public interface UEffects {
     StatusEffect FOOD_POISONING = register("food_poisoning", new FoodPoisoningStatusEffect(3484199));
@@ -15,7 +14,7 @@ public interface UEffects {
     StatusEffect BUTTER_FINGERS = register("butter_fingers", new ButterfingersStatusEffect(0x888800));
 
     private static StatusEffect register(String name, StatusEffect effect) {
-        return Registry.register(Registries.STATUS_EFFECT, Unicopia.id(name), effect);
+        return Registry.register(Registry.STATUS_EFFECT, Unicopia.id(name), effect);
     }
 
     static void bootstrap() {}

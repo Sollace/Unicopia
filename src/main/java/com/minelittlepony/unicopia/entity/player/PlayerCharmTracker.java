@@ -44,7 +44,7 @@ public class PlayerCharmTracker implements NbtSerialisable {
 
     public void equipSpell(Hand hand, CustomisedSpellType<?> spell) {
         handSpells[hand.ordinal()] = spell;
-        pony.asEntity().playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.25F, 1.75F);
+        pony.asEntity().playSound(SoundEvents.UI_BUTTON_CLICK, 0.25F, 1.75F);
         pony.setDirty();
     }
 

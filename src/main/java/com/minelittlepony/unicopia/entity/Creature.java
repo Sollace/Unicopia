@@ -131,7 +131,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
                     .isEmpty();
         });
 
-        targets.clear(g -> true);
+        targets.clear();
         targets.add(2, new ActiveTargetGoal<>((MobEntity)entity, PlayerEntity.class, true, filter));
         targets.add(2, new ActiveTargetGoal<>((MobEntity)entity, HostileEntity.class, true, filter));
         targets.add(2, new ActiveTargetGoal<>((MobEntity)entity, SlimeEntity.class, true, filter));

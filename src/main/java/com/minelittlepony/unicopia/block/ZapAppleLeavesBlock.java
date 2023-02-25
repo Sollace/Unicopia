@@ -68,7 +68,7 @@ public class ZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
             onStageChanged(store, newStage, world, state, pos, random);
         }
 
-        world.scheduleBlockTick(pos, this, 1);
+        world.createAndScheduleBlockTick(pos, this, 1);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         if (!ctx.getWorld().isClient) {
-            ctx.getWorld().scheduleBlockTick(ctx.getBlockPos(), this, 1);
+            ctx.getWorld().createAndScheduleBlockTick(ctx.getBlockPos(), this, 1);
             return super.getPlacementState(ctx).with(STAGE, ZapAppleStageStore.get(ctx.getWorld()).getStage());
         }
         return super.getPlacementState(ctx);

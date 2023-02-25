@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.client.gui;
 
-import org.joml.Matrix4f;
-
 import com.minelittlepony.unicopia.Race;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -17,6 +15,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 
 public interface DrawableUtil {
     double PI = Math.PI;
@@ -56,7 +55,7 @@ public interface DrawableUtil {
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
@@ -68,11 +67,11 @@ public interface DrawableUtil {
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(matrix, x1, y1, 0).color(r, g, b, k).next();
         bufferBuilder.vertex(matrix, x2, y2, 0).color(r, g, b, k).next();
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
@@ -99,7 +98,7 @@ public interface DrawableUtil {
         }
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
@@ -120,7 +119,7 @@ public interface DrawableUtil {
             cylendricalVertex(bufferBuilder, model, innerRadius, angle + INCREMENT, r, g, b, k);
         }
 
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
     }
 
@@ -159,7 +158,7 @@ public interface DrawableUtil {
         }
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
@@ -186,7 +185,7 @@ public interface DrawableUtil {
             }
         }
 
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
     }
 

@@ -9,7 +9,7 @@ import net.minecraft.block.LeavesBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 public record TreeTypeImpl (
         Identifier name,
@@ -43,7 +43,7 @@ public record TreeTypeImpl (
     }
 
     private static boolean findMatch(Set<Identifier> ids, BlockState state) {
-        return ids.contains(Registries.BLOCK.getId(state.getBlock()));
+        return ids.contains(Registry.BLOCK.getId(state.getBlock()));
     }
 
     static boolean isNonPersistent(BlockState state) {

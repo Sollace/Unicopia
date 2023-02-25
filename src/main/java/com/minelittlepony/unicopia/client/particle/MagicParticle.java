@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import org.joml.Vector3f;
-
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 
 import net.minecraft.client.particle.ParticleTextureSheet;
@@ -9,13 +7,14 @@ import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.util.math.Vec3f;
 
 public class MagicParticle extends SpriteBillboardParticle {
     private final double startX;
     private final double startY;
     private final double startZ;
 
-    MagicParticle(ParticleEffect effect, SpriteProvider provider, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ, Vector3f color, float alpha) {
+    MagicParticle(ParticleEffect effect, SpriteProvider provider, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ, Vec3f color, float alpha) {
         super(w, x, y, z);
         setSprite(provider);
 
@@ -28,9 +27,9 @@ public class MagicParticle extends SpriteBillboardParticle {
         scale = random.nextFloat() * 0.12F;
         maxAge = (int)(Math.random() * 10) + 20;
 
-        red = color.x;
-        green = color.y;
-        blue = color.z;
+        red = color.getX();
+        green = color.getY();
+        blue = color.getZ();
         this.alpha = alpha;
     }
 

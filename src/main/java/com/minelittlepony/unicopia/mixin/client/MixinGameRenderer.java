@@ -15,10 +15,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.RotationAxis;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.resource.SynchronousResourceReloader;
+import net.minecraft.util.math.Vec3f;
 
 @Mixin(value = GameRenderer.class, priority = Integer.MAX_VALUE)
 abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceReloader {
@@ -36,7 +36,7 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
     @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V",
             at = @At("HEAD"))
     private void beforeRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
-        UnicopiaClient.getCamera().ifPresent(c -> matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(c.calculateRoll())));
+        UnicopiaClient.getCamera().ifPresent(c -> matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(c.calculateRoll())));
         BatEyesApplicator.INSTANCE.enable();
     }
 

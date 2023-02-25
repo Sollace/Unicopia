@@ -1,10 +1,9 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
-import org.joml.Vector3f;
-
 import com.minelittlepony.unicopia.entity.Living;
 
 import net.minecraft.entity.passive.AxolotlEntity;
+import net.minecraft.util.math.Vec3f;
 
 public class AxolotlBehaviour extends EntityBehaviour<AxolotlEntity> {
     private static final float toRad = 0.017453292F;
@@ -13,11 +12,11 @@ public class AxolotlBehaviour extends EntityBehaviour<AxolotlEntity> {
         if (entity.getModelAngles().isEmpty()) {
             return;
         }
-        Vector3f current = entity.getModelAngles().get("body");
-        entity.getModelAngles().put("body", new Vector3f(
+        Vec3f current = entity.getModelAngles().get("body");
+        entity.getModelAngles().put("body", new Vec3f(
                source.asEntity().isSubmergedInWater() ? source.asEntity().getPitch() * toRad : 0,
                0,
-               current == null ? 0 : current.z
+               current == null ? 0 : current.getZ()
        ));
     }
 }

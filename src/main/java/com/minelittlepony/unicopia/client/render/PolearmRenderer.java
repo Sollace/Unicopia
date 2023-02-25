@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.DynamicItemRenderer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.ClampedModelPredicateProvider;
+import net.minecraft.client.item.UnclampedModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -20,9 +20,9 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.*;
 import net.minecraft.util.Identifier;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
-public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredicateProvider {
+public class PolearmRenderer implements DynamicItemRenderer, UnclampedModelPredicateProvider {
 
     private static final PolearmRenderer INSTANCE = new PolearmRenderer();
     private static final Identifier THROWING = new Identifier("throwing");
@@ -36,7 +36,7 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
     }
 
     static ModelIdentifier getModelId(ItemConvertible item) {
-        Identifier id = Registries.ITEM.getId(item.asItem());
+        Identifier id = Registry.ITEM.getId(item.asItem());
         return new ModelIdentifier(new Identifier(id.getNamespace(), id.getPath() + "_in_inventory"), "inventory");
     }
 
@@ -68,7 +68,7 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
         } else {
             matrices.push();
             matrices.scale(1, -1, -1);
-            Identifier id = Registries.ITEM.getId(stack.getItem());
+            Identifier id = Registry.ITEM.getId(stack.getItem());
             Identifier texture = new Identifier(id.getNamespace(), "textures/entity/polearm/" + id.getPath() + ".png");
             model.render(matrices, MineLPDelegate.getInstance().getItemBuffer(vertexConsumers, texture).orElseGet(() -> {
                 return ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, model.getLayer(texture), false, stack.hasGlint());

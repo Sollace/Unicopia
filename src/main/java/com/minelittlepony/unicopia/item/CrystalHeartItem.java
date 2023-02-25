@@ -74,7 +74,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
 
         if (world instanceof ServerWorld serverWorld) {
 
-            FloatingArtefactEntity entity = UEntities.FLOATING_ARTEFACT.create(serverWorld, context.getStack().getNbt(), null, blockPos, SpawnReason.SPAWN_EGG, false, true);
+            FloatingArtefactEntity entity = UEntities.FLOATING_ARTEFACT.create(serverWorld, context.getStack().getNbt(), null, null, blockPos, SpawnReason.SPAWN_EGG, false, true);
 
             if (entity == null) {
                 return ActionResult.FAIL;

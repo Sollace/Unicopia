@@ -3,11 +3,10 @@ package com.minelittlepony.unicopia.client.render.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joml.Matrix4f;
-import org.joml.Vector4f;
-
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vector4f;
 
 public class BakedModel {
     private static final Vector4f drawVert = new Vector4f();
@@ -15,7 +14,7 @@ public class BakedModel {
     protected final List<Vertex> vertices = new ArrayList<>();
 
     protected void addVertex(Vector4f vertex) {
-        addVertex(vertex.x, vertex.y, vertex.z, 0, 0);
+        addVertex(vertex.getX(), vertex.getY(), vertex.getZ(), 0, 0);
     }
 
     protected void addVertex(float x, float y, float z, float u, float v) {
@@ -31,8 +30,8 @@ public class BakedModel {
         Matrix4f model = matrices.peek().getPositionMatrix();
         for (Vertex vertex : vertices) {
             drawVert.set(vertex.x() * scale, vertex.y() * scale, vertex.z() * scale, 1);
-            drawVert.mul(model);
-            vertexWriter.vertex(drawVert.x, drawVert.y, drawVert.z, r, g, b, a, vertex.u(), vertex.v(), overlay, light, 0, 0, 0);
+            drawVert.transform(model);
+            vertexWriter.vertex(drawVert.getX(), drawVert.getY(), drawVert.getZ(), r, g, b, a, vertex.u(), vertex.v(), overlay, light, 0, 0, 0);
         }
     }
 

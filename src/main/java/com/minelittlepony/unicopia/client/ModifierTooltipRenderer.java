@@ -31,7 +31,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 public class ModifierTooltipRenderer implements ItemTooltipCallback {
 
@@ -102,7 +102,7 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
            if (stack.isDamaged()) {
                insertPosition = checkFor(lines, Text.translatable("item.durability", stack.getMaxDamage() - stack.getDamage(), stack.getMaxDamage()));
            } else {
-               insertPosition = checkFor(lines, Text.literal(Registries.ITEM.getId(stack.getItem()).toString()).formatted(Formatting.DARK_GRAY));
+               insertPosition = checkFor(lines, Text.literal(Registry.ITEM.getId(stack.getItem()).toString()).formatted(Formatting.DARK_GRAY));
            }
         }
 
@@ -156,7 +156,7 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
             return stack.getEnchantments()
                     .stream()
                     .map(t -> (NbtCompound)t)
-                    .map(tag -> Registries.ENCHANTMENT.getOrEmpty(Identifier.tryParse(tag.getString("id")))
+                    .map(tag -> Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(tag.getString("id")))
                                 .map(ench -> new Pair<>(tag.getInt("lvl"), ench)))
                     .filter(Optional::isPresent)
                     .map(Optional::get);

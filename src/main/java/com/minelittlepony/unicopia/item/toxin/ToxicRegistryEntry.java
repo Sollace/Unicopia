@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.item.toxin;
 
 import net.minecraft.item.Item;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.tag.TagKey;
 
 public record ToxicRegistryEntry (
         Toxic value,

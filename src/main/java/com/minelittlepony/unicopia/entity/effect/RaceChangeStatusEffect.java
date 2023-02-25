@@ -17,8 +17,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 public class RaceChangeStatusEffect extends StatusEffect {
     public static final int STAGE_DURATION = 200;
@@ -34,7 +33,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
 
     public static StatusEffect register(int color, Race race) {
         Identifier id = Race.REGISTRY.getId(race);
-        return Registry.register(Registries.STATUS_EFFECT,
+        return Registry.register(Registry.STATUS_EFFECT,
                 new Identifier(id.getNamespace(), "change_race_" + id.getPath().toLowerCase()),
                 new RaceChangeStatusEffect(color, race)
         );

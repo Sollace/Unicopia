@@ -33,7 +33,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     public static final SpellTraits EMPTY = new SpellTraits(Map.of());
@@ -199,7 +199,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static SpellTraits of(Item item) {
-        return REGISTRY.getOrDefault(Registries.ITEM.getId(item), EMPTY);
+        return REGISTRY.getOrDefault(Registry.ITEM.getId(item), EMPTY);
     }
 
     public static SpellTraits of(Block block) {
@@ -210,7 +210,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return REGISTRY.entrySet().stream()
             .filter(e -> e.getValue().get(trait) > 0)
             .map(Map.Entry::getKey)
-            .flatMap(id -> Registries.ITEM.getOrEmpty(id).stream());
+            .flatMap(id -> Registry.ITEM.getOrEmpty(id).stream());
     }
 
     public static Optional<SpellTraits> getEmbeddedTraits(ItemStack stack) {

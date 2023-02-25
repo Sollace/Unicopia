@@ -175,7 +175,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     @Override
     protected SoundEvent getHitSound() {
-        return isBouncy() ? SoundEvents.BLOCK_NOTE_BLOCK_BANJO.value() : SoundEvents.BLOCK_STONE_HIT;
+        return isBouncy() ? SoundEvents.BLOCK_NOTE_BLOCK_BANJO : SoundEvents.BLOCK_STONE_HIT;
     }
 
     @Override

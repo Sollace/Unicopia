@@ -42,7 +42,7 @@ public class ClientNetworkHandlerImpl {
     @SuppressWarnings("unchecked")
     private void handleSpawnProjectile(PlayerEntity sender, MsgSpawnProjectile packet) {
         ClientWorld world = client.world;
-        Entity entity = packet.getEntityType().create(world);
+        Entity entity = packet.getEntityTypeId().create(world);
 
         entity.updateTrackedPosition(packet.getX(), packet.getY(), packet.getZ());
         entity.refreshPositionAfterTeleport(packet.getX(), packet.getY(), packet.getZ());

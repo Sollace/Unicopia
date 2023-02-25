@@ -295,7 +295,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
-            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
             RenderSystem.setShaderColor(1, 1, 1, alpha);
             RenderSystem.defaultBlendFunc();

@@ -8,7 +8,7 @@ import com.minelittlepony.unicopia.item.toxin.Toxic;
 import com.minelittlepony.unicopia.item.toxin.ToxicHolder;
 
 import net.minecraft.item.*;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 public interface UItemGroups {
     ItemGroup ALL_ITEMS = ItemGroupRegistry.createDynamic("items", UItems.EMPTY_JAR::getDefaultStack, () -> {
@@ -16,7 +16,7 @@ public interface UItemGroups {
                 .filter(item -> !(item instanceof ChameleonItem) || ((ChameleonItem)item).isFullyDisguised()));
     });
     ItemGroup HORSE_FEED = ItemGroupRegistry.createDynamic("horsefeed", UItems.ZAP_APPLE::getDefaultStack, () -> {
-        return Registries.ITEM.stream()
+        return Registry.ITEM.stream()
                 .filter(item -> ((ToxicHolder)item).getToxic(item.getDefaultStack()) != Toxic.EMPTY);
     });
 

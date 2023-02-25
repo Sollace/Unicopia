@@ -1,10 +1,9 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import org.joml.Vector3f;
-
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.util.math.Vec3f;
 
 public class ChangelingMagicParticle extends MagicParticle {
 
@@ -15,8 +14,8 @@ public class ChangelingMagicParticle extends MagicParticle {
         this.provider = provider;
     }
 
-    static Vector3f nextColor(float intensity) {
-        return new Vector3f(intensity * 0.5F, intensity, intensity * 0.4F);
+    static Vec3f nextColor(float intensity) {
+        return new Vec3f(intensity * 0.5F, intensity, intensity * 0.4F);
     }
 
     @Override

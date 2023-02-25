@@ -2,11 +2,10 @@ package com.minelittlepony.unicopia.client.render.model;
 
 import java.util.function.Consumer;
 
-import org.joml.Vector4f;
-
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
 
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vector4f;
 
 public class SphereModel extends BakedModel {
     public static final SphereModel SPHERE = new SphereModel(40, 40, DrawableUtil.TAU);

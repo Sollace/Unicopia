@@ -18,12 +18,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 
 public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
     private static final Identifier ID = Unicopia.id("data/tree_type");
@@ -106,12 +105,12 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
             @Override
             public void appendTo(Weighted.Builder<Supplier<ItemStack>> weighted) {
                 if (item != null) {
-                    Registries.ITEM.getOrEmpty(item).ifPresent(item -> {
+                    Registry.ITEM.getOrEmpty(item).ifPresent(item -> {
                         weighted.put(weight, item::getDefaultStack);
                     });
                 } else {
                     weighted.put(weight, () -> {
-                        return Registries.ITEM.getOrCreateEntryList(TagKey.of(RegistryKeys.ITEM, tag))
+                        return Registry.ITEM.getOrCreateEntryList(TagKey.of(Registry.ITEM_KEY, tag))
                                 .getRandom(Weighted.getRng())
                                 .map(RegistryEntry::value)
                                 .map(Item::getDefaultStack)

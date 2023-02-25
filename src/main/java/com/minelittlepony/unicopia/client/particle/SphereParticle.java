@@ -50,9 +50,9 @@ public class SphereParticle extends Particle implements Attachment {
         super(w, x, y, z);
         this.parameters = parameters;
         this.radius = parameters.getRadius();
-        this.red = parameters.getColor().x / 255F;
-        this.green = parameters.getColor().y / 255F;
-        this.blue = parameters.getColor().z / 255F;
+        this.red = parameters.getColor().getX() / 255F;
+        this.green = parameters.getColor().getY() / 255F;
+        this.blue = parameters.getColor().getZ() / 255F;
         this.alpha = parameters.getAlpha();
 
         setMaxAge(10);
@@ -158,7 +158,7 @@ public class SphereParticle extends Particle implements Attachment {
         RenderSystem.enableCull();
         RenderSystem.depthMask(true);
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShader(GameRenderer::getParticleProgram);
+        RenderSystem.setShader(GameRenderer::getParticleShader);
     }
 
     protected void renderModel(MatrixStack matrices, VertexConsumer buffer, float lerpedRad, float tickDelta, int light) {

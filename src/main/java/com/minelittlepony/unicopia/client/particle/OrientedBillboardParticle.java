@@ -1,8 +1,5 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 
 import net.minecraft.client.render.BufferBuilder;
@@ -15,16 +12,15 @@ import net.minecraft.util.math.*;
 public abstract class OrientedBillboardParticle extends AbstractBillboardParticle {
 
     protected boolean fixed;
-    protected Quaternionf rotation = new Quaternionf(0, 0, 0, 1);
+    protected Quaternion rotation = new Quaternion(0, 0, 0, 1);
 
     public OrientedBillboardParticle(OrientedBillboardParticleEffect effect, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
 
         fixed = effect.isAngleFixed();
         if (fixed) {
-            // Was hamiltonianProduct (CHECK THIS!!)
-            rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees(effect.getPitch()));
-            rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(180 - effect.getYaw()));
+            rotation.hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(effect.getPitch()));
+            rotation.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(180 - effect.getYaw()));
         }
     }
 
@@ -38,18 +34,18 @@ public abstract class OrientedBillboardParticle extends AbstractBillboardParticl
 
     @Override
     protected void renderQuads(Tessellator te, BufferBuilder buffer, float x, float y, float z, float tickDelta) {
-        Vector3f[] corners = new Vector3f[]{
-                new Vector3f(-1, -1, 0),
-                new Vector3f(-1,  1, 0),
-                new Vector3f( 1,  1, 0),
-                new Vector3f( 1, -1, 0)
+        Vec3f[] corners = new Vec3f[]{
+                new Vec3f(-1, -1, 0),
+                new Vec3f(-1,  1, 0),
+                new Vec3f( 1,  1, 0),
+                new Vec3f( 1, -1, 0)
         };
         float scale = getScale(tickDelta);
 
         for(int k = 0; k < 4; ++k) {
-           Vector3f corner = corners[k];
+           Vec3f corner = corners[k];
            corner.rotate(rotation);
-           corner.mul(scale);
+           corner.scale(scale);
            corner.add(x, y, z);
         }
 

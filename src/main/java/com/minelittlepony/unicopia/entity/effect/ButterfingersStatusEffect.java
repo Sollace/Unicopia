@@ -39,7 +39,7 @@ public class ButterfingersStatusEffect extends StatusEffect {
 
         if (target instanceof ServerPlayerEntity player) {
             if (player.dropSelectedItem(proximity < 1)) {
-                player.world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, player.getSoundCategory());
+                player.world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, player.getSoundCategory(), 1, 1);
                 PlayerInventory inventory = player.getInventory();
                 player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 0, inventory.selectedSlot, inventory.getStack(inventory.selectedSlot)));
             }
@@ -48,7 +48,7 @@ public class ButterfingersStatusEffect extends StatusEffect {
             if (!stack.isEmpty()) {
                 target.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
                 target.dropStack(stack);
-                target.world.playSound(null, target.getBlockPos(), SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, target.getSoundCategory());
+                target.world.playSound(null, target.getBlockPos(), SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, target.getSoundCategory(), 1, 1);
             }
         }
     }

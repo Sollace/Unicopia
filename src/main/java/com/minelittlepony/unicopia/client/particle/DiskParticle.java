@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import org.joml.Quaternionf;
-
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
 
@@ -12,13 +10,13 @@ import net.minecraft.util.math.*;
 
 public class DiskParticle extends SphereParticle {
 
-    private final Quaternionf rotation = new Quaternionf(0, 0, 0, 1);
+    private final Quaternion rotation = new Quaternion(0, 0, 0, 1);
 
     public DiskParticle(SphereParticleEffect effect, ClientWorld w, double x, double y, double z, double rX, double rY, double rZ) {
         super(effect, w, x, y, z, 0, 0, 0);
 
-        rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees((float)effect.getOffset().y));
-        rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(90 - (float)effect.getOffset().x));
+        rotation.hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion((float)effect.getOffset().y));
+        rotation.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(90 - (float)effect.getOffset().x));
 
         effect.setOffset(new Vec3d(0, 0.25, 0));
     }

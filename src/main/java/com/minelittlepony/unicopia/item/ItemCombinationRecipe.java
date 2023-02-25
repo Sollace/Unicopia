@@ -3,15 +3,14 @@ package com.minelittlepony.unicopia.item;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.SpecialCraftingRecipe;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.world.World;
 
 public abstract class ItemCombinationRecipe extends SpecialCraftingRecipe {
 
-    public ItemCombinationRecipe(Identifier id, CraftingRecipeCategory category) {
-        super(id, category);
+    public ItemCombinationRecipe(Identifier id) {
+        super(id);
     }
 
     @Override

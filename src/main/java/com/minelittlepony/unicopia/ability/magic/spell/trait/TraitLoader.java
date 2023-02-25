@@ -26,7 +26,7 @@ import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Identifier, TraitLoader.TraitStream>> implements IdentifiableResourceReloadListener {
     private static final Identifier ID = Unicopia.id("data/traits");
@@ -108,7 +108,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
                         .map(JsonElement::getAsString)
                         .map(Identifier::tryParse)
                         .filter(item -> {
-                            if (item == null || !Registries.ITEM.containsId(item)) {
+                            if (item == null || !Registry.ITEM.containsId(item)) {
                                 Unicopia.LOGGER.warn("Skipping unknown item {} in {}:{}", item, pack, id);
                                 return false;
                             }

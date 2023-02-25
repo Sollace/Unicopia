@@ -19,7 +19,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 class AmuletGear extends AmuletModel implements IGear {
 
@@ -41,7 +41,7 @@ class AmuletGear extends AmuletModel implements IGear {
 
     @Override
     public <T extends Entity> Identifier getTexture(T entity, Context<T, ?> context) {
-        return textures.computeIfAbsent(Registries.ITEM.getId(AmuletItem.getForEntity((LivingEntity)entity).getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));
+        return textures.computeIfAbsent(Registry.ITEM.getId(AmuletItem.getForEntity((LivingEntity)entity).getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));
     }
 
     @Override

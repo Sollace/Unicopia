@@ -215,7 +215,7 @@ public class PlayerPoser {
 
     private void rearUp(MatrixStack matrices, BipedEntityModel<?> model, float progress) {
         matrices.translate(0, 0, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-45 * progress));
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-45 * progress));
         matrices.translate(0, 0, -0.5);
 
         float roll = progress / 2F;

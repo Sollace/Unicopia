@@ -29,7 +29,7 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
             float leanAmount = ((LivingEntityDuck)entity).getLeaningPitch();
 
             matrices.push();
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180 - leanAmount * 90));
+            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180 - leanAmount * 90));
 
             Vec3d carryPosition = getCarryPosition(Living.living(entity), passenger)
                     .rotateX(-leanAmount * MathHelper.PI / 4F)
@@ -37,7 +37,7 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
 
             matrices.translate(carryPosition.x, carryPosition.y, carryPosition.z);
             if (!(passenger instanceof Pony)) {
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
+                matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90));
             }
 
             renderCarriedEntity(passenger.asEntity(), matrices, vertexConsumers, light, tickDelta);
@@ -60,9 +60,9 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
             matrices.push();
             matrices.translate(f, g, h);
             matrices.translate(0, -1.3F, -1.3F);
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(13));
+            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(13));
             if (!(passenger instanceof Pony)) {
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
+                matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90));
             }
 
             renderCarriedEntity(passenger.asEntity(), matrices, vertexConsumers, light, tickDelta);

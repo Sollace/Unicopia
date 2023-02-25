@@ -17,7 +17,7 @@ public final class RenderLayers extends RenderLayer {
 
     private static final RenderLayer MAGIC_NO_COLOR = of("magic_no_color", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
             VertexFormat.DrawMode.QUADS, 256, true, true, MultiPhaseParameters.builder()
-            .program(COLOR_PROGRAM)
+            .shader(COLOR_SHADER)
             .transparency(TRANSLUCENT_TRANSPARENCY)
             .target(TRANSLUCENT_TARGET)
         .build(false));
@@ -27,7 +27,7 @@ public final class RenderLayers extends RenderLayer {
                     VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
                     VertexFormat.DrawMode.QUADS, 256, true, true,
             MultiPhaseParameters.builder()
-                .program(COLOR_PROGRAM)
+                .shader(COLOR_SHADER)
                 .transparency(TRANSLUCENT_TRANSPARENCY)
                // .target(TRANSLUCENT_TARGET)
                 .texturing(solid(Color.r(color), Color.g(color), Color.b(color), 0.6F))

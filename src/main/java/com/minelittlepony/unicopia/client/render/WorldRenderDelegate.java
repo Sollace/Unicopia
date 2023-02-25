@@ -120,8 +120,8 @@ public class WorldRenderDelegate {
 
         matrices.translate(x, y + owner.getHeight() / 2, z);
 
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(roll));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(roll));
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(roll));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(roll));
 
         if (pony instanceof Pony) {
             roll = ((Pony)pony).getCamera().calculateRoll();
@@ -129,9 +129,9 @@ public class WorldRenderDelegate {
                 roll -= 180;
             }
 
-            matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(yaw));
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(roll));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
+            matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(yaw));
+            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(roll));
+            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(yaw));
         }
 
         matrices.translate(-x, -y - owner.getHeight() / 2, -z);
@@ -206,7 +206,7 @@ public class WorldRenderDelegate {
                 matrices.translate(x, y, z);
 
                 matrices.multiply(direction.getRotationQuaternion());
-                matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(90));
+                matrices.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(90));
 
                 matrices.translate(-0.5, 0, -0.5);
 

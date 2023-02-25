@@ -4,7 +4,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 public interface ChameleonItem {
 
@@ -36,7 +36,7 @@ public interface ChameleonItem {
 
     default Item getAppearance(ItemStack stack) {
         if (stack.hasNbt() && stack.getNbt().contains("appearance")) {
-            return Registries.ITEM.get(new Identifier(stack.getNbt().getString("appearance")));
+            return Registry.ITEM.get(new Identifier(stack.getNbt().getString("appearance")));
         }
 
         return Items.AIR;
@@ -51,7 +51,7 @@ public interface ChameleonItem {
             result.setDamage(stack.getDamage());
             result.setCount(stack.getCount());
         }
-        result.getOrCreateNbt().putString("appearance", Registries.ITEM.getId(appearance.getItem()).toString());
+        result.getOrCreateNbt().putString("appearance", Registry.ITEM.getId(appearance.getItem()).toString());
 
         return result;
     }

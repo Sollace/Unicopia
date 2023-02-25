@@ -131,9 +131,9 @@ public class UHud extends DrawableHelper {
                 if (pony.asEntity().isSneaking()) {
                     first = !first;
                 }
-                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(first ? 37 : 63));
+                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(first ? 37 : 63));
                 matrices.translate(-23, 0, 0);
-                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-26));
+                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-26));
                 matrices.scale(0.8F, 0.8F, 1);
                 UHud.drawTexture(matrices, 0, 0, 3, 120, 15, 7, 128, 128);
                 matrices.pop();
@@ -170,7 +170,7 @@ public class UHud extends DrawableHelper {
 
                     view.push();
                     view.translate(x, y, 0);
-                    view.multiply(RotationAxis.POSITIVE_X.rotationDegrees(xDirection * 45));
+                    view.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(xDirection * 45));
                     InventoryScreen.drawEntity(0, 0, scale, 0, -20, client.player);
                     view.pop();
                     RenderSystem.applyModelViewMatrix();

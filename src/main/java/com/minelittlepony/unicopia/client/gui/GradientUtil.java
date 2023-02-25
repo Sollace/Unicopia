@@ -1,12 +1,11 @@
 package com.minelittlepony.unicopia.client.gui;
 
-import org.joml.Matrix4f;
-
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 
 public interface GradientUtil {
 
@@ -14,7 +13,7 @@ public interface GradientUtil {
         RenderSystem.disableTexture();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         fillVerticalGradient(matrices.peek().getPositionMatrix(), bufferBuilder, startX, startY, stopY, endX, endY, z, colorStart, colorStop, colorEnd);
@@ -53,7 +52,7 @@ public interface GradientUtil {
         RenderSystem.disableTexture();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Tessellator tessellator = Tessellator.getInstance();
         if (fillRadials(matrices.peek().getPositionMatrix(), tessellator.getBuffer(), startX, startY, endX, endY, z, colorStart, colorEnd, radius)) {
             tessellator.draw();

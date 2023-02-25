@@ -14,8 +14,8 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.tag.FluidTags;
+import net.minecraft.tag.TagKey;
 
 @Mixin(BoatEntity.class)
 abstract class MixinBoatEntity extends Entity implements LavaAffine {
@@ -31,7 +31,7 @@ abstract class MixinBoatEntity extends Entity implements LavaAffine {
                     "fall",
                     "canAddPassenger"
             },
-            at = @At(value = "FIELD", target = "net/minecraft/registry/tag/FluidTags.WATER:Lnet/minecraft/registry/tag/TagKey;", opcode = Opcodes.GETSTATIC)
+            at = @At(value = "FIELD", target = "net/minecraft/tag/FluidTags.WATER:Lnet/minecraft/tag/TagKey;", opcode = Opcodes.GETSTATIC)
     )
     private TagKey<Fluid> redirectFluidTag() {
         return isLavaAffine() ? FluidTags.LAVA : FluidTags.WATER;

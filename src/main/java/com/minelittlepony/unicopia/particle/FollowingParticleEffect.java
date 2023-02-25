@@ -11,7 +11,7 @@ import net.minecraft.particle.ParticleType;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class FollowingParticleEffect implements ParticleEffect {
@@ -41,7 +41,7 @@ public class FollowingParticleEffect implements ParticleEffect {
         this(type, buf.readInt(), new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble()), buf.readFloat());
 
         if (buf.readBoolean()) {
-            childEffect = ParticleFactoryHelper.read(Registries.PARTICLE_TYPE.get(buf.readInt()), buf);
+            childEffect = ParticleFactoryHelper.read(Registry.PARTICLE_TYPE.get(buf.readInt()), buf);
         }
     }
 
@@ -109,7 +109,7 @@ public class FollowingParticleEffect implements ParticleEffect {
         buf.writeFloat(followSpeed);
         getChildEffect().ifPresentOrElse(child -> {
             buf.writeBoolean(true);
-            buf.writeInt(Registries.PARTICLE_TYPE.getRawId(child.getType()));
+            buf.writeInt(Registry.PARTICLE_TYPE.getRawId(child.getType()));
             child.write(buf);
         }, () -> buf.writeBoolean(false));
     }
@@ -118,12 +118,12 @@ public class FollowingParticleEffect implements ParticleEffect {
     public String asString() {
         return getChildEffect().map(child -> {
             return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %s",
-                    Registries.PARTICLE_TYPE.getId(getType()),
+                    Registry.PARTICLE_TYPE.getId(getType()),
                     fixedTarget.x, fixedTarget.y, fixedTarget.z,
                     followSpeed, child.asString());
         }).orElseGet(() -> {
             return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f",
-                    Registries.PARTICLE_TYPE.getId(getType()),
+                    Registry.PARTICLE_TYPE.getId(getType()),
                     fixedTarget.x, fixedTarget.y, fixedTarget.z,
                     followSpeed);
         });

@@ -2,9 +2,6 @@ package com.minelittlepony.unicopia.client.particle;
 
 import java.util.Optional;
 
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-
 import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -89,11 +86,11 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
             targetSize = value.floatValue();
         }
         if (key == ATTR_PITCH) {
-            rotation = new Quaternionf(0, 0, 0, 1);
-            rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees(value.floatValue()));
+            rotation = new Quaternion(0, 0, 0, 1);
+            rotation.hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(value.floatValue()));
         }
         if (key == ATTR_YAW) {
-            rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(180 - value.floatValue()));
+            rotation.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(180 - value.floatValue()));
         }
     }
 
@@ -129,27 +126,27 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
                 RenderSystem.setShaderTexture(0, TEXTURES[i]);
                 RenderSystem.setShaderColor(red, green, blue, alpha / ((float)(dim * 3) + 1));
 
-                Vector3f[] corners = new Vector3f[]{
-                        new Vector3f(-1, -1, 0),
-                        new Vector3f(-1,  1, 0),
-                        new Vector3f( 1,  1, 0),
-                        new Vector3f( 1, -1, 0)
+                Vec3f[] corners = new Vec3f[]{
+                        new Vec3f(-1, -1, 0),
+                        new Vec3f(-1,  1, 0),
+                        new Vec3f( 1,  1, 0),
+                        new Vec3f( 1, -1, 0)
                 };
                 float scale = getScale(tickDelta);
 
                 float ringSpeed = (i % 2 == 0 ? i : -1) * i;
 
-                Quaternionf ringAngle = RotationAxis.POSITIVE_Z.rotationDegrees(angle * ringSpeed);
-                Quaternionf ringFlip = RotationAxis.POSITIVE_Y.rotationDegrees(angle * ringSpeed * dim);
-                Quaternionf ringRoll = RotationAxis.POSITIVE_X.rotationDegrees(angle * ringSpeed * dim);
+                Quaternion ringAngle = Vec3f.POSITIVE_Z.getDegreesQuaternion(angle * ringSpeed);
+                Quaternion ringFlip = Vec3f.POSITIVE_Y.getDegreesQuaternion(angle * ringSpeed * dim);
+                Quaternion ringRoll = Vec3f.POSITIVE_X.getDegreesQuaternion(angle * ringSpeed * dim);
 
                 for(int k = 0; k < 4; ++k) {
-                   Vector3f corner = corners[k];
+                   Vec3f corner = corners[k];
                    corner.rotate(ringAngle);
                    corner.rotate(ringFlip);
                    corner.rotate(ringRoll);
                    corner.rotate(rotation);
-                   corner.mul(scale);
+                   corner.scale(scale);
                    corner.add(x, y + 0.001F, z);
                 }
 

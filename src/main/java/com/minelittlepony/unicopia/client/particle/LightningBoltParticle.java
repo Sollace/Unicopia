@@ -3,8 +3,6 @@ package com.minelittlepony.unicopia.client.particle;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joml.Vector3f;
-
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
@@ -18,10 +16,11 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 
 public class LightningBoltParticle extends AbstractGeometryBasedParticle {
 
-    private final List<List<Vector3f>> branches = new ArrayList<>();
+    private final List<List<Vec3f>> branches = new ArrayList<>();
 
     public LightningBoltParticle(DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
@@ -50,21 +49,21 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
         world.setLightningTicksLeft(2);
     }
 
-    private List<Vector3f> generateBranch() {
-        Vector3f startPos = new Vector3f(0, 0, 0);
+    private List<Vec3f> generateBranch() {
+        Vec3f startPos = new Vec3f(0, 0, 0);
 
         int intendedLength = 2 + world.random.nextInt(6);
 
-        List<Vector3f> nodes = new ArrayList<>();
+        List<Vec3f> nodes = new ArrayList<>();
 
         while (nodes.size() < intendedLength) {
-            startPos = startPos.add(
+            startPos.add(
                     (float)world.random.nextTriangular(0.1F, 3),
                     (float)world.random.nextTriangular(0.1F, 3),
                     (float)world.random.nextTriangular(0.1F, 3)
             );
 
-            nodes.add(startPos);
+            nodes.add(startPos.copy());
         }
 
         return nodes;
@@ -83,11 +82,14 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
         float y = (float)(MathHelper.lerp(tickDelta, prevPosY, this.y) - cam.getY());
         float z = (float)(MathHelper.lerp(tickDelta, prevPosZ, this.z) - cam.getZ());
 
-        Vector3f origin = new Vector3f(x, y, z);
+        Vec3f origin = new Vec3f(x, y, z);
 
-        for (List<Vector3f> branch : branches) {
+        for (List<Vec3f> branch : branches) {
             for (int i = 0; i < branch.size(); i++) {
-                renderBranch(buffer, i == 0 ? origin : new Vector3f(branch.get(i - 1).add(x, y, z)), new Vector3f(branch.get(i).add(x, y, z)));
+                renderBranch(
+                        buffer, i == 0 ? origin : new Vec3f(branch.get(i - 1).getX() + x, branch.get(i - 1).getY() + y, branch.get(i - 1).getZ() + z),
+                        new Vec3f(branch.get(i).getX() + x, branch.get(i).getY() + y, branch.get(i).getZ() + z)
+                );
             }
         }
 
@@ -96,29 +98,29 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
         RenderSystem.enableCull();
     }
 
-    private void renderBranch(VertexConsumer buffer, Vector3f from, Vector3f to) {
+    private void renderBranch(VertexConsumer buffer, Vec3f from, Vec3f to) {
         float thickness = world.random.nextFloat() / 30 + 0.01F;
 
-        renderQuad(buffer, new Vector3f[]{
-            new Vector3f(from.x - thickness, from.y, from.z),
-            new Vector3f(to.x - thickness, to.y, to.z),
-            new Vector3f(to.x + thickness, to.y, to.z),
-            new Vector3f(from.x + thickness, from.y, from.z),
+        renderQuad(buffer, new Vec3f[]{
+            new Vec3f(from.getX() - thickness, from.getY(), from.getX()),
+            new Vec3f(to.getX() - thickness, to.getY(), to.getZ()),
+            new Vec3f(to.getX() + thickness, to.getY(), to.getZ()),
+            new Vec3f(from.getX() + thickness, from.getY(), from.getZ()),
 
-            new Vector3f(from.x - thickness, from.y - thickness * 2, from.z),
-            new Vector3f(to.x - thickness, to.y - thickness * 2, to.z),
-            new Vector3f(to.x + thickness, to.y - thickness * 2, to.z),
-            new Vector3f(from.x + thickness, from.y - thickness * 2, from.z),
+            new Vec3f(from.getX() - thickness, from.getY() - thickness * 2, from.getZ()),
+            new Vec3f(to.getX() - thickness, to.getY() - thickness * 2, to.getZ()),
+            new Vec3f(to.getX() + thickness, to.getY() - thickness * 2, to.getZ()),
+            new Vec3f(from.getX() + thickness, from.getY() - thickness * 2, from.getZ()),
 
-            new Vector3f(from.x, from.y - thickness, from.z + thickness),
-            new Vector3f(to.x, to.y - thickness, to.z + thickness),
-            new Vector3f(to.x, to.y + thickness, to.z + thickness),
-            new Vector3f(from.x, from.y + thickness, from.z + thickness),
+            new Vec3f(from.getX(), from.getY() - thickness, from.getZ() + thickness),
+            new Vec3f(to.getX(), to.getY() - thickness, to.getZ() + thickness),
+            new Vec3f(to.getX(), to.getY() + thickness, to.getZ() + thickness),
+            new Vec3f(from.getX(), from.getY() + thickness, from.getZ() + thickness),
 
-            new Vector3f(from.x - thickness * 2, from.y - thickness, from.z + thickness),
-            new Vector3f(to.x - thickness * 2, to.y - thickness, to.z + thickness),
-            new Vector3f(to.x - thickness * 2, to.y + thickness, to.z + thickness),
-            new Vector3f(from.x - thickness * 2, from.y + thickness, from.z + thickness)
+            new Vec3f(from.getX() - thickness * 2, from.getY() - thickness, from.getZ() + thickness),
+            new Vec3f(to.getX() - thickness * 2, to.getY() - thickness, to.getZ() + thickness),
+            new Vec3f(to.getX() - thickness * 2, to.getY() + thickness, to.getZ() + thickness),
+            new Vec3f(from.getX() - thickness * 2, from.getY() + thickness, from.getZ() + thickness)
         }, 0.3F, 1);
     }
 }

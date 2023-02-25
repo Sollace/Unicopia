@@ -8,24 +8,21 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.ShapelessRecipe;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 public class ZapAppleRecipe extends ShapelessRecipe {
 
-    public ZapAppleRecipe(Identifier id, String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
-        super(id, group, category, output, input);
+    public ZapAppleRecipe(Identifier id, String group, ItemStack output, DefaultedList<Ingredient> input) {
+        super(id, group, output, input);
     }
 
     public static class Serializer extends ShapelessRecipe.Serializer {
         @Override
         public ShapelessRecipe read(Identifier identifier, JsonObject json) {
             String group = JsonHelper.getString(json, "group", "");
-            @SuppressWarnings("deprecation")
-            CraftingRecipeCategory category = CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(json, "category", null), CraftingRecipeCategory.MISC);
             DefaultedList<Ingredient> ingredients = URecipes.getIngredients(JsonHelper.getArray(json, "ingredients"));
 
             if (ingredients.isEmpty()) {
@@ -36,7 +33,7 @@ public class ZapAppleRecipe extends ShapelessRecipe {
 
             Identifier id = new Identifier(JsonHelper.getString(json, "appearance"));
 
-            return new ZapAppleRecipe(identifier, group, category, UItems.ZAP_APPLE.setAppearance(UItems.ZAP_APPLE.getDefaultStack(), Registries.ITEM.getOrEmpty(id).orElseThrow(() -> {
+            return new ZapAppleRecipe(identifier, group, UItems.ZAP_APPLE.setAppearance(UItems.ZAP_APPLE.getDefaultStack(), Registry.ITEM.getOrEmpty(id).orElseThrow(() -> {
                 return new JsonSyntaxException("Unknown item '" + id + "'");
             }).getDefaultStack()), ingredients);
         }
@@ -44,7 +41,6 @@ public class ZapAppleRecipe extends ShapelessRecipe {
         @Override
         public ShapelessRecipe read(Identifier identifier, PacketByteBuf input) {
             String group = input.readString(32767);
-            CraftingRecipeCategory category = input.readEnumConstant(CraftingRecipeCategory.class);
 
             DefaultedList<Ingredient> ingredients = DefaultedList.ofSize(input.readVarInt(), Ingredient.EMPTY);
 
@@ -52,7 +48,7 @@ public class ZapAppleRecipe extends ShapelessRecipe {
                 ingredients.set(j, Ingredient.fromPacket(input));
             }
 
-            return new ZapAppleRecipe(identifier, group, category, input.readItemStack(), ingredients);
+            return new ZapAppleRecipe(identifier, group, input.readItemStack(), ingredients);
         }
     }
 }

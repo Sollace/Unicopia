@@ -9,7 +9,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 public class OrientedBillboardParticleEffect implements ParticleEffect {
     @SuppressWarnings("deprecation")
@@ -70,7 +70,7 @@ public class OrientedBillboardParticleEffect implements ParticleEffect {
 
     @Override
     public String asString() {
-        return String.format(Locale.ROOT, "%s %b %.2f %.2f", Registries.PARTICLE_TYPE.getId(getType()), fixed, yaw, pitch);
+        return String.format(Locale.ROOT, "%s %b %.2f %.2f", Registry.PARTICLE_TYPE.getId(getType()), fixed, yaw, pitch);
     }
 
 }

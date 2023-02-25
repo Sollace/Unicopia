@@ -14,7 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public abstract class StateChange {
@@ -49,7 +49,7 @@ public abstract class StateChange {
                     if (chance > 0 && world.random.nextFloat() > chance) {
                         return state;
                     }
-                    return Registries.BLOCK.getOrEmpty(id).map(Block::getDefaultState)
+                    return Registry.BLOCK.getOrEmpty(id).map(Block::getDefaultState)
                             .map(newState -> merge(newState, state))
                             .orElse(state);
                 }

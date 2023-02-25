@@ -13,7 +13,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
-import net.minecraft.registry.Registries;
+import net.minecraft.util.registry.Registry;
 
 public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tickable, TrinketsDelegate.Inventory {
     public static final long TICKS = 1;
@@ -108,7 +108,7 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
     @Override
     public void toNBT(NbtCompound compound) {
         items.forEach((charm, count) -> {
-            compound.putLong(Registries.ITEM.getId(charm.asItem()).toString(), count);
+            compound.putLong(Registry.ITEM.getId(charm.asItem()).toString(), count);
         });
     }
 
@@ -117,7 +117,7 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
         items.clear();
         compound.getKeys().stream().map(Identifier::tryParse)
             .filter(Objects::nonNull)
-            .map(id -> Map.entry(Registries.ITEM.get(id), compound.getLong(id.toString())))
+            .map(id -> Map.entry(Registry.ITEM.get(id), compound.getLong(id.toString())))
             .filter(i -> i.getKey() instanceof Trackable && i.getValue() > 0)
             .forEach(item -> items.put((Trackable)item.getKey(), item.getValue()));
     }

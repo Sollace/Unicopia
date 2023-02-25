@@ -14,6 +14,7 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.world.GameMode;
 
 public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implements Owned<PlayerEntity>, Owned.Mutable<PlayerEntity> {
@@ -23,7 +24,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
     private PlayerEntity owner;
 
     public DummyClientPlayerEntity(ClientWorld world, GameProfile profile) {
-        super(world, profile);
+        super(world, profile, null);
     }
 
     @Override
@@ -45,7 +46,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
             playerInfo = connection.getPlayerListEntry(getGameProfile().getId());
 
             if (playerInfo == null) {
-                playerInfo = new PlayerListEntry(getGameProfile(), false);
+                playerInfo = new PlayerListEntry(new PlayerListS2CPacket.Entry(getGameProfile(), 0, null, null, null), null, false);
             }
         }
 

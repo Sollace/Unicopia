@@ -36,7 +36,7 @@ public class DiscoveryToast implements Toast {
             return Toast.Visibility.HIDE;
         }
 
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.setShaderColor(1.0F, 1, 1, 1);
         manager.drawTexture(matrices, 0, 0, 0, 32, getWidth(), getHeight());

@@ -17,8 +17,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.mob.FlyingEntity;
-import net.minecraft.registry.*;
-import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.tag.BiomeTags;
 import net.minecraft.world.biome.Biome;
 
 public interface UEntities {
@@ -54,7 +55,7 @@ public interface UEntities {
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         EntityType<T> type = builder.build();
-        return Registry.register(Registries.ENTITY_TYPE, Unicopia.id(name), type);
+        return Registry.register(Registry.ENTITY_TYPE, Unicopia.id(name), type);
     }
 
     static void bootstrap() {
@@ -86,7 +87,7 @@ public interface UEntities {
 
     interface Paintings {
         private static void register(String id, int width, int height) {
-            Registry.register(Registries.PAINTING_VARIANT, RegistryKey.of(RegistryKeys.PAINTING_VARIANT, Unicopia.id(id)), new PaintingVariant(16 * width, 16 * height));
+            Registry.register(Registry.PAINTING_VARIANT, RegistryKey.of(Registry.PAINTING_VARIANT_KEY, Unicopia.id(id)), new PaintingVariant(16 * width, 16 * height));
         }
 
         static void bootstrap() {

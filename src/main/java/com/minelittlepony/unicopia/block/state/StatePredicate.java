@@ -17,10 +17,9 @@ import net.minecraft.block.*;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.tag.TagKey;
 import net.minecraft.world.World;
 
 public abstract class StatePredicate implements Predicate<BlockState> {
@@ -54,7 +53,7 @@ public abstract class StatePredicate implements Predicate<BlockState> {
             predicates.add(ofState(JsonHelper.getString(o, "state")));
         }
         if (o.has("tag")) {
-            Optional.of(JsonHelper.getString(o, "tag")).map(s -> TagKey.of(RegistryKeys.BLOCK, new Identifier(s))).ifPresent(tag -> {
+            Optional.of(JsonHelper.getString(o, "tag")).map(s -> TagKey.of(Registry.BLOCK_KEY, new Identifier(s))).ifPresent(tag -> {
                 predicates.add(new StatePredicate() {
                     @Override
                     public StateChange getInverse() {
@@ -67,7 +66,7 @@ public abstract class StatePredicate implements Predicate<BlockState> {
 
                             @Override
                             public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-                                return Registries.BLOCK.getOrCreateEntryList(tag)
+                                return Registry.BLOCK.getOrCreateEntryList(tag)
                                         .getRandom(world.random)
                                         .map(RegistryEntry::value)
                                         .map(Block::getDefaultState)
@@ -154,14 +153,14 @@ public abstract class StatePredicate implements Predicate<BlockState> {
 
                         @Override
                         public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-                            return Registries.BLOCK.getOrEmpty(id).map(Block::getDefaultState).orElse(state);
+                            return Registry.BLOCK.getOrEmpty(id).map(Block::getDefaultState).orElse(state);
                         }
                     };
                 }
 
                 @Override
                 public boolean test(BlockState state) {
-                    return Registries.BLOCK.getOrEmpty(id).filter(state::isOf).isPresent();
+                    return Registry.BLOCK.getOrEmpty(id).filter(state::isOf).isPresent();
                 }
             };
         }
@@ -178,7 +177,7 @@ public abstract class StatePredicate implements Predicate<BlockState> {
 
                     @Override
                     public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-                        return Registries.BLOCK.getOrEmpty(id).map(Block::getDefaultState).map(newState -> {
+                        return Registry.BLOCK.getOrEmpty(id).map(Block::getDefaultState).map(newState -> {
                             for (PropertyOp prop : properties) {
                                 newState = prop.applyTo(world, newState);
                             }
@@ -190,7 +189,7 @@ public abstract class StatePredicate implements Predicate<BlockState> {
 
             @Override
             public boolean test(BlockState state) {
-                return Registries.BLOCK.getOrEmpty(id).filter(state::isOf).isPresent() && properties.stream().allMatch(p -> p.test(state));
+                return Registry.BLOCK.getOrEmpty(id).filter(state::isOf).isPresent() && properties.stream().allMatch(p -> p.test(state));
             }
         };
     }
