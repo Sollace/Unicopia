@@ -154,8 +154,12 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             if (!entity.hasVehicle() && getCarrierId().isPresent() && !asWorld().isClient && entity.age % 10 == 0) {
                 UUID carrierId = getCarrierId().get();
                 Entity carrier = ((ServerWorld)asWorld()).getEntity(carrierId);
-                asEntity().startRiding(carrier, true);
-                Living.transmitPassengers(carrier);
+                if (carrier != null) {
+                    asEntity().startRiding(carrier, true);
+                    Living.transmitPassengers(carrier);
+                } else {
+                    Unicopia.LOGGER.warn("No passenger with id {]", carrierId);
+                }
             }
         }
 
