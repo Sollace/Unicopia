@@ -29,6 +29,10 @@ public class MineLPDelegate {
         return Race.HUMAN;
     }
 
+    public float getPonyHeight(Entity entity) {
+        return entity.getHeight();
+    }
+
     public Race getRace(Entity entity) {
         return Race.HUMAN;
     }
