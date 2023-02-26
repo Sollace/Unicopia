@@ -121,8 +121,11 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 spreadAmount += Math.sin(pony.asEntity().age * 4F) * 8;
             } else {
                 if (isGliding()) {
-                    spreadAmount += 2.5F;
+                    spreadAmount += MineLPDelegate.getInstance().getPlayerPonyRace(entity).isEquine() ? -0.8F : 2.5F;
                 } else {
+                    if (MineLPDelegate.getInstance().getPlayerPonyRace(entity).isEquine()) {
+                        spreadAmount -= 1.8F;
+                    }
                     spreadAmount += strafe * 10;
                     spreadAmount += thrustScale * 24;
                 }
