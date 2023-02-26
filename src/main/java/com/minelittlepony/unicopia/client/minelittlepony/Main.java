@@ -79,6 +79,11 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
         return IPony.getManager().getPony(entity).map(IPony::race).map(Main::toUnicopiaRace).orElse(Race.HUMAN);
     }
 
+    @Override
+    public float getPonyHeight(Entity entity) {
+        return super.getPonyHeight(entity) * IPony.getManager().getPony(entity).map(pony -> pony.metadata().getSize().getScaleFactor() + 0.1F).orElse(1F);
+    }
+
     private static Race toUnicopiaRace(com.minelittlepony.api.pony.meta.Race race) {
         switch (race) {
             case ALICORN:
@@ -97,6 +102,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
                 return Race.BAT;
             case SEAPONY:
             case UNICORN:
+            case KIRIN:
                 return Race.UNICORN;
             default:
                 return Race.HUMAN;

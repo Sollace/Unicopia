@@ -99,12 +99,12 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
     }
 
     protected Vec3d getCarryPosition(Living<E> entity, Living<?> passenger) {
-        float passengerHeight = passenger.asEntity().getHeight() / 2F;
+        float passengerHeight = MineLPDelegate.getInstance().getPonyHeight(passenger.asEntity()) / 2F;
         float carrierHeight = entity.asEntity().getHeight() / 5F;
 
         if (entity instanceof Pony pony && MineLPDelegate.getInstance().getPlayerPonyRace(pony.asEntity()).isEquine() && pony.getPhysics().isFlying()) {
             return new Vec3d(0,
-                    -passenger.asEntity().getHeight() - passengerHeight,
+                    -carrierHeight * 10 - passengerHeight * 2,
                     0
             );
         }
