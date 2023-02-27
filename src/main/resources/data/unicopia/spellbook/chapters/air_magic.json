@@ -80,6 +80,25 @@
         ]
       },
       {
+        "title": "Bubble",
+        "level": 2,
+        "elements": [
+          "A defensive and utility spell. Bubble will trap the target in a giant soap bubble, rendering them defensless.",
+          "Use it again will pop the bubble",
+          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
+          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/water.png" }
+        ]
+      },
+      {
+        "title": "",
+        "level": 2,
+        "elements": [
+          { "recipe": "unicopia:spells/bubble" },
+          "Requires:",
+          "- 1 catapult gem\n- At least 9x water trait\n- At least 9x air trait"
+        ]
+      },
+      {
         "title": "8th Hoof '12",
         "level": 4,
         "elements": [
