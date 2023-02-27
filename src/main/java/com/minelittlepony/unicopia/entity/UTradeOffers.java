@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.entity;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.collect.ImmutableMap;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.effect.UPotions;
@@ -10,7 +9,6 @@ import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
@@ -25,7 +23,6 @@ import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.TradeOffers.Factory;
-import net.minecraft.village.TradeOffers.SellItemFactory;
 
 public interface UTradeOffers {
     static void bootstrap() {
