@@ -8,7 +8,6 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.entity.UEntities;
-import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
@@ -59,7 +58,7 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
             MagicProjectileEntity projectile = UEntities.MAGIC_BEAM.create(world);
             projectile.setPosition(entity.getX(), entity.getEyeY() - 0.1F, entity.getZ());
             projectile.setOwner(entity);
-            projectile.setItem(GemstoneItem.enchant(UItems.GEMSTONE.getDefaultStack(), spell.getType()));
+            projectile.setItem(UItems.GEMSTONE.getDefaultStack(spell.getType()));
             projectile.getSpellSlot().put(spell);
             projectile.setVelocity(entity, entity.getPitch(), entity.getYaw(), 0, 1.5F, divergance);
             projectile.setNoGravity(true);

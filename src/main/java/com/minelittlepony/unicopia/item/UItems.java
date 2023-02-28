@@ -56,7 +56,7 @@ public interface UItems {
     Item CRYSTAL_HEART = register("crystal_heart", new CrystalHeartItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
     Item CRYSTAL_SHARD = register("crystal_shard", new Item(new Item.Settings()), ItemGroups.NATURAL);
 
-    Item GEMSTONE = register("gemstone", new GemstoneItem(new Item.Settings()), ItemGroups.NATURAL);
+    GemstoneItem GEMSTONE = register("gemstone", new GemstoneItem(new Item.Settings()), ItemGroups.NATURAL);
     Item BOTCHED_GEM = register("botched_gem", new Item(new Item.Settings()), ItemGroups.NATURAL);
 
     Item PEGASUS_FEATHER = register("pegasus_feather", new Item(new Item.Settings()), ItemGroups.NATURAL);
@@ -99,6 +99,9 @@ public interface UItems {
     Item GOLDEN_WING = register("golden_wing", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)), ItemGroups.NATURAL);
 
     Item DRAGON_BREATH_SCROLL = register("dragon_breath_scroll", new DragonBreathScrollItem(new Item.Settings().rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
+    Item GROGARS_BELL = register("grogars_bell", new Item(new Item.Settings().rarity(Rarity.RARE)), ItemGroups.TOOLS);
+    Item MEADOWBROOKS_STAFF = register("meadowbrooks_staff", new StaffItem(new Settings().rarity(Rarity.UNCOMMON).maxCount(1).maxDamage(120)), ItemGroups.TOOLS);
+    Item MAGIC_STAFF = register("magic_staff", new EnchantedStaffItem(new Settings().rarity(Rarity.UNCOMMON).maxCount(1).maxDamage(120)), ItemGroups.TOOLS);
 
     Item WOODEN_POLEARM = register("wooden_polearm", new PolearmItem(ToolMaterials.WOOD, 2, -3.6F, 2, new Item.Settings()), ItemGroups.COMBAT);
     Item STONE_POLEARM = register("stone_polearm", new PolearmItem(ToolMaterials.STONE, 2, -3.6F, 2, new Item.Settings()), ItemGroups.COMBAT);

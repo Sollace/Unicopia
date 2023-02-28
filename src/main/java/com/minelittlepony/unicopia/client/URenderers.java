@@ -17,7 +17,7 @@ import com.minelittlepony.unicopia.client.render.*;
 import com.minelittlepony.unicopia.client.render.entity.*;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.ChameleonItem;
-import com.minelittlepony.unicopia.item.GemstoneItem;
+import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.particle.UParticles;
 
@@ -117,11 +117,17 @@ public interface URenderers {
         PolearmRenderer.register(UItems.DIAMOND_POLEARM);
         PolearmRenderer.register(UItems.NETHERITE_POLEARM);
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> {
-            return GemstoneItem.isEnchanted(stack) ? 1 + GemstoneItem.getSpellKey(stack).getAffinity().ordinal() : 0;
+            return EnchantableItem.isEnchanted(stack) ? 1 + EnchantableItem.getSpellKey(stack).getAffinity().ordinal() : 0;
         });
         ColorProviderRegistry.ITEM.register((stack, i) -> {
-            return i > 0 || !GemstoneItem.isEnchanted(stack) ? -1 : GemstoneItem.getSpellKey(stack).getColor();
+            return i > 0 || !EnchantableItem.isEnchanted(stack) ? -1 : EnchantableItem.getSpellKey(stack).getColor();
         }, UItems.GEMSTONE);
+        ColorProviderRegistry.ITEM.register((stack, i) -> {
+            if (i == 1 && EnchantableItem.isEnchanted(stack)) {
+                return EnchantableItem.getSpellKey(stack).getColor();
+            }
+            return -1;
+        }, UItems.MAGIC_STAFF);
 
         BlockColorProvider tintedProvider = (state, view, pos, color) -> {
             if (view == null || pos == null) {

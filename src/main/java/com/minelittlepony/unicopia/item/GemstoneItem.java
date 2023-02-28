@@ -8,10 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.client.FlowingText;
 import com.minelittlepony.unicopia.entity.player.PlayerCharmTracker;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -25,11 +23,10 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class GemstoneItem extends Item implements MultiItem {
+public class GemstoneItem extends Item implements MultiItem, EnchantableItem {
 
     public GemstoneItem(Settings settings) {
         super(settings);
@@ -43,16 +40,16 @@ public class GemstoneItem extends Item implements MultiItem {
             ItemStack stack = user.getStackInHand(hand);
             PlayerCharmTracker charms = Pony.of(user).getCharms();
 
-            TypedActionResult<CustomisedSpellType<?>> spell = consumeSpell(stack, user, ((Predicate<CustomisedSpellType<?>>)charms.getEquippedSpell(hand)::equals).negate());
+            TypedActionResult<CustomisedSpellType<?>> spell = EnchantableItem.consumeSpell(stack, user, ((Predicate<CustomisedSpellType<?>>)charms.getEquippedSpell(hand)::equals).negate());
 
             CustomisedSpellType<?> existing = charms.getEquippedSpell(hand);
 
             if (!existing.isEmpty()) {
 
                 if (stack.getCount() == 1) {
-                    stack = existing.traits().applyTo(enchant(stack, existing.type()));
+                    stack = existing.traits().applyTo(EnchantableItem.enchant(stack, existing.type()));
                 } else {
-                    user.giveItemStack(existing.traits().applyTo(enchant(stack.split(1), existing.type())));
+                    user.giveItemStack(existing.traits().applyTo(EnchantableItem.enchant(stack.split(1), existing.type())));
                 }
             }
 
@@ -76,8 +73,8 @@ public class GemstoneItem extends Item implements MultiItem {
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> lines, TooltipContext tooltipContext) {
         super.appendTooltip(stack, world, lines, tooltipContext);
 
-        if (isEnchanted(stack)) {
-            SpellType<?> key = getSpellKey(stack);
+        if (EnchantableItem.isEnchanted(stack)) {
+            SpellType<?> key = EnchantableItem.getSpellKey(stack);
 
             MutableText line = Text.translatable(key.getTranslationKey() + ".lore").formatted(key.getAffinity().getColor());
 
@@ -94,81 +91,26 @@ public class GemstoneItem extends Item implements MultiItem {
         return Arrays.stream(Affinity.VALUES)
             .flatMap(i -> SpellType.byAffinity(i).stream()
                     .filter(type -> type.isObtainable())
-                    .map(type -> enchant(getDefaultStack(), type, i))
+                    .map(type -> EnchantableItem.enchant(getDefaultStack(), type, i))
             )
             .toList();
     }
 
     @Override
     public boolean hasGlint(ItemStack stack) {
-        return super.hasGlint(stack) || (Unicopia.SIDE.getPlayerSpecies().canCast() && isEnchanted(stack));
+        return super.hasGlint(stack) || (Unicopia.SIDE.getPlayerSpecies().canCast() && EnchantableItem.isEnchanted(stack));
     }
 
     @Override
     public Text getName(ItemStack stack) {
-        if (isEnchanted(stack)) {
+        if (EnchantableItem.isEnchanted(stack)) {
             if (!Unicopia.SIDE.getPlayerSpecies().canCast()) {
                 return Text.translatable(getTranslationKey(stack) + ".obfuscated");
             }
 
-            return Text.translatable(getTranslationKey(stack) + ".enchanted", getSpellKey(stack).getName());
+            return Text.translatable(getTranslationKey(stack) + ".enchanted", EnchantableItem.getSpellKey(stack).getName());
         }
         return super.getName();
     }
 
-    public static TypedActionResult<CustomisedSpellType<?>> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable Predicate<CustomisedSpellType<?>> filter) {
-
-        if (!isEnchanted(stack)) {
-            return TypedActionResult.pass(null);
-        }
-
-        SpellType<Spell> key = getSpellKey(stack);
-
-        if (key.isEmpty()) {
-            return TypedActionResult.fail(null);
-        }
-
-        CustomisedSpellType<?> result = key.withTraits(SpellTraits.of(stack));
-
-        if (filter != null && !filter.test(result)) {
-            return TypedActionResult.fail(null);
-        }
-
-        if (!player.world.isClient) {
-            player.swingHand(player.getStackInHand(Hand.OFF_HAND) == stack ? Hand.OFF_HAND : Hand.MAIN_HAND);
-
-            if (stack.getCount() == 1) {
-                unenchant(stack);
-            } else {
-                player.giveItemStack(unenchant(stack.split(1)));
-            }
-        }
-
-        return TypedActionResult.consume(result);
-    }
-
-    public static boolean isEnchanted(ItemStack stack) {
-        return !stack.isEmpty() && stack.hasNbt() && stack.getNbt().contains("spell");
-    }
-
-    public static ItemStack enchant(ItemStack stack, SpellType<?> type) {
-        return enchant(stack, type, type.getAffinity());
-    }
-
-    public static ItemStack enchant(ItemStack stack, SpellType<?> type, Affinity affinity) {
-        if (type.isEmpty()) {
-            return unenchant(stack);
-        }
-        stack.getOrCreateNbt().putString("spell", type.getId().toString());
-        return type.getTraits().applyTo(stack);
-    }
-
-    public static ItemStack unenchant(ItemStack stack) {
-        stack.removeSubNbt("spell");
-        return stack;
-    }
-
-    public static <T extends Spell> SpellType<T> getSpellKey(ItemStack stack) {
-        return SpellType.getKey(isEnchanted(stack) ? new Identifier(stack.getNbt().getString("spell")) : SpellType.EMPTY_ID);
-    }
 }

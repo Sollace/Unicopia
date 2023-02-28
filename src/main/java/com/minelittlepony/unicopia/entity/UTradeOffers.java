@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.effect.UPotions;
-import com.minelittlepony.unicopia.item.GemstoneItem;
+import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 
@@ -43,7 +43,7 @@ public interface UTradeOffers {
 
         TradeOfferHelper.registerWanderingTraderOffers(1, factories -> {
             factories.add(buyTiered(UItems.GEMSTONE, 30, UItems.GOLDEN_FEATHER, 1, UItems.GOLDEN_WING, 1, 30, 2, 0.05F));
-            factories.add((e, rng) -> new TradeOffer(new ItemStack(UItems.GEMSTONE, 3), GemstoneItem.enchant(UItems.GEMSTONE.getDefaultStack(), SpellType.REGISTRY.getRandom(rng).get().value()), 20, 1, 0.05F));
+            factories.add((e, rng) -> new TradeOffer(new ItemStack(UItems.GEMSTONE, 3), EnchantableItem.enchant(UItems.GEMSTONE.getDefaultStack(), SpellType.REGISTRY.getRandom(rng).get().value()), 20, 1, 0.05F));
             factories.add(buy(UItems.GEMSTONE, 20, UItems.HAY_FRIES, 5, 50, 3, 0.06F));
             factories.add(buy(Items.WHEAT, 17, UItems.HAY_BURGER, 1, 10, 6, 0.08F));
             factories.add(buy(ItemTags.SMALL_FLOWERS, 2, UItems.DAFFODIL_DAISY_SANDWICH, 1, 10, 6, 0.08F));

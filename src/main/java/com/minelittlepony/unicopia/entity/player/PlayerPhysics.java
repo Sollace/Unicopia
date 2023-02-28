@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.item.AmuletItem;
+import com.minelittlepony.unicopia.item.ChargeableItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.*;
@@ -389,9 +390,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 minDamage *= 3;
             }
 
-            AmuletItem.consumeEnergy(stack, energyConsumed);
+            ChargeableItem.consumeEnergy(stack, energyConsumed);
 
-            if (AmuletItem.getEnergy(stack) < 9) {
+            if (ChargeableItem.getEnergy(stack) < 9) {
                 entity.playSound(USounds.ITEM_ICARUS_WINGS_WARN, 0.13F, 0.5F);
             }
 

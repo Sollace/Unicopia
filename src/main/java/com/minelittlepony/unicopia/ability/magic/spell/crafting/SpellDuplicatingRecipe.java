@@ -29,7 +29,7 @@ public class SpellDuplicatingRecipe implements SpellbookRecipe {
     public void buildCraftingTree(CraftingTreeBuilder builder) {
         ItemStack[] spells = SpellType.REGISTRY.stream()
                 .filter(SpellType::isObtainable)
-                .map(type -> GemstoneItem.enchant(UItems.GEMSTONE.getDefaultStack(), type))
+                .map(UItems.GEMSTONE::getDefaultStack)
                 .toArray(ItemStack[]::new);
         builder.input(UItems.BOTCHED_GEM.getDefaultStack());
         builder.input(spells);
@@ -47,16 +47,16 @@ public class SpellDuplicatingRecipe implements SpellbookRecipe {
         return InventoryUtil.stream(inventory)
                 .limit(inventory.size() - 1)
                 .filter(i -> !i.isEmpty())
-                .noneMatch(i -> !i.isOf(UItems.GEMSTONE) || !GemstoneItem.isEnchanted(i))
+                .noneMatch(i -> !i.isOf(UItems.GEMSTONE) || !EnchantableItem.isEnchanted(i))
                 && material.test(stack)
-                && !GemstoneItem.isEnchanted(stack);
+                && !EnchantableItem.isEnchanted(stack);
     }
 
     @Override
     public ItemStack craft(SpellbookInventory inventory) {
         return InventoryUtil.stream(inventory)
             .filter(i -> i.isOf(UItems.GEMSTONE))
-            .filter(GemstoneItem::isEnchanted)
+            .filter(EnchantableItem::isEnchanted)
             .map(stack -> stack.copy())
             .map(stack -> {
                 stack.setCount(2);

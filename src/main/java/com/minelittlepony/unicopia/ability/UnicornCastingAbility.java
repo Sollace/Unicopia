@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
+import com.minelittlepony.unicopia.item.ChargeableItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -89,13 +90,13 @@ public class UnicornCastingAbility implements Ability<Hit> {
 
         if (amulet.getResult().isAccepted()) {
             ItemStack stack = amulet.getValue();
-            AmuletItem item = (AmuletItem)stack.getItem();
+            ChargeableItem item = (ChargeableItem)stack.getItem();
 
             if (item.canCharge(stack)) {
                 float amount = -Math.min(player.getMagicalReserves().getMana().get(), item.getChargeRemainder(stack));
 
                 if (amount < 0) {
-                    AmuletItem.consumeEnergy(stack, amount);
+                    ChargeableItem.consumeEnergy(stack, amount);
                     player.getMagicalReserves().getMana().add(amount * player.getMagicalReserves().getMana().getMax());
                     player.asWorld().playSoundFromEntity(null, player.asEntity(), USounds.ITEM_AMULET_RECHARGE, SoundCategory.PLAYERS, 1, 1);
                 }

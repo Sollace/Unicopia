@@ -37,7 +37,7 @@ public class SpellEnhancingRecipe implements SpellbookRecipe {
     @Override
     public boolean matches(SpellbookInventory inventory, World world) {
         ItemStack stack = inventory.getItemToModify();
-        return material.test(stack) && GemstoneItem.isEnchanted(stack);
+        return material.test(stack) && EnchantableItem.isEnchanted(stack);
     }
 
     @Override

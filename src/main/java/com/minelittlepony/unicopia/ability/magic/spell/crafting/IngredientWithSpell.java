@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.item.GemstoneItem;
+import com.minelittlepony.unicopia.item.EnchantableItem;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -32,7 +32,7 @@ public class IngredientWithSpell implements Predicate<ItemStack> {
     @Override
     public boolean test(ItemStack t) {
         boolean stackMatch = stack.map(m -> m.test(t)).orElse(true);
-        boolean spellMatch = spell.map(m -> GemstoneItem.getSpellKey(t).equals(m)).orElse(true);
+        boolean spellMatch = spell.map(m -> EnchantableItem.getSpellKey(t).equals(m)).orElse(true);
         return stackMatch && spellMatch;
     }
 
@@ -41,7 +41,7 @@ public class IngredientWithSpell implements Predicate<ItemStack> {
             stacks = stack.stream()
                     .map(Ingredient::getMatchingStacks)
                     .flatMap(Arrays::stream)
-                    .map(stack -> spell.map(spell -> GemstoneItem.enchant(stack, spell)).orElse(stack))
+                    .map(stack -> spell.map(spell -> EnchantableItem.enchant(stack, spell)).orElse(stack))
                     .toArray(ItemStack[]::new);
         }
         return stacks;

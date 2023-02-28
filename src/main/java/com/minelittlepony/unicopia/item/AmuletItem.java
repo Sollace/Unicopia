@@ -27,7 +27,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
-public class AmuletItem extends WearableItem {
+public class AmuletItem extends WearableItem implements ChargeableItem {
 
     private final int maxEnergy;
 
@@ -57,7 +57,7 @@ public class AmuletItem extends WearableItem {
         }
 
         if (isChargable()) {
-            list.add(Text.translatable("item.unicopia.amulet.energy", (int)Math.floor(getEnergy(stack)), maxEnergy));
+            list.add(Text.translatable("item.unicopia.amulet.energy", (int)Math.floor(ChargeableItem.getEnergy(stack)), getMaxCharge()));
         }
     }
 
@@ -73,7 +73,7 @@ public class AmuletItem extends WearableItem {
 
     @Override
     public boolean hasGlint(ItemStack stack) {
-        return !isChargable() || stack.hasEnchantments() || getEnergy(stack) > 0;
+        return !isChargable() || stack.hasEnchantments() || ChargeableItem.getEnergy(stack) > 0;
     }
 
     @Override
@@ -82,11 +82,16 @@ public class AmuletItem extends WearableItem {
     }
 
     public boolean isApplicable(ItemStack stack) {
-        return stack.getItem() == this && (!isChargable() || getEnergy(stack) > 0);
+        return stack.getItem() == this && (!isChargable() || ChargeableItem.getEnergy(stack) > 0);
     }
 
     public boolean isApplicable(LivingEntity entity) {
         return isApplicable(getForEntity(entity));
+    }
+
+    @Override
+    public int getMaxCharge() {
+        return maxEnergy;
     }
 
     public static ItemStack getForEntity(LivingEntity entity) {
@@ -94,34 +99,6 @@ public class AmuletItem extends WearableItem {
                 .filter(stack -> stack.getItem() instanceof AmuletItem)
                 .findFirst()
                 .orElse(ItemStack.EMPTY);
-    }
-
-    public boolean isChargable() {
-        return maxEnergy > 0;
-    }
-
-    public boolean canCharge(ItemStack stack) {
-        return isChargable() && getEnergy(stack) < maxEnergy;
-    }
-
-    public float getChargeRemainder(ItemStack stack) {
-        return Math.max(0, maxEnergy - getEnergy(stack));
-    }
-
-    public static void consumeEnergy(ItemStack stack, float amount) {
-        setEnergy(stack, getEnergy(stack) - amount);
-    }
-
-    public static float getEnergy(ItemStack stack) {
-        return stack.hasNbt() && stack.getNbt().contains("energy") ? stack.getNbt().getFloat("energy") : 0;
-    }
-
-    public static void setEnergy(ItemStack stack, float energy) {
-        if (energy <= 0) {
-            stack.removeSubNbt("energy");
-        } else {
-            stack.getOrCreateNbt().putFloat("energy", energy);
-        }
     }
 
     public static class ModifiersBuilder {

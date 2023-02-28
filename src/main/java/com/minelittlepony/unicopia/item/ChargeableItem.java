@@ -1,0 +1,56 @@
+package com.minelittlepony.unicopia.item;
+
+import net.minecraft.item.ItemStack;
+
+public interface ChargeableItem {
+
+    int getMaxCharge();
+
+    default int getDefaultCharge() {
+        return 0;
+    }
+
+    default boolean isChargable() {
+        return getMaxCharge() > 0;
+    }
+
+    default boolean hasCharge(ItemStack stack) {
+        return getEnergy(stack) > 0;
+    }
+
+    default ItemStack recharge(ItemStack stack) {
+        return setEnergy(stack, getMaxCharge());
+    }
+
+    default boolean canCharge(ItemStack stack) {
+        return isChargable() && getEnergy(stack) < getMaxCharge();
+    }
+
+    default float getChargeRemainder(ItemStack stack) {
+        return Math.max(0, getMaxCharge() - getEnergy(stack));
+    }
+
+    default void onDischarge(ItemStack stack) {
+
+    }
+
+    static void consumeEnergy(ItemStack stack, float amount) {
+        setEnergy(stack, getEnergy(stack) - amount);
+        if (stack.getItem() instanceof ChargeableItem c) {
+            c.onDischarge(stack);
+        }
+    }
+
+    static float getEnergy(ItemStack stack) {
+        return stack.hasNbt() && stack.getNbt().contains("energy") ? stack.getNbt().getFloat("energy") : (stack.getItem() instanceof ChargeableItem c) ? c.getDefaultCharge() : 0;
+    }
+
+    static ItemStack setEnergy(ItemStack stack, float energy) {
+        if (energy <= 0) {
+            stack.removeSubNbt("energy");
+        } else {
+            stack.getOrCreateNbt().putFloat("energy", energy);
+        }
+        return stack;
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "parent": "unicopia:item/handheld_staff",
+    "textures": {
+        "layer0": "unicopia:item/magic_staff_base",
+        "layer1": "unicopia:item/magic_staff_magic"
+    }
+}

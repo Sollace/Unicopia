@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.entity.player;
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.item.GemstoneItem;
+import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
@@ -36,8 +36,8 @@ public class PlayerCharmTracker implements NbtSerialisable {
 
     public TypedActionResult<CustomisedSpellType<?>> getSpellInHand(Hand hand) {
         return Streams.stream(pony.asEntity().getHandItems())
-                .filter(GemstoneItem::isEnchanted)
-                .map(stack -> GemstoneItem.consumeSpell(stack, pony.asEntity(), null))
+                .filter(EnchantableItem::isEnchanted)
+                .map(stack -> EnchantableItem.consumeSpell(stack, pony.asEntity(), null))
                 .findFirst()
                 .orElse(getEquippedSpell(hand).toAction());
     }
