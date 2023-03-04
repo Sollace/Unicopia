@@ -32,13 +32,14 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.*;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.event.GameEvent;
 
 public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickable, Motion, NbtSerialisable {
     private static final int MAX_WALL_HIT_CALLDOWN = 30;
     private static final int MAX_TICKS_TO_GLIDE = 20;
+    private static final int MAX_TICKS_TO_WEATHER_EFFECTS = 100;
     private static final int IDLE_FLAP_INTERVAL = 20;
     private static final int GLIDING_SOUND_INTERVAL = 200;
 
@@ -564,42 +565,24 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     private void applyTurbulance(MutableVector velocity) {
+        float effectStrength = Math.min(1, (float)ticksInAir / MAX_TICKS_TO_WEATHER_EFFECTS);
+        Vec3d gust = WeatherConditions.getGustStrength(entity.world, entity.getBlockPos());
 
-        Vec3d wind = WeatherConditions.getAirflow(entity.getBlockPos(), entity.world).multiply(0.04);
-        velocity.x += wind.x;
-        velocity.y += wind.y;
-        velocity.z += wind.z;
-
-        Random rng = Random.create(entity.world.getTime());
-
-        float glance = 360 * rng.nextFloat();
-        float forward = 0.015F * rng.nextFloat() * entity.world.getRainGradient(1);
-
-        if (entity.world.random.nextInt(30) == 0) {
-            forward *= 10;
-        }
-        if (entity.world.random.nextInt(30) == 0) {
-            forward *= 10;
-        }
-        if (entity.world.random.nextInt(40) == 0) {
-            forward *= 100;
-        }
-
-        if (entity.world.isThundering() && rng.nextInt(60) == 0) {
-            velocity.y += forward * 3 * getGravitySignum();
-        }
-
-        if (forward >= 1) {
+        if (effectStrength * gust.getX() >= 1) {
             SoundEmitter.playSoundAt(entity, USounds.AMBIENT_WIND_GUST, SoundCategory.AMBIENT, 3, 1);
         }
 
-        forward = Math.min(forward, 7);
-        forward /= 1 + (EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.8F);
+        float weight = 1 + (EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.8F) + (pony.getActualSpecies().canUseEarth() ? 1 : 0);
 
-        velocity.x += - forward * MathHelper.sin((entity.getYaw() + glance) * 0.017453292F);
-        velocity.z += forward * MathHelper.cos((entity.getYaw() + glance) * 0.017453292F);
+        velocity.add(WeatherConditions.getAirflow(entity.getBlockPos(), entity.world), 0.04F * effectStrength);
+        velocity.add(Vec3d.fromPolar(
+                (entity.getPitch() + (float)gust.getY()) * MathHelper.RADIANS_PER_DEGREE,
+                (entity.getYaw() + (float)gust.getZ()) * MathHelper.RADIANS_PER_DEGREE
+            ),
+            effectStrength * (float)gust.getX() / weight
+        );
 
-        if (!entity.world.isClient && entity.world.isThundering() && entity.world.random.nextInt(9000) == 0) {
+        if (!entity.world.isClient && effectStrength > 0.9F && entity.world.isThundering() && entity.world.random.nextInt(9000) == 0) {
             LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(entity.world);
             lightning.refreshPositionAfterTeleport(entity.getX(), entity.getY(), entity.getZ());
 

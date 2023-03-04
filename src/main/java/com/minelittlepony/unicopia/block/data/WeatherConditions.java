@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
@@ -115,7 +116,12 @@ public class WeatherConditions extends PersistentState implements Tickable {
         Vec3d thermalGradient = THERMAL_FIELD.computeAverage(world, pos, probedPosition).multiply(terrainFactor);
         Vec3d wind = get(world).getWindDirection().multiply(1 - windFactor);
 
-        return terrainGradient.add(thermalGradient).add(wind).normalize().add(0, getUpdraft(probedPosition.set(pos), world), 0);
+        return terrainGradient
+                .add(thermalGradient)
+                .add(wind)
+                .normalize()
+                .add(0, getUpdraft(probedPosition.set(pos), world), 0)
+                .multiply(localAltitude / MAX_WIND_HEIGHT);
     }
 
     public static double getUpdraft(BlockPos.Mutable pos, World world) {
@@ -146,6 +152,34 @@ public class WeatherConditions extends PersistentState implements Tickable {
         }
 
         return 0;
+    }
+
+    public static Vec3d getGustStrength(World world, BlockPos pos) {
+        Random random = getPositionalRandom(world, pos);
+        float strength = 0.015F * random.nextFloat();
+
+        if (random.nextInt(30) == 0) {
+            strength *= 10;
+        }
+        if (random.nextInt(30) == 0) {
+            strength *= 10;
+        }
+        if (random.nextInt(40) == 0) {
+            strength *= 100;
+        }
+
+        strength = Math.min(strength, 7);
+
+        float pitch = (180 * random.nextFloat()) - 90;
+        float yaw = (180 * random.nextFloat()) - 90;
+
+        return new Vec3d(strength * world.getRainGradient(1), pitch, yaw);
+    }
+
+    public static Random getPositionalRandom(World world, BlockPos pos) {
+        long posLong = ChunkPos.toLong(pos);
+        long time = world.getTime();
+        return Random.create(posLong + time);
     }
 
     private static int getSurfaceBelow(BlockPos.Mutable pos, World world) {

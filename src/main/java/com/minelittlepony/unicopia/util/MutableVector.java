@@ -20,6 +20,24 @@ public class MutableVector {
         z = vec.z;
     }
 
+    public void add(Vec3d vector) {
+        add(vector.x, vector.y, vector.z);
+    }
+
+    public void add(Vec3d vector, float scale) {
+        add(vector.x, vector.y, vector.z, scale);
+    }
+
+    public void add(double x, double y, double z, float scale) {
+        add(x * scale, y * scale, z * scale);
+    }
+
+    public void add(double x, double y, double z) {
+        this.x += x;
+        this.y += y;
+        this.z += z;
+    }
+
     public Vec3d toImmutable() {
         return new Vec3d(x, y, z);
     }
