@@ -92,7 +92,9 @@
 
   "item.unicopia.alicorn_amulet": "Alicorn Amulet",
   "item.unicopia.alicorn_amulet.lore": "Time worn: %d",
-  
+
+  "item.unicopia.grogars_bell": "Grogar's Bell",
+  "item.unicopia.grogars_bell.charges": "Charges: %d / %d",
   "item.unicopia.magic_staff": "Magic Staff",
   "item.unicopia.magic_staff.charges": "Charges: %d / %d",
   "item.unicopia.meadowbrooks_staff": "Meadowbrook's Staff",
