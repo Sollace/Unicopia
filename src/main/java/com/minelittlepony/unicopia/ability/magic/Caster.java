@@ -65,6 +65,10 @@ public interface Caster<E extends Entity> extends
     default boolean canModifyAt(BlockPos pos, ModificationType mod) {
 
         if (mod.checkPhysical()) {
+            if (asWorld().getBlockState(pos).getHardness(asWorld(), pos) < 0) {
+                return false;
+            }
+
             if (getMaster() instanceof PlayerEntity player) {
                 if (!asWorld().canPlayerModifyAt(player, pos)) {
                     return false;
