@@ -38,6 +38,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     private static final TrackedData<NbtCompound> MASTER = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
     public static final TrackedData<Float> GRAVITY = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Integer> EATING = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Boolean> DISCORDED = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     public static void boostrap() {}
 
@@ -52,11 +53,14 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     @Nullable
     private EatMuffinGoal eatMuffinGoal;
 
+    private boolean discordedChanged = true;
+
     public Creature(LivingEntity entity) {
         super(entity, EFFECT);
         physics = new EntityPhysics<>(entity, GRAVITY);
         entity.getDataTracker().startTracking(MASTER, owner.toNBT());
         entity.getDataTracker().startTracking(EATING, 0);
+        entity.getDataTracker().startTracking(DISCORDED, false);
 
         addTicker(physics);
         addTicker(this::updateConsumption);
@@ -73,6 +77,15 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     public boolean isMinion() {
         return owner.getId().isPresent();
+    }
+
+    public boolean isDiscorded() {
+        return entity.getDataTracker().get(DISCORDED);
+    }
+
+    public void setDiscorded(boolean discorded) {
+        entity.getDataTracker().set(DISCORDED, discorded);
+        discordedChanged = true;
     }
 
     @Override
@@ -115,6 +128,10 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
             initMinionAi(targets);
         }
 
+        if (isDiscorded()) {
+            initDiscordedAi();
+        }
+
         if (entity instanceof CreeperEntity mob) {
             goals.add(1, new FleeEntityGoal<>(mob, LivingEntity.class, 10, 1.5, 1.9, AmuletSelectors.ALICORN_AMULET));
         }
@@ -131,10 +148,30 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
                     .isEmpty();
         });
 
-        targets.clear(g -> true);
+        clearGoals(targets);
         targets.add(2, new ActiveTargetGoal<>((MobEntity)entity, PlayerEntity.class, true, filter));
         targets.add(2, new ActiveTargetGoal<>((MobEntity)entity, HostileEntity.class, true, filter));
         targets.add(2, new ActiveTargetGoal<>((MobEntity)entity, SlimeEntity.class, true, filter));
+    }
+
+    private void initDiscordedAi() {
+        targets.ifPresent(this::clearGoals);
+        // the brain drain
+        entity.getBrain().clear();
+        if (entity instanceof MobEntity mob) {
+            mob.setTarget(null);
+            goals.ifPresent(goalSelector -> {
+                clearGoals(goalSelector);
+                goalSelector.add(1, new SwimGoal(mob));
+                if (mob instanceof PathAwareEntity pae) {
+                    goalSelector.add(5, new WanderAroundFarGoal(pae, 0.8));
+                }
+                goalSelector.add(6, new LookAtEntityGoal(mob, PlayerEntity.class, 8.0f));
+                goalSelector.add(6, new LookAroundGoal(mob));
+            });
+        } else {
+            goals.ifPresent(this::clearGoals);
+        }
     }
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
@@ -145,7 +182,15 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     @Override
     public boolean beforeUpdate() {
+        if (isDiscorded() && discordedChanged) {
+            discordedChanged = false;
+            initDiscordedAi();
+        }
         return false;
+    }
+
+    private void clearGoals(GoalSelector t) {
+        t.clear(g -> true);
     }
 
     private void updateConsumption() {
@@ -227,6 +272,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         });
         compound.put("master", owner.toNBT());
         physics.toNBT(compound);
+        compound.putBoolean("discorded", isDiscorded());
     }
 
     @Override
@@ -242,5 +288,6 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
             }
         }
         physics.fromNBT(compound);
+        setDiscorded(compound.getBoolean("discorded"));
     }
 }

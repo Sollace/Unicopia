@@ -99,7 +99,7 @@ public interface UItems {
     Item GOLDEN_WING = register("golden_wing", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)), ItemGroups.NATURAL);
 
     Item DRAGON_BREATH_SCROLL = register("dragon_breath_scroll", new DragonBreathScrollItem(new Item.Settings().rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
-    Item GROGARS_BELL = register("grogars_bell", new Item(new Item.Settings().rarity(Rarity.RARE)), ItemGroups.TOOLS);
+    Item GROGARS_BELL = register("grogars_bell", new BellItem(new Item.Settings().rarity(Rarity.RARE).maxCount(1)), ItemGroups.TOOLS);
     Item MEADOWBROOKS_STAFF = register("meadowbrooks_staff", new StaffItem(new Settings().rarity(Rarity.UNCOMMON).maxCount(1).maxDamage(120)), ItemGroups.TOOLS);
     Item MAGIC_STAFF = register("magic_staff", new EnchantedStaffItem(new Settings().rarity(Rarity.UNCOMMON).maxCount(1).maxDamage(120)), ItemGroups.TOOLS);
 

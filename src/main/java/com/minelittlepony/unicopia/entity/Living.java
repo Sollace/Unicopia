@@ -61,6 +61,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Nullable
     private Caster<?> attacker;
 
+    private Optional<Living<?>> target = Optional.empty();
+
     private int invinsibilityTicks;
 
     private final List<Tickable> tickers = new ArrayList<>();
@@ -133,6 +135,15 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     public void setCarrier(Entity carrier) {
         entity.getDataTracker().set(CARRIER_ID, Optional.ofNullable(carrier).map(Entity::getUuid));
+    }
+
+    @Nullable
+    public Optional<Living<?>> getTarget() {
+        return target;
+    }
+
+    public void setTarget(Living<?> target) {
+        this.target = Optional.ofNullable(target);
     }
 
     public boolean isBeingCarried() {
