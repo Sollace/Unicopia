@@ -80,7 +80,9 @@ public class HydrophobicSpell extends AbstractSpell {
                 }
             });
 
-            source.subtractEnergyCost(storedFluidPositions.isEmpty() ? 0.001F : 0.02F);
+            if (!source.subtractEnergyCost(storedFluidPositions.isEmpty() ? 0.001F : 0.02F)) {
+                setDead();
+            }
             source.spawnParticles(new Sphere(true, getRange(source)), 10, pos -> {
                 BlockPos bp = new BlockPos(pos);
                 if (source.asWorld().getFluidState(bp.up()).isIn(affectedFluid)) {

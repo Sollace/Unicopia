@@ -89,7 +89,9 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
             source.asWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_ADDITIONS, SoundCategory.AMBIENT, 1, 1);
         }
 
-        source.subtractEnergyCost(-accumulatedMass);
+        if (!source.subtractEnergyCost(-accumulatedMass)) {
+            setDead();
+        }
 
         if (!source.isClient() && source.asWorld().random.nextInt(300) == 0) {
             ParticleUtils.spawnParticle(source.asWorld(), UParticles.LIGHTNING_BOLT, getOrigin(source), Vec3d.ZERO);
@@ -233,7 +235,9 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
                 target.discard();
             }
 
-            source.subtractEnergyCost(-massOfTarget * 10);
+            if (!source.subtractEnergyCost(-massOfTarget * 10)) {
+                setDead();
+            }
             source.asWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_MOOD, SoundCategory.AMBIENT, 2, 0.02F);
         } else {
             double force = getAttractiveForce(source, target);

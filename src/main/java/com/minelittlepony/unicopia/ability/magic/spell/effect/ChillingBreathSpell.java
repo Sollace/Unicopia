@@ -20,7 +20,9 @@ public class ChillingBreathSpell extends AbstractSpell implements HomingSpell {
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        source.subtractEnergyCost(90);
+        if (!source.subtractEnergyCost(90)) {
+            setDead();
+        }
         return false;
     }
 

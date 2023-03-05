@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.List;
 
+import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -66,9 +67,11 @@ public class IceSpell extends AbstractSpell {
             return false;
         }).count();
 
-        source.subtractEnergyCost(Math.min(10, blocksAffected));
+        if (!source.subtractEnergyCost(Math.min(10, blocksAffected / 30))) {
+            setDead();
+        }
 
-        return applyEntities(source, source.getOriginVector()) && situation == Situation.PROJECTILE;
+        return applyEntities(source, source.getOriginVector()) && situation == Situation.PROJECTILE && !isDead();
     }
 
     protected boolean applyEntities(Caster<?> source, Vec3d pos) {
@@ -79,6 +82,9 @@ public class IceSpell extends AbstractSpell {
     }
 
     protected void applyEntitySingle(Caster<?> source, Entity e) {
+        if (source.asEntity() == e || source.isOwnedBy(e) || (e instanceof Owned<?> sibling && source.hasCommonOwner(sibling))) {
+            return;
+        }
         if (e instanceof TntEntity) {
             e.remove(RemovalReason.DISCARDED);
             e.getEntityWorld().setBlockState(e.getBlockPos(), Blocks.TNT.getDefaultState());

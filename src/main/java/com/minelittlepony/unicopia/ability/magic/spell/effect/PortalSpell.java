@@ -127,7 +127,9 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
                     entity.world.playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
                     setDirty();
 
-                    source.subtractEnergyCost(Math.sqrt(entity.getPos().subtract(dest).length()));
+                    if (!source.subtractEnergyCost(Math.sqrt(entity.getPos().subtract(dest).length()))) {
+                        setDead();
+                    }
                 }
 
                 ParticleUtils.spawnParticles(new MagicParticleEffect(getType().getColor()), entity, 7);

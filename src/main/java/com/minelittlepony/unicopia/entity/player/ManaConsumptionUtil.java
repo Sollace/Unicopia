@@ -74,7 +74,7 @@ public interface ManaConsumptionUtil {
         return hunger.getFoodLevel()
             + (pony.getMagicalReserves().getMana().get() / MANA_PER_FOOD)
             + (hunger.getSaturationLevel() / SATURATION_PER_FOOD)
-            + (pony.asEntity().getHealth() / HEARTS_PER_FOOD);
+            + ((pony.asEntity().getHealth() - 1) / HEARTS_PER_FOOD);
     }
 
     static float addExhaustion(HungerManager hunger, float foodSubtract) {

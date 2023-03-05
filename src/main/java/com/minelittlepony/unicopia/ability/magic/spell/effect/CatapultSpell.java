@@ -12,7 +12,6 @@ import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.util.hit.BlockHitResult;

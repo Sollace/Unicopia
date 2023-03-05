@@ -129,7 +129,9 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
     protected void spawnMonster(Caster<?> source, Vec3d pos, EntityType<? extends LivingEntity> type) {
         LivingEntity minion = type.create(source.asWorld());
 
-        source.subtractEnergyCost(3);
+        if (!source.subtractEnergyCost(3)) {
+            setDead();
+        }
 
         minion.updatePositionAndAngles(pos.x, pos.y, pos.z, 0, 0);
         minion.setVelocity(0, 0.3, 0);

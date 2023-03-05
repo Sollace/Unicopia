@@ -92,7 +92,9 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
         getTargets(source).forEach(e -> {
             float maxHealthGain = e.getMaxHealth() - e.getHealth();
 
-            source.subtractEnergyCost(0.2F);
+            if (!source.subtractEnergyCost(0.2F)) {
+                setDead();
+            }
 
             if (ticksUpset > 0 || maxHealthGain <= 0) {
                 if (source.asWorld().random.nextInt(3000) == 0) {
