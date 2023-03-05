@@ -42,7 +42,7 @@
             {
               "condition": "minecraft:table_bonus",
               "enchantment": "unicopia:gem_finder",
-              "chances": [ 0.060555554 ]
+              "chances": [ 0.1 ]
             }
           ],
           "functions": [
@@ -59,32 +59,6 @@
             }
           ],
           "name": "unicopia:gemstone"
-        },
-        {
-          "type": "minecraft:item",
-          "conditions": [
-            {
-              "condition": "minecraft:table_bonus",
-              "enchantment": "minecraft:fortune",
-              "chances": [
-                0.05, 0.052222223, 0.055, 0.066666665, 0.1
-              ]
-            }
-          ],
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 1.0,
-                "max": 2.0,
-                "type": "minecraft:uniform"
-              }
-            },
-            {
-              "function": "minecraft:explosion_decay"
-            }
-          ],
-          "name": "unicopia:wheat_worms"
         }
       ]
     }

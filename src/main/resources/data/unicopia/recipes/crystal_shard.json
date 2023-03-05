@@ -4,7 +4,7 @@
     { "item": "minecraft:diamond" }
   ],
   "result": {
-  	"item": "unicopia:crystal_shard",
-  	"count": 3
+    "item": "unicopia:crystal_shard",
+    "count": 3
   }
 }
