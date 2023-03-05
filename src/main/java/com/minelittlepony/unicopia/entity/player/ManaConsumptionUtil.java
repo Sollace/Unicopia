@@ -6,7 +6,7 @@ import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 
 public interface ManaConsumptionUtil {
-    float FOOD_PER_MANA = 0.1F;
+    float MANA_PER_FOOD = 10F;
     float HEARTS_PER_FOOD = 0.5F;
     float SATURATION_PER_FOOD = 0.8F;
 
@@ -17,7 +17,7 @@ public interface ManaConsumptionUtil {
         }
 
         float availableMana = mana.get();
-        float consumedMana = (float)foodSubtract / FOOD_PER_MANA;
+        float consumedMana = (float)foodSubtract *  MANA_PER_FOOD;
 
         if (consumedMana <= availableMana) {
             mana.set(availableMana - consumedMana);
@@ -25,7 +25,7 @@ public interface ManaConsumptionUtil {
         }
 
         mana.set(0);
-        return (float)foodSubtract - (availableMana * FOOD_PER_MANA);
+        return (float)foodSubtract - (availableMana / MANA_PER_FOOD);
     }
 
     static float burnFood(PlayerEntity entity, float foodSubtract) {
@@ -58,13 +58,23 @@ public interface ManaConsumptionUtil {
 
         float availableHearts = entity.getHealth();
         if (foodSubtract > 0) {
-            float consumedHearts = Math.max(0.001F, Math.min(availableHearts - 1, foodSubtract * HEARTS_PER_FOOD));
+            float consumedHearts = Math.max(0, Math.min(availableHearts - 1, foodSubtract * HEARTS_PER_FOOD));
             foodSubtract = addExhaustion(hunger, foodSubtract);
             foodSubtract -= (consumedHearts / HEARTS_PER_FOOD);
-            entity.damage(MagicalDamageSource.EXHAUSTION, consumedHearts);
+            if (consumedHearts > 0) {
+                entity.damage(MagicalDamageSource.EXHAUSTION, consumedHearts);
+            }
         }
 
         return Math.max(0, foodSubtract);
+    }
+
+    static float getCombinedTotalMana(Pony pony) {
+        HungerManager hunger = pony.asEntity().getHungerManager();
+        return hunger.getFoodLevel()
+            + (pony.getMagicalReserves().getMana().get() / MANA_PER_FOOD)
+            + (hunger.getSaturationLevel() / SATURATION_PER_FOOD)
+            + (pony.asEntity().getHealth() / HEARTS_PER_FOOD);
     }
 
     static float addExhaustion(HungerManager hunger, float foodSubtract) {
