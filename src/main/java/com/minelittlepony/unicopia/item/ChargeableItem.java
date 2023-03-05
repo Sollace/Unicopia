@@ -22,6 +22,10 @@ public interface ChargeableItem {
         return setEnergy(stack, getMaxCharge());
     }
 
+    default ItemStack recharge(ItemStack stack, float amount) {
+        return setEnergy(stack, getEnergy(stack) + amount);
+    }
+
     default boolean canCharge(ItemStack stack) {
         return isChargable() && getEnergy(stack) < getMaxCharge();
     }
@@ -41,12 +45,16 @@ public interface ChargeableItem {
         }
     }
 
+    static int getDefaultCharge(ItemStack stack) {
+        return stack.getItem() instanceof ChargeableItem c ? c.getDefaultCharge() : 0;
+    }
+
     static float getEnergy(ItemStack stack) {
-        return stack.hasNbt() && stack.getNbt().contains("energy") ? stack.getNbt().getFloat("energy") : (stack.getItem() instanceof ChargeableItem c) ? c.getDefaultCharge() : 0;
+        return stack.hasNbt() && stack.getNbt().contains("energy") ? stack.getNbt().getFloat("energy") : getDefaultCharge(stack);
     }
 
     static ItemStack setEnergy(ItemStack stack, float energy) {
-        if (energy <= 0) {
+        if (energy <= 0 && getDefaultCharge(stack) <= 0) {
             stack.removeSubNbt("energy");
         } else {
             stack.getOrCreateNbt().putFloat("energy", energy);

@@ -26,6 +26,11 @@ public class PegasusAmuletItem extends AmuletItem implements ItemTracker.Trackab
     }
 
     @Override
+    public int getDefaultCharge() {
+        return getMaxCharge() / 2;
+    }
+
+    @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         if (entity.world.getTime() % 6 == 0 && entity instanceof LivingEntity living && isApplicable(living)) {
             ParticleUtils.spawnParticles(entity.world.getDimension().ultrawarm() ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.COMPOSTER, entity, 1);
