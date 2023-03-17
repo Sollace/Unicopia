@@ -7,11 +7,13 @@ import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.WearableItem;
 
 import dev.emi.trinkets.api.*;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
 
 public class UnicopiaTrinket implements Trinket {
@@ -47,6 +49,11 @@ public class UnicopiaTrinket implements Trinket {
         }
 
         return slot.inventory().getStack(slot.index()).isEmpty();
+    }
+
+    @Override
+    public boolean canUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        return !(EnchantmentHelper.hasBindingCurse(stack) && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity));
     }
 
     @Override
