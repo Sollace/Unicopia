@@ -26,18 +26,18 @@ class PlayerLevelStore implements Levelled.LevelStore {
 
     @Override
     public void add(int levels) {
+        Levelled.LevelStore.super.add(levels);
         if (levels > 0) {
             if (upgradeMana) {
                 pony.getMagicalReserves().getMana().add(pony.getMagicalReserves().getMana().getMax() / 2);
             }
             pony.asWorld().playSound(null, pony.getOrigin(), levelUpSound, SoundCategory.PLAYERS, 1, 2);
         }
-        Levelled.LevelStore.super.add(levels);
     }
 
     @Override
     public int getMax() {
-        return 900;
+        return 999; // -1 because displayed levels start at 1
     }
 
     @Override
