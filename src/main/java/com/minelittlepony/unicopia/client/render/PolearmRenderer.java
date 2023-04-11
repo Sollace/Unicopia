@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.client.render;
 
-import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
-
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.DynamicItemRenderer;
@@ -70,9 +68,7 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
             matrices.scale(1, -1, -1);
             Identifier id = Registries.ITEM.getId(stack.getItem());
             Identifier texture = new Identifier(id.getNamespace(), "textures/entity/polearm/" + id.getPath() + ".png");
-            model.render(matrices, MineLPDelegate.getInstance().getItemBuffer(vertexConsumers, texture).orElseGet(() -> {
-                return ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, model.getLayer(texture), false, stack.hasGlint());
-            }), light, overlay, 1, 1, 1, 1);
+            model.render(matrices, ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, model.getLayer(texture), false, stack.hasGlint()), light, overlay, 1, 1, 1, 1);
             matrices.pop();
         }
     }

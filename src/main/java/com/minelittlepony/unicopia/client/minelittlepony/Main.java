@@ -1,12 +1,9 @@
 package com.minelittlepony.unicopia.client.minelittlepony;
 
-import java.util.Optional;
-
 import com.minelittlepony.api.model.*;
 import com.minelittlepony.api.model.fabric.PonyModelPrepareCallback;
 import com.minelittlepony.api.model.gear.IGear;
 import com.minelittlepony.api.pony.IPony;
-import com.minelittlepony.client.render.LevitatingItemRenderer;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -14,11 +11,8 @@ import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.AnimationUtil;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -107,14 +101,5 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
             default:
                 return Race.HUMAN;
         }
-    }
-
-    @Override
-    public Optional<VertexConsumer> getItemBuffer(VertexConsumerProvider vertexConsumers, Identifier texture) {
-        if (LevitatingItemRenderer.isEnabled()) {
-            return Optional.of(vertexConsumers.getBuffer(LevitatingItemRenderer.getRenderLayer(texture)));
-        }
-
-        return Optional.empty();
     }
 }

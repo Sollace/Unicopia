@@ -70,7 +70,7 @@ class WingsGear implements IGear {
     @Override
     public void pose(IModel model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
         ((ClientPonyModel)model).copyAttributes(this.model);
-        this.model.getWings().setRotationAndAngles(rainboom, interpolatorId, move, swing, bodySwing, ticks);
+        this.model.getWings().setPartAngles(this.model.getAttributes(), move, swing, bodySwing, ticks);
     }
 
     @Override
