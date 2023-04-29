@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
+import com.minelittlepony.unicopia.input.Heuristic;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.ChargeableItem;
 import com.minelittlepony.unicopia.item.UItems;
@@ -289,9 +290,14 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 ticksInAir = 0;
                 wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
                 soundPlaying = false;
+                if (pony.getJumpingHeuristic().hasChanged(Heuristic.TWICE)) {
+                    System.out.println("DOUBLE JUMP!!!!");
+                }
 
                 if (!creative && type.isAvian()) {
                     checkAvianTakeoffConditions(velocity);
+                } else {
+                    System.out.println("WRONG TYPE");
                 }
             }
         } else {
@@ -440,21 +446,26 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         double horMotion = getHorizontalMotion();
         double motion = entity.getPos().subtract(lastPos).lengthSquared();
 
-        boolean takeOffCondition = velocity.y > 0
-                && (horMotion > 0.2 || (motion > 0.2 && velocity.y < -0.02 * getGravitySignum()));
-        boolean fallingTakeOffCondition = !entity.isOnGround() && velocity.y < -1.6 * getGravitySignum();
+        boolean takeOffCondition =
+                   (horMotion > 0.05 || motion > 0.05)
+                && pony.getJumpingHeuristic().hasChanged(Heuristic.TWICE);
+        boolean fallingTakeOffCondition = !entity.isOnGround() && velocity.y < -1.6 * getGravitySignum() && entity.fallDistance > 1;
 
         if ((takeOffCondition || fallingTakeOffCondition) && !pony.isHanging() && !isCancelled) {
-            startFlying(false);
-
-            if (!isGravityNegative()) {
-                velocity.y += horMotion + 0.3;
-            }
-            applyThrust(velocity);
-
-            velocity.x *= 0.2;
-            velocity.z *= 0.2;
+            initiateTakeoff(velocity);
         }
+    }
+
+    private void initiateTakeoff(MutableVector velocity) {
+        startFlying(false);
+
+        if (!isGravityNegative()) {
+            velocity.y += getHorizontalMotion() + 0.3;
+        }
+        applyThrust(velocity);
+
+        velocity.x *= 0.2;
+        velocity.z *= 0.2;
     }
 
     public void startFlying(boolean force) {

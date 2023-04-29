@@ -17,8 +17,11 @@ import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.block.data.DragonBreathStore;
+import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.input.Heuristic;
+import com.minelittlepony.unicopia.input.Interactable;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
@@ -50,8 +53,9 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     private final EffectSync effectDelegate;
 
-    private boolean prevSneaking;
-    private boolean prevLanded;
+    private final Interactable sneakingHeuristic;
+    private final Interactable landedHeuristic;
+    private final Interactable jumpingHeuristic;
 
     @Nullable
     private Runnable landEvent;
@@ -73,6 +77,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     protected Living(T entity, TrackedData<NbtCompound> effect) {
         this.entity = entity;
         this.effectDelegate = new EffectSync(this, effect);
+
+        this.sneakingHeuristic = addTicker(new Interactable(entity::isSneaking));
+        this.landedHeuristic = addTicker(new Interactable(entity::isOnGround));
+        this.jumpingHeuristic = addTicker(new Interactable(((LivingEntityDuck)entity)::isJumping));
 
         entity.getDataTracker().startTracking(effect, new NbtCompound());
         entity.getDataTracker().startTracking(CARRIER_ID, Optional.empty());
@@ -100,11 +108,15 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public boolean sneakingChanged() {
-        return entity.isSneaking() != prevSneaking;
+        return sneakingHeuristic.hasChanged(Heuristic.ONCE);
     }
 
     public boolean landedChanged() {
-        return entity.isOnGround() != prevLanded;
+        return landedHeuristic.hasChanged(Heuristic.ONCE);
+    }
+
+    public Interactable getJumpingHeuristic() {
+        return jumpingHeuristic;
     }
 
     @Override
@@ -188,7 +200,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             updateVelocity();
         }
 
-
         if (isBeingCarried()) {
             Pony carrier = Pony.of(entity.getVehicle()).orElse(null);
             if (!carrier.getCompositeRace().any(Abilities.CARRY::canUse)) {
@@ -199,9 +210,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         }
 
         updateDragonBreath();
-
-        prevSneaking = entity.isSneaking();
-        prevLanded = entity.isOnGround();
     }
 
     private void updateDragonBreath() {
