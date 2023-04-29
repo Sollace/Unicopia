@@ -54,6 +54,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private int prevStrafe;
     private float strafe;
 
+    private float descentRate;
+
     private FlightType lastFlightType = FlightType.NONE;
 
     public boolean isFlyingEither = false;
@@ -290,24 +292,21 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 ticksInAir = 0;
                 wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
                 soundPlaying = false;
-                if (pony.getJumpingHeuristic().hasChanged(Heuristic.TWICE)) {
-                    System.out.println("DOUBLE JUMP!!!!");
-                }
+                descentRate = 0;
 
                 if (!creative && type.isAvian()) {
                     checkAvianTakeoffConditions(velocity);
-                } else {
-                    System.out.println("WRONG TYPE");
                 }
             }
         } else {
+            descentRate = 0;
             soundPlaying = false;
         }
 
         if (!entity.isOnGround()) {
             float heavyness = 1 - EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.015F;
-            velocity.x *= heavyness;
-            velocity.z *= heavyness;
+            velocity.x /= heavyness;
+            velocity.z /= heavyness;
         }
 
         entity.setVelocity(velocity.toImmutable());
@@ -349,12 +348,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         }
 
         moveFlying(velocity);
-
-        if (entity.world.hasRain(entity.getBlockPos())) {
-            applyTurbulance(velocity);
-        } else {
-            velocity.y += WeatherConditions.getUpdraft(new BlockPos.Mutable().set(entity.getBlockPos()), entity.world);
-        }
 
         if (type.isAvian()) {
             if (entity.world.isClient && ticksInAir % IDLE_FLAP_INTERVAL == 0 && entity.getVelocity().length() < 0.29) {
@@ -475,6 +468,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         entity.getAbilities().flying = true;
         isFlyingEither = true;
         isFlyingSurvival = true;
+        thrustScale = 0;
         entity.calculateDimensions();
     }
 
@@ -522,8 +516,21 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         forward += 0.005F;
 
         velocity.x += - forward * MathHelper.sin(entity.getYaw() * 0.017453292F);
-        velocity.y -= (0.01F / Math.max(motion * 100, 1)) * getGravityModifier();
         velocity.z += forward * MathHelper.cos(entity.getYaw() * 0.017453292F);
+
+
+        if (entity.world.hasRain(entity.getBlockPos())) {
+            applyTurbulance(velocity);
+        } else {
+            descentRate -= WeatherConditions.getUpdraft(new BlockPos.Mutable().set(entity.getBlockPos()), entity.world) / 3F;
+        }
+
+        descentRate += 0.001F;
+        descentRate = Math.min(1.5F, descentRate);
+        if (descentRate < 0) {
+            descentRate *= 0.8F;
+        }
+        velocity.y -= descentRate * getGravityModifier();
     }
 
     private void applyThrust(MutableVector velocity) {
@@ -534,41 +541,36 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         thrustScale *= 0.2889F;
 
+        boolean hovering = entity.getVelocity().horizontalLength() < 0.1;
+
         if (thrustScale <= 0.000001F & flapping) {
             flapping = false;
             if (!SpellPredicate.IS_DISGUISE.isOn(pony)) {
                 entity.playSound(getFlightType().getWingFlapSound(), 0.5F, 1);
                 entity.world.emitGameEvent(entity, GameEvent.ELYTRA_GLIDE, entity.getPos());
             }
-            thrustScale = 1;
+            if (!hovering) {
+                thrustScale = 1;
+                descentRate -= 0.5F;
+            }
         }
 
-        float heavyness = EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) / 6F;
+        float heavyness = EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity);
         float thrustStrength = 0.135F * thrustScale;
+
         if (heavyness > 0) {
-            thrustStrength /= heavyness;
+            thrustStrength /= 1 + heavyness;
         }
 
         Vec3d direction = entity.getRotationVec(1).normalize().multiply(thrustStrength);
 
-        if (entity.getVelocity().horizontalLength() > 0.1) {
+        if (!hovering) {
             velocity.x += direction.x;
             velocity.z += direction.z;
-            velocity.y += (direction.y * 2.45 + Math.abs(direction.y) * 10) * getGravitySignum() - heavyness / 5F;
+            velocity.y += ((direction.y * 2.45 + Math.abs(direction.y) * 10)) * getGravitySignum();// - heavyness / 5F
         }
 
-        if (entity.isSneaking()) {
-            if (!isGravityNegative()) {
-                velocity.y += 0.4 - 0.25;
-            }
-            if (pony.sneakingChanged()) {
-                velocity.y += 0.75 * getGravitySignum();
-            }
-        } else {
-            velocity.y -= 0.1 * getGravitySignum();
-        }
-
-        if (velocity.y < 0 && entity.getVelocity().horizontalLength() < 0.1) {
+        if (velocity.y < 0 && hovering) {
             velocity.y *= 0.01;
         }
 
@@ -648,6 +650,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         compound.putBoolean("isCancelled", isCancelled);
         compound.putBoolean("isFlyingEither", isFlyingEither);
         compound.putInt("ticksInAir", ticksInAir);
+        compound.putFloat("descentRate", descentRate);
     }
 
     @Override
@@ -657,6 +660,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         isCancelled = compound.getBoolean("isCancelled");
         isFlyingEither = compound.getBoolean("isFlyingEither");
         ticksInAir = compound.getInt("ticksInAir");
+        descentRate = compound.getFloat("descentRate");
 
         entity.calculateDimensions();
     }
