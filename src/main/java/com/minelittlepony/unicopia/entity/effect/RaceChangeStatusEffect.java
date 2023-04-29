@@ -84,6 +84,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
             if (progression == 0 && entity instanceof PlayerEntity player && stage == Stage.CRAWLING) {
                 player.sendMessage(Stage.INITIAL.getMessage(race), true);
             }
+            entity.removeStatusEffect(this);
             return;
         }
 
@@ -106,6 +107,8 @@ public class RaceChangeStatusEffect extends StatusEffect {
         }
 
         if (stage == Stage.DEATH) {
+            entity.removeStatusEffect(this);
+
             if (eq instanceof Caster) {
                 ((Caster<?>)eq).getSpellSlot().clear();
             }
@@ -115,7 +118,10 @@ public class RaceChangeStatusEffect extends StatusEffect {
                 magic.getEnergy().set(0.6F);
                 magic.getExhaustion().set(0);
                 magic.getExertion().set(0);
-                entity.damage(MagicalDamageSource.TRIBE_SWAP, Float.MAX_VALUE);
+
+                if (!pony.asEntity().isCreative()) {
+                    entity.damage(MagicalDamageSource.TRIBE_SWAP, Float.MAX_VALUE);
+                }
             } else {
                 eq.setSpecies(race);
             }
