@@ -17,7 +17,6 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.CreeperEntity;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -61,7 +60,7 @@ public class BellItem extends Item implements ChargeableItem {
         Pony pony = Pony.of(player);
         pony.getCorruption().add(1);
         pony.playSound(SoundEvents.BLOCK_BELL_USE, 0.4F, 0.2F);
-        Living<?> targetLiving = target instanceof HostileEntity || target instanceof PlayerEntity ? Living.getOrEmpty(target)
+        Living<?> targetLiving = target instanceof MobEntity || target instanceof PlayerEntity ? Living.getOrEmpty(target)
                 .filter(living -> !(living instanceof Creature c && c.isDiscorded()))
                 .orElse(null) : null;
         pony.setTarget(targetLiving);
