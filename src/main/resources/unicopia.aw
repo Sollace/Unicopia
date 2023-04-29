@@ -4,3 +4,4 @@ accessible          method   net/minecraft/client/render/RenderLayer     of     
 accessible          class    net/minecraft/client/render/item/HeldItemRenderer$HandRenderType
 accessible          method   net/minecraft/world/GameRules               register                 (Ljava/lang/String;Lnet/minecraft/world/GameRules$Category;Lnet/minecraft/world/GameRules$Type;)Lnet/minecraft/world/GameRules$Key;
 accessible          method   net/minecraft/world/GameRules$BooleanRule   create                   (Z)Lnet/minecraft/world/GameRules$Type;
+accessible          method   net/minecraft/world/GameRules$IntRule       create                   (I)Lnet/minecraft/world/GameRules$Type;
