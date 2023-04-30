@@ -11,13 +11,13 @@ import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.CasterView;
-import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.client.gui.DismissSpellScreen;
 import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
 import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyClientPlayerEntity;
+import com.minelittlepony.unicopia.server.world.Ether;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.client.MinecraftClient;

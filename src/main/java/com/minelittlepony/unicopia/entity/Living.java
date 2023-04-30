@@ -16,7 +16,6 @@ import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.advancement.UCriteria;
-import com.minelittlepony.unicopia.block.data.DragonBreathStore;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -28,6 +27,7 @@ import com.minelittlepony.unicopia.network.datasync.EffectSync;
 import com.minelittlepony.unicopia.network.datasync.Transmittable;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
+import com.minelittlepony.unicopia.server.world.DragonBreathStore;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.*;
 

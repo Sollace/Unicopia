@@ -13,9 +13,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.block.data.BlockDestructionManager;
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.duck.RotatedView;
+import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;

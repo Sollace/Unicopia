@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.command;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.WorldTribeManager;
+import com.minelittlepony.unicopia.server.world.WorldTribeManager;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;

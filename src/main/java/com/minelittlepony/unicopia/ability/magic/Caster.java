@@ -8,9 +8,9 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.block.data.ModificationType;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.particle.ParticleSource;
+import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.util.SoundEmitter;
 import com.minelittlepony.unicopia.util.VecHelper;
 

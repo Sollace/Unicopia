@@ -4,8 +4,6 @@ import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
-import com.minelittlepony.unicopia.block.data.ModificationType;
-import com.minelittlepony.unicopia.block.data.WeatherConditions;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.*;
@@ -18,6 +16,9 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.*;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
+import com.minelittlepony.unicopia.server.world.ModificationType;
+import com.minelittlepony.unicopia.server.world.UGameRules;
+import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import com.minelittlepony.unicopia.util.*;
 
 import net.minecraft.block.*;

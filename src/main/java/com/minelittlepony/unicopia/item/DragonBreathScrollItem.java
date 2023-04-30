@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.advancement.UCriteria;
-import com.minelittlepony.unicopia.block.data.DragonBreathStore;
+import com.minelittlepony.unicopia.server.world.DragonBreathStore;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;

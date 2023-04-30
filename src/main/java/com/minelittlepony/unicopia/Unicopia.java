@@ -30,6 +30,10 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.particle.UParticles;
+import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
+import com.minelittlepony.unicopia.server.world.UGameRules;
+import com.minelittlepony.unicopia.server.world.WeatherConditions;
+import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 
 public class Unicopia implements ModInitializer {
     public static final String DEFAULT_NAMESPACE = "unicopia";

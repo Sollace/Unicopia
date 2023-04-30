@@ -24,6 +24,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.*;
 import com.minelittlepony.unicopia.network.*;
 import com.minelittlepony.unicopia.network.datasync.EffectSync.UpdateCallback;
+import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.common.util.animation.LinearInterpolator;
 import com.google.common.collect.Streams;

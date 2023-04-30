@@ -1,4 +1,6 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.server.world;
+
+import com.minelittlepony.unicopia.Race;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;

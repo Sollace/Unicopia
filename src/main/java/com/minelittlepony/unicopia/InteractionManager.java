@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.CasterView;
-import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyPlayerEntity;
+import com.minelittlepony.unicopia.server.world.Ether;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;

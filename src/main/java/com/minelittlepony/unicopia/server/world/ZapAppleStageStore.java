@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.block.data;
+package com.minelittlepony.unicopia.server.world;
 
 import java.util.Locale;
 import java.util.stream.StreamSupport;

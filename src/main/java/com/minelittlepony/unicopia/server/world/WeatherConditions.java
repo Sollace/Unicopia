@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.block.data;
+package com.minelittlepony.unicopia.server.world;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Tickable;

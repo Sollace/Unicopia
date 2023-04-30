@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.block.data;
+package com.minelittlepony.unicopia.server.world;
 
 public enum ModificationType {
     MAGICAL,

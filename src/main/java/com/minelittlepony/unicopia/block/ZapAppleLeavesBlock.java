@@ -2,8 +2,9 @@ package com.minelittlepony.unicopia.block;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.block.data.ZapAppleStageStore;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
+
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;

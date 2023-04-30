@@ -8,6 +8,7 @@ import com.minelittlepony.common.client.gui.element.*;
 import com.minelittlepony.common.client.gui.style.Style;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
+import com.minelittlepony.unicopia.server.world.WorldTribeManager;
 import com.minelittlepony.unicopia.util.RegistryIndexer;
 
 import net.fabricmc.loader.api.FabricLoader;

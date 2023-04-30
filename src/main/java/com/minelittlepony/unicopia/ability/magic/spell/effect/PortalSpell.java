@@ -8,11 +8,11 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.particle.*;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
+import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.shape.*;
 
 import net.minecraft.block.Block;

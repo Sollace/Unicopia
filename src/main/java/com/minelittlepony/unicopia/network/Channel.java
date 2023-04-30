@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.server.world.WorldTribeManager;
 import com.sollace.fabwork.api.packets.*;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;

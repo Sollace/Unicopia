@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia;
+package com.minelittlepony.unicopia.server.world;
 
 import net.minecraft.world.GameRules;
 import net.minecraft.world.GameRules.BooleanRule;

@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.block;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.block.data.WeatherConditions;
+import com.minelittlepony.unicopia.server.world.WeatherConditions;
 
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
