@@ -13,7 +13,7 @@ import net.minecraft.text.Text;
 public class ManaCommand {
     static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager
-                .literal("mana")
+                .literal("mana").requires(s -> s.hasPermissionLevel(2))
                 .then(CommandManager.argument("type", EnumArgumentType.of(ManaType.class)).executes(source -> {
                     var type = source.getArgument("type", ManaType.class);
                     var pony = Pony.of(source.getSource().getPlayer());

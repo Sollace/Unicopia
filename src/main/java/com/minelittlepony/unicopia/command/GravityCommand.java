@@ -22,7 +22,7 @@ class GravityCommand {
     static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager
                 .literal("gravity")
-                .requires(s -> s.hasPermissionLevel(4));
+                .requires(s -> s.hasPermissionLevel(2));
 
         builder.then(CommandManager.literal("get")
                         .executes(context -> get(context.getSource(), context.getSource().getPlayer(), true))

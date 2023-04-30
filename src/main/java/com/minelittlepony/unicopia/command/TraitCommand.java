@@ -19,7 +19,7 @@ class TraitCommand {
     static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager
                 .literal("trait")
-                .requires(s -> s.hasPermissionLevel(4));
+                .requires(s -> s.hasPermissionLevel(2));
 
         builder.then(CommandManager.literal("add")
                 .then(CommandManager.argument("trait", EnumArgumentType.of(Trait.class))

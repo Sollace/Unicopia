@@ -268,7 +268,11 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static Optional<SpellTraits> fromString(String traits) {
-        return fromEntries(Arrays.stream(traits.split(" ")).map(a -> a.split(":")).map(pair -> {
+        return fromString(traits, " ");
+    }
+
+    public static Optional<SpellTraits> fromString(String traits, String delimiter) {
+        return fromEntries(Arrays.stream(traits.split(delimiter)).map(a -> a.split(":")).map(pair -> {
             Trait key = Trait.fromName(pair[0]).orElse(null);
             if (key == null) {
                 Unicopia.LOGGER.warn("Skipping unknown trait {}", pair[0]);

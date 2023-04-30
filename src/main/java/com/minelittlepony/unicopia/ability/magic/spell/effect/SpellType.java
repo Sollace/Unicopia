@@ -19,6 +19,9 @@ import com.minelittlepony.unicopia.ability.magic.spell.ThrowableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.RegistryUtils;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -26,14 +29,19 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.command.ServerCommandSource;
 
 public final class SpellType<T extends Spell> implements Affine, SpellPredicate<T> {
     public static final Identifier EMPTY_ID = Unicopia.id("none");
     public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, SpellTraits.EMPTY, t -> null);
 
     public static final Registry<SpellType<?>> REGISTRY = RegistryUtils.createSimple(Unicopia.id("spells"));
+    public static final RegistryKey<? extends Registry<SpellType<?>>> REGISTRY_KEY = REGISTRY.getKey();
     public static final Map<Affinity, Set<SpellType<?>>> BY_AFFINITY = new EnumMap<>(Affinity.class);
+
+    private static final DynamicCommandExceptionType UNKNOWN_SPELL_TYPE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("spell_type.unknown", id));
 
     public static final SpellType<PlaceableSpell> PLACED_SPELL = register("placed", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, PlaceableSpell::new);
     public static final SpellType<ThrowableSpell> THROWN_SPELL = register("thrown", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, ThrowableSpell::new);
@@ -190,6 +198,11 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     public static Set<SpellType<?>> byAffinity(Affinity affinity) {
         return BY_AFFINITY.computeIfAbsent(affinity, a -> new LinkedHashSet<>());
+    }
+
+    public static SpellType<?> fromArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+        Identifier id = context.getArgument(name, RegistryKey.class).getValue();
+        return REGISTRY.getOrEmpty(id).orElseThrow(() -> UNKNOWN_SPELL_TYPE_EXCEPTION.create(id));
     }
 
     public interface Factory<T extends Spell> {
