@@ -11,13 +11,15 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.FairyEntity;
 import com.minelittlepony.unicopia.entity.UEntities;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 
-public class LightSpell extends AbstractSpell implements TimedSpell {
+public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileDelegate.HitListener {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
             .with(Trait.LIFE, 10)
             .with(Trait.AIR, 0.3F)
@@ -78,6 +80,11 @@ public class LightSpell extends AbstractSpell implements TimedSpell {
         }
 
         return true;
+    }
+
+    @Override
+    public void onImpact(MagicProjectileEntity projectile) {
+        Caster.of(projectile.getMaster()).ifPresent(getTypeAndTraits()::apply);
     }
 
     @Override

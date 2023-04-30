@@ -97,6 +97,7 @@
   "item.unicopia.grogars_bell": "Grogar's Bell",
   "item.unicopia.grogars_bell.charges": "Charges: %d / %d",
   "item.unicopia.magic_staff": "Magic Staff",
+  "item.unicopia.magic_staff.enchanted": "%s of %s",
   "item.unicopia.magic_staff.charges": "Charges: %d / %d",
   "item.unicopia.meadowbrooks_staff": "Meadowbrook's Staff",
   "item.unicopia.meadowbrooks_staff.lore": "A Heavy Stick",

@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.group.MultiItem;
 
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
@@ -32,7 +33,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class EnchantedStaffItem extends StaffItem implements EnchantableItem, ChargeableItem {
+public class EnchantedStaffItem extends StaffItem implements EnchantableItem, ChargeableItem, MultiItem {
 
     private static final Map<EntityType<?>, SpellType<?>> ENTITY_TYPE_TO_SPELL = new HashMap<>();
     public static <T extends Spell> SpellType<T> register(EntityType<?> entityType, SpellType<T> spellType) {
@@ -58,6 +59,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
         register(EntityType.CREEPER, SpellType.CATAPULT);
         register(EntityType.HUSK, SpellType.HYDROPHOBIC);
         register(EntityType.SNOW_GOLEM, SpellType.FROST);
+        register(EntityType.POLAR_BEAR, SpellType.FROST);
         register(EntityType.FIREBALL, SpellType.FLAME);
         register(EntityType.SMALL_FIREBALL, SpellType.FLAME);
         register(EntityType.ENDER_DRAGON, SpellType.DISPLACEMENT);
@@ -78,8 +80,8 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
     }
 
     @Override
-    public ItemStack getDefaultStack() {
-        return EnchantableItem.enchant(super.getDefaultStack(), SpellType.FIRE_BOLT);
+    public List<ItemStack> getDefaultStacks() {
+        return ENTITY_TYPE_TO_SPELL.values().stream().distinct().map(type -> EnchantableItem.enchant(getDefaultStack(), type)).toList();
     }
 
     @Override
@@ -195,6 +197,14 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
     @Override
     public int getDefaultCharge() {
         return 3;
+    }
+
+    @Override
+    public Text getName(ItemStack stack) {
+        if (EnchantableItem.isEnchanted(stack) && hasCharge(stack)) {
+            return Text.translatable(this.getTranslationKey(stack) + ".enchanted", super.getName(stack), EnchantableItem.getSpellKey(stack).getName());
+        }
+        return super.getName(stack);
     }
 
     @Override

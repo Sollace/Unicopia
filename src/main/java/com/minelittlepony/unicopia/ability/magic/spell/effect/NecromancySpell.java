@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -10,17 +11,25 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.Weighted;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.*;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
@@ -29,7 +38,7 @@ import net.minecraft.world.WorldEvents;
 /**
  * An area-effect spell that summons the undead.
  */
-public class NecromancySpell extends AbstractAreaEffectSpell {
+public class NecromancySpell extends AbstractAreaEffectSpell implements ProjectileDelegate.EntityHitListener, ProjectileDelegate.BlockHitListener {
     private final Supplier<Optional<EntityType<? extends LivingEntity>>> spawnPool = new Weighted.Builder<EntityType<? extends LivingEntity>>()
             .put(7, EntityType.ZOMBIE)
             .put(4, EntityType.HUSK)
@@ -37,6 +46,23 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
             .put(2, EntityType.ZOMBIFIED_PIGLIN)
             .put(1, EntityType.ZOMBIE_VILLAGER)
             .build();
+
+    static final Map<Predicate<Entity>, EntityType<? extends MobEntity>> NECROMANTIC_CONVERSIONS = Map.of(
+            match(EntityType.PIGLIN), EntityType.ZOMBIFIED_PIGLIN,
+            match(EntityType.HOGLIN), EntityType.ZOGLIN,
+            match(EntityType.HORSE), EntityType.ZOMBIE_HORSE,
+            match(EntityType.DONKEY), EntityType.SKELETON_HORSE,
+            match(EntityType.ZOMBIE), EntityType.HUSK,
+            match(EntityType.SKELETON), EntityType.WITHER_SKELETON,
+            match(EntityType.WANDERING_TRADER), EntityType.WITCH,
+            match(EntityType.WITHER), EntityType.WARDEN,
+            match(EntityType.WARDEN), EntityType.RABBIT,
+            (e -> e instanceof VillagerEntity), EntityType.ZOMBIE_VILLAGER
+    );
+
+    static Predicate<Entity> match(EntityType<?> type) {
+        return e -> e.getType() == type;
+    }
 
     private final List<EntityReference<LivingEntity>> summonedEntities = new ArrayList<>();
 
@@ -171,5 +197,38 @@ public class NecromancySpell extends AbstractAreaEffectSpell {
                 summonedEntities.add(new EntityReference<>((NbtCompound)tag));
             });
         }
+    }
+
+    @Override
+    public void onImpact(MagicProjectileEntity source, BlockHitResult hit) {
+
+       // source.asWorld().createExplosion(source, hit.getPos().x, hit.getPos().y, hit.getPos().z, 3, ExplosionSourceType.MOB);
+
+        Shape affectRegion = new Sphere(false, 3);
+
+        for (int i = 0; i < 10; i++) {
+            Vec3d pos = affectRegion.computePoint(source.asWorld().random).add(source.getOriginVector());
+
+            BlockPos loc = new BlockPos(pos);
+
+            if (source.asWorld().isAir(loc.up()) && !source.asWorld().isAir(loc)) {
+                spawnPool.get().ifPresent(type -> {
+                    spawnMonster(source, pos, type);
+                });
+            }
+        }
+
+        summonedEntities.clear();
+    }
+
+    @Override
+    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
+        NECROMANTIC_CONVERSIONS.entrySet().stream().filter(entry -> entry.getKey().test(hit.getEntity())).findFirst().ifPresent(entry -> {
+            MobEntity newEntity = ((MobEntity)hit.getEntity()).convertTo(entry.getValue(), true);
+
+            if (newEntity != null) {
+                newEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
+            }
+        });
     }
 }

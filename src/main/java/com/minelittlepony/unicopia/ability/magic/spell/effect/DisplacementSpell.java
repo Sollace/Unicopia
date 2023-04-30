@@ -7,13 +7,16 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 
-public class DisplacementSpell extends AbstractSpell implements HomingSpell, PlaceableSpell.PlacementDelegate {
+public class DisplacementSpell extends AbstractSpell implements HomingSpell, PlaceableSpell.PlacementDelegate, ProjectileDelegate.EntityHitListener {
 
     private final EntityReference<Entity> target = new EntityReference<>();
 
@@ -41,21 +44,27 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
         }
 
         if (ticks == 0) {
-            target.ifPresent(originator.asWorld(), target -> {
-
-                Vec3d destinationPos = target.getPos();
-                Vec3d destinationVel = target.getVelocity();
-
-                Vec3d sourcePos = originator.getOriginVector();
-                Vec3d sourceVel = originator.asEntity().getVelocity();
-
-                teleport(target, sourcePos, sourceVel);
-                teleport(originator.asEntity(), destinationPos, destinationVel);
-                originator.subtractEnergyCost(destinationPos.distanceTo(sourcePos) / 20F);
-            });
+            target.ifPresent(originator.asWorld(), target -> apply(originator, target));
         }
 
         return ticks >= -10;
+    }
+
+    @Override
+    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
+        Caster.of(projectile.getMaster()).ifPresent(originator -> apply(originator, hit.getEntity()));
+    }
+
+    private void apply(Caster<?> originator, Entity target) {
+        Vec3d destinationPos = target.getPos();
+        Vec3d destinationVel = target.getVelocity();
+
+        Vec3d sourcePos = originator.getOriginVector();
+        Vec3d sourceVel = originator.asEntity().getVelocity();
+
+        teleport(target, sourcePos, sourceVel);
+        teleport(originator.asEntity(), destinationPos, destinationVel);
+        originator.subtractEnergyCost(destinationPos.distanceTo(sourcePos) / 20F);
     }
 
     @Override
