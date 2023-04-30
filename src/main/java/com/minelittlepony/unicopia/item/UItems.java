@@ -158,7 +158,7 @@ public interface UItems {
         FuelRegistry.INSTANCE.add(DRAGON_BREATH_SCROLL, 20000);
         FuelRegistry.INSTANCE.add(BUTTERFLY, 2);
         FuelRegistry.INSTANCE.add(SPELLBOOK, 9000);
-
+        FuelRegistry.INSTANCE.add(MEADOWBROOKS_STAFF, 300);
 
         CompostingChanceRegistry.INSTANCE.add(GREEN_APPLE, 0.65F);
         CompostingChanceRegistry.INSTANCE.add(SWEET_APPLE, 0.65F);
