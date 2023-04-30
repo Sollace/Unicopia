@@ -157,6 +157,11 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         respawnRace = race;
     }
 
+    /**
+     * Gets this player's species as it appears when interacting physically with other players or the world.
+     * This includes temporary race swaps due to illusions/shape shifting as well as artifacts that merely
+     * grant the abilities of a race, such as the alicorn amulet.
+     */
     @Override
     public Race getSpecies() {
         if (AmuletSelectors.ALICORN_AMULET.test(entity)) {
@@ -166,6 +171,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return getObservedSpecies();
     }
 
+    /**
+     * Gets the species this player appears to be.
+     * This includes illusions and shape-shifting but excludes items that grant abilities without changing their race.
+     */
     public Race getObservedSpecies() {
         return getSpellSlot()
                 .get(SpellPredicate.IS_MIMIC, true)
@@ -176,11 +185,18 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 .orElse(getActualSpecies());
     }
 
+    /**
+     * Gets the composite race that represents what this player is capable of.
+     * Physical is the race they appear to have, whilst pseudo is the race who's abilities they have been granted by magical means.
+     */
     public Race.Composite getCompositeRace() {
         Race observed = getObservedSpecies();
         return new Race.Composite(observed, AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN : observed);
     }
 
+    /**
+     * Gets the origin species of the player. This excludes any shapeshifting, illusions, or magic.
+     */
     public Race getActualSpecies() {
         return Race.fromName(entity.getDataTracker().get(RACE), Race.HUMAN);
     }
