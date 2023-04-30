@@ -570,6 +570,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 .map(p -> Text.translatable("block.unicopia.bed.not_safe"));
     }
 
+    public boolean isDaytime() {
+        return asWorld().getGameRules().getBoolean(UGameRules.DO_NOCTURNAL_BAT_PONIES) && getActualSpecies().isNocturnal() ? !asWorld().isDay() : asWorld().isDay();
+    }
+
     @Override
     public boolean isEnemy(Affine other) {
         return getArmour().contains(UItems.ALICORN_AMULET) || super.isEnemy(other);

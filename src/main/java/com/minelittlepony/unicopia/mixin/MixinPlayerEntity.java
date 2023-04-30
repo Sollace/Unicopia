@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.duck.PlayerEntityDuck;
@@ -24,6 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 @Mixin(PlayerEntity.class)
 abstract class MixinPlayerEntity extends LivingEntity implements Equine.Container<Pony>, PlayerEntityDuck {
@@ -98,5 +100,13 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
             cancellable = true)
     private void onGetBlockBreakingSpeed(BlockState state, CallbackInfoReturnable<Float> info) {
         info.setReturnValue(info.getReturnValue() * get().getBlockBreakingSpeed());
+    }
+
+    @Redirect(method = "tick", at = @At(
+            value = "INVOKE",
+            target = "net/minecraft/world/World.isDay()Z"
+    ))
+    private boolean redirectIsDay(World world) {
+        return get().isDaytime();
     }
 }

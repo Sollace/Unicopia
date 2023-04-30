@@ -220,7 +220,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
             @SuppressWarnings("unchecked")
             Pony iplayer = Pony.of(((Owned<PlayerEntity>)entity).getMaster());
 
-            return iplayer == null ? FlightType.NONE : iplayer.getSpecies().getFlightType();
+            return iplayer == null ? FlightType.NONE : iplayer.getSpecies().flightType();
         }
 
         if (entity instanceof FlyingEntity
