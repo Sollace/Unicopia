@@ -35,7 +35,7 @@ abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHan
     }
 
     @Inject(method = "trySleep(Lnet/minecraft/util/math/BlockPos;)Lcom/mojang/datafixers/util/Either;",
-            at = @At(value = "FIELD", target = "net/minecraft/entity/player/PlayerEntity$SleepFailureReason.NOT_POSSIBLE_NOW"),
+            at = @At(value = "FIELD", target = "net/minecraft/entity/player/PlayerEntity$SleepFailureReason.NOT_POSSIBLE_NOW:Lnet/minecraft/entity/player/PlayerEntity$SleepFailureReason;"),
             cancellable = true)
     private void onTrySleep(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> info) {
         if (get().getActualSpecies().isNocturnal() && get().asWorld().getGameRules().getBoolean(UGameRules.DO_NOCTURNAL_BAT_PONIES)) {
