@@ -93,6 +93,32 @@
         ]
       },
       {
+        "title": "Grogar's Bell",
+        "level": 0,
+        "elements": [
+          { "item": { "item": "unicopia:grogars_bell" } },
+          "Status: Lost",
+          "A powerful artifact once thought to be the source of King Grogar's power.",
+          "In skilled hooves, the bell may be used to transfer magical energy from one being to another."
+        ]
+      },
+      {
+        "title": "22nd Trot '12",
+        "level": 80,
+        "elements": [
+          "It's theorised this artifact was forged from the claws of an Ursa Major during the era of Discord's reign, possibly as a weapon against the tyrant.",
+          "By its nature, the bell a corrupting influence inherent to it that will destroy the minds of anyone who dares weird its power."
+        ]
+      },
+      {
+        "title": "Grogar's Bell II",
+        "level": 80,
+        "elements": [
+          "Legend says that after its first bearer, King Grogar, was driven to madness, the bell was stowed far away",
+          "beyond most ponies' grasp, guarded inside an ancient city by an unbeatable beast."
+        ]
+      },
+      {
         "title": "Alicorn Amulet",
         "level": 0,
         "elements": [
@@ -102,7 +128,7 @@
         ]
       },
       {
-        "title": "22nd Trot '12",
+        "title": "23nd Trot '12",
         "level": 999,
         "elements": [
           "The alicorn amulet is a powerful force of dark magic created created by an unknown mage as their attempt to create the perfect being.",
