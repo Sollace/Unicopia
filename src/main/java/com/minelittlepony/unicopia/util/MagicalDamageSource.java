@@ -21,6 +21,7 @@ public class MagicalDamageSource extends EntityDamageSource {
     public static final DamageSource TRIBE_SWAP = new DamageSource("tribe_swap").setOutOfWorld().setUnblockable();
     public static final DamageSource ZAP_APPLE = create("zap");
     public static final DamageSource KICK = create("kick");
+    public static final DamageSource STEAMROLLER = create("steamroller");
     public static final DamageSource SUN = new DamageSource("sun").setBypassesArmor().setFire();
     public static final DamageSource SUNLIGHT = new DamageSource("sunlight").setBypassesArmor().setFire();
     public static final DamageSource PETRIFIED = new DamageSource("petrified").setBypassesArmor().setFire();

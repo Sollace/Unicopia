@@ -2,7 +2,9 @@
 
   "block.unicopia.bed.not_safe": "You may not rest here, there are enemies nearby",
   "block.unicopia.bed.not_tired": "You do not feel tired right now",
-  "block.minecraft.bed.no_sleep.nocturnal": "You can only sleep in the day or during thunderstorms",
+  "block.unicopia.bed.no_sleep.nocturnal": "You can only sleep in the day or during thunderstorms",
+  "sleep.not_possible.nocturnal": "No amount of rest can pass this day",
+  "sleep.skipping_day": "Sleeping through this day",
 
   "ability.unicopia.empty_hooves": "I need to find a jar",
   "ability.unicopia.indoors": "I can't see the sky from here",
@@ -533,6 +535,8 @@
   "death.attack.black_hole.player": "%1$s got sucked into %2$s's black hole",
   "death.attack.kick": "%1$s was kicked really hard",
   "death.attack.kick.player": "%2$s kicked %1$s really hard",
+  "death.attack.steamroller": "%1$s was flattened",
+  "death.attack.steamroller.player": "%2$s steamrolled %1$s",
   "death.attack.stalagmite.pegasus": "%1$s tried to perch on a stalagmite",
   "death.attack.stalagmite.pegasus.player": "%1$s flew into a stalagmite whilst fighting %2$s",
 

@@ -39,7 +39,7 @@ abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHan
             cancellable = true)
     private void onTrySleep(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> info) {
         if (get().getActualSpecies().isNocturnal() && get().asWorld().getGameRules().getBoolean(UGameRules.DO_NOCTURNAL_BAT_PONIES)) {
-            ((PlayerEntity)this).sendMessage(Text.translatable("block.minecraft.bed.no_sleep.nocturnal"), true);
+            ((PlayerEntity)this).sendMessage(Text.translatable("block.unicopia.bed.no_sleep.nocturnal"), true);
 
             info.setReturnValue(Either.left(PlayerEntity.SleepFailureReason.OTHER_PROBLEM));
         }

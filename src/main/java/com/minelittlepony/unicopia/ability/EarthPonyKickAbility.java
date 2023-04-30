@@ -100,6 +100,12 @@ public class EarthPonyKickAbility implements Ability<Pos> {
             return true;
         }
 
+        if (type == ActivationType.DOUBLE_TAP && player.asEntity().isOnGround() && player.getMagicalReserves().getMana().get() > 40) {
+            player.getPhysics().dashForward((float)player.asWorld().random.nextTriangular(3.5F, 0.3F));
+            player.subtractEnergyCost(4);
+            return true;
+        }
+
         return false;
     }
 

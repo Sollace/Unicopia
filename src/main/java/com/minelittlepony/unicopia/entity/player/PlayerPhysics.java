@@ -16,6 +16,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.*;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
+import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
@@ -32,6 +33,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
@@ -623,12 +625,20 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         Vec3d orientation = entity.getRotationVec(1).multiply(speed);
         entity.addVelocity(orientation.x, orientation.y, orientation.z);
 
-        int damage = TraceHelper.findBlocks(entity, speed + 4, 1, state -> state.isIn(UTags.GLASS_PANES)).stream()
+        boolean isEarthPonySmash = pony.getObservedSpecies().canUseEarth() && !isFlying();
+        int damage = TraceHelper.findBlocks(entity, speed + 4, 1, state -> (isEarthPonySmash && !state.isAir()) || state.isIn(UTags.GLASS_PANES)).stream()
             .flatMap(pos -> BlockPos.streamOutwards(pos, 2, 2, 2))
-            .filter(pos -> entity.world.getBlockState(pos).isOf(Blocks.GLASS_PANE))
+            .filter(pos -> (isEarthPonySmash && !entity.world.isAir(pos)) || entity.world.getBlockState(pos).isIn(UTags.GLASS_PANES))
             .reduce(0, (u, pos) -> {
                 if (pony.canModifyAt(pos, ModificationType.PHYSICAL)) {
-                    entity.world.breakBlock(pos, true);
+                    if (isEarthPonySmash) {
+                        BlockDestructionManager.of(entity.world).damageBlock(pos, (int)entity.world.getRandom().nextTriangular(5, 3));
+                        if (BlockDestructionManager.of(entity.world).getBlockDestruction(pos) >= 9) {
+                            entity.world.breakBlock(pos, true);
+                        }
+                    } else {
+                        entity.world.breakBlock(pos, true);
+                    }
                 } else {
                     ParticleUtils.spawnParticles(new MagicParticleEffect(0x00AAFF), entity.world, Vec3d.ofCenter(pos), 15);
                 }
@@ -638,11 +648,22 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (damage > 0) {
             pony.subtractEnergyCost(damage / 5F);
             entity.damage(DamageSource.FLY_INTO_WALL, Math.min(damage, entity.getHealth() - 1));
-            UCriteria.BREAK_WINDOW.trigger(entity);
+            if (!isEarthPonySmash) {
+                UCriteria.BREAK_WINDOW.trigger(entity);
+            }
+        }
+
+        if (isEarthPonySmash) {
+            pony.findAllEntitiesInRange(speed + 4, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR).forEach(e -> e.damage(MagicalDamageSource.STEAMROLLER, 50));
         }
 
         pony.updateVelocity();
-        pony.playSound(USounds.ENTITY_PLAYER_PEGASUS_DASH, 1);
+
+        if (isFlying()) {
+            pony.playSound(USounds.ENTITY_PLAYER_PEGASUS_DASH, 1);
+        } else {
+            pony.playSound(SoundEvents.ENTITY_RAVAGER_STEP, 2, 0.3F);
+        }
     }
 
     @Override
