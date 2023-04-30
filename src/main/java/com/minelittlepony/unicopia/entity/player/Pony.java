@@ -47,6 +47,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 import net.minecraft.world.GameMode;
@@ -571,8 +572,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 .map(p -> Text.translatable("block.unicopia.bed.not_safe"));
     }
 
-    public boolean isDaytime() {
-        return asWorld().getGameRules().getBoolean(UGameRules.DO_NOCTURNAL_BAT_PONIES) && getActualSpecies().isNocturnal() ? !asWorld().isDay() : asWorld().isDay();
+    public ActionResult canSleepNow() {
+        if (asWorld().getGameRules().getBoolean(UGameRules.DO_NOCTURNAL_BAT_PONIES) && getActualSpecies().isNocturnal()) {
+            return asWorld().isDay() ? ActionResult.SUCCESS : ActionResult.FAIL;
+        }
+
+        return ActionResult.PASS;
     }
 
     @Override

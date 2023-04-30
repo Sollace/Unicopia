@@ -18,7 +18,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitLoader;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.UTreeGen;
-import com.minelittlepony.unicopia.block.data.*;
 import com.minelittlepony.unicopia.block.state.StateMapLoader;
 import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.container.SpellbookChapterLoader;
@@ -31,6 +30,7 @@ import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
+import com.minelittlepony.unicopia.server.world.NocturnalSleepManager;
 import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
@@ -71,6 +71,8 @@ public class Unicopia implements ModInitializer {
                 SpellbookChapterLoader.INSTANCE.sendUpdate(w.getServer());
             }
         });
+        NocturnalSleepManager.bootstrap();
+
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(TreeTypeLoader.INSTANCE);
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(UEnchantments.POISONED_JOKE);
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new TraitLoader());

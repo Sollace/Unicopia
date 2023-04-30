@@ -2,6 +2,7 @@
 
   "block.unicopia.bed.not_safe": "You may not rest here, there are enemies nearby",
   "block.unicopia.bed.not_tired": "You do not feel tired right now",
+  "block.minecraft.bed.no_sleep.nocturnal": "You can only sleep in the day or during thunderstorms",
 
   "ability.unicopia.empty_hooves": "I need to find a jar",
   "ability.unicopia.indoors": "I can't see the sky from here",

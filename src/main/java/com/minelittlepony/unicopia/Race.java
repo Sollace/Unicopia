@@ -29,7 +29,7 @@ public record Race (boolean canCast, FlightType flightType, boolean canUseEarth,
     private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("race.unknown", id));
 
     public static Race register(String name, boolean magic, FlightType flight, boolean earth, boolean nocturnal) {
-        return register(Unicopia.id(name), magic, flight, earth, false);
+        return register(Unicopia.id(name), magic, flight, earth, nocturnal);
     }
 
     public static Race register(Identifier id, boolean magic, FlightType flight, boolean earth, boolean nocturnal) {

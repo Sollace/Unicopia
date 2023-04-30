@@ -28,6 +28,7 @@
     "MixinServerPlayerEntity",
     "MixinServerPlayNetworkHandler",
     "MixinServerWorld",
+    "MixinSleepManager",
     "MixinSheepEntity",
     "MixinShulkerEntity",
     "MixinStateManager",
