@@ -30,7 +30,7 @@ public record MsgPlayerAnimationChange (
     @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeUuid(playerId);
-        buffer.writeInt(animation.ordinal());
+        buffer.writeEnumConstant(animation);
         buffer.writeInt(duration);
     }
 
