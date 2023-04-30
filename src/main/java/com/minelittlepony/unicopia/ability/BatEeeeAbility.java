@@ -7,11 +7,14 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
+import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -72,6 +75,10 @@ public class BatEeeeAbility implements Ability<Hit> {
             }
         }, rng.nextInt(10));
 
+        if (!player.getPhysics().isFlying()) {
+            player.setAnimation(Animation.SPREAD_WINGS);
+        }
+
         Vec3d origin = player.getOriginVector();
 
         if (rng.nextInt(20000) == 0) {
@@ -106,5 +113,8 @@ public class BatEeeeAbility implements Ability<Hit> {
 
     @Override
     public void postApply(Pony player, AbilitySlot slot) {
+        for (int i = 0; i < 20; i++) {
+            player.addParticle(ParticleTypes.BUBBLE_POP, player.getPhysics().getHeadPosition().toCenterPos(), VecHelper.supply(() -> player.asWorld().getRandom().nextGaussian() - 0.5));
+        }
     }
 }
