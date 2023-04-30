@@ -4,11 +4,9 @@ import java.util.Optional;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
-import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -62,12 +60,12 @@ public class CastCommand {
                 CommandManager.literal("place").executes(c -> placed(c, traitsFunc, Optional.empty(), c.getSource().getRotation())).then(
                     CommandManager.argument("loc", BlockPosArgumentType.blockPos()).executes(c -> placed(c,
                                 traitsFunc,
-                                Optional.of(BlockPosArgumentType.getBlockPos(c, "location").toCenterPos()),
+                                Optional.of(BlockPosArgumentType.getBlockPos(c, "loc").toCenterPos()),
                                 c.getSource().getRotation()
                         )).then(
                         CommandManager.argument("rot", RotationArgumentType.rotation()).executes(c -> placed(c,
                                 traitsFunc,
-                                Optional.of(BlockPosArgumentType.getBlockPos(c, "location").toCenterPos()),
+                                Optional.of(BlockPosArgumentType.getBlockPos(c, "loc").toCenterPos()),
                                 RotationArgumentType.getRotation(c, "rot").toAbsoluteRotation(c.getSource())
                         ))
                     )
@@ -105,14 +103,8 @@ public class CastCommand {
         Caster<?> caster = Caster.of(player).orElseThrow();
 
         spell.setOrientation(rotation.x, rotation.y);
+        position.ifPresent(pos -> spell.setPosition(caster, pos));
         spell.apply(caster);
-
-        position.ifPresent(pos -> {
-            spell.tick(caster, Situation.BODY);
-            CastSpellEntity entity = spell.getSpellEntity(caster).orElseThrow();
-            entity.setPosition(pos);
-        });
-
 
         return 0;
     }

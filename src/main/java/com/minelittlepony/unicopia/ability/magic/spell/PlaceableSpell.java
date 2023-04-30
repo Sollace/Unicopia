@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.server.world.Ether;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.*;
 import net.minecraft.registry.*;
@@ -51,6 +52,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     public float pitch;
     public float yaw;
+
+    private Optional<Vec3d> position = Optional.empty();
 
     public PlaceableSpell(CustomisedSpellType<?> type) {
         super(type);
@@ -120,7 +123,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     private void spawnPlacedEntity(Caster<?> source) {
         CastSpellEntity entity = UEntities.CAST_SPELL.create(source.asWorld());
-        Vec3d pos = castEntity.getPosition().orElse(source.getOriginVector());
+        Vec3d pos = castEntity.getPosition().orElse(position.orElse(source.getOriginVector()));
         entity.updatePositionAndAngles(pos.x, pos.y, pos.z, source.asEntity().getYaw(), source.asEntity().getPitch());
         PlaceableSpell copy = spell.toPlaceable();
         if (spell instanceof PlacementDelegate delegate) {
@@ -140,7 +143,19 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         this.pitch = -90 - pitch;
         this.yaw = -yaw;
         getDelegates(spell -> spell instanceof OrientedSpell o ? o : null)
-            .forEach(oriented -> oriented.setOrientation(pitch, yaw));
+            .forEach(spell -> spell.setOrientation(pitch, yaw));
+        setDirty();
+    }
+
+    public void setPosition(Caster<?> source, Vec3d position) {
+        this.position = Optional.of(position);
+        getWorld(source).ifPresent(world -> {
+            castEntity.ifPresent(world, entity -> {
+                entity.updatePositionAndAngles(position.x, position.y, position.z, entity.getYaw(), entity.getPitch());
+            });
+        });
+        getDelegates(spell -> spell instanceof PlaceableSpell o ? o : null)
+            .forEach(spell -> spell.setPosition(source ,position));
         setDirty();
     }
 
@@ -188,6 +203,9 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         super.toNBT(compound);
         compound.putFloat("pitch", pitch);
         compound.putFloat("yaw", yaw);
+        position.ifPresent(pos -> {
+            compound.put("position", NbtSerialisable.writeVector(pos));
+        });
         if (dimension != null) {
             compound.putString("dimension", dimension.getValue().toString());
         }
@@ -200,6 +218,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         super.fromNBT(compound);
         pitch = compound.getFloat("pitch");
         yaw = compound.getFloat("yaw");
+        position = compound.contains("position") ? Optional.of(NbtSerialisable.readVector(compound.getList("position", NbtElement.FLOAT_TYPE))) : Optional.empty();
         if (compound.contains("dimension", NbtElement.STRING_TYPE)) {
             Identifier id = Identifier.tryParse(compound.getString("dimension"));
             if (id != null) {
