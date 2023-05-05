@@ -6,7 +6,9 @@ import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.item.ItemStack;
 
 public class WantItNeedItEnchantment extends SimpleEnchantment {
 
@@ -19,5 +21,11 @@ public class WantItNeedItEnchantment extends SimpleEnchantment {
         if (user instanceof Creature && user.asWorld().random.nextInt(10) == 0) {
             ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, user.asEntity(), 0.2F), user.asEntity(), 1);
         }
+    }
+
+    public static boolean prefersEquipment(ItemStack newStack, ItemStack oldStack) {
+        int newLevel = EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, newStack);
+        int oldLevel = EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, oldStack);
+        return newLevel > oldLevel;
     }
 }

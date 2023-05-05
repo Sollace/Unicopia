@@ -8,7 +8,6 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -50,6 +49,8 @@ public class WantItTakeItGoal extends BreakHeartGoal {
             speed *= 2;
         }
 
+        reach = Math.max(1.5, reach);
+
         mob.getNavigation().startMovingTo(target, speed);
 
         cooldown = Math.max(cooldown - 1, 0);
@@ -80,10 +81,15 @@ public class WantItTakeItGoal extends BreakHeartGoal {
                     ItemStack stack = item.getStack();
 
                     if (!item.isRemoved()) {
-                        mob.tryEquip(stack);
-                        mob.triggerItemPickedUpByEntityCriteria(item);
-                        mob.sendPickup(item, stack.getCount());
-                        item.remove(RemovalReason.DISCARDED);
+                        ItemStack collected = mob.tryEquip(stack.copy());
+                        if (!collected.isEmpty()) {
+                            mob.triggerItemPickedUpByEntityCriteria(item);
+                            mob.sendPickup(item, stack.getCount());
+                            stack.decrement(collected.getCount());
+                            if (stack.isEmpty()) {
+                                item.discard();
+                            }
+                        }
                     }
                 });
             }
