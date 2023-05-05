@@ -13,6 +13,8 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.mojang.datafixers.util.Either;
 
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -43,5 +45,11 @@ abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHan
 
             info.setReturnValue(Either.left(PlayerEntity.SleepFailureReason.OTHER_PROBLEM));
         }
+    }
+
+    @Inject(method = "updateKilledAdvancementCriterion(Lnet/minecraft/entity/Entity;ILnet/minecraft/entity/damage/DamageSource;)V",
+            at = @At("TAIL"))
+    private void onUpdateKilledAdvancementCriterion(Entity entityKilled, int score, DamageSource damageSource, CallbackInfo info) {
+        get().onKill(entityKilled, damageSource);
     }
 }

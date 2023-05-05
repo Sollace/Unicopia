@@ -25,6 +25,6 @@
     }
   },
   "requirements": [
-  	[ "shed_feather_5" ]
+    [ "shed_feather_5" ]
   ]
 }

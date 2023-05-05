@@ -538,6 +538,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
     }
 
+    public void onKill(Entity killedEntity, DamageSource damage) {
+        if (killedEntity != null && killedEntity.getType() == EntityType.PHANTOM && getPhysics().isFlying()) {
+            UCriteria.KILL_PHANTOM_WHILE_FLYING.trigger(entity);
+        }
+    }
+
     @Override
     public boolean subtractEnergyCost(double foodSubtract) {
 

@@ -2,28 +2,31 @@
   "parent": "unicopia:unicopia/pegasus/sky_route",
   "display": {
     "icon": {
-      "item": "unicopia:pegasus_feather"
+      "item": "unicopia:phantom_membrane"
     },
     "title": {
-      "translate": "advancements.unicopia.molting_season_1.title"
+      "translate": "advancements.unicopia.deter_phantom.title"
     },
     "description": {
-      "translate": "advancements.unicopia.molting_season_1.description"
+      "translate": "advancements.unicopia.deter_phantom.description"
     },
-    "frame": "task",
+    "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": true
   },
   "criteria": {
-    "shed_feather": {
+    "the_thing": {
       "trigger": "unicopia:custom",
       "conditions": {
-        "event": "shed_feather"
+        "event": "kill_phantom_while_flying"
       }
     }
   },
   "requirements": [
-    [ "shed_feather" ]
-  ]
+    [ "the_thing" ]
+  ],
+  "rewards": {
+    "experience": 100
+  }
 }
