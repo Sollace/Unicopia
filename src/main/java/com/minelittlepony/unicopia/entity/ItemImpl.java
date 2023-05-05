@@ -11,6 +11,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
@@ -129,10 +130,12 @@ public class ItemImpl implements Equine<ItemEntity> {
         return physics;
     }
 
+    @Override
     public Race getSpecies() {
         return Race.fromName(entity.getDataTracker().get(ITEM_RACE), Race.HUMAN);
     }
 
+    @Override
     public void setSpecies(Race race) {
         entity.getDataTracker().set(ITEM_RACE, Race.REGISTRY.getId(race).toString());
     }
@@ -205,6 +208,10 @@ public class ItemImpl implements Equine<ItemEntity> {
         }
 
         default void interactWithPlayer(IItemEntity entity, PlayerEntity player) {
+
+        }
+
+        default void inFrameTick(ItemFrameEntity entity) {
 
         }
     }

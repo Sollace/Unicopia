@@ -10,8 +10,12 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.*;
+import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.MagicalDamageSource;
+import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -24,16 +28,20 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
@@ -126,12 +134,14 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
             return;
         }
 
-        float attachedTime = timeWorn / 100F;
+        float attachedTime = timeWorn / ItemTracker.HOURS;
 
         LocalDifficulty difficulty = wearer.asWorld().getLocalDifficulty(wearer.getOrigin());
-        float amount = attachedTime * (1 + difficulty.getClampedLocalDifficulty());
+        float amount = Math.min(entity.getMaxHealth() - 1, (attachedTime / 4) * (1 + difficulty.getClampedLocalDifficulty()));
 
-        amount = Math.min(amount, entity.getMaxHealth());
+        if (timeWorn > ItemTracker.DAYS) {
+            amount++;
+        }
 
         if (entity instanceof PlayerEntity player) {
             player.getHungerManager().setFoodLevel(1);
@@ -142,7 +152,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
             entity.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 200, 3));
         }
 
-        if (attachedTime > 120) {
+        if (attachedTime > ItemTracker.HOURS / 2) {
             entity.takeKnockback(1, 1, 1);
             wearer.updateVelocity();
         }
@@ -280,5 +290,38 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         }
 
         return ActionResult.PASS;
+    }
+
+    @Override
+    public void inFrameTick(ItemFrameEntity entity) {
+        Random rng = entity.world.random;
+
+        if (rng.nextInt(500) == 0) {
+            entity.world.playSound(null, entity.getBlockPos(), USounds.ITEM_ALICORN_AMULET_AMBIENT, SoundCategory.HOSTILE, 0.5F, 1);
+            for (int i = 0; i < 5; i++) {
+                entity.world.addParticle(rng.nextBoolean() ? ParticleTypes.LARGE_SMOKE : ParticleTypes.FLAME,
+                        rng.nextTriangular(entity.getX(), 0.5),
+                        rng.nextTriangular(entity.getY(), 0.5),
+                        rng.nextTriangular(entity.getZ(), 0.5),
+                        0, 0, 0
+                );
+            }
+        }
+
+        if ((entity.age / 1000) % 10 == 0 && entity.age % 50 == 0) {
+            for (Entity target : VecHelper.findInRange(entity, entity.world, entity.getPos(), 10, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
+                for (ItemStack equipment : target.getItemsEquipped()) {
+                    if (equipment.getItem() == UItems.GROGARS_BELL) {
+                        ChargeableItem chargeable = (ChargeableItem)UItems.GROGARS_BELL;
+                        if (chargeable.hasCharge(equipment)) {
+                            ChargeableItem.consumeEnergy(equipment, 3);
+                            ParticleUtils.spawnParticle(entity.world,
+                                    new FollowingParticleEffect(UParticles.HEALTH_DRAIN, entity, 0.4F)
+                                    .withChild(ParticleTypes.COMPOSTER), target.getEyePos(), Vec3d.ZERO);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

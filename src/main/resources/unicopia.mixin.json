@@ -5,6 +5,7 @@
   "refmap": "unicopia.mixin.refmap.json",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "MixinAbstractDecorationEntity",
     "MixinBlazeEntity",
     "MixinBlockEntity",
     "MixinBlockItem",
