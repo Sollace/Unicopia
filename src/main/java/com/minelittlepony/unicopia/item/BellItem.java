@@ -34,7 +34,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class BellItem extends Item implements ChargeableItem {
-
     public BellItem(Settings settings) {
         super(settings);
     }
@@ -149,10 +148,18 @@ public class BellItem extends Item implements ChargeableItem {
             if (living.asEntity() instanceof MobEntity mob) {
                 mob.setTarget(null);
             }
+            amountDrawn = Math.max(living.asEntity().getWidth(), living.asEntity().getHeight()) + living.asEntity().getHealth();
+
             if (living.asEntity() instanceof CreeperEntity creeper) {
-                creeper.setFuseSpeed(0);
+                creeper.setFuseSpeed(-1);
+
+                if (creeper.getDataTracker().get(CreeperEntity.CHARGED)) {
+                    creeper.getDataTracker().set(CreeperEntity.CHARGED, false);
+                    amountDrawn += 60;
+                }
+                creeper.getDataTracker().set(CreeperEntity.IGNITED, false);
             }
-            amountDrawn = Math.max(living.asEntity().getWidth(), living.asEntity().getHeight());
+
             if (living.asEntity() instanceof IllagerEntity) {
                 particleType = ParticleTypes.ANGRY_VILLAGER;
             }
