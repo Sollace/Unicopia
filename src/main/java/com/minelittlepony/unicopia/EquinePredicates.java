@@ -28,7 +28,11 @@ public interface EquinePredicates {
     Predicate<Entity> IS_CASTER = e -> !e.isRemoved() && (e instanceof Caster || IS_PLAYER.test(e));
     Predicate<Entity> IS_PLACED_SPELL = e -> e instanceof Caster && !e.isRemoved();
 
-    Predicate<LivingEntity> HAS_WANT_IT_NEED_IT = e -> EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) > 0;
+    Predicate<LivingEntity> HAS_WANT_IT_NEED_IT = e -> {
+        return EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) > 0
+            || EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, e.getOffHandStack()) > 0
+            || EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, e.getMainHandStack()) > 0;
+    };
 
     Predicate<Entity> VALID_FOR_DISGUISE = EntityPredicates.EXCEPT_SPECTATOR.and(e -> !(e instanceof LightningEntity || e instanceof AbstractDecorationEntity));
 
