@@ -13,6 +13,9 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
             .addComment("whilst any ones left off are not permitted")
             .addComment("An empty list disables whitelisting entirely.");
 
+    public final Setting<Set<String>> wantItNeedItEntityExcludelist = value("server", "wantItNeedItEntityExcludelist", (Set<String>)new HashSet<>(Set.of("minecraft:creeper")))
+            .addComment("A list of entity types that are immune to the want it need it spell's effects");
+
     public final Setting<Boolean> enableCheats = value("server", "enableCheats", false)
             .addComment("Allows use of the /race, /disguise, and /gravity commands");
 

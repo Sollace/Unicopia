@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.WeaklyOwned;
 import com.minelittlepony.unicopia.ability.magic.*;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -17,6 +18,7 @@ import com.minelittlepony.unicopia.entity.ai.DynamicTargetGoal;
 import com.minelittlepony.unicopia.entity.ai.EatMuffinGoal;
 import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;
 
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.goal.*;
@@ -115,7 +117,9 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
         DynamicTargetGoal targetter = new DynamicTargetGoal((MobEntity)entity);
         targets.add(1, targetter);
-        goals.add(1, new WantItTakeItGoal((MobEntity)entity, targetter));
+        if (!Unicopia.getConfig().wantItNeedItEntityExcludelist.get().contains(EntityType.getId(entity.getType()).toString())) {
+            goals.add(1, new WantItTakeItGoal((MobEntity)entity, targetter));
+        }
         if (entity.getType().getSpawnGroup() == SpawnGroup.MONSTER) {
             goals.add(3, new BreakHeartGoal((MobEntity)entity, targetter));
         }
