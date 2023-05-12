@@ -456,11 +456,11 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             float velocityScale = MathHelper.clamp((float)this.entity.getVelocity().horizontalLength(), 0, 5) / 5F;
             float lightScale = asWorld().getLightLevel(getPhysics().getHeadPosition()) / 15F;
 
-            if (((velocityScale + lightScale) / 2F) < 0.8F) {
+            if (((velocityScale + lightScale) / 2F) < 0.6F) {
                 return false;
             }
         }
-        return !super.canBeSeenBy(entity);
+        return super.canBeSeenBy(entity);
     }
 
     public Optional<Living<?>> getEntityInArms() {
