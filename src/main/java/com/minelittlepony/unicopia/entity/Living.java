@@ -212,6 +212,14 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         updateDragonBreath();
     }
 
+    public boolean canBeSeenBy(Entity entity) {
+        return !isInvisible()
+            && getSpellSlot()
+            .get(SpellPredicate.IS_DISGUISE, true)
+            .filter(spell -> spell.getDisguise().getAppearance() == entity)
+            .isEmpty();
+    }
+
     private void updateDragonBreath() {
         if (!entity.world.isClient && (entity instanceof PlayerEntity || entity.hasCustomName())) {
 

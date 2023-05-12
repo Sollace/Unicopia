@@ -110,7 +110,7 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
 
     @Inject(method = "canSee(Lnet/minecraft/entity/Entity;)Z", at = @At("HEAD"), cancellable = true)
     private void onCanSee(Entity other, CallbackInfoReturnable<Boolean> info) {
-        if (get().isInvisible()) {
+        if (!get().canBeSeenBy(other)) {
             info.setReturnValue(false);
         }
     }

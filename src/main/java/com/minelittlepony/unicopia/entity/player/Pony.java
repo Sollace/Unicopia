@@ -40,6 +40,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -447,6 +448,19 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public void tick() {
         super.tick();
         sendCapabilities();
+    }
+
+    @Override
+    public boolean canBeSeenBy(Entity entity) {
+        if (entity instanceof HostileEntity && getActualSpecies() == Race.BAT) {
+            float velocityScale = MathHelper.clamp((float)this.entity.getVelocity().horizontalLength(), 0, 5) / 5F;
+            float lightScale = asWorld().getLightLevel(getPhysics().getHeadPosition()) / 15F;
+
+            if (((velocityScale + lightScale) / 2F) < 0.8F) {
+                return false;
+            }
+        }
+        return !super.canBeSeenBy(entity);
     }
 
     public Optional<Living<?>> getEntityInArms() {
