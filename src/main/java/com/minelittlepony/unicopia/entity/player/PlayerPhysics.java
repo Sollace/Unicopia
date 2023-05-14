@@ -180,7 +180,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         }
     }
 
-    private double getHorizontalMotion() {
+    public double getHorizontalMotion() {
         return lastVel.horizontalLengthSquared();
     }
 

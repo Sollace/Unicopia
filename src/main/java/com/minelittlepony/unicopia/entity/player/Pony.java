@@ -452,11 +452,22 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public boolean canBeSeenBy(Entity entity) {
-        if (entity instanceof HostileEntity && getActualSpecies() == Race.BAT) {
-            float velocityScale = MathHelper.clamp((float)this.entity.getVelocity().horizontalLength(), 0, 5) / 5F;
-            float lightScale = asWorld().getLightLevel(getPhysics().getHeadPosition()) / 15F;
+        if (entity instanceof HostileEntity hostile
+                && getActualSpecies() == Race.BAT
+                && hostile.getTarget() != this.entity
+                && hostile.getAttacker() != this.entity
+                && entity.distanceTo(this.entity) > entity.getWidth()) {
+            if (entity.isSneaking() && entity.distanceTo(this.entity) > 4) {
+                return false;
+            }
 
-            if (((velocityScale + lightScale) / 2F) < 0.6F) {
+            float vel = (float)getPhysics().getHorizontalMotion();
+            float velocityScale = MathHelper.clamp(vel * 15, 0, 1);
+            int light = asWorld().getLightLevel(getPhysics().getHeadPosition());
+            float lightScale = light / 15F;
+            float approachFactor = ((velocityScale + lightScale) / 2F);
+
+            if (approachFactor < (entity.isSneaking() ? 0.8F : 0.6F)) {
                 return false;
             }
         }
