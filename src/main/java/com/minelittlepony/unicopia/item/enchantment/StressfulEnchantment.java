@@ -4,12 +4,10 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import net.minecraft.entity.EquipmentSlot;
-
 public class StressfulEnchantment extends SimpleEnchantment {
 
     protected StressfulEnchantment() {
-        super(Rarity.RARE, true, 3, EquipmentSlot.values());
+        super(Rarity.RARE, true, 3, UEnchantmentValidSlots.ANY);
     }
 
     @Override

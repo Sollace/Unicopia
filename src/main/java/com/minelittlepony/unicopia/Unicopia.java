@@ -34,6 +34,7 @@ import com.minelittlepony.unicopia.server.world.NocturnalSleepManager;
 import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
+import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 
 public class Unicopia implements ModInitializer {
     public static final String DEFAULT_NAMESPACE = "unicopia";
@@ -62,6 +63,7 @@ public class Unicopia implements ModInitializer {
         UCriteria.bootstrap();
         UEntities.bootstrap();
         Commands.bootstrap();
+        TrinketsDelegate.getInstance().bootstrap();
 
         ServerTickEvents.END_WORLD_TICK.register(w -> {
             ((BlockDestructionManager.Source)w).getDestructionManager().tick();

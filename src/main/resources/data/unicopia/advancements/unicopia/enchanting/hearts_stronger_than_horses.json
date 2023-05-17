@@ -1,0 +1,36 @@
+{
+  "parent": "minecraft:story/enchant_item",
+  "display": {
+    "icon": {
+      "item": "minecraft:golden_pickaxe"
+    },
+    "title": {
+      "translate": "advancements.unicopia.hearts_stronger_than_horses.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.hearts_stronger_than_horses.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "rewards": {
+    "experience": 120
+  },
+  "criteria": {
+    "enchant_with_heart_bound": {
+      "trigger": "minecraft:enchanted_item",
+      "conditions": {
+        "item": {
+          "enchantments": [
+            { "enchantment": "unicopia:heart_bound" }
+          ]
+        }
+      }
+    }
+  },
+  "requirements": [
+    [ "enchant_with_heart_bound" ]
+  ]
+}

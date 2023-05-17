@@ -13,7 +13,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate.Extended;
@@ -53,7 +53,7 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
     public CustomEventCriterion.Trigger createTrigger(String name) {
         return player -> {
             if (player instanceof ServerPlayerEntity p) {
-                int counter = Pony.of(player).getAdvancementProgress().compute(name, (key, i) -> i == null ? 1 : i + 1);
+                int counter = Pony.of(p).getAdvancementProgress().compute(name, (key, i) -> i == null ? 1 : i + 1);
 
                 trigger(p, c -> c.test(name, counter, p));
             }
@@ -61,7 +61,7 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
     }
 
     public interface Trigger {
-        void trigger(@Nullable PlayerEntity player);
+        void trigger(@Nullable Entity player);
     }
 
     public static class Conditions extends AbstractCriterionConditions {

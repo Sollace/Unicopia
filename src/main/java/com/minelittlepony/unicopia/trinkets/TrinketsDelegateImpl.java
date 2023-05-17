@@ -4,10 +4,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 
 import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.*;
+import dev.emi.trinkets.api.TrinketEnums.DropRule;
+import dev.emi.trinkets.api.event.TrinketDropCallback;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -20,6 +24,16 @@ import net.minecraft.world.event.GameEvent;
 public class TrinketsDelegateImpl implements TrinketsDelegate {
     public static final TrinketsDelegateImpl INSTANCE = new TrinketsDelegateImpl();
     // who tf designed this api?
+
+    @Override
+    public void bootstrap() {
+        TrinketDropCallback.EVENT.register((rule, stack, ref, entity) -> {
+            if (EnchantmentHelper.getLevel(UEnchantments.HEART_BOUND, stack) > 0) {
+                return DropRule.KEEP;
+            }
+            return rule;
+        });
+    }
 
     @Override
     public boolean equipStack(LivingEntity entity, Identifier slot, ItemStack stack) {

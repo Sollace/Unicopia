@@ -426,6 +426,8 @@
   "enchantment.unicopia.want_it_need_it": "Want It Need It",
   "enchantment.unicopia.poisoned_joke": "Poisoned Joke",
   "enchantment.unicopia.stressed": "Stressed",
+  "enchantment.unicopia.heart_bound": "Heart Bound",
+  "enchantment.unicopia.consumption": "Consumption",
 
   "commands.race.success.self": "Set own race to %1$s",
   "commands.race.success": "%1$s changed race to %2$s",
@@ -617,6 +619,14 @@
   "advancements.unicopia.eat_pinecone.description": "Eat a pinecone",
   "advancements.unicopia.imported_oats.title": "As Delicious As They Are Expensive",
   "advancements.unicopia.imported_oats.description": "Send of receive fancy imported oats",
+  "advancements.unicopia.experimental.title": "You Can't Take It With You",
+  "advancements.unicopia.experimental.description": "Enchant a tool with Consumption",
+  "advancements.unicopia.xp_mine.title": "XP Miner",
+  "advancements.unicopia.xp_mine.description": "Use consumption to dig up some experience",
+  "advancements.unicopia.hearts_stronger_than_horses.title": "You Can Keep it With You",
+  "advancements.unicopia.hearts_stronger_than_horses.description": "Enchant a tool with Heart Bound",
+  "advancements.unicopia.soulmate.title": "Hearts Stronger Than Horses",
+  "advancements.unicopia.soulmate.description": "Die whilst holding a heart-bound item",
 
   "advancements.unicopia.burn_juice.title": "That doesn't seem right",
   "advancements.unicopia.burn_juice.description": "Burn the juice",

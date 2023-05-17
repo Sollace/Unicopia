@@ -21,6 +21,7 @@ import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.*;
 import com.minelittlepony.unicopia.network.*;
 import com.minelittlepony.unicopia.network.datasync.EffectSync.UpdateCallback;
@@ -32,6 +33,7 @@ import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
@@ -42,6 +44,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -52,6 +55,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.GameRules;
 
 public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, UpdateCallback {
     private static final TrackedData<String> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
@@ -696,6 +700,17 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 Channel.SERVER_SELECT_TRIBE.sendToPlayer(new MsgTribeSelect(Race.allPermitted(entity), "gui.unicopia.tribe_selection.respawn"), (ServerPlayerEntity)entity);
             } else {
                 oldPlayer.getSpellSlot().stream(true).filter(SpellPredicate.IS_PLACED).forEach(getSpellSlot()::put);
+            }
+
+            // putting it here instead of adding another injection point into ServerPlayerEntity.copyFrom()
+            if (!asWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+                PlayerInventory inventory = oldPlayer.asEntity().getInventory();
+                for (int i = 0; i < inventory.size(); i++) {
+                    ItemStack stack = inventory.getStack(i);
+                    if (EnchantmentHelper.getLevel(UEnchantments.HEART_BOUND, stack) > 0) {
+                        asEntity().getInventory().setStack(i, stack);
+                    }
+                }
             }
         }
 

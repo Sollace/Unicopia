@@ -7,13 +7,12 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 
 public class WantItNeedItEnchantment extends SimpleEnchantment {
 
     protected WantItNeedItEnchantment() {
-        super(Rarity.VERY_RARE, true, 1, EquipmentSlot.values());
+        super(Rarity.VERY_RARE, true, 1, UEnchantmentValidSlots.ANY);
     }
 
     @Override

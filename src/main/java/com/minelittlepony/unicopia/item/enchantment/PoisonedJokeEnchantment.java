@@ -15,7 +15,6 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.util.Resources;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -31,7 +30,7 @@ public class PoisonedJokeEnchantment extends SimpleEnchantment implements Identi
     private List<SoundEvent> sounds = new ArrayList<>();
 
     protected PoisonedJokeEnchantment() {
-        super(Rarity.VERY_RARE, true, 1, EquipmentSlot.values());
+        super(Rarity.VERY_RARE, true, 1, UEnchantmentValidSlots.ANY);
     }
 
     @Override

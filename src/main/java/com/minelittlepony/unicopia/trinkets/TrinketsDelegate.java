@@ -37,6 +37,10 @@ public interface TrinketsDelegate {
         return FabricLoader.getInstance().isModLoaded("trinkets");
     }
 
+    default void bootstrap() {
+
+    }
+
     default boolean equipStack(LivingEntity entity, Identifier slot, ItemStack stack) {
         EquipmentSlot eq = MobEntity.getPreferredEquipmentSlot(stack);
         if (!entity.getEquippedStack(eq).isEmpty()) {

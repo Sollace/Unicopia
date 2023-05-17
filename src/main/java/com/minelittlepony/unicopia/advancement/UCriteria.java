@@ -19,6 +19,8 @@ public interface UCriteria {
     CustomEventCriterion.Trigger RECEIVE_OATS = CUSTOM_EVENT.createTrigger("receive_oats");
     CustomEventCriterion.Trigger BREAK_WINDOW = CUSTOM_EVENT.createTrigger("break_window");
     CustomEventCriterion.Trigger KILL_PHANTOM_WHILE_FLYING = CUSTOM_EVENT.createTrigger("kill_phantom_while_flying");
+    CustomEventCriterion.Trigger USE_CONSUMPTION = CUSTOM_EVENT.createTrigger("use_consumption");
+    CustomEventCriterion.Trigger USE_SOULMATE = CUSTOM_EVENT.createTrigger("use_soulmate");
 
     static void bootstrap() { }
 }
