@@ -73,6 +73,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<MindSwapSpell> MIND_SWAP = register("mind_swap", Affinity.BAD, 0xF9FF99, true, SpellTraits.EMPTY, MindSwapSpell::new);
     public static final SpellType<HydrophobicSpell> HYDROPHOBIC = register("hydrophobic", Affinity.NEUTRAL, 0xF999FF, true, SpellTraits.EMPTY, s -> new HydrophobicSpell(s, FluidTags.WATER));
     public static final SpellType<BubbleSpell> BUBBLE = register("bubble", Affinity.NEUTRAL, 0xF999FF, true, BubbleSpell.DEFAULT_TRAITS, BubbleSpell::new);
+    public static final SpellType<DispellEvilSpell> DISPEL_EVIL = register("dispel_evil", Affinity.GOOD, 0x00FF00, true, DispellEvilSpell.DEFAULT_TRAITS, DispellEvilSpell::new);
 
     public static void bootstrap() {}
 

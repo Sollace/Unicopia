@@ -247,6 +247,8 @@
   "spell.unicopia.feather_fall.lore": "Slows the descent of the caster and surrounding allies",
   "spell.unicopia.catapult": "Catapult",
   "spell.unicopia.catapult.lore": "Grabs a nearby block or entity and throws it into the air",
+  "spell.unicopia.dispel_evil": "Dispel Evil",
+  "spell.unicopia.dispel_evil.lore": "Casts away any nearby unearthly forces.",
 
   "gui.unicopia.trait.label": "Element of %s",
   "gui.unicopia.trait.group": "\n %s",
