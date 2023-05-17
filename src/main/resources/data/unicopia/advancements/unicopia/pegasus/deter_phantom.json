@@ -2,7 +2,7 @@
   "parent": "unicopia:unicopia/pegasus/sky_route",
   "display": {
     "icon": {
-      "item": "unicopia:phantom_membrane"
+      "item": "minecraft:phantom_membrane"
     },
     "title": {
       "translate": "advancements.unicopia.deter_phantom.title"
