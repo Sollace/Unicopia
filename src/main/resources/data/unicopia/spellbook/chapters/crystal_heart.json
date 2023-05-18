@@ -86,10 +86,45 @@
         ]
       },
       {
-        "title": "22nd Trot '12",
+        "title": "21st Trot '12",
         "level": 0,
         "elements": [
           "It was intended as an aide for early unicorn ambassadors to Cloud Heights, but was lost after negotiations broke down."
+        ]
+      },
+      {
+        "title": "Meadowbrook's Staff",
+        "level": 3,
+        "elements": [
+          { "item": { "item": "unicopia:meadowbrooks_staff" } },
+          "Status: Confirmed",
+          "A precursor to magic staffs, the meadwobrook's staff is an upright support structure commonly used by warlocks during long incantation sessions.",
+          "It features a twisting and mottled shape with a dense and sturdy core capable of supporting the weight of an average-sized, adult male."
+        ]
+      },
+      {
+        "title": "22nd Trot '12",
+        "level": 3,
+        "elements": [
+          "Due to its dense structure and flamability, this object also serves a secondary purpose as an offensive weapon and fuel source should the situation demand.",
+          "To use correctly in combat, one must begin by gripping the staff by the narrow end in both hands, followed by a swift swing from above one's head whilst yelling 'Fus Roh DAH!'"
+        ]
+      },
+      {
+        "title": "Magic Staffs",
+        "level": 5,
+        "elements": [
+          { "item": { "item": "unicopia:magic_staff" } },
+          "Status: Unconfirmed",
+          "Magical aides for non-magical users. Magic staffs work in a similar way to a unicorns horn in that they can be used to channel and harness the innate magic stored within gems."
+        ]
+      },
+      {
+        "title": "22nd Trot '12",
+        "level": 5,
+        "elements": [
+          "Not all spells work in the same way, but for those that do, a good staff is an essential tool for any beginner magi.",
+          "The simplest way to create these is to put a gem on the end of a stick. Yes, very revolutionary, I know."
         ]
       },
       {

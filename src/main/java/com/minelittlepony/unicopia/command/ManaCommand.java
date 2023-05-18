@@ -27,7 +27,13 @@ public class ManaCommand {
                         var pony = Pony.of(source.getSource().getPlayer());
                         var bar = type.getBar(pony.getMagicalReserves());
 
-                        bar.set(source.getArgument("value", Float.class));
+                        float value = source.getArgument("value", Float.class);
+                        while (type == ManaType.XP && value > 1) {
+                            pony.getLevel().add(1);
+                            value -= 1;
+                        }
+
+                        bar.set(value);
                         source.getSource().getPlayer().sendMessage(Text.literal("Set " + type.name() + " to " + bar.get() + "/" + bar.getMax()));
                         return 0;
                     }))

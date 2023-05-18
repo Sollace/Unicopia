@@ -296,7 +296,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
     public void inFrameTick(ItemFrameEntity entity) {
         Random rng = entity.world.random;
 
-        if (rng.nextInt(500) == 0) {
+        if (rng.nextInt(1500) == 0) {
             entity.world.playSound(null, entity.getBlockPos(), USounds.ITEM_ALICORN_AMULET_AMBIENT, SoundCategory.HOSTILE, 0.5F, 1);
             for (int i = 0; i < 5; i++) {
                 entity.world.addParticle(rng.nextBoolean() ? ParticleTypes.LARGE_SMOKE : ParticleTypes.FLAME,

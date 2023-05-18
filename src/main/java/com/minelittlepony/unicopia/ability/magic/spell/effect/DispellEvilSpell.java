@@ -15,7 +15,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class DispellEvilSpell extends AbstractSpell implements ProjectileDelegate.HitListener {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
-            .with(Trait.POWER, 10)
+            .with(Trait.POWER, 1)
             .build();
 
     protected DispellEvilSpell(CustomisedSpellType<?> type) {
