@@ -69,7 +69,7 @@ class SpellbookEmiRecipe implements EmiRecipe, SpellbookRecipe.CraftingTreeBuild
     @Override
     public void addWidgets(WidgetHolder widgets) {
         widgets.addTexture(SpellbookScreen.TEXTURE, 0, 0, getDisplayWidth(), getDisplayHeight(), 50, 50, 128, 128, 512, 256);
-        widgets.addTexture(EmiTexture.EMPTY_ARROW, 160, 65);
+        widgets.addTexture(Main.EMPTY_ARROW, 160, 65);
 
         List<HexagonalCraftingGrid.Slot> grid = new ArrayList<>();
         List<HexagonalCraftingGrid.Slot> gem = new ArrayList<>();

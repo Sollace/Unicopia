@@ -19,6 +19,7 @@ import com.minelittlepony.unicopia.item.group.MultiItem;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
+import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiStack;
 import net.minecraft.item.ItemStack;
@@ -29,6 +30,9 @@ public class Main implements EmiPlugin {
     static final EmiStack SPELL_BOOK_STATION = EmiStack.of(UItems.SPELLBOOK);
     static final EmiRecipeCategory SPELL_BOOK_CATEGORY = new EmiRecipeCategory(Unicopia.id("spellbook"), SPELL_BOOK_STATION, SPELL_BOOK_STATION);
     static final Comparison COMPARING_BOTH = Comparison.builder().nbt(true).build();
+
+    static final Identifier WIDGETS = Unicopia.id("textures/gui/widgets.png");
+    static final EmiTexture EMPTY_ARROW = new EmiTexture(WIDGETS, 44, 0, 24, 17);
 
     @Override
     public void register(EmiRegistry registry) {
