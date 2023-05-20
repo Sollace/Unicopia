@@ -622,13 +622,15 @@
   "advancements.unicopia.eat_pinecone.description": "Eat a pinecone",
   "advancements.unicopia.imported_oats.title": "As Delicious As They Are Expensive",
   "advancements.unicopia.imported_oats.description": "Send of receive fancy imported oats",
+
   "advancements.unicopia.experimental.title": "You Can't Take It With You",
   "advancements.unicopia.experimental.description": "Enchant a tool with Consumption",
-  "advancements.unicopia.xp_mine.title": "XP Miner",
-  "advancements.unicopia.xp_mine.description": "Use consumption to dig up some experience",
-  "advancements.unicopia.hearts_stronger_than_horses.title": "You Can Keep it With You",
+  "advancements.unicopia.xp_miner.title": "XP Miner",
+  "advancements.unicopia.xp_miner.description": "Use consumption to dig up some experience",
+
+  "advancements.unicopia.hearts_stronger_than_horses.title": "Hearts Stronger Than Horses",
   "advancements.unicopia.hearts_stronger_than_horses.description": "Enchant a tool with Heart Bound",
-  "advancements.unicopia.soulmate.title": "Hearts Stronger Than Horses",
+  "advancements.unicopia.soulmate.title": "You Can Keep it With You",
   "advancements.unicopia.soulmate.description": "Die whilst holding a heart-bound item",
 
   "advancements.unicopia.burn_juice.title": "That doesn't seem right",
@@ -648,6 +650,13 @@
   "advancements.unicopia.screech_twenty_mobs.description": "Rain down terror on at least 20 mobs at once",
   "advancements.unicopia.screech_self.title": "Jeepers!",
   "advancements.unicopia.screech_self.description": "Be so terrifying that you even scared your self a little",
+
+  "advancements.unicopia.earth_route.title": "Path of the Pony",
+  "advancements.unicopia.earth_route.description": "Join the Apple Clan",
+  "advancements.unicopia.born_on_a_rock_farm.title": "Born on a Rock Farm",
+  "advancements.unicopia.born_on_a_rock_farm.description": "Successfully farm your first rock",
+  "advancements.unicopia.thats_unusual.title": "That's Unusual",
+  "advancements.unicopia.thats_unusual.description": "But what does it do?",
 
   "advancements.unicopia.sky_route.title": "Path of the Pegasus",
   "advancements.unicopia.sky_route.description": "Join the Clousdale Pegasi",

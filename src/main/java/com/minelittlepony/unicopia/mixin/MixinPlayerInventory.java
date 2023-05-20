@@ -43,7 +43,7 @@ abstract class MixinPlayerInventory implements Inventory, Nameable {
                 if (EnchantmentHelper.getLevel(Enchantments.BINDING_CURSE, stack) == 0
                     && EnchantmentUtil.consumeEnchantment(UEnchantments.HEART_BOUND, 1, stack, player.world.random, EnchantmentUtil.getLuck(3, player))) {
                     original.set(i, ItemStack.EMPTY);
-                    UCriteria.USE_CONSUMPTION.trigger(player);
+                    UCriteria.USE_SOULMATE.trigger(player);
                     storedCombinedInventory.get(group).set(i, stack);
                 }
             }

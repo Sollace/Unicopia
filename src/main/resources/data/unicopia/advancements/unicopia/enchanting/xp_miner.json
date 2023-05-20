@@ -5,10 +5,10 @@
       "item": "minecraft:netherite_pickaxe"
     },
     "title": {
-      "translate": "advancements.unicopia.xp_mine.title"
+      "translate": "advancements.unicopia.xp_miner.title"
     },
     "description": {
-      "translate": "advancements.unicopia.xp_mine.description"
+      "translate": "advancements.unicopia.xp_miner.description"
     },
     "frame": "task",
     "show_toast": true,
