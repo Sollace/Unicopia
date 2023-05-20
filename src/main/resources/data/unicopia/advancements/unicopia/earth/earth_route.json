@@ -2,7 +2,7 @@
   "parent": "unicopia:unicopia/root",
   "display": {
     "icon": {
-      "item": "minecraft:apple"
+      "item": "unicopia:earth_badge"
     },
     "title": {
       "translate": "advancements.unicopia.earth_route.title"

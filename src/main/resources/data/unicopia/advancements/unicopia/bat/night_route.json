@@ -2,7 +2,7 @@
   "parent": "unicopia:unicopia/root",
   "display": {
     "icon": {
-      "item": "minecraft:black_candle"
+      "item": "unicopia:bat_badge"
     },
     "title": {
       "translate": "advancements.unicopia.night_route.title"

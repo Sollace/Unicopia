@@ -127,6 +127,13 @@ public interface UItems {
     GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
     GlassesItem BROKEN_SUNGLASSES = register("broken_sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
 
+    Item ALICORN_BADGE = register(Race.ALICORN);
+    Item PEGASUS_BADGE = register(Race.PEGASUS);
+    Item UNICORN_BADGE = register(Race.UNICORN);
+    Item EARTH_BADGE = register(Race.EARTH);
+    Item BAT_BADGE = register(Race.BAT);
+    Item CHANGELING_BADGE = register(Race.CHANGELING);
+
     static <T extends Item> T register(String name, T item, ItemGroup group) {
         return ItemGroupRegistry.register(register(name, item), group);
     }
@@ -149,6 +156,10 @@ public interface UItems {
                 .maxCount(1)
                 .rarity(Rarity.RARE), seconds
             ) {}, ItemGroups.TOOLS);
+    }
+
+    static Item register(Race race) {
+        return register(race.getId().withPath(p -> p + "_badge"), new Item(new Settings()));
     }
 
     static void bootstrap() {

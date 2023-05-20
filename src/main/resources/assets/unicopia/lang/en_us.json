@@ -26,6 +26,13 @@
   "item.unicopia.spellbook": "Spellbook",
   "emi.category.unicopia.spellbook": "Spellbook",
 
+  "item.unicopia.alicorn_badge": "Alicorn Emblem",
+  "item.unicopia.unicorn_badge": "Unicorn Emblem",
+  "item.unicopia.pegasus_badge": "Pegasus Emblem",
+  "item.unicopia.earth_badge": "Earth Pony Emblem",
+  "item.unicopia.changeling_badge": "Changeling Emblem",
+  "item.unicopia.bat_badge": "Bat Pony Emblem",
+
   "item.unicopia.butterfly_spawn_egg": "Butterfly Spawn Egg",
   "item.unicopia.butterfly": "Butterfly",
 

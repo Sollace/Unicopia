@@ -20,11 +20,11 @@ public interface UItemGroups {
                 .filter(item -> ((ToxicHolder)item).getToxic(item.getDefaultStack()) != Toxic.EMPTY);
     });
 
-    ItemGroup EARTH_PONY_ITEMS = ItemGroupRegistry.createGroupFromTag("earth_pony", UItems.APPLE_PIE::getDefaultStack);
-    ItemGroup UNICORN_ITEMS = ItemGroupRegistry.createGroupFromTag("unicorn", UItems.SPELLBOOK::getDefaultStack);
-    ItemGroup PEGASUS_ITEMS = ItemGroupRegistry.createGroupFromTag("pegasus", UItems.PEGASUS_FEATHER::getDefaultStack);
-    ItemGroup BAT_PONY_ITEMS = ItemGroupRegistry.createGroupFromTag("bat_pony", UItems.SUNGLASSES::getDefaultStack);
-    ItemGroup CHANGELING_ITEMS = ItemGroupRegistry.createGroupFromTag("changeling", UItems.LOVE_BOTTLE::getDefaultStack);
+    ItemGroup EARTH_PONY_ITEMS = ItemGroupRegistry.createGroupFromTag("earth_pony", UItems.EARTH_BADGE::getDefaultStack);
+    ItemGroup UNICORN_ITEMS = ItemGroupRegistry.createGroupFromTag("unicorn", UItems.UNICORN_BADGE::getDefaultStack);
+    ItemGroup PEGASUS_ITEMS = ItemGroupRegistry.createGroupFromTag("pegasus", UItems.PEGASUS_BADGE::getDefaultStack);
+    ItemGroup BAT_PONY_ITEMS = ItemGroupRegistry.createGroupFromTag("bat_pony", UItems.BAT_BADGE::getDefaultStack);
+    ItemGroup CHANGELING_ITEMS = ItemGroupRegistry.createGroupFromTag("changeling", UItems.CHANGELING_BADGE::getDefaultStack);
 
     static void bootstrap() {
         ItemGroupRegistry.bootstrap();

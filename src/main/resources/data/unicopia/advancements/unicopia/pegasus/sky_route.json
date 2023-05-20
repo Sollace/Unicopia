@@ -2,7 +2,7 @@
   "parent": "unicopia:unicopia/root",
   "display": {
     "icon": {
-      "item": "unicopia:pegasus_feather"
+      "item": "unicopia:pegasus_badge"
     },
     "title": {
       "translate": "advancements.unicopia.sky_route.title"
