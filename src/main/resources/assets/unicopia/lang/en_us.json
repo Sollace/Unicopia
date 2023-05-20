@@ -505,6 +505,7 @@
   "death.attack.generic.and_also": "%1$s and %2$s",
   "death.attack.generic.whilst_flying": "%1$s whilst flying",
   "death.attack.tribe_swap": "%1$s was reborn into a different tribe",
+  "death.attack.tribe_swap.player": "%1$s was doomed to be reborn into a different tribe by %2$s",
   "death.attack.sun": "%1$s stared into the sun",
   "death.attack.sun.player": "%1$s stared into the sun whilst fighting %2$s",
   "death.attack.sunlight": "%1$s was burned by the sun",
