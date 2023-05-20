@@ -32,11 +32,15 @@ public interface SpellbookRecipe extends Recipe<SpellbookInventory> {
     int getPriority();
 
     interface CraftingTreeBuilder {
-        void input(ItemStack...stack);
+        void input(ItemStack...stacks);
+
+        void input(Trait...traits);
 
         void input(Trait trait, float value);
 
-        void mystery(ItemStack...stacks);
+        default void mystery(ItemStack...stacks) {
+            input(stacks);
+        }
 
         void result(ItemStack...stack);
 

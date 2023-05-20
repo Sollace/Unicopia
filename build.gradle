@@ -63,6 +63,9 @@ dependencies {
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
     modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
+
+    //modCompileOnly "dev.emi:emi:${project.emi_version}:api"
+    modCompileOnly "dev.emi:emi:${project.emi_version}"
 }
 
 processResources {

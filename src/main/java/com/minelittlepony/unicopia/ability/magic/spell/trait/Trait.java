@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.Unicopia;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -63,6 +64,7 @@ public enum Trait {
 
     private final Text tooltip;
     private final Text obfuscatedTooltip;
+    private final List<Text> tooltipLines;
 
     Trait(TraitGroup group) {
         this.id = Unicopia.id(name().toLowerCase(Locale.ROOT));
@@ -75,14 +77,17 @@ public enum Trait {
                     ? Formatting.RED
                     : Formatting.WHITE;
 
-        MutableText tooltipText = Text.translatable("gui.unicopia.trait.label",
-                            Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".name")
-                        ).formatted(Formatting.YELLOW)
-                        .append(Text.translatable("gui.unicopia.trait.group", getGroup().name().toLowerCase(Locale.ROOT)).formatted(Formatting.ITALIC, Formatting.GRAY))
-                        .append(Text.literal("\n\n").formatted(Formatting.WHITE)
-                        .append(Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".description").formatted(Formatting.GRAY))
-                        .append("\n")
-                        .append(Text.translatable("gui.unicopia.trait.corruption", ItemStack.MODIFIER_FORMAT.format(getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor)));
+        tooltipLines = List.of(
+            Text.translatable("gui.unicopia.trait.group", getGroup().name().toLowerCase(Locale.ROOT)).formatted(Formatting.ITALIC, Formatting.GRAY),
+            Text.empty(),
+            Text.empty(),
+            Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".description").formatted(Formatting.GRAY),
+            Text.empty(),
+            Text.translatable("gui.unicopia.trait.corruption", ItemStack.MODIFIER_FORMAT.format(getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor)
+        );
+
+        MutableText tooltipText = getName().copy();
+        tooltipLines.forEach(line -> tooltipText.append(line).append("\n"));
         this.tooltip = tooltipText;
         this.obfuscatedTooltip = tooltipText.copy().formatted(Formatting.OBFUSCATED);
 
@@ -100,12 +105,26 @@ public enum Trait {
         return sprite;
     }
 
+    public Text getName() {
+        return Text.translatable("gui.unicopia.trait.label",
+                Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".name")
+            ).formatted(Formatting.YELLOW);
+    }
+
+    public List<Text> getTooltipLines() {
+        return tooltipLines;
+    }
+
     public Text getTooltip() {
         return tooltip;
     }
 
     public Text getObfuscatedTooltip() {
         return obfuscatedTooltip;
+    }
+
+    public List<Item> getItems() {
+        return SpellTraits.ITEMS.getOrDefault(this, List.of());
     }
 
     public static Collection<Trait> all() {

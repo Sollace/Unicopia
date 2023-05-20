@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.item;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
@@ -81,7 +82,10 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
 
     @Override
     public List<ItemStack> getDefaultStacks() {
-        return ENTITY_TYPE_TO_SPELL.values().stream().distinct().map(type -> EnchantableItem.enchant(getDefaultStack(), type)).toList();
+        return Stream.concat(
+                Stream.of(getDefaultStack()),
+                ENTITY_TYPE_TO_SPELL.values().stream().distinct().map(type -> EnchantableItem.enchant(getDefaultStack(), type))
+            ).toList();
     }
 
     @Override

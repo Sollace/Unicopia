@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.trait;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -39,9 +40,21 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     public static final SpellTraits EMPTY = new SpellTraits(Map.of());
 
     private static Map<Identifier, SpellTraits> REGISTRY = new HashMap<>();
+    static final Map<Trait, List<Item>> ITEMS = new HashMap<>();
 
     public static void load(Map<Identifier, SpellTraits> newRegistry) {
         REGISTRY = new HashMap<>(newRegistry);
+        ITEMS.clear();
+        REGISTRY.forEach((itemId, traits) -> {
+            Registries.ITEM.getOrEmpty(itemId).ifPresent(item -> {
+                traits.forEach(entry -> {
+                    List<Item> items = ITEMS.computeIfAbsent(entry.getKey(), k -> new ArrayList<>());
+                    if (!items.contains(item)) {
+                        items.add(item);
+                    }
+                 });
+            });
+        });
     }
 
     public static Map<Identifier, SpellTraits> all() {

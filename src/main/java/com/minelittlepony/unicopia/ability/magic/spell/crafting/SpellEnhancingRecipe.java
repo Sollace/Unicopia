@@ -24,9 +24,13 @@ public class SpellEnhancingRecipe implements SpellbookRecipe {
         this.material = material;
     }
 
+    public IngredientWithSpell getBaseMaterial() {
+        return material;
+    }
+
     @Override
     public void buildCraftingTree(CraftingTreeBuilder builder) {
-
+        builder.input(material.getMatchingStacks());
     }
 
     @Override
