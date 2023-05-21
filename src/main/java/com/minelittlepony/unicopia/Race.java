@@ -76,6 +76,10 @@ public record Race (boolean canCast, FlightType flightType, boolean canUseEarth,
         return this == UNSET || this == HUMAN;
     }
 
+    public boolean isDayurnal() {
+        return !isNocturnal();
+    }
+
     public boolean isOp() {
         return this == ALICORN;
     }
