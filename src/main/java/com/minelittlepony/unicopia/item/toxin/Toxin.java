@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -13,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.StringHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 
 public interface Toxin extends Affliction {
@@ -111,10 +113,15 @@ public interface Toxin extends Affliction {
 
         return of(text, (player, stack) -> {
             StatusEffectInstance current = player.getStatusEffect(effect);
+            float health = player.getHealth();
             if (current != null) {
                 player.addStatusEffect(new StatusEffectInstance(effect, ticks + current.getDuration(), amplifier + current.getAmplifier(), false, false, false));
             } else {
                 player.addStatusEffect(new StatusEffectInstance(effect, ticks, amplifier, false, false, false));
+            }
+            // keep original health
+            if (effect.getAttributeModifiers().containsKey(EntityAttributes.GENERIC_MAX_HEALTH)) {
+                player.setHealth(MathHelper.clamp(health, 0, player.getMaxHealth()));
             }
         });
     }

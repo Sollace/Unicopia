@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.item.toxin;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.registry.Registry;
 
 import static com.minelittlepony.unicopia.item.toxin.Toxicity.*;
@@ -110,6 +111,15 @@ public interface Toxics {
 
     Toxic PINECONE = register("pinecone", new Toxic.Builder(of(Toxicity.SAFE, Toxin.healing(1)))
             .with(Race.HUMAN, Ailment.INNERT)
+    );
+
+    Toxic BAT_PONYS_DELIGHT = register("bat_ponys_delight", new Toxic.Builder(Ailment.INNERT)
+            .with(Race.BAT, Ailment.of(Toxicity.SAFE,
+                    Toxin.of(StatusEffects.HEALTH_BOOST, 30, 2)
+                        .and(Toxin.of(StatusEffects.JUMP_BOOST, 30, 1))
+                        .and(Toxin.of(StatusEffects.SPEED, 30, 1))
+                        .and(Toxin.of(StatusEffects.REGENERATION, 3, 3))
+            ))
     );
 
     static void bootstrap() {}

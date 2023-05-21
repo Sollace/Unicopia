@@ -39,6 +39,7 @@ public interface UTradeOffers {
         });
         TradeOfferHelper.registerVillagerOffers(VillagerProfession.FARMER, 2, factories -> {
             factories.add(buy(Items.EMERALD, 4, UTags.APPLE_SEEDS, 2, 20, 1, 0.05F));
+            factories.add(buy(Items.EMERALD, 8, UItems.MANGO, 1, 15, 1, 0.025F));
         });
 
         TradeOfferHelper.registerWanderingTraderOffers(1, factories -> {
@@ -50,6 +51,7 @@ public interface UTradeOffers {
             factories.add(buy(UItems.ZAP_APPLE, 45, UItems.ZAP_APPLE_JAM_JAR, 5, 50, 3, 0.07F));
             factories.add(buy(UItems.CIDER, 1, UItems.FRIENDSHIP_BRACELET, 1, 6, 1, 0.05F));
             factories.add(buy(UItems.GEMSTONE, 5, UTags.FRESH_APPLES, 2, 12, 3, 0.05F));
+            factories.add(buy(Items.EMERALD, 4, UItems.MANGO, 1, 35, 1, 0.025F));
             factories.add(new JarredItemTradeOfferFactory());
         });
         TradeOfferHelper.registerWanderingTraderOffers(2, factories -> {

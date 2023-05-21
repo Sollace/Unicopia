@@ -74,6 +74,7 @@ public interface UItems {
     Item MUFFIN = register("muffin", new MuffinItem(new Item.Settings().maxCount(32).food(FoodComponents.BREAD), 0), ItemGroups.FOOD_AND_DRINK);
     Item PINECONE = register("pinecone", new Item(new Item.Settings().food(UFoodComponents.PINECONE).maxCount(3)), ItemGroups.FOOD_AND_DRINK);
     Item ACORN = register("acorn", new Item(new Item.Settings().food(UFoodComponents.ACORN).maxCount(16)), ItemGroups.FOOD_AND_DRINK);
+    Item MANGO = register("mango", new Item(new Item.Settings().food(UFoodComponents.MANGO)), ItemGroups.FOOD_AND_DRINK);
 
     Item PEBBLES = register("pebbles", new RacePredicatedAliasedBlockItem(UBlocks.ROCKS, new Item.Settings(), Race::canUseEarth), ItemGroups.NATURAL);
     Item ROCK = register("rock", new HeavyProjectileItem(new Item.Settings(), 3), ItemGroups.NATURAL);
