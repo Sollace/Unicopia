@@ -537,7 +537,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     private void applyThrust(MutableVector velocity) {
-        if (pony.sneakingChanged() && entity.isSneaking()) {
+        boolean manualFlap = pony.sneakingChanged() && entity.isSneaking();
+        if (manualFlap) {
             flapping = true;
             ticksToGlide = MAX_TICKS_TO_GLIDE;
         }
@@ -552,9 +553,11 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 entity.playSound(getFlightType().getWingFlapSound(), 0.5F, 1);
                 entity.world.emitGameEvent(entity, GameEvent.ELYTRA_GLIDE, entity.getPos());
             }
-            if (!hovering) {
-                thrustScale = 1;
-                descentRate -= 0.5F;
+            thrustScale = 1;
+            if (manualFlap) {
+                descentRate -= 0.5;
+            } else {
+                descentRate = Math.max(0, descentRate / 2);
             }
         }
 
