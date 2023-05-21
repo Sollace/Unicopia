@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.entity.player;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
-public record ExperienceGroup (String experience, String corruption) {
-    public static final LinearSelector<String> EXPERIENCES = new LinearSelector<>(new String[] {
+public interface ExperienceGroup {
+    LinearSelector<String> EXPERIENCES = new LinearSelector<>(new String[] {
             "MAGICAL_KINDERGARTENER",
             "FRIENDSHIP_STUDENT",
             "SENIOR_FRIENDSHIP_STUDENT",
@@ -20,7 +20,7 @@ public record ExperienceGroup (String experience, String corruption) {
             "POLYCORN_PRINCESS",
             "FAUSTIAN_LEGEND"
     }, 2);
-    public static final LinearSelector<String> CORRUPTIONS = new LinearSelector<>(new String[] {
+    LinearSelector<String> CORRUPTIONS = new LinearSelector<>(new String[] {
             "PURE",
             "IMPURE",
             "TAINTED",
@@ -29,13 +29,15 @@ public record ExperienceGroup (String experience, String corruption) {
             "MONSTROUS"
     }, 1F/8F);
 
-    public static Text forLevel(int level, int corruption) {
-        return Text.of(CORRUPTIONS.get(corruption).toLowerCase() + " " + EXPERIENCES.get(level).toLowerCase());
+    static Text forLevel(float level, float corruption) {
+        return Text.translatable(
+            "experience.unicopia." + CORRUPTIONS.get(corruption).toLowerCase() + "." + EXPERIENCES.get(level).toLowerCase()
+        );
     }
 
     public record LinearSelector<T> (T[] values, float ratio) {
-        public T get(int level) {
-            return values()[MathHelper.clamp(MathHelper.floor(MathHelper.sqrt(level * ratio())), 0, values().length - 1)];
+        public T get(float level) {
+            return values()[MathHelper.clamp(MathHelper.floor(level * values().length), 0, values().length - 1)];
         }
     }
 }

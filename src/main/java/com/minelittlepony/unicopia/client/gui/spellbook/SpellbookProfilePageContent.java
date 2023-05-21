@@ -4,11 +4,12 @@ import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.client.gui.*;
 import com.minelittlepony.unicopia.entity.player.*;
+import com.minelittlepony.unicopia.util.ColorHelper;
+import com.sollace.romanizer.api.Romanizer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -69,9 +70,19 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
 
         float delta = pony.asEntity().age + client.getTickDelta();
         int currentLevel = pony.getLevel().get();
+        float currentScaledLevel = pony.getLevel().getScaled(1);
+        float currentCorruption = pony.getCorruption().getScaled(1);
 
         DrawableUtil.drawScaledText(matrices, pony.asEntity().getName(), SpellbookScreen.TITLE_X, y, 1.3F, SpellbookScreen.TITLE_COLOR);
-        DrawableUtil.drawScaledText(matrices, ExperienceGroup.forLevel(currentLevel, pony.getCorruption().get()), SpellbookScreen.TITLE_X, y + 13, 0.8F, 0xAA0040FF);
+        DrawableUtil.drawScaledText(matrices, ExperienceGroup.forLevel(
+                currentScaledLevel,
+                currentCorruption
+        ), SpellbookScreen.TITLE_X, y + 13, 0.8F,
+                ColorHelper.lerp(currentCorruption,
+                        ColorHelper.lerp(currentScaledLevel, 0xAA0040FF, 0xAAA0AA40),
+                        0xAAFF0000
+                )
+        );
 
         MagicReserves reserves = pony.getMagicalReserves();
 
@@ -100,6 +111,28 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
 
         DrawableUtil.drawArc(matrices, 0, radius + 24, 0, DrawableUtil.TAU, color, false);
         DrawableUtil.drawArc(matrices, radius / 3, radius + 6, 0, DrawableUtil.TAU, color, false);
+
+        if (currentLevel >= pony.getLevel().getMax()) {
+            int rayCount = 6;
+            float raySeparation = MathHelper.TAU / rayCount;
+            float rotate = (delta / 120) % (MathHelper.TAU / (rayCount / 2));
+
+            growth = MathHelper.sin(delta / 10F) * 2;
+
+            int bandAColor = ColorHelper.lerp(currentCorruption, 0xAAFFAA60, 0xFF000030);
+            int bandBColor = ColorHelper.lerp(currentCorruption, 0xFFFFFF40, 0x00000020);
+
+            float glowSize = ColorHelper.lerp(currentCorruption, 8, -8);
+
+            for (int i = 0; i < rayCount; i++) {
+                double rad = (radius + glowSize) * 0.8F + growth - (i % 2) * 5;
+                float rot = (rotate + raySeparation * i) % MathHelper.TAU;
+
+                DrawableUtil.drawArc(matrices, 0, rad, rot, 0.2F, bandAColor, false);
+                DrawableUtil.drawArc(matrices, 0, rad + 0.3F, rot + 0.37F, 0.25F, bandBColor, false);
+            }
+        }
+
         DrawableUtil.drawArc(matrices, radius / 3, radius + 6, 0, xpPercentage * DrawableUtil.TAU, xpColor, false);
         radius += 8;
         DrawableUtil.drawArc(matrices, radius, radius + 6 + growth, 0, manaPercentage * DrawableUtil.TAU, manaColor, false);

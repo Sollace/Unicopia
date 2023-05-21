@@ -1,5 +1,9 @@
 package com.minelittlepony.unicopia.util;
 
+import com.minelittlepony.common.util.Color;
+
+import net.minecraft.util.math.MathHelper;
+
 public interface ColorHelper {
 
     static float[] changeSaturation(float red, float green, float blue, float intensity) {
@@ -27,4 +31,12 @@ public interface ColorHelper {
         return new float[] {r, g, b};
     }
 
+    static int lerp(float delta, int fromColor, int toColor) {
+        return Color.argbToHex(
+                MathHelper.lerp(delta, Color.a(fromColor), Color.a(toColor)),
+                MathHelper.lerp(delta, Color.r(fromColor), Color.r(toColor)),
+                MathHelper.lerp(delta, Color.g(fromColor), Color.g(toColor)),
+                MathHelper.lerp(delta, Color.b(fromColor), Color.b(toColor))
+        );
+    }
 }
