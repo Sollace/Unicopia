@@ -61,6 +61,9 @@ dependencies {
     modApi "com.sollace:fabwork:${project.fabwork_version}"
     include "com.sollace:fabwork:${project.fabwork_version}"
 
+    compileOnly files('lib/Romanizer-1.0.0.jar')
+    include files('lib/Romanizer-1.0.0.jar')
+
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
     modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
 

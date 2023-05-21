@@ -143,7 +143,7 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
         font.draw(matrices, "Mana", -font.getWidth("Mana") / 2, y, SpellbookScreen.TITLE_COLOR);
         font.draw(matrices, manaString, -font.getWidth(manaString) / 2, y += font.fontHeight, SpellbookScreen.TITLE_COLOR);
 
-        Text levelString = I18n.hasTranslation("enchantment.level." + (currentLevel + 1)) ? Text.translatable("enchantment.level." + (currentLevel + 1)) : Text.literal(currentLevel >= 999 ? ">999" : "" + (currentLevel + 1));
+        Text levelString = Text.literal(Romanizer.romanize(currentLevel + 1));
 
         matrices.translate(-font.getWidth(levelString), -35, 0);
         matrices.scale(2F, 2F, 1);
