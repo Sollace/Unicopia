@@ -1,6 +1,7 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.server.world;
 
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.block.UBlocks;
 
 import net.minecraft.block.*;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;

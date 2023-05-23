@@ -6,6 +6,7 @@ import java.util.List;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
+import com.minelittlepony.unicopia.server.world.UTreeGen;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricMaterialBuilder;

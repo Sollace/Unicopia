@@ -1,8 +1,10 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.server.world;
 
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import com.minelittlepony.unicopia.block.UBlocks;
 
 import net.fabricmc.fabric.api.biome.v1.*;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistrySetupCallback;
