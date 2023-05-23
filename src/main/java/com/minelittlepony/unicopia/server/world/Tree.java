@@ -1,8 +1,9 @@
 package com.minelittlepony.unicopia.server.world;
 
 import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import com.minelittlepony.unicopia.block.UBlocks;
 
@@ -65,6 +66,7 @@ public record Tree (
         private Block logType = Blocks.OAK_LOG;
         private Block leavesType = Blocks.OAK_LEAVES;
         private Optional<Identifier> saplingId = Optional.empty();
+        private BiFunction<SaplingGenerator, Block.Settings, SaplingBlock> saplingConstructor = SaplingBlock::new;
 
         private final TrunkPlacer trunkPlacer;
         private final FoliagePlacer foliagePlacer;
@@ -73,7 +75,7 @@ public record Tree (
 
         private Optional<Predicate<BiomeSelectionContext>> selector = Optional.empty();
         private Optional<PlacementModifier> countModifier = Optional.empty();
-        private Optional<Supplier<TreeFeatureConfig.Builder>> configSupplier = Optional.empty();
+        private Function<TreeFeatureConfig.Builder, TreeFeatureConfig.Builder> configParameters = Function.identity();
         private Optional<TwoLayersFeatureSize> size = Optional.empty();
 
         private Builder(Identifier id, TrunkPlacer trunkPlacer, FoliagePlacer foliagePlacer) {
@@ -97,6 +99,11 @@ public record Tree (
             return this;
         }
 
+        public Builder sapling(BiFunction<SaplingGenerator, Block.Settings, SaplingBlock> constructor) {
+            saplingConstructor = constructor;
+            return this;
+        }
+
         public Builder count(int count, float extraChance, int extraCount) {
             countModifier = Optional.of(PlacedFeatures.createCountExtraModifier(count, extraChance, extraCount));
             return this;
@@ -107,8 +114,8 @@ public record Tree (
             return this;
         }
 
-        public Builder shape(Supplier<TreeFeatureConfig.Builder> shape) {
-            this.configSupplier = Optional.of(shape);
+        public Builder configure(Function<TreeFeatureConfig.Builder, TreeFeatureConfig.Builder> shape) {
+            this.configParameters = shape;
             return this;
         }
 
@@ -119,18 +126,17 @@ public record Tree (
 
         public Tree build() {
             RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureId = RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, id);
-            Tree tree = new Tree(id, configSupplier.map(Supplier::get)
-                    .orElseGet(() -> new TreeFeatureConfig.Builder(
-                            BlockStateProvider.of(logType),
-                            trunkPlacer,
-                            BlockStateProvider.of(leavesType),
-                            foliagePlacer,
-                            size.get()
-                        ).forceDirt()), configuredFeatureId, selector.map(selector -> {
+            Tree tree = new Tree(id, configParameters.apply(new TreeFeatureConfig.Builder(
+                    BlockStateProvider.of(logType),
+                    trunkPlacer,
+                    BlockStateProvider.of(leavesType),
+                    foliagePlacer,
+                    size.get()
+                )), configuredFeatureId, selector.map(selector -> {
                 RegistryKey<PlacedFeature> i = RegistryKey.of(RegistryKeys.PLACED_FEATURE, id);
                 BiomeModifications.addFeature(selector, GenerationStep.Feature.VEGETAL_DECORATION, i);
                 return i;
-            }), saplingId.map(id -> UBlocks.register(id, new SaplingBlock(new SaplingGenerator() {
+            }), saplingId.map(id -> UBlocks.register(id, saplingConstructor.apply(new SaplingGenerator() {
                 @Override
                 protected RegistryKey<ConfiguredFeature<?, ?>> getTreeFeature(Random rng, boolean flowersNearby) {
                     return configuredFeatureId;

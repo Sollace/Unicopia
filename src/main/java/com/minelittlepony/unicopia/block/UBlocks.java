@@ -10,14 +10,17 @@ import com.minelittlepony.unicopia.server.world.UTreeGen;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricMaterialBuilder;
+import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.minecraft.block.*;
+import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.*;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.Registries;
 import net.minecraft.world.BlockView;
@@ -44,6 +47,17 @@ public interface UBlocks {
     Block ZAP_LEAVES = register("zap_leaves", new ZapAppleLeavesBlock(), ItemGroups.NATURAL);
     Block ZAP_BULB = register("zap_bulb", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GRAY).strength(500, 1200).sounds(BlockSoundGroup.AZALEA_LEAVES), Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false));
     Block ZAP_APPLE = register("zap_apple", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GRAY).sounds(BlockSoundGroup.AZALEA_LEAVES), Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false));
+
+    Block PALM_LOG = register("palm_log", createLogBlock(MapColor.OFF_WHITE, MapColor.SPRUCE_BROWN), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_WOOD = register("palm_wood", createWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_PLANKS = register("palm_planks", new Block(Settings.of(Material.WOOD, MapColor.OFF_WHITE).strength(2, 3).sounds(BlockSoundGroup.WOOD)), ItemGroups.BUILDING_BLOCKS);
+
+    Block STRIPPED_PALM_LOG = register("stripped_palm_log", createLogBlock(MapColor.OFF_WHITE, MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
+    Block STRIPPED_PALM_WOOD = register("stripped_palm_wood", createWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
+
+    Block PALM_LEAVES = register("palm_leaves", createLeavesBlock(BlockSoundGroup.GRASS), ItemGroups.BUILDING_BLOCKS);
+
+    Block BANANAS = register("bananas", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.YELLOW).sounds(BlockSoundGroup.WOOD).hardness(3), Direction.DOWN, PALM_LEAVES, VoxelShapes.fullCube()));
 
     Block WEATHER_VANE = register("weather_vane", new WeatherVaneBlock(FabricBlockSettings.of(Material.METAL, MapColor.BLACK).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.METAL).nonOpaque()), ItemGroups.TOOLS);
 
@@ -102,14 +116,37 @@ public interface UBlocks {
 
     static void bootstrap() {
         StrippableBlockRegistry.register(ZAP_LOG, STRIPPED_ZAP_LOG);
+        StrippableBlockRegistry.register(PALM_LOG, STRIPPED_PALM_LOG);
         StrippableBlockRegistry.register(ZAP_WOOD, STRIPPED_ZAP_WOOD);
+        StrippableBlockRegistry.register(PALM_WOOD, STRIPPED_PALM_WOOD);
         TRANSLUCENT_BLOCKS.add(WEATHER_VANE);
+        TintedBlock.REGISTRY.add(PALM_LEAVES);
+
+        FlammableBlockRegistry.getDefaultInstance().add(PALM_LEAVES, 30, 60);
+        FlammableBlockRegistry.getDefaultInstance().add(PALM_LOG, 5, 5);
+        FlammableBlockRegistry.getDefaultInstance().add(PALM_WOOD, 5, 5);
+        FlammableBlockRegistry.getDefaultInstance().add(STRIPPED_PALM_LOG, 5, 5);
+        FlammableBlockRegistry.getDefaultInstance().add(STRIPPED_PALM_WOOD, 5, 5);
+        FlammableBlockRegistry.getDefaultInstance().add(PALM_PLANKS, 5, 20);
+        FlammableBlockRegistry.getDefaultInstance().add(BANANAS, 5, 20);
 
         UBlockEntities.bootstrap();
     }
 
     static boolean never(BlockState state, BlockView world, BlockPos pos) {
         return false;
+    }
+
+    static PillarBlock createLogBlock(MapColor topMapColor, MapColor sideMapColor) {
+        return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor).strength(2).sounds(BlockSoundGroup.WOOD));
+    }
+
+    static PillarBlock createWoodBlock(MapColor mapColor) {
+        return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, mapColor).strength(2).sounds(BlockSoundGroup.WOOD));
+    }
+
+    static LeavesBlock createLeavesBlock(BlockSoundGroup soundGroup) {
+        return new LeavesBlock(AbstractBlock.Settings.of(Material.LEAVES).strength(0.2F).ticksRandomly().sounds(soundGroup).nonOpaque().allowsSpawning(UBlocks::canSpawnOnLeaves).suffocates(UBlocks::never).blockVision(UBlocks::never));
     }
 
     static Boolean canSpawnOnLeaves(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {

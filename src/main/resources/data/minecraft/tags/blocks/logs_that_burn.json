@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "unicopia:palm_log",
+    "unicopia:palm_wood",
+    "unicopia:stripped_palm_log",
+    "unicopia:stripped_palm_wood"
+  ]
+}

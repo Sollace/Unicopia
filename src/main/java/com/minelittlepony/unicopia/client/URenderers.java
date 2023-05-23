@@ -136,7 +136,11 @@ public interface URenderers {
                 color = BiomeColors.getFoliageColor(view, pos);
             }
 
-            return ((TintedBlock)state.getBlock()).getTint(state, view, pos, color);
+            if (state.getBlock() instanceof TintedBlock block) {
+                return block.getTint(state, view, pos, color);
+            }
+
+            return color;
         };
 
         ColorProviderRegistry.BLOCK.register(tintedProvider, TintedBlock.REGISTRY.stream().toArray(Block[]::new));

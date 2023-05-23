@@ -1,6 +1,10 @@
 {
   "replace": false,
   "values": [
+    "unicopia:palm_log",
+    "unicopia:palm_wood",
+    "unicopia:stripped_palm_log",
+    "unicopia:stripped_palm_wood",
     "unicopia:zap_log",
     "unicopia:zap_wood",
     "unicopia:stripped_zap_log",
