@@ -23,6 +23,7 @@ public class ZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
     public static final EnumProperty<ZapAppleStageStore.Stage> STAGE = EnumProperty.of("stage", ZapAppleStageStore.Stage.class);
 
     ZapAppleLeavesBlock() {
+
         super(Settings.of(Material.LEAVES)
                 .strength(500, 1200)
                 .ticksRandomly()
@@ -43,17 +44,20 @@ public class ZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
 
     @Override
     public boolean hasRandomTicks(BlockState state) {
-        return true;
+        return !state.get(PERSISTENT);
     }
 
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.randomTick(state, world, pos, random);
+        if (state.get(PERSISTENT)) {
+            return;
+        }
 
         ZapAppleStageStore store = ZapAppleStageStore.get(world);
         ZapAppleStageStore.Stage newStage = store.getStage();
         if (!world.isDay() && state.get(STAGE).mustChangeInto(newStage)) {
-            world.setBlockState(pos, state.with(STAGE, newStage));
+            world.setBlockState(pos, newStage == ZapAppleStageStore.Stage.HIBERNATING ? UBlocks.ZAP_LEAVES_PLACEHOLDER.getDefaultState() : state.with(STAGE, newStage));
             onStageChanged(store, newStage, world, state, pos, random);
         }
     }
@@ -61,11 +65,14 @@ public class ZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.scheduledTick(state, world, pos, random);
+        if (state.get(PERSISTENT)) {
+            return;
+        }
 
         ZapAppleStageStore store = ZapAppleStageStore.get(world);
         ZapAppleStageStore.Stage newStage = store.getStage();
         if (!world.isDay() && state.get(STAGE).mustChangeIntoInstantly(newStage)) {
-            world.setBlockState(pos, state.with(STAGE, newStage));
+            world.setBlockState(pos, newStage == ZapAppleStageStore.Stage.HIBERNATING ? UBlocks.ZAP_LEAVES_PLACEHOLDER.getDefaultState() : state.with(STAGE, newStage));
             onStageChanged(store, newStage, world, state, pos, random);
         }
 
@@ -79,14 +86,10 @@ public class ZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        if (!ctx.getWorld().isClient) {
-            ctx.getWorld().scheduleBlockTick(ctx.getBlockPos(), this, 1);
-            return super.getPlacementState(ctx).with(STAGE, ZapAppleStageStore.get(ctx.getWorld()).getStage());
-        }
-        return super.getPlacementState(ctx);
+        return super.getPlacementState(ctx).with(STAGE, ZapAppleStageStore.Stage.GREENING);
     }
 
-    private void onStageChanged(ZapAppleStageStore store, ZapAppleStageStore.Stage stage, ServerWorld world, BlockState state, BlockPos pos, Random random) {
+    static void onStageChanged(ZapAppleStageStore store, ZapAppleStageStore.Stage stage, ServerWorld world, BlockState state, BlockPos pos, Random random) {
         boolean mustFruit = Random.create(state.getRenderingSeed(pos)).nextInt(5) < 2;
         BlockState below = world.getBlockState(pos.down());
 
