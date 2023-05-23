@@ -42,6 +42,7 @@ public interface UFoodComponents {
     FoodComponent PINECONE = builder(0, 0.01F).snack().alwaysEdible().build();
     FoodComponent ACORN = builder(1, 0.01F).snack().alwaysEdible().build();
     FoodComponent MANGO = builder(8, 0.8F).alwaysEdible().build();
+    FoodComponent BANANA = builder(6, 0.9F).build();
 
     static FoodComponent.Builder builder(int hunger, float saturation) {
         return new FoodComponent.Builder()
