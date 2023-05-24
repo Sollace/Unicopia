@@ -23,6 +23,11 @@ class RacelistCommand {
         builder.then(CommandManager.literal("allow")
                 .then(CommandManager.argument("race", raceArgument)
                 .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), Race.fromArgument(context, "race"), "allowed", race -> {
+
+                    if (race.isUnset()) {
+                        return false;
+                    }
+
                     boolean result = Unicopia.getConfig().speciesWhiteList.get().add(race.getId().toString());
 
                     Unicopia.getConfig().save();
@@ -48,7 +53,11 @@ class RacelistCommand {
         String translationKey = "commands.racelist." + action;
 
         if (!func.apply(race)) {
-            translationKey += ".failed";
+            if (race.isUnset()) {
+                translationKey = "commands.racelist.illegal";
+            } else {
+                translationKey += ".failed";
+            }
         }
 
         Text formattedName = race.getDisplayName().copy().formatted(Formatting.GOLD);
