@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.command;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgTribeSelect;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
@@ -11,6 +13,7 @@ import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandManager.RegistrationEnvironment;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -63,6 +66,10 @@ class SpeciesCommand {
             Pony pony = Pony.of(player);
             pony.setSpecies(race);
             pony.setDirty();
+
+            if (race.isUnset()) {
+                Channel.SERVER_SELECT_TRIBE.sendToPlayer(new MsgTribeSelect(Race.allPermitted(player), "gui.unicopia.tribe_selection.respawn"), (ServerPlayerEntity)player);
+            }
 
             if (player == source.getPlayer()) {
                 source.sendFeedback(Text.translatable("commands.race.success.self", race.getDisplayName()), true);
