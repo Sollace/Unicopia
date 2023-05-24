@@ -16,6 +16,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
@@ -145,7 +146,11 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
         static final Stage[] VALUES = values();
 
         public Stage getNext() {
-            return VALUES[(ordinal() + 1) % VALUES.length];
+            return byId((ordinal() + 1) % VALUES.length);
+        }
+
+        public static Stage byId(int id) {
+            return VALUES[MathHelper.clamp(id, 0, VALUES.length)];
         }
 
         public boolean mustChangeInto(Stage to) {

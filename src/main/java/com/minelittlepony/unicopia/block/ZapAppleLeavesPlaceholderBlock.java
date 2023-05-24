@@ -32,5 +32,4 @@ public class ZapAppleLeavesPlaceholderBlock extends AirBlock {
 
         world.scheduleBlockTick(pos, this, 1);
     }
-
 }

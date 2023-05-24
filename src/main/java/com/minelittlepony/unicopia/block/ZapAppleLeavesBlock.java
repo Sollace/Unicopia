@@ -7,23 +7,20 @@ import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.*;
 
 public class ZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
     public static final EnumProperty<ZapAppleStageStore.Stage> STAGE = EnumProperty.of("stage", ZapAppleStageStore.Stage.class);
 
     ZapAppleLeavesBlock() {
-
         super(Settings.of(Material.LEAVES)
                 .strength(500, 1200)
                 .ticksRandomly()
@@ -50,21 +47,17 @@ public class ZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.randomTick(state, world, pos, random);
-        if (state.get(PERSISTENT)) {
-            return;
-        }
-
-        ZapAppleStageStore store = ZapAppleStageStore.get(world);
-        ZapAppleStageStore.Stage newStage = store.getStage();
-        if (!world.isDay() && state.get(STAGE).mustChangeInto(newStage)) {
-            world.setBlockState(pos, newStage == ZapAppleStageStore.Stage.HIBERNATING ? UBlocks.ZAP_LEAVES_PLACEHOLDER.getDefaultState() : state.with(STAGE, newStage));
-            onStageChanged(store, newStage, world, state, pos, random);
-        }
+        tryAdvanceStage(state, world, pos, random);
     }
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.scheduledTick(state, world, pos, random);
+        tryAdvanceStage(state, world, pos, random);
+        world.scheduleBlockTick(pos, this, 1);
+    }
+
+    private void tryAdvanceStage(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (state.get(PERSISTENT)) {
             return;
         }
@@ -75,8 +68,6 @@ public class ZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
             world.setBlockState(pos, newStage == ZapAppleStageStore.Stage.HIBERNATING ? UBlocks.ZAP_LEAVES_PLACEHOLDER.getDefaultState() : state.with(STAGE, newStage));
             onStageChanged(store, newStage, world, state, pos, random);
         }
-
-        world.scheduleBlockTick(pos, this, 1);
     }
 
     @Override
@@ -85,8 +76,15 @@ public class ZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
     }
 
     @Override
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+        ItemStack stack = super.getPickStack(world, pos, state);
+        stack.setDamage(Math.max(0, state.get(STAGE).ordinal() - 1));
+        return stack;
+    }
+
+    @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return super.getPlacementState(ctx).with(STAGE, ZapAppleStageStore.Stage.GREENING);
+        return super.getPlacementState(ctx).with(STAGE, ZapAppleStageStore.Stage.byId(ctx.getStack().getDamage() + 1));
     }
 
     static void onStageChanged(ZapAppleStageStore store, ZapAppleStageStore.Stage stage, ServerWorld world, BlockState state, BlockPos pos, Random random) {
@@ -121,34 +119,6 @@ public class ZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
     @Override
     public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
         ZapBlock.triggerLightning(state, world, pos, player);
-    }
-
-    @Deprecated
-    @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        return isAir(state) ? BlockRenderType.INVISIBLE : super.getRenderType(state);
-    }
-
-    @Deprecated
-    @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return isAir(state) ? VoxelShapes.empty() : super.getOutlineShape(state, world, pos, context);
-    }
-
-    @Deprecated
-    @Override
-    public boolean canReplace(BlockState state, ItemPlacementContext context) {
-        return isAir(state) || super.canReplace(state, context);
-    }
-
-    @Deprecated
-    @Override
-    public boolean canBucketPlace(BlockState state, Fluid fluid) {
-        return isAir(state) || super.canBucketPlace(state, fluid);
-    }
-
-    protected boolean isAir(BlockState state) {
-        return state.get(STAGE) == ZapAppleStageStore.Stage.HIBERNATING;
     }
 
     @Override
