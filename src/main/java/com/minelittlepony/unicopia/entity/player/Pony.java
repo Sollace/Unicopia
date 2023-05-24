@@ -451,6 +451,16 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void tick() {
         super.tick();
+
+        Race currentRace = getActualSpecies();
+        if (!currentRace.isUnset()) {
+            Race newRace = currentRace.validate(entity);
+
+            if (newRace != currentRace) {
+                setSpecies(newRace);
+            }
+        }
+
         sendCapabilities();
     }
 
