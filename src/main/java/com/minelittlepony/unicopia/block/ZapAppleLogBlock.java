@@ -8,13 +8,12 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.*;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class ZapAppleLogBlock extends PillarBlock {
-    public static final BooleanProperty NATURAL = Properties.PERSISTENT;
+    public static final BooleanProperty NATURAL = ZapBlock.NATURAL;
 
     private final Block artifialModelBlock;
 

@@ -13,14 +13,13 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.*;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class ZapBlock extends Block {
-    public static final BooleanProperty NATURAL = Properties.PERSISTENT;
+    public static final BooleanProperty NATURAL = BooleanProperty.of("natural");
 
     private final Block artificialModelBlock;
 
