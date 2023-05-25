@@ -6,6 +6,10 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ButtonBlock;
+import net.minecraft.block.HopperBlock;
+import net.minecraft.block.LeverBlock;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -15,13 +19,16 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -126,6 +133,42 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     @Override
     protected void onBlockHit(BlockHitResult hit) {
         BlockState state = world.getBlockState(hit.getBlockPos());
+
+        BlockState posState = getBlockStateAtPos();
+        if (state.isIn(BlockTags.WOODEN_BUTTONS) && state.getBlock() instanceof ButtonBlock button) {
+            button.powerOn(state, world, hit.getBlockPos());
+        } else if (posState.isIn(BlockTags.WOODEN_BUTTONS) && posState.getBlock() instanceof ButtonBlock button) {
+            button.powerOn(posState, world, getBlockPos());
+        }
+
+        if (state.getBlock() instanceof LeverBlock lever) {
+            lever.togglePower(state, world, hit.getBlockPos());
+        } else if (posState.getBlock() instanceof LeverBlock lever) {
+            lever.togglePower(posState, world, getBlockPos());
+        }
+
+        BlockPos belowPos = getBlockPos().down();
+        BlockState below = world.getBlockState(belowPos);
+        ItemStack stack = getStack();
+        if (below.getBlock() instanceof HopperBlock hopper) {
+            BlockEntity e = world.getBlockEntity(belowPos);
+            if (e instanceof Inventory inventory) {
+                for (int i = 0; i < inventory.size(); i++) {
+                    ItemStack slotStack = inventory.getStack(i);
+                    if (slotStack.isEmpty()) {
+                        inventory.setStack(i, stack);
+                        discard();
+                        break;
+                    }
+
+                    if (ItemStack.canCombine(slotStack, stack) && slotStack.getCount() < slotStack.getMaxCount()) {
+                        slotStack.increment(1);
+                        discard();
+                        break;
+                    }
+                }
+            }
+        }
 
         if (getVelocity().length() > 0.2F) {
             boolean ownerCanModify = !world.isClient && Caster.of(getOwner()).filter(pony -> pony.canModifyAt(hit.getBlockPos())).isPresent();
