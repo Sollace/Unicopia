@@ -21,9 +21,9 @@ public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock 
                 .ticksRandomly()
                 .sounds(BlockSoundGroup.AZALEA_LEAVES)
                 .nonOpaque()
-                .allowsSpawning(UBlocks::canSpawnOnLeaves)
-                .suffocates(UBlocks::never)
-                .blockVision(UBlocks::never)
+                .allowsSpawning(BlockConstructionUtils::canSpawnOnLeaves)
+                .suffocates(BlockConstructionUtils::never)
+                .blockVision(BlockConstructionUtils::never)
         );
     }
 

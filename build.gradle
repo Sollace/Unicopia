@@ -42,6 +42,7 @@ repositories {
     maven { name 'mod-menu'; url 'https://maven.terraformersmc.com/' }
     maven { name 'minelp-snapshot'; url 'https://repo.minelittlepony-mod.com/maven/snapshot' }
     maven { name 'minelp-releases'; url 'https://repo.minelittlepony-mod.com/maven/release' }
+    maven { name 'TerraformersMC'; url 'https://maven.terraformersmc.com/' }
 }
 
 dependencies {
@@ -66,6 +67,9 @@ dependencies {
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
     modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
+    
+    modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
+    include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
 
     //modCompileOnly "dev.emi:emi:${project.emi_version}:api"
     modCompileOnly "dev.emi:emi:${project.emi_version}"
@@ -102,6 +106,6 @@ modrinth {
       gameVersions.add ver
     }
     dependencies {
-       required.project 'P7dR8mSH'
+       required.project '9K7RJlvM'
     }
 }

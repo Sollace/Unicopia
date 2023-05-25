@@ -34,7 +34,7 @@ public class FruitBlock extends Block implements Buckable {
     }
 
     public FruitBlock(Settings settings, Direction attachmentFace, Block stem, VoxelShape shape, boolean flammable) {
-        super(settings.nonOpaque().suffocates(UBlocks::never).blockVision(UBlocks::never));
+        super(settings.nonOpaque().suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never));
         this.attachmentFace = attachmentFace;
         this.stem = stem;
         this.shape = shape;

@@ -148,9 +148,6 @@ public interface UItems {
 
     static <T extends Item> T register(Identifier id, T item) {
         ITEMS.add(item);
-        if (item instanceof BlockItem) {
-            ((BlockItem)item).appendBlocks(Item.BLOCK_ITEMS, item);
-        }
         return Registry.register(Registries.ITEM, id, item);
     }
 

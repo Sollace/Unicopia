@@ -14,16 +14,14 @@ import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.AbstractBlock.Settings;
-import net.minecraft.entity.EntityType;
 import net.minecraft.item.*;
 import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.Registries;
-import net.minecraft.world.BlockView;
 
 public interface UBlocks {
     List<Block> TRANSLUCENT_BLOCKS = new ArrayList<>();
@@ -50,14 +48,27 @@ public interface UBlocks {
     Block ZAP_BULB = register("zap_bulb", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GRAY).strength(500, 1200).sounds(BlockSoundGroup.AZALEA_LEAVES), Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false));
     Block ZAP_APPLE = register("zap_apple", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GRAY).sounds(BlockSoundGroup.AZALEA_LEAVES), Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false));
 
-    Block PALM_LOG = register("palm_log", createLogBlock(MapColor.OFF_WHITE, MapColor.SPRUCE_BROWN), ItemGroups.BUILDING_BLOCKS);
-    Block PALM_WOOD = register("palm_wood", createWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_LOG = register("palm_log", BlockConstructionUtils.createLogBlock(MapColor.OFF_WHITE, MapColor.SPRUCE_BROWN), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_WOOD = register("palm_wood", BlockConstructionUtils.createWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
+    Block STRIPPED_PALM_LOG = register("stripped_palm_log", BlockConstructionUtils.createLogBlock(MapColor.OFF_WHITE, MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
+    Block STRIPPED_PALM_WOOD = register("stripped_palm_wood", BlockConstructionUtils.createWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
+
     Block PALM_PLANKS = register("palm_planks", new Block(Settings.of(Material.WOOD, MapColor.OFF_WHITE).strength(2, 3).sounds(BlockSoundGroup.WOOD)), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_STAIRS = register("palm_stairs", new StairsBlock(PALM_PLANKS.getDefaultState(), Settings.copy(PALM_PLANKS)), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_SLAB = register("palm_slab", new SlabBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD)), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_FENCE = register("palm_fence", new FenceBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD)), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_FENCE_GATE = register("palm_fence_gate", new FenceGateBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD), SoundEvents.BLOCK_FENCE_GATE_CLOSE, SoundEvents.BLOCK_FENCE_GATE_OPEN), ItemGroups.BUILDING_BLOCKS);
+   // Block PALM_DOOR = register("palm_door", new DoorBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque(), SoundEvents.BLOCK_WOODEN_DOOR_CLOSE, SoundEvents.BLOCK_WOODEN_DOOR_OPEN), ItemGroups.BUILDING_BLOCKS);
+   // Block PALM_TRAPDOOR = register("palm_trapdoor", new TrapdoorBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(UBlocks::never), SoundEvents.BLOCK_WOODEN_TRAPDOOR_CLOSE, SoundEvents.BLOCK_WOODEN_TRAPDOOR_OPEN), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_PRESSURE_PLATE = register("palm_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD), SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_BUTTON = register("palm_button", BlockConstructionUtils.woodenButton(), ItemGroups.BUILDING_BLOCKS);
+   // Block PALM_SIGN = register("palm_sign", new SignBlock(Settings.of(Material.WOOD).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), PALM_SIGN_TYPE), ItemGroups.BUILDING_BLOCKS);
+   //
+   // Block PALM_WALL_SIGN = register("palm_wall_sign", new WallSignBlock(Settings.of(Material.WOOD).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD).dropsLike(PALM_SIGN), PALM_SIGN_TYPE), ItemGroups.BUILDING_BLOCKS);
+   // Block PALM_HANGING_SIGN = register("palm_hanging_sign", new HangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, PALM_LOG.getDefaultMapColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), PALM_SIGN_TYPE), ItemGroups.BUILDING_BLOCKS);
+   // Block PALM_WALL_HANGING_SIGN = register("palm_wall_hanging_sign", new WallHangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, PALM_LOG.getDefaultMapColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20).dropsLike(PALM_HANGING_SIGN), PALM_SIGN_TYPE), ItemGroups.BUILDING_BLOCKS);
 
-    Block STRIPPED_PALM_LOG = register("stripped_palm_log", createLogBlock(MapColor.OFF_WHITE, MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
-    Block STRIPPED_PALM_WOOD = register("stripped_palm_wood", createWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
-
-    Block PALM_LEAVES = register("palm_leaves", createLeavesBlock(BlockSoundGroup.GRASS), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_LEAVES = register("palm_leaves", BlockConstructionUtils.createLeavesBlock(BlockSoundGroup.GRASS), ItemGroups.BUILDING_BLOCKS);
 
     Block BANANAS = register("bananas", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.YELLOW).sounds(BlockSoundGroup.WOOD).hardness(3), Direction.DOWN, PALM_LEAVES, VoxelShapes.fullCube()));
 
@@ -133,25 +144,5 @@ public interface UBlocks {
         FlammableBlockRegistry.getDefaultInstance().add(BANANAS, 5, 20);
 
         UBlockEntities.bootstrap();
-    }
-
-    static boolean never(BlockState state, BlockView world, BlockPos pos) {
-        return false;
-    }
-
-    static PillarBlock createLogBlock(MapColor topMapColor, MapColor sideMapColor) {
-        return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor).strength(2).sounds(BlockSoundGroup.WOOD));
-    }
-
-    static PillarBlock createWoodBlock(MapColor mapColor) {
-        return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, mapColor).strength(2).sounds(BlockSoundGroup.WOOD));
-    }
-
-    static LeavesBlock createLeavesBlock(BlockSoundGroup soundGroup) {
-        return new LeavesBlock(AbstractBlock.Settings.of(Material.LEAVES).strength(0.2F).ticksRandomly().sounds(soundGroup).nonOpaque().allowsSpawning(UBlocks::canSpawnOnLeaves).suffocates(UBlocks::never).blockVision(UBlocks::never));
-    }
-
-    static Boolean canSpawnOnLeaves(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
-        return type == EntityType.OCELOT || type == EntityType.PARROT;
     }
 }

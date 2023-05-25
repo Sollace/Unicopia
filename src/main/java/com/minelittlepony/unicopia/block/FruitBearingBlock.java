@@ -39,9 +39,9 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
         super(settings
                 .ticksRandomly()
                 .nonOpaque()
-                .allowsSpawning(UBlocks::canSpawnOnLeaves)
-                .suffocates(UBlocks::never)
-                .blockVision(UBlocks::never));
+                .allowsSpawning(BlockConstructionUtils::canSpawnOnLeaves)
+                .suffocates(BlockConstructionUtils::never)
+                .blockVision(BlockConstructionUtils::never));
         setDefaultState(getDefaultState().with(STAGE, Stage.IDLE));
         this.overlay = overlay;
         this.fruit = fruit;
