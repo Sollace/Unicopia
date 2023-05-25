@@ -162,7 +162,7 @@ public interface UItems {
     }
 
     static Item register(Race race) {
-        return register(race.getId().withPath(p -> p + "_badge"), new Item(new Settings()));
+        return Registry.register(Registries.ITEM, race.getId().withPath(p -> p + "_badge"), new Item(new Settings()));
     }
 
     static void bootstrap() {
