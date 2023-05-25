@@ -3,19 +3,21 @@ package com.minelittlepony.unicopia;
 import net.minecraft.util.Formatting;
 
 public enum Affinity {
-    GOOD(Formatting.BLUE, -1),
-    NEUTRAL(Formatting.LIGHT_PURPLE, 0),
-    BAD(Formatting.RED, 1);
+    GOOD(Formatting.BLUE, -1, 0),
+    NEUTRAL(Formatting.LIGHT_PURPLE, 0, 0.5F),
+    BAD(Formatting.RED, 1, 1);
 
     private final Formatting color;
 
     private final int corruption;
+    private final float alignment;
 
     public static final Affinity[] VALUES = values();
 
-    Affinity(Formatting color, int corruption) {
+    Affinity(Formatting color, int corruption, float alignment) {
         this.color = color;
         this.corruption = corruption;
+        this.alignment = alignment;
     }
 
     public Formatting getColor() {
@@ -28,6 +30,10 @@ public enum Affinity {
 
     public int getCorruption() {
         return corruption;
+    }
+
+    public float getAlignment() {
+        return alignment;
     }
 
     public boolean isNeutral() {

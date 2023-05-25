@@ -6,13 +6,13 @@
     "overrides": [
         {
             "predicate": {
-                "affinity": 1
+                "affinity": 0
             },
             "model": "unicopia:item/gemstone_pure"
         },
         {
             "predicate": {
-                "affinity": 3
+                "affinity": 1
             },
             "model": "unicopia:item/gemstone_corrupted"
         }
