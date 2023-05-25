@@ -26,8 +26,8 @@ public class ZapAppleLeavesPlaceholderBlock extends AirBlock {
         ZapAppleStageStore store = ZapAppleStageStore.get(world);
         ZapAppleStageStore.Stage newStage = store.getStage();
         if (!world.isDay() && ZapAppleStageStore.Stage.HIBERNATING.mustChangeIntoInstantly(newStage)) {
-            world.setBlockState(pos, UBlocks.ZAP_LEAVES.getDefaultState().with(ZapAppleLeavesBlock.STAGE, newStage));
-            ZapAppleLeavesBlock.onStageChanged(store, newStage, world, state, pos, random);
+            world.setBlockState(pos, newStage.getNewState(state));
+            BaseZapAppleLeavesBlock.onStageChanged(store, newStage, world, state, pos, random);
         }
 
         world.scheduleBlockTick(pos, this, 1);

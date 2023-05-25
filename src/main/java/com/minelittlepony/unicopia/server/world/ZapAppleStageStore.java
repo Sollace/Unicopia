@@ -4,13 +4,15 @@ import java.util.Locale;
 import java.util.stream.StreamSupport;
 
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.block.ZapAppleLeavesBlock;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.Tickable;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -154,16 +156,22 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
             return VALUES[MathHelper.clamp(id, 0, VALUES.length)];
         }
 
-        public static Stage byStack(ItemStack stack) {
-            return byId(stack.getDamage() + 1);
-        }
-
         public boolean mustChangeInto(Stage to) {
             return this != to && (getNext() == to || this == HIBERNATING || to == HIBERNATING);
         }
 
         public boolean mustChangeIntoInstantly(Stage to) {
             return this != to && (this == HIBERNATING || to == HIBERNATING);
+        }
+
+        public BlockState getNewState(BlockState currentState) {
+            if (this == ZapAppleStageStore.Stage.HIBERNATING) {
+                return UBlocks.ZAP_LEAVES_PLACEHOLDER.getDefaultState();
+            }
+            if (this == ZapAppleStageStore.Stage.FLOWERING) {
+                return UBlocks.FLOWERING_ZAP_LEAVES.getDefaultState();
+            }
+            return currentState.withIfExists(ZapAppleLeavesBlock.STAGE, this);
         }
 
         @Override

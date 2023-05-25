@@ -20,7 +20,6 @@ import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
@@ -119,9 +118,6 @@ public interface URenderers {
         PolearmRenderer.register(UItems.NETHERITE_POLEARM);
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> {
             return EnchantableItem.isEnchanted(stack) ? EnchantableItem.getSpellKey(stack).getAffinity().getAlignment() : 0;
-        });
-        ModelPredicateProviderRegistry.register(UBlocks.ZAP_LEAVES.asItem(), new Identifier("flowering"), (stack, world, entity, seed) -> {
-            return ZapAppleStageStore.Stage.byStack(stack) == ZapAppleStageStore.Stage.FLOWERING ? 1 : 0;
         });
         ColorProviderRegistry.ITEM.register((stack, i) -> {
             return i > 0 || !EnchantableItem.isEnchanted(stack) ? -1 : EnchantableItem.getSpellKey(stack).getColor();
