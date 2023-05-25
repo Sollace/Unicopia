@@ -120,7 +120,9 @@ public interface TreeType {
 
         traverseInner(logs, leaves, w, findCanopy(w, pos), 0, 50, null, null);
 
-        return logCount <= (leaves.size() / 2) ? logCount + leaves.size() : 0;
+        int leafCount = leaves.size();
+
+        return logCount <= (leafCount / 2) ? logCount + leafCount : 0;
     }
 
     /**

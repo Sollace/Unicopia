@@ -1,0 +1,6 @@
+{
+	"logs": [ "unicopia:palm_log", "unicopia:palm_wood" ],
+	"leaves": [ "unicopia:palm_leaves" ],
+	"wideTrunk": false,
+	"drops": []
+}

@@ -156,9 +156,9 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
         if (tree == TreeType.NONE) {
             return;
-        } else {
-            ParticleUtils.spawnParticle(iplayer.asWorld(), UParticles.GROUND_POUND, data.vec(), Vec3d.ZERO);
         }
+
+        ParticleUtils.spawnParticle(iplayer.asWorld(), UParticles.GROUND_POUND, data.vec(), Vec3d.ZERO);
 
         PlayerEntity player = iplayer.asEntity();
 
@@ -243,6 +243,10 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
         if (below.isAir()) {
             return Stream.of(tree.pickRandomStack(world.random, treeState));
+        }
+
+        if (below.getBlock() instanceof Buckable buckable) {
+            return buckable.onBucked((ServerWorld)world, below, down).stream();
         }
 
         return Stream.empty();
