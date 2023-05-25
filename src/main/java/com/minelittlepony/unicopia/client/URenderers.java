@@ -119,6 +119,9 @@ public interface URenderers {
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> {
             return EnchantableItem.isEnchanted(stack) ? 1 + EnchantableItem.getSpellKey(stack).getAffinity().ordinal() : 0;
         });
+        ModelPredicateProviderRegistry.register(UBlocks.ZAP_LEAVES.asItem(), new Identifier("flowering"), (stack, world, entity, seed) -> {
+            return ZapAppleStageStore.Stage.byStack(stack) == ZapAppleStageStore.Stage.FLOWERING ? 1 : 0;
+        });
         ColorProviderRegistry.ITEM.register((stack, i) -> {
             return i > 0 || !EnchantableItem.isEnchanted(stack) ? -1 : EnchantableItem.getSpellKey(stack).getColor();
         }, UItems.GEMSTONE);

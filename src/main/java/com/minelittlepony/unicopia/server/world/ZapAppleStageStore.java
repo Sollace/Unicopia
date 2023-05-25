@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -151,6 +152,10 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
 
         public static Stage byId(int id) {
             return VALUES[MathHelper.clamp(id, 0, VALUES.length)];
+        }
+
+        public static Stage byStack(ItemStack stack) {
+            return byId(stack.getDamage() + 1);
         }
 
         public boolean mustChangeInto(Stage to) {

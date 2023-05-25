@@ -1,3 +1,11 @@
 {
-  "parent": "unicopia:block/zap_leaves"
+  "parent": "unicopia:block/zap_leaves",
+  "overrides": [
+      {
+          "predicate": {
+              "flowering": 1
+          },
+          "model": "unicopia:item/flowering_zap_leaves"
+      }
+  ]
 }
