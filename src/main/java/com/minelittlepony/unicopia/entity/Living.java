@@ -383,15 +383,17 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return Equine.<E, Living<E>>of(entity, e -> e instanceof Living<?>).orElse(null);
     }
 
-    public static void updateVelocity(Entity entity) {
-        entity.velocityModified = true;
-        //if (entity instanceof ServerPlayerEntity ply) {
-        //    ply.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(ply));
-        //}
+    public static void updateVelocity(@Nullable Entity entity) {
+        if (entity != null) {
+            entity.velocityModified = true;
+            //if (entity instanceof ServerPlayerEntity ply) {
+            //    ply.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(ply));
+            //}
+        }
     }
 
-    public static void transmitPassengers(Entity entity) {
-        if (entity.world instanceof ServerWorld sw) {
+    public static void transmitPassengers(@Nullable Entity entity) {
+        if (entity != null && entity.world instanceof ServerWorld sw) {
             sw.getChunkManager().sendToNearbyPlayers(entity, new EntityPassengersSetS2CPacket(entity));
         }
     }

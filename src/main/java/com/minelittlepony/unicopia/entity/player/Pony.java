@@ -312,6 +312,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         if (isClient()) {
             if (entity.hasVehicle() && entity.isSneaking()) {
 
+                @Nullable
                 Entity vehicle = entity.getVehicle();
 
                 if (vehicle instanceof Trap) {
@@ -326,7 +327,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 } else {
                     setCarrier((UUID)null);
                     entity.stopRiding();
-                    entity.refreshPositionAfterTeleport(vehicle.getPos());
+                    if (vehicle != null) {
+                        entity.refreshPositionAfterTeleport(vehicle.getPos());
+                    }
                     Living.transmitPassengers(vehicle);
                 }
             }
