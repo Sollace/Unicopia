@@ -28,7 +28,7 @@ abstract class MixinEntity implements EntityDuck {
     @Override
     public boolean isLavaAffine() {
         Entity self = (Entity)(Object)this;
-        return self.hasVehicle() && ((LavaAffine)self.getVehicle()).isLavaAffine();
+        return self.hasVehicle() && self.getVehicle() instanceof LavaAffine affine && affine.isLavaAffine();
     }
 
     @Inject(method = "isFireImmune", at = @At("HEAD"), cancellable = true)
