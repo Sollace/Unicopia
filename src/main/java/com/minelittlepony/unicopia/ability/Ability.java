@@ -91,17 +91,25 @@ public interface Ability<T extends Hit> {
     /**
      * The icon representing this ability on the UI and HUD.
      */
-    default Identifier getIcon(Pony player, boolean swap) {
+    default Identifier getIcon(Pony player) {
         Identifier id = Abilities.REGISTRY.getId(this);
         return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + ".png");
+    }
+
+    default Text getName(Pony player) {
+        return getName();
     }
 
     /**
      * The display name for this ability.
      */
     default Text getName() {
+        return Text.translatable(getTranslationKey());
+    }
+
+    default String getTranslationKey() {
         Identifier id = Abilities.REGISTRY.getId(this);
-        return Text.translatable("ability." + id.getNamespace() + "." + id.getPath().replace('/', '.'));
+        return "ability." + id.getNamespace() + "." + id.getPath().replace('/', '.');
     }
 
     /**

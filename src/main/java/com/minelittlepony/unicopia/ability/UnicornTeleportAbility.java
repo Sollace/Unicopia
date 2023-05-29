@@ -20,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -31,9 +32,17 @@ import net.minecraft.world.World;
 public class UnicornTeleportAbility implements Ability<Pos> {
 
     @Override
-    public Identifier getIcon(Pony player, boolean swap) {
+    public Identifier getIcon(Pony player) {
         Identifier id = Abilities.REGISTRY.getId(this);
-        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (swap ? "_far" : "_near") + ".png");
+        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (player.asEntity().isSneaking() ? "_far" : "_near") + ".png");
+    }
+
+    @Override
+    public Text getName(Pony player) {
+        if (player.asEntity().isSneaking()) {
+            return Text.translatable(getTranslationKey() + ".far");
+        }
+        return getName();
     }
 
     @Override

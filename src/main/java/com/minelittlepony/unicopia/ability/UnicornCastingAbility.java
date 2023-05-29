@@ -33,21 +33,11 @@ import net.minecraft.util.math.random.Random;
  * 2. If the player is holding a gem, consumes it and casts whatever spell is contained within onto the user.
  * 3. If the player is holding a amulet, charges it.
  */
-public class UnicornCastingAbility implements Ability<Hit> {
+public class UnicornCastingAbility extends AbstractSpellCastingAbility {
 
     @Override
     public int getWarmupTime(Pony player) {
         return 20;
-    }
-
-    @Override
-    public int getCooldownTime(Pony player) {
-        return 0;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race.canCast();
     }
 
     @Override
@@ -60,11 +50,6 @@ public class UnicornCastingAbility implements Ability<Hit> {
     }
 
     @Override
-    public Hit.Serializer<Hit> getSerializer() {
-        return Hit.SERIALIZER;
-    }
-
-    @Override
     public double getCostEstimate(Pony player) {
         TypedActionResult<ItemStack> amulet = getAmulet(player);
 
@@ -74,8 +59,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
             return Math.min(manaLevel, ((AmuletItem)amulet.getValue().getItem()).getChargeRemainder(amulet.getValue()));
         }
 
-        Hand hand = player.asEntity().isSneaking() ? Hand.OFF_HAND : Hand.MAIN_HAND;
-        TypedActionResult<CustomisedSpellType<?>> spell = player.getCharms().getSpellInHand(hand);
+        TypedActionResult<CustomisedSpellType<?>> spell = player.getCharms().getSpellInHand(false);
 
         return !spell.getResult().isAccepted() || spell.getValue().isOn(player) ? 2 : 4;
     }
@@ -87,13 +71,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
             return 0x000000;
         }
 
-        Hand hand = player.asEntity().isSneaking() ? Hand.OFF_HAND : Hand.MAIN_HAND;
-        TypedActionResult<CustomisedSpellType<?>> newSpell = player.getCharms().getSpellInHand(hand);
-
-        if (newSpell.getResult() != ActionResult.FAIL) {
-            return newSpell.getValue().type().getColor();
-        }
-        return -1;
+        return super.getColor(player);
     }
 
     @Override
@@ -118,8 +96,7 @@ public class UnicornCastingAbility implements Ability<Hit> {
                 }
             }
         } else {
-            Hand hand = player.asEntity().isSneaking() ? Hand.OFF_HAND : Hand.MAIN_HAND;
-            TypedActionResult<CustomisedSpellType<?>> newSpell = player.getCharms().getSpellInHand(hand);
+            TypedActionResult<CustomisedSpellType<?>> newSpell = player.getCharms().getSpellInHand(true);
 
             if (newSpell.getResult() != ActionResult.FAIL) {
                 CustomisedSpellType<?> spell = newSpell.getValue();
@@ -177,10 +154,5 @@ public class UnicornCastingAbility implements Ability<Hit> {
         } else {
             player.spawnParticles(MagicParticleEffect.UNICORN, 5);
         }
-    }
-
-    @Override
-    public void postApply(Pony player, AbilitySlot slot) {
-        player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 }

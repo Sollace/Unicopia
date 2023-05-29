@@ -43,7 +43,7 @@ public class UnicornDispellAbility implements Ability<Pos> {
     }
 
     @Override
-    public Identifier getIcon(Pony player, boolean swap) {
+    public Identifier getIcon(Pony player) {
         Identifier id = Abilities.REGISTRY.getId(this);
         return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (player.getSpecies() == Race.CHANGELING ? "_changeling" : "") + ".png");
     }

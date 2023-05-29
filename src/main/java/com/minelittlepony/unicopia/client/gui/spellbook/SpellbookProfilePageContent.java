@@ -34,7 +34,6 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
         int x = screen.getX() + bounds.left + bounds.width / 4 - size + 5;
         int y = screen.getY() + bounds.top + bounds.height / 2 + 3;
 
-
         screen.addDrawable(new SpellbookScreen.ImageButton(x, y, size, size))
             .getStyle()
                 .setIcon(TribeButton.createSprite(pony.getActualSpecies(), 0, 0, size))

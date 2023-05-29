@@ -44,7 +44,9 @@ public class GemstoneItem extends Item implements MultiItem, EnchantableItem {
                 return result;
             }
 
-            TypedActionResult<CustomisedSpellType<?>> spell = EnchantableItem.consumeSpell(stack, user, ((Predicate<CustomisedSpellType<?>>)charms.getEquippedSpell(hand)::equals).negate());
+            hand = user.isSneaking() ? Hand.OFF_HAND : Hand.MAIN_HAND;
+
+            TypedActionResult<CustomisedSpellType<?>> spell = EnchantableItem.consumeSpell(stack, user, ((Predicate<CustomisedSpellType<?>>)charms.getEquippedSpell(hand)::equals).negate(), true);
 
             CustomisedSpellType<?> existing = charms.getEquippedSpell(hand);
 
@@ -67,6 +69,8 @@ public class GemstoneItem extends Item implements MultiItem, EnchantableItem {
 
                 charms.equipSpell(hand, SpellType.EMPTY_KEY.withTraits());
             }
+
+            user.getItemCooldownManager().set(this, 20);
             return TypedActionResult.success(stack, true);
         }
 

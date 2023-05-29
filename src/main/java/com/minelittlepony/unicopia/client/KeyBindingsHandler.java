@@ -8,7 +8,6 @@ import java.util.Set;
 import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.ability.ActivationType;
@@ -87,7 +86,7 @@ public class KeyBindingsHandler {
 
                 if (state != PressedState.UNCHANGED) {
                     if (state == PressedState.PRESSED) {
-                        abilities.activate(slot, page).map(Ability::getName).ifPresent(UHud.INSTANCE::setMessage);
+                        abilities.activate(slot, page).map(a -> a.getName(iplayer)).ifPresent(UHud.INSTANCE::setMessage);
                     } else {
                         abilities.clear(slot, ActivationType.NONE, page);
                     }

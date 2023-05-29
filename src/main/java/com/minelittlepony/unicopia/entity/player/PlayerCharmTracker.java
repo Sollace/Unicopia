@@ -34,10 +34,18 @@ public class PlayerCharmTracker implements NbtSerialisable {
         return handSpells[hand.ordinal()] == null ? SpellType.EMPTY_KEY.withTraits() : handSpells[hand.ordinal()];
     }
 
-    public TypedActionResult<CustomisedSpellType<?>> getSpellInHand(Hand hand) {
+    public Hand getHand() {
+        return pony.asEntity().isSneaking() ? Hand.OFF_HAND : Hand.MAIN_HAND;
+    }
+
+    public TypedActionResult<CustomisedSpellType<?>> getSpellInHand(boolean consume) {
+        return getSpellInHand(getHand(), consume);
+    }
+
+    public TypedActionResult<CustomisedSpellType<?>> getSpellInHand(Hand hand, boolean consume) {
         return Streams.stream(pony.asEntity().getHandItems())
                 .filter(EnchantableItem::isEnchanted)
-                .map(stack -> EnchantableItem.consumeSpell(stack, pony.asEntity(), null))
+                .map(stack -> EnchantableItem.consumeSpell(stack, pony.asEntity(), null, consume))
                 .findFirst()
                 .orElse(getEquippedSpell(hand).toAction());
     }

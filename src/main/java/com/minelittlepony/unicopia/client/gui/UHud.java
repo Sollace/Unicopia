@@ -66,6 +66,10 @@ public class UHud extends DrawableHelper {
     @Nullable
     private LoopingSoundInstance<PlayerEntity> partySound;
 
+    private boolean prevPointed;
+    private boolean prevReplacing;
+    private SpellType<?> focusedType = SpellType.empty();
+
     public void render(InGameHud hud, MatrixStack matrices, float tickDelta) {
 
         if (client.player == null) {
@@ -119,23 +123,29 @@ public class UHud extends DrawableHelper {
         slots.forEach(slot -> slot.renderBackground(matrices, abilities, swap, tickDelta));
 
         if (pony.getObservedSpecies().canCast()) {
-
-            Ability<?> ability = pony.getAbilities().getStat(AbilitySlot.PRIMARY)
+            AbilitySlot slot = swap ? AbilitySlot.PASSIVE : AbilitySlot.PRIMARY;
+            Ability<?> ability = pony.getAbilities().getStat(slot)
                     .getAbility(Unicopia.getConfig().hudPage.get())
                     .orElse(null);
 
             if (ability == Abilities.CAST || ability == Abilities.SHOOT) {
                 matrices.push();
                 matrices.translate(PRIMARY_SLOT_SIZE / 2F, PRIMARY_SLOT_SIZE / 2F, 0);
-                boolean first = ability == Abilities.CAST;
-                if (pony.asEntity().isSneaking()) {
-                    first = !first;
+                boolean first = !pony.asEntity().isSneaking();
+                TypedActionResult<CustomisedSpellType<?>> inHand = pony.getCharms().getSpellInHand(false);
+                boolean replacing = inHand.getResult().isAccepted() && pony.getAbilities().getStat(slot).getActiveAbility().isEmpty();
+                if (first != prevPointed || replacing != prevReplacing || inHand.getValue().type() != focusedType) {
+                    focusedType = inHand.getValue().type();
+                    prevPointed = first;
+                    prevReplacing = replacing;
+                    setMessage(ability.getName(pony));
                 }
                 matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(first ? 37 : 63));
                 matrices.translate(-23, 0, 0);
                 matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-26));
                 matrices.scale(0.8F, 0.8F, 1);
-                UHud.drawTexture(matrices, 0, 0, 3, 120, 15, 7, 128, 128);
+                int u = replacing ? 16 : 3;
+                UHud.drawTexture(matrices, 0, 0, u, 120, 13, 7, 128, 128);
                 matrices.pop();
             }
         }
@@ -327,8 +337,6 @@ public class UHud extends DrawableHelper {
                 getZOffset(), Math.min(1, radius));
     }
 
-
-
     public void setMessage(Text message) {
         this.message = message;
         this.messageTime = 60;
@@ -342,7 +350,7 @@ public class UHud extends DrawableHelper {
 
     void renderAbilityIcon(MatrixStack matrices, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
         stat.getAbility(Unicopia.getConfig().hudPage.get()).ifPresent(ability -> {
-            RenderSystem.setShaderTexture(0, ability.getIcon(Pony.of(client.player), client.options.sneakKey.isPressed()));
+            RenderSystem.setShaderTexture(0, ability.getIcon(Pony.of(client.player)));
             drawTexture(matrices, x, y, 0, 0, frameWidth, frameHeight, u, v);
             RenderSystem.setShaderTexture(0, HUD_TEXTURE);
         });

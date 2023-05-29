@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability;
 
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -11,7 +10,6 @@ import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.TraceHelper;
 
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 
 /**
@@ -20,30 +18,15 @@ import net.minecraft.util.TypedActionResult;
  * 1. If the player is holding nothing, casts their equipped offensive spell (currently only vortex - inverse of shield)
  * 2. If the player is holding a gem, consumes it and casts whatever spell is contained within onto a projectile.
  */
-public class UnicornProjectileAbility implements Ability<Hit> {
+public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
     @Override
     public int getWarmupTime(Pony player) {
         return 8;
     }
 
     @Override
-    public int getCooldownTime(Pony player) {
-        return 0;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race.canCast();
-    }
-
-    @Override
     public Hit tryActivate(Pony player) {
-        return Hit.of(player.getCharms().getSpellInHand(Hand.OFF_HAND).getResult() != ActionResult.FAIL);
-    }
-
-    @Override
-    public Hit.Serializer<Hit> getSerializer() {
-        return Hit.SERIALIZER;
+        return Hit.of(player.getCharms().getSpellInHand(false).getResult() != ActionResult.FAIL);
     }
 
     @Override
@@ -55,8 +38,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
     public boolean onQuickAction(Pony player, ActivationType type) {
         if (type == ActivationType.DOUBLE_TAP) {
             if (!player.isClient()) {
-                Hand hand = player.asEntity().isSneaking() ? Hand.MAIN_HAND : Hand.OFF_HAND;
-                TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(hand);
+                TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(true);
 
                 if (thrown.getResult() != ActionResult.FAIL) {
                     thrown.getValue().create().toThrowable().throwProjectile(player).ifPresent(projectile -> {
@@ -73,8 +55,7 @@ public class UnicornProjectileAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
-        Hand hand = player.asEntity().isSneaking() ? Hand.MAIN_HAND : Hand.OFF_HAND;
-        TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(hand);
+        TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(true);
 
         if (thrown.getResult() != ActionResult.FAIL) {
             Spell spell = thrown.getValue().create();
@@ -94,11 +75,6 @@ public class UnicornProjectileAbility implements Ability<Hit> {
     @Override
     public void preApply(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getExhaustion().multiply(3.3F);
-        player.spawnParticles(MagicParticleEffect.UNICORN, 5);
-    }
-
-    @Override
-    public void postApply(Pony player, AbilitySlot slot) {
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 }

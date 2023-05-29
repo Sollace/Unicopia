@@ -27,31 +27,34 @@ public interface EnchantableItem extends ItemConvertible {
         return EnchantableItem.getSpellKey(stack).withTraits(SpellTraits.of(stack));
     }
 
-    static TypedActionResult<CustomisedSpellType<?>> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable Predicate<CustomisedSpellType<?>> filter) {
+    static TypedActionResult<CustomisedSpellType<?>> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable Predicate<CustomisedSpellType<?>> filter, boolean consume) {
 
         if (!isEnchanted(stack)) {
-            return TypedActionResult.pass(null);
+            return TypedActionResult.pass(SpellType.EMPTY_KEY.withTraits());
         }
 
         SpellType<Spell> key = EnchantableItem.getSpellKey(stack);
 
         if (key.isEmpty()) {
-            return TypedActionResult.fail(null);
+            return TypedActionResult.fail(SpellType.EMPTY_KEY.withTraits());
         }
 
         CustomisedSpellType<?> result = key.withTraits(SpellTraits.of(stack));
 
         if (filter != null && !filter.test(result)) {
-            return TypedActionResult.fail(null);
+            return TypedActionResult.fail(SpellType.EMPTY_KEY.withTraits());
         }
 
-        if (!player.world.isClient) {
+        if (!player.world.isClient && consume) {
             player.swingHand(player.getStackInHand(Hand.OFF_HAND) == stack ? Hand.OFF_HAND : Hand.MAIN_HAND);
+            player.getItemCooldownManager().set(stack.getItem(), 20);
 
-            if (stack.getCount() == 1) {
-                unenchant(stack);
-            } else {
-                player.giveItemStack(unenchant(stack.split(1)));
+            if (!player.isCreative()) {
+                if (stack.getCount() == 1) {
+                    unenchant(stack);
+                } else {
+                    player.giveItemStack(unenchant(stack.split(1)));
+                }
             }
         }
 
