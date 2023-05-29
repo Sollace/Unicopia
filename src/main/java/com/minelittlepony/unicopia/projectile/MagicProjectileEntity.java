@@ -170,7 +170,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     @Override
     public void tick() {
         if (!world.isClient() && !homingTarget.isPresent(world)) {
-            if (getVelocity().length() < 0.01) {
+            if (getVelocity().length() < 0.1 || age > 90) {
                 discard();
             }
         }

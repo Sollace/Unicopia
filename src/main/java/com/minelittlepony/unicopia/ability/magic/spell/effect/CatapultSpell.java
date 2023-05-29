@@ -59,7 +59,8 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
         }
 
         getTypeAndTraits().create().toThrowable().throwProjectile(caster);
-        return false;
+        setDead();
+        return isDead();
     }
 
     protected void apply(Caster<?> caster, Entity e) {

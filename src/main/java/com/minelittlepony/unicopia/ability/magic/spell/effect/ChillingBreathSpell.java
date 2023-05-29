@@ -23,7 +23,7 @@ public class ChillingBreathSpell extends AbstractSpell implements HomingSpell {
         if (!source.subtractEnergyCost(90)) {
             setDead();
         }
-        return false;
+        return !isDead();
     }
 
     @Override
