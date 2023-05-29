@@ -64,6 +64,10 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         return stats.values();
     }
 
+    public Optional<Stat> getActiveStat() {
+        return stats.values().stream().filter(stat -> stat.getFillProgress() > 0).findFirst();
+    }
+
     public Stat getStat(AbilitySlot slot) {
         return stats.computeIfAbsent(slot, Stat::new);
     }
@@ -246,7 +250,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
             return Optional.empty();
         }
 
-        protected synchronized Optional<Ability<?>> getActiveAbility() {
+        public synchronized Optional<Ability<?>> getActiveAbility() {
             return activeAbility.filter(ability -> {
                 return (!(ability == null || (triggered && warmup == 0 && cooldown == 0)) && player.getCompositeRace().any(ability::canUse));
             });

@@ -81,6 +81,22 @@ public class UnicornCastingAbility implements Ability<Hit> {
     }
 
     @Override
+    public int getColor(Pony player) {
+        TypedActionResult<ItemStack> amulet = getAmulet(player);
+        if (amulet.getResult().isAccepted()) {
+            return 0x000000;
+        }
+
+        Hand hand = player.asEntity().isSneaking() ? Hand.OFF_HAND : Hand.MAIN_HAND;
+        TypedActionResult<CustomisedSpellType<?>> newSpell = player.getCharms().getSpellInHand(hand);
+
+        if (newSpell.getResult() != ActionResult.FAIL) {
+            return newSpell.getValue().type().getColor();
+        }
+        return -1;
+    }
+
+    @Override
     public void apply(Pony player, Hit data) {
         if (!player.canCast()) {
             return;

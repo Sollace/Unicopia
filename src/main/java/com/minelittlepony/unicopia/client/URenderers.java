@@ -61,6 +61,7 @@ public interface URenderers {
         AccessoryFeatureRenderer.register(BraceletFeatureRenderer::new);
         AccessoryFeatureRenderer.register(AmuletFeatureRenderer::new);
         AccessoryFeatureRenderer.register(WingsFeatureRenderer::new);
+        AccessoryFeatureRenderer.register(HornFeatureRenderer::new);
         AccessoryFeatureRenderer.register(IcarusWingsFeatureRenderer::new);
         AccessoryFeatureRenderer.register(BatWingsFeatureRenderer::new);
         AccessoryFeatureRenderer.register(GlassesFeatureRenderer::new);

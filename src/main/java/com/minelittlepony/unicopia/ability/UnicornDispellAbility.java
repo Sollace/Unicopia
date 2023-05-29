@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
@@ -34,6 +35,11 @@ public class UnicornDispellAbility implements Ability<Pos> {
     @Override
     public boolean canUse(Race race) {
         return race.canCast() || race == Race.CHANGELING;
+    }
+
+    @Override
+    public int getColor(Pony player) {
+        return SpellType.PORTAL.getColor();
     }
 
     @Override

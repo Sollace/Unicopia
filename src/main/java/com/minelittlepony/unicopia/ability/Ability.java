@@ -28,6 +28,10 @@ public interface Ability<T extends Hit> {
      */
     int getCooldownTime(Pony player);
 
+    default int getColor(Pony player) {
+        return -1;
+    }
+
     /**
      * Called when an ability is about to be triggered. This event occurs on both the client and server so check {@code Pony#isClient} if you need to know which one you're on.
      * <p>

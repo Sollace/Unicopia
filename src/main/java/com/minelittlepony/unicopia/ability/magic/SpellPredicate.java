@@ -16,11 +16,22 @@ public interface SpellPredicate<T extends Spell> extends Predicate<Spell> {
     SpellPredicate<ShieldSpell> IS_SHIELD_LIKE = spell -> spell instanceof ShieldSpell;
     SpellPredicate<TimedSpell> IS_TIMED = spell -> spell instanceof TimedSpell;
 
+    SpellPredicate<?> IS_NOT_PLACED = IS_PLACED.negate();
+
     default <Q extends Spell> SpellPredicate<Q> and(SpellPredicate<Q> predicate) {
         SpellPredicate<T> self = this;
-        return s -> {
-            return self.test(s) && predicate.test(s);
-        };
+        return s -> self.test(s) && predicate.test(s);
+    }
+
+    default <Q extends Spell> SpellPredicate<? extends Spell> or(SpellPredicate<Q> predicate) {
+        SpellPredicate<T> self = this;
+        return s -> self.test(s) || predicate.test(s);
+    }
+
+    @Override
+    default SpellPredicate<?> negate() {
+        SpellPredicate<T> self = this;
+        return s -> !self.test(s);
     }
 
     default boolean isOn(Caster<?> caster) {

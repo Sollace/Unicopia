@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
@@ -58,6 +59,11 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             return 0;
         }
         return pos.distanceTo(player) / 10;
+    }
+
+    @Override
+    public int getColor(Pony player) {
+        return SpellType.PORTAL.getColor();
     }
 
     @Override
