@@ -86,7 +86,7 @@ class SpellbookEmiRecipe implements EmiRecipe, SpellbookRecipe.CraftingTreeBuild
             }
         }
         widgets.addSlot(inputs.get(0), gem.get(0).left(), gem.get(0).top()).drawBack(false);
-        widgets.addSlot(getOutput(), 190, 60).output(true).recipeContext(this);
+        widgets.addSlot(getOutput(), 190, 60).large(true).recipeContext(this);
     }
 
     protected EmiIngredient getOutput() {

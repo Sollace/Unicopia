@@ -29,7 +29,6 @@ import net.minecraft.util.Identifier;
 public class Main implements EmiPlugin {
     static final EmiStack SPELL_BOOK_STATION = EmiStack.of(UItems.SPELLBOOK);
     static final EmiRecipeCategory SPELL_BOOK_CATEGORY = new EmiRecipeCategory(Unicopia.id("spellbook"), SPELL_BOOK_STATION, SPELL_BOOK_STATION);
-    static final Comparison COMPARING_BOTH = Comparison.builder().nbt(true).build();
 
     static final Identifier WIDGETS = Unicopia.id("textures/gui/widgets.png");
     static final EmiTexture EMPTY_ARROW = new EmiTexture(WIDGETS, 44, 0, 24, 17);
@@ -52,7 +51,7 @@ public class Main implements EmiPlugin {
                             input(trait);
                             this.getOutputs().addAll(
                                 Arrays.stream(enhancingRecipe.getBaseMaterial().getMatchingStacks())
-                                    .map(stack -> EmiStack.of(SpellTraits.of(stack).add(new SpellTraits.Builder().with(trait, 1).build()).applyTo(stack)).comparison(c -> Comparison.builder().nbt(false).build()))
+                                    .map(stack -> EmiStack.of(SpellTraits.of(stack).add(new SpellTraits.Builder().with(trait, 1).build()).applyTo(stack)).comparison(c -> Comparison.DEFAULT_COMPARISON))
                                     .toList()
                             );
                         }
@@ -70,7 +69,7 @@ public class Main implements EmiPlugin {
         });
 
         Stream.of(UItems.GEMSTONE, UItems.BOTCHED_GEM, UItems.MAGIC_STAFF, UItems.FILLED_JAR).forEach(item -> {
-            registry.setDefaultComparison(item, comparison -> COMPARING_BOTH);
+            registry.setDefaultComparison(item, comparison -> Comparison.compareNbt());
         });
 
         registry.getRecipeManager().listAllOfType(RecipeType.CRAFTING).stream()
