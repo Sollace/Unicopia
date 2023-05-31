@@ -37,6 +37,7 @@ reckon {
 
 repositories {
     mavenLocal()
+    flatDir { dirs 'lib' }
     maven { name 'entity-reach-attributes'; url 'https://maven.jamieswhiteshirt.com/libs-release' }
     maven { name 'trinkets'; url 'https://ladysnake.jfrog.io/artifactory/mods' }
     maven { name 'mod-menu'; url 'https://maven.terraformersmc.com/' }
@@ -62,8 +63,8 @@ dependencies {
     modApi "com.sollace:fabwork:${project.fabwork_version}"
     include "com.sollace:fabwork:${project.fabwork_version}"
 
-    compileOnly files('lib/Romanizer-1.0.1.jar')
-    include files('lib/Romanizer-1.0.1.jar')
+    compileOnly "com.sollace:Romanizer:Romanizer:1.0.2"
+    include "com.sollace:Romanizer:Romanizer:1.0.2"
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
     modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
