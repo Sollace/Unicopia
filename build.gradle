@@ -72,14 +72,16 @@ dependencies {
     modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
     include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
 
-    if (project.tmi_type == 'jei') {
-      // We don't use that garbage
-    } else if (project.tmi_type == 'emi') {
-      // Use EMI at runtime
+    if (project.tmi_type == 'emi') {
       modCompileOnly "dev.emi:emi-fabric:${project.emi_version}"
     } else {
-      // Use neither
-      modCompileOnly "dev.emi:emi-fabric:${project.emi_version}"
+      modCompileOnly "dev.emi:emi-fabric-dummy:${project.emi_version}"
+    }
+
+    if (project.tmi_type == 'rei') {
+      // TODO:
+    } else {
+      // TODO:
     }
 }
 
