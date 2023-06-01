@@ -24,8 +24,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ConsumptionEnchantment extends SimpleEnchantment {
-    protected ConsumptionEnchantment() {
-        super(Rarity.VERY_RARE, EnchantmentTarget.DIGGER, false, 1, UEnchantmentValidSlots.HANDS);
+    protected ConsumptionEnchantment(Options options) {
+        super(options, EnchantmentTarget.DIGGER, UEnchantmentValidSlots.HANDS);
     }
 
     public static boolean applyConsumption(World w, BlockState state, BlockPos pos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack tool) {

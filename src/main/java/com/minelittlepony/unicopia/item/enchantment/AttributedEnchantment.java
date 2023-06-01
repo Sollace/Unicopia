@@ -17,12 +17,12 @@ public class AttributedEnchantment extends SimpleEnchantment {
 
     private final Map<EntityAttribute, ModifierFactory> modifiers = new HashMap<>();
 
-    protected AttributedEnchantment(Rarity rarity, EnchantmentTarget target, boolean cursed, int maxLevel, EquipmentSlot... slots) {
-        super(rarity, target, cursed, maxLevel, slots);
+    protected AttributedEnchantment(Options options, EnchantmentTarget target, EquipmentSlot... slots) {
+        super(options, target, slots);
     }
 
-    protected AttributedEnchantment(Rarity rarity, boolean cursed, int maxLevel, EquipmentSlot... slots) {
-        super(rarity, cursed, maxLevel, slots);
+    protected AttributedEnchantment(Options options, EquipmentSlot... slots) {
+        super(options, slots);
     }
 
     public AttributedEnchantment addModifier(EntityAttribute attribute, ModifierFactory modifierSupplier) {

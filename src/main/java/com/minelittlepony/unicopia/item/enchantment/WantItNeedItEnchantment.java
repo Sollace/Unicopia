@@ -11,8 +11,8 @@ import net.minecraft.item.ItemStack;
 
 public class WantItNeedItEnchantment extends SimpleEnchantment {
 
-    protected WantItNeedItEnchantment() {
-        super(Rarity.VERY_RARE, true, 1, UEnchantmentValidSlots.ANY);
+    protected WantItNeedItEnchantment(Options options) {
+        super(options, UEnchantmentValidSlots.ANY);
     }
 
     @Override

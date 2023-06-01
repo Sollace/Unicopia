@@ -29,8 +29,8 @@ public class PoisonedJokeEnchantment extends SimpleEnchantment implements Identi
     private static final Type TYPE = TypeUtils.parameterize(List.class, Identifier.class);
     private List<SoundEvent> sounds = new ArrayList<>();
 
-    protected PoisonedJokeEnchantment() {
-        super(Rarity.VERY_RARE, true, 1, UEnchantmentValidSlots.ANY);
+    protected PoisonedJokeEnchantment(Options options) {
+        super(options, UEnchantmentValidSlots.ANY);
     }
 
     @Override

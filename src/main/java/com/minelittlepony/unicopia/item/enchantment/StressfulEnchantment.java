@@ -2,12 +2,13 @@ package com.minelittlepony.unicopia.item.enchantment;
 
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
+
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 public class StressfulEnchantment extends SimpleEnchantment {
 
-    protected StressfulEnchantment() {
-        super(Rarity.RARE, true, 3, UEnchantmentValidSlots.ANY);
+    protected StressfulEnchantment(Options options) {
+        super(options, UEnchantmentValidSlots.ANY);
     }
 
     @Override

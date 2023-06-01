@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.UEntityAttributes;
+import com.minelittlepony.unicopia.item.enchantment.SimpleEnchantment.Options;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantment.Rarity;
@@ -24,17 +25,17 @@ public interface UEnchantments {
     /**
      * Makes a sound when there are interesting blocks in your area.
      */
-    Enchantment GEM_FINDER = register("gem_finder", new GemFindingEnchantment());
+    Enchantment GEM_FINDER = register("gem_finder", new GemFindingEnchantment(new Options().rarity(Rarity.RARE).maxLevel(3).treasure()));
 
     /**
      * Protects against wall collisions and earth pony attacks!
      */
-    Enchantment PADDED = register("padded", new SimpleEnchantment(Rarity.COMMON, EnchantmentTarget.ARMOR, false, 3, UEnchantmentValidSlots.ARMOR));
+    Enchantment PADDED = register("padded", new SimpleEnchantment(new Options().rarity(Rarity.COMMON).maxLevel(3), EnchantmentTarget.ARMOR, UEnchantmentValidSlots.ARMOR));
 
     /**
      * Heavy players move more slowly but are less likely to be flung around wildly.
      */
-    Enchantment HEAVY = register("heavy", new AttributedEnchantment(Rarity.COMMON, EnchantmentTarget.ARMOR, false, 4, UEnchantmentValidSlots.ARMOR))
+    Enchantment HEAVY = register("heavy", new AttributedEnchantment(new Options().rarity(Rarity.COMMON).maxLevel(4), EnchantmentTarget.ARMOR, UEnchantmentValidSlots.ARMOR))
             .addModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED, (user, level) -> {
                 return new EntityAttributeModifier(UUID.fromString("a3d5a94f-4c40-48f6-a343-558502a13e10"), "Heavyness", (1 - level/(float)10) - 1, Operation.MULTIPLY_TOTAL);
             });
@@ -44,12 +45,12 @@ public interface UEnchantments {
      *
      * Weapons will become stronger the more allies you have around.
      */
-    Enchantment HERDS = register("herds", new CollaboratorEnchantment());
+    Enchantment HERDS = register("herds", new CollaboratorEnchantment(new Options().rarity(Rarity.RARE).maxLevel(3)));
 
     /**
      * Alters gravity
      */
-    Enchantment REPULSION = register("repulsion", new AttributedEnchantment(Rarity.VERY_RARE, EnchantmentTarget.ARMOR_FEET, false, 3, EquipmentSlot.FEET))
+    Enchantment REPULSION = register("repulsion", new AttributedEnchantment(new Options().rarity(Rarity.VERY_RARE).maxLevel(3), EnchantmentTarget.ARMOR_FEET, EquipmentSlot.FEET))
             .addModifier(UEntityAttributes.ENTITY_GRAVTY_MODIFIER, (user, level) -> {
                 return new EntityAttributeModifier(UUID.fromString("1734bbd6-1916-4124-b710-5450ea70fbdb"), "Anti Grav", (0.5F - (0.375 * (level - 1))) - 1, Operation.MULTIPLY_TOTAL);
             });
@@ -59,35 +60,35 @@ public interface UEnchantments {
      *
      * Mobs really want your candy. You'd better give it to them.
      */
-    Enchantment WANT_IT_NEED_IT = register("want_it_need_it", new WantItNeedItEnchantment());
+    Enchantment WANT_IT_NEED_IT = register("want_it_need_it", new WantItNeedItEnchantment(new Options().rarity(Rarity.VERY_RARE).curse().treasure()));
 
     /**
      * Hahaha geddit?
      *
      * Random things happen.
      */
-    PoisonedJokeEnchantment POISONED_JOKE = register("poisoned_joke", new PoisonedJokeEnchantment());
+    PoisonedJokeEnchantment POISONED_JOKE = register("poisoned_joke", new PoisonedJokeEnchantment(new Options().rarity(Rarity.VERY_RARE).curse().tradedOnly()));
 
     /**
      * Who doesn't like a good freakout?
      */
-    Enchantment STRESSED = register("stressed", new StressfulEnchantment());
+    Enchantment STRESSED = register("stressed", new StressfulEnchantment(new Options().rarity(Rarity.RARE).curse().treasure().maxLevel(3)));
 
     /**
      * This item just wants to be held.
      */
-    Enchantment CLINGY = register("clingy", new SimpleEnchantment(Rarity.VERY_RARE, true, 6, UEnchantmentValidSlots.ANY));
+    Enchantment CLINGY = register("clingy", new SimpleEnchantment(new Options().rarity(Rarity.VERY_RARE).curse().maxLevel(6), UEnchantmentValidSlots.ANY));
 
     /**
      * Items with loyalty are kept after death.
      * Only works if they don't also have curse of binding.
      */
-    Enchantment HEART_BOUND = register("heart_bound", new SimpleEnchantment(Rarity.COMMON, EnchantmentTarget.VANISHABLE, false, 5, UEnchantmentValidSlots.ANY));
+    Enchantment HEART_BOUND = register("heart_bound", new SimpleEnchantment(new Options().rarity(Rarity.COMMON).maxLevel(5), EnchantmentTarget.VANISHABLE, UEnchantmentValidSlots.ANY));
 
     /**
      * Consumes drops whilst mining and produces experience instead
      */
-    Enchantment CONSUMPTION = register("consumption", new ConsumptionEnchantment());
+    Enchantment CONSUMPTION = register("consumption", new ConsumptionEnchantment(new Options().rarity(Rarity.VERY_RARE)));
 
     static void bootstrap() { }
 

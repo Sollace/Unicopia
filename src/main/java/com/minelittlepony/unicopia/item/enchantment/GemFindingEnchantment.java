@@ -13,8 +13,8 @@ import net.minecraft.util.math.BlockPos;
 
 public class GemFindingEnchantment extends SimpleEnchantment {
 
-    protected GemFindingEnchantment() {
-        super(Rarity.RARE, EnchantmentTarget.DIGGER, false, 3, EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND);
+    protected GemFindingEnchantment(Options options) {
+        super(options, EnchantmentTarget.DIGGER, EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND);
     }
 
     @Override
