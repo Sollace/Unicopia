@@ -8,7 +8,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 public class StressfulEnchantment extends SimpleEnchantment {
 
     protected StressfulEnchantment(Options options) {
-        super(options, UEnchantmentValidSlots.ANY);
+        super(options);
     }
 
     @Override

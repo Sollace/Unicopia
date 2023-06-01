@@ -11,7 +11,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
@@ -25,7 +24,7 @@ import net.minecraft.world.World;
 
 public class ConsumptionEnchantment extends SimpleEnchantment {
     protected ConsumptionEnchantment(Options options) {
-        super(options, EnchantmentTarget.DIGGER, UEnchantmentValidSlots.HANDS);
+        super(options);
     }
 
     public static boolean applyConsumption(World w, BlockState state, BlockPos pos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack tool) {

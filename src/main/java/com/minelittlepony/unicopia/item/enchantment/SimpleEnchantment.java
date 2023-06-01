@@ -9,24 +9,11 @@ import net.minecraft.item.ItemStack;
 
 public class SimpleEnchantment extends Enchantment {
 
-    private final boolean allItems;
-
-    private final EquipmentSlot[] slots;
-
     private final Options options;
 
-    protected SimpleEnchantment(Options options, EnchantmentTarget target, EquipmentSlot... slots) {
-        super(options.rarity, target, slots);
+    protected SimpleEnchantment(Options options) {
+        super(options.rarity, options.target, options.slots);
         this.options = options;
-        this.allItems = false;
-        this.slots = slots;
-    }
-
-    protected SimpleEnchantment(Options options, EquipmentSlot... slots) {
-        super(options.rarity, EnchantmentTarget.VANISHABLE, slots); // vanishable includes breakable. It's the one that accepts the widest variety of items
-        this.options = options;
-        this.allItems = true;
-        this.slots = slots;
     }
 
     public void onUserTick(Living<?> user, int level) {
@@ -43,11 +30,11 @@ public class SimpleEnchantment extends Enchantment {
 
     @Override
     public boolean isAcceptableItem(ItemStack itemStack) {
-       return allItems || super.isAcceptableItem(itemStack);
+       return options.allItems || super.isAcceptableItem(itemStack);
     }
 
     public EquipmentSlot[] getSlots() {
-        return slots;
+        return options.slots;
     }
 
     @Override
@@ -94,6 +81,31 @@ public class SimpleEnchantment extends Enchantment {
         private boolean looted = true;
         private Rarity rarity;
         private int maxLevel = 1;
+        private EquipmentSlot[] slots;
+        private EnchantmentTarget target;
+        private boolean allItems;
+
+        public static Options create(EnchantmentTarget target, EquipmentSlot... slots) {
+            return new Options(target, slots);
+        }
+
+        public static Options armor() {
+            return create(EnchantmentTarget.ARMOR, UEnchantmentValidSlots.ARMOR);
+        }
+
+        public static Options allItems() {
+            return create(EnchantmentTarget.VANISHABLE, UEnchantmentValidSlots.ANY).ignoreTarget();
+        }
+
+        Options(EnchantmentTarget target, EquipmentSlot[] slots) {
+            this.slots = slots;
+            this.target = target;
+        }
+
+        public Options ignoreTarget() {
+            allItems = true;
+            return this;
+        }
 
         /**
          * Sets how rare this enchantment is when using the enchantment table.

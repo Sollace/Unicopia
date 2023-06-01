@@ -7,7 +7,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.entity.Living;
 
-import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -17,12 +16,8 @@ public class AttributedEnchantment extends SimpleEnchantment {
 
     private final Map<EntityAttribute, ModifierFactory> modifiers = new HashMap<>();
 
-    protected AttributedEnchantment(Options options, EnchantmentTarget target, EquipmentSlot... slots) {
-        super(options, target, slots);
-    }
-
-    protected AttributedEnchantment(Options options, EquipmentSlot... slots) {
-        super(options, slots);
+    protected AttributedEnchantment(Options options) {
+        super(options);
     }
 
     public AttributedEnchantment addModifier(EntityAttribute attribute, ModifierFactory modifierSupplier) {

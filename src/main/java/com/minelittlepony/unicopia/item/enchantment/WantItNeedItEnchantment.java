@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 public class WantItNeedItEnchantment extends SimpleEnchantment {
 
     protected WantItNeedItEnchantment(Options options) {
-        super(options, UEnchantmentValidSlots.ANY);
+        super(options);
     }
 
     @Override

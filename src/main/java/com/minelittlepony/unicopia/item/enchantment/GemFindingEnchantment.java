@@ -7,14 +7,12 @@ import com.minelittlepony.unicopia.entity.Living;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.enchantment.EnchantmentTarget;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.util.math.BlockPos;
 
 public class GemFindingEnchantment extends SimpleEnchantment {
 
     protected GemFindingEnchantment(Options options) {
-        super(options, EnchantmentTarget.DIGGER, EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND);
+        super(options);
     }
 
     @Override

@@ -4,8 +4,6 @@ import java.util.UUID;
 import com.minelittlepony.unicopia.entity.Living;
 
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.EnchantmentTarget;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -15,8 +13,8 @@ public class CollaboratorEnchantment extends AttributedEnchantment {
     private static final UUID TEAM_STRENGTH_UUID = UUID.fromString("5f08c02d-d959-4763-ac84-16e2acfd4b62");
 
     protected CollaboratorEnchantment(Options options) {
-        super(options, EnchantmentTarget.WEAPON, EquipmentSlot.MAINHAND);
-        this.addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, this::getModifier);
+        super(options);
+        addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, this::getModifier);
     }
 
     @Override

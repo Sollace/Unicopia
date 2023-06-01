@@ -30,7 +30,7 @@ public class PoisonedJokeEnchantment extends SimpleEnchantment implements Identi
     private List<SoundEvent> sounds = new ArrayList<>();
 
     protected PoisonedJokeEnchantment(Options options) {
-        super(options, UEnchantmentValidSlots.ANY);
+        super(options);
     }
 
     @Override
