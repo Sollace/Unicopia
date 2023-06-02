@@ -12,6 +12,7 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.GameMode;
@@ -53,7 +54,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
     }
 
     @Override
-    protected void playEquipSound(ItemStack stack) {
+    public void onEquipStack(EquipmentSlot slot, ItemStack oldStack, ItemStack newStack) {
         /*noop*/
     }
 

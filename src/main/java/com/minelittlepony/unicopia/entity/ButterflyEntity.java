@@ -166,7 +166,7 @@ public class ButterflyEntity extends AmbientEntity {
             breedingCooldown--;
         }
 
-        BlockPos below = new BlockPos(getPos().add(0, -0.5, 0));
+        BlockPos below = BlockPos.ofFloored(getPos().add(0, -0.5, 0));
 
         visited.entrySet().removeIf(e -> e.getValue() < age - 500);
 

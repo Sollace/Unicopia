@@ -15,9 +15,9 @@ abstract class MixinTranslationStorage {
     private @Final Map<String, String> translations;
 
     @Inject(method = "get", at = @At("HEAD"), cancellable = true)
-    public void onGet(String key, CallbackInfoReturnable<String> info) {
+    public void onGet(String key, String fallback, CallbackInfoReturnable<String> info) {
         if (key != null && key.contains(".pegasus") && !translations.containsKey(key)) {
-            info.setReturnValue(translations.getOrDefault(key.replace(".pegasus", ""), key));
+            info.setReturnValue(translations.getOrDefault(key.replace(".pegasus", ""), fallback));
         }
     }
 

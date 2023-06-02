@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -40,6 +41,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
@@ -225,13 +227,13 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
             Vec3d targetPos = entity.getRotationVector().multiply(2).add(entity.getEyePos());
 
-            if (entity.getWorld().isAir(new BlockPos(targetPos))) {
+            if (entity.getWorld().isAir(BlockPos.ofFloored(targetPos))) {
                 DragonBreathStore store = DragonBreathStore.get(entity.world);
                 String name = entity.getDisplayName().getString();
                 store.popEntries(name).forEach(stack -> {
                     Vec3d randomPos = targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
 
-                    if (!entity.getWorld().isAir(new BlockPos(randomPos))) {
+                    if (!entity.getWorld().isAir(BlockPos.ofFloored(randomPos))) {
                         store.put(name, stack.payload());
                     }
 
@@ -272,7 +274,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     public Optional<Boolean> onDamage(DamageSource source, float amount) {
 
-        if (source == DamageSource.LIGHTNING_BOLT && (invinsibilityTicks > 0 || tryCaptureLightning())) {
+        if (source.isIn(DamageTypeTags.IS_LIGHTNING) && (invinsibilityTicks > 0 || tryCaptureLightning())) {
             return Optional.of(false);
         }
 
@@ -282,7 +284,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 this.attacker = attacker;
             }
 
-            if (magical.breaksSunglasses()) {
+            if (magical.isIn(UTags.BREAKS_SUNGLASSES)) {
                 ItemStack glasses = GlassesItem.getForEntity(entity);
                 if (glasses.getItem() == UItems.SUNGLASSES) {
                     ItemStack broken = UItems.BROKEN_SUNGLASSES.getDefaultStack();

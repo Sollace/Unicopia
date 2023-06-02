@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.util.InventoryUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -53,7 +54,7 @@ public class SpellDuplicatingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public ItemStack craft(SpellbookInventory inventory) {
+    public ItemStack craft(SpellbookInventory inventory, DynamicRegistryManager registries) {
         return InventoryUtil.stream(inventory)
             .filter(i -> i.isOf(UItems.GEMSTONE))
             .filter(EnchantableItem::isEnchanted)
@@ -71,7 +72,7 @@ public class SpellDuplicatingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public ItemStack getOutput() {
+    public ItemStack getOutput(DynamicRegistryManager registries) {
         ItemStack stack = UItems.GEMSTONE.getDefaultStack();
         stack.setCount(2);
         return stack;

@@ -6,11 +6,11 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -143,7 +143,7 @@ public class BellItem extends Item implements ChargeableItem {
             }
         } else {
             float damageAmount = Math.min(Math.max(1, living.asEntity().getMaxHealth() / 25F), living.asEntity().getHealth() - 1);
-            living.asEntity().damage(MagicalDamageSource.EXHAUSTION, damageAmount);
+            living.asEntity().damage(user.damageOf(UDamageTypes.EXHAUSTION, user), damageAmount);
             living.asEntity().setAttacker(user.asEntity());
             if (living.asEntity() instanceof MobEntity mob) {
                 mob.setTarget(null);

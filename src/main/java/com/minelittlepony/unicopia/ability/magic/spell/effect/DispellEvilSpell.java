@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -29,7 +28,7 @@ public class DispellEvilSpell extends AbstractSpell implements ProjectileDelegat
         }
 
         source.findAllEntitiesInRange(getTraits().get(Trait.POWER) * 10, e -> e.getType() == EntityType.PHANTOM).forEach(entity -> {
-            entity.damage(MagicalDamageSource.MAGIC, 50);
+            entity.damage(entity.getDamageSources().magic(), 50);
             if (entity instanceof LivingEntity l) {
                 double d = source.getOriginVector().getX() - entity.getX();
                 double e = source.getOriginVector().getZ() - entity.getZ();

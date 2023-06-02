@@ -70,7 +70,6 @@ public class ViewportShader implements SynchronousResourceReloader, Identifiable
         if (shader != null && client.player != null) {
             RenderSystem.disableBlend();
             RenderSystem.disableDepthTest();
-            RenderSystem.enableTexture();
             RenderSystem.resetTextureMatrix();
 
             Pony pony = Pony.of(client.player);

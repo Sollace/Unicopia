@@ -7,11 +7,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -112,7 +112,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
             float healAmount = 0;
 
             for (LivingEntity i : getTargets(iplayer)) {
-                healAmount += drainFrom(player, i);
+                healAmount += drainFrom(iplayer, i);
             }
 
             int foodAmount = (int)Math.floor(Math.min(healAmount / 3, maximumFoodGain));
@@ -133,9 +133,9 @@ public class ChangelingFeedAbility implements Ability<Hit> {
         }
     }
 
-    public float drainFrom(PlayerEntity changeling, LivingEntity living) {
+    public float drainFrom(Pony changeling, LivingEntity living) {
 
-        DamageSource d = MagicalDamageSource.create("feed", changeling);
+        DamageSource d = changeling.damageOf(UDamageTypes.LOVE_DRAINING, changeling);
 
         float damage = living.getHealth()/2;
 
@@ -144,13 +144,13 @@ public class ChangelingFeedAbility implements Ability<Hit> {
         }
 
         ParticleUtils.spawnParticles(UParticles.CHANGELING_MAGIC, living, 7);
-        ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, changeling, 0.2F), living, 1);
+        ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, changeling.asEntity(), 0.2F), living, 1);
 
-        if (changeling.hasStatusEffect(StatusEffects.NAUSEA)) {
-            StatusEffectInstance effect = changeling.getStatusEffect(StatusEffects.NAUSEA);
-            changeling.removeStatusEffect(StatusEffects.NAUSEA);
+        if (changeling.asEntity().hasStatusEffect(StatusEffects.NAUSEA)) {
+            StatusEffectInstance effect = changeling.asEntity().getStatusEffect(StatusEffects.NAUSEA);
+            changeling.asEntity().removeStatusEffect(StatusEffects.NAUSEA);
             living.addStatusEffect(effect);
-        } else if (changeling.getEntityWorld().random.nextInt(2300) == 0) {
+        } else if (changeling.asWorld().random.nextInt(2300) == 0) {
             living.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20, 1));
         }
 
@@ -158,8 +158,8 @@ public class ChangelingFeedAbility implements Ability<Hit> {
             damage ++;
             damage *= 1.6F;
 
-            if (!changeling.hasStatusEffect(StatusEffects.HEALTH_BOOST)) {
-                changeling.addStatusEffect(new StatusEffectInstance(StatusEffects.HEALTH_BOOST, 13000, 1));
+            if (!changeling.asEntity().hasStatusEffect(StatusEffects.HEALTH_BOOST)) {
+                changeling.asEntity().addStatusEffect(new StatusEffectInstance(StatusEffects.HEALTH_BOOST, 13000, 1));
             }
         }
 

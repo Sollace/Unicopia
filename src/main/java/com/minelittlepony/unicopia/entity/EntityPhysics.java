@@ -8,7 +8,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -44,7 +43,7 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
     public void tick() {
         if (isGravityNegative()) {
             if (entity.getY() > entity.world.getHeight() + 64) {
-                entity.damage(DamageSource.OUT_OF_WORLD, 4.0F);
+                entity.damage(entity.getDamageSources().outOfWorld(), 4.0F);
             }
 
             entity.setOnGround(entity.verticalCollision && entity.getVelocity().getY() > 0);

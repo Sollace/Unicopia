@@ -21,26 +21,22 @@ abstract class MixinDamageSource {
     private void onGetDeathMessage(LivingEntity entity, CallbackInfoReturnable<Text> info) {
         final DamageSource self = (DamageSource)(Object)this;
 
-        if (self.isFromFalling()) {
-            info.setReturnValue(new DamageSource(self.name + ".pegasus").getDeathMessage(entity));
-        } else {
-            Living.getOrEmpty(entity).map(Living::getAttacker).ifPresent(attacker -> {
-                Entity prime = entity.getPrimeAdversary();
-                if (prime != null && !attacker.isOwnedBy(prime)) {
-                    info.setReturnValue(Text.translatable("death.attack.generic.and_also", info.getReturnValue(), attacker.asEntity().getDisplayName()));
-                    return;
-                }
+        Living.getOrEmpty(entity).map(Living::getAttacker).ifPresent(attacker -> {
+            Entity prime = entity.getPrimeAdversary();
+            if (prime != null && !attacker.isOwnedBy(prime)) {
+                info.setReturnValue(Text.translatable("death.attack.generic.and_also", info.getReturnValue(), attacker.asEntity().getDisplayName()));
+                return;
+            }
 
-                info.setReturnValue(Text.translatable("death.attack." + self.getName() + ".player", entity.getDisplayName(), attacker.asEntity().getDisplayName()));
-            });
+            info.setReturnValue(Text.translatable("death.attack." + self.getName() + ".player", entity.getDisplayName(), attacker.asEntity().getDisplayName()));
+        });
 
 
-            Pony.of(entity).filter(e -> e.getSpecies().canFly()).ifPresent(pony -> {
-                if (pony.getPhysics().isFlying()) {
-                    info.setReturnValue(Text.translatable("death.attack.generic.whilst_flying", info.getReturnValue()));
-                }
-            });
-        }
+        Pony.of(entity).filter(e -> e.getSpecies().canFly()).ifPresent(pony -> {
+            if (pony.getPhysics().isFlying()) {
+                info.setReturnValue(Text.translatable("death.attack.generic.whilst_flying", info.getReturnValue()));
+            }
+        });
     }
 }
 

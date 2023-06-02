@@ -16,7 +16,6 @@ import net.minecraft.block.*;
 import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.item.*;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShapes;
@@ -57,10 +56,10 @@ public interface UBlocks {
     Block PALM_STAIRS = register("palm_stairs", new StairsBlock(PALM_PLANKS.getDefaultState(), Settings.copy(PALM_PLANKS)), ItemGroups.BUILDING_BLOCKS);
     Block PALM_SLAB = register("palm_slab", new SlabBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD)), ItemGroups.BUILDING_BLOCKS);
     Block PALM_FENCE = register("palm_fence", new FenceBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD)), ItemGroups.BUILDING_BLOCKS);
-    Block PALM_FENCE_GATE = register("palm_fence_gate", new FenceGateBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD), SoundEvents.BLOCK_FENCE_GATE_CLOSE, SoundEvents.BLOCK_FENCE_GATE_OPEN), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_FENCE_GATE = register("palm_fence_gate", new FenceGateBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD), WoodType.OAK), ItemGroups.BUILDING_BLOCKS);
    // Block PALM_DOOR = register("palm_door", new DoorBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque(), SoundEvents.BLOCK_WOODEN_DOOR_CLOSE, SoundEvents.BLOCK_WOODEN_DOOR_OPEN), ItemGroups.BUILDING_BLOCKS);
    // Block PALM_TRAPDOOR = register("palm_trapdoor", new TrapdoorBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(UBlocks::never), SoundEvents.BLOCK_WOODEN_TRAPDOOR_CLOSE, SoundEvents.BLOCK_WOODEN_TRAPDOOR_OPEN), ItemGroups.BUILDING_BLOCKS);
-    Block PALM_PRESSURE_PLATE = register("palm_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD), SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_PRESSURE_PLATE = register("palm_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD), BlockSetType.OAK), ItemGroups.BUILDING_BLOCKS);
     Block PALM_BUTTON = register("palm_button", BlockConstructionUtils.woodenButton(), ItemGroups.BUILDING_BLOCKS);
    // Block PALM_SIGN = register("palm_sign", new SignBlock(Settings.of(Material.WOOD).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), PALM_SIGN_TYPE), ItemGroups.BUILDING_BLOCKS);
    //

@@ -64,9 +64,9 @@ public class KeyBindingsHandler {
         }
         Pony iplayer = Pony.of(client.player);
         AbilityDispatcher abilities = iplayer.getAbilities();
-        long maxPage = abilities.getMaxPage();
+        int maxPage = abilities.getMaxPage();
 
-        long page = MathHelper.clamp(Unicopia.getConfig().hudPage.get(), 0, maxPage);
+        int page = MathHelper.clamp(Unicopia.getConfig().hudPage.get(), 0, maxPage);
 
         if (page > 0 && pageDown.getState() == PressedState.PRESSED) {
             changePage(client, maxPage, -1);

@@ -14,6 +14,7 @@ import dev.emi.trinkets.api.event.TrinketDropCallback;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
@@ -40,7 +41,7 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
         return getInventory(entity, slot).map(inventory -> {
             for (int position = 0; position < inventory.size(); position++) {
                 if (inventory.getStack(position).isEmpty() && TrinketSlot.canInsert(stack, new SlotReference(inventory, position), entity)) {
-                    SoundEvent soundEvent = stack.getEquipSound();
+                    SoundEvent soundEvent = stack.getItem() instanceof Equipment q ? q.getEquipSound() : null;
                     inventory.setStack(position, stack.split(1));
                     if (soundEvent != null) {
                        entity.emitGameEvent(GameEvent.EQUIP);
@@ -56,7 +57,7 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
     @Override
     public void setEquippedStack(LivingEntity entity, Identifier slot, ItemStack stack) {
         getInventory(entity, slot).ifPresent(inventory -> {
-            SoundEvent soundEvent = stack.getEquipSound();
+            SoundEvent soundEvent = stack.getItem() instanceof Equipment q ? q.getEquipSound() : null;
             inventory.clear();
             inventory.setStack(0, stack);
             if (soundEvent != null) {
@@ -138,7 +139,7 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
 
         Trinket trinket = TrinketsApi.getTrinket(stack.getItem());
 
-        SoundEvent soundEvent = stack.getEquipSound();
+        SoundEvent soundEvent = stack.getItem() instanceof Equipment q ? q.getEquipSound() : null;
         inv.setStack(i, stack.split(trinket instanceof UnicopiaTrinket ut ? ut.getMaxCount(stack, ref) : stack.getMaxCount()));
         if (!stack.isEmpty() && soundEvent != null) {
             user.emitGameEvent(GameEvent.EQUIP);

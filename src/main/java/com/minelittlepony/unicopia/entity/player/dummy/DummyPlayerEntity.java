@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.Owned;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -21,7 +22,7 @@ public class DummyPlayerEntity extends PlayerEntity implements Owned<PlayerEntit
     }
 
     @Override
-    protected void playEquipSound(ItemStack stack) {
+    public void onEquipStack(EquipmentSlot slot, ItemStack oldStack, ItemStack newStack) {
         /*noop*/
     }
 

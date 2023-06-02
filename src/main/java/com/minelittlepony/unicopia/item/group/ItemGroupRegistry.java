@@ -29,9 +29,9 @@ public interface ItemGroupRegistry {
     }
 
     static ItemGroup createDynamic(String name, Supplier<ItemStack> icon, Supplier<Stream<Item>> items) {
-        return FabricItemGroup.builder(Unicopia.id(name)).entries((features, list, k) -> {
+        return FabricItemGroup.builder(Unicopia.id(name)).entries((context, entries) -> {
             items.get().forEach(item -> {
-                list.addAll(ItemGroupRegistry.getVariations(item));
+                entries.addAll(ItemGroupRegistry.getVariations(item));
             });
         }).icon(icon).build();
     }

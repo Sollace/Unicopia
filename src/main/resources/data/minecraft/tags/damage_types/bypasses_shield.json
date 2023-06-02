@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "unicopia:exhaustion",
+    "unicopia:bat_screech",
+    "unicopia:alicorn_amulet",
+    "unicopia:love_draining",
+    "unicopia:life_draining",
+    "unicopia:rainboom",
+    "unicopia:tribe_swap"
+  ]
+}

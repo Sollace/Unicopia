@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.server.world;
 
-import java.util.function.BiConsumer;
-
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.mojang.serialization.Codec;
@@ -32,7 +30,7 @@ public class FernFoliagePlacer extends FoliagePlacer {
     }
 
     @Override
-    protected void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> placer, Random random,
+    protected void generate(TestableWorld world, BlockPlacer placer, Random random,
             TreeFeatureConfig config, int trunkHeight, TreeNode node, int foliageHeight, int radius, int offset) {
 
         BlockPos center = node.getCenter();
@@ -70,16 +68,16 @@ public class FernFoliagePlacer extends FoliagePlacer {
             if (outset == 1) {
                 BlockState fruitState = UBlocks.BANANAS.getDefaultState();
                 if (random.nextInt(5) == 0) {
-                    placer.accept(pos.set(center, outset, fanY - 1, 0), fruitState);
+                    placer.placeBlock(pos.set(center, outset, fanY - 1, 0), fruitState);
                 }
                 if (random.nextInt(5) == 0) {
-                    placer.accept(pos.set(center, -outset, fanY - 1, 0), fruitState);
+                    placer.placeBlock(pos.set(center, -outset, fanY - 1, 0), fruitState);
                 }
                 if (random.nextInt(5) == 0) {
-                    placer.accept(pos.set(center, 0, fanY - 1, outset), fruitState);
+                    placer.placeBlock(pos.set(center, 0, fanY - 1, outset), fruitState);
                 }
                 if (random.nextInt(5) == 0) {
-                    placer.accept(pos.set(center, 0, fanY - 1, -outset), fruitState);
+                    placer.placeBlock(pos.set(center, 0, fanY - 1, -outset), fruitState);
                 }
             }
         }

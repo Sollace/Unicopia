@@ -10,7 +10,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.block.state.StatePredicate;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Shape;
@@ -19,6 +18,7 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.property.Properties;
@@ -91,7 +91,7 @@ public class IceSpell extends AbstractSpell {
         } else if (e.isOnFire()) {
             e.extinguish();
         } else {
-            e.damage(MagicalDamageSource.create("cold", source.getMaster()), 2);
+            e.damage(source.damageOf(DamageTypes.FREEZE, source), 2);
         }
     }
 

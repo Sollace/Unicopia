@@ -24,7 +24,6 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -256,7 +255,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     @Override
     public boolean subtractEnergyCost(double amount) {
-        getMaster().damage(DamageSource.MAGIC, (int)amount/2);
+        getMaster().damage(asEntity().getDamageSources().magic(), (int)amount/2);
         return getMaster().getHealth() > 0;
     }
 

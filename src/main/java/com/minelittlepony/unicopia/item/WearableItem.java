@@ -9,9 +9,9 @@ import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorMaterials;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Wearable;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
@@ -19,7 +19,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 
-public abstract class WearableItem extends Item implements Wearable {
+public abstract class WearableItem extends Item implements Equipment {
 
     public WearableItem(FabricItemSettings settings) {
         super(configureEquipmentSlotSupplier(settings));
@@ -31,7 +31,7 @@ public abstract class WearableItem extends Item implements Wearable {
         if (TrinketsDelegate.hasTrinkets()) {
             return settings;
         }
-        return settings.equipmentSlot(s -> ((WearableItem)s.getItem()).getPreferredSlot(s));
+        return settings.equipmentSlot(s -> ((WearableItem)s.getItem()).getSlotType(s));
     }
 
     @Override
@@ -49,8 +49,13 @@ public abstract class WearableItem extends Item implements Wearable {
         return ArmorMaterials.LEATHER.getEquipSound();
     }
 
-    public EquipmentSlot getPreferredSlot(ItemStack stack) {
+    @Override
+    public final EquipmentSlot getSlotType() {
         return EquipmentSlot.OFFHAND;
+    }
+
+    public EquipmentSlot getSlotType(ItemStack stack) {
+        return getSlotType();
     }
 
     public static boolean dispenseArmor(BlockPointer pointer, ItemStack armor) {

@@ -47,7 +47,7 @@ public class TribeButton extends Button {
 
             if (hovered && screenWidth > 0) {
                 Identifier id = Race.REGISTRY.getId(race);
-                drawCenteredText(matrices, getFont(), Text.translatable("gui.unicopia.tribe_selection.describe." + id.getNamespace() + "." + id.getPath()), screenWidth / 2, getY() + height, 0xFFFFFFFF);
+                drawCenteredTextWithShadow(matrices, getFont(), Text.translatable("gui.unicopia.tribe_selection.describe." + id.getNamespace() + "." + id.getPath()), screenWidth / 2, getY() + height, 0xFFFFFFFF);
             }
         }
 

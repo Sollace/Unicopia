@@ -3,12 +3,12 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -58,7 +58,7 @@ public class RainboomAbilitySpell extends AbstractSpell {
         }
 
         source.findAllEntitiesInRange(RADIUS).forEach(e -> {
-            e.damage(MagicalDamageSource.create("rainboom", source).setBreakSunglasses(), 6);
+            e.damage(source.damageOf(UDamageTypes.RAINBOOM, source), 6);
         });
         EFFECT_RANGE.translate(source.getOrigin()).getBlockPositions().forEach(pos -> {
             BlockState state = source.asWorld().getBlockState(pos);

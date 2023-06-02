@@ -8,10 +8,10 @@ import com.google.common.base.Suppliers;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.FloatingArtefactEntity.State;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.block.BlockState;
@@ -156,7 +156,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                 }
 
                 inputs.forEach(input -> {
-                    input.damage(MagicalDamageSource.create("feed"), takes);
+                    input.damage(entity.damageOf(UDamageTypes.LIFE_DRAINING), takes);
                     ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, entity, 0.2F), input, 1);
                 });
                 outputs.forEach(output -> {

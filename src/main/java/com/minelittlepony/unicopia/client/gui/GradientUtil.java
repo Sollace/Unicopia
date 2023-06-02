@@ -11,7 +11,6 @@ import net.minecraft.util.math.MathHelper;
 public interface GradientUtil {
 
     static void fillVerticalGradient(MatrixStack matrices, int startX, int startY, int stopY, int endX, int endY, int colorStart, int colorStop, int colorEnd, int z) {
-        RenderSystem.disableTexture();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
@@ -20,7 +19,6 @@ public interface GradientUtil {
         fillVerticalGradient(matrices.peek().getPositionMatrix(), bufferBuilder, startX, startY, stopY, endX, endY, z, colorStart, colorStop, colorEnd);
         tessellator.draw();
         RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
     }
 
     private static void fillVerticalGradient(Matrix4f matrix, BufferBuilder builder, int startX, int startY, int stopY, int endX, int endY, int z, int colorStart, int colorStop, int colorEnd) {
@@ -50,7 +48,6 @@ public interface GradientUtil {
     }
 
     static void fillRadialGradient(MatrixStack matrices, int startX, int startY, int endX, int endY, int colorStart, int colorEnd, int z, float radius) {
-        RenderSystem.disableTexture();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
@@ -59,7 +56,6 @@ public interface GradientUtil {
             tessellator.draw();
         }
         RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
     }
 
     private static boolean fillRadials(Matrix4f matrix, BufferBuilder builder, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd, float radius) {

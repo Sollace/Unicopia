@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.*;
+import com.minelittlepony.unicopia.entity.damage.UDamageSources;
 import com.minelittlepony.unicopia.particle.ParticleSource;
 import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.util.SoundEmitter;
@@ -30,7 +31,8 @@ public interface Caster<E extends Entity> extends
         Affine,
         ParticleSource<E>,
         SoundEmitter<E>,
-        EntityConvertable<E> {
+        EntityConvertable<E>,
+        UDamageSources {
 
     Physics getPhysics();
 

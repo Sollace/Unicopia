@@ -39,7 +39,7 @@ public class DiscoveryToast implements Toast {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.setShaderColor(1.0F, 1, 1, 1);
-        manager.drawTexture(matrices, 0, 0, 0, 32, getWidth(), getHeight());
+        ToastManager.drawTexture(matrices, 0, 0, 0, 32, getWidth(), getHeight());
         manager.getClient().textRenderer.draw(matrices, TITLE, 30, 7, -11534256);
         manager.getClient().textRenderer.draw(matrices, DESCRIPTION, 30, 18, -16777216);
 
@@ -49,7 +49,7 @@ public class DiscoveryToast implements Toast {
         matrixStack.push();
         matrixStack.scale(0.6F, 0.6F, 1);
         RenderSystem.applyModelViewMatrix();
-        manager.getClient().getItemRenderer().renderInGui(UItems.SPELLBOOK.getDefaultStack(), 3, 3);
+        manager.getClient().getItemRenderer().renderInGui(matrixStack, UItems.SPELLBOOK.getDefaultStack(), 3, 3);
         matrixStack.pop();
         RenderSystem.applyModelViewMatrix();
 

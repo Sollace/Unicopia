@@ -27,7 +27,7 @@ abstract class MixinServerWorld extends World implements StructureWorldAccess, N
 
     private NocturnalSleepManager nocturnalSleepManager;
 
-    MixinServerWorld() { super(null, null, null, null, false, false, 0, 0); }
+    MixinServerWorld() { super(null, null, null, null, null, false, false, 0, 0); }
 
     @Inject(method = "onBlockChanged", at = @At("HEAD"))
     private void onOnBlockChanged(BlockPos pos, BlockState oldState, BlockState newState, CallbackInfo info) {

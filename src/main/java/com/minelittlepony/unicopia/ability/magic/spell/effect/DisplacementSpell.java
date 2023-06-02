@@ -6,10 +6,10 @@ import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
@@ -62,8 +62,8 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
         Vec3d sourcePos = originator.getOriginVector();
         Vec3d sourceVel = originator.asEntity().getVelocity();
 
-        teleport(target, sourcePos, sourceVel);
-        teleport(originator.asEntity(), destinationPos, destinationVel);
+        teleport(originator, target, sourcePos, sourceVel);
+        teleport(originator, originator.asEntity(), destinationPos, destinationVel);
         originator.subtractEnergyCost(destinationPos.distanceTo(sourcePos) / 20F);
     }
 
@@ -80,7 +80,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
         });
     }
 
-    private void teleport(Entity entity, Vec3d pos, Vec3d vel) {
+    private void teleport(Caster<?> source, Entity entity, Vec3d pos, Vec3d vel) {
         entity.teleport(pos.x, pos.y, pos.z);
         entity.setVelocity(vel);
         entity.setGlowing(false);
@@ -88,7 +88,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
 
         float damage = getTraits().get(Trait.BLOOD);
         if (damage > 0) {
-            entity.damage(MagicalDamageSource.EXHAUSTION, damage);
+            entity.damage(source.damageOf(UDamageTypes.EXHAUSTION, source), damage);
         }
     }
 

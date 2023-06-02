@@ -5,10 +5,11 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -120,7 +121,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
                 magic.getExertion().set(0);
 
                 if (!pony.asEntity().isCreative()) {
-                    entity.damage(MagicalDamageSource.TRIBE_SWAP, Float.MAX_VALUE);
+                    entity.damage(Living.living(entity).damageOf(UDamageTypes.TRIBE_SWAP), Float.MAX_VALUE);
                 }
             } else {
                 eq.setSpecies(race);

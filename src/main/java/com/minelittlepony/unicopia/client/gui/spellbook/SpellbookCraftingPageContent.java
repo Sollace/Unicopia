@@ -25,7 +25,7 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
     public SpellbookCraftingPageContent(SpellbookScreen screen) {
         this.screen = screen;
         backgroundColor = 0xFFf9efd3;
-        scrollbar.layoutToEnd = true;
+        verticalScrollbar.layoutToEnd = true;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
             int top = 0;
             for (SpellbookRecipe recipe : this.client.world.getRecipeManager().listAllOfType(URecipes.SPELLBOOK)) {
                 if (client.player.getRecipeBook().contains(recipe)) {
-                    IngredientTree tree = new IngredientTree(0, top, width - scrollbar.getBounds().width + 2);
+                    IngredientTree tree = new IngredientTree(0, top, width - verticalScrollbar.getBounds().width + 2);
                     recipe.buildCraftingTree(tree);
                     top += tree.build(this);
                 }

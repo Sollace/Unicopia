@@ -15,7 +15,6 @@ import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -87,7 +86,7 @@ public class FilledJarItem extends JarItem implements ChameleonItem {
 
         damage += instance.getValue();
 
-        if (entity.damage(DamageSource.thrownProjectile(projectile, projectile.getOwner()), damage)) {
+        if (entity.damage(entity.getDamageSources().thrown(projectile, projectile.getOwner()), damage)) {
 
             int knockback = EnchantmentHelper.getLevel(Enchantments.KNOCKBACK, stack);
 

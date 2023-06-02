@@ -9,8 +9,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.LivingEntity;
@@ -82,14 +82,14 @@ public class BatEeeeAbility implements Ability<Hit> {
         Vec3d origin = player.getOriginVector();
 
         if (rng.nextInt(20000) == 0) {
-            player.asEntity().damage(MagicalDamageSource.create("eeee", player).setBreakSunglasses(), 0.1F);
+            player.asEntity().damage(player.damageOf(UDamageTypes.BAT_SCREECH, player), 0.1F);
             UCriteria.SCREECH_SELF.trigger(player.asEntity());
         }
 
         int total = player.findAllEntitiesInRange(5).mapToInt(e -> {
             if (e instanceof LivingEntity living && !SpellType.SHIELD.isOn(e)) {
                 boolean isEarthPony = EquinePredicates.PLAYER_EARTH.test(e);
-                e.damage(MagicalDamageSource.create("eeee", player).setBreakSunglasses(), isEarthPony ? 0.1F : 0.3F);
+                e.damage(player.damageOf(UDamageTypes.BAT_SCREECH, player), isEarthPony ? 0.1F : 0.3F);
 
                 Vec3d knockVec = origin.subtract(e.getPos());
                 living.takeKnockback(isEarthPony ? 0.3F : 0.5F, knockVec.getX(), knockVec.getZ());

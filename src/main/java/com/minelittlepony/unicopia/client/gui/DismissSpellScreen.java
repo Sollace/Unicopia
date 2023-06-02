@@ -213,12 +213,21 @@ public class DismissSpellScreen extends GameGui {
         }
 
         @Override
-        public void appendNarrations(NarrationMessageBuilder var1) {
+        public void appendNarrations(NarrationMessageBuilder builder) {
         }
 
         @Override
         public SelectionType getType() {
             return SelectionType.HOVERED;
+        }
+
+        @Override
+        public void setFocused(boolean focused) {
+        }
+
+        @Override
+        public boolean isFocused() {
+            return false;
         }
     }
 

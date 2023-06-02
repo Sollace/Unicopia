@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
@@ -12,7 +10,6 @@ import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.Block;
@@ -23,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -134,7 +132,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
                 (master instanceof PlayerEntity && !EquinePredicates.PLAYER_UNICORN.test(master))) && !(e instanceof ItemEntity)
         && !(e instanceof Caster<?>)) {
             e.setOnFireFor(60);
-            e.damage(getDamageCause(e, master), 0.1f);
+            e.damage(getDamageCause(source, e), 0.1f);
             playEffect(source.asWorld(), e.getBlockPos());
             return true;
         }
@@ -142,8 +140,8 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
         return false;
     }
 
-    protected DamageSource getDamageCause(Entity target, @Nullable LivingEntity attacker) {
-        return MagicalDamageSource.create("fire", attacker);
+    protected DamageSource getDamageCause(Caster<?> source, Entity target) {
+        return source.damageOf(DamageTypes.IN_FIRE, source);
     }
 
     /**

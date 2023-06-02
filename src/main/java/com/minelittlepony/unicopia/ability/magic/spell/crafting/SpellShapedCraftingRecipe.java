@@ -10,23 +10,24 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapedRecipe;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 
 public class SpellShapedCraftingRecipe extends ShapedRecipe {
 
     public SpellShapedCraftingRecipe(ShapedRecipe recipe) {
-        super(recipe.getId(), recipe.getGroup(), recipe.getCategory(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getOutput());
+        super(recipe.getId(), recipe.getGroup(), recipe.getCategory(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getOutput(null));
     }
 
     @Override
-    public ItemStack craft(CraftingInventory inventory) {
+    public ItemStack craft(CraftingInventory inventory, DynamicRegistryManager registries) {
         return InventoryUtil.stream(inventory)
             .filter(stack -> stack.getItem() instanceof EnchantableItem)
             .filter(EnchantableItem::isEnchanted)
             .map(stack -> ((EnchantableItem)stack.getItem()).getSpellEffect(stack))
             .findFirst()
-            .map(spell -> spell.traits().applyTo(EnchantableItem.enchant(super.craft(inventory), spell.type())))
-            .orElseGet(() -> super.craft(inventory));
+            .map(spell -> spell.traits().applyTo(EnchantableItem.enchant(super.craft(inventory, registries), spell.type())))
+            .orElseGet(() -> super.craft(inventory, registries));
     }
 
     @Override

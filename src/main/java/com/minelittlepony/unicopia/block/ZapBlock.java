@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.particle.UParticles;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
@@ -74,7 +73,7 @@ public class ZapBlock extends Block {
                 } else {
                     float damage = 3 / dist;
                     if (damage > 1) {
-                        other.damage(DamageSource.LIGHTNING_BOLT, damage);
+                        other.damage(world.getDamageSources().lightningBolt(), damage);
                     }
                 }
             });

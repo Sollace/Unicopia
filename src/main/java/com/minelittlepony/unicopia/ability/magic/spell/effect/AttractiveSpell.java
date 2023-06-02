@@ -5,12 +5,12 @@ import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
@@ -93,7 +93,7 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
         }
 
         if (!isGood && source.asWorld().random.nextInt(4500) == 0) {
-            source.asEntity().damage(MagicalDamageSource.create("vortex"), 4);
+            source.asEntity().damage(source.damageOf(UDamageTypes.GAVITY_WELL_RECOIL, source), 4);
         }
 
         AttractionUtils.applyForce(getOrigin(source), target, -force, 0, false);

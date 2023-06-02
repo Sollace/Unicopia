@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
@@ -15,7 +16,7 @@ public class GlowingRecipe extends ItemCombinationRecipe {
     }
 
     @Override
-    public final ItemStack craft(CraftingInventory inventory) {
+    public final ItemStack craft(CraftingInventory inventory, DynamicRegistryManager registries) {
         Pair<ItemStack, ItemStack> pair = runMatch(inventory);
 
         ItemStack result = pair.getLeft().copy();

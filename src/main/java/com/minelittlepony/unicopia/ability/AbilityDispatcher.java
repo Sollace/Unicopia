@@ -76,7 +76,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         return getStat(slot).getMaxPage() > 0;
     }
 
-    public long getMaxPage() {
+    public int getMaxPage() {
         if (maxPage < 0 || prevRace != player.getSpecies()) {
             prevRace = player.getSpecies();
             maxPage = 0;
@@ -84,7 +84,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
                 maxPage = Math.max(maxPage, getStat(slot).getMaxPage() - 1);
             }
         }
-        return maxPage;
+        return (int)maxPage;
     }
 
     @Override

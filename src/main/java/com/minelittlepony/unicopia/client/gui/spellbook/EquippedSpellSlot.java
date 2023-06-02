@@ -52,15 +52,15 @@ public class EquippedSpellSlot extends Button {
         } else {
             RenderSystem.disableBlend();
             RenderSystem.setShaderColor(1, 1, 1, 1);
-            drawItem((int)pos.x, (int)pos.y);
+            drawItem(matrices, (int)pos.x, (int)pos.y);
         }
         if (isHovered()) {
             HandledScreen.drawSlotHighlight(matrices, getX(), getY(), 0);
         }
     }
 
-    protected void drawItem(int x, int y) {
-        itemRenderer.renderInGui(spell.getDefaultStack(), x, y);
+    protected void drawItem(MatrixStack matrices, int x, int y) {
+        itemRenderer.renderInGui(matrices, spell.getDefaultStack(), x, y);
     }
 
     @Override

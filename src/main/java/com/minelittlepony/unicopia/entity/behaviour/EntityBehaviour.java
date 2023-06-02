@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.LimbAnimationUtil;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 
 import net.minecraft.entity.Entity;
@@ -131,7 +132,7 @@ public class EntityBehaviour<T extends Entity> {
             double y = positionOffset.y + Math.floor(from.getY());
             double z = positionOffset.z + Math.floor(from.getZ()) + 0.5;
 
-            BlockPos pos = new BlockPos(x, y, z);
+            BlockPos pos = BlockPos.ofFloored(x, y, z);
 
             if (!from.world.isAir(pos) && !from.world.isWater(pos)) {
                 y++;
@@ -182,9 +183,7 @@ public class EntityBehaviour<T extends Entity> {
             l.bodyYaw = from.bodyYaw;
             l.prevBodyYaw = from.prevBodyYaw;
 
-            l.limbDistance = from.limbDistance;
-            l.limbAngle = from.limbAngle;
-            l.lastLimbDistance = from.lastLimbDistance;
+            LimbAnimationUtil.copy(from.limbAnimator, l.limbAnimator);
 
             l.handSwingProgress = from.handSwingProgress;
             l.lastHandSwingProgress = from.lastHandSwingProgress;

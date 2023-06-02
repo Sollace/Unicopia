@@ -46,7 +46,7 @@ public record Tree (
                 var reg = registries.asDynamicRegistryManager().createRegistryLookup().getOrThrow(RegistryKeys.CONFIGURED_FEATURE);
                 REGISTRY.stream().filter(tree -> tree.placedFeatureId().isPresent()).forEach(tree -> {
                     var placedFeature = new PlacedFeature(reg.getOrThrow(tree.configuredFeatureId()),
-                            VegetationPlacedFeatures.modifiersWithWouldSurvive(tree.placement().orElseThrow(), tree.sapling().orElse(Blocks.OAK_SAPLING))
+                            VegetationPlacedFeatures.treeModifiersWithWouldSurvive(tree.placement().orElseThrow(), tree.sapling().orElse(Blocks.OAK_SAPLING))
                     );
 
                     Registry.register(registry, tree.id, placedFeature);

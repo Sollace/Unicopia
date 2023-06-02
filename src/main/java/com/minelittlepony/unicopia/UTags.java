@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.item.toxin.Toxics;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.registry.*;
@@ -39,6 +40,8 @@ public interface UTags {
 
     TagKey<StatusEffect> PINEAPPLE_EFFECTS = effect("pineapple_effects");
 
+    TagKey<DamageType> BREAKS_SUNGLASSES = damage("breaks_sunglasses");
+
     static TagKey<Item> item(String name) {
         return TagKey.of(RegistryKeys.ITEM, Unicopia.id(name));
     }
@@ -53,6 +56,10 @@ public interface UTags {
 
     static TagKey<StatusEffect> effect(String name) {
         return TagKey.of(RegistryKeys.STATUS_EFFECT, Unicopia.id(name));
+    }
+
+    static TagKey<DamageType> damage(String name) {
+        return TagKey.of(RegistryKeys.DAMAGE_TYPE, Unicopia.id(name));
     }
 
     static void bootstrap() {

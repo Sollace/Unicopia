@@ -34,9 +34,10 @@ import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
@@ -77,7 +78,7 @@ public interface URenderers {
         EntityRendererRegistry.register(UEntities.SPELLBOOK, SpellbookEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.AIR_BALLOON, AirBalloonEntityRenderer::new);
 
-        BlockEntityRendererRegistry.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
 
         ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack), UItems.FRIENDSHIP_BRACELET);
         BuiltinItemRendererRegistry.INSTANCE.register(UItems.FILLED_JAR, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
@@ -89,23 +90,24 @@ public interface URenderers {
             // Reset stuff done in the beforelands
             matrices.pop();
 
-            if (mode == ModelTransformation.Mode.GUI) {
+            if (mode == ModelTransformationMode.GUI) {
                 DiffuseLighting.disableGuiDepthLighting();
             }
 
             VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+            ClientWorld world = MinecraftClient.getInstance().world;
 
             if (item.hasAppearance(stack)) {
                 matrices.push();
                 matrices.scale(0.5F, 0.5F, 0.5F);
                 matrices.translate(0.0125, 0.1, 0);
-                renderer.renderItem(item.getAppearanceStack(stack), mode, light, overlay, matrices, immediate, 0);
+                renderer.renderItem(item.getAppearanceStack(stack), mode, light, overlay, matrices, immediate, world, 0);
                 matrices.pop();
             }
-            renderer.renderItem(item.createAppearanceStack(stack, UItems.EMPTY_JAR), mode, light, OverlayTexture.DEFAULT_UV, matrices, immediate, 0);
+            renderer.renderItem(item.createAppearanceStack(stack, UItems.EMPTY_JAR), mode, light, OverlayTexture.DEFAULT_UV, matrices, immediate, world, 0);
             immediate.draw();
 
-            if (mode == ModelTransformation.Mode.GUI) {
+            if (mode == ModelTransformationMode.GUI) {
                 DiffuseLighting.enableGuiDepthLighting();
             }
             matrices.push();

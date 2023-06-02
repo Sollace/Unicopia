@@ -165,7 +165,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
                         .stream().sorted(Comparator.comparing(SpellbookRecipe::getPriority))
                         .findFirst()
                         .filter(recipe -> result.shouldCraftRecipe(world, (ServerPlayerEntity)this.inventory.player, recipe))
-                        .map(recipe -> recipe.craft(input))
+                        .map(recipe -> recipe.craft(input, world.getRegistryManager()))
                         .orElseGet(this::getFallbackStack) : ItemStack.EMPTY;
                 outputSlot.setStack(resultStack);
 
@@ -298,10 +298,10 @@ public class SpellbookScreenHandler extends ScreenHandler {
     }
 
     @Override
-    public void close(PlayerEntity playerEntity) {
-        super.close(playerEntity);
+    public void onClosed(PlayerEntity player) {
+        super.onClosed(player);
         context.run((world, pos) -> {
-            dropInventory(playerEntity, input);
+            dropInventory(player, input);
         });
     }
 

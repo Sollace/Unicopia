@@ -2,7 +2,8 @@ package com.minelittlepony.unicopia.entity.effect;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
+import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -34,7 +35,7 @@ public class FoodPoisoningStatusEffect extends StatusEffect {
         }
 
         if (entity.getHealth() > amplifier) {
-            entity.damage(MagicalDamageSource.FOOD_POISONING, amplifier);
+            entity.damage(Living.living(entity).damageOf(UDamageTypes.FOOD_POISONING), amplifier);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.block;
 
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BlockSetType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ButtonBlock;
 import net.minecraft.block.LeavesBlock;
@@ -9,19 +10,17 @@ import net.minecraft.block.Material;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 
 interface BlockConstructionUtils {
     static ButtonBlock woodenButton() {
-        return woodenButton(BlockSoundGroup.WOOD, SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_OFF, SoundEvents.BLOCK_WOODEN_BUTTON_CLICK_ON);
+        return woodenButton(BlockSoundGroup.WOOD, BlockSetType.OAK);
     }
 
-    static ButtonBlock woodenButton(BlockSoundGroup soundGroup, SoundEvent clickOffSound, SoundEvent clickOnSound) {
-        return new ButtonBlock(AbstractBlock.Settings.of(Material.DECORATION).noCollision().strength(0.5f).sounds(soundGroup), 30, true, clickOffSound, clickOnSound);
+    static ButtonBlock woodenButton(BlockSoundGroup soundGroup, BlockSetType setType) {
+        return new ButtonBlock(AbstractBlock.Settings.of(Material.DECORATION).noCollision().strength(0.5f).sounds(soundGroup), setType, 30, true);
     }
 
     static boolean never(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {

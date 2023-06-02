@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.item.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -45,7 +46,7 @@ public class SpellEnhancingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public ItemStack craft(SpellbookInventory inventory) {
+    public ItemStack craft(SpellbookInventory inventory, DynamicRegistryManager registries) {
         return SpellTraits.of(inventory.getItemToModify())
                 .add(inventory.getTraits())
                 .applyTo(inventory.getItemToModify());
@@ -57,7 +58,7 @@ public class SpellEnhancingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public ItemStack getOutput() {
+    public ItemStack getOutput(DynamicRegistryManager registries) {
         return UItems.GEMSTONE.getDefaultStack();
     }
 

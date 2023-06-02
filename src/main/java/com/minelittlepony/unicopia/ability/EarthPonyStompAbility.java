@@ -6,13 +6,13 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 
 import net.minecraft.block.Block;
@@ -22,10 +22,10 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -122,8 +122,6 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                             -(player.getY() - i.getY() - liftAmount) / inertia + (dist < 1 ? dist : 0),
                             -(player.getZ() - i.getZ()) / inertia);
 
-                    DamageSource damage = MagicalDamageSource.create("smash", iplayer);
-
                     double amount = (1.5F * player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue() + heavyness * 0.4) / (float)(dist * 1.3F);
 
                     if (i instanceof PlayerEntity) {
@@ -141,7 +139,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                         amount /= 1 + (EnchantmentHelper.getEquipmentLevel(UEnchantments.PADDED, (LivingEntity)i) / 6F);
                     }
 
-                    i.damage(damage, (float)amount);
+                    i.damage(iplayer.damageOf(UDamageTypes.SMASH, iplayer), (float)amount);
                     Living.updateVelocity(i);
                 }
             });
@@ -157,8 +155,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     }
 
     public static void spawnEffectAround(Entity source, BlockPos center, double radius, double range) {
-
-        BlockPos.iterate(center.add(-radius, -radius, -radius), center.add(radius, radius, radius)).forEach(i -> {
+        BlockPos.stream(new BlockBox(center).expand(MathHelper.ceil(radius))).forEach(i -> {
             double dist = Math.sqrt(i.getSquaredDistance(source.getX(), source.getY(), source.getZ()));
 
             if (dist <= radius) {

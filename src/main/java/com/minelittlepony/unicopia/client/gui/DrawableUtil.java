@@ -41,7 +41,7 @@ public interface DrawableUtil {
         }
         RenderSystem.applyModelViewMatrix();
 
-        MinecraftClient.getInstance().getItemRenderer().renderGuiItemIcon(stack, 0, 0);
+        MinecraftClient.getInstance().getItemRenderer().renderGuiItemIcon(modelStack, stack, 0, 0);
 
         modelStack.pop();
         RenderSystem.applyModelViewMatrix();
@@ -54,7 +54,6 @@ public interface DrawableUtil {
 
     static void drawLine(MatrixStack matrices, int x1, int y1, int x2, int y2, int color) {
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
@@ -66,14 +65,12 @@ public interface DrawableUtil {
         float k = (color & 255) / 255F;
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(matrix, x1, y1, 0).color(r, g, b, k).next();
         bufferBuilder.vertex(matrix, x2, y2, 0).color(r, g, b, k).next();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 
@@ -101,7 +98,6 @@ public interface DrawableUtil {
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
 
         Matrix4f model = matrices.peek().getPositionMatrix();
@@ -121,7 +117,6 @@ public interface DrawableUtil {
         }
 
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-        RenderSystem.enableTexture();
     }
 
     /**
@@ -161,7 +156,6 @@ public interface DrawableUtil {
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
 
         Matrix4f model = matrices.peek().getPositionMatrix();
@@ -187,7 +181,6 @@ public interface DrawableUtil {
         }
 
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-        RenderSystem.enableTexture();
     }
 
     private static void cylendricalVertex(BufferBuilder bufferBuilder, Matrix4f model, double radius, double angle, float r, float g, float b, float k) {

@@ -11,10 +11,10 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.sound.SoundEvent;
 
 public class UnicopiaTrinket implements Trinket {
 
@@ -30,9 +30,8 @@ public class UnicopiaTrinket implements Trinket {
             return;
         }
 
-        SoundEvent soundEvent = stack.getEquipSound();
-        if (soundEvent != null) {
-            entity.playSound(soundEvent, 1, 1);
+        if (stack.getItem() instanceof Equipment q) {
+            entity.playSound( q.getEquipSound(), 1, 1);
         }
     }
 
@@ -65,7 +64,7 @@ public class UnicopiaTrinket implements Trinket {
     public Multimap<EntityAttribute, EntityAttributeModifier> getModifiers(ItemStack stack, SlotReference slot, LivingEntity entity, UUID uuid) {
         Multimap<EntityAttribute, EntityAttributeModifier> modifiers = Trinket.super.getModifiers(stack, slot, entity, uuid);
         if (item instanceof WearableItem wearable) {
-            item.getAttributeModifiers(wearable.getPreferredSlot(stack));
+            item.getAttributeModifiers(wearable.getSlotType(stack));
         }
         return modifiers;
     }

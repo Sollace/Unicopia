@@ -175,7 +175,7 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
             move(MovementType.SELF, getVelocity());
             setVelocity(getVelocity().multiply(f));
         }
-        updateLimbs(this, false);
+        updateLimbs(false);
     }
 
     @Override

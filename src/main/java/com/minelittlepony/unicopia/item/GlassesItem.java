@@ -20,7 +20,7 @@ public class GlassesItem extends WearableItem {
     }
 
     @Override
-    public EquipmentSlot getPreferredSlot(ItemStack stack) {
+    public EquipmentSlot getSlotType(ItemStack stack) {
         return EquipmentSlot.HEAD;
     }
 

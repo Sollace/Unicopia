@@ -12,6 +12,7 @@ import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 
@@ -32,7 +33,7 @@ abstract class MixinArmorFeatureRenderer<
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void onInit(FeatureRendererContext<T, M> context, A inner, A outer, CallbackInfo info) {
+    private void onInit(FeatureRendererContext<T, M> context, A inner, A outer, BakedModelManager bakery, CallbackInfo info) {
         accessories = new AccessoryFeatureRenderer<>(context);
     }
 

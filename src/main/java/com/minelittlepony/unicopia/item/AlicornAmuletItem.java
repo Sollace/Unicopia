@@ -8,13 +8,13 @@ import com.google.common.collect.ImmutableMultimap;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.*;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.*;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.fabricmc.api.EnvType;
@@ -36,6 +36,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
@@ -84,7 +85,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
     @Override
     public boolean damage(DamageSource source) {
-        return source.isOutOfWorld();
+        return source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY);
     }
 
     @Override
@@ -146,7 +147,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         if (entity instanceof PlayerEntity player) {
             player.getHungerManager().setFoodLevel(1);
         }
-        entity.damage(MagicalDamageSource.ALICORN_AMULET, amount);
+        entity.damage(wearer.damageOf(UDamageTypes.ALICORN_AMULET), amount);
         entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 1));
         if (timeWorn > ItemTracker.HOURS) {
             entity.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 200, 3));
@@ -256,7 +257,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                 if (attachedTicks % 100 == 0) {
                     player.getHungerManager().addExhaustion(90F);
                     float healthDrop = MathHelper.clamp(player.getMaxHealth() - player.getHealth(), 2, 5);
-                    player.damage(MagicalDamageSource.ALICORN_AMULET, healthDrop);
+                    player.damage(pony.damageOf(UDamageTypes.ALICORN_AMULET), healthDrop);
                 }
 
                 return;

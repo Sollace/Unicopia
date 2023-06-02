@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapedRecipe;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
@@ -106,8 +107,8 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public ItemStack craft(SpellbookInventory inventory) {
-        return getOutput().copy();
+    public ItemStack craft(SpellbookInventory inventory, DynamicRegistryManager registries) {
+        return getOutput(registries).copy();
     }
 
     @Override
@@ -116,7 +117,7 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public ItemStack getOutput() {
+    public ItemStack getOutput(DynamicRegistryManager registries) {
         return output;
     }
 

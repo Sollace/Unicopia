@@ -21,7 +21,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
@@ -178,7 +177,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
 
                 if (i > 200) {
                     living.clearActiveItem();
-                    living.damage(DamageSource.MAGIC, 1);
+                    living.damage(entity.getDamageSources().magic(), 1);
                     if (EnchantableItem.isEnchanted(stack) && hasCharge(stack)) {
                         Caster.of(entity).ifPresent(c -> getSpellEffect(stack).create().apply(c));
                         ChargeableItem.consumeEnergy(stack, 1);

@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.ability.data.tree.TreeType;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -82,7 +83,8 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                     for (var e : VecHelper.findInRange(player.asEntity(), w, kickLocation.vec(), 2, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
                         if (e instanceof LivingEntity entity) {
                             float calculatedStrength = 0.5F * (1 + player.getLevel().getScaled(9));
-                            entity.damage(MagicalDamageSource.KICK, player.asWorld().random.nextBetween(2, 10) + calculatedStrength);
+
+                            entity.damage(player.damageOf(UDamageTypes.KICK, player), player.asWorld().random.nextBetween(2, 10) + calculatedStrength);
                             entity.takeKnockback(calculatedStrength, origin.x - entity.getX(), origin.z - entity.getZ());
                             Living.updateVelocity(entity);
                             player.subtractEnergyCost(3);
@@ -128,7 +130,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         if (MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isEquine()) {
             kickVector = kickVector.rotateY((float)Math.PI);
         }
-        return new Pos(new BlockPos(player.getOriginVector().add(kickVector)));
+        return new Pos(BlockPos.ofFloored(player.getOriginVector().add(kickVector)));
     }
 
     @Override

@@ -19,7 +19,6 @@ import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.BiomeTags;
-import net.minecraft.world.biome.Biome;
 
 public interface UEntities {
     EntityType<ButterflyEntity> BUTTERFLY = register("butterfly", FabricEntityTypeBuilder.create(SpawnGroup.AMBIENT, ButterflyEntity::new)
@@ -65,7 +64,7 @@ public interface UEntities {
 
         if (!Unicopia.getConfig().disableButterflySpawning.get()) {
             final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()
-                    .and(ctx -> ctx.getBiome().getPrecipitation() == Biome.Precipitation.RAIN);
+                    .and(ctx -> ctx.getBiome().hasPrecipitation() && ctx.getBiome().getTemperature() > 0.15F);
 
             BiomeModifications.addSpawn(butterflySpawnable.and(
                         BiomeSelectors.tag(BiomeTags.IS_RIVER)

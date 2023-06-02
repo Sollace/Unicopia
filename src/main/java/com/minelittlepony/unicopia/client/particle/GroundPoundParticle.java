@@ -46,7 +46,7 @@ public class GroundPoundParticle extends Particle {
         Vec3d vel = new Vec3d(0, (0.5 + (Math.sin(age) * 2.5)) * 5, 0);
 
         new Sphere(true, age, 1, 0, 1).translate(getPos()).randomPoints(random).forEach(point -> {
-            BlockPos pos = new BlockPos(point).down();
+            BlockPos pos = BlockPos.ofFloored(point).down();
 
             BlockState state = world.getBlockState(pos);
             if (state.isAir()) {

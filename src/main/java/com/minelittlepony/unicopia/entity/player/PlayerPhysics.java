@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.*;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.input.Heuristic;
@@ -28,8 +29,8 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
@@ -326,8 +327,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 }
             }
 
-            entity.limbAngle = 20 + (float)Math.cos(entity.age / 7F) - 0.5F;
-            entity.limbDistance = thrustScale;
+            // TODO: Probably wrong. Need to redo this
+            entity.limbAnimator.setSpeed(20 + (float)Math.cos(entity.age / 7F) - 0.5F);
+            entity.limbAnimator.updateLimbs(thrustScale, 1);
         }
     }
 
@@ -480,7 +482,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             return;
         }
 
-        BlockPos pos = new BlockPos(entity.getCameraPosVec(1).add(entity.getRotationVec(1).normalize().multiply(2)));
+        BlockPos pos = BlockPos.ofFloored(entity.getCameraPosVec(1).add(entity.getRotationVec(1).normalize().multiply(2)));
 
         BlockState state = entity.world.getBlockState(pos);
 
@@ -502,7 +504,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 } else {
                     entity.playSound(distance > 4 ? SoundEvents.ENTITY_PLAYER_BIG_FALL : SoundEvents.ENTITY_PLAYER_SMALL_FALL, 1, 1);
                 }
-                entity.damage(DamageSource.FLY_INTO_WALL, distance);
+                entity.damage(entity.getDamageSources().flyIntoWall(), distance);
             }
         }
 
@@ -650,14 +652,15 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         if (damage > 0) {
             pony.subtractEnergyCost(damage / 5F);
-            entity.damage(DamageSource.FLY_INTO_WALL, Math.min(damage, entity.getHealth() - 1));
+            entity.damage(entity.getDamageSources().flyIntoWall(), Math.min(damage, entity.getHealth() - 1));
             if (!isEarthPonySmash) {
                 UCriteria.BREAK_WINDOW.trigger(entity);
             }
         }
 
         if (isEarthPonySmash) {
-            pony.findAllEntitiesInRange(speed + 4, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR).forEach(e -> e.damage(MagicalDamageSource.STEAMROLLER, 50));
+            DamageSource damageSource = pony.damageOf(UDamageTypes.STEAMROLLER);
+            pony.findAllEntitiesInRange(speed + 4, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR).forEach(e -> e.damage(damageSource, 50));
         }
 
         pony.updateVelocity();

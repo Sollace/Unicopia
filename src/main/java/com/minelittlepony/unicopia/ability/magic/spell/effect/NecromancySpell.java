@@ -84,7 +84,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
 
         if (source.isClient()) {
             source.spawnParticles(new Sphere(true, radius * 2), rainy ? 98 : 125, pos -> {
-                BlockPos bpos = new BlockPos(pos);
+                BlockPos bpos = BlockPos.ofFloored(pos);
 
                 if (!source.asWorld().isAir(bpos.down())) {
                     source.addParticle(source.asWorld().hasRain(bpos) ? ParticleTypes.SMOKE : ParticleTypes.FLAME, pos, Vec3d.ZERO);
@@ -123,7 +123,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
         for (int i = 0; i < 10; i++) {
             Vec3d pos = affectRegion.computePoint(source.asWorld().random).add(source.getOriginVector());
 
-            BlockPos loc = new BlockPos(pos);
+            BlockPos loc = BlockPos.ofFloored(pos);
 
             if (source.asWorld().isAir(loc.up()) && !source.asWorld().isAir(loc)) {
                 spawnPool.get().ifPresent(type -> {
@@ -209,7 +209,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
         for (int i = 0; i < 10; i++) {
             Vec3d pos = affectRegion.computePoint(source.asWorld().random).add(source.getOriginVector());
 
-            BlockPos loc = new BlockPos(pos);
+            BlockPos loc = BlockPos.ofFloored(pos);
 
             if (source.asWorld().isAir(loc.up()) && !source.asWorld().isAir(loc)) {
                 spawnPool.get().ifPresent(type -> {

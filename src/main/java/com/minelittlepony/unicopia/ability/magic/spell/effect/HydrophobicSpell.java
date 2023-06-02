@@ -84,7 +84,7 @@ public class HydrophobicSpell extends AbstractSpell {
                 setDead();
             }
             source.spawnParticles(new Sphere(true, getRange(source)), 10, pos -> {
-                BlockPos bp = new BlockPos(pos);
+                BlockPos bp = BlockPos.ofFloored(pos);
                 if (source.asWorld().getFluidState(bp.up()).isIn(affectedFluid)) {
                     source.addParticle(UParticles.RAIN_DROPS, pos, Vec3d.ZERO);
                 }

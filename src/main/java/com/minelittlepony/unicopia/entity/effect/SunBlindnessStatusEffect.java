@@ -4,9 +4,10 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -38,7 +39,7 @@ public class SunBlindnessStatusEffect extends StatusEffect {
             if (!hasSunExposure(entity)) {
                 entity.setStatusEffect(new StatusEffectInstance(this, (int)(state.getDuration() * 0.8F), Math.max(1, amplifier - 1), true, false), entity);
             } else {
-                entity.damage(amplifier == 2 ? MagicalDamageSource.SUN : MagicalDamageSource.SUNLIGHT, amplifier / 5F);
+                entity.damage(Living.living(entity).damageOf(amplifier == 2 ? UDamageTypes.SUN : UDamageTypes.SUNLIGHT), amplifier / 5F);
             }
         }
     }

@@ -181,7 +181,7 @@ public class UHud extends DrawableHelper {
                     view.push();
                     view.translate(x, y, 0);
                     view.multiply(RotationAxis.POSITIVE_X.rotationDegrees(xDirection * 45));
-                    InventoryScreen.drawEntity(0, 0, scale, 0, -20, client.player);
+                    InventoryScreen.drawEntity(view, 0, 0, scale, 0, -20, client.player);
                     view.pop();
                     RenderSystem.applyModelViewMatrix();
                 });
@@ -235,7 +235,7 @@ public class UHud extends DrawableHelper {
 
             color |= alpha;
 
-            drawCenteredText(matrices, client.textRenderer, message, 25, -15, color);
+            drawCenteredTextWithShadow(matrices, client.textRenderer, message, 25, -15, color);
         }
     }
 
@@ -261,13 +261,13 @@ public class UHud extends DrawableHelper {
                 GradientUtil.fillRadialGradient(matrices, 0, 0, scaledWidth, scaledHeight,
                         color | (alpha1 << 24),
                         color | (alpha2 << 24),
-                        getZOffset(), 1);
+                        0, 1);
             } else {
                 GradientUtil.fillVerticalGradient(matrices, 0, 0, scaledHeight / 2, scaledWidth, scaledHeight,
                         color | (alpha1 << 24),
                         color | (alpha2 << 24),
                         color | (alpha1 << 24),
-                        getZOffset());
+                        0);
             }
         }
 
@@ -334,7 +334,7 @@ public class UHud extends DrawableHelper {
         GradientUtil.fillRadialGradient(matrices, 0, 0, scaledWidth, scaledHeight,
                 color | (int)alpha1 << 24,
                 color | (int)alpha2 << 24,
-                getZOffset(), Math.min(1, radius));
+                0, Math.min(1, radius));
     }
 
     public void setMessage(Text message) {

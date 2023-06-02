@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity.player;
 
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
+import com.minelittlepony.unicopia.entity.damage.UDamageSources;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -62,7 +63,7 @@ public interface ManaConsumptionUtil {
             foodSubtract = addExhaustion(hunger, foodSubtract);
             foodSubtract -= (consumedHearts / HEARTS_PER_FOOD);
             if (consumedHearts > 0) {
-                entity.damage(MagicalDamageSource.EXHAUSTION, consumedHearts);
+                entity.damage(UDamageSources.of(entity.getWorld()).damageOf(UDamageTypes.EXHAUSTION), consumedHearts);
             }
         }
 

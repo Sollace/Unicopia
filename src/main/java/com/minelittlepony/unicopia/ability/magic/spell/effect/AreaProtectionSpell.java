@@ -38,7 +38,7 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
             Vec3d origin = source.getOriginVector();
 
             source.spawnParticles(origin, new Sphere(true, radius), (int)(radius * 6), pos -> {
-                if (!source.asWorld().isAir(new BlockPos(pos))) {
+                if (!source.asWorld().isAir(BlockPos.ofFloored(pos))) {
                     source.addParticle(new MagicParticleEffect(getType().getColor()), pos, Vec3d.ZERO);
                 }
             });

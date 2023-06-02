@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.entity.damage.UDamageSources;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
@@ -13,14 +14,14 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class FloatingArtefactEntity extends Entity {
+public class FloatingArtefactEntity extends Entity implements UDamageSources {
 
     private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(FloatingArtefactEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<Byte> STATE = DataTracker.registerData(FloatingArtefactEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -188,6 +189,11 @@ public class FloatingArtefactEntity extends Entity {
     @Override
     public Packet<ClientPlayPacketListener> createSpawnPacket() {
         return Channel.SERVER_SPAWN_PROJECTILE.toPacket(new MsgSpawnProjectile(this));
+    }
+
+    @Override
+    public World asWorld() {
+        return world;
     }
 
     public enum State {

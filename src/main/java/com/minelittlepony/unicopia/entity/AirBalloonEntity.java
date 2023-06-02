@@ -170,8 +170,8 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
             e.distanceTraveled = 0;
             e.horizontalSpeed = 0;
             if (e instanceof LivingEntity l) {
-                l.limbAngle = 0;
-                l.limbDistance = 0;
+                l.limbAnimator.setSpeed(0);
+                l.limbAnimator.updateLimbs(0, 1);
             }
         }
     }

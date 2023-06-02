@@ -5,12 +5,13 @@ import java.util.List;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.group.MultiItem;
 import com.minelittlepony.unicopia.item.toxin.*;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 
@@ -52,7 +53,7 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder, Mu
     public ItemStack finishUsing(ItemStack stack, World w, LivingEntity player) {
         stack = super.finishUsing(stack, w, player);
 
-        player.damage(MagicalDamageSource.ZAP_APPLE, 120);
+        player.damage(Living.living(player).damageOf(UDamageTypes.ZAP_APPLE), 120);
 
         if (w instanceof ServerWorld) {
             LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(w);
@@ -61,7 +62,7 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder, Mu
             player.onStruckByLightning((ServerWorld)w, lightning);
 
             if (player instanceof PlayerEntity) {
-                UCriteria.EAT_TRICK_APPLE.trigger((PlayerEntity)player);
+                UCriteria.EAT_TRICK_APPLE.trigger(player);
             }
         }
 

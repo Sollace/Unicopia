@@ -61,8 +61,8 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
         rightPage.init(screen, page + 1);
         screen.addPageButtons(187, 30, 350, incr -> {
             state.swap(incr, (int)Math.ceil(traits.length / 2F));
-            leftPage.scrollbar.scrollBy(leftPage.scrollbar.getVerticalScrollAmount());
-            rightPage.scrollbar.scrollBy(rightPage.scrollbar.getVerticalScrollAmount());
+            leftPage.verticalScrollbar.scrollBy(leftPage.verticalScrollbar.getScrubber().getPosition());
+            rightPage.verticalScrollbar.scrollBy(rightPage.verticalScrollbar.getScrubber().getPosition());
         });
     }
 
@@ -74,8 +74,8 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
         page /= 2;
         state = screen.getState().getState(SpellbookChapterList.TRAIT_DEX_ID);
         state.setOffset(page);
-        leftPage.scrollbar.scrollBy(leftPage.scrollbar.getVerticalScrollAmount());
-        rightPage.scrollbar.scrollBy(rightPage.scrollbar.getVerticalScrollAmount());
+        leftPage.verticalScrollbar.scrollBy(leftPage.verticalScrollbar.getScrubber().getPosition());
+        rightPage.verticalScrollbar.scrollBy(rightPage.verticalScrollbar.getScrubber().getPosition());
 
         GameGui.playSound(SoundEvents.ITEM_BOOK_PAGE_TURN);
         screen.clearAndInit();
@@ -88,7 +88,7 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
 
     private final class DexPage extends ScrollContainer {
         public DexPage() {
-            scrollbar.layoutToEnd = true;
+            verticalScrollbar.layoutToEnd = true;
             backgroundColor = 0xFFf9efd3;
             getContentPadding().setVertical(10);
         }

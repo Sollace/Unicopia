@@ -8,18 +8,17 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.Item;
@@ -220,7 +219,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
                 }
             } else if (target instanceof PersistentProjectileEntity) {
                 if (master != null) {
-                    master.damage(DamageSource.thrownProjectile(target, ((PersistentProjectileEntity)target).getOwner()), 4);
+                    master.damage(master.getDamageSources().thrown(target, ((PersistentProjectileEntity)target).getOwner()), 4);
                 }
                 target.discard();
                 return;
@@ -230,7 +229,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
 
             accumulatedMass += massOfTarget;
             setDirty();
-            target.damage(MagicalDamageSource.create("black_hole"), Integer.MAX_VALUE);
+            target.damage(source.damageOf(UDamageTypes.GAVITY_WELL_RECOIL, source), Integer.MAX_VALUE);
             if (!(target instanceof PlayerEntity)) {
                 target.discard();
             }

@@ -24,6 +24,8 @@ import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
 public class Main implements EmiPlugin {
@@ -72,10 +74,11 @@ public class Main implements EmiPlugin {
             registry.setDefaultComparison(item, comparison -> Comparison.compareNbt());
         });
 
+        DynamicRegistryManager registries = DynamicRegistryManager.of(Registries.REGISTRIES);
         registry.getRecipeManager().listAllOfType(RecipeType.CRAFTING).stream()
                 .filter(recipe -> recipe instanceof SpellShapedCraftingRecipe)
                 .map(SpellShapedCraftingRecipe.class::cast).forEach(recipe -> {
-            ItemStack output = recipe.getOutput();
+            ItemStack output = recipe.getOutput(registries);
             if (output.getItem() instanceof MultiItem multiItem && output.getItem() instanceof EnchantableItem enchantable) {
                 multiItem.getDefaultStacks().forEach(outputVariation -> {
                     var spellEffect = enchantable.getSpellEffect(outputVariation);

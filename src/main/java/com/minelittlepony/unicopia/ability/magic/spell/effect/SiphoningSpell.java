@@ -13,11 +13,11 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -60,7 +60,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
             int direction = isFriendlyTogether(source) ? 1 : -1;
 
             source.spawnParticles(new Sphere(true, radius, 1, 0, 1), 1, pos -> {
-                if (!source.asWorld().isAir(new BlockPos(pos).down())) {
+                if (!source.asWorld().isAir(BlockPos.ofFloored(pos).down())) {
 
                     double dist = pos.distanceTo(source.getOriginVector());
                     Vec3d velocity = pos.subtract(source.getOriginVector()).normalize().multiply(direction * dist);
@@ -87,7 +87,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
     }
 
     private void distributeHealth(Caster<?> source) {
-        DamageSource damage = MagicalDamageSource.create("drain", source);
+        DamageSource damage = source.damageOf(UDamageTypes.LIFE_DRAINING, source);
 
         getTargets(source).forEach(e -> {
             float maxHealthGain = e.getMaxHealth() - e.getHealth();
@@ -127,7 +127,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
 
         float attackAmount = Math.max(maxHealthGain / targets.size(), 0.5F);
 
-        DamageSource damage = MagicalDamageSource.create("drain", source);
+        DamageSource damage = source.damageOf(UDamageTypes.LIFE_DRAINING, source);
 
         float healthGain = 0;
 

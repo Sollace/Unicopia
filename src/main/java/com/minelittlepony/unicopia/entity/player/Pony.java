@@ -37,7 +37,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.EntityDamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -47,6 +47,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -517,12 +518,15 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public Optional<Float> modifyDamage(DamageSource cause, float amount) {
 
-        if (!cause.isUnblockable() && !cause.isMagic() && !cause.isFire() && !cause.isOutOfWorld()
-                && !(cause instanceof EntityDamageSource && ((EntityDamageSource)cause).isThorns())
-                && cause != DamageSource.FREEZE) {
+        if (!cause.isIn(DamageTypeTags.BYPASSES_SHIELD)
+                && !cause.isOf(DamageTypes.MAGIC)
+                && !cause.isIn(DamageTypeTags.IS_FIRE)
+                && !cause.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)
+                && !cause.isOf(DamageTypes.THORNS)
+                && !cause.isOf(DamageTypes.FREEZE)) {
 
             if (getSpecies().canUseEarth() && entity.isSneaking()) {
-                amount /= (cause.isProjectile() ? 3 : 2) * (entity.getHealth() < 5 ? 3 : 1);
+                amount /= (cause.isOf(DamageTypes.MOB_PROJECTILE) ? 3 : 2) * (entity.getHealth() < 5 ? 3 : 1);
 
                 return Optional.of(amount);
             }

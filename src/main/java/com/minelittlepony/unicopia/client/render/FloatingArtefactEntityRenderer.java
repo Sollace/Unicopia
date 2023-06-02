@@ -9,7 +9,7 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -38,7 +38,7 @@ public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtef
 
         final float variance = 0.25F;
         final float verticalOffset = entity.getVerticalOffset(timeDelta);
-        final float modelScaleY = model.getTransformation().getTransformation(ModelTransformation.Mode.GROUND).scale.y;
+        final float modelScaleY = model.getTransformation().getTransformation(ModelTransformationMode.GROUND).scale.y;
 
         float scale = 1.6F;
 
@@ -47,7 +47,7 @@ public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtef
         transforms.translate(0, verticalOffset + variance * modelScaleY, 0);
         transforms.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getRotation(timeDelta)));
 
-        itemRenderer.renderItem(stack, ModelTransformation.Mode.GROUND, false, transforms, renderContext, lightUv, OverlayTexture.DEFAULT_UV, model);
+        itemRenderer.renderItem(stack, ModelTransformationMode.GROUND, false, transforms, renderContext, lightUv, OverlayTexture.DEFAULT_UV, model);
 
         transforms.pop();
 

@@ -10,6 +10,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.Tessellator;
@@ -53,7 +54,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
     }
 
     @Override
-    public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack matrices, ItemRenderer itemRenderer, int z) {
+    public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack matrices, ItemRenderer itemRenderer) {
         int columns = getColumns();
         int i = 0;
 
@@ -115,14 +116,13 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
 
     public static void renderTraitIcon(Trait trait, float value, MatrixStack matrices, float xx, float yy, boolean reveal) {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-        ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
 
         int size = 12;
 
         RenderSystem.setShaderTexture(0, reveal ? trait.getSprite() : UNKNOWN);
 
         matrices.push();
-        matrices.translate(xx, yy, itemRenderer.zOffset + 300.0F);
+        matrices.translate(xx, yy, 300F);
 
         DrawableHelper.drawTexture(matrices, 2, 1, 0, 0, 0, size, size, size, size);
 
@@ -132,7 +132,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
         String count = value > 99 ? "99+" : Math.round(value) == value ? (int)value + "" : ((Math.round(value * 10) / 10F) + "");
 
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        textRenderer.draw(count, 0, 0, 16777215, true, matrices.peek().getPositionMatrix(), immediate, false, 0, 15728880);
+        textRenderer.draw(count, 0, 0, 16777215, true, matrices.peek().getPositionMatrix(), immediate, TextLayerType.SEE_THROUGH, 0, 15728880);
         immediate.draw();
         matrices.pop();
     }

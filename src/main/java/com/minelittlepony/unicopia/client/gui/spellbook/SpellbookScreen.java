@@ -24,7 +24,6 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.slot.Slot;
@@ -32,6 +31,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 
 public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> implements RecipeBookProvider {
     public static final Identifier TEXTURE = Unicopia.id("textures/gui/container/book.png");
@@ -143,7 +143,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        renderBackground(matrices, 0);
+        renderBackground(matrices);
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShaderTexture(0, TEXTURE);
 
@@ -164,7 +164,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             if (color == 0xFFFFFF || color == 0) {
                 v += 48;
             } else {
-                RenderSystem.setShaderColor(NativeImage.getRed(color) / 255F, NativeImage.getGreen(color) / 255F, NativeImage.getBlue(color) / 255F, 1);
+                RenderSystem.setShaderColor(ColorHelper.Abgr.getRed(color) / 255F, ColorHelper.Abgr.getGreen(color) / 255F, ColorHelper.Abgr.getBlue(color) / 255F, 1);
             }
 
             boolean isRight = tab.chapter().side() == TabSide.RIGHT;

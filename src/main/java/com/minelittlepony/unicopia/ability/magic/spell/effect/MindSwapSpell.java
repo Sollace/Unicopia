@@ -11,7 +11,6 @@ import com.minelittlepony.unicopia.entity.behaviour.Inventory;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 
@@ -82,14 +81,14 @@ public class MindSwapSpell extends MimicSpell {
             }
 
             if (counterpart.getId().isPresent() && counterpart.get(caster.asWorld()) == null) {
-                caster.getOriginatingCaster().asEntity().damage(DamageSource.MAGIC, Float.MAX_VALUE);
+                caster.getOriginatingCaster().asEntity().damage(caster.asWorld().getDamageSources().magic(), Float.MAX_VALUE);
                 setDead();
                 return false;
             }
 
             if (!caster.asEntity().isAlive()) {
                 counterpart.ifPresent(caster.asWorld(), e -> {
-                    e.damage(DamageSource.MAGIC, Float.MAX_VALUE);
+                    e.damage(e.getDamageSources().magic(), Float.MAX_VALUE);
                 });
                 onDestroyed(caster);
                 setDead();

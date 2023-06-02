@@ -27,7 +27,6 @@ import com.minelittlepony.unicopia.network.datasync.EffectSync;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -37,7 +36,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
@@ -290,7 +289,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
             float damage = getThrowDamage();
 
             if (damage > 0) {
-                entity.damage(DamageSource.thrownProjectile(this, getOwner()), getThrowDamage());
+                entity.damage(getDamageSources().thrown(this, getOwner()), getThrowDamage());
             }
 
             forEachDelegates(effect -> effect.onImpact(this, hit), ProjectileDelegate.EntityHitListener.PREDICATE);

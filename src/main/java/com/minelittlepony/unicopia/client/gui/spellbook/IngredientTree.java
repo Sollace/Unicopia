@@ -20,7 +20,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -243,11 +243,11 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
 
             Vector4f pos = new Vector4f(x, y, 0, 1);
             pos.mul(matrices.peek().getPositionMatrix());
-            drawItem((int)pos.x, (int)pos.y);
+            drawItem(matrices, (int)pos.x, (int)pos.y);
         }
 
-        protected void drawItem(int x, int y) {
-            itemRenderer.renderInGui(stack, x, y);
+        protected void drawItem(MatrixStack matrices, int x, int y) {
+            itemRenderer.renderInGui(matrices, stack, x, y);
         }
 
         @Override
@@ -276,7 +276,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         }
 
         @Override
-        protected void drawItem(int x, int y) {
+        protected void drawItem(MatrixStack matrices, int x, int y) {
             var model = itemRenderer.getModel(stack, null, null, 0);
 
             MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
@@ -286,7 +286,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             RenderSystem.setShaderColor(1, 1, 1, 0.2F);
             MatrixStack matrixStack = RenderSystem.getModelViewStack();
             matrixStack.push();
-            matrixStack.translate(x, y, 100 + itemRenderer.zOffset);
+            matrixStack.translate(x, y, 100);
             matrixStack.translate(8, 8, 0);
             matrixStack.scale(1, -1, 1);
             matrixStack.scale(8, 8, 8);
@@ -298,7 +298,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             }
             RenderSystem.disableDepthTest();
             try {
-                itemRenderer.renderItem(stack, ModelTransformation.Mode.GUI, false, new MatrixStack(), layer -> PassThroughVertexConsumer.of(immediate.getBuffer(layer), FIXTURE), 0, OverlayTexture.DEFAULT_UV, model);
+                itemRenderer.renderItem(stack, ModelTransformationMode.GUI, false, matrices, layer -> PassThroughVertexConsumer.of(immediate.getBuffer(layer), FIXTURE), 0, OverlayTexture.DEFAULT_UV, model);
                 immediate.draw();
             } catch (Exception e) {
                 // Sodium

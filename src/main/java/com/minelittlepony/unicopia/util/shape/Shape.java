@@ -37,8 +37,8 @@ public interface Shape extends PointGenerator {
      */
     default Stream<BlockPos> getBlockPositions() {
         return BlockPos.stream(
-            new BlockPos(getLowerBound()),
-            new BlockPos(getUpperBound())
+            BlockPos.ofFloored(getLowerBound()),
+            BlockPos.ofFloored(getUpperBound())
         ).filter(pos -> isPointInside(Vec3d.ofCenter(pos)));
     }
 
