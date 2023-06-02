@@ -5,15 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.joml.Vector4f;
-
 import com.minelittlepony.common.client.gui.*;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
 import com.minelittlepony.unicopia.client.render.PassThroughVertexConsumer;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
@@ -239,11 +236,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
 
         @Override
         public void render(MatrixStack matrices, int x, int y, float tickDelta) {
-            y -= 2;
-
-            Vector4f pos = new Vector4f(x, y, 0, 1);
-            pos.mul(matrices.peek().getPositionMatrix());
-            drawItem(matrices, (int)pos.x, (int)pos.y);
+            drawItem(matrices, x, y - 2);
         }
 
         protected void drawItem(MatrixStack matrices, int x, int y) {
@@ -281,16 +274,11 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
 
             MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
             RenderSystem.setShaderTexture(0, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-            RenderSystem.setShaderColor(1, 1, 1, 0.2F);
-            MatrixStack matrixStack = RenderSystem.getModelViewStack();
-            matrixStack.push();
-            matrixStack.translate(x, y, 100);
-            matrixStack.translate(8, 8, 0);
-            matrixStack.scale(1, -1, 1);
-            matrixStack.scale(8, 8, 8);
-            RenderSystem.applyModelViewMatrix();
+            matrices.push();
+            matrices.translate(x, y, 100);
+            matrices.translate(8, 8, 0);
+            matrices.scale(1, -1, 1);
+            matrices.scale(8, 8, 8);
             VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
             boolean bl = !model.isSideLit();
             if (bl) {
@@ -308,8 +296,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             if (bl) {
                 DiffuseLighting.enableGuiDepthLighting();
             }
-            matrixStack.pop();
-            RenderSystem.applyModelViewMatrix();
+            matrices.pop();
             RenderSystem.setShaderColor(1, 1, 1, 1);
         }
 
