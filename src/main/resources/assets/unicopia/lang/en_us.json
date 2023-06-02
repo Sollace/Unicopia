@@ -444,12 +444,12 @@
   "gui.unicopia.action.spells_cleared": "Removed all spells",
   "gui.unicopia.action.no_spells_cleared": "You have no active spells",
 
-  "experience.unicopia.pure.magical_kindergartener": "New Blood",
-  "experience.unicopia.impure.magical_kindergartener": "Impure",
-  "experience.unicopia.tainted.magical_kindergartener": "Misguided",
-  "experience.unicopia.twisted.magical_kindergartener": "Twisted",
-  "experience.unicopia.corrupt.magical_kindergartener": "Filly Fiend",
-  "experience.unicopia.monstrous.magical_kindergartener": "Evil Foal",
+  "experience.unicopia.pure.magical_kindergartner": "New Blood",
+  "experience.unicopia.impure.magical_kindergartner": "Impure",
+  "experience.unicopia.tainted.magical_kindergartner": "Misguided",
+  "experience.unicopia.twisted.magical_kindergartner": "Twisted",
+  "experience.unicopia.corrupt.magical_kindergartner": "Filly Fiend",
+  "experience.unicopia.monstrous.magical_kindergartner": "Evil Foal",
 
   "experience.unicopia.pure.friendship_student": "Friendship Student",
   "experience.unicopia.impure.friendship_student": "Wayward Soul",
