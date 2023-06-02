@@ -59,6 +59,11 @@ public class PlayerPoser {
         }
 
         switch (animation) {
+            case NECK_SNAP: {
+                head.yaw += 3F;
+                head.pitch *= -1;
+                break;
+            }
             case WOLOLO: {
                 float roll = MathHelper.sin(player.age / 10F);
                 float yaw = MathHelper.cos(player.age / 10F);
@@ -237,7 +242,8 @@ public class PlayerPoser {
         KICK(USounds.ENTITY_PLAYER_KICK, 5),
         STOMP(5),
         WIGGLE_NOSE(6),
-        SPREAD_WINGS(6);
+        SPREAD_WINGS(6),
+        NECK_SNAP(50);
 
         private final int duration;
         private final Optional<SoundEvent> sound;

@@ -81,10 +81,10 @@ public class HornFeatureRenderer<E extends LivingEntity> implements AccessoryFea
                         .cuboid(-4, -8, -4, 8, 8, 8, dilation), ModelTransform.NONE);
             head.addChild("horn", ModelPartBuilder.create()
                         .uv(0, 3)
-                        .cuboid(-0.5F, -11, -3.5F, 1, 4, 1, dilation), ModelTransform.rotation(29 * MathHelper.RADIANS_PER_DEGREE, 0, 0));
+                        .cuboid(-0.5F, -12, -0.5F, 1, 4, 1, dilation), ModelTransform.rotation(29 * MathHelper.RADIANS_PER_DEGREE, 0, 0));
             head.addChild("magic", ModelPartBuilder.create()
                     .uv(0, 3)
-                    .cuboid(-0.5F, -11, -3.5F, 1, 4, 1, dilation.add(0.5F)), ModelTransform.rotation(29 * MathHelper.RADIANS_PER_DEGREE, 0, 0));
+                    .cuboid(-0.5F, -12, -0.5F, 1, 4, 1, dilation.add(0.5F)), ModelTransform.rotation(29 * MathHelper.RADIANS_PER_DEGREE, 0, 0));
 
             return TexturedModelData.of(data, 64, 64);
         }
