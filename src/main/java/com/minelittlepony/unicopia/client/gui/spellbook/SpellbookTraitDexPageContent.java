@@ -114,16 +114,13 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
 
                 boolean known = Pony.of(MinecraftClient.getInstance().player).getDiscoveries().isKnown(trait);
 
-                // TODO: Kirin's scrollbars in 1.19.4 are kind of jank
-                final int fixForPositionalBug = 8;
-
-                addButton(new TraitButton(width / 2 - 8 - fixForPositionalBug, 8 + fixForPositionalBug, trait));
-                addButton(new Label(width / 2 - fixForPositionalBug, 26 + fixForPositionalBug).setCentered())
+                addButton(new TraitButton(width / 2 - 8, 8, trait));
+                addButton(new Label(width / 2, 26).setCentered())
                     .getStyle()
                         .setText(known ? Text.translatable("gui.unicopia.trait.label",
                                 Text.translatable("trait." + trait.getId().getNamespace() + "." + trait.getId().getPath() + ".name")
                 ) : Text.literal("???"));
-                IngredientTree tree = new IngredientTree(-fixForPositionalBug, 50 + fixForPositionalBug, width + 18).noLabels();
+                IngredientTree tree = new IngredientTree(0, 50, width + 18).noLabels();
 
                 List<Item> knownItems = Pony.of(MinecraftClient.getInstance().player).getDiscoveries().getKnownItems(trait).toList();
                 SpellTraits.getItems(trait)

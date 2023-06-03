@@ -70,17 +70,15 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
         getContentPadding().bottom = 30;
 
         if (state.getOffset() == 1) {
-            // TODO: Kirin's scrollbars in 1.19.4 are kind of jank
-            final int fixForPositionalBug = 10;
-            int top = 0 + fixForPositionalBug;
+            int top = 0;
             for (SpellbookRecipe recipe : this.client.world.getRecipeManager().listAllOfType(URecipes.SPELLBOOK)) {
                 if (client.player.getRecipeBook().contains(recipe)) {
-                    IngredientTree tree = new IngredientTree(-fixForPositionalBug, top, width - verticalScrollbar.getBounds().width + 2);
+                    IngredientTree tree = new IngredientTree(0, top, width - verticalScrollbar.getBounds().width + 2);
                     recipe.buildCraftingTree(tree);
                     top += tree.build(this);
                 }
             }
-            if (top == 0 + fixForPositionalBug) {
+            if (top == 0) {
                 addButton(new Label(width / 2, 0).setCentered()).getStyle().setText("gui.unicopia.spellbook.page.recipes.empty");
             }
         }

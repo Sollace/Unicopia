@@ -170,9 +170,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             context.drawTexture(TEXTURE, bounds.left, bounds.top, isRight ? 510 - bounds.width : 402, v, bounds.width, bounds.height, 512, 256);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            RenderSystem.setShaderTexture(0, tab.icon().get());
-            context.drawTexture(TEXTURE, isRight ? bounds.left + bounds.width - 16 - 10 : bounds.left + 10, bounds.top + (bounds.height - 16) / 2, 0, 0, 16, 16, 16, 16);
-            RenderSystem.setShaderTexture(0, TEXTURE);
+            context.drawTexture(tab.icon().get(), isRight ? bounds.left + bounds.width - 16 - 10 : bounds.left + 10, bounds.top + (bounds.height - 16) / 2, 0, 0, 16, 16, 16, 16);
         });
 
         MatrixStack matrices = context.getMatrices();
