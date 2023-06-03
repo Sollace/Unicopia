@@ -15,6 +15,8 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 
 public interface ItemGroupRegistry {
     Map<RegistryKey<ItemGroup>, Set<Item>> REGISTRY = new HashMap<>();
@@ -37,7 +39,7 @@ public interface ItemGroupRegistry {
             items.get().forEach(item -> {
                 entries.addAll(ItemGroupRegistry.getVariations(item));
             });
-        }).icon(icon).build());
+        }).icon(icon).displayName(Text.translatable(Util.createTranslationKey("itemGroup", key.getValue()))).build());
         return key;
     }
 

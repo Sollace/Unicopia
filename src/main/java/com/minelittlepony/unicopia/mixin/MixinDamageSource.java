@@ -1,10 +1,8 @@
 package com.minelittlepony.unicopia.mixin;
 
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.Living;
@@ -40,18 +38,17 @@ abstract class MixinDamageSource {
     }
 }
 
-@Mixin(DamageTracker.class)
-abstract class MixinDamageTracker {
-    @Shadow
-    private @Final LivingEntity entity;
-    @Nullable
-    private String fallDeathSuffix;
-
-    @Inject(method = "setFallDeathSuffix", at = @At("RETURN"))
-    private void onSetFallDeathSuffix(CallbackInfo info) {
+@Mixin(FallLocation.class)
+abstract class MixinFallLocation {
+    @Inject(method = "fromEntity", at = @At("RETURN"))
+    private static void onFromEntity(LivingEntity entity, CallbackInfoReturnable<FallLocation> info) {
+        FallLocation location = info.getReturnValue();
+        if (location == null) {
+            return;
+        }
         Pony.of(entity).ifPresent(pony -> {
             if (pony.getSpecies().canFly()) {
-                fallDeathSuffix = (fallDeathSuffix == null ? "" : fallDeathSuffix + ".") + "pegasus";
+                info.setReturnValue(new FallLocation(location.id() + ".pegasus"));
             }
         });
     }
