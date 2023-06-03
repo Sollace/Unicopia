@@ -124,8 +124,7 @@ public class UHud {
         slots.forEach(slot -> slot.renderBackground(context, abilities, swap, tickDelta));
 
         if (pony.getObservedSpecies().canCast()) {
-            AbilitySlot slot = swap ? AbilitySlot.PASSIVE : AbilitySlot.PRIMARY;
-            Ability<?> ability = pony.getAbilities().getStat(slot)
+            Ability<?> ability = pony.getAbilities().getStat(AbilitySlot.PRIMARY)
                     .getAbility(Unicopia.getConfig().hudPage.get())
                     .orElse(null);
 
@@ -134,7 +133,7 @@ public class UHud {
                 matrices.translate(PRIMARY_SLOT_SIZE / 2F, PRIMARY_SLOT_SIZE / 2F, 0);
                 boolean first = !pony.asEntity().isSneaking();
                 TypedActionResult<CustomisedSpellType<?>> inHand = pony.getCharms().getSpellInHand(false);
-                boolean replacing = inHand.getResult().isAccepted() && pony.getAbilities().getStat(slot).getActiveAbility().isEmpty();
+                boolean replacing = inHand.getResult().isAccepted() && pony.getAbilities().getStat(AbilitySlot.PRIMARY).getActiveAbility().isEmpty();
                 if (first != prevPointed || replacing != prevReplacing || inHand.getValue().type() != focusedType) {
                     focusedType = inHand.getValue().type();
                     prevPointed = first;
