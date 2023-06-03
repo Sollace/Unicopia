@@ -37,6 +37,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.*;
 import net.minecraft.world.event.GameEvent;
 
@@ -289,6 +290,11 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     }
                 } else {
                     strafe *= 0.28;
+                }
+
+                if (((LivingEntityDuck)entity).isJumping()) {
+                    velocity.y -= 0.2F * getGravitySignum();
+                    velocity.y /= 2F;
                 }
             } else {
                 prevStrafe = 0;
