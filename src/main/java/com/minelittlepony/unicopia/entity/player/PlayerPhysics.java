@@ -327,9 +327,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 }
             }
 
-            // TODO: Probably wrong. Need to redo this
-            entity.limbAnimator.setSpeed(20 + (float)Math.cos(entity.age / 7F) - 0.5F);
-            entity.limbAnimator.updateLimbs(thrustScale, 1);
+            LimbAnimationUtil.resetToZero(entity.limbAnimator);
         }
     }
 
