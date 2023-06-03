@@ -36,7 +36,7 @@ public class ChickenBehaviour extends EntityBehaviour<ChickenEntity> {
                             player.asEntity().getInventory().removeStack(slot, 1);
                             entity.playSound(SoundEvents.ENTITY_CHICKEN_EGG,
                                     1,
-                                    (entity.world.random.nextFloat() - entity.world.random.nextFloat()) * 0.2F + 4
+                                    (entity.getWorld().random.nextFloat() - entity.getWorld().random.nextFloat()) * 0.2F + 4
                             );
                             entity.equipStack(EquipmentSlot.OFFHAND, egg);
                         }

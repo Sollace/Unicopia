@@ -17,6 +17,10 @@ public record MsgSpellbookStateChanged<T extends PlayerEntity> (
         SpellbookState state
     ) implements HandledPacket<T> {
 
+    public static <T extends PlayerEntity> MsgSpellbookStateChanged<T> create(SpellbookScreenHandler handler, SpellbookState state) {
+        return new MsgSpellbookStateChanged<>(handler.syncId, state);
+    }
+
     public MsgSpellbookStateChanged(PacketByteBuf buffer) {
         this(buffer.readInt(), new SpellbookState().fromPacket(buffer));
     }

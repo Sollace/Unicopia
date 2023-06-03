@@ -9,7 +9,7 @@ public class BeeBehaviour extends EntityBehaviour<BeeEntity> {
     @Override
     public BeeEntity onCreate(BeeEntity entity, EntityAppearance context, boolean replaceOld) {
         super.onCreate(entity, context, replaceOld);
-        if (replaceOld && entity.world.isClient) {
+        if (replaceOld && entity.getWorld().isClient) {
             InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_BEE, entity.getId());
         }
         return entity;

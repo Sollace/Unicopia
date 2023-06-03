@@ -13,8 +13,8 @@ import com.minelittlepony.unicopia.util.RegistryIndexer;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -81,7 +81,7 @@ public class SettingsScreen extends GameGui {
             row += 20;
             content.addButton(new Label(LEFT, row)).getStyle().setText("unicopia.options.world");
 
-            WorldTribeManager tribes = WorldTribeManager.forWorld((ServerWorld)server.getPlayerManager().getPlayer(MinecraftClient.getInstance().player.getUuid()).world);
+            WorldTribeManager tribes = WorldTribeManager.forWorld((ServerWorld)server.getPlayerManager().getPlayer(MinecraftClient.getInstance().player.getUuid()).getWorld());
 
             content.addButton(new Slider(LEFT, row += 20, 0, races.size(), races.indexOf(tribes.getDefaultRace())))
                     .onChange(races.createSetter(tribes::setDefaultRace))
@@ -105,10 +105,10 @@ public class SettingsScreen extends GameGui {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
-        renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, tickDelta);
-        content.render(matrices, mouseX, mouseY, tickDelta);
+    public void render(DrawContext context, int mouseX, int mouseY, float tickDelta) {
+        renderBackground(context);
+        super.render(context, mouseX, mouseY, tickDelta);
+        content.render(context, mouseX, mouseY, tickDelta);
     }
 
     @Override

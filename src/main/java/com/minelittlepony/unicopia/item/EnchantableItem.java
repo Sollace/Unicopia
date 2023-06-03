@@ -45,7 +45,7 @@ public interface EnchantableItem extends ItemConvertible {
             return TypedActionResult.fail(SpellType.EMPTY_KEY.withTraits());
         }
 
-        if (!player.world.isClient && consume) {
+        if (!player.getWorld().isClient && consume) {
             player.swingHand(player.getStackInHand(Hand.OFF_HAND) == stack ? Hand.OFF_HAND : Hand.MAIN_HAND);
             player.getItemCooldownManager().set(stack.getItem(), 20);
 

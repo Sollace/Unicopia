@@ -86,7 +86,7 @@ class TraitCommand {
         if (source.getPlayer() == player) {
             player.sendMessage(Text.translatable(translationKey, gravity), false);
         } else {
-            source.sendFeedback(Text.translatable(translationKey + ".other", player.getName(), gravity), true);
+            source.sendFeedback(() -> Text.translatable(translationKey + ".other", player.getName(), gravity), true);
         }
 
         return 0;

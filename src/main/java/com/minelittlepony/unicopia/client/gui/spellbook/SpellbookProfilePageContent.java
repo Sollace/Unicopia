@@ -9,14 +9,14 @@ import com.sollace.romanizer.api.Romanizer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
-public class SpellbookProfilePageContent extends DrawableHelper implements SpellbookChapterList.Content {
+public class SpellbookProfilePageContent implements SpellbookChapterList.Content {
     private final MinecraftClient client = MinecraftClient.getInstance();
     private final Pony pony = Pony.of(client.player);
     private final TextRenderer font = client.textRenderer;
@@ -63,7 +63,7 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
     }
 
     @Override
-    public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
+    public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
 
         int y = SpellbookScreen.TITLE_Y;
 
@@ -72,8 +72,8 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
         float currentScaledLevel = pony.getLevel().getScaled(1);
         float currentCorruption = pony.getCorruption().getScaled(1);
 
-        DrawableUtil.drawScaledText(matrices, pony.asEntity().getName(), SpellbookScreen.TITLE_X, y, 1.3F, SpellbookScreen.TITLE_COLOR);
-        DrawableUtil.drawScaledText(matrices, ExperienceGroup.forLevel(
+        DrawableUtil.drawScaledText(context, pony.asEntity().getName(), SpellbookScreen.TITLE_X, y, 1.3F, SpellbookScreen.TITLE_COLOR);
+        DrawableUtil.drawScaledText(context, ExperienceGroup.forLevel(
                 currentScaledLevel,
                 currentCorruption
         ), SpellbookScreen.TITLE_X, y + 13, 0.8F,
@@ -85,10 +85,11 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
 
         MagicReserves reserves = pony.getMagicalReserves();
 
+        MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(screen.getBackgroundWidth() / 2 + SpellbookScreen.TITLE_X - 10, y, 0);
         matrices.scale(1.3F, 1.3F, 1);
-        font.draw(matrices, SpellbookCraftingPageContent.INVENTORY_TITLE, 0, 0, SpellbookScreen.TITLE_COLOR);
+        context.drawText(font, SpellbookCraftingPageContent.INVENTORY_TITLE, 0, 0, SpellbookScreen.TITLE_COLOR, false);
         matrices.pop();
 
         Bounds bounds = screen.getFrameBounds();
@@ -139,26 +140,26 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
         String manaString = (int)reserves.getMana().get() + "/" + (int)reserves.getMana().getMax();
 
         y = 15;
-        font.draw(matrices, "Mana", -font.getWidth("Mana") / 2, y, SpellbookScreen.TITLE_COLOR);
-        font.draw(matrices, manaString, -font.getWidth(manaString) / 2, y += font.fontHeight, SpellbookScreen.TITLE_COLOR);
+        context.drawText(font, "Mana", -font.getWidth("Mana") / 2, y, SpellbookScreen.TITLE_COLOR, false);
+        context.drawText(font, manaString, -font.getWidth(manaString) / 2, y += font.fontHeight, SpellbookScreen.TITLE_COLOR, false);
 
         Text levelString = Text.literal(Romanizer.romanize(currentLevel + 1));
 
         matrices.translate(-font.getWidth(levelString), -35, 0);
         matrices.scale(2F, 2F, 1);
-        font.draw(matrices, levelString, 0, 0, SpellbookScreen.TITLE_COLOR);
+        context.drawText(font, levelString, 0, 0, SpellbookScreen.TITLE_COLOR, false);
         matrices.pop();
 
         matrices.push();
         matrices.translate(-screen.getX(), -screen.getY(), 0);
-        screen.drawSlots(matrices, mouseX, mouseY, 0);
+        screen.drawSlots(context, mouseX, mouseY, 0);
         matrices.pop();
     }
 
-    static void drawBar(MatrixStack matrices, int x, int y, float value, int color) {
+    static void drawBar(DrawContext context, int x, int y, float value, int color) {
         int barWidth = 40;
         int midpoint = x + (int)(barWidth * value);
-        fill(matrices, x, y, midpoint, y + 5, 0xFFAAFFFF);
-        fill(matrices, midpoint, y, x + barWidth, y + 5, color);
+        context.fill(x, y, midpoint, y + 5, 0xFFAAFFFF);
+        context.fill(midpoint, y, x + barWidth, y + 5, color);
     }
 }

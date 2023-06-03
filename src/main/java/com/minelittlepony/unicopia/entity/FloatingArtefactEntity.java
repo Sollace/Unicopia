@@ -98,7 +98,7 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
             setStack(UItems.EMPTY_JAR.getDefaultStack());
         }
 
-        if (world.isClient) {
+        if (getWorld().isClient) {
             float spin = getSpin();
             if (Math.abs(spin - targetSpin) > 1.0E-5F) {
                 spinChange = spin - targetSpin;
@@ -129,7 +129,7 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
             ((Artifact)stack.getItem()).onArtifactTick(this);
         }
 
-        if (world.getTime() % 80 == 0) {
+        if (getWorld().getTime() % 80 == 0) {
             State state = getState();
             playSound(USounds.ENTITY_ARTEFACT_AMBIENT, state.getVolume(), state.getPitch());
         }
@@ -193,7 +193,7 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
 
     @Override
     public World asWorld() {
-        return world;
+        return getWorld();
     }
 
     public enum State {

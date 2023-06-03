@@ -41,7 +41,7 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
     @Override
     public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
         if (!projectile.isClient() && projectile.canModifyAt(hit.getBlockPos())) {
-            createBlockEntity(projectile.world, hit.getBlockPos(), e -> apply(projectile, e));
+            createBlockEntity(projectile.getWorld(), hit.getBlockPos(), e -> apply(projectile, e));
         }
     }
 

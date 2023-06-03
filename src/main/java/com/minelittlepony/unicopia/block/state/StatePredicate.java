@@ -20,6 +20,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.world.World;
 
@@ -123,11 +124,11 @@ public abstract class StatePredicate implements Predicate<BlockState> {
     }
 
     static boolean isWater(BlockState s) {
-        return s.getMaterial() == Material.WATER;
+        return s.isLiquid() && s.getFluidState().isIn(FluidTags.WATER);
     }
 
     static boolean isLava(BlockState s) {
-        return s.getMaterial() == Material.LAVA;
+        return s.isLiquid() && s.getFluidState().isIn(FluidTags.LAVA);
     }
 
     public static Predicate<BlockState> ofState(String state) {

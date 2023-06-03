@@ -11,7 +11,7 @@ public class TraderBehaviour extends EntityBehaviour<MerchantEntity> {
         if (pony.sneakingChanged() && pony.asEntity().isSneaking()) {
             entity.setHeadRollingTimeLeft(40);
 
-            if (!entity.world.isClient()) {
+            if (!entity.getWorld().isClient()) {
                entity.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1, 1);
             }
         }

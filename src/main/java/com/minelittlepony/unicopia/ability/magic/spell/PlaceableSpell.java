@@ -131,8 +131,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         }
         entity.getSpellSlot().put(copy);
         entity.setCaster(source);
-        entity.world.spawnEntity(entity);
-        Ether.get(entity.world).put(getType(), entity);
+        entity.getWorld().spawnEntity(entity);
+        Ether.get(entity.getWorld()).put(getType(), entity);
 
         castEntity.set(entity);
         setDirty();

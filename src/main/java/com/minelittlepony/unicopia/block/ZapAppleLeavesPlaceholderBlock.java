@@ -10,7 +10,7 @@ import net.minecraft.util.math.random.Random;
 public class ZapAppleLeavesPlaceholderBlock extends AirBlock {
 
     ZapAppleLeavesPlaceholderBlock() {
-        super(AbstractBlock.Settings.of(Material.AIR).noCollision().dropsNothing().air());
+        super(Settings.create().replaceable().noCollision().dropsNothing().air());
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.RecipeSerializer;
@@ -16,7 +16,7 @@ public class GlowingRecipe extends ItemCombinationRecipe {
     }
 
     @Override
-    public final ItemStack craft(CraftingInventory inventory, DynamicRegistryManager registries) {
+    public final ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
         Pair<ItemStack, ItemStack> pair = runMatch(inventory);
 
         ItemStack result = pair.getLeft().copy();

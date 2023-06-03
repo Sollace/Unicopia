@@ -75,8 +75,8 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
 
     @Override
     protected boolean isValidTarget(Caster<?> source, Entity entity) {
-        if (target.isPresent(entity.world)) {
-            return target.get(entity.world) == entity;
+        if (target.referenceEquals(entity)) {
+            return true;
         }
         return getTraits().get(Trait.KNOWLEDGE) > 10 ? entity instanceof ItemEntity : super.isValidTarget(source, entity);
     }
@@ -114,7 +114,7 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
             z = 0;
         }
 
-        if (this.target.get(target.world) == target) {
+        if (this.target.referenceEquals(target)) {
             target.fallDistance = 0;
 
             if (target.isOnGround()) {

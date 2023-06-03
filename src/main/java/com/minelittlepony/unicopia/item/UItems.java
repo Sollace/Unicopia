@@ -20,6 +20,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.Registries;
 
 public interface UItems {
@@ -137,7 +138,7 @@ public interface UItems {
     Item BAT_BADGE = register(Race.BAT);
     Item CHANGELING_BADGE = register(Race.CHANGELING);
 
-    static <T extends Item> T register(String name, T item, ItemGroup group) {
+    static <T extends Item> T register(String name, T item, RegistryKey<ItemGroup> group) {
         return ItemGroupRegistry.register(register(name, item), group);
     }
 

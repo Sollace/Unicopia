@@ -80,7 +80,7 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
 
         if (isAirworthy()) {
             setVelocity(getVelocity()
-                    .add(getWind(world, getBlockPos()))
+                    .add(getWind(getWorld(), getBlockPos()))
                     .normalize()
                     .multiply(0.2)
                     .add(0, isBurnerActive() ? 0.00F : isTouchingWater() ? 0.02F : -0.06F, 0));
@@ -112,15 +112,15 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
         if (velocityBeforeTick.length() > 0.01 && !isSubmergedInWater()) {
             Box box = getInteriorBoundingBox();
 
-            for (Entity e : world.getOtherEntities(this, box.expand(-0.2, 1, -0.2))) {
-                updatePassenger(e, box, !onGround);
+            for (Entity e : getWorld().getOtherEntities(this, box.expand(-0.2, 1, -0.2))) {
+                updatePassenger(e, box, !isOnGround());
                 weight++;
             }
 
             if (hasBalloon()) {
                 Box balloonBox = getBalloonBoundingBox();
 
-                for (Entity e : world.getOtherEntities(this, balloonBox.expand(1.0E-7))) {
+                for (Entity e : getWorld().getOtherEntities(this, balloonBox.expand(1.0E-7))) {
                     updatePassenger(e, balloonBox, false);
                 }
             }

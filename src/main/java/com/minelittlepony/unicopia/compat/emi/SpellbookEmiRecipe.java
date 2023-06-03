@@ -18,7 +18,7 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.TextureWidget;
 import dev.emi.emi.api.widget.WidgetHolder;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
@@ -120,9 +120,9 @@ class SpellbookEmiRecipe implements EmiRecipe, SpellbookRecipe.CraftingTreeBuild
         }
 
         @Override
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        public void render(DrawContext context, int mouseX, int mouseY, float delta) {
             RenderSystem.enableBlend();
-            super.render(matrices, mouseX, mouseY, delta);
+            context.drawTexture(texture, x, y, 0, u, v, width, height, textureWidth, textureHeight);
         }
     }
 }

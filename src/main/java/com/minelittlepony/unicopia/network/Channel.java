@@ -35,7 +35,7 @@ public interface Channel {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             Pony pony = Pony.of(handler.player);
             if (pony.getActualSpecies() == Race.UNSET) {
-                Race race = WorldTribeManager.forWorld(handler.player.getWorld()).getDefaultRace();
+                Race race = WorldTribeManager.forWorld(handler.player.getServerWorld()).getDefaultRace();
                 if (!race.isPermitted(handler.player)) {
                     race = Race.UNSET;
                 }

@@ -16,7 +16,7 @@ import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
 import net.minecraft.sound.SoundEvents;
@@ -24,7 +24,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
-public class SpellbookTraitDexPageContent extends DrawableHelper implements SpellbookChapterList.Content, SpellbookScreen.RecipesChangedListener {
+public class SpellbookTraitDexPageContent implements SpellbookChapterList.Content, SpellbookScreen.RecipesChangedListener {
     private final Trait[] traits = Trait.values();
     private SpellbookState.PageState state = new SpellbookState.PageState();
 
@@ -40,7 +40,7 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
     }
 
     @Override
-    public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
+    public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
 
     }
 
@@ -144,42 +144,42 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
 
 
         @Override
-        public void drawOverlays(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
+        public void drawOverlays(DrawContext context, int mouseX, int mouseY, float tickDelta) {
+            MatrixStack matrices = context.getMatrices();
             matrices.push();
             matrices.translate(margin.left, margin.top, 0);
             matrices.translate(-2, -2, 200);
             RenderSystem.enableBlend();
-            RenderSystem.setShaderTexture(0, SpellbookScreen.TEXTURE);
             int tileSize = 25;
 
             final int bottom = height - tileSize + 4;
             final int right = width - tileSize + 9;
 
-            drawTexture(matrices, 0, 0, 405, 62, tileSize, tileSize, 512, 256);
-            drawTexture(matrices, 0, bottom, 405, 72, tileSize, tileSize, 512, 256);
+            context.drawTexture(SpellbookScreen.TEXTURE, 0, 0, 405, 62, tileSize, tileSize, 512, 256);
+            context.drawTexture(SpellbookScreen.TEXTURE, 0, bottom, 405, 72, tileSize, tileSize, 512, 256);
 
             for (int i = tileSize; i < right; i += tileSize) {
-                drawTexture(matrices, i, 0, 415, 62, tileSize, tileSize, 512, 256);
-                drawTexture(matrices, i, bottom, 415, 72, tileSize, tileSize, 512, 256);
+                context.drawTexture(SpellbookScreen.TEXTURE, i, 0, 415, 62, tileSize, tileSize, 512, 256);
+                context.drawTexture(SpellbookScreen.TEXTURE, i, bottom, 415, 72, tileSize, tileSize, 512, 256);
             }
 
             for (int i = tileSize; i < bottom; i += tileSize) {
-                drawTexture(matrices, 0, i, 405, 67, tileSize, tileSize, 512, 256);
-                drawTexture(matrices, right, i, 425, 67, tileSize, tileSize, 512, 256);
+                context.drawTexture(SpellbookScreen.TEXTURE, 0, i, 405, 67, tileSize, tileSize, 512, 256);
+                context.drawTexture(SpellbookScreen.TEXTURE, right, i, 425, 67, tileSize, tileSize, 512, 256);
             }
 
-            drawTexture(matrices, right, 0, 425, 62, tileSize, tileSize, 512, 256);
-            drawTexture(matrices, right, bottom, 425, 72, tileSize, tileSize, 512, 256);
+            context.drawTexture(SpellbookScreen.TEXTURE, right, 0, 425, 62, tileSize, tileSize, 512, 256);
+            context.drawTexture(SpellbookScreen.TEXTURE, right, bottom, 425, 72, tileSize, tileSize, 512, 256);
             matrices.pop();
 
             if (this == rightPage) {
-                leftPage.drawDelayed(matrices, mouseX, mouseY, 0);
-                rightPage.drawDelayed(matrices, mouseX, mouseY, 0);
+                leftPage.drawDelayed(context, mouseX, mouseY, 0);
+                rightPage.drawDelayed(context, mouseX, mouseY, 0);
             }
         }
 
-        public void drawDelayed(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
-            super.drawOverlays(matrices, mouseX, mouseY, tickDelta);
+        public void drawDelayed(DrawContext context, int mouseX, int mouseY, float tickDelta) {
+            super.drawOverlays(context, mouseX, mouseY, tickDelta);
         }
     }
 
@@ -199,24 +199,23 @@ public class SpellbookTraitDexPageContent extends DrawableHelper implements Spel
         }
 
         @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
+        public void renderButton(DrawContext context, int mouseX, int mouseY, float tickDelta) {
             TraitDiscovery discoveries = Pony.of(MinecraftClient.getInstance().player).getDiscoveries();
             setEnabled(discoveries.isKnown(trait));
 
             RenderSystem.setShaderColor(1, 1, 1, 1);
-            RenderSystem.setShaderTexture(0, SpellbookScreen.TEXTURE);
             RenderSystem.enableBlend();
-            drawTexture(matrices, getX() - 2, getY() - 8, 204, 219, 22, 32, 512, 256);
+            context.drawTexture(SpellbookScreen.TEXTURE, getX() - 2, getY() - 8, 204, 219, 22, 32, 512, 256);
 
             if (!active) {
-                drawTexture(matrices, getX() - 2, getY() - 1, 74, 223, 18, 18, 512, 256);
+                context.drawTexture(SpellbookScreen.TEXTURE, getX() - 2, getY() - 1, 74, 223, 18, 18, 512, 256);
             }
 
             if (discoveries.isUnread(trait)) {
-                drawTexture(matrices, getX() - 8, getY() - 8, 225, 219, 35, 32, 512, 256);
+                context.drawTexture(SpellbookScreen.TEXTURE, getX() - 8, getY() - 8, 225, 219, 35, 32, 512, 256);
             }
 
-            super.renderButton(matrices, mouseX, mouseY, tickDelta);
+            super.renderButton(context, mouseX, mouseY, tickDelta);
             hovered &= active;
         }
 

@@ -25,7 +25,7 @@ class ItemPhysics extends EntityPhysics<ItemEntity> {
 
                 float above = 0.98f;
                 if (entity.verticalCollision) {
-                   above *= entity.world.getBlockState(entity.getBlockPos().up()).getBlock().getSlipperiness();
+                   above *= entity.getWorld().getBlockState(entity.getBlockPos().up()).getBlock().getSlipperiness();
                    //above /= 9;
                 }
 
@@ -36,8 +36,8 @@ class ItemPhysics extends EntityPhysics<ItemEntity> {
 
     @Override
     protected void onGravitychanged() {
-        if (!entity.world.isClient) {
-            float gravity = this.getBaseGravityModifier();
+        if (!entity.getWorld().isClient) {
+            float gravity = getBaseGravityModifier();
             setBaseGravityModifier(gravity == 0 ? 1 : gravity * 2);
             setBaseGravityModifier(gravity);
         }

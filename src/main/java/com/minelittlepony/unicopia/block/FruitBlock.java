@@ -6,8 +6,10 @@ import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
 
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.block.*;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
@@ -30,7 +32,7 @@ public class FruitBlock extends Block implements Buckable {
     }
 
     public FruitBlock(Settings settings, Direction attachmentFace, Block stem, VoxelShape shape) {
-        this(settings, attachmentFace, stem, shape, true);
+        this(settings.sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY), attachmentFace, stem, shape, true);
     }
 
     public FruitBlock(Settings settings, Direction attachmentFace, Block stem, VoxelShape shape, boolean flammable) {

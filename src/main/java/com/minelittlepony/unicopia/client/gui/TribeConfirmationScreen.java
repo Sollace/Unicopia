@@ -6,10 +6,9 @@ import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.unicopia.Race;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 
@@ -82,10 +81,8 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackground(matrices);
-
-        RenderSystem.setShaderTexture(0, TribeSelectionScreen.TEXTURE);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        renderBackground(context);
 
         final int columnHeight = 180;
         final int columnWidth = 310;
@@ -98,23 +95,23 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
 
         final int zOffset = 0;
 
-        drawTexture(matrices, left + zOffset, top, 0, 70, 123, columnHeight);
+        context.drawTexture(TribeSelectionScreen.TEXTURE, left + zOffset, top, 0, 70, 123, columnHeight);
 
-        drawTexture(matrices, left + segmentWidth + zOffset, top, 20, 70, 123, columnHeight);
+        context.drawTexture(TribeSelectionScreen.TEXTURE, left + segmentWidth + zOffset, top, 20, 70, 123, columnHeight);
 
-        drawTexture(matrices, width - left - segmentWidth + zOffset, top, 10, 70, 123, columnHeight);
+        context.drawTexture(TribeSelectionScreen.TEXTURE, width - left - segmentWidth + zOffset, top, 10, 70, 123, columnHeight);
 
         top -= 31;
 
         left = width / 2;
 
-        drawTexture(matrices, left - 55, top, 140, 70, 21, 50);
+        context.drawTexture(TribeSelectionScreen.TEXTURE, left - 55, top, 140, 70, 21, 50);
 
-        drawTexture(matrices, left - 35, top, 10, 70, 69, 50);
+        context.drawTexture(TribeSelectionScreen.TEXTURE, left - 35, top, 10, 70, 69, 50);
 
-        drawTexture(matrices, left + 35, top, 148, 70, 21, 50);
+        context.drawTexture(TribeSelectionScreen.TEXTURE, left + 35, top, 148, 70, 21, 50);
 
-        super.render(matrices, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
     }
 
     @Override

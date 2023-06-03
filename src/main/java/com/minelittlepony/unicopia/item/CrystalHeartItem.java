@@ -106,18 +106,18 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
             entity.addSpin(2, 10);
 
             BlockPos pos = entity.getBlockPos();
-            entity.world.addParticle(ParticleTypes.COMPOSTER,
-                    pos.getX() + entity.world.getRandom().nextFloat(),
-                    pos.getY() + entity.world.getRandom().nextFloat(),
-                    pos.getZ() + entity.world.getRandom().nextFloat(),
+            entity.getWorld().addParticle(ParticleTypes.COMPOSTER,
+                    pos.getX() + entity.getWorld().getRandom().nextFloat(),
+                    pos.getY() + entity.getWorld().getRandom().nextFloat(),
+                    pos.getZ() + entity.getWorld().getRandom().nextFloat(),
                     0, 0, 0);
 
-            if (entity.world.getTime() % 80 == 0 && !entity.world.isClient) {
+            if (entity.getWorld().getTime() % 80 == 0 && !entity.getWorld().isClient) {
                 List<LivingEntity> inputs = new ArrayList<>();
                 List<LivingEntity> outputs = new ArrayList<>();
                 List<ItemEntity> containers = new ArrayList<>();
 
-                VecHelper.findInRange(entity, entity.world, entity.getPos(), 20, TARGET_PREDICATE).forEach(e -> {
+                VecHelper.findInRange(entity, entity.getWorld(), entity.getPos(), 20, TARGET_PREDICATE).forEach(e -> {
                     LivingEntity living = (LivingEntity)e;
 
                     if (e instanceof PlayerEntity
@@ -130,7 +130,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                         inputs.add(living);
                     }
                 });
-                VecHelper.findInRange(entity, entity.world, entity.getPos(), 20, i -> {
+                VecHelper.findInRange(entity, entity.getWorld(), entity.getPos(), 20, i -> {
                     return i instanceof ItemEntity ie && isFillable(ie.getStack()) && Equine.of(i).filter(p -> p.getSpecies() == Race.CHANGELING).isPresent();
                 }).forEach(i -> containers.add((ItemEntity)i));
 
@@ -177,7 +177,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
     @Override
     public ActionResult onArtifactDestroyed(FloatingArtefactEntity entity) {
         entity.playSound(USounds.ENTITY_CRYSTAL_HEART_DEACTIVATE, 0.75F, 1);
-        entity.dropStack(new ItemStack(UItems.CRYSTAL_SHARD, 1 + entity.world.random.nextInt(5)), 0);
+        entity.dropStack(new ItemStack(UItems.CRYSTAL_SHARD, 1 + entity.getWorld().random.nextInt(5)), 0);
         return ActionResult.SUCCESS;
     }
 
@@ -188,13 +188,13 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
     private boolean findPyramid(FloatingArtefactEntity entity, Direction direction) {
 
         BlockPos tip = entity.getBlockPos().offset(direction);
-        BlockState tipState = entity.world.getBlockState(tip);
+        BlockState tipState = entity.getWorld().getBlockState(tip);
         if (!tipState.isIn(UTags.CRYSTAL_HEART_ORNAMENT) || (!tipState.contains(EndRodBlock.FACING)|| tipState.get(EndRodBlock.FACING) != direction.getOpposite())) {
             return false;
         }
 
         tip = tip.offset(direction);
-        if (!isDiamond(entity.world.getBlockState(tip))) {
+        if (!isDiamond(entity.getWorld().getBlockState(tip))) {
             return false;
         }
         tip = tip.offset(direction);
@@ -203,7 +203,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
 
         return BlockPos.streamOutwards(center, 1, 0, 1)
                 .filter(p -> p.getX() == center.getX() || p.getZ() == center.getZ())
-                .map(entity.world::getBlockState)
+                .map(entity.getWorld()::getBlockState)
                 .allMatch(this::isDiamond);
     }
 

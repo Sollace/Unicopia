@@ -22,7 +22,7 @@ public interface DynamicLightSource {
 
         @SuppressWarnings("deprecation")
         void tick() {
-            if (entity.world.isClient) {
+            if (entity.getWorld().isClient) {
                 if (entity.isRemoved()) {
                     remove();
                     return;
@@ -36,12 +36,13 @@ public interface DynamicLightSource {
 
                 BlockPos currentPos = entity.getBlockPos();
 
-                if (!currentPos.equals(lastPos) && entity.world.isChunkLoaded(currentPos)) {
+                if (!currentPos.equals(lastPos) && entity.getWorld().isChunkLoaded(currentPos)) {
                     try {
                         if (lastPos != null) {
-                            entity.world.getLightingProvider().checkBlock(lastPos);
+                            entity.getWorld().getLightingProvider().checkBlock(lastPos);
                         }
-                        entity.world.getLightingProvider().addLightSource(currentPos, light);
+                        // TODO: store this in the ether and inject into Chunk#forEachLightSource
+                        //entity.getWorld().getLightingProvider().addLightSource(currentPos, light);
                         lastPos = currentPos;
                     } catch (Exception ignored) { }
                 }
@@ -49,9 +50,9 @@ public interface DynamicLightSource {
         }
 
         void remove() {
-            if (entity.world.isClient && lastPos != null) {
+            if (entity.getWorld().isClient && lastPos != null) {
                 try {
-                    entity.world.getLightingProvider().checkBlock(lastPos);
+                    entity.getWorld().getLightingProvider().checkBlock(lastPos);
                 } catch (Exception ignored) {}
             }
         }

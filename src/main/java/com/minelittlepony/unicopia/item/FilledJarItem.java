@@ -106,8 +106,8 @@ public class FilledJarItem extends JarItem implements ChameleonItem {
 
                 float healthDiff = prevHealth - ((LivingEntity)entity).getHealth();
 
-                if (projectile.world instanceof ServerWorld && healthDiff > 2) {
-                    ((ServerWorld)projectile.world).spawnParticles(ParticleTypes.DAMAGE_INDICATOR, entity.getX(), entity.getBodyY(0.5D), entity.getZ(), (int)(healthDiff / 2F), 0.1, 0, 0.1, 0.2);
+                if (projectile.getWorld() instanceof ServerWorld && healthDiff > 2) {
+                    ((ServerWorld)projectile.getWorld()).spawnParticles(ParticleTypes.DAMAGE_INDICATOR, entity.getX(), entity.getBodyY(0.5D), entity.getZ(), (int)(healthDiff / 2F), 0.1, 0, 0.1, 0.2);
                 }
             } else {
                 entity.addVelocity(
@@ -125,9 +125,9 @@ public class FilledJarItem extends JarItem implements ChameleonItem {
     @Override
     public void onImpact(MagicProjectileEntity projectile) {
         ItemStack stack = getAppearanceStack(projectile.getStack());
-        stack.damage(1, projectile.world.random, null);
+        stack.damage(1, projectile.getWorld().random, null);
         projectile.dropStack(stack);
-        projectile.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, projectile.getBlockPos(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
+        projectile.getWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, projectile.getBlockPos(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
     }
 
     public ItemStack withContents(ItemStack contents) {

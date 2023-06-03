@@ -7,7 +7,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FrostedIceBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
@@ -34,10 +33,5 @@ public class FrostedObsidianBlock extends FrostedIceBlock {
         }
         world.setBlockState(pos, Blocks.LAVA.getDefaultState());
         world.updateNeighbor(pos, Blocks.LAVA, pos);
-    }
-
-    @Override
-    public PistonBehavior getPistonBehavior(BlockState state) {
-        return PistonBehavior.BLOCK;
     }
 }

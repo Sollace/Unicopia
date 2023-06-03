@@ -79,7 +79,7 @@ public class InteractionManager {
      */
     @NotNull
     public final PlayerEntity createPlayer(Entity observer, GameProfile profile) {
-        return createPlayer(observer.world, profile);
+        return createPlayer(observer.getWorld(), profile);
     }
 
     /**

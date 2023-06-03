@@ -44,32 +44,32 @@ public class JarItem extends ProjectileItem implements ItemImpl.GroundTickCallba
         entity.setInvulnerable(true);
 
         if (!lightning
-                && !entity.world.isClient
+                && !entity.getWorld().isClient
                 && !entity.isRemoved()
                 && entity.getItemAge() > 100
-                && entity.world.isThundering()
-                && entity.world.isSkyVisible(entity.getBlockPos())
-                && entity.world.random.nextInt(130) == 0) {
-            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(entity.world);
+                && entity.getWorld().isThundering()
+                && entity.getWorld().isSkyVisible(entity.getBlockPos())
+                && entity.getWorld().random.nextInt(130) == 0) {
+            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(entity.getWorld());
             lightning.refreshPositionAfterTeleport(entity.getX(), entity.getY(), entity.getZ());
 
             entity.remove(RemovalReason.DISCARDED);
-            entity.world.spawnEntity(lightning);
+            entity.getWorld().spawnEntity(lightning);
 
-            ItemEntity neu = EntityType.ITEM.create(entity.world);
+            ItemEntity neu = EntityType.ITEM.create(entity.getWorld());
             neu.copyPositionAndRotation(entity);
             neu.setStack(new ItemStack(this == UItems.RAIN_CLOUD_JAR ? UItems.STORM_CLOUD_JAR : UItems.LIGHTNING_JAR));
             neu.setInvulnerable(true);
 
-            entity.world.spawnEntity(neu);
+            entity.getWorld().spawnEntity(neu);
 
-            ItemEntity copy = EntityType.ITEM.create(entity.world);
+            ItemEntity copy = EntityType.ITEM.create(entity.getWorld());
             copy.copyPositionAndRotation(entity);
             copy.setInvulnerable(true);
             copy.setStack(entity.getStack());
             copy.getStack().decrement(1);
 
-            entity.world.spawnEntity(copy);
+            entity.getWorld().spawnEntity(copy);
         }
         return ActionResult.PASS;
     }
@@ -81,8 +81,8 @@ public class JarItem extends ProjectileItem implements ItemImpl.GroundTickCallba
 
     @Override
     public void onImpact(MagicProjectileEntity projectile) {
-        if (!projectile.world.isClient()) {
-            ServerWorld world = (ServerWorld)projectile.world;
+        if (!projectile.getWorld().isClient()) {
+            ServerWorld world = (ServerWorld)projectile.getWorld();
 
             if (rain || thunder) {
                 // clear weather time = number of ticks for which the weather is clear
@@ -128,22 +128,22 @@ public class JarItem extends ProjectileItem implements ItemImpl.GroundTickCallba
         }
 
         if (lightning) {
-            ParticleUtils.spawnParticle(projectile.world, UParticles.LIGHTNING_BOLT, projectile.getPos(), Vec3d.ZERO);
+            ParticleUtils.spawnParticle(projectile.getWorld(), UParticles.LIGHTNING_BOLT, projectile.getPos(), Vec3d.ZERO);
         }
 
         if (rain || thunder) {
-            projectile.world.syncWorldEvent(WorldEvents.SPLASH_POTION_SPLASHED, projectile.getBlockPos(), thunder ? 0x888888 : 0xF8F8F8);
+            projectile.getWorld().syncWorldEvent(WorldEvents.SPLASH_POTION_SPLASHED, projectile.getBlockPos(), thunder ? 0x888888 : 0xF8F8F8);
 
-            for (int i = projectile.world.random.nextInt(3) + 1; i >= 0; i--) {
-                ParticleUtils.spawnParticle(projectile.world, UParticles.CLOUDS_ESCAPING,
+            for (int i = projectile.getWorld().random.nextInt(3) + 1; i >= 0; i--) {
+                ParticleUtils.spawnParticle(projectile.getWorld(), UParticles.CLOUDS_ESCAPING,
                         projectile.getX(), projectile.getY(), projectile.getZ(),
-                        projectile.world.random.nextFloat() - 0.5,
+                        projectile.getWorld().random.nextFloat() - 0.5,
                         0,
-                        projectile.world.random.nextFloat() - 0.5
+                        projectile.getWorld().random.nextFloat() - 0.5
                 );
             }
         }
 
-        projectile.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, projectile.getBlockPos(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
+        projectile.getWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, projectile.getBlockPos(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
     }
 }

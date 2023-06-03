@@ -80,7 +80,7 @@ public class SunBlindnessStatusEffect extends StatusEffect {
             return false;
         }
 
-        return isPositionExposedToSun(entity.world, entity.getBlockPos());
+        return isPositionExposedToSun(entity.getWorld(), entity.getBlockPos());
     }
 
     public static boolean isPositionExposedToSun(World world, BlockPos pos) {

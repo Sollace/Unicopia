@@ -30,6 +30,6 @@ public interface EntityConvertable<E extends Entity> extends WorldConvertable {
 
     @Override
     default World asWorld() {
-        return asEntity().world;
+        return asEntity().getWorld();
     }
 }

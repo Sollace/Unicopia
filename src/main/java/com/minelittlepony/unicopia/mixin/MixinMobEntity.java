@@ -36,13 +36,13 @@ abstract class MixinMobEntity extends LivingEntity implements Equine.Container<C
     @Inject(method = "tickNewAi", at = @At("HEAD"))
     public void beforeTickAi(CallbackInfo into) {
         if (get().getPhysics().isGravityNegative()) {
-            ((RotatedView)world).pushRotation((int)getY());
+            ((RotatedView)getWorld()).pushRotation((int)getY());
         }
     }
 
     @Inject(method = "tickNewAi", at = @At("RETURN"))
     public void afterTickAi(CallbackInfo into) {
-        ((RotatedView)world).popRotation();
+        ((RotatedView)getWorld()).popRotation();
     }
 
     @Inject(method = "prefersNewEquipment(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)Z",

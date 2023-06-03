@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.container.SpellbookChapterLoader.Flow;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
@@ -30,17 +31,17 @@ public class DynamicContent implements Content {
     }
 
     @Override
-    public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
+    public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
         int pageIndex = state.getOffset() * 2;
 
-        getPage(pageIndex).ifPresent(page -> page.draw(matrices, mouseX, mouseY, container));
+        getPage(pageIndex).ifPresent(page -> page.draw(context, mouseX, mouseY, container));
 
-        matrices.push();
+        context.getMatrices().push();
         getPage(pageIndex + 1).ifPresent(page -> {
             page.bounds.left = bounds.left + bounds.width / 2 + 20;
-            page.draw(matrices, mouseX, mouseY, container);
+            page.draw(context, mouseX, mouseY, container);
         });
-        matrices.pop();
+        context.getMatrices().pop();
     }
 
     @Override
@@ -123,7 +124,7 @@ public class DynamicContent implements Content {
         }
 
         @Override
-        public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
+        public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
 
             if (elements.isEmpty()) {
                 return;
@@ -142,8 +143,9 @@ public class DynamicContent implements Content {
 
             int headerColor = mouseY % 255;
 
-            DrawableUtil.drawScaledText(matrices, needsMoreXp ? UNKNOWN : title, bounds.left, bounds.top - 10, 1.3F, headerColor);
-            DrawableUtil.drawScaledText(matrices, level < 0 ? UNKNOWN_LEVEL : Text.literal("Level: " + (level + 1)).formatted(Formatting.DARK_GREEN), bounds.left, bounds.top - 10 + 12, 0.8F, headerColor);
+            MatrixStack matrices = context.getMatrices();
+            DrawableUtil.drawScaledText(context, needsMoreXp ? UNKNOWN : title, bounds.left, bounds.top - 10, 1.3F, headerColor);
+            DrawableUtil.drawScaledText(context, level < 0 ? UNKNOWN_LEVEL : Text.literal("Level: " + (level + 1)).formatted(Formatting.DARK_GREEN), bounds.left, bounds.top - 10 + 12, 0.8F, headerColor);
 
             matrices.push();
             matrices.translate(bounds.left, bounds.top + 16, 0);
@@ -151,13 +153,13 @@ public class DynamicContent implements Content {
                 Bounds bounds = element.bounds();
                 matrices.push();
                 bounds.translate(matrices);
-                element.draw(matrices, mouseX, mouseY, container);
+                element.draw(context, mouseX, mouseY, container);
                 matrices.pop();
             });
 
             matrices.push();
             elements.stream().filter(PageElement::isInline).forEach(element -> {
-                element.draw(matrices, mouseX, mouseY, container);
+                element.draw(context, mouseX, mouseY, container);
                 matrices.translate(0, element.bounds().height, 0);
             });
             matrices.pop();

@@ -216,7 +216,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (typeChanged) {
             pony.spawnParticles(ParticleTypes.CLOUD, 10);
 
-            entity.playSound(entity.world.getDimension().ultrawarm() ? USounds.ITEM_ICARUS_WINGS_CORRUPT : USounds.ITEM_ICARUS_WINGS_PURIFY, 0.1125F, 1.5F);
+            entity.playSound(entity.getWorld().getDimension().ultrawarm() ? USounds.ITEM_ICARUS_WINGS_CORRUPT : USounds.ITEM_ICARUS_WINGS_PURIFY, 0.1125F, 1.5F);
         }
 
         entity.getAbilities().allowFlying = type.canFlyCreative(entity);
@@ -285,7 +285,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     ticksToGlide = MAX_TICKS_TO_GLIDE;
                     if (!SpellPredicate.IS_DISGUISE.isOn(pony)) {
                         entity.playSound(type.getWingFlapSound(), 0.25F, 1);
-                        entity.world.emitGameEvent(entity, GameEvent.ELYTRA_GLIDE, entity.getPos());
+                        entity.getWorld().emitGameEvent(entity, GameEvent.ELYTRA_GLIDE, entity.getPos());
                     }
                 } else {
                     strafe *= 0.28;
@@ -345,7 +345,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (type.isAvian()) {
             applyThrust(velocity);
 
-            if (pony.getObservedSpecies() != Race.BAT && entity.world.random.nextInt(9000) == 0) {
+            if (pony.getObservedSpecies() != Race.BAT && entity.getWorld().random.nextInt(9000) == 0) {
                 entity.dropItem(UItems.PEGASUS_FEATHER);
                 entity.playSound(USounds.ENTITY_PLAYER_PEGASUS_MOLT, 0.3F, 1);
                 UCriteria.SHED_FEATHER.trigger(entity);
@@ -355,7 +355,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         moveFlying(velocity);
 
         if (type.isAvian()) {
-            if (entity.world.isClient && ticksInAir % IDLE_FLAP_INTERVAL == 0 && entity.getVelocity().length() < 0.29) {
+            if (entity.getWorld().isClient && ticksInAir % IDLE_FLAP_INTERVAL == 0 && entity.getVelocity().length() < 0.29) {
                 flapping = true;
                 ticksToGlide = MAX_TICKS_TO_GLIDE;
             }
@@ -370,7 +370,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             velocity.x *= 0.9896;
             velocity.z *= 0.9896;
         } else if (type == FlightType.INSECTOID && !SpellPredicate.IS_DISGUISE.isOn(pony)) {
-            if (entity.world.isClient && !soundPlaying) {
+            if (entity.getWorld().isClient && !soundPlaying) {
                 soundPlaying = true;
                 InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_CHANGELING_BUZZ, entity.getId());
             }
@@ -378,17 +378,17 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     private void tickArtificialFlight(MutableVector velocity) {
-        if (ticksInAir % 10 == 0 && !entity.world.isClient) {
+        if (ticksInAir % 10 == 0 && !entity.getWorld().isClient) {
             ItemStack stack = AmuletItem.getForEntity(entity);
 
             int damageInterval = 20;
             int minDamage = 1;
 
             float energyConsumed = 2 + (float)getHorizontalMotion() / 10F;
-            if (entity.world.hasRain(entity.getBlockPos())) {
+            if (entity.getWorld().hasRain(entity.getBlockPos())) {
                 energyConsumed *= 3;
             }
-            if (entity.world.getDimension().ultrawarm()) {
+            if (entity.getWorld().getDimension().ultrawarm()) {
                 energyConsumed *= 4;
                 damageInterval /= 2;
                 minDamage *= 3;
@@ -400,8 +400,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 entity.playSound(USounds.ITEM_ICARUS_WINGS_WARN, 0.13F, 0.5F);
             }
 
-            if (entity.world.random.nextInt(damageInterval) == 0) {
-                stack.damage(minDamage + entity.world.random.nextInt(50), entity, e -> e.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+            if (entity.getWorld().random.nextInt(damageInterval) == 0) {
+                stack.damage(minDamage + entity.getWorld().random.nextInt(50), entity, e -> e.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
             }
 
             if (!getFlightType().canFly()) {
@@ -484,9 +484,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         BlockPos pos = BlockPos.ofFloored(entity.getCameraPosVec(1).add(entity.getRotationVec(1).normalize().multiply(2)));
 
-        BlockState state = entity.world.getBlockState(pos);
+        BlockState state = entity.getWorld().getBlockState(pos);
 
-        if (!entity.world.isAir(pos) && Block.isFaceFullSquare(state.getCollisionShape(entity.world, pos), entity.getHorizontalFacing().getOpposite())) {
+        if (!entity.getWorld().isAir(pos) && Block.isFaceFullSquare(state.getCollisionShape(entity.getWorld(), pos), entity.getHorizontalFacing().getOpposite())) {
             double motion = Math.sqrt(getHorizontalMotion());
 
             float distance = (float)(motion * 20 - 3);
@@ -524,10 +524,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         velocity.z += forward * MathHelper.cos(entity.getYaw() * 0.017453292F);
 
 
-        if (entity.world.hasRain(entity.getBlockPos())) {
+        if (entity.getWorld().hasRain(entity.getBlockPos())) {
             applyTurbulance(velocity);
         } else {
-            descentRate -= WeatherConditions.getUpdraft(new BlockPos.Mutable().set(entity.getBlockPos()), entity.world) / 3F;
+            descentRate -= WeatherConditions.getUpdraft(new BlockPos.Mutable().set(entity.getBlockPos()), entity.getWorld()) / 3F;
         }
 
         descentRate += 0.001F;
@@ -553,7 +553,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             flapping = false;
             if (!SpellPredicate.IS_DISGUISE.isOn(pony)) {
                 entity.playSound(getFlightType().getWingFlapSound(), 0.5F, 1);
-                entity.world.emitGameEvent(entity, GameEvent.ELYTRA_GLIDE, entity.getPos());
+                entity.getWorld().emitGameEvent(entity, GameEvent.ELYTRA_GLIDE, entity.getPos());
             }
             thrustScale = 1;
             if (manualFlap) {
@@ -587,7 +587,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private void applyTurbulance(MutableVector velocity) {
         int globalEffectStrength = MathHelper.clamp(entity.getWorld().getGameRules().getInt(UGameRules.WEATHER_EFFECTS_STRENGTH), 0, 100);
         float effectStrength = Math.min(1, (float)ticksInAir / MAX_TICKS_TO_WEATHER_EFFECTS) * (globalEffectStrength / 100F);
-        Vec3d gust = WeatherConditions.getGustStrength(entity.world, entity.getBlockPos()).multiply(globalEffectStrength / 100D);
+        Vec3d gust = WeatherConditions.getGustStrength(entity.getWorld(), entity.getBlockPos()).multiply(globalEffectStrength / 100D);
 
         if (effectStrength * gust.getX() >= 1) {
             SoundEmitter.playSoundAt(entity, USounds.AMBIENT_WIND_GUST, SoundCategory.AMBIENT, 3, 1);
@@ -595,7 +595,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         float weight = 1 + (EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.8F) + (pony.getActualSpecies().canUseEarth() ? 1 : 0);
 
-        velocity.add(WeatherConditions.getAirflow(entity.getBlockPos(), entity.world), 0.04F * effectStrength);
+        velocity.add(WeatherConditions.getAirflow(entity.getBlockPos(), entity.getWorld()), 0.04F * effectStrength);
         velocity.add(Vec3d.fromPolar(
                 (entity.getPitch() + (float)gust.getY()) * MathHelper.RADIANS_PER_DEGREE,
                 (entity.getYaw() + (float)gust.getZ()) * MathHelper.RADIANS_PER_DEGREE
@@ -603,11 +603,11 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             effectStrength * (float)gust.getX() / weight
         );
 
-        if (!entity.world.isClient && effectStrength > 0.9F && entity.world.isThundering() && entity.world.random.nextInt(9000) == 0) {
-            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(entity.world);
+        if (!entity.getWorld().isClient && effectStrength > 0.9F && entity.getWorld().isThundering() && entity.getWorld().random.nextInt(9000) == 0) {
+            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(entity.getWorld());
             lightning.refreshPositionAfterTeleport(entity.getX(), entity.getY(), entity.getZ());
 
-            entity.world.spawnEntity(lightning);
+            entity.getWorld().spawnEntity(lightning);
             UCriteria.LIGHTNING_STRUCK.trigger(entity);
         }
     }
@@ -633,19 +633,19 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         boolean isEarthPonySmash = pony.getObservedSpecies().canUseEarth() && !isFlying();
         int damage = TraceHelper.findBlocks(entity, speed + 4, 1, state -> (isEarthPonySmash && !state.isAir()) || state.isIn(UTags.GLASS_PANES)).stream()
             .flatMap(pos -> BlockPos.streamOutwards(pos, 2, 2, 2))
-            .filter(pos -> (isEarthPonySmash && !entity.world.isAir(pos)) || entity.world.getBlockState(pos).isIn(UTags.GLASS_PANES))
+            .filter(pos -> (isEarthPonySmash && !entity.getWorld().isAir(pos)) || entity.getWorld().getBlockState(pos).isIn(UTags.GLASS_PANES))
             .reduce(0, (u, pos) -> {
                 if (pony.canModifyAt(pos, ModificationType.PHYSICAL)) {
                     if (isEarthPonySmash) {
-                        BlockDestructionManager.of(entity.world).damageBlock(pos, (int)entity.world.getRandom().nextTriangular(5, 3));
-                        if (BlockDestructionManager.of(entity.world).getBlockDestruction(pos) >= 9) {
-                            entity.world.breakBlock(pos, true);
+                        BlockDestructionManager.of(entity.getWorld()).damageBlock(pos, (int)entity.getWorld().getRandom().nextTriangular(5, 3));
+                        if (BlockDestructionManager.of(entity.getWorld()).getBlockDestruction(pos) >= 9) {
+                            entity.getWorld().breakBlock(pos, true);
                         }
                     } else {
-                        entity.world.breakBlock(pos, true);
+                        entity.getWorld().breakBlock(pos, true);
                     }
                 } else {
-                    ParticleUtils.spawnParticles(new MagicParticleEffect(0x00AAFF), entity.world, Vec3d.ofCenter(pos), 15);
+                    ParticleUtils.spawnParticles(new MagicParticleEffect(0x00AAFF), entity.getWorld(), Vec3d.ofCenter(pos), 15);
                 }
                 return 1;
             }, Integer::sum);

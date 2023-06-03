@@ -168,7 +168,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
         participant.fallDistance /= distance;
 
-        participant.world.playSound(null, destination.pos(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
+        participant.getWorld().playSound(null, destination.pos(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
     }
 
     private boolean enterable(World w, BlockPos pos) {
@@ -186,7 +186,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
         Block c = state.getBlock();
         return state.hasSolidTopSurface(w, pos, player)
-                || state.getMaterial().isLiquid()
+                || state.isLiquid()
                 || (c instanceof WallBlock)
                 || (c instanceof FenceBlock)
                 || (c instanceof LeavesBlock);

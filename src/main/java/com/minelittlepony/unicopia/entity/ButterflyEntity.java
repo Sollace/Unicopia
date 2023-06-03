@@ -176,17 +176,17 @@ public class ButterflyEntity extends AmbientEntity {
                 return;
             }
 
-            if (world.getBlockState(below).isAir()
-                || !world.getOtherEntities(this, getBoundingBox().expand(3), this::isAggressor).isEmpty()
-                || (ticksResting++ > MAX_REST_TICKS || world.random.nextInt(500) == 0)
-                || world.hasRain(below)) {
+            if (getWorld().getBlockState(below).isAir()
+                || !getWorld().getOtherEntities(this, getBoundingBox().expand(3), this::isAggressor).isEmpty()
+                || (ticksResting++ > MAX_REST_TICKS || getWorld().random.nextInt(500) == 0)
+                || getWorld().hasRain(below)) {
                 setResting(false);
                 return;
             }
 
-            if (!world.isClient
+            if (!getWorld().isClient
                     && age % BREEDING_INTERVAL == 0
-                    && world.random.nextInt(200) == 0
+                    && getWorld().random.nextInt(200) == 0
                     && canBreed()) {
                 breed();
             }
@@ -205,14 +205,14 @@ public class ButterflyEntity extends AmbientEntity {
                 return flower;
             }).or(this::findNextHoverPosition).ifPresent(this::moveTowards);
 
-            if (random.nextInt(100) == 0 && world.getBlockState(below).isOpaque()) {
+            if (random.nextInt(100) == 0 && getWorld().getBlockState(below).isOpaque()) {
                 setResting(true);
             }
         }
     }
 
     private boolean canBreed() {
-        return age > BREEDING_INTERVAL && breedingCooldown <= 0 && isResting() && world.getOtherEntities(this, getBoundingBox().expand(2), i -> {
+        return age > BREEDING_INTERVAL && breedingCooldown <= 0 && isResting() && getWorld().getOtherEntities(this, getBoundingBox().expand(2), i -> {
             return i instanceof ButterflyEntity && i.getType() == getType() && ((ButterflyEntity)i).isResting();
         }).size() == 1;
     }
@@ -220,9 +220,9 @@ public class ButterflyEntity extends AmbientEntity {
     private boolean breed() {
         breedingCooldown = MAX_BREEDING_COOLDOWN;
 
-        ButterflyEntity copy = (ButterflyEntity)getType().create(world);
+        ButterflyEntity copy = (ButterflyEntity)getType().create(getWorld());
         copy.copyPositionAndRotation(this);
-        world.spawnEntity(copy);
+        getWorld().spawnEntity(copy);
         setResting(false);
         return true;
     }
@@ -231,7 +231,7 @@ public class ButterflyEntity extends AmbientEntity {
         // invalidate the hovering position
         BlockPos pos = getBlockPos();
 
-        return hoveringPosition = hoveringPosition.filter(p -> world.isAir(p)
+        return hoveringPosition = hoveringPosition.filter(p -> getWorld().isAir(p)
                 && p.getY() >= 1
                 && random.nextInt(30) != 0
                 && p.getSquaredDistance(pos) >= 4).or(() -> {
@@ -249,9 +249,9 @@ public class ButterflyEntity extends AmbientEntity {
             return flowerPosition;
         }
 
-        flowerPosition = flowerPosition.filter(p -> world.getBlockState(p).isIn(BlockTags.FLOWERS)).or(() -> {
+        flowerPosition = flowerPosition.filter(p -> getWorld().getBlockState(p).isIn(BlockTags.FLOWERS)).or(() -> {
             return BlockPos.streamOutwards(getBlockPos(), FLOWER_DETECTION_RANGE, FLOWER_DETECTION_RANGE, FLOWER_DETECTION_RANGE)
-                    .filter(p -> !visited.containsKey(p) && world.getBlockState(p).isIn(BlockTags.FLOWERS))
+                    .filter(p -> !visited.containsKey(p) && getWorld().getBlockState(p).isIn(BlockTags.FLOWERS))
                     .findFirst()
                     .map(p -> {
                 visited.put(p, (long)age - 900);

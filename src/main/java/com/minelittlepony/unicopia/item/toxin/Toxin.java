@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 
 public interface Toxin extends Affliction {
-    Predicate IF_NOT_PEACEFUL = Predicate.of(Text.of("when not in peaceful "), (player, stack) -> player.world.getDifficulty() != Difficulty.PEACEFUL);
+    Predicate IF_NOT_PEACEFUL = Predicate.of(Text.of("when not in peaceful "), (player, stack) -> player.getWorld().getDifficulty() != Difficulty.PEACEFUL);
 
     Toxin INNERT = of(Text.of("No Effect"), (player, stack) -> {});
 
@@ -45,7 +45,7 @@ public interface Toxin extends Affliction {
     Toxin LOVE_CONSUMPTION = of(Text.literal("Love"), (player, stack) -> {
         player.heal(stack.isFood() ? stack.getItem().getFoodComponent().getHunger() : 1);
         player.removeStatusEffect(StatusEffects.NAUSEA);
-        if (player.world.random.nextInt(10) == 0) {
+        if (player.getWorld().random.nextInt(10) == 0) {
             player.removeStatusEffect(UEffects.FOOD_POISONING);
         }
     });
@@ -59,7 +59,7 @@ public interface Toxin extends Affliction {
     }
 
     default Toxin withChance(int max) {
-        return Predicate.of(Text.of("1 in " + max + " chance of "), (player, stack) -> player.world.random.nextInt(max) == 0).then(this);
+        return Predicate.of(Text.of("1 in " + max + " chance of "), (player, stack) -> player.getWorld().random.nextInt(max) == 0).then(this);
     }
 
     Text getName();

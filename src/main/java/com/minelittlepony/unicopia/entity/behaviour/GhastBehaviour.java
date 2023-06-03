@@ -19,16 +19,16 @@ public class GhastBehaviour extends MobBehaviour<GhastEntity> {
 
             if (sneaking) {
                 if (!entity.isSilent()) {
-                    entity.world.syncWorldEvent(null, WorldEvents.GHAST_WARNS, entity.getBlockPos(), 0);
+                    entity.getWorld().syncWorldEvent(null, WorldEvents.GHAST_WARNS, entity.getBlockPos(), 0);
                 }
             } else {
                 if (!entity.isSilent()) {
-                    entity.world.syncWorldEvent(null, WorldEvents.GHAST_SHOOTS, entity.getBlockPos(), 0);
+                    entity.getWorld().syncWorldEvent(null, WorldEvents.GHAST_SHOOTS, entity.getBlockPos(), 0);
                 }
 
                 Vec3d rot = player.asEntity().getRotationVec(1);
 
-                FireballEntity proj = new FireballEntity(entity.world, player.asEntity(),
+                FireballEntity proj = new FireballEntity(entity.getWorld(), player.asEntity(),
                         rot.getX(),
                         rot.getY(),
                         rot.getZ(),
@@ -40,7 +40,7 @@ public class GhastBehaviour extends MobBehaviour<GhastEntity> {
                         proj.getZ() + rot.z * 4
                 );
 
-                entity.world.spawnEntity(proj);
+                entity.getWorld().spawnEntity(proj);
             }
         }
     }

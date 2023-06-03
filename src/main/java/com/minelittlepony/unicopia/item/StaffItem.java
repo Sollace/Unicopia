@@ -47,9 +47,9 @@ public class StaffItem extends SwordItem {
 
         for (int i = 0; i < 130; i++) {
             w.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.OAK_LOG.getDefaultState()),
-                    target.getX() + (target.world.random.nextFloat() - 0.5F) * (dims.width + 1),
-                    (target.getY() + dims.height / 2) + (target.world.random.nextFloat() - 0.5F) * dims.height,
-                    target.getZ() + (target.world.random.nextFloat() - 0.5F) * (dims.width + 1),
+                    target.getX() + (target.getWorld().random.nextFloat() - 0.5F) * (dims.width + 1),
+                    (target.getY() + dims.height / 2) + (target.getWorld().random.nextFloat() - 0.5F) * dims.height,
+                    target.getZ() + (target.getWorld().random.nextFloat() - 0.5F) * (dims.width + 1),
                     0, 0, 0
             );
         }

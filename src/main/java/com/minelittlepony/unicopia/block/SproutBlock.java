@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.block.*;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -34,7 +35,12 @@ public class SproutBlock extends CropBlock implements TintedBlock {
     private final int overlay;
 
     public SproutBlock(int overlay, ItemConvertible seeds, Supplier<BlockState> matureState) {
-        super(Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM));
+        super(Settings.create()
+                .noCollision()
+                .ticksRandomly()
+                .breakInstantly()
+                .sounds(BlockSoundGroup.STEM)
+                .pistonBehavior(PistonBehavior.DESTROY));
         this.seeds = seeds;
         this.matureState = matureState;
         this.overlay = overlay;

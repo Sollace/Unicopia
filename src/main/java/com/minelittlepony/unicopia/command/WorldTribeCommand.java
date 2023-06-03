@@ -25,8 +25,10 @@ class WorldTribeCommand {
     }
 
     static int get(ServerCommandSource source) throws CommandSyntaxException {
-        WorldTribeManager manager = WorldTribeManager.forWorld(source.getWorld());
-        source.sendFeedback(Text.translatable("commands.worldtribe.success.get", manager.getDefaultRace().getDisplayName()), true);
+        source.sendFeedback(() -> {
+            WorldTribeManager manager = WorldTribeManager.forWorld(source.getWorld());
+            return Text.translatable("commands.worldtribe.success.get", manager.getDefaultRace().getDisplayName());
+        }, true);
         return 0;
     }
 
@@ -34,7 +36,7 @@ class WorldTribeCommand {
         WorldTribeManager manager = WorldTribeManager.forWorld(source.getWorld());
         manager.setDefaultRace(race);
 
-        source.sendFeedback(Text.translatable("commands.worldtribe.success.set", race.getDisplayName()), true);
+        source.sendFeedback(() -> Text.translatable("commands.worldtribe.success.set", race.getDisplayName()), true);
         return 0;
     }
 }

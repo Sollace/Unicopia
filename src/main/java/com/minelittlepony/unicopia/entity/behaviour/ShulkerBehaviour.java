@@ -24,7 +24,7 @@ public class ShulkerBehaviour extends EntityBehaviour<ShulkerEntity> {
         Direction attachmentFace = shulker.getAttachedFace();
         BlockPos pos = shulker.getBlockPos().offset(attachmentFace);
 
-        boolean noGravity = !shulker.isOnGround() && !shulker.world.isAir(pos)
+        boolean noGravity = !shulker.isOnGround() && !shulker.getWorld().isAir(pos)
                 && (attachmentFace == Direction.UP || attachmentFace.getAxis() != Axis.Y);
 
         source.asEntity().setNoGravity(noGravity);
@@ -54,7 +54,7 @@ public class ShulkerBehaviour extends EntityBehaviour<ShulkerEntity> {
         if (player.sneakingChanged()) {
             mx.callSetPeekAmount((int)(peekAmount / 0.01F));
         } else if (peekAmount > 0.2 && mx.callGetPeekAmount() == 0) {
-            if (shulker.isAlive() && shulker.world.random.nextInt(1000) < shulker.ambientSoundChance++) {
+            if (shulker.isAlive() && shulker.getWorld().random.nextInt(1000) < shulker.ambientSoundChance++) {
                 shulker.ambientSoundChance = -shulker.getMinAmbientSoundDelay();
                 shulker.playSound(SoundEvents.ENTITY_SHULKER_AMBIENT, 1, 1);
              }

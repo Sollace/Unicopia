@@ -47,7 +47,7 @@ public interface URecipes {
             }
 
             Identifier modId = new Identifier("unicopiamc", id.getPath());
-            LootTable table = manager.getTable(modId);
+            LootTable table = manager.getLootTable(modId);
             if (table != LootTable.EMPTY) {
                 supplier.pools(List.of(table.pools));
             }

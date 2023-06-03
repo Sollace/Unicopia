@@ -16,7 +16,8 @@ import net.minecraft.world.*;
 public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
 
     BaseZapAppleLeavesBlock() {
-        super(Settings.of(Material.LEAVES)
+        super(Settings.create()
+                .mapColor(MapColor.PURPLE)
                 .strength(500, 1200)
                 .ticksRandomly()
                 .sounds(BlockSoundGroup.AZALEA_LEAVES)

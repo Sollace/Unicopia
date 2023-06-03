@@ -106,7 +106,7 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
 
     @Override
     public World asWorld() {
-        return world;
+        return getWorld();
     }
 
     @Override
@@ -138,12 +138,12 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
 
     @Override
     public void tick() {
-        onGround = true;
+        setOnGround(true);
         super.tick();
         emitter.tick();
 
-        if (world.random.nextInt(20) == 3) {
-            world.addParticle(new MagicParticleEffect(0xFFFFFF), getParticleX(1), getY(), getParticleZ(1), 0, 0, 0);
+        if (getWorld().random.nextInt(20) == 3) {
+            getWorld().addParticle(new MagicParticleEffect(0xFFFFFF), getParticleX(1), getY(), getParticleZ(1), 0, 0, 0);
         }
 
         if (age % 60 == 0) {
@@ -163,15 +163,15 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
             setVelocity(getVelocity().multiply(0.5));
         } else {
             float f = 0.91f;
-            if (onGround) {
-                f = world.getBlockState(getBlockPos().down()).getBlock().getSlipperiness() * 0.91f;
+            if (isOnGround()) {
+                f = getWorld().getBlockState(getBlockPos().down()).getBlock().getSlipperiness() * 0.91f;
             }
             float g = 0.16277137f / (f * f * f);
             f = 0.91f;
-            if (onGround) {
-                f = world.getBlockState(getBlockPos().down()).getBlock().getSlipperiness() * 0.91f;
+            if (isOnGround()) {
+                f = getWorld().getBlockState(getBlockPos().down()).getBlock().getSlipperiness() * 0.91f;
             }
-            updateVelocity(onGround ? 0.1f * g : 0.02f, movementInput);
+            updateVelocity(isOnGround() ? 0.1f * g : 0.02f, movementInput);
             move(MovementType.SELF, getVelocity());
             setVelocity(getVelocity().multiply(f));
         }
@@ -203,13 +203,13 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
 
     @Override
     public boolean handleAttack(Entity attacker) {
-        if (world instanceof ServerWorld serverWorld) {
-            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world);
+        if (getWorld() instanceof ServerWorld serverWorld) {
+            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(getWorld());
             lightning.refreshPositionAfterTeleport(getX(), getY(), getZ());
             attacker.onStruckByLightning(serverWorld, lightning);
         }
         emitGameEvent(GameEvent.LIGHTNING_STRIKE);
-        ParticleUtils.spawnParticle(world, UParticles.LIGHTNING_BOLT, getPos(), Vec3d.ZERO);
+        ParticleUtils.spawnParticle(getWorld(), UParticles.LIGHTNING_BOLT, getPos(), Vec3d.ZERO);
 
         return false;
     }
@@ -258,13 +258,13 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
 
         @Override
         public boolean canStart() {
-            target = assignment.get(world);
+            target = assignment.get(getWorld());
 
             if (target == null) {
                 target = getMaster();
             }
             if (target == null) {
-                target = world.getClosestPlayer(FairyEntity.this, maxDistance);
+                target = getWorld().getClosestPlayer(FairyEntity.this, maxDistance);
             }
             return target != null;
         }
@@ -297,7 +297,7 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
             getLookControl().lookAt(target, 10, getMaxLookPitchChange());
 
             Path currentPath = getNavigation().getCurrentPath();
-            if (currentPath != null && target.getEyeY() < getY() - 0.5 && world.getBlockState(getBlockPos().down(3)).isAir()) {
+            if (currentPath != null && target.getEyeY() < getY() - 0.5 && getWorld().getBlockState(getBlockPos().down(3)).isAir()) {
                 addVelocity(0, -speed, 0);
             }
 
@@ -307,9 +307,9 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
 
             if (distance > 100) {
                 teleport(
-                    target.getX() + world.random.nextFloat() / 2F - 0.5F,
+                    target.getX() + getWorld().random.nextFloat() / 2F - 0.5F,
                     target.getEyeY(),
-                    target.getZ() + world.random.nextFloat() / 2F - 0.5F
+                    target.getZ() + getWorld().random.nextFloat() / 2F - 0.5F
                 );
                 setVelocity(target.getVelocity());
                 return;
@@ -331,7 +331,7 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
 
             if (distance <= minDistance * minDistance) {
 
-                BlockPos pos = FuzzyPositions.localFuzz(FairyEntity.this.world.random, 5, 5);
+                BlockPos pos = FuzzyPositions.localFuzz(getWorld().random, 5, 5);
                 if (pos != null) {
                     getNavigation().startMovingTo(pos.getX(), pos.getY(), pos.getZ(), speed);
                 } else {

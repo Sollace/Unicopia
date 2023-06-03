@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -74,7 +75,7 @@ class Slot {
         return y;
     }
 
-    void renderBackground(MatrixStack matrices, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
+    void renderBackground(DrawContext context, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
 
         if (aSlot != bSlot) {
             bSwap |= !abilities.isFilled(aSlot);
@@ -83,17 +84,17 @@ class Slot {
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.enableBlend();
+        MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(getX(), getY(), 0);
 
         // background
-        UHud.drawTexture(matrices, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
+        context.drawTexture(UHud.HUD_TEXTURE, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
 
         AbilityDispatcher.Stat stat = abilities.getStat(bSwap ? bSlot : aSlot);
 
-
         int sz = iconSize - slotPadding;
-        uHud.renderAbilityIcon(matrices, stat, slotPadding, slotPadding, sz, sz, sz, sz);
+        uHud.renderAbilityIcon(context, stat, slotPadding, slotPadding, sz, sz, sz, sz);
 
         float cooldown = stat.getFillProgress();
 
@@ -107,21 +108,22 @@ class Slot {
             int progressTop = progressBottom - (int)(progressMax * cooldown);
 
             // progress
-            UHud.fill(matrices, slotPadding, progressTop, size - slotPadding, progressBottom, 0xCFFFFFFF);
+            context.fill(slotPadding, progressTop, size - slotPadding, progressBottom, 0xCFFFFFFF);
         }
 
-        renderContents(matrices, abilities, bSwap, tickDelta);
+        renderContents(context, abilities, bSwap, tickDelta);
         matrices.pop();
     }
 
-    protected void renderContents(MatrixStack matrices, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
+    protected void renderContents(DrawContext context, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
         // contents
-        UHud.drawTexture(matrices, 0, 0, foregroundU, foregroundV, size, size, 128, 128);
+        context.drawTexture(UHud.HUD_TEXTURE, 0, 0, foregroundU, foregroundV, size, size, 128, 128);
     }
 
-    void renderLabel(MatrixStack matrices, AbilityDispatcher abilities, float tickDelta) {
+    void renderLabel(DrawContext context, AbilityDispatcher abilities, float tickDelta) {
         Text label = KeyBindingsHandler.INSTANCE.getBinding(aSlot).getLabel();
 
+        MatrixStack matrices = context.getMatrices();
         matrices.push();
 
         int x = getX();
@@ -135,7 +137,7 @@ class Slot {
         matrices.translate(x, getY() + labelY, 0);
         matrices.scale(0.5F, 0.5F, 0.5F);
 
-        UHud.drawTextWithShadow(matrices, uHud.font, label, 0, 0, 0xFFFFFF);
+        context.drawText(uHud.font, label, 0, 0, 0xFFFFFF, true);
 
         matrices.pop();
     }

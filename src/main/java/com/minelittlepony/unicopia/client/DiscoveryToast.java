@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.spongepowered.include.com.google.common.base.Objects;
 
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
@@ -26,7 +26,7 @@ public class DiscoveryToast implements Toast {
     private boolean justUpdated;
 
     @Override
-    public Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
+    public Toast.Visibility draw(DrawContext context, ToastManager manager, long startTime) {
         if (justUpdated) {
             this.startTime = startTime;
             justUpdated = false;
@@ -37,26 +37,21 @@ public class DiscoveryToast implements Toast {
         }
 
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.setShaderColor(1.0F, 1, 1, 1);
-        ToastManager.drawTexture(matrices, 0, 0, 0, 32, getWidth(), getHeight());
-        manager.getClient().textRenderer.draw(matrices, TITLE, 30, 7, -11534256);
-        manager.getClient().textRenderer.draw(matrices, DESCRIPTION, 30, 18, -16777216);
+
+        context.drawTexture(TEXTURE, 0, 0, 0, 32, getWidth(), getHeight());
+        context.drawText(manager.getClient().textRenderer, TITLE, 30, 7, -11534256, false);
+        context.drawText(manager.getClient().textRenderer, DESCRIPTION, 30, 18, -16777216, false);
 
         Identifier icon = discoveries.get((int)(startTime / Math.max(1L, MAX_AGE / discoveries.size()) % discoveries.size()));
 
-        MatrixStack matrixStack = RenderSystem.getModelViewStack();
-        matrixStack.push();
-        matrixStack.scale(0.6F, 0.6F, 1);
-        RenderSystem.applyModelViewMatrix();
-        manager.getClient().getItemRenderer().renderInGui(matrixStack, UItems.SPELLBOOK.getDefaultStack(), 3, 3);
-        matrixStack.pop();
-        RenderSystem.applyModelViewMatrix();
+        MatrixStack matrices = context.getMatrices();
+        matrices.push();
+        matrices.scale(0.6F, 0.6F, 1);
+        context.drawItem(UItems.SPELLBOOK.getDefaultStack(), 3, 3);
+        matrices.pop();
 
-        RenderSystem.setShaderTexture(0, icon);
-        DrawableHelper.drawTexture(matrices, 8, 8, 1, 0, 0, 16, 16, 16, 16);
-
-        // manager.getClient().getItemRenderer().renderInGui(recipe.getOutput(), 8, 8);
+        context.drawTexture(icon, 8, 8, 1, 0, 0, 16, 16, 16, 16);
 
         return startTime - this.startTime >= MAX_AGE ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
     }

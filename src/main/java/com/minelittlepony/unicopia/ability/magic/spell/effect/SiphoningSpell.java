@@ -106,7 +106,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
                 }
             } else {
                 e.heal((float)Math.min(source.getLevel().getScaled(e.getHealth()) / 2F, maxHealthGain * 0.6));
-                ParticleUtils.spawnParticle(e.world, new FollowingParticleEffect(UParticles.HEALTH_DRAIN, e, 0.2F), e.getPos(), Vec3d.ZERO);
+                ParticleUtils.spawnParticle(e.getWorld(), new FollowingParticleEffect(UParticles.HEALTH_DRAIN, e, 0.2F), e.getPos(), Vec3d.ZERO);
             }
         });
     }

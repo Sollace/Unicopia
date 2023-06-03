@@ -164,9 +164,9 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
         PlayerEntity player = iplayer.asEntity();
 
-        if (BlockDestructionManager.of(player.world).getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
-            if (player.world.random.nextInt(30) == 0) {
-                tree.traverse(player.world, pos, (w, state, p, recurseLevel) -> {
+        if (BlockDestructionManager.of(player.getWorld()).getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
+            if (player.getWorld().random.nextInt(30) == 0) {
+                tree.traverse(player.getWorld(), pos, (w, state, p, recurseLevel) -> {
                     if (recurseLevel < 5) {
                         w.breakBlock(p, true);
                     } else {
@@ -196,12 +196,12 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     }
 
     private int dropApples(PlayerEntity player, BlockPos pos) {
-        TreeType tree = TreeType.at(pos, player.world);
+        TreeType tree = TreeType.at(pos, player.getWorld());
 
-        if (tree.countBlocks(player.world, pos) > 0) {
+        if (tree.countBlocks(player.getWorld(), pos) > 0) {
             List<ItemEntity> capturedDrops = new ArrayList<>();
 
-            tree.traverse(player.world, pos, (world, state, position, recurse) -> {
+            tree.traverse(player.getWorld(), pos, (world, state, position, recurse) -> {
                 affectBlockChange(player, position);
             }, (world, state, position, recurse) -> {
                 affectBlockChange(player, position);
@@ -215,7 +215,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                 }
             });
 
-            capturedDrops.forEach(player.world::spawnEntity);
+            capturedDrops.forEach(player.getWorld()::spawnEntity);
 
             return capturedDrops.size() / 3;
         }
@@ -255,28 +255,28 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     }
 
     private void affectBlockChange(PlayerEntity player, BlockPos position) {
-        BlockDestructionManager.of(player.world).damageBlock(position, 4);
+        BlockDestructionManager.of(player.getWorld()).damageBlock(position, 4);
 
         PosHelper.all(position, p -> {
-            BlockState s = player.world.getBlockState(p);
+            BlockState s = player.getWorld().getBlockState(p);
 
             if (s.getBlock() instanceof BeehiveBlock) {
-                if (player.world.getBlockEntity(p) instanceof BeehiveBlockEntity hive) {
+                if (player.getWorld().getBlockEntity(p) instanceof BeehiveBlockEntity hive) {
                     hive.angerBees(player, s, BeehiveBlockEntity.BeeState.EMERGENCY);
                 }
 
-                player.world.updateComparators(position, s.getBlock());
+                player.getWorld().updateComparators(position, s.getBlock());
 
                 Box area = new Box(position).expand(8, 6, 8);
-                List<BeeEntity> nearbyBees = player.world.getNonSpectatingEntities(BeeEntity.class, area);
+                List<BeeEntity> nearbyBees = player.getWorld().getNonSpectatingEntities(BeeEntity.class, area);
 
                 if (!nearbyBees.isEmpty()) {
-                    List<PlayerEntity> nearbyPlayers = player.world.getNonSpectatingEntities(PlayerEntity.class, area);
+                    List<PlayerEntity> nearbyPlayers = player.getWorld().getNonSpectatingEntities(PlayerEntity.class, area);
                     int i = nearbyPlayers.size();
 
                     for (BeeEntity bee : nearbyBees) {
                         if (bee.getTarget() == null) {
-                            bee.setTarget(nearbyPlayers.get(player.world.random.nextInt(i)));
+                            bee.setTarget(nearbyPlayers.get(player.getWorld().random.nextInt(i)));
                         }
                     }
                 }

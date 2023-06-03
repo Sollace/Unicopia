@@ -22,7 +22,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.util.math.MatrixStack;
@@ -35,7 +35,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 
-public class UHud extends DrawableHelper {
+public class UHud {
 
     public static final UHud INSTANCE = new UHud();
 
@@ -70,7 +70,7 @@ public class UHud extends DrawableHelper {
     private boolean prevReplacing;
     private SpellType<?> focusedType = SpellType.empty();
 
-    public void render(InGameHud hud, MatrixStack matrices, float tickDelta) {
+    public void render(InGameHud hud, DrawContext context, float tickDelta) {
 
         if (client.player == null) {
             return;
@@ -81,7 +81,7 @@ public class UHud extends DrawableHelper {
 
         Pony pony = Pony.of(client.player);
 
-        renderViewEffects(pony, matrices, scaledWidth, scaledHeight, tickDelta);
+        renderViewEffects(pony, context, scaledWidth, scaledHeight, tickDelta);
 
         if (client.currentScreen instanceof HidesHud || client.player.isSpectator() || client.options.hudHidden) {
             return;
@@ -90,6 +90,7 @@ public class UHud extends DrawableHelper {
         font = client.textRenderer;
         xDirection = client.player.getMainArm() == Arm.LEFT ? -1 : 1;
 
+        MatrixStack matrices = context.getMatrices();
         matrices.push();
 
         int hudX = ((scaledWidth - 50) / 2) + (104 * xDirection);
@@ -111,7 +112,7 @@ public class UHud extends DrawableHelper {
         AbilityDispatcher abilities = pony.getAbilities();
 
         if (message != null && messageTime > 0) {
-            renderMessage(matrices, tickDelta);
+            renderMessage(context, tickDelta);
         }
 
         RenderSystem.setShaderColor(1, 1, 1,1);
@@ -120,7 +121,7 @@ public class UHud extends DrawableHelper {
 
         boolean swap = client.options.sneakKey.isPressed();
 
-        slots.forEach(slot -> slot.renderBackground(matrices, abilities, swap, tickDelta));
+        slots.forEach(slot -> slot.renderBackground(context, abilities, swap, tickDelta));
 
         if (pony.getObservedSpecies().canCast()) {
             AbilitySlot slot = swap ? AbilitySlot.PASSIVE : AbilitySlot.PRIMARY;
@@ -145,18 +146,18 @@ public class UHud extends DrawableHelper {
                 matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-26));
                 matrices.scale(0.8F, 0.8F, 1);
                 int u = replacing ? 16 : 3;
-                UHud.drawTexture(matrices, 0, 0, u, 120, 13, 7, 128, 128);
+                context.drawTexture(HUD_TEXTURE, 0, 0, u, 120, 13, 7, 128, 128);
                 matrices.pop();
             }
         }
 
-        slots.forEach(slot -> slot.renderLabel(matrices, abilities, tickDelta));
+        slots.forEach(slot -> slot.renderLabel(context, abilities, tickDelta));
 
         matrices.pop();
 
         if (pony.getObservedSpecies().canCast()) {
-            renderSpell(pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 10 - xDirection * 13, hudY + 2);
-            renderSpell(pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 8 - xDirection * 2, hudY - 6);
+            renderSpell(context, pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 10 - xDirection * 13, hudY + 2);
+            renderSpell(context, pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 8 - xDirection * 2, hudY - 6);
         }
 
         RenderSystem.disableBlend();
@@ -176,19 +177,16 @@ public class UHud extends DrawableHelper {
                     int x = scaledWidth / 2 + xDirection * 67;
                     int y = (int)(scaledHeight - 18 - dims.height/2F);
 
-                    MatrixStack view = RenderSystem.getModelViewStack();
-
-                    view.push();
-                    view.translate(x, y, 0);
-                    view.multiply(RotationAxis.POSITIVE_X.rotationDegrees(xDirection * 45));
-                    InventoryScreen.drawEntity(view, 0, 0, scale, 0, -20, client.player);
-                    view.pop();
-                    RenderSystem.applyModelViewMatrix();
+                    matrices.push();
+                    matrices.translate(x, y, 0);
+                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(xDirection * 45));
+                    InventoryScreen.drawEntity(context, 0, 0, scale, 0, -20, client.player);
+                    matrices.pop();
                 });
         }
     }
 
-    public void renderSpell(CustomisedSpellType<?> spell, double x, double y) {
+    public void renderSpell(DrawContext context, CustomisedSpellType<?> spell, double x, double y) {
         if (spell.isEmpty()) {
             return;
         }
@@ -196,7 +194,7 @@ public class UHud extends DrawableHelper {
         Pony pony = Pony.of(client.player);
 
         if (spell.isOn(pony)) {
-            MatrixStack modelStack = new MatrixStack();
+            MatrixStack modelStack = context.getMatrices();
 
             modelStack.push();
             modelStack.translate(x + 5.5, y + 5.5, 0);
@@ -215,17 +213,17 @@ public class UHud extends DrawableHelper {
                 modelStack.push();
                 modelStack.translate(1, 1, 900);
                 modelStack.scale(0.8F, 0.8F, 0.8F);
-                font.drawWithShadow(modelStack, count > 64 ? "64+" : String.valueOf(count), 0, 0, 0xFFFFFFFF);
+                context.drawText(font, count > 64 ? "64+" : String.valueOf(count), 0, 0, 0xFFFFFFFF, true);
                 modelStack.pop();
             }
 
             modelStack.pop();
         }
 
-        DrawableUtil.renderItemIcon(spell.getDefaultStack(), x, y, EQUIPPED_GEMSTONE_SCALE);
+        DrawableUtil.renderItemIcon(context, spell.getDefaultStack(), x, y, EQUIPPED_GEMSTONE_SCALE);
     }
 
-    private void renderMessage(MatrixStack matrices, float tickDelta) {
+    private void renderMessage(DrawContext context, float tickDelta) {
         float time = messageTime - tickDelta;
         int progress = Math.min(255, (int)(time * 255F / 20F));
 
@@ -235,11 +233,11 @@ public class UHud extends DrawableHelper {
 
             color |= alpha;
 
-            drawCenteredTextWithShadow(matrices, client.textRenderer, message, 25, -15, color);
+            context.drawCenteredTextWithShadow(font, message, 25, -15, color);
         }
     }
 
-    protected void renderViewEffects(Pony pony, MatrixStack matrices, int scaledWidth, int scaledHeight, float tickDelta) {
+    protected void renderViewEffects(Pony pony, DrawContext context, int scaledWidth, int scaledHeight, float tickDelta) {
 
         boolean hasEffect = client.player.hasStatusEffect(UEffects.SUN_BLINDNESS);
 
@@ -258,12 +256,12 @@ public class UHud extends DrawableHelper {
             int color = 0xFFFFFF;
 
             if (hasEffect) {
-                GradientUtil.fillRadialGradient(matrices, 0, 0, scaledWidth, scaledHeight,
+                GradientUtil.fillRadialGradient(context.getMatrices(), 0, 0, scaledWidth, scaledHeight,
                         color | (alpha1 << 24),
                         color | (alpha2 << 24),
                         0, 1);
             } else {
-                GradientUtil.fillVerticalGradient(matrices, 0, 0, scaledHeight / 2, scaledWidth, scaledHeight,
+                GradientUtil.fillVerticalGradient(context.getMatrices(), 0, 0, scaledHeight / 2, scaledWidth, scaledHeight,
                         color | (alpha1 << 24),
                         color | (alpha2 << 24),
                         color | (alpha1 << 24),
@@ -277,7 +275,7 @@ public class UHud extends DrawableHelper {
                 final int delay = 7;
                 final int current = client.player.age / delay;
                 final int tint = DyeColor.byId(current % DyeColor.values().length).getSignColor();
-                fillGradient(matrices, 0, 0, scaledWidth, scaledHeight, 0x1F000000 | tint, 0x5F000000 | tint);
+                context.fillGradient(0, 0, scaledWidth, scaledHeight, 0x1F000000 | tint, 0x5F000000 | tint);
 
                 if (partySound == null || partySound.isDone()) {
                     client.getSoundManager().play(
@@ -292,7 +290,7 @@ public class UHud extends DrawableHelper {
                 if (partySound != null) {
                     partySound.setMuted(true);
                 }
-                fillGradient(matrices, 0, 0, scaledWidth, scaledHeight, 0x0A000088, 0x7E000000);
+                context.fillGradient(0, 0, scaledWidth, scaledHeight, 0x0A000088, 0x7E000000);
             }
         } else {
             if (partySound != null) {
@@ -302,7 +300,7 @@ public class UHud extends DrawableHelper {
 
         if (UItems.ALICORN_AMULET.isApplicable(client.player)) {
             float radius = (float)pony.getArmour().getTicks(UItems.ALICORN_AMULET) / (5 * ItemTracker.DAYS);
-            renderVignette(matrices, 0x000000, radius, radius, scaledWidth, scaledHeight);
+            renderVignette(context, 0x000000, radius, radius, scaledWidth, scaledHeight);
         }
 
         float exhaustion = MathHelper.clamp(pony.getMagicalReserves().getExhaustion().getPercentFill(), 0, 0.6F);
@@ -319,11 +317,11 @@ public class UHud extends DrawableHelper {
             float rate = exhaustion > 0.5F ? 2.5F : 7F;
             float radius = (1 + (float)Math.sin(client.player.age / rate)) / 2F;
 
-            renderVignette(matrices, 0x880000, exhaustion * radius, 0.1F + radius * 0.3F, scaledWidth, scaledHeight);
+            renderVignette(context, 0x880000, exhaustion * radius, 0.1F + radius * 0.3F, scaledWidth, scaledHeight);
         }
     }
 
-    private void renderVignette(MatrixStack matrices, int color, float alpha, float radius, int scaledWidth, int scaledHeight) {
+    private void renderVignette(DrawContext context, int color, float alpha, float radius, int scaledWidth, int scaledHeight) {
         if (radius <= 0) {
             return;
         }
@@ -331,7 +329,7 @@ public class UHud extends DrawableHelper {
         color &= 0xFFFFFF;
         float alpha2 = MathHelper.clamp(radius - 1, 0, 1) * 255;
         float alpha1 = Math.max(alpha2, MathHelper.clamp(alpha * 2, 0, 1) * 205);
-        GradientUtil.fillRadialGradient(matrices, 0, 0, scaledWidth, scaledHeight,
+        GradientUtil.fillRadialGradient(context.getMatrices(), 0, 0, scaledWidth, scaledHeight,
                 color | (int)alpha1 << 24,
                 color | (int)alpha2 << 24,
                 0, Math.min(1, radius));
@@ -348,11 +346,9 @@ public class UHud extends DrawableHelper {
         }
     }
 
-    void renderAbilityIcon(MatrixStack matrices, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
+    void renderAbilityIcon(DrawContext context, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
         stat.getAbility(Unicopia.getConfig().hudPage.get()).ifPresent(ability -> {
-            RenderSystem.setShaderTexture(0, ability.getIcon(Pony.of(client.player)));
-            drawTexture(matrices, x, y, 0, 0, frameWidth, frameHeight, u, v);
-            RenderSystem.setShaderTexture(0, HUD_TEXTURE);
+            context.drawTexture(ability.getIcon(Pony.of(client.player)), x, y, 0, 0, frameWidth, frameHeight, u, v);
         });
     }
 }

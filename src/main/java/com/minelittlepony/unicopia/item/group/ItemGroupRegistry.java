@@ -11,10 +11,13 @@ import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 
 public interface ItemGroupRegistry {
-    Map<ItemGroup, Set<Item>> REGISTRY = new HashMap<>();
+    Map<RegistryKey<ItemGroup>, Set<Item>> REGISTRY = new HashMap<>();
 
     static List<ItemStack> getVariations(Item item) {
         if (item instanceof MultiItem) {
@@ -23,20 +26,22 @@ public interface ItemGroupRegistry {
         return List.of(item.getDefaultStack());
     }
 
-    static <T extends Item> T register(T item, ItemGroup group) {
+    static <T extends Item> T register(T item, RegistryKey<ItemGroup> group) {
         REGISTRY.computeIfAbsent(group, g -> new LinkedHashSet<>()).add(item);
         return item;
     }
 
-    static ItemGroup createDynamic(String name, Supplier<ItemStack> icon, Supplier<Stream<Item>> items) {
-        return FabricItemGroup.builder(Unicopia.id(name)).entries((context, entries) -> {
+    static RegistryKey<ItemGroup> createDynamic(String name, Supplier<ItemStack> icon, Supplier<Stream<Item>> items) {
+        RegistryKey<ItemGroup> key = RegistryKey.of(RegistryKeys.ITEM_GROUP, Unicopia.id(name));
+        Registry.register(Registries.ITEM_GROUP, key.getValue(), FabricItemGroup.builder().entries((context, entries) -> {
             items.get().forEach(item -> {
                 entries.addAll(ItemGroupRegistry.getVariations(item));
             });
-        }).icon(icon).build();
+        }).icon(icon).build());
+        return key;
     }
 
-    static ItemGroup createGroupFromTag(String name, Supplier<ItemStack> icon) {
+    static RegistryKey<ItemGroup> createGroupFromTag(String name, Supplier<ItemStack> icon) {
         TagKey<Item> key = UTags.item("groups/" + name);
         return createDynamic(name, icon, () -> {
             return Registries.ITEM.getEntryList(key)

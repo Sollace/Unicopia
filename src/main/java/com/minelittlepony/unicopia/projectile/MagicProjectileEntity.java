@@ -168,7 +168,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
 
     @Override
     public void tick() {
-        if (!world.isClient() && !homingTarget.isPresent(world)) {
+        if (!getWorld().isClient() && !homingTarget.isPresent(getWorld())) {
             if (getVelocity().length() < 0.1 || age > 90) {
                 discard();
             }
@@ -183,7 +183,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         getSpellSlot().get(true).filter(spell -> spell.tick(this, Situation.PROJECTILE));
 
         if (getHydrophobic()) {
-            if (world.getBlockState(getBlockPos()).getMaterial().isLiquid()) {
+            if (getWorld().getBlockState(getBlockPos()).isLiquid()) {
                 Vec3d vel = getVelocity();
 
                 double velY = vel.y;
@@ -198,7 +198,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
             }
         }
 
-        homingTarget.ifPresent(world, e -> {
+        homingTarget.ifPresent(getWorld(), e -> {
             setNoGravity(true);
             noClip = true;
             setVelocity(getVelocity().add(e.getPos().subtract(getPos()).normalize().multiply(0.2)).multiply(0.6, 0.6, 0.6));
@@ -225,7 +225,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
           ParticleEffect effect = getParticleParameters();
 
           for(int i = 0; i < 8; i++) {
-             world.addParticle(effect, getX(), getY(), getZ(), 0, 0, 0);
+             getWorld().addParticle(effect, getX(), getY(), getZ(), 0, 0, 0);
           }
        } else {
            super.handleStatus(id);
@@ -257,8 +257,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         if (!isRemoved()) {
             super.onCollision(result);
 
-            if (!world.isClient()) {
-                world.sendEntityStatus(this, PROJECTILE_COLLISSION);
+            if (!getWorld().isClient()) {
+                getWorld().sendEntityStatus(this, PROJECTILE_COLLISSION);
                 discard();
             }
         }
@@ -300,7 +300,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         getSpellSlot().forEach(spell -> {
             Optional.ofNullable(predicate.apply(spell)).ifPresent(consumer);
             return Operation.SKIP;
-        }, world.isClient);
+        }, getWorld().isClient);
         Optional.ofNullable(predicate.apply(getItem().getItem())).ifPresent(consumer);
     }
 

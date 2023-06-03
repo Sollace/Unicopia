@@ -168,7 +168,7 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
         activeItemStack = stack;
         itemUseTimeLeft = time;
 
-        if (!world.isClient) {
+        if (!getWorld().isClient) {
             setLivingFlag(1, !stack.isEmpty());
             setLivingFlag(2, hand == Hand.OFF_HAND);
         }

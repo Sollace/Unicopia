@@ -20,7 +20,7 @@ public interface ParticleUtils {
     }
 
     static void spawnParticles(ParticleEffect effect, Entity entity, int count) {
-        spawnParticles(entity.world, getShapeFor(entity), effect, count);
+        spawnParticles(entity.getWorld(), getShapeFor(entity), effect, count);
     }
 
     static void spawnParticles(ParticleEffect effect, World world, Vec3d origin, int count) {

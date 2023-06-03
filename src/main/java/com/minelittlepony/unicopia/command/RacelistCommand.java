@@ -50,19 +50,20 @@ class RacelistCommand {
     }
 
     static int toggle(ServerCommandSource source, ServerPlayerEntity player, Race race, String action, Function<Race, Boolean> func) {
-        String translationKey = "commands.racelist." + action;
+        source.sendFeedback(() -> {
+            String translationKey = "commands.racelist." + action;
 
-        if (!func.apply(race)) {
-            if (race.isUnset()) {
-                translationKey = "commands.racelist.illegal";
-            } else {
-                translationKey += ".failed";
+            if (!func.apply(race)) {
+                if (race.isUnset()) {
+                    translationKey = "commands.racelist.illegal";
+                } else {
+                    translationKey += ".failed";
+                }
             }
-        }
 
-        Text formattedName = race.getDisplayName().copy().formatted(Formatting.GOLD);
-
-        source.sendFeedback(Text.translatable(translationKey, formattedName).formatted(Formatting.GREEN), false);
+            Text formattedName = race.getDisplayName().copy().formatted(Formatting.GOLD);
+            return Text.translatable(translationKey, formattedName).formatted(Formatting.GREEN);
+        }, false);
         return 0;
     }
 }

@@ -25,21 +25,21 @@ public class ButterfingersStatusEffect extends StatusEffect {
         amplifier = MathHelper.clamp(amplifier, 0, 5);
         final int scale = 500 + (int)(((5 - amplifier) / 5F) * 900);
 
-        if (entity.world.random.nextInt(scale / 4) == 0) {
-            applyInstantEffect(null, null, entity, amplifier, entity.world.random.nextInt(scale));
+        if (entity.getWorld().random.nextInt(scale / 4) == 0) {
+            applyInstantEffect(null, null, entity, amplifier, entity.getWorld().random.nextInt(scale));
         }
     }
 
     @Override
     public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
 
-        if (target.world.isClient) {
+        if (target.getWorld().isClient) {
             return;
         }
 
         if (target instanceof ServerPlayerEntity player) {
             if (player.dropSelectedItem(proximity < 1)) {
-                player.world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, player.getSoundCategory());
+                player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, player.getSoundCategory());
                 PlayerInventory inventory = player.getInventory();
                 player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 0, inventory.selectedSlot, inventory.getStack(inventory.selectedSlot)));
             }
@@ -48,7 +48,7 @@ public class ButterfingersStatusEffect extends StatusEffect {
             if (!stack.isEmpty()) {
                 target.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
                 target.dropStack(stack);
-                target.world.playSound(null, target.getBlockPos(), SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, target.getSoundCategory());
+                target.getWorld().playSound(null, target.getBlockPos(), SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, target.getSoundCategory());
             }
         }
     }

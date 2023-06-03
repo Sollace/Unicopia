@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
@@ -15,7 +15,7 @@ public class JarInsertRecipe extends ItemCombinationRecipe {
     }
 
     @Override
-    public final ItemStack craft(CraftingInventory inventory, DynamicRegistryManager registries) {
+    public final ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
         Pair<ItemStack, ItemStack> pair = runMatch(inventory);
 
         return UItems.FILLED_JAR.setAppearance(UItems.FILLED_JAR.getDefaultStack(), pair.getRight());

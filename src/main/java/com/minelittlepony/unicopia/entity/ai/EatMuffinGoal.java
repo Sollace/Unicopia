@@ -66,11 +66,11 @@ public class EatMuffinGoal extends BreakHeartGoal {
             eatingStarted = true;
 
             if (target instanceof PhysicsBodyProjectileEntity projectile) {
-                mob.eatFood(mob.world, projectile.getStack());
+                mob.eatFood(mob.getWorld(), projectile.getStack());
                 projectile.discard();
 
                 if (mob instanceof AnimalEntity animal) {
-                    if (mob.world.random.nextInt(12) == 0) {
+                    if (mob.getWorld().random.nextInt(12) == 0) {
                         Entity player = ((PhysicsBodyProjectileEntity) target).getOwner();
 
                         animal.lovePlayer(player instanceof PlayerEntity ? (PlayerEntity)player : null);

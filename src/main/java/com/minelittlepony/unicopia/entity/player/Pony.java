@@ -299,7 +299,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public void onSpawn() {
-        if (entity.world instanceof ServerWorld sw
+        if (entity.getWorld() instanceof ServerWorld sw
                 && getObservedSpecies() == Race.BAT
                 && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE
                 && SunBlindnessStatusEffect.isPositionExposedToSun(sw, getOrigin())) {
@@ -434,13 +434,13 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private void updateCorruptionDecay() {
         if (!isClient() && !UItems.ALICORN_AMULET.isApplicable(entity)) {
             if (entity.age % (10 * ItemTracker.SECONDS) == 0) {
-                if (entity.world.random.nextInt(100) == 0) {
+                if (entity.getWorld().random.nextInt(100) == 0) {
                     corruption.add(-1);
                     setDirty();
                 }
 
                 if (entity.getHealth() >= entity.getMaxHealth() - 1 && !entity.getHungerManager().isNotFull()) {
-                    corruption.add(-entity.world.random.nextInt(4));
+                    corruption.add(-entity.getWorld().random.nextInt(4));
                     setDirty();
                 }
             }
@@ -608,7 +608,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     protected void directTakeEnergy(double foodSubtract) {
-        if (!entity.isCreative() && !entity.world.isClient) {
+        if (!entity.isCreative() && !entity.getWorld().isClient) {
             magicExhaustion += ManaConsumptionUtil.consumeMana(mana.getMana(), foodSubtract);
         }
     }
@@ -707,7 +707,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         boolean forcedSwap = (!alive
                 && entity instanceof ServerPlayerEntity
-                && entity.world.getGameRules().getBoolean(UGameRules.SWAP_TRIBE_ON_DEATH)
+                && entity.getWorld().getGameRules().getBoolean(UGameRules.SWAP_TRIBE_ON_DEATH)
                 && oldPlayer.respawnRace.isUnset())
                 || oldPlayer.getActualSpecies().isUnset();
 

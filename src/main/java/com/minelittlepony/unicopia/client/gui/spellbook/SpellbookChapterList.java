@@ -8,7 +8,7 @@ import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.Unicopia;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 
 public class SpellbookChapterList {
@@ -89,14 +89,14 @@ public class SpellbookChapterList {
                 }
 
                 @Override
-                public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
-                    obj.draw(matrices, mouseX, mouseY, container);
+                public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
+                    obj.draw(context, mouseX, mouseY, container);
                 }
             });
         }
     }
 
     public interface Drawable {
-        void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container);
+        void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container);
     }
 }

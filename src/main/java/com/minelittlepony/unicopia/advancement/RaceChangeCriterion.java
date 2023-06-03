@@ -10,7 +10,7 @@ import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate.Extended;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -25,7 +25,7 @@ public class RaceChangeCriterion extends AbstractCriterion<RaceChangeCriterion.C
     }
 
     @Override
-    protected Conditions conditionsFromJson(JsonObject json, Extended playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
+    protected Conditions conditionsFromJson(JsonObject json, LootContextPredicate playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
         return new Conditions(playerPredicate, Race.fromName(JsonHelper.getString(json, "race"), Race.EARTH));
     }
 
@@ -38,7 +38,7 @@ public class RaceChangeCriterion extends AbstractCriterion<RaceChangeCriterion.C
     public static class Conditions extends AbstractCriterionConditions {
         private final Race race;
 
-        public Conditions(Extended playerPredicate, Race race) {
+        public Conditions(LootContextPredicate playerPredicate, Race race) {
             super(ID, playerPredicate);
             this.race = race;
         }

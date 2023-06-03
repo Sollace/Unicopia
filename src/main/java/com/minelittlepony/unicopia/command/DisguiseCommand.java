@@ -87,13 +87,13 @@ public class DisguiseCommand {
             .setDisguise(entity);
 
         if (source.getEntity() == player) {
-            source.sendFeedback(Text.translatable("commands.disguise.success.self", entity.getName()), true);
+            source.sendFeedback(() -> Text.translatable("commands.disguise.success.self", entity.getName()), true);
         } else {
             if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
                 player.sendMessage(Text.translatable("commands.disguise.success", entity.getName()));
             }
 
-            source.sendFeedback(Text.translatable("commands.disguise.success.other", player.getName(), entity.getName()), true);
+            source.sendFeedback(() -> Text.translatable("commands.disguise.success.other", player.getName(), entity.getName()), true);
         }
 
         return 0;
@@ -114,13 +114,13 @@ public class DisguiseCommand {
         iplayer.getSpellSlot().removeIf(SpellPredicate.IS_DISGUISE, true);
 
         if (source.getEntity() == player) {
-            source.sendFeedback(Text.translatable("commands.disguise.removed.self"), true);
+            source.sendFeedback(() -> Text.translatable("commands.disguise.removed.self"), true);
         } else {
             if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
                 player.sendMessage(Text.translatable("commands.disguise.removed"));
             }
 
-            source.sendFeedback(Text.translatable("commands.disguise.removed.other", player.getName()), true);
+            source.sendFeedback(() -> Text.translatable("commands.disguise.removed.other", player.getName()), true);
         }
 
         return 0;

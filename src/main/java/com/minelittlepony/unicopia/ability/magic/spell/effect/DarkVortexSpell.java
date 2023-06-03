@@ -60,7 +60,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
     public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
         if (!projectile.isClient()) {
             BlockPos pos = hit.getBlockPos();
-            projectile.world.createExplosion(projectile, pos.getX(), pos.getY(), pos.getZ(), 3, ExplosionSourceType.NONE);
+            projectile.getWorld().createExplosion(projectile, pos.getX(), pos.getY(), pos.getZ(), 3, ExplosionSourceType.NONE);
             toPlaceable().tick(projectile, Situation.BODY);
         }
     }

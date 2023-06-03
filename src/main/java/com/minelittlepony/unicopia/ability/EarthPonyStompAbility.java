@@ -17,13 +17,13 @@ import com.minelittlepony.unicopia.util.PosHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -148,7 +148,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
             spawnEffectAround(player, center, radius, rad);
 
-            ParticleUtils.spawnParticle(player.world, UParticles.GROUND_POUND, player.getX(), player.getY() - 1, player.getZ(), 0, 0, 0);
+            ParticleUtils.spawnParticle(player.getWorld(), UParticles.GROUND_POUND, player.getX(), player.getY() - 1, player.getZ(), 0, 0, 0);
 
             iplayer.subtractEnergyCost(rad);
         });
@@ -159,7 +159,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
             double dist = Math.sqrt(i.getSquaredDistance(source.getX(), source.getY(), source.getZ()));
 
             if (dist <= radius) {
-                spawnEffect(source.world, i, dist, range);
+                spawnEffect(source.getWorld(), i, dist, range);
             }
         });
     }
@@ -187,7 +187,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
             w.breakBlock(pos, true);
 
             if (w instanceof ServerWorld) {
-                if (state.getMaterial() == Material.STONE && w.getRandom().nextInt(4) == 0) {
+                if (state.isIn(BlockTags.BASE_STONE_OVERWORLD) && w.getRandom().nextInt(4) == 0) {
                     ItemStack stack = UItems.PEBBLES.getDefaultStack();
                     stack.setCount(1 + w.getRandom().nextInt(2));
                     Block.dropStack(w, pos, stack);

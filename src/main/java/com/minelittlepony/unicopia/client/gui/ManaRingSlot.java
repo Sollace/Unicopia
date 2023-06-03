@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 
 class ManaRingSlot extends Slot {
@@ -18,7 +19,8 @@ class ManaRingSlot extends Slot {
     }
 
     @Override
-    protected void renderContents(MatrixStack matrices, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
+    protected void renderContents(DrawContext context, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
+        MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(24.5, 25.5, 0);
 
@@ -58,7 +60,7 @@ class ManaRingSlot extends Slot {
 
         matrices.pop();
 
-        super.renderContents(matrices, abilities, bSwap, tickDelta);
+        super.renderContents(context, abilities, bSwap, tickDelta);
     }
 
     private double renderRing(MatrixStack matrices, double outerRadius, double innerRadius, double offsetAngle, Bar bar, int color, float tickDelta) {

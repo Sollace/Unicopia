@@ -170,7 +170,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         tickers.forEach(Tickable::tick);
 
         try {
-            getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.BODY)), entity.world.isClient);
+            getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.BODY)), entity.getWorld().isClient);
         } catch (Exception e) {
             Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", entity, e);
         }
@@ -223,12 +223,12 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     private void updateDragonBreath() {
-        if (!entity.world.isClient && (entity instanceof PlayerEntity || entity.hasCustomName())) {
+        if (!entity.getWorld().isClient && (entity instanceof PlayerEntity || entity.hasCustomName())) {
 
             Vec3d targetPos = entity.getRotationVector().multiply(2).add(entity.getEyePos());
 
             if (entity.getWorld().isAir(BlockPos.ofFloored(targetPos))) {
-                DragonBreathStore store = DragonBreathStore.get(entity.world);
+                DragonBreathStore store = DragonBreathStore.get(entity.getWorld());
                 String name = entity.getDisplayName().getString();
                 store.popEntries(name).forEach(stack -> {
                     Vec3d randomPos = targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
@@ -238,16 +238,16 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                     }
 
                     for (int i = 0; i < 10; i++) {
-                        ParticleUtils.spawnParticle(entity.world, ParticleTypes.FLAME, randomPos.add(
+                        ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(
                                 VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5))
                         ), Vec3d.ZERO);
                     }
 
-                    ItemEntity item = EntityType.ITEM.create(entity.world);
+                    ItemEntity item = EntityType.ITEM.create(entity.getWorld());
                     item.setStack(stack.payload());
                     item.setPosition(randomPos);
-                    item.world.spawnEntity(item);
-                    entity.world.playSoundFromEntity(null, entity, USounds.ITEM_DRAGON_BREATH_ARRIVE, entity.getSoundCategory(), 1, 1);
+                    item.getWorld().spawnEntity(item);
+                    entity.getWorld().playSoundFromEntity(null, entity, USounds.ITEM_DRAGON_BREATH_ARRIVE, entity.getSoundCategory(), 1, 1);
 
                     if (stack.payload().getItem() == UItems.OATS && entity instanceof PlayerEntity player) {
                         UCriteria.RECEIVE_OATS.trigger(player);
@@ -395,7 +395,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public static void transmitPassengers(@Nullable Entity entity) {
-        if (entity != null && entity.world instanceof ServerWorld sw) {
+        if (entity != null && entity.getWorld() instanceof ServerWorld sw) {
             sw.getChunkManager().sendToNearbyPlayers(entity, new EntityPassengersSetS2CPacket(entity));
         }
     }

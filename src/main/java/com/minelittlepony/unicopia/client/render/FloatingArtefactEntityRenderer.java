@@ -34,7 +34,7 @@ public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtef
             stack = UItems.EMPTY_JAR.getDefaultStack();
         }
 
-        final BakedModel model = itemRenderer.getModel(stack, entity.world, null, 0);
+        final BakedModel model = itemRenderer.getModel(stack, entity.getWorld(), null, 0);
 
         final float variance = 0.25F;
         final float verticalOffset = entity.getVerticalOffset(timeDelta);

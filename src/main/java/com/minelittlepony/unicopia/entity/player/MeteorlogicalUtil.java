@@ -20,7 +20,7 @@ public interface MeteorlogicalUtil {
         }
 
         // we translate sun angle to a scale of 0-1 (0=sunrise, 1=sunset, >1 nighttime)
-        final float skyAngle = ((entity.world.getSkyAngle(1) + 0.25F) % 1F) * 2;
+        final float skyAngle = ((entity.getWorld().getSkyAngle(1) + 0.25F) % 1F) * 2;
         float playerYaw = MathHelper.wrapDegrees(entity.getHeadYaw());
         float playerAngle = (-entity.getPitch(1) / 90F) / 2F;
 

@@ -99,7 +99,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
 
         summonedEntities.removeIf(ref -> ref.getOrEmpty(source.asWorld()).filter(e -> {
             if (e.getPos().distanceTo(source.getOriginVector()) > radius * 2) {
-                e.world.sendEntityStatus(e, (byte)60);
+                e.getWorld().sendEntityStatus(e, (byte)60);
                 e.discard();
                 return false;
             }
@@ -146,7 +146,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
                 if (master != null) {
                     master.applyDamageEffects(master, e);
                 }
-                e.world.sendEntityStatus(e, (byte)60);
+                e.getWorld().sendEntityStatus(e, (byte)60);
                 e.discard();
             });
         });

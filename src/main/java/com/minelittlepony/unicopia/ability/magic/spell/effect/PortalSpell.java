@@ -122,9 +122,9 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
                     entity.setYaw(entity.getYaw() + yawDifference);
                     entity.setVelocity(entity.getVelocity().rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE));
 
-                    entity.world.playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
+                    entity.getWorld().playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
                     entity.teleport(dest.x, dest.y, dest.z);
-                    entity.world.playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
+                    entity.getWorld().playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
                     setDirty();
 
                     if (!source.subtractEnergyCost(Math.sqrt(entity.getPos().subtract(dest).length()))) {

@@ -28,7 +28,7 @@ public class ParticleHandle {
 
     public Optional<Attachment> update(UUID id, String partName, ParticleSource<?> source, Consumer<ParticleSpawner> constructor) {
         return get(partName).or(() -> {
-            if (source.asEntity().world.isClient) {
+            if (source.asEntity().getWorld().isClient) {
                 new ClientHandle().addParticle(id, partName, source, constructor);
             }
             return get(partName);

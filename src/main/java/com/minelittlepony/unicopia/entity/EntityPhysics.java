@@ -42,7 +42,7 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
     @Override
     public void tick() {
         if (isGravityNegative()) {
-            if (entity.getY() > entity.world.getHeight() + 64) {
+            if (entity.getY() > entity.getWorld().getHeight() + 64) {
                 entity.damage(entity.getDamageSources().outOfWorld(), 4.0F);
             }
 
@@ -60,7 +60,7 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
     protected void onGravitychanged() {
         entity.calculateDimensions();
 
-        if (!entity.world.isClient && entity instanceof MobEntity) {
+        if (!entity.getWorld().isClient && entity instanceof MobEntity) {
             ((MobEntity)entity).getNavigation().stop();
             ((MobEntity)entity).setTarget(null);
         }
@@ -92,9 +92,9 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
                 MathHelper.floor(entity.getZ())
         );
 
-        if (entity.world.getBlockState(pos).isAir()) {
+        if (entity.getWorld().getBlockState(pos).isAir()) {
             BlockPos below = pos.down();
-            BlockState block = entity.world.getBlockState(below);
+            BlockState block = entity.getWorld().getBlockState(below);
             if (block.isIn(BlockTags.FENCES) || block.isIn(BlockTags.WALLS) || block.getBlock() instanceof FenceGateBlock) {
                 entity.setOnGround(true);
                 return below;
@@ -108,13 +108,13 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
 
     @Override
     public void spawnSprintingParticles() {
-        BlockState state = entity.world.getBlockState(getHeadPosition());
+        BlockState state = entity.getWorld().getBlockState(getHeadPosition());
         if (state.getRenderType() != BlockRenderType.INVISIBLE) {
             Vec3d vel = entity.getVelocity();
-            entity.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, state),
-                    entity.getX() + (entity.world.random.nextFloat() - 0.5D) * entity.getWidth(),
+            entity.getWorld().addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, state),
+                    entity.getX() + (entity.getWorld().random.nextFloat() - 0.5D) * entity.getWidth(),
                     entity.getY() + entity.getHeight() - 0.1D,
-                    entity.getZ() + (entity.world.random.nextFloat() - 0.5D) * entity.getWidth(),
+                    entity.getZ() + (entity.getWorld().random.nextFloat() - 0.5D) * entity.getWidth(),
                     vel.x * -4, -1.5D, vel.z * -4);
         }
     }

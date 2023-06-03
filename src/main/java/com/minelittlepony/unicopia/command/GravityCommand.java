@@ -60,13 +60,13 @@ class GravityCommand {
         String translationKey = "commands.gravity." + key;
 
         if (source.getEntity() == player) {
-            source.sendFeedback(Text.translatable(translationKey + ".self", arguments), true);
+            source.sendFeedback(() -> Text.translatable(translationKey + ".self", arguments), true);
         } else {
             if (notifyTarget && source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
                 player.sendMessage(Text.translatable(translationKey, arguments));
             }
 
-            source.sendFeedback(Text.translatable(translationKey + ".other", Streams.concat(Stream.of(player.getDisplayName()), Arrays.stream(arguments)).toArray()), true);
+            source.sendFeedback(() -> Text.translatable(translationKey + ".other", Streams.concat(Stream.of(player.getDisplayName()), Arrays.stream(arguments)).toArray()), true);
         }
     }
 }

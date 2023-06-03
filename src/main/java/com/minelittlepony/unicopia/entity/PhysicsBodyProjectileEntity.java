@@ -107,7 +107,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     @Override
     public void onPlayerCollision(PlayerEntity player) {
 
-        if (world.isClient || isNoClip() || shake > 0) {
+        if (getWorld().isClient || isNoClip() || shake > 0) {
             return;
         }
 
@@ -132,26 +132,26 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     @Override
     protected void onBlockHit(BlockHitResult hit) {
-        BlockState state = world.getBlockState(hit.getBlockPos());
+        BlockState state = getWorld().getBlockState(hit.getBlockPos());
 
         BlockState posState = getBlockStateAtPos();
         if (state.isIn(BlockTags.WOODEN_BUTTONS) && state.getBlock() instanceof ButtonBlock button) {
-            button.powerOn(state, world, hit.getBlockPos());
+            button.powerOn(state, getWorld(), hit.getBlockPos());
         } else if (posState.isIn(BlockTags.WOODEN_BUTTONS) && posState.getBlock() instanceof ButtonBlock button) {
-            button.powerOn(posState, world, getBlockPos());
+            button.powerOn(posState, getWorld(), getBlockPos());
         }
 
         if (state.getBlock() instanceof LeverBlock lever) {
-            lever.togglePower(state, world, hit.getBlockPos());
+            lever.togglePower(state, getWorld(), hit.getBlockPos());
         } else if (posState.getBlock() instanceof LeverBlock lever) {
-            lever.togglePower(posState, world, getBlockPos());
+            lever.togglePower(posState, getWorld(), getBlockPos());
         }
 
         BlockPos belowPos = getBlockPos().down();
-        BlockState below = world.getBlockState(belowPos);
+        BlockState below = getWorld().getBlockState(belowPos);
         ItemStack stack = getStack();
         if (below.getBlock() instanceof HopperBlock hopper) {
-            BlockEntity e = world.getBlockEntity(belowPos);
+            BlockEntity e = getWorld().getBlockEntity(belowPos);
             if (e instanceof Inventory inventory) {
                 for (int i = 0; i < inventory.size(); i++) {
                     ItemStack slotStack = inventory.getStack(i);
@@ -171,18 +171,18 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         }
 
         if (getVelocity().length() > 0.2F) {
-            boolean ownerCanModify = !world.isClient && Caster.of(getOwner()).filter(pony -> pony.canModifyAt(hit.getBlockPos())).isPresent();
+            boolean ownerCanModify = !getWorld().isClient && Caster.of(getOwner()).filter(pony -> pony.canModifyAt(hit.getBlockPos())).isPresent();
 
-            if (ownerCanModify && world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
-                if ((!isBouncy() || world.random.nextInt(200) == 0) && state.isIn(UTags.FRAGILE)) {
-                    world.breakBlock(hit.getBlockPos(), true);
+            if (ownerCanModify && getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+                if ((!isBouncy() || getWorld().random.nextInt(200) == 0) && state.isIn(UTags.FRAGILE)) {
+                    getWorld().breakBlock(hit.getBlockPos(), true);
                 }
             }
 
             if (isBouncy()) {
                 Direction.Axis side = hit.getSide().getAxis();
 
-                double randomisation = ((world.random.nextFloat() - 0.5F) / 5);
+                double randomisation = ((getWorld().random.nextFloat() - 0.5F) / 5);
 
                 double inflectionAmount = randomisation + -0.4;
                 double deflectionAmount = randomisation + 0.3;
@@ -200,9 +200,9 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
                 }
 
                 addVelocity(
-                        ((world.random.nextFloat() - 0.5F) / 5),
-                        ((world.random.nextFloat() - 0.5F) / 5),
-                        ((world.random.nextFloat() - 0.5F) / 5)
+                        ((getWorld().random.nextFloat() - 0.5F) / 5),
+                        ((getWorld().random.nextFloat() - 0.5F) / 5),
+                        ((getWorld().random.nextFloat() - 0.5F) / 5)
                 );
             } else {
                 super.onBlockHit(hit);
@@ -212,7 +212,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         }
 
         setSound(state.getSoundGroup().getStepSound());
-        world.playSoundFromEntity(null, this, state.getSoundGroup().getStepSound(), SoundCategory.BLOCKS, 1, 1);
+        getWorld().playSoundFromEntity(null, this, state.getSoundGroup().getStepSound(), SoundCategory.BLOCKS, 1, 1);
         emitGameEvent(GameEvent.STEP);
     }
 

@@ -34,7 +34,7 @@ public class EntityCollisions {
         } else if (entity instanceof FallingBlockEntity) {
             BlockPos pos = entity.getBlockPos();
             output.accept(((FallingBlockEntity) entity).getBlockState()
-                    .getCollisionShape(entity.world, entity.getBlockPos(), context)
+                    .getCollisionShape(entity.getWorld(), entity.getBlockPos(), context)
                     .offset(pos.getX(), pos.getY(), pos.getZ())
             );
         }

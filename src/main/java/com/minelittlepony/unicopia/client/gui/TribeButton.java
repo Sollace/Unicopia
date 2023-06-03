@@ -8,8 +8,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -28,9 +28,8 @@ public class TribeButton extends Button {
     }
 
     @Override
-    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(DrawContext context, int mouseX, int mouseY, float partialTicks) {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.setShaderTexture(0, TribeSelectionScreen.TEXTURE);
         RenderSystem.setShaderColor(1, 1, 1, alpha);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -41,18 +40,18 @@ public class TribeButton extends Button {
 
         MinecraftClient mc = MinecraftClient.getInstance();
 
-        drawTexture(matrices, getX()  - 3, getY() - 13, 0, 0, 76, 69);
+        context.drawTexture(TribeSelectionScreen.TEXTURE, getX()  - 3, getY() - 13, 0, 0, 76, 69);
         if (isHovered()) {
-            drawTexture(matrices, getX()  - 4, getY() - 14, 76, 0, 78, 71);
+            context.drawTexture(TribeSelectionScreen.TEXTURE, getX()  - 4, getY() - 14, 76, 0, 78, 71);
 
             if (hovered && screenWidth > 0) {
                 Identifier id = Race.REGISTRY.getId(race);
-                drawCenteredTextWithShadow(matrices, getFont(), Text.translatable("gui.unicopia.tribe_selection.describe." + id.getNamespace() + "." + id.getPath()), screenWidth / 2, getY() + height, 0xFFFFFFFF);
+                context.drawCenteredTextWithShadow(getFont(), Text.translatable("gui.unicopia.tribe_selection.describe." + id.getNamespace() + "." + id.getPath()), screenWidth / 2, getY() + height, 0xFFFFFFFF);
             }
         }
 
         if (getStyle().hasIcon()) {
-            getStyle().getIcon().render(matrices, getX(), getY(), mouseX, mouseY, partialTicks);
+            getStyle().getIcon().render(context, getX(), getY(), mouseX, mouseY, partialTicks);
         }
 
         int foreColor = getStyle().getColor();
@@ -65,7 +64,7 @@ public class TribeButton extends Button {
         setMessage(getStyle().getText());
 
 
-        renderForground(matrices, mc, mouseX, mouseY, foreColor | MathHelper.ceil(alpha * 255.0F) << 24);
+        renderForground(context, mc, mouseX, mouseY, foreColor | MathHelper.ceil(alpha * 255.0F) << 24);
     }
 
     public static ISprite createSprite(Race race, int x, int y, int size) {

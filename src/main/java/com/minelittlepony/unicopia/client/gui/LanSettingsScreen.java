@@ -15,8 +15,8 @@ import com.minelittlepony.unicopia.Config;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -135,10 +135,10 @@ public class LanSettingsScreen extends GameGui {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
-        renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, tickDelta);
-        content.render(matrices, mouseX, mouseY, tickDelta);
+    public void render(DrawContext context, int mouseX, int mouseY, float tickDelta) {
+        renderBackground(context);
+        super.render(context, mouseX, mouseY, tickDelta);
+        content.render(context, mouseX, mouseY, tickDelta);
     }
 
     @Override

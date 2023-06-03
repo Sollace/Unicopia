@@ -39,11 +39,11 @@ public class TransformationSpell extends AbstractSpell implements ProjectileDele
 
     @Override
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
-        if (projectile.world.isClient) {
+        if (projectile.getWorld().isClient) {
             return;
         }
         Entity entity = hit.getEntity();
-        pickType(entity.getType(), entity.world).flatMap(type -> convert(entity, type)).ifPresentOrElse(e -> {
+        pickType(entity.getType(), entity.getWorld()).flatMap(type -> convert(entity, type)).ifPresentOrElse(e -> {
             entity.playSound(USounds.SPELL_TRANSFORM_TRANSMUTE_ENTITY, 1, 1);
         }, () -> {
             ParticleUtils.spawnParticles(ParticleTypes.SMOKE, entity, 20);

@@ -5,7 +5,7 @@ import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.RecipeSerializer;
@@ -20,7 +20,7 @@ public class SpellShapedCraftingRecipe extends ShapedRecipe {
     }
 
     @Override
-    public ItemStack craft(CraftingInventory inventory, DynamicRegistryManager registries) {
+    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
         return InventoryUtil.stream(inventory)
             .filter(stack -> stack.getItem() instanceof EnchantableItem)
             .filter(EnchantableItem::isEnchanted)

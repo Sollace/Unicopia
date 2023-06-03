@@ -57,7 +57,7 @@ public class UnicopiaTrinket implements Trinket {
 
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        item.inventoryTick(stack, entity.world, entity, slot.index(), false);
+        item.inventoryTick(stack, entity.getWorld(), entity, slot.index(), false);
     }
 
     @Override

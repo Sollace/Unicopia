@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.block;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.block.*;
+import net.minecraft.block.enums.Instrument;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.sound.BlockSoundGroup;
@@ -18,11 +19,13 @@ public class ZapAppleLogBlock extends PillarBlock {
     private final Block artifialModelBlock;
 
     ZapAppleLogBlock(Block artifialModelBlock, MapColor topMapColor, MapColor sideMapColor) {
-        super(AbstractBlock.Settings.of(Material.WOOD,
+        super(AbstractBlock.Settings.create().mapColor(
                     state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor
                 )
+                .instrument(Instrument.BASS)
+                .strength(2.0f)
                 .sounds(BlockSoundGroup.WOOD)
-                .strength(500, 1200));
+                .burnable());
         setDefaultState(getDefaultState().with(NATURAL, true));
         this.artifialModelBlock = artifialModelBlock;
     }

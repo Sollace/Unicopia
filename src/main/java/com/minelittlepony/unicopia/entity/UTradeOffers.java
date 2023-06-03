@@ -87,7 +87,7 @@ public interface UTradeOffers {
     }
 
     private static Item random(Entity e, TagKey<Item> item, Random rng) {
-        return RegistryUtils.entriesForTag(e.world, item).getRandom(rng).get().value();
+        return RegistryUtils.entriesForTag(e.getWorld(), item).getRandom(rng).get().value();
     }
 
     static class JarredItemTradeOfferFactory implements TradeOffers.Factory {

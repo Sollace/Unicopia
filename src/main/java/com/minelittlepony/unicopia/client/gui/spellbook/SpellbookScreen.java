@@ -19,6 +19,7 @@ import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
@@ -27,7 +28,6 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -70,7 +70,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             return chapters.getCurrentChapter() == craftingChapter;
         });
         handler.getSpellbookState().setSynchronizer(state -> {
-            Channel.CLIENT_SPELLBOOK_UPDATE.sendToServer(new MsgSpellbookStateChanged<ServerPlayerEntity>(handler.syncId, state));
+            Channel.CLIENT_SPELLBOOK_UPDATE.sendToServer(MsgSpellbookStateChanged.create(handler, state));
         });
     }
 
@@ -133,21 +133,19 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
+    public void render(DrawContext context, int mouseX, int mouseY, float partialTicks) {
         if (getState().isDirty()) {
             clearAndInit();
         }
-        super.render(matrices, mouseX, mouseY, partialTicks);
-        drawMouseoverTooltip(matrices, mouseX, mouseY);
+        super.render(context, mouseX, mouseY, partialTicks);
     }
 
     @Override
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        renderBackground(matrices);
+    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+        renderBackground(context);
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShaderTexture(0, TEXTURE);
 
-        drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight, 512, 256);
+        context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight, 512, 256);
 
         if (Debug.DEBUG_SPELLBOOK_CHAPTERS) {
             clearAndInit();
@@ -169,43 +167,41 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
             boolean isRight = tab.chapter().side() == TabSide.RIGHT;
 
-            drawTexture(matrices, bounds.left, bounds.top, isRight ? 510 - bounds.width : 402, v, bounds.width, bounds.height, 512, 256);
+            context.drawTexture(TEXTURE, bounds.left, bounds.top, isRight ? 510 - bounds.width : 402, v, bounds.width, bounds.height, 512, 256);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
             RenderSystem.setShaderTexture(0, tab.icon().get());
-            drawTexture(matrices, isRight ? bounds.left + bounds.width - 16 - 10 : bounds.left + 10, bounds.top + (bounds.height - 16) / 2, 0, 0, 16, 16, 16, 16);
+            context.drawTexture(TEXTURE, isRight ? bounds.left + bounds.width - 16 - 10 : bounds.left + 10, bounds.top + (bounds.height - 16) / 2, 0, 0, 16, 16, 16, 16);
             RenderSystem.setShaderTexture(0, TEXTURE);
         });
 
+        MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(x, y, 0);
-        chapters.getCurrentChapter().content().ifPresent(content -> content.draw(matrices, mouseX, mouseY, (IViewRoot)this));
+        chapters.getCurrentChapter().content().ifPresent(content -> content.draw(context, mouseX, mouseY, (IViewRoot)this));
         matrices.pop();
     }
 
-    void drawSlots(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+    void drawSlots(DrawContext context, int mouseX, int mouseY, float delta) {
+        MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(x, y, 0);
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShaderTexture(0, SLOT);
         RenderSystem.enableBlend();
 
         for (Slot slot : handler.slots) {
             if (slot.isEnabled() && slot instanceof SpellbookSlot p) {
-                drawTexture(matrices, slot.x - 8, slot.y - 8, 0, 0, 32, 32, 32, 32);
+                context.drawTexture(SLOT, slot.x - 8, slot.y - 8, 0, 0, 32, 32, 32, 32);
 
                 if (slot instanceof InputSlot) {
                     RenderSystem.setShaderColor(1, 1, 1, 0.3F);
-                    RenderSystem.setShaderTexture(0, GEM);
-                    drawTexture(matrices, slot.x, slot.y, 0, 0, 16, 16, 16, 16);
+                    context.drawTexture(GEM, slot.x, slot.y, 0, 0, 16, 16, 16, 16);
                     RenderSystem.setShaderColor(1, 1, 1, 1);
-                    RenderSystem.setShaderTexture(0, SLOT);
                 }
 
                 if (!(p instanceof InventorySlot)) {
                     float weight = p.getWeight();
-                    ItemTraitsTooltipRenderer.renderStackTraits(slot.getStack(), matrices, slot.x, slot.y, weight == 0 ? 1 : weight, delta, slot.id);
-                    RenderSystem.setShaderTexture(0, SLOT);
+                    ItemTraitsTooltipRenderer.renderStackTraits(slot.getStack(), context, slot.x, slot.y, weight == 0 ? 1 : weight, delta, slot.id);
                     RenderSystem.enableBlend();
                 }
             }
@@ -216,7 +212,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
     }
 
     @Override
-    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+    protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
     }
 
     @Override
@@ -271,7 +267,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
         }
 
         @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
+        public void renderButton(DrawContext context, int mouseX, int mouseY, float tickDelta) {
             if (!active) {
                return;
             }
@@ -279,7 +275,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             int state = hovered ? 1 : 0;
 
             sprite.setTextureOffset(23 * state, (int)(479 + 6.5F - (increment * 6.5F)));
-            super.renderButton(matrices, mouseX, mouseY, tickDelta);
+            super.renderButton(context, mouseX, mouseY, tickDelta);
         }
     }
 
@@ -294,7 +290,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
         }
 
         @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
+        public void renderButton(DrawContext context, int mouseX, int mouseY, float tickDelta) {
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 
             RenderSystem.setShaderColor(1, 1, 1, alpha);
@@ -304,7 +300,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
                     GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 
             if (getStyle().hasIcon()) {
-                getStyle().getIcon().render(matrices, getX(), getY(), mouseX, mouseY, tickDelta);
+                getStyle().getIcon().render(context, getX(), getY(), mouseX, mouseY, tickDelta);
             }
 
             RenderSystem.setShaderColor(1, 1, 1, 1);

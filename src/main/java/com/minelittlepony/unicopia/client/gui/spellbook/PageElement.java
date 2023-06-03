@@ -11,11 +11,10 @@ import com.minelittlepony.unicopia.client.gui.ParagraphWrappingVisitor;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Drawable;
 import com.minelittlepony.unicopia.container.SpellbookChapterLoader.Flow;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Style;
@@ -24,7 +23,7 @@ import net.minecraft.util.*;
 
 interface PageElement extends Drawable {
     @Override
-    default void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
+    default void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
 
     }
 
@@ -64,10 +63,8 @@ interface PageElement extends Drawable {
         Bounds bounds,
         Flow flow) implements PageElement {
         @Override
-        public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
-            RenderSystem.setShaderTexture(0, texture);
-            DrawableHelper.drawTexture(matrices, 0, 0, 0, 0, 0, bounds().width, bounds().height, bounds().width, bounds().height);
-            RenderSystem.setShaderTexture(0, SpellbookScreen.TEXTURE);
+        public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
+            context.drawTexture(texture, 0, 0, 0, 0, 0, bounds().width, bounds().height, bounds().width, bounds().height);
         }
     }
 
@@ -96,12 +93,13 @@ interface PageElement extends Drawable {
         }
 
         @Override
-        public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
+        public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
             TextRenderer font = MinecraftClient.getInstance().textRenderer;
             boolean needsMoreXp = page.getLevel() < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < page.getLevel();
+            MatrixStack matrices = context.getMatrices();
             matrices.push();
             wrappedText.forEach(line -> {
-                font.draw(matrices, needsMoreXp ? line.text().copy().formatted(Formatting.OBFUSCATED) : line.text().copy(), line.x(), 0, 0);
+                context.drawText(font, needsMoreXp ? line.text().copy().formatted(Formatting.OBFUSCATED) : line.text().copy(), line.x(), 0, 0, false);
                 matrices.translate(0, font.fontHeight, 0);
             });
             matrices.pop();

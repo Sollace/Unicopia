@@ -4,7 +4,7 @@ import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.common.client.gui.element.Label;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.OrderedText;
 
 public class TextBlock extends Label {
@@ -24,11 +24,11 @@ public class TextBlock extends Label {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
+    public void render(DrawContext context, int mouseX, int mouseY, float partialTicks) {
         int textY = (int)(getY() + MinecraftClient.getInstance().textRenderer.fontHeight/1.5F);
 
         for (OrderedText line : getFont().wrapLines(getStyle().getText(), maxWidth)) {
-            getFont().drawWithShadow(matrices, line, getX(), textY, getStyle().getColor());
+            context.drawText(getFont(), line, getX(), textY, getStyle().getColor(), true);
             textY += getFont().fontHeight;
         }
     }

@@ -80,18 +80,18 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder, Mu
 
     public TypedActionResult<ItemStack> onFedTo(ItemStack stack, PlayerEntity player, Entity e) {
 
-        LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(e.world);
+        LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(e.getWorld());
         lightning.refreshPositionAfterTeleport(e.getX(), e.getY(), e.getZ());
         lightning.setCosmetic(true);
         if (player instanceof ServerPlayerEntity) {
             lightning.setChanneler((ServerPlayerEntity)player);
         }
 
-        if (e.world instanceof ServerWorld) {
-            e.onStruckByLightning((ServerWorld)e.world, lightning);
+        if (!e.getWorld().isClient) {
+            e.onStruckByLightning((ServerWorld)e.getWorld(), lightning);
             UCriteria.FEED_TRICK_APPLE.trigger(player);
         }
-        player.world.spawnEntity(lightning);
+        player.getWorld().spawnEntity(lightning);
 
         if (!player.getAbilities().creativeMode) {
             stack.decrement(1);

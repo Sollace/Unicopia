@@ -71,7 +71,7 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
                         return caster.getOriginVector().add(VecHelper.supply(() -> caster.asWorld().random.nextInt(3) - 1));
                     }));
                     entity.setMaster(caster);
-                    entity.world.spawnEntity(entity);
+                    entity.getWorld().spawnEntity(entity);
 
                     ref.set(entity);
                     setDirty();
@@ -94,7 +94,7 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
         }
         lights.forEach(ref -> {
             ref.ifPresent(caster.asWorld(), e -> {
-                e.world.sendEntityStatus(e, (byte)60);
+                e.getWorld().sendEntityStatus(e, (byte)60);
                 e.discard();
             });
         });

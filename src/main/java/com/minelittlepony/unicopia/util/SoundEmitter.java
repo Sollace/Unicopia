@@ -18,7 +18,7 @@ public interface SoundEmitter<E extends Entity> extends EntityConvertable<E> {
     }
 
     default float getRandomPitch() {
-        return getRandomPitch(asEntity().world.getRandom());
+        return getRandomPitch(asEntity().getWorld().getRandom());
     }
 
     static void playSoundAt(Entity entity, SoundEvent sound, float volume, float pitch) {
@@ -26,7 +26,7 @@ public interface SoundEmitter<E extends Entity> extends EntityConvertable<E> {
     }
 
     static void playSoundAt(Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-        entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, category, volume, pitch);
+        entity.getWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, category, volume, pitch);
     }
 
     static float getRandomPitch(Random rng) {

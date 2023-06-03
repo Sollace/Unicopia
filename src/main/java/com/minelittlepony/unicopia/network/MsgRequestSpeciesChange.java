@@ -39,11 +39,11 @@ public record MsgRequestSpeciesChange (
             player.setSpecies(newRace.isPermitted(sender) ? newRace : WorldTribeManager.forWorld((ServerWorld)player.asWorld()).getDefaultRace());
 
             if (force) {
-                if (sender.world.getGameRules().getBoolean(UGameRules.ANNOUNCE_TRIBE_JOINS)) {
+                if (sender.getWorld().getGameRules().getBoolean(UGameRules.ANNOUNCE_TRIBE_JOINS)) {
                     Text message = Text.translatable("respawn.reason.joined_new_tribe",
                             sender.getDisplayName(),
                             player.getActualSpecies().getDisplayName(), player.getActualSpecies().getAltDisplayName());
-                    sender.world.getPlayers().forEach(p -> {
+                    sender.getWorld().getPlayers().forEach(p -> {
                         ((ServerPlayerEntity)p).sendMessageToClient(message, false);
                     });
                 }

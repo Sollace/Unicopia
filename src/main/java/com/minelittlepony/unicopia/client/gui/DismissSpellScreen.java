@@ -72,21 +72,22 @@ public class DismissSpellScreen extends GameGui {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        fillGradient(matrices, 0, 0, width, height / 2, 0xF0101010, 0x80101010);
-        fillGradient(matrices, 0, height / 2, width, height, 0x80101010, 0xF0101010);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        context.fillGradient(0, 0, width, height / 2, 0xF0101010, 0x80101010);
+        context.fillGradient(0, height / 2, width, height, 0x80101010, 0xF0101010);
 
         relativeMouseX = -width + mouseX * 2;
         relativeMouseY = -height + mouseY * 2;
 
+        MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(width - mouseX, height - mouseY, 0);
         DrawableUtil.drawLine(matrices, 0, 0, relativeMouseX, relativeMouseY, 0xFFFFFF88);
         DrawableUtil.drawArc(matrices, 40, 80, 0, DrawableUtil.TAU, 0x00000010, false);
         DrawableUtil.drawArc(matrices, 160, 1600, 0, DrawableUtil.TAU, 0x00000020, false);
 
-        super.render(matrices, mouseX, mouseY, delta);
-        DrawableUtil.renderRaceIcon(matrices, pony.getObservedSpecies(), 0, 0, 16);
+        super.render(context, mouseX, mouseY, delta);
+        DrawableUtil.renderRaceIcon(context, pony.getObservedSpecies(), 0, 0, 16);
         matrices.pop();
 
         DrawableUtil.drawLine(matrices, mouseX, mouseY - 4, mouseX, mouseY + 4, 0xFFAAFF99);
@@ -95,7 +96,7 @@ public class DismissSpellScreen extends GameGui {
         matrices.push();
         matrices.translate(0, 0, 300);
         Text cancel = Text.literal("Press ESC to cancel");
-        getFont().drawWithShadow(matrices, cancel, (width - getFont().getWidth(cancel)) / 2, height - 30, 0xFFFFFFFF);
+        context.drawText(getFont(), cancel, (width - getFont().getWidth(cancel)) / 2, height - 30, 0xFFFFFFFF, true);
         matrices.pop();
     }
 
@@ -159,14 +160,15 @@ public class DismissSpellScreen extends GameGui {
         }
 
         @Override
-        public void render(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
+        public void render(DrawContext context, int mouseX, int mouseY, float tickDelta) {
+            MatrixStack matrices = context.getMatrices();
             copy.set(x, y, z, w);
             copy.mul(matrices.peek().getPositionMatrix());
 
             var type = actualSpell.getType().withTraits(actualSpell.getTraits());
 
             DrawableUtil.drawLine(matrices, 0, 0, (int)x, (int)y, 0xFFAAFF99);
-            DrawableUtil.renderItemIcon(actualSpell.isDead() ? UItems.BOTCHED_GEM.getDefaultStack() : type.getDefaultStack(),
+            DrawableUtil.renderItemIcon(context, actualSpell.isDead() ? UItems.BOTCHED_GEM.getDefaultStack() : type.getDefaultStack(),
                     copy.x - 8 + copy.z / 20F,
                     copy.y - 8 + copy.z / 20F,
                     1
@@ -199,7 +201,7 @@ public class DismissSpellScreen extends GameGui {
                 }
                 tooltip.add(ScreenTexts.EMPTY);
                 tooltip.add(Text.translatable("[Click to Discard]"));
-                renderTooltip(matrices, tooltip, 0, 0);
+                context.drawTooltip(getFont(), tooltip, 0, 0);
 
                 if (!lastMouseOver) {
                     lastMouseOver = true;

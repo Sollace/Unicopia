@@ -34,7 +34,7 @@ public class MobBehaviour<T extends MobEntity> extends EntityBehaviour<T> {
     @SuppressWarnings("unchecked")
     protected T getDummy(T entity) {
         if (dummy == null) {
-            dummy = (T)entity.getType().create(entity.world);
+            dummy = (T)entity.getType().create(entity.getWorld());
         }
 
         return dummy;

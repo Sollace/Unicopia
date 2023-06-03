@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
@@ -20,13 +20,13 @@ public abstract class ItemCombinationRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public final boolean matches(CraftingInventory inventory, World world) {
+    public final boolean matches(RecipeInputInventory inventory, World world) {
         Pair<ItemStack, ItemStack> result = runMatch(inventory);
 
         return !result.getLeft().isEmpty() && !result.getRight().isEmpty();
     }
 
-    protected Pair<ItemStack, ItemStack> runMatch(CraftingInventory inventory) {
+    protected Pair<ItemStack, ItemStack> runMatch(RecipeInputInventory inventory) {
         ItemStack bangle = ItemStack.EMPTY;
         ItemStack dust = ItemStack.EMPTY;
 

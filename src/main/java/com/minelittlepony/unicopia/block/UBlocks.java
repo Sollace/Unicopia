@@ -9,25 +9,27 @@ import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.server.world.UTreeGen;
 
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricMaterialBuilder;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.AbstractBlock.Settings;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.*;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.Registries;
 
 public interface UBlocks {
     List<Block> TRANSLUCENT_BLOCKS = new ArrayList<>();
 
-    Block ROCKS = register("rocks", new RockCropBlock(FabricBlockSettings.of(
-                new FabricMaterialBuilder(MapColor.STONE_GRAY).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().build()
-            )
+    Block ROCKS = register("rocks", new RockCropBlock(Settings.create()
+            .mapColor(MapColor.STONE_GRAY)
+            .nonOpaque()
+            .pistonBehavior(PistonBehavior.DESTROY)
             .requiresTool()
             .ticksRandomly()
             .strength(2)
@@ -44,22 +46,22 @@ public interface UBlocks {
     Block ZAP_LEAVES = register("zap_leaves", new ZapAppleLeavesBlock(), ItemGroups.NATURAL);
     Block FLOWERING_ZAP_LEAVES = register("flowering_zap_leaves", new BaseZapAppleLeavesBlock(), ItemGroups.NATURAL);
     Block ZAP_LEAVES_PLACEHOLDER = register("zap_leaves_placeholder", new ZapAppleLeavesPlaceholderBlock());
-    Block ZAP_BULB = register("zap_bulb", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GRAY).strength(500, 1200).sounds(BlockSoundGroup.AZALEA_LEAVES), Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false));
-    Block ZAP_APPLE = register("zap_apple", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GRAY).sounds(BlockSoundGroup.AZALEA_LEAVES), Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false));
+    Block ZAP_BULB = register("zap_bulb", new FruitBlock(Settings.create().mapColor(MapColor.GRAY).strength(500, 1200).sounds(BlockSoundGroup.AZALEA_LEAVES), Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false));
+    Block ZAP_APPLE = register("zap_apple", new FruitBlock(Settings.create().mapColor(MapColor.GRAY).sounds(BlockSoundGroup.AZALEA_LEAVES), Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false));
 
     Block PALM_LOG = register("palm_log", BlockConstructionUtils.createLogBlock(MapColor.OFF_WHITE, MapColor.SPRUCE_BROWN), ItemGroups.BUILDING_BLOCKS);
     Block PALM_WOOD = register("palm_wood", BlockConstructionUtils.createWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
     Block STRIPPED_PALM_LOG = register("stripped_palm_log", BlockConstructionUtils.createLogBlock(MapColor.OFF_WHITE, MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
     Block STRIPPED_PALM_WOOD = register("stripped_palm_wood", BlockConstructionUtils.createWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
 
-    Block PALM_PLANKS = register("palm_planks", new Block(Settings.of(Material.WOOD, MapColor.OFF_WHITE).strength(2, 3).sounds(BlockSoundGroup.WOOD)), ItemGroups.BUILDING_BLOCKS);
-    Block PALM_STAIRS = register("palm_stairs", new StairsBlock(PALM_PLANKS.getDefaultState(), Settings.copy(PALM_PLANKS)), ItemGroups.BUILDING_BLOCKS);
-    Block PALM_SLAB = register("palm_slab", new SlabBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD)), ItemGroups.BUILDING_BLOCKS);
-    Block PALM_FENCE = register("palm_fence", new FenceBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD)), ItemGroups.BUILDING_BLOCKS);
-    Block PALM_FENCE_GATE = register("palm_fence_gate", new FenceGateBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD), WoodType.OAK), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_PLANKS = register("palm_planks", new Block(Settings.create().mapColor(MapColor.OFF_WHITE).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_STAIRS = register("palm_stairs", new StairsBlock(PALM_PLANKS.getDefaultState(), Settings.copy(PALM_PLANKS).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_SLAB = register("palm_slab", new SlabBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_FENCE = register("palm_fence", new FenceBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_FENCE_GATE = register("palm_fence_gate", new FenceGateBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL), WoodType.OAK), ItemGroups.BUILDING_BLOCKS);
    // Block PALM_DOOR = register("palm_door", new DoorBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque(), SoundEvents.BLOCK_WOODEN_DOOR_CLOSE, SoundEvents.BLOCK_WOODEN_DOOR_OPEN), ItemGroups.BUILDING_BLOCKS);
    // Block PALM_TRAPDOOR = register("palm_trapdoor", new TrapdoorBlock(Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).strength(3.0f).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(UBlocks::never), SoundEvents.BLOCK_WOODEN_TRAPDOOR_CLOSE, SoundEvents.BLOCK_WOODEN_TRAPDOOR_OPEN), ItemGroups.BUILDING_BLOCKS);
-    Block PALM_PRESSURE_PLATE = register("palm_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, Settings.of(Material.WOOD, PALM_PLANKS.getDefaultMapColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD), BlockSetType.OAK), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_PRESSURE_PLATE = register("palm_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY), BlockSetType.OAK), ItemGroups.BUILDING_BLOCKS);
     Block PALM_BUTTON = register("palm_button", BlockConstructionUtils.woodenButton(), ItemGroups.BUILDING_BLOCKS);
    // Block PALM_SIGN = register("palm_sign", new SignBlock(Settings.of(Material.WOOD).noCollision().strength(1.0f).sounds(BlockSoundGroup.WOOD), PALM_SIGN_TYPE), ItemGroups.BUILDING_BLOCKS);
    //
@@ -69,16 +71,16 @@ public interface UBlocks {
 
     Block PALM_LEAVES = register("palm_leaves", BlockConstructionUtils.createLeavesBlock(BlockSoundGroup.GRASS), ItemGroups.BUILDING_BLOCKS);
 
-    Block BANANAS = register("bananas", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.YELLOW).sounds(BlockSoundGroup.WOOD).hardness(3), Direction.DOWN, PALM_LEAVES, VoxelShapes.fullCube()));
+    Block BANANAS = register("bananas", new FruitBlock(Settings.create().mapColor(MapColor.YELLOW).sounds(BlockSoundGroup.WOOD).hardness(3).pistonBehavior(PistonBehavior.DESTROY), Direction.DOWN, PALM_LEAVES, VoxelShapes.fullCube()));
 
-    Block WEATHER_VANE = register("weather_vane", new WeatherVaneBlock(FabricBlockSettings.of(Material.METAL, MapColor.BLACK).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.METAL).nonOpaque()), ItemGroups.TOOLS);
+    Block WEATHER_VANE = register("weather_vane", new WeatherVaneBlock(Settings.create().mapColor(MapColor.BLACK).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.METAL).nonOpaque().pistonBehavior(PistonBehavior.BLOCK)), ItemGroups.TOOLS);
 
     Block GREEN_APPLE_LEAVES = register("green_apple_leaves", new FruitBearingBlock(FabricBlockSettings.copy(Blocks.OAK_LEAVES),
             0xE5FFFF88,
             () -> UBlocks.GREEN_APPLE,
             () -> UItems.GREEN_APPLE.getDefaultStack()
     ), ItemGroups.NATURAL);
-    Block GREEN_APPLE = register("green_apple", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GREEN).sounds(BlockSoundGroup.WOOD), Direction.DOWN, GREEN_APPLE_LEAVES, FruitBlock.DEFAULT_SHAPE));
+    Block GREEN_APPLE = register("green_apple", new FruitBlock(Settings.create().mapColor(MapColor.GREEN), Direction.DOWN, GREEN_APPLE_LEAVES, FruitBlock.DEFAULT_SHAPE));
     Block GREEN_APPLE_SPROUT = register("green_apple_sprout", new SproutBlock(0xE5FFFF88, () -> UItems.GREEN_APPLE_SEEDS, () -> UTreeGen.GREEN_APPLE_TREE.sapling().map(Block::getDefaultState).get()));
 
     Block SWEET_APPLE_LEAVES = register("sweet_apple_leaves", new FruitBearingBlock(FabricBlockSettings.copy(Blocks.OAK_LEAVES),
@@ -86,7 +88,7 @@ public interface UBlocks {
             () -> UBlocks.SWEET_APPLE,
             () -> UItems.SWEET_APPLE.getDefaultStack()
     ), ItemGroups.NATURAL);
-    Block SWEET_APPLE = register("sweet_apple", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GREEN).sounds(BlockSoundGroup.WOOD), Direction.DOWN, SWEET_APPLE_LEAVES, FruitBlock.DEFAULT_SHAPE));
+    Block SWEET_APPLE = register("sweet_apple", new FruitBlock(Settings.create().mapColor(MapColor.GREEN), Direction.DOWN, SWEET_APPLE_LEAVES, FruitBlock.DEFAULT_SHAPE));
     Block SWEET_APPLE_SPROUT = register("sweet_apple_sprout", new SproutBlock(0xE5FFCC88, () -> UItems.SWEET_APPLE_SEEDS, () -> UTreeGen.SWEET_APPLE_TREE.sapling().map(Block::getDefaultState).get()));
 
     Block SOUR_APPLE_LEAVES = register("sour_apple_leaves", new FruitBearingBlock(FabricBlockSettings.copy(Blocks.OAK_LEAVES),
@@ -94,10 +96,10 @@ public interface UBlocks {
             () -> UBlocks.SOUR_APPLE,
             () -> UItems.SOUR_APPLE.getDefaultStack()
     ), ItemGroups.NATURAL);
-    Block SOUR_APPLE = register("sour_apple", new FruitBlock(FabricBlockSettings.of(Material.GOURD, MapColor.GREEN).sounds(BlockSoundGroup.WOOD), Direction.DOWN, SOUR_APPLE_LEAVES, FruitBlock.DEFAULT_SHAPE));
+    Block SOUR_APPLE = register("sour_apple", new FruitBlock(Settings.create().mapColor(MapColor.GREEN), Direction.DOWN, SOUR_APPLE_LEAVES, FruitBlock.DEFAULT_SHAPE));
     Block SOUR_APPLE_SPROUT = register("sour_apple_sprout", new SproutBlock(0xE5FFCC88, () -> UItems.SOUR_APPLE_SEEDS, () -> UTreeGen.SOUR_APPLE_TREE.sapling().map(Block::getDefaultState).get()));
 
-    Block APPLE_PIE = register("apple_pie", new PieBlock(FabricBlockSettings.of(Material.CAKE, MapColor.ORANGE).strength(0.5F).sounds(BlockSoundGroup.WET_GRASS), () -> UItems.APPLE_PIE_SLICE));
+    Block APPLE_PIE = register("apple_pie", new PieBlock(Settings.create().solid().mapColor(MapColor.ORANGE).strength(0.5F).sounds(BlockSoundGroup.WET_GRASS).pistonBehavior(PistonBehavior.DESTROY), () -> UItems.APPLE_PIE_SLICE));
 
     SegmentedCropBlock OATS = register("oats", SegmentedCropBlock.create(11, 5, AbstractBlock.Settings.copy(Blocks.WHEAT), () -> UItems.OAT_SEEDS, null, () -> UBlocks.OATS_STEM));
     SegmentedCropBlock OATS_STEM = register("oats_stem", OATS.createNext(5));
@@ -107,11 +109,11 @@ public interface UBlocks {
         return register(Unicopia.id(name), item);
     }
 
-    static <T extends Block> T register(String name, T block, ItemGroup group) {
+    static <T extends Block> T register(String name, T block, RegistryKey<ItemGroup> group) {
         return register(Unicopia.id(name), block, group);
     }
 
-    static <T extends Block> T register(Identifier id, T block, ItemGroup group) {
+    static <T extends Block> T register(Identifier id, T block, RegistryKey<ItemGroup> group) {
         UItems.register(id, ItemGroupRegistry.register(new BlockItem(block, new Item.Settings()), group));
         return register(id, block);
     }

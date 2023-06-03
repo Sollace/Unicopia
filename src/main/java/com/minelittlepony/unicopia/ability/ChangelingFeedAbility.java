@@ -127,7 +127,7 @@ public class ChangelingFeedAbility implements Ability<Hit> {
 
 
         if (!canFeed(iplayer)) {
-            iplayer.playSound(SoundEvents.ENTITY_PLAYER_BURP, 1, (float)player.world.random.nextTriangular(1F, 0.2F));
+            iplayer.playSound(SoundEvents.ENTITY_PLAYER_BURP, 1, (float)player.getWorld().random.nextTriangular(1F, 0.2F));
         } else {
             iplayer.playSound(SoundEvents.ENTITY_GENERIC_DRINK, 0.1F, iplayer.getRandomPitch());
         }

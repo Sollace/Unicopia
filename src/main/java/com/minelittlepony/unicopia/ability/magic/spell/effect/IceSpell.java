@@ -110,7 +110,7 @@ public class IceSpell extends AbstractSpell {
             return true;
         }
 
-        if (state.getMaterial() == Material.ICE
+        if (state.isIn(BlockTags.ICE)
                 && world.random.nextInt(10) == 0
                 && isSurroundedByIce(world, pos)) {
             world.setBlockState(pos, Blocks.PACKED_ICE.getDefaultState());
@@ -122,7 +122,7 @@ public class IceSpell extends AbstractSpell {
 
     private static boolean isSurroundedByIce(World w, BlockPos pos) {
         return PosHelper.adjacentNeighbours(pos).allMatch(i ->
-            w.getBlockState(i).getMaterial() == Material.ICE
+            w.getBlockState(i).isIn(BlockTags.ICE)
         );
     }
 

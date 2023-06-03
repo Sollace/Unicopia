@@ -72,12 +72,12 @@ class SpeciesCommand {
             }
 
             if (player == source.getPlayer()) {
-                source.sendFeedback(Text.translatable("commands.race.success.self", race.getDisplayName()), true);
+                source.sendFeedback(() -> Text.translatable("commands.race.success.self", race.getDisplayName()), true);
             } else {
                 if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
                     player.sendMessage(Text.translatable("commands.race.success", race.getDisplayName()), false);
                 }
-                source.sendFeedback(Text.translatable("commands.race.success.other", player.getName(), race.getDisplayName()), true);
+                source.sendFeedback(() -> Text.translatable("commands.race.success.other", player.getName(), race.getDisplayName()), true);
             }
         } else if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
             player.sendMessage(Text.translatable("commands.race.permission"), false);

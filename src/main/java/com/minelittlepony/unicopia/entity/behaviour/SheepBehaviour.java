@@ -22,17 +22,17 @@ public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
         if (player.sneakingChanged()) {
 
             BlockPos pos = entity.getBlockPos().down();
-            BlockState state = entity.world.getBlockState(pos);
+            BlockState state = entity.getWorld().getBlockState(pos);
             boolean grass = state.isOf(Blocks.GRASS_BLOCK);
 
             if (player.asEntity().isSneaking()) {
-                if (grass && entity.world.isClient && entity.isSheared()) {
+                if (grass && entity.getWorld().isClient && entity.isSheared()) {
                     entity.handleStatus((byte)10);
                 }
             } else {
                 if (entity.isSheared() && grass) {
-                    entity.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
-                    entity.world.setBlockState(pos, Blocks.DIRT.getDefaultState(), 2);
+                    entity.getWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
+                    entity.getWorld().setBlockState(pos, Blocks.DIRT.getDefaultState(), 2);
 
                     entity.onEatingGrass();
                 } else if (!entity.isSheared()) {
@@ -41,7 +41,7 @@ public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
                     player.asEntity().playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1, 1);
                     entity.setSheared(true);
 
-                    Random rng = entity.world.random;
+                    Random rng = entity.getWorld().random;
                     PlayerInventory inv = player.asEntity().getInventory();
 
                     int dropAmount = rng.nextInt(3);

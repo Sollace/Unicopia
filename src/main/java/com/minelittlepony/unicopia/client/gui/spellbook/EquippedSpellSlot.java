@@ -9,11 +9,11 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellTyp
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.sound.SoundManager;
-import net.minecraft.client.util.math.MatrixStack;
 
 public class EquippedSpellSlot extends Button {
 
@@ -33,34 +33,32 @@ public class EquippedSpellSlot extends Button {
     }
 
     @Override
-    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
+    public void renderButton(DrawContext context, int mouseX, int mouseY, float tickDelta) {
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShaderTexture(0, SpellbookScreen.SLOT);
         RenderSystem.enableBlend();
 
-        drawTexture(matrices, getX() - 8, getY() - 8, 0, 0, 32, 32, 32, 32);
+        context.drawTexture(SpellbookScreen.SLOT, getX() - 8, getY() - 8, 0, 0, 32, 32, 32, 32);
 
         Vector4f pos = new Vector4f(getX(), getY(), 0, 1);
-        pos.mul(matrices.peek().getPositionMatrix());
+        pos.mul(context.getMatrices().peek().getPositionMatrix());
 
         if (spell.isEmpty()) {
             RenderSystem.setShaderColor(1, 1, 1, 0.3F);
-            RenderSystem.setShaderTexture(0, SpellbookScreen.GEM);
-            drawTexture(matrices, getX(), getY(), 0, 0, 16, 16, 16, 16);
+            context.drawTexture(SpellbookScreen.GEM, getX(), getY(), 0, 0, 16, 16, 16, 16);
             RenderSystem.disableBlend();
             RenderSystem.setShaderColor(1, 1, 1, 1);
         } else {
             RenderSystem.disableBlend();
             RenderSystem.setShaderColor(1, 1, 1, 1);
-            drawItem(matrices, (int)pos.x, (int)pos.y);
+            drawItem(context, (int)pos.x, (int)pos.y);
         }
         if (isHovered()) {
-            HandledScreen.drawSlotHighlight(matrices, getX(), getY(), 0);
+            HandledScreen.drawSlotHighlight(context, getX(), getY(), 0);
         }
     }
 
-    protected void drawItem(MatrixStack matrices, int x, int y) {
-        itemRenderer.renderInGui(matrices, spell.getDefaultStack(), x, y);
+    protected void drawItem(DrawContext context, int x, int y) {
+        context.drawItem(spell.getDefaultStack(), x, y);
     }
 
     @Override

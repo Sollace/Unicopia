@@ -41,7 +41,7 @@ abstract class MixinPlayerInventory implements Inventory, Nameable {
             for (int i = 0; i < original.size(); i++) {
                 ItemStack stack = original.get(i);
                 if (EnchantmentHelper.getLevel(Enchantments.BINDING_CURSE, stack) == 0
-                    && EnchantmentUtil.consumeEnchantment(UEnchantments.HEART_BOUND, 1, stack, player.world.random, EnchantmentUtil.getLuck(3, player))) {
+                    && EnchantmentUtil.consumeEnchantment(UEnchantments.HEART_BOUND, 1, stack, player.getWorld().random, EnchantmentUtil.getLuck(3, player))) {
                     original.set(i, ItemStack.EMPTY);
                     UCriteria.USE_SOULMATE.trigger(player);
                     storedCombinedInventory.get(group).set(i, stack);

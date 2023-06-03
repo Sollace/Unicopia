@@ -6,16 +6,14 @@ import java.util.List;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.*;
@@ -54,12 +52,12 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
     }
 
     @Override
-    public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack matrices, ItemRenderer itemRenderer) {
+    public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
         int columns = getColumns();
         int i = 0;
 
         for (var entry : traits) {
-            renderTraitIcon(entry.getKey(), entry.getValue(), matrices,
+            renderTraitIcon(entry.getKey(), entry.getValue(), context,
                     x + (i % columns) * 17,
                     y + (i / columns) * 17
             );
@@ -82,11 +80,11 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
         return Text.empty();
     }
 
-    public static void renderStackTraits(ItemStack stack, MatrixStack matrices, float x, float y, float weight, float delta, int seed) {
-        renderStackTraits(SpellTraits.of(stack), matrices, x, y, weight, delta, seed, false);
+    public static void renderStackTraits(ItemStack stack, DrawContext context, float x, float y, float weight, float delta, int seed) {
+        renderStackTraits(SpellTraits.of(stack), context, x, y, weight, delta, seed, false);
     }
 
-    public static void renderStackTraits(SpellTraits traits, MatrixStack matrices, float x, float y, float weight, float delta, int seed, boolean revealAll) {
+    public static void renderStackTraits(SpellTraits traits, DrawContext context, float x, float y, float weight, float delta, int seed, boolean revealAll) {
         float time = MathHelper.cos((MinecraftClient.getInstance().player.age + delta + seed) / 2F) * 0.7F;
 
         float angle = 0.7F + (time / 30F) % MathHelper.TAU;
@@ -95,7 +93,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
 
         for (var entry : traits) {
             if (revealAll || isKnown(entry.getKey())) {
-                ItemTraitsTooltipRenderer.renderTraitIcon(entry.getKey(), entry.getValue() * weight, matrices,
+                ItemTraitsTooltipRenderer.renderTraitIcon(entry.getKey(), entry.getValue() * weight, context,
                         x + r * MathHelper.sin(angle),
                         y + r * MathHelper.cos(angle),
                         revealAll || isKnown(entry.getKey())
@@ -110,21 +108,20 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
             || Pony.of(MinecraftClient.getInstance().player).getDiscoveries().isKnown(trait);
     }
 
-    public static void renderTraitIcon(Trait trait, float value, MatrixStack matrices, float xx, float yy) {
-        renderTraitIcon(trait, value, matrices, xx, yy, isKnown(trait));
+    public static void renderTraitIcon(Trait trait, float value, DrawContext context, float xx, float yy) {
+        renderTraitIcon(trait, value, context, xx, yy, isKnown(trait));
     }
 
-    public static void renderTraitIcon(Trait trait, float value, MatrixStack matrices, float xx, float yy, boolean reveal) {
+    public static void renderTraitIcon(Trait trait, float value, DrawContext context, float xx, float yy, boolean reveal) {
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
         int size = 12;
 
-        RenderSystem.setShaderTexture(0, reveal ? trait.getSprite() : UNKNOWN);
-
+        MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(xx, yy, 300F);
 
-        DrawableHelper.drawTexture(matrices, 2, 1, 0, 0, 0, size, size, size, size);
+        context.drawTexture(reveal ? trait.getSprite() : UNKNOWN, 2, 1, 0, 0, 0, size, size, size, size);
 
         matrices.translate(9, 3 + size / 2, 0);
         matrices.scale(0.5F, 0.5F, 1);

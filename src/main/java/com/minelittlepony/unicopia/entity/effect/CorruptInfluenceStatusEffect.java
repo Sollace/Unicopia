@@ -28,35 +28,29 @@ public class CorruptInfluenceStatusEffect extends StatusEffect {
     @Override
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
 
-        if (entity.world.isClient) {
+        if (entity.getWorld().isClient) {
             return;
         }
 
         if (entity instanceof HostileEntity) {
 
-            int nearby = 0;
-
-            for (Entity i : entity.world.getOtherEntities(entity, entity.getBoundingBox().expand(40))) {
-                if (i.getType() == entity.getType()) {
-                    nearby++;
-                }
-            }
+            int nearby = entity.getWorld().getOtherEntities(entity, entity.getBoundingBox().expand(40), i -> i.getType() == entity.getType()).size();
 
             if (nearby > 1) {
                 if (Equine.of(entity).filter(eq -> eq instanceof Owned<?> o && o.getMaster() != null).isPresent()) {
                     return;
                 }
 
-                if (entity.world.random.nextInt(2000) != 0) {
+                if (entity.getWorld().random.nextInt(2000) != 0) {
                     return;
                 }
-            } else if (entity.world.random.nextInt(200) != 0) {
+            } else if (entity.getWorld().random.nextInt(200) != 0) {
                 return;
             }
 
             HostileEntity mob = (HostileEntity)entity;
 
-            HostileEntity clone = (HostileEntity)mob.getType().create(mob.world);
+            HostileEntity clone = (HostileEntity)mob.getType().create(mob.getWorld());
             clone.copyPositionAndRotation(entity);
 
             Equine.of(clone).ifPresent(eq -> {
@@ -64,10 +58,10 @@ public class CorruptInfluenceStatusEffect extends StatusEffect {
                     ((Owned.Mutable<Entity>)eq).setMaster(mob);
                 }
             });
-            mob.world.spawnEntity(clone);
+            mob.getWorld().spawnEntity(clone);
 
             if (!mob.isSilent()) {
-                mob.world.syncWorldEvent((PlayerEntity)null, WorldEvents.ZOMBIE_INFECTS_VILLAGER, mob.getBlockPos(), 0);
+                mob.getWorld().syncWorldEvent((PlayerEntity)null, WorldEvents.ZOMBIE_INFECTS_VILLAGER, mob.getBlockPos(), 0);
             }
         } else if (entity.age % 2000 == 0) {
             entity.damage(Living.living(entity).damageOf(UDamageTypes.ALICORN_AMULET), 2);

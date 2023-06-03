@@ -55,7 +55,7 @@ class WingsGear implements IGear {
         }
 
         if (AmuletSelectors.PEGASUS_AMULET.test(living.asEntity())) {
-            return entity.world.getDimension().ultrawarm() ? ICARUS_WINGS_CORRUPTED : ICARUS_WINGS;
+            return entity.getWorld().getDimension().ultrawarm() ? ICARUS_WINGS_CORRUPTED : ICARUS_WINGS;
         }
 
         Race race = living instanceof Pony pony ? pony.getObservedSpecies() : living.getSpecies();

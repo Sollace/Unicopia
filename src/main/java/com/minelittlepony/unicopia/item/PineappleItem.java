@@ -23,7 +23,7 @@ public class PineappleItem extends Item {
             user.eatFood(world, stack.copy());
             if (!world.isClient) {
                 stack.damage(1, user, u -> {
-                    AwaitTickQueue.scheduleTask(u.world, w -> {
+                    AwaitTickQueue.scheduleTask(u.getWorld(), w -> {
                         w.playSoundFromEntity(null, u, SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 1, 0.7F);
                     });
                 });

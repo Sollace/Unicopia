@@ -58,7 +58,7 @@ public class SpellbookEntity extends MobEntity {
                     if (player instanceof ServerPlayerEntity recipient
                             && player.currentScreenHandler instanceof SpellbookScreenHandler book
                             && getUuid().equals(book.entityId)) {
-                        Channel.SERVER_SPELLBOOK_UPDATE.sendToPlayer(new MsgSpellbookStateChanged<PlayerEntity>(book.syncId, state), recipient);
+                        Channel.SERVER_SPELLBOOK_UPDATE.sendToPlayer(new MsgSpellbookStateChanged<>(book.syncId, state), recipient);
                     }
                 });
             });
@@ -143,7 +143,7 @@ public class SpellbookEntity extends MobEntity {
         jumping = awake && isTouchingWater();
         super.tick();
 
-        if (world.isClient && isOpen()) {
+        if (getWorld().isClient && isOpen()) {
             for (int offX = -2; offX <= 1; ++offX) {
                 for (int offZ = -2; offZ <= 1; ++offZ) {
                     if (offX > -1 && offX < 1 && offZ == -1) {
@@ -152,7 +152,7 @@ public class SpellbookEntity extends MobEntity {
 
                     if (random.nextInt(320) == 0) {
                         for (int offY = 0; offY <= 1; ++offY) {
-                            world.addParticle(ParticleTypes.ENCHANT,
+                            getWorld().addParticle(ParticleTypes.ENCHANT,
                                     getX(), getY(), getZ(),
                                     offX/2F + random.nextFloat(),
                                     offY/2F - random.nextFloat() + 0.5f,
@@ -165,7 +165,7 @@ public class SpellbookEntity extends MobEntity {
         }
 
         if (awake) {
-            world.getOtherEntities(this, getBoundingBox().expand(2), EquinePredicates.PLAYER_UNICORN.and(e -> e instanceof PlayerEntity)).stream().findFirst().ifPresent(player -> {
+            getWorld().getOtherEntities(this, getBoundingBox().expand(2), EquinePredicates.PLAYER_UNICORN.and(e -> e instanceof PlayerEntity)).stream().findFirst().ifPresent(player -> {
                 setBored(false);
                 if (isOpen()) {
                     Vec3d diff = player.getPos().subtract(getPos());
@@ -176,15 +176,15 @@ public class SpellbookEntity extends MobEntity {
                 }
             });
 
-            if (!world.isClient) {
+            if (!getWorld().isClient) {
                 if (activeTicks > 0 && --activeTicks <= 0) {
                     setBored(true);
                 }
             }
         }
 
-        if (!world.isClient && world.random.nextInt(30) == 0) {
-            float celest = world.getSkyAngle(1) * 4;
+        if (!getWorld().isClient && getWorld().random.nextInt(30) == 0) {
+            float celest = getWorld().getSkyAngle(1) * 4;
 
             boolean daytime = celest > 3 || celest < 1;
 
@@ -198,14 +198,14 @@ public class SpellbookEntity extends MobEntity {
 
     @Override
     public boolean damage(DamageSource source, float amount) {
-        if (!world.isClient) {
+        if (!getWorld().isClient) {
             remove(Entity.RemovalReason.KILLED);
 
             BlockSoundGroup sound = BlockSoundGroup.WOOD;
 
-            world.playSound(getX(), getY(), getZ(), sound.getBreakSound(), SoundCategory.BLOCKS, sound.getVolume(), sound.getPitch(), true);
+            getWorld().playSound(getX(), getY(), getZ(), sound.getBreakSound(), SoundCategory.BLOCKS, sound.getVolume(), sound.getPitch(), true);
 
-            if (world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
+            if (getWorld().getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
                 dropStack(getPickBlockStack(), 1);
             }
         }
@@ -232,7 +232,7 @@ public class SpellbookEntity extends MobEntity {
 
                 @Override
                 public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new SpellbookScreenHandler(syncId, inv, ScreenHandlerContext.create(world, getBlockPos()), state, getUuid());
+                    return new SpellbookScreenHandler(syncId, inv, ScreenHandlerContext.create(getWorld(), getBlockPos()), state, getUuid());
                 }
 
                 @Override

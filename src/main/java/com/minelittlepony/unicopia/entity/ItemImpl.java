@@ -49,7 +49,7 @@ public class ItemImpl implements Equine<ItemEntity> {
     @Override
     public boolean beforeUpdate() {
 
-        if (!entity.world.isClient) {
+        if (!entity.getWorld().isClient) {
             Race race = getSpecies();
             if (race != serverRace) {
                 serverRace = race;
@@ -67,9 +67,9 @@ public class ItemImpl implements Equine<ItemEntity> {
             ClingyItem clingy = item instanceof ClingyItem ? (ClingyItem)item : ClingyItem.DEFAULT;
 
             if (clingy.isClingy(stack)) {
-                Random rng = entity.world.random;
+                Random rng = entity.getWorld().random;
 
-                entity.world.addParticle(clingy.getParticleEffect((IItemEntity)entity),
+                entity.getWorld().addParticle(clingy.getParticleEffect((IItemEntity)entity),
                         entity.getX() + rng.nextFloat() - 0.5,
                         entity.getY() + rng.nextFloat() - 0.5,
                         entity.getZ() + rng.nextFloat() - 0.5,
@@ -77,7 +77,7 @@ public class ItemImpl implements Equine<ItemEntity> {
                 );
 
                 Vec3d position = entity.getPos();
-                VecHelper.findInRange(entity, entity.world, entity.getPos(), clingy.getFollowDistance(i), e -> e instanceof PlayerEntity)
+                VecHelper.findInRange(entity, entity.getWorld(), entity.getPos(), clingy.getFollowDistance(i), e -> e instanceof PlayerEntity)
                     .stream()
                     .sorted((a, b) -> (int)(a.getPos().distanceTo(position) - b.getPos().distanceTo(position)))
                     .findFirst()

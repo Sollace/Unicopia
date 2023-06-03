@@ -110,7 +110,7 @@ public class EntityBehaviour<T extends Entity> {
         ((EntityDuck)to).setRemovalReason(from.getRemovalReason());
         to.setOnGround(from.isOnGround());
 
-        if (!from.world.isClient) {
+        if (!from.getWorld().isClient) {
             // player collision is not known on the server
             boolean clip = to.noClip;
             to.noClip = false;
@@ -134,7 +134,7 @@ public class EntityBehaviour<T extends Entity> {
 
             BlockPos pos = BlockPos.ofFloored(x, y, z);
 
-            if (!from.world.isAir(pos) && !from.world.isWater(pos)) {
+            if (!from.getWorld().isAir(pos) && !from.getWorld().isWater(pos)) {
                 y++;
             }
 
