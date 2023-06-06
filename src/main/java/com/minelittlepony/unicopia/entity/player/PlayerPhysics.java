@@ -34,10 +34,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.*;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 
 public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickable, Motion, NbtSerialisable {
@@ -153,6 +154,11 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     public FlightType getFlightType() {
+        DimensionType dimension = entity.getWorld().getDimension();
+
+        if (RegistryUtils.isIn(entity.getWorld(), dimension, RegistryKeys.DIMENSION_TYPE, UTags.HAS_NO_ATMOSPHERE)) {
+            return FlightType.NONE;
+        }
 
         if (UItems.PEGASUS_AMULET.isApplicable(entity)) {
             return FlightType.ARTIFICIAL;

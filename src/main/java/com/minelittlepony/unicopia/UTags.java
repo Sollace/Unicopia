@@ -8,6 +8,8 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.dimension.DimensionType;
 
 public interface UTags {
     TagKey<Item> APPLES = item("apples");
@@ -39,6 +41,8 @@ public interface UTags {
 
     TagKey<StatusEffect> PINEAPPLE_EFFECTS = effect("pineapple_effects");
 
+    TagKey<DimensionType> HAS_NO_ATMOSPHERE = dimension("has_no_atmosphere");
+
     static TagKey<Item> item(String name) {
         return TagKey.of(RegistryKeys.ITEM, Unicopia.id(name));
     }
@@ -53,6 +57,10 @@ public interface UTags {
 
     static TagKey<StatusEffect> effect(String name) {
         return TagKey.of(RegistryKeys.STATUS_EFFECT, Unicopia.id(name));
+    }
+
+    static TagKey<DimensionType> dimension(String name) {
+        return TagKey.of(RegistryKeys.DIMENSION_TYPE, new Identifier("c", name));
     }
 
     static void bootstrap() {
