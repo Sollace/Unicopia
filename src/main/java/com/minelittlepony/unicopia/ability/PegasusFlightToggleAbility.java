@@ -30,7 +30,7 @@ public class PegasusFlightToggleAbility implements Ability<Hit> {
     @Nullable
     @Override
     public Hit tryActivate(Pony player) {
-        return player.asEntity().isCreative() ? null : Hit.INSTANCE;
+        return player.asEntity().isCreative() || player.getPhysics().getFlightType().isGrounded() ? null : Hit.INSTANCE;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class PegasusFlightToggleAbility implements Ability<Hit> {
 
     @Override
     public void apply(Pony player, Hit data) {
-        if (player.asEntity().isCreative()) {
+        if (tryActivate(player) == null) {
             return;
         }
 

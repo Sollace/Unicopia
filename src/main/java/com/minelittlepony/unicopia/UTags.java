@@ -9,6 +9,8 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.dimension.DimensionType;
 
 public interface UTags {
     TagKey<Item> APPLES = item("apples");
@@ -42,6 +44,8 @@ public interface UTags {
 
     TagKey<DamageType> BREAKS_SUNGLASSES = damage("breaks_sunglasses");
 
+    TagKey<DimensionType> HAS_NO_ATMOSPHERE = dimension("has_no_atmosphere");
+
     static TagKey<Item> item(String name) {
         return TagKey.of(RegistryKeys.ITEM, Unicopia.id(name));
     }
@@ -60,6 +64,10 @@ public interface UTags {
 
     static TagKey<DamageType> damage(String name) {
         return TagKey.of(RegistryKeys.DAMAGE_TYPE, Unicopia.id(name));
+    }
+
+    static TagKey<DimensionType> dimension(String name) {
+        return TagKey.of(RegistryKeys.DIMENSION_TYPE, new Identifier("c", name));
     }
 
     static void bootstrap() {
