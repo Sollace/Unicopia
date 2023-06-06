@@ -1,12 +1,19 @@
 package com.minelittlepony.unicopia.entity.damage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.minelittlepony.unicopia.Unicopia;
 
+import net.fabricmc.fabric.api.event.registry.DynamicRegistrySetupCallback;
 import net.minecraft.entity.damage.DamageType;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 
 public interface UDamageTypes {
+    List<RegistryKey<DamageType>> REGISTRY = new ArrayList<>();
+
     RegistryKey<DamageType> EXHAUSTION = register("magical_exhaustion");
     RegistryKey<DamageType> ALICORN_AMULET = register("alicorn_amulet");
     RegistryKey<DamageType> FOOD_POISONING = register("food_poisoning");
@@ -25,10 +32,18 @@ public interface UDamageTypes {
     RegistryKey<DamageType> PETRIFIED = register("petrified");
 
     private static RegistryKey<DamageType> register(String name) {
-        return RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Unicopia.id(name));
+        var key = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Unicopia.id(name));
+        REGISTRY.add(key);
+        return key;
     }
 
     static void bootstrap() {
-
+        DynamicRegistrySetupCallback.EVENT.register(registries -> {
+            registries.getOptional(RegistryKeys.DAMAGE_TYPE).ifPresent(registry -> {
+                REGISTRY.forEach(key -> {
+                    Registry.register(registry, key.getValue(), new DamageType(key.getValue().getNamespace() + "." + key.getValue().getPath(), 0));
+                });
+            });
+        });
     }
 }
