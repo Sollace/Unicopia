@@ -22,6 +22,7 @@ import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.container.SpellbookChapterLoader;
 import com.minelittlepony.unicopia.container.UScreenHandlers;
 import com.minelittlepony.unicopia.entity.UEntities;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.effect.UPotions;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
@@ -93,6 +94,7 @@ public class Unicopia implements ModInitializer {
         UScreenHandlers.bootstrap();
         UTreeGen.bootstrap();
         UGameRules.bootstrap();
+        UDamageTypes.bootstrap();
     }
 
     public interface SidedAccess {
