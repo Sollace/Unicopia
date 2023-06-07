@@ -40,7 +40,7 @@ abstract class MixinDamageSource {
 
 @Mixin(FallLocation.class)
 abstract class MixinFallLocation {
-    @Inject(method = "fromEntity", at = @At("RETURN"))
+    @Inject(method = "fromEntity", at = @At("RETURN"), cancellable = true)
     private static void onFromEntity(LivingEntity entity, CallbackInfoReturnable<FallLocation> info) {
         FallLocation location = info.getReturnValue();
         if (location == null) {
