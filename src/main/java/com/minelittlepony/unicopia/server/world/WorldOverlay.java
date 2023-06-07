@@ -1,6 +1,9 @@
 package com.minelittlepony.unicopia.server.world;
 
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.*;
 
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +24,7 @@ import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
 public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState implements Tickable {
+
     private final World world;
 
     private final Long2ObjectMap<Chunk> chunks = new Long2ObjectOpenHashMap<>();
@@ -39,7 +43,8 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
                     id.toString()
             );
         }
-        return factory.apply(world);
+
+        return ClientInstance.of(world, id, factory).instance();
     }
 
     public static <T extends State> WorldOverlay<T> getOverlay(World world, Identifier id, Supplier<T> factory, @Nullable BiConsumer<Long2ObjectMap<T>, List<ServerPlayerEntity>> updateSender) {
@@ -180,5 +185,27 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
 
     public interface State extends NbtSerialisable {
         boolean tick();
+    }
+
+    record ClientInstance<T extends PersistentState>(WeakReference<World> world, T instance) {
+        private static final Map<Identifier, ClientInstance<?>> INSTANCES = new HashMap<>();
+
+        @SuppressWarnings("unchecked")
+        public static <T extends PersistentState> ClientInstance<T> of(World world, Identifier id, Function<World, T> factory) {
+            return (ClientInstance<T>)INSTANCES.compute(id, (i, instance) -> {
+                if (instance == null || !instance.matches(world)) {
+                    return new ClientInstance<>(world, factory);
+                }
+                return instance;
+            });
+        }
+
+        public ClientInstance(World world, Function<World, T> factory) {
+            this(new WeakReference<>(world), factory.apply(world));
+        }
+
+        public boolean matches(World world) {
+            return this.world().get() == world;
+        }
     }
 }
