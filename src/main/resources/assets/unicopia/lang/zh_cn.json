@@ -730,7 +730,7 @@
   "unicopia.subtitle.spell.shield.projectile.burn": "Arrow burns",
   "unicopia.subtitle.spell.transform.transmute.entity": "Magic pops",
   
-  "advancements.unicopia.root.title": "Unicopia",
+  "advancements.unicopia.root.title": "奇幻小马国",
   "advancements.unicopia.root.description": "一个充满魔法与冒险的世界",
   "advancements.unicopia.praise_the_sun.title": "赞美太阳！",
   "advancements.unicopia.praise_the_sun.description": "感受太阳公主的无上熔光",
@@ -754,18 +754,18 @@
   "advancements.unicopia.eat_trick_apple.description": "咬向魔虹苹果",
   "advancements.unicopia.eat_pinecone.title": "豁出去了",
   "advancements.unicopia.eat_pinecone.description": "吃下一颗松果",
-  "advancements.unicopia.imported_oats.title": "As Delicious As They Are Expensive",
-  "advancements.unicopia.imported_oats.description": "Send of receive fancy imported oats",
+  "advancements.unicopia.imported_oats.title": "昂贵的味道",
+  "advancements.unicopia.imported_oats.description": "收发高档进口燕麦",
   
-  "advancements.unicopia.experimental.title": "你不能留着它",
-  "advancements.unicopia.experimental.description": "Enchant a tool with Consumption",
-  "advancements.unicopia.xp_miner.title": "XP Miner",
-  "advancements.unicopia.xp_miner.description": "Use consumption to dig up some experience",
+  "advancements.unicopia.experimental.title": "你不能带走它",
+  "advancements.unicopia.experimental.description": "给一件工具附上经验提取的魔力",
+  "advancements.unicopia.xp_miner.title": "发掘经验",
+  "advancements.unicopia.xp_miner.description": "用经验提取工具提取一些经验",
   
-  "advancements.unicopia.hearts_stronger_than_horses.title": "Hearts Stronger Than Horses",
-  "advancements.unicopia.hearts_stronger_than_horses.description": "Enchant a tool with Heart Bound",
-  "advancements.unicopia.soulmate.title": "你可以留着它",
-  "advancements.unicopia.soulmate.description": "Die whilst holding a heart-bound item",
+  "advancements.unicopia.hearts_stronger_than_horses.title": "马不失塞翁",
+  "advancements.unicopia.hearts_stronger_than_horses.description": "给一件工具附上心灵绑定的魔力",
+  "advancements.unicopia.soulmate.title": "你可以带走它",
+  "advancements.unicopia.soulmate.description": "带着一件附魔了心灵绑定的物品死亡",
   
   "advancements.unicopia.burn_juice.title": "这不对吧",
   "advancements.unicopia.burn_juice.description": "烤果汁",
@@ -788,7 +788,7 @@
   "advancements.unicopia.earth_route.title": "陆行",
   "advancements.unicopia.earth_route.description": "入伙苹果帮",
   "advancements.unicopia.born_on_a_rock_farm.title": "种石得石",
-  "advancements.unicopia.born_on_a_rock_farm.description": "种石头",
+  "advancements.unicopia.born_on_a_rock_farm.description": "播种石籽",
   "advancements.unicopia.thats_unusual.title": "不对劲",
   "advancements.unicopia.thats_unusual.description": "这有啥用？",
   
@@ -807,8 +807,8 @@
   "advancements.unicopia.rainbow_crash.title": "去你的彩虹",
   "advancements.unicopia.rainbow_crash.description": "向邪恶的玻璃国宣战",
   
-  "advancements.unicopia.deter_phantom.title": "What Flies Around",
-  "advancements.unicopia.deter_phantom.description": "Get up there and give those phantoms a taste of their own medicine",
+  "advancements.unicopia.deter_phantom.title": "神仙斗法",
+  "advancements.unicopia.deter_phantom.description": "马飞飞，让那些修仙的幻翼永远安眠吧",
   
   "unicopia.toast.discoveries.title": "新发现！",
   "unicopia.toast.discoveries.description": "该看书了"
