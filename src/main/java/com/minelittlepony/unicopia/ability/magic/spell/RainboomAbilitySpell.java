@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleSpawner;
 import com.minelittlepony.unicopia.particle.TargetBoundParticleEffect;
@@ -59,7 +60,9 @@ public class RainboomAbilitySpell extends AbstractSpell {
             }
         }
 
-        source.findAllEntitiesInRange(RADIUS).forEach(e -> {
+        source.findAllEntitiesInRange(RADIUS)
+                .filter(e -> !FriendshipBraceletItem.isComrade(source, e))
+                .forEach(e -> {
             e.damage(source.damageOf(UDamageTypes.RAINBOOM, source), 6);
         });
         EFFECT_RANGE.translate(source.getOrigin()).getBlockPositions().forEach(pos -> {
