@@ -733,7 +733,7 @@
   "advancements.unicopia.root.title": "Unicopia",
   "advancements.unicopia.root.description": "一个充满魔法与冒险的世界",
   "advancements.unicopia.praise_the_sun.title": "赞美太阳！",
-  "advancements.unicopia.praise_the_sun.description": "感受太阳公主的无上荣光",
+  "advancements.unicopia.praise_the_sun.description": "感受太阳公主的无上熔光",
   "advancements.unicopia.cool_potato.title": "酷毙了",
   "advancements.unicopia.cool_potato.description": "保护你的眼睛不受阳光侵袭",
   "advancements.unicopia.baked_bads.title": "烤砸了",
@@ -750,10 +750,10 @@
   "advancements.unicopia.trick_apple.description": "找到你的第一颗魔虹苹果",
   "advancements.unicopia.feed_trick_apple.title": "试试，这个劲大",
   "advancements.unicopia.feed_trick_apple.description": "把魔虹苹果喂给一位生灵",
-  "advancements.unicopia.eat_trick_apple.title": "脆",
+  "advancements.unicopia.eat_trick_apple.title": "酥脆",
   "advancements.unicopia.eat_trick_apple.description": "咬向魔虹苹果",
-  "advancements.unicopia.eat_pinecone.title": "Desperation",
-  "advancements.unicopia.eat_pinecone.description": "Eat a pinecone",
+  "advancements.unicopia.eat_pinecone.title": "豁出去了",
+  "advancements.unicopia.eat_pinecone.description": "吃下一颗松果",
   "advancements.unicopia.imported_oats.title": "As Delicious As They Are Expensive",
   "advancements.unicopia.imported_oats.description": "Send of receive fancy imported oats",
   
@@ -768,7 +768,7 @@
   "advancements.unicopia.soulmate.description": "Die whilst holding a heart-bound item",
   
   "advancements.unicopia.burn_juice.title": "这不对吧",
-  "advancements.unicopia.burn_juice.description": "Burn the juice",
+  "advancements.unicopia.burn_juice.description": "烤果汁",
   "advancements.unicopia.apple_route.title": "苹果…苹果。苹果！",
   "advancements.unicopia.apple_route.description": "向传奇苹果进军",
   "advancements.unicopia.juice.title": "神清气爽",
@@ -786,14 +786,14 @@
   "advancements.unicopia.screech_self.description": "我恐怖起来连自己都怕",
   
   "advancements.unicopia.earth_route.title": "陆行",
-  "advancements.unicopia.earth_route.description": "Join the Apple Clan",
-  "advancements.unicopia.born_on_a_rock_farm.title": "Born on a Rock Farm",
-  "advancements.unicopia.born_on_a_rock_farm.description": "Successfully farm your first rock",
-  "advancements.unicopia.thats_unusual.title": "That's Unusual",
-  "advancements.unicopia.thats_unusual.description": "But what does it do?",
+  "advancements.unicopia.earth_route.description": "入伙苹果帮",
+  "advancements.unicopia.born_on_a_rock_farm.title": "种石得石",
+  "advancements.unicopia.born_on_a_rock_farm.description": "种石头",
+  "advancements.unicopia.thats_unusual.title": "不对劲",
+  "advancements.unicopia.thats_unusual.description": "这有啥用？",
   
   "advancements.unicopia.sky_route.title": "飞彳亍",
-  "advancements.unicopia.sky_route.description": "Join the Clousdale Pegasi",
+  "advancements.unicopia.sky_route.description": "入驻云中城",
   
   "advancements.unicopia.molting_season_1.title": "换羽季节I",
   "advancements.unicopia.molting_season_1.description": "飞行时掉下一根羽毛",
@@ -811,5 +811,5 @@
   "advancements.unicopia.deter_phantom.description": "Get up there and give those phantoms a taste of their own medicine",
   
   "unicopia.toast.discoveries.title": "新发现！",
-  "unicopia.toast.discoveries.description": "Check your spellbook"
+  "unicopia.toast.discoveries.description": "该看书了"
 }
