@@ -501,7 +501,7 @@
   "experience.unicopia.monstrous.senior_archmagus": "Cult Leader",
 
   "experience.unicopia.pure.ascended_senior_archmagus": "Ascended Senior Archmagus",
-  "experience.unicopia.impure.ascended_senior_archmagus": "Strugling Senior Archmagus",
+  "experience.unicopia.impure.ascended_senior_archmagus": "Struggling Senior Archmagus",
   "experience.unicopia.tainted.ascended_senior_archmagus": "Falling Senior Archmagus",
   "experience.unicopia.twisted.ascended_senior_archmagus": "Fallen Senior Archmagus",
   "experience.unicopia.corrupt.ascended_senior_archmagus": "Shadowy Senior Anti-Archmagus",
@@ -567,7 +567,7 @@
   "commands.race.success.self": "Set own race to %1$s",
   "commands.race.success": "%1$s changed race to %2$s",
   "commands.race.success.other": "Changed %1$s's race to %2$s",
-  "commands.race.usage": "/race <get|set|list|describe> [player] <species>",
+  "commands.race.usage": "/race <get|set|list|describe> <species> [player]",
   "commands.race.list": "The available races are:",
   "commands.race.permission": "Selected Race is not permitted by your current server",
   "commands.race.fail": "\"%s\" is not a recognised Race",
