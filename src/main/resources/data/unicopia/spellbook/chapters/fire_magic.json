@@ -45,7 +45,7 @@
         "level": 1,
         "elements": [
           "Creates a heating affect up to a radius of 3 hooves from any surfaces it touches.",
-          "Useful when one needs a flame in a hurry or to fend off a wild wendigo",
+          "Useful when one needs a flame in a hurry or to fend off a wild wendigo.",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/fire.png" }
         ]
@@ -56,7 +56,7 @@
         "elements": [
           { "recipe": "unicopia:spells/flame" },
           "Requires:",
-          "- 1x Gemstone\n- At least 15x fire trait\n- A gem with scorch"
+          "- 1x gemstone\n- At least 15x fire trait\n- A gem with scorch"
         ]
       },
       {
@@ -65,7 +65,7 @@
         "elements": []
       },
       {
-        "title": "10 Jum '12",
+        "title": "10th Jum '12",
         "level": 0,
         "elements": [
           "Progress?",
@@ -112,7 +112,7 @@
         "elements": [
           "Creates a series of heated projectiles to fling at a target. Upon impact the target will be set alight.",
           "- Increase focus will allow finer grained control of the projectile's trajectory.",
-          "- With over 50 focus it's almost like they know where the target is (homing?)",
+          "- With over 50 focus it's almost like they know where the target is (homing?).",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/focus.png" }
         ]
@@ -123,7 +123,7 @@
         "elements": [
           { "recipe": "unicopia:spells/fire_bolt" },
           "Requires:",
-          "- At least 9x focus for control and flight\n- 30x fire trait for energy\n- A gem with scorch"
+          "- At least 9x focus for control and flight\n- 30x fire trait for energy\n- A gem with flame"
         ]
       },
       {
@@ -148,7 +148,7 @@
         ]
       },
       {
-        "title": "11 Jum '12",
+        "title": "11th Jum '12",
         "level": 2,
         "elements": [
           "Got a knock at the door today. Luna was very eager to answer it but I had to send her away as it was a messenger from the crown.",
@@ -190,7 +190,7 @@
         "elements": []
       },
       {
-        "title": "20 Jum '12",
+        "title": "20th Jum '12",
         "level": 9,
         "elements": [
           "I have word from the crown. They appear satisfied, for now, and have agreed to let my continue my research as I have into the winter.",
@@ -200,14 +200,14 @@
         ]
       },
       {
-        "title": "21 Jum '12",
+        "title": "21st Jum '12",
         "level": 0,
         "elements": [
           {
             "text": "I shall visit",
             "extra": [
               { "text": "Commander Hurricane", "obfuscated": true },
-              " tomorrow. Perhaps she may shed light onto my predicament"
+              " tomorrow. Perhaps she may shed light onto my predicament."
             ]
           },
           "At the princess' behest",
@@ -234,7 +234,7 @@
         "elements": [
           { "recipe": "unicopia:spells/shield" },
           "Requires:",
-          "- 1 gemstone\n- At least 10x strength trait\n- At least 6x focus trait\n- At least 10x power trait",
+          "- 1x gemstone\n- At least 10x strength trait\n- At least 6x focus trait\n- At least 10x power trait",
           "\n+ add power trait to increase effect range"
         ]
       },
@@ -261,7 +261,7 @@
           {
             "text": "I can't stop now, though...I'm told the situation in the west is growing dire. They have asked me to pick up the pace and produce something we can use to get the upper hoof against the",
             "extra": [
-              { "text": "Changeling Storm", "obfuscated": true}
+              { "text": "Changeling Storm.", "obfuscated": true}
             ]
           }
         ]
