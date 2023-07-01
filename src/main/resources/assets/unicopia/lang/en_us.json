@@ -567,7 +567,7 @@
   "commands.race.success.self": "Set own race to %1$s",
   "commands.race.success": "%1$s changed race to %2$s",
   "commands.race.success.other": "Changed %1$s's race to %2$s",
-  "commands.race.usage": "/race <get|set|list|describe> [player] <species>",
+  "commands.race.usage": "/race <get|set|list|describe> <species> [player]",
   "commands.race.list": "The available races are:",
   "commands.race.permission": "Selected Race is not permitted by your current server",
   "commands.race.fail": "\"%s\" is not a recognised Race",
@@ -592,7 +592,7 @@
   "commands.disguise.removed": "Your disguise has been removed.",
   "commands.disguise.removed.self": "Removed own disguise.",
   "commands.disguise.removed.other": "Removed %s's disguise.",
-  "commands.disguise.success": "You are nod disguised as %s",
+  "commands.disguise.success": "You are now disguised as %s",
   "commands.disguise.success.self": "Set own disguise to %s",
   "commands.disguise.success.other": "%s changed their disguise to %s",
 
