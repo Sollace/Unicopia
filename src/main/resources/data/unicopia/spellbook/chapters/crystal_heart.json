@@ -45,7 +45,7 @@
         "elements": [
           { "item": { "item": "unicopia:dragon_breath_scroll" } },
           "Status: Confirmed",
-          "It's, um a scroll that you write somepony's name on it and you hold it in one hoof and something in the other hoof and, like, um it goes whooosh and the item is sent to that pony",
+          "It's, um a scroll that you write somepony's name on it and you hold it in one hoof and something in the other hoof and, like, um it goes whooosh and the item is sent to that pony.",
           "- XOXOX Lulu"
         ]
       },
@@ -53,7 +53,7 @@
         "title": "2nd Hoof '12",
         "level": 0,
         "elements": [
-          "P.S. Uncle Starswirly is a dunderhead",
+          "P.S. Uncle Starswirly is a dunderhead.",
           { "recipe": "unicopia:dragon_breath_scroll" }
         ]
       },
@@ -149,7 +149,7 @@
         "title": "Grogar's Bell II",
         "level": 80,
         "elements": [
-          "Legend says that after its first bearer, King Grogar, was driven to madness, the bell was stowed far away",
+          "Legend says that after its first bearer, King Grogar, was driven to madness, the bell was stowed far away.",
           "beyond most ponies' grasp, guarded inside an ancient city by an unbeatable beast."
         ]
       },

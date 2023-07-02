@@ -28,7 +28,7 @@
         "title": "3rd Slep '12",
         "level": 9,
         "elements": [
-          "Let it be known that it was never my intention that anypony use my work for nefarious purposes. I am a researcher, above and beyond all else. My intentions are pure, and my wants are nothing more than this world to be at peace"
+          "Let it be known that it was never my intention that anypony use my work for nefarious purposes. I am a researcher, above and beyond all else. My intentions are pure, and my wants are nothing more than this world to be at peace."
         ]
       },
       {
@@ -37,7 +37,7 @@
         "elements": []
       },
       {
-        "title": "4th Slep 12",
+        "title": "4th Slep '12",
         "level": 10,
         "elements": [
           "No review of magic is ever complete without a glimpse into the other side.",
@@ -61,8 +61,8 @@
         "elements": [
           { "recipe": "unicopia:spells/vortex" },
           "Requires:",
-          "- 1 protection gem\n- At least 10x strength trait\n- At least 8x knowledge trait\n- At least 9x air trait",
-          "+ 10x knowledge to narrow the effect's range to items\n+ Add focus trait to increase duration\n+ add power trait to increase range"
+          "- 1x protection gem\n- At least 10x strength trait\n- At least 8x knowledge trait\n- At least 9x air trait",
+          "+ 10x knowledge to narrow the effect's range to items\n+ add focus trait to increase duration\n+ add power trait to increase range"
         ]
       },
       {
@@ -133,7 +133,7 @@
         "title": "25th Slep '12",
         "level": 13,
         "elements": [
-          "I'm sorry for the long delays. Things have been... Busy.",
+          "I'm sorry for the long delays. Things have been... busy.",
           "I've learned a lot about these creatures. Attached are some illustrations, done best I could so I wouldn't have to look at the thing directly.",
           {
             "text": "Its body is black and vaguely",
@@ -277,7 +277,7 @@
         "elements": [
           { "recipe": "unicopia:spells/displacement" },
           "Requires:",
-          "- 1 gemstone\n- At least 18x knowledge trait\n- At least 10x chaos trait"
+          "- 1x gemstone\n- At least 18x knowledge trait\n- At least 10x chaos trait"
         ]
       },
       {
@@ -311,7 +311,7 @@
         "elements": [
           { "recipe": "unicopia:spells/mimic" },
           "Requires:",
-          "- A transmutation gem\nAt least 19x knowledge trait\n- At least 10x life trait\n- At least 4x chaos trait",
+          "- A transmutation gem\n- At least 19x knowledge trait\n- At least 10x life trait\n- At least 4x chaos trait",
           "* Add the focus trait to increase the effect's duration"
         ]
       },
@@ -350,7 +350,7 @@
         "level": 21,
         "elements": [
           {
-            "text": "It's not enough. Never enough. Crawling. I feel crawling. Oh gods the crawling won't stop",
+            "text": "It's not enough. Never enough. Crawling. I feel crawling. Oh gods the crawling won't stop.",
             "obfuscated": true
           }
         ]
@@ -359,7 +359,7 @@
         "title": "??? ???? ??",
         "level": 33,
         "elements": [
-          "The insomnia. I can't take it. I lie in my bed every night waiting to go to sleep",
+          "The insomnia. I can't take it. I lie in my bed every night waiting to go to sleep.",
           "I thought I could stop it, keep it at bay, but I still hear it. That creature. Cold, unfeeling.",
           "I feel myself being drained any time I'm around it. Is it... feeding on me?",
           "No, it couldn't be."
@@ -381,7 +381,7 @@
         "elements": [
           { "recipe": "unicopia:spells/dispel_evil" },
           "Requires:",
-          "- A arcane protection gem\n- A displacement gem\n- At least 1x kindness trait\n- At least 1x power trait",
+          "- An arcane protection gem\n- A displacement gem\n- At least 1x kindness trait\n- At least 1x power trait",
           "* Add the power trait to increase the effect's range"
         ]
       }

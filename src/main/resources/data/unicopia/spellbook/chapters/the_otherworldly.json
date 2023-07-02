@@ -46,7 +46,7 @@
           {
             "text": "This spell is not very useful when used on its own, but combined with other traits may become a powerful tool against the",
             "extra": [
-              { "text": "Changeling Swarms", "obfuscated": true }
+              { "text": "Changeling Swarms.", "obfuscated": true }
             ]
           },
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/darkness.png" },
@@ -59,7 +59,7 @@
         "elements": [
           { "recipe": "unicopia:spells/necromancy" },
           "Requires:",
-          "- 1 life sapping gem\n- At least 10x strength trait\n- At least 8x knowledge trait\n- At least 8x chaos trait\n- At least 19x darkness trait\n- At least 9x poison trait\n- At least 10x blood trait"
+          "- 1x life sapping gem\n- At least 10x strength trait\n- At least 8x knowledge trait\n- At least 8x chaos trait\n- At least 19x darkness trait\n- At least 9x poison trait\n- At least 10x blood trait"
         ]
       },
       {
@@ -116,7 +116,7 @@
         "elements": [
           { "recipe": "unicopia:spells/mind_swap" },
           "Requires:",
-          "- A mimic gem\nAt least 19x knowledge trait\n- At least 10x life trait\n- At least 40x chaos trait",
+          "- A mimic gem\n- At least 19x knowledge trait\n- At least 10x life trait\n- At least 40x chaos trait",
           "* Add the focus trait to increase the effect's duration"
         ]
       }

@@ -12,10 +12,10 @@
         ]
       },
       {
-        "title": "4th Trot 12",
+        "title": "4th Trot '12",
         "level": 0,
         "elements": [
-          "This is an interesting one. Rather simple, I admit, but Luna insisted I make something cold to help us deal with this darn heat",
+          "This is an interesting one. Rather simple, I admit, but Luna insisted I make something cold to help us deal with this darn heat.",
           "All you need is a gem and something cold. Like a snowball.",
           "At the princess' behest",
           "- Starswirl the Bearded"
@@ -129,8 +129,8 @@
         "elements": [
           { "recipe": "unicopia:spells/light" },
           "Requires:",
-          "- A fire bolt gem\n- At least 10 focus trait\n- At least 30 life trait\n- At least 30 ice trait",
-          "* By adding more focus you can extend the duration of the spell."
+          "- A fire bolt gem\n- At least 10x focus trait\n- At least 30x life trait\n- At least 30x ice trait",
+          "* By adding more focus you can extend the duration of the spell"
         ]
       },
       {
@@ -179,7 +179,7 @@
         "level": 19,
         "elements": [
           "Oh gods, of princesses. I. I don't know how to describe this. My hooves are shaking, I can barely breeze. I'm freezing cold and I can't stop thinking about what happened.",
-          "I knew there was somethign wrong. I b---knew it. I didn't know what it was at the time, but I'm extremely glad I didn't let Luna scate on that lake."
+          "I knew there was something wrong. I b---knew it. I didn't know what it was at the time, but I'm extremely glad I didn't let Luna scate on that lake."
         ]
       },
       {
@@ -272,9 +272,9 @@
         "elements": [
           { "recipe": "unicopia:spells/hydrophobic" },
           "Requires:",
-          "- A gem with frost\n- A with protection\n- At least 6x focus trait",
-          "* By adding more focus you can extend the duration of the spell.",
-          "* Add the generosity trait to tie this spell to a location rather than a user."
+          "- A gem with frost\n- A gem with protection\n- At least 6x focus trait",
+          "* By adding more focus you can extend the duration of the spell",
+          "* Add the generosity trait to tie this spell to a location rather than a user"
         ]
       }
     ]
