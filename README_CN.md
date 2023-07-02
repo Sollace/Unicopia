@@ -1,85 +1,80 @@
-# Unicopia
+# 奇幻小马国
 
 [![Downloads](https://img.shields.io/github/downloads/Sollace/Unicopia/total.svg?color=yellowgreen)](https://github.com/Sollace/Unicopia/releases/latest)
 ![](https://img.shields.io/badge/api-fabric-orange.svg)
 
-Bringing the magic of friendship to Minecraft!
+将友谊的的魔法带到Minecraft世界中！
 
-What started as a humble utility to make playing as a unicorn a little more emersive has grown into a full-blown pony
-conversion experience that brings new magic, mechanics and experience to the world of Minecraft to make it truly feel like you've
-entered the world of Equestria!
+起初，本模组只是一款能让玩家体验扮演魔法独角兽的简陋程序，但现已进化到成熟阶段。现在您可以在进入Minecraft世界时从各族小马中任选其一作为您的新身份，以此体验全新魔法机制，就如同真正踏入小马国一般！
 
-# Features
+# 独家特性
 
-## Learn how it feels to play as your favourite species of pony!
+## 来看看成为您最喜欢的小马种族是什么感觉
 
-Unicorns, Pegasi, Earth Ponies, and even Changelings get their own special abilities
+独角兽，飞马，陆马，甚至幻形灵都有其独特的能力
  
- - *Play as a unicorn* and learn to use magic! Craft your first spellbook and experiment, finding the different spells you can
-   make and what they do, or simply delve into the lore to learn more about the past of this mysterious world!
+ - *成为独角兽，* 学习使用魔法！制成您的第一本魔法书并开展实验。既可研究不同魔咒
+   的配方与功效，亦可潜心研究历史传说，揭开这奇幻世界过往的面纱！
   
-   Besides casting spells, such as a shield to protect themselves, of fire a bolt of magic to incinerate your foes,
-   Unicorns can also teleport to get around obstacles or simply reach those hard to reach places.   
+   除了施放保护自己的防护罩，用魔法镭射焚烧敌人的魔咒外，独角兽还可利用瞬移法术免去翻山越岭的苦恼，直接传送到难以到达的地方。
  
- - *Play as a pegasus* and dominate the skies! Besides the ability to fly, pegasi can also perform rainbooms, control the weather by shoving them into jars,
-   and have a greater reach distance and speed than other races.
+ - *成为飞马，*统治天空！除了能飞以外，飞马还可以制造彩虹音爆、用罐子收容坏天气，
+   相比于其他种族可触距离更远，跑得更快。
  
- - *Play as a a humble background pony*! Earth Ponies are tougher and heavier than the other races. They also have the nify ability to
-   kick trees to get food and hasten the growth of crops. You'll never go hungry if you're an earth pony.
+ - *成为兢兢业业的背景小马！*陆马相比于其他种族更壮实。他们亦有
+   踢树落果和滋养作物的实用能力。成为陆马，从此再也不缺粮。
 
- Feeling like going over to the dark side?
+ 想要加入黑暗阵营吗？
 
- - *Become one with the hive,* and shapeshift into anything when you play as a Changeling. Hunt and feast on the love gathered from other players
-   and mobs. Some forms may even come with their own unique abilities.
+ - *成为幻形虫巢的一员，*可变形成一切事物。掠夺并享用从别的玩家或生物身上吸来
+   的爱。变成某些形态时可以使用其形态对应的特殊能力。
   
- - *Embrace the night* as a Bat Pony. Bat Ponies have unlimited screeches, can see in the dark, and can fly! Only downside is you have to wear
-   really cool-cooling sunglasses otherwise the sun will burn your eyes. I think that's a fair price, don't you?
+ - *拥抱暗夜，*成为夜骐。夜骐能发出无止境的尖叫，自带夜视，亦可飞行！唯一的不足之处是在白天时得戴着
+   略显冷酷的墨镜免得阳光刺眼。我倒是觉得挺公平，您怎么看？
   
-### Manage your diet
+### 管理饮食
 
-  Playing as a pony isn't all just kicking and zapping, though! As herbivores your food options open up to include
-  a lot of items normal players don't usually get to eat. Feeling peckish? Try for some flowers from the meadow,
-  or some hay! I hear the hay burgers of good, if you can find some oats.
+  小马们的生活可不只踢树或彩虹镭射！作为食草动物，您得吃普通玩家不常吃的东西。感觉饿了吗？ 试试从草地上摘些花或
+  弄点干草来吃！我听说干草堡挺不错的，前提是您能找到一些燕麦。
 
-### Ponified Paintings
+### 马国艺术
   
-  Because what kind of pony mod would this be if it _didn't_ have this? Every race has at least one painting to represent them, so show your pride
-  and fly that flag!
+  没这些东西怎么还算得上小马模组？每个种族都至少有一种代表他们的艺术品，
+  自豪地打出您的旗号吧！
   
-  Disclaimer: Rainbow flags not included (yet)
+  免责声明：不包含彩虹旗（目前）
 
-### Natural Stuff
+### 自然现象
 
-  - Airflow is simulated (badly)
-    Pegasi, beware about flying during storms! It can get dangerous out there!
-    If you're playing as a flying species, or just like having nice things, try building a weather vein.
-    It shows the actual, totally real and not simulated badly, wind direction of your minecraft world. Just beware
-    that the direction and strength is situational (and bad), and will be different depending where you are and
-    how high up you are.
+  - 突发气流（低精度）
+    飞马啊，小心在风雨中飞行！这可能会很危险！
+    如果您是一种飞行生物，或者穿着飞行道具，请制作一个风向标。
+    它能高精度地展示真实的Minecraft世界气流方向。请小心，
+    风向和风强 （坏得很）可能会随着环境和您所处位置的变化而变化。
 
-  - Hot air Rises
-    No, it's not a bad Star Wars movie, it's an actual mechanic. Sand and lava will give flying species extra lift. Water does the opposite.
-    Try it! Actually don't, I don't want you to drown.
+  - 天行者乘势崛起
+    不，这绝对不是星战梗，而是一个真实机制。沙子和岩浆将会给予飞行生物一些飞行升力。 水则会起到相反作用。
+    您可以试试！还是别了吧，我可不希望您淹死。
 
-### Magic Items And Artifacts
+### 蕴魔物品和法器
   
-  - Craft and build s shrine for the Crystal Heart to provide valuable support to your friends
-  - Or give out bangles of comradery to your non-unicorn buddies so they can share in your powers,
-     or just so you can laugh when you teleport and they end up coming witht
-  - Send and receive items using the Dragon's Breath Scroll
-  - Possibly more I'm forgetting about (or am I? OoOoOooOOoo...Spooky surprise mechanics)
+  - 为水晶之心盖一座圣殿以为您的朋友们提供宝贵的支援。
+  - 或把友谊手环送给您的非独角兽伙伴们，以便他们借用您的力量。
+     亦或是带着他们来个突击传送
+  - 使用龙息卷轴邮寄物品
+  - 还有更多，但是我忘了（真的吗？OoOoOooOOoo…超级惊喜机制）
 
-Have feedback on this description? Found issues, or anything missing?
-DM me directly on discord.
-Things are still changing, so this description may always be out of date.
+觉得本描述有问题？还是发现了游戏问题，有甚阙漏？
+请在discord上私信我。
+事物都是处于运动和变化中的，本描述也有可能过时。
 
-# How To Play
+# 玩法
 
-View the HOW_TO_PLAY.md file for more details.
+详情请见HOW_TO_PLAY.md文档。
 
-# Dependencies & Building
+# 依赖项与开发构建
 
-### 1.19.3 Only
+### 仅1.19.3
 
 This project uses reach-entity-attributes, which may not be updated at the time of this writing.
 If you building for 1.19.3, you may follow these steps to make sure it's available to git:
@@ -88,7 +83,7 @@ If you building for 1.19.3, you may follow these steps to make sure it's availab
 `cd reach-entity-attributes`
 `gradlew build publishToMavenLocal`
 
-### Building Unicopia
+### 开发构建奇幻小马国
 
 `git clone https://github.com/Sollace/Unicopia`
 `cd Unicopia` 
