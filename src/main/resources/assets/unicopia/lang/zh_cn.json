@@ -28,7 +28,7 @@
   
   "item.unicopia.alicorn_badge": "天角兽徽章",
   "item.unicopia.unicorn_badge": "独角兽徽章",
-  "item.unicopia.pegasus_badge": "飞马徽章",
+  "item.unicopia.pegasus_badge": "天马徽章",
   "item.unicopia.earth_badge": "陆马徽章",
   "item.unicopia.changeling_badge": "幻形灵徽章",
   "item.unicopia.bat_badge": "夜骐徽章",
@@ -63,7 +63,7 @@
   "item.unicopia.gemstone.obfuscated": "不凡的 宝石",
   "item.unicopia.botched_gem": "报废的 宝石",
   
-  "item.unicopia.pegasus_feather": "飞马的羽毛",
+  "item.unicopia.pegasus_feather": "天马的羽毛",
   "item.unicopia.gryphon_feather": "狮鹫的羽毛",
   "item.unicopia.golden_feather": "金色羽毛",
   "item.unicopia.golden_wing": "金色翅膀",
@@ -204,11 +204,11 @@
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_unicorn": "滞留型转生独角兽药水",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_unicorn": "转生独角兽之箭",
   
-  "effect.unicopia.change_race_pegasus": "转生飞马",
-  "item.minecraft.potion.effect.unicopia.tribe_swap_pegasus": "转生飞马药水",
-  "item.minecraft.splash_potion.effect.unicopia.tribe_swap_pegasus": "喷溅型转生飞马药水",
-  "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_pegasus": "滞留型转生飞马药水",
-  "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_pegasus": "转生飞马之箭",
+  "effect.unicopia.change_race_pegasus": "转生天马",
+  "item.minecraft.potion.effect.unicopia.tribe_swap_pegasus": "转生天马药水",
+  "item.minecraft.splash_potion.effect.unicopia.tribe_swap_pegasus": "喷溅型转生天马药水",
+  "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_pegasus": "滞留型转生天马药水",
+  "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_pegasus": "转生天马之箭",
   
   "effect.unicopia.change_race_changeling": "转生幻形灵",
   "item.minecraft.potion.effect.unicopia.tribe_swap_changeling": "转生幻形灵药水",
@@ -270,7 +270,7 @@
   "spell.unicopia.transformation.lore": "将目标变成其它东西",
   "spell.unicopia.feather_fall": "缓降",
   "spell.unicopia.feather_fall.lore": "减缓施法者和周围同伴的下落速度",
-  "spell.unicopia.catapult": "升天",
+  "spell.unicopia.catapult": "击飞",
   "spell.unicopia.catapult.lore": "将命中的方块或实体抛向空中",
   "spell.unicopia.dispel_evil": "驱邪",
   "spell.unicopia.dispel_evil.lore": "驱散附近的任何邪恶力量。",
@@ -371,7 +371,7 @@
   
   "gui.unicopia.tribe_selection.describe.unicopia.earth": "加入陆马种族",
   "gui.unicopia.tribe_selection.describe.unicopia.unicorn": "加入独角兽种族，精通高阶魔法",
-  "gui.unicopia.tribe_selection.describe.unicopia.pegasus": "加入飞马种族，与闪电天马一起翱翔",
+  "gui.unicopia.tribe_selection.describe.unicopia.pegasus": "加入天马种族，与闪电天马一起翱翔",
   "gui.unicopia.tribe_selection.describe.unicopia.bat": "加入夜骐种族，成为最黑暗的夜晚",
   "gui.unicopia.tribe_selection.describe.unicopia.changeling": "加入幻形灵蜂巢，你的女王需要你",
   
@@ -690,12 +690,12 @@
   
   "unicopia.subtitle.flap_wings": "拍翅膀",
   "unicopia.subtitle.dash": "小马冲刺",
-  "unicopia.subtitle.wind_rush": "阵风拂面",
+  "unicopia.subtitle.wind_rush": "强风袭脸",
   "unicopia.subtitle.insects": "昆虫乱舞",
   "unicopia.subtitle.changeling_buzz": "雄峰嗡嗡",
   "unicopia.subtitle.batpony_eeee": "夜骐尖叫",
   "unicopia.subtitle.changeling.transform": "幻形灵 变形",
-  "unicopia.subtitle.pegasus.molt": "飞马脱羽",
+  "unicopia.subtitle.pegasus.molt": "天马脱羽",
   "unicopia.subtitle.unicorn.teleport": "魔法泡泡",
   "unicopia.subtitle.player.wololo": "Wololo！",
   "unicopia.subtitle.entity.player.whistle": "玩家吹口哨",

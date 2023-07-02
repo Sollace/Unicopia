@@ -60,7 +60,7 @@ also respond to quick, short single-taps, or double-taps.
    
    
 ### Pegasi (only)
- - Ranbooms / Dashing
+ - Rainbooms / Dashing
    
    Using the ability whilst flying will allow pegasi to perform a sonic rainboom that deafens the ears of your enemies and shatters glass!
    It may take some practice, but the results are most satisfying.

@@ -1,62 +1,55 @@
-# How To Play
+# 玩法
 
-When starting a new world you're given the choice of which tribe to join. One of Unicorn, Pegasus, Earth, Bat, or Changeling.
+现在您可以在进入新的Minecraft世界时从各族小马中任选其一作为您的新身份，选项包括独角兽、天马、陆马、夜骐和幻形灵。
 
-Depending on which race you pick, you're given different abilities, displayed on your HUD in a series of circular elements.
-To activate an ability, simply press and hold the key corresponding to that ability. Some take longer than others, and certain abilities
-also respond to quick, short single-taps, or double-taps.
+选择不同的种族将给您带来不同的技能，这些技能这将以几个圆形图标显示在您的UHD上。
+若要激活不同的技能，只需要按住其对应绑定的按键。有些技能需要您按住更长的时间来激活，另外有些技能所需按住时间较短，只需快速单击或双击即可激活。
 
-## Abilitis By Species
+## 不同种族的技能
 
-### Unicorns
+### 独角兽
 
- - Magic
+ - 魔法
 
-   For unicorns, casting spells is done through gems, which you can obtain whilst mining. You first need to craft a spellbook using a gem, and then
-   in the spellbook you can discover the magical traits of different items and recipes to combine them to create different spells, as well
-   as modify existing one.
+   独角兽需要魔法宝石来施法，没有魔法的普通宝石可以从挖矿活动中取得。一开始，您需要用一颗宝石和一本书合成魔法书，魔法书将助力您解析各物品中含有的要素并辅助您用这些要素开发各类魔咒配方，同样可以用于修饰已有配方。
 
-   Once you have a gem with a spell you want to use, you can equip it to your main-hand or off-hand slot by right-clicking with a gem in
-   one of either hand, then to activate it you us your primary ability. You can also cast spells directly from a gem by using the ability
-   whilst holding the gem in your hand.
+   当您做出了所需的魔法宝石后，您可以拿着它右键以将其中的魔法导入到主槽位或是副槽位（按下潜行键）中 ，这些魔咒将可以以您的主技能形式激活。您也可以直接拿着魔法宝石释放其中的魔力。
 
- - Teleporting
+ - 瞬移
    
-   Unicorns can teleport long distances, and occasionally through floors and walls up to 2 blocks. They can also take others with them by giving out signed
-   bangles of comradery.
+   独角兽可以通过瞬移跃迁到远处，偶尔能够越过最多两个方块厚的墙或地板。他们也可以带着朋友一并瞬移，前提是这些朋友要戴上签了他们名字的友谊手环。
    
-   By sneaking, unicorns can switch between teleporting to the nearest face of the block they're looking at, and the farthest. To teleport and take others
-   with you, they can switch pages in their hud using Page Up/Page Down.
+   独角兽们可以通过按下潜行键以选择瞬移到墙的背面。为了和您一起瞬移，您的朋友们可能需要按下Page Up/Page Down来切换UHD页面。
 
-### Earth Ponies
- - Kicking & Stomping
+### 陆马
+ - 尥蹶子和重蹄出击
 
-   Earth ponies kick good.
+   陆马尥蹶子劲儿大.
 
-   If Mine Little Pony is installed, and you have the appearance of a pony, kicking will target the block behind you, so twirl that rump!
-   Kicking blocks will incrementally mine them, and kicing trees will shake items loose from their branches. Kicking a tree _too much_ might destroy it,
-   so be careful!
+   如果您安装了Mine Little Pony，且调整外观为小马模型，那么在使用尥蹶子技能时，您将会踢中你背后的方块，所以快转过身来吧！
+   不停踢中单个方块会起到类似挖掘的效果，踢中树干则会将树枝上的物品抖落下来。 踢中同一棵树 _太多次_ 可能会把它踢坏，
+   请蹄下留情！
 
- - Stomping
-   Stomping is the downwards version of kicking. Activate the ability whilst in the air to land a crushing blow against the ground and push
-   other mobs away. Doing this will also gradually mine the affected blocks.
+ - 重蹄出击
+   类似方向向下的尥蹶子。跃到空中激活此技能可落到上产生碾压冲击波，这将损坏方块和推开其他生灵。
+   如果冲击波持续不断的话，方块也最终会被破坏。
 
- - Bracing
+ - 不动如山
 
-   Earth ponies can brace themselves by sneaking! It, uh, makes you harder to push! yeah!
+   陆马可以通过按下潜行键绷紧肌肉！这将，呃，让你很难被推动！没错就是这样！
 
-### Pegasi / Bat Ponies
+### 天马/夜骐
 
- - Picking Up Mobs/Players
+ - 抱起生灵/玩家
 
-   Pegasi can pick up mobs and carry them on their back. It's great for getting around! Just use the ability to grab an entity you're looking at,
-   and use it again to drop them.
+   天马可以将各种生灵抱起来。用于出门旅行再合适不过！激活技能就可以抱起你所注视着的生灵，
+   再次激活技能即可扔下他们。
 
- - Avian Flight
+ - 鸟式飞行
 
-   Pegasi can fly either by getting a running start and jumping into the air, or by using their tertiary ability to open or close their wings.
-   Once in the sky you have to flap your wings (Space) to propel yourself forward and upwards, and glide (by sneaking/holding shift).
-   You can navigate and hover using the arrow keys and by slowing down and adjusting your position to stay in one spot.
+   天马可以通过助跑或是跃到空中以起飞，亦可使用三级技能来伸展或收回翅膀。
+   飞到空中后，您需要拍打翅膀（按住跳跃键）以推动您向前和向上移动和，亦可向下滑行(需要按下潜行键)。
+   您可以按下方向键以控制方向，慢下来，以稳定在同一个位置。
    
    
 ### Pegasi (only)
