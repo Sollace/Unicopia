@@ -17,115 +17,107 @@
 
  - 瞬移
    
-   独角兽可以通过瞬移跃迁到远处，偶尔能够越过最多两个方块厚的墙或地板。他们也可以带着朋友一并瞬移，前提是这些朋友要戴上签了他们名字的友谊手环。
+   独角兽可以通过瞬移跃迁到远处，偶尔能够穿过最多两格厚的墙或地板。他们也可以带着朋友一并瞬移，前提是这些朋友要戴上签了他们名字的友谊手环。
    
    独角兽们可以通过按下潜行键以选择瞬移到墙的背面。为了和您一起瞬移，您的朋友们可能需要按下Page Up/Page Down来切换UHD页面。
 
 ### 陆马
  - 尥蹶子和重蹄出击
 
-   陆马尥蹶子劲儿大.
+   陆马尥蹶劲儿大.
 
-   如果您安装了Mine Little Pony，且调整外观为小马模型，那么在使用尥蹶子技能时，您将会踢中你背后的方块，所以快转过身来吧！
+   如果您安装了Mine Little Pony，且调整外观为小马模型，那么在使用尥蹶子技能时，您将会踢中背后的方块，所以快转过身来吧！
    不停踢中单个方块会起到类似挖掘的效果，踢中树干则会将树枝上的物品抖落下来。 踢中同一棵树 _太多次_ 可能会把它踢坏，
    请蹄下留情！
 
  - 重蹄出击
-   类似方向向下的尥蹶子。跃到空中激活此技能可落到上产生碾压冲击波，这将损坏方块和推开其他生灵。
+   类似方向向下的尥蹶子。跃到空中激活此技能可落到地上产生碾压冲击波，这将损坏方块和推开其他生灵。
    如果冲击波持续不断的话，方块也最终会被破坏。
 
  - 不动如山
 
-   陆马可以通过按下潜行键绷紧肌肉！这将，呃，让你很难被推动！没错就是这样！
+   陆马可以通过按下潜行键绷紧肌肉！这将，呃，让您很难被推动！没错就是这样！
 
 ### 天马/夜骐
 
  - 抱起生灵/玩家
 
-   天马可以将各种生灵抱起来。用于出门旅行再合适不过！激活技能就可以抱起你所注视着的生灵，
+   天马可以将各种生灵抱起来。用于出门旅行再合适不过！激活技能就可以抱起您所注视着的生灵，
    再次激活技能即可扔下他们。
 
  - 鸟式飞行
 
    天马可以通过助跑或是跃到空中以起飞，亦可使用三级技能来伸展或收回翅膀。
-   飞到空中后，您需要拍打翅膀（按住跳跃键）以推动您向前和向上移动和，亦可向下滑行(需要按下潜行键)。
+   飞到空中后，您需要拍打翅膀（按住跳跃键）以推动您向前和向上移动，亦可向下滑行(需要按下潜行键)。
    您可以按下方向键以控制方向，慢下来，以稳定在同一个位置。
    
    
-### Pegasi (only)
- - Ranbooms / Dashing
+### 天马（专属）
+ - 彩虹音爆/冲刺
    
-   Using the ability whilst flying will allow pegasi to perform a sonic rainboom that deafens the ears of your enemies and shatters glass!
-   It may take some practice, but the results are most satisfying.
+   在飞行中，天马可以发动彩虹音爆，这将损伤敌人的耳朵和震碎玻璃！
+   需要多多练习，但效果总会让您满意的。
 
- - Capturing Storms
+ - 捕获风暴
    
-   Give a pegasuscloud, and they'll have water for a day, give a pegasus a bottle, and they'll capture the clouds and make it rain all
-   summer. I think that's how the saying goes? Anywho, you can right-click with bottles to capture rain in a bottle during storms.
+   授之以雨，不如授之以云。我觉得这句老话应该是这么说的的吧？管它呢，您可以拿着玻璃罐子对着雷云按下捕获云朵技能所对应的按键，以将其封入罐子中。
 
-   Doing this will both stop it from raining and store the weather in the bottle for later use.
+   这样做也会使天空放晴，罐中存云以备日后他用。
    
-   Dropping bottles on the ground during a thunder storm is also the only way to obtain lightning in a bottle.
+   获得罐中雷电的唯一的方法是在雷暴天将罐子放在地上等待雷击。
 
-### Bat Ponies
- - Screeching
+### 夜骐
+ - 尖叫
  
-   Eeee! Eee-Eeee! Eeee!
+   Eeee！Eee-Eeee！Eeee！
    
-   Bat ponies can screeeeEEeeeeEEEEech!
+   夜骐可以screeeeEEeeeeEEEEech！
    
-   Besides annoying other players, they also deal some awesome knockback and a tiny bit of damage to anypony or anything that's caught off-guard by
-   your terrifying howl. It's so scary you might just scare yourself!
+   除了烦到别的玩家，尖叫还能造成强力的击退效果，同时微微伤到些毫无防备的生灵。您的叫声如此恐怖，以至于可能会吓到自己！
 
- - Night Vision
-   Bat Ponies have night vision. They can see in the dark, like true sisters of the night! The drawback of this is you can't look at the sun, or be
-   anywhere near sunlight in general. Luckily uou can craft some really cool sunglasses to protect your precious assets!
+ - 夜视
+   夜骐自带夜视能力。他们可以在黑暗中视物，如同夜晚的伴生生物！缺点就是您不能直视太阳，或是靠近阳光直射区域。幸运的是您可以制作炫酷的墨镜，以此保护您脆弱的双眼！
    
-   Or wear a pumpkin. That works too.
+   或者戴上南瓜头，这也可以应急一下。
    
-   (Bat Ponies also respawn in dark places)
+   （夜骐会在阴暗的地方重生）
    
- - Hanging of Ceilings
+ - 倒挂于天花板
 
-   Ever just want to hang out? Well bat ponies can, _literally_! All the cool kids are doing.
+   想开挂吗？夜骐是可以 _字面意义上_ 开挂的！大哥都喜欢这么玩。
 
-### Changelings
+### 幻形灵
 
- - Insectoid Flight
+ - 虫式飞行
 
-   Flying as a changeling is somewhat simpler. It's closer to creative flight.
+   操控幻形灵飞行是比较简单的。其操作方式更接近创造模式的飞行.
    
- - Draining Love
+ - 吸取爱
 
-   Love is the primary source of nutrition for Changelings. They can't eat a lot else, so they have to seek out hostile mobs and certain livestock to
-   sustain themselves. Alternatively, love can also be 'stolen' in-transit from the crystal heart if a changeling drops a bucket, bottle, or mug
-   anywhere nearby.
+   爱是幻形灵的主要营养来源。他们能吃的食物非常少，所以必须得寻找敌对怪物和一些特定动物来吸取爱。或者，幻形灵也可以将空桶，瓶子或杯子扔在水晶之心附近以从中“偷取”爱并将其灌入这些容器中。 
    
- - Shapeshifting
+ - 变形
    
-   Changelings can turn into damn near anything, even other players! And blocks! And hostile mobs!
-   Careful about turning into skeletons, though, because they hate the sun even more than bat ponies.
+   幻形灵可拟态成附近的事物，包括其他玩家，方块和敌对生物！
+   变成骷髅时，请小心一点，因为他们比夜骐还厌恶阳光。
 
-## Special Items, Plants, Tools
+## 特殊物品，植物，工具
 
-### Polearms
+### 长枪
 
-Polearms function like a combination of a spear and a sword. They have longer cooldown and a minor knockback, but will grant the user extra reach distance
-when equipped. Perfect for farming those unusual, magical blocks from a safer distance.
+长枪就像矛和剑的结合体。它们有更长的冷却时间和更小的击退效果，但在使用时会给予使用者更长的可触距离。适合在安全距离上收获那些不寻常的，有魔法的方块。
 
-Fighting too close together with them may cause you some knockback.
+如果在攻击生灵时候凑得过近，长枪也可能反过来把您击退。
 
-### Zap Apples
+### 魔虹苹果
 
-Zap Apple Trees occur naturally in the world and are the only way to obtain zap apples in survival. They can appear in one of several different states:
+魔虹苹果树会在世界中自然形成，它是在生存模式下唯一能获得魔虹苹果的途径。它们有以下一种不同的状态：
 
-Hybernating, Flowering, Fruiting, or Withering
+休眠，开花，结果或凋零
 
-They cycle through these states throughout the lunar cycle, so if you find one and it's not in the state you want, wait around another few days and it
-will eventually bear fruit, but don't try to harvest the apples before they're ripe, because they will zap you!
+这些状态是按周期循环的，如果您发现的果树不是您想要的状态，可以在它旁边等待几天直到结果，但请不要在魔虹苹果成熟前收获它们，否则它们会把您电得酥脆！
+如果您设法获取到了魔虹苹果的木头和叶子，那它们也可以充当威慑滋事者的完美屏障。
 
-If you're able to obtain the wood and leaves, it also make the perfect deterant to griefers.
+### 马芬
 
-### Muffins
-
-They're bouncy and delicious, and pigs absolutely love them!
+香软可口，猪猪最爱。
