@@ -19,7 +19,7 @@
   "itemGroup.unicopia.bat_pony": "奇幻小马国 - 林阴镇",
   "itemGroup.unicopia.changeling": "奇幻小马国 - 幻形虫巢",
   
-  "item.unicopia.friendship_bracelet": "友谊手环",
+  "item.unicopia.friendship_bracelet": "联谊手环",
   "item.unicopia.friendship_bracelet.issuer": "上面写着 %s 的名字",
   "item.unicopia.friendship_bracelet.glowing": "正在发光",
   
@@ -112,7 +112,7 @@
   "item.unicopia.magic_staff": "法杖",
   "item.unicopia.magic_staff.enchanted": "%s - %s",
   "item.unicopia.magic_staff.charges": "剩余能量: %d / %d",
-  "item.unicopia.meadowbrooks_staff": "梅多布鲁克的权杖",
+  "item.unicopia.meadowbrooks_staff": "麦都布鲁的权杖",
   "item.unicopia.meadowbrooks_staff.lore": "就一粗壮的木头棍子",
   
   "item.unicopia.wooden_polearm": "木质长枪",
@@ -132,7 +132,7 @@
   "item.unicopia.music_disc_funk.desc": "funk, just funk",
   
   "block.unicopia.rocks": "一些石块",
-  "block.unicopia.zapling": "雷击",
+  "block.unicopia.zapling": "魔虹苹果树苗",
   "block.unicopia.zap_log": "魔虹苹果木原木",
   "block.unicopia.zap_wood": "魔虹苹果木",
   "block.unicopia.stripped_zap_log": "去皮魔虹苹果木原木",
