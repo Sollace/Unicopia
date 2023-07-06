@@ -92,7 +92,7 @@ class SpeciesCommand {
         String name = "commands.race.tell.";
         name += isSelf ? "self" : "other";
 
-        player.sendMessage(Text.translatable(name)
+        player.sendMessage(Text.translatable(name, player.getName())
                 .append(Text.translatable(spec.getTranslationKey())
                         .styled(s -> s.withColor(Formatting.GOLD))), false);
 
