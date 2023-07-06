@@ -34,7 +34,7 @@ also respond to quick, short single-taps, or double-taps.
    Earth ponies kick good.
 
    If Mine Little Pony is installed, and you have the appearance of a pony, kicking will target the block behind you, so twirl that rump!
-   Kicking blocks will incrementally mine them, and kicing trees will shake items loose from their branches. Kicking a tree _too much_ might destroy it,
+   Kicking blocks will incrementally mine them, and kicking trees will shake items loose from their branches. Kicking a tree _too much_ might destroy it,
    so be careful!
 
  - Stomping
@@ -60,15 +60,15 @@ also respond to quick, short single-taps, or double-taps.
    
    
 ### Pegasi (only)
- - Ranbooms / Dashing
+ - Rainbooms / Dashing
    
    Using the ability whilst flying will allow pegasi to perform a sonic rainboom that deafens the ears of your enemies and shatters glass!
    It may take some practice, but the results are most satisfying.
 
  - Capturing Storms
    
-   Give a pegasuscloud, and they'll have water for a day, give a pegasus a bottle, and they'll capture the clouds and make it rain all
-   summer. I think that's how the saying goes? Anywho, you can right-click with bottles to capture rain in a bottle during storms.
+   Give a pegasus a cloud, and they'll have water for a day, give a pegasus a jar, and they'll capture the clouds and make it rain all
+   summer. I think that's how the saying goes? Anywho, you can use jars to capture rain in a jar during storms.
 
    Doing this will both stop it from raining and store the weather in the bottle for later use.
    
@@ -95,6 +95,10 @@ also respond to quick, short single-taps, or double-taps.
  - Hanging of Ceilings
 
    Ever just want to hang out? Well bat ponies can, _literally_! All the cool kids are doing.
+   
+ - Mangoes
+   
+   And other fruit! Bat Ponies LOVE THEM! Especially the pineapples? Especially the pineapples.
 
 ### Changelings
 
