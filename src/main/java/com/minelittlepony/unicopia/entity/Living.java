@@ -32,7 +32,11 @@ import com.minelittlepony.unicopia.server.world.DragonBreathStore;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.*;
 
+import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import net.minecraft.entity.*;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -46,6 +50,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T>, Transmittable {
@@ -212,6 +217,31 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         }
 
         updateDragonBreath();
+    }
+
+    public void updateAttributeModifier(UUID id, EntityAttribute attribute, float desiredValue, Float2ObjectFunction<EntityAttributeModifier> modifierSupplier, boolean permanent) {
+        @Nullable
+        EntityAttributeInstance instance = asEntity().getAttributeInstance(attribute);
+        if (instance == null) {
+            return;
+        }
+
+        @Nullable
+        EntityAttributeModifier modifier = instance.getModifier(id);
+
+        if (!MathHelper.approximatelyEquals(desiredValue, modifier == null ? 0 : modifier.getValue())) {
+            if (modifier != null) {
+                instance.removeModifier(modifier);
+            }
+
+            if (desiredValue != 0) {
+                if (permanent) {
+                    instance.addPersistentModifier(modifierSupplier.get(desiredValue));
+                } else {
+                    instance.addTemporaryModifier(modifierSupplier.get(desiredValue));
+                }
+            }
+        }
     }
 
     public boolean canBeSeenBy(Entity entity) {
