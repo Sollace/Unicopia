@@ -122,22 +122,18 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
     }
 
     protected boolean applyEntities(Caster<?> source, Vec3d pos) {
-        return source.findAllEntitiesInRange(Math.max(0, 3 + getTraits().get(Trait.POWER)), i -> applyEntitySingle(source, i)).count() > 0;
-    }
-
-    protected boolean applyEntitySingle(Caster<?> source, Entity e) {
-        LivingEntity master = source.getMaster();
-
-        if ((!(e.equals(source.asEntity()) || e.equals(master)) ||
-                (master instanceof PlayerEntity && !EquinePredicates.PLAYER_UNICORN.test(master))) && !(e instanceof ItemEntity)
-        && !(e instanceof Caster<?>)) {
+        return source.findAllEntitiesInRange(Math.max(0, 3 + getTraits().get(Trait.POWER)), e -> {
+            LivingEntity master = source.getMaster();
+            return (!(e.equals(source.asEntity()) || e.equals(master)) ||
+                    (master instanceof PlayerEntity && !EquinePredicates.PLAYER_UNICORN.test(master))) && !(e instanceof ItemEntity)
+                    && !(e instanceof Caster<?>);
+        }).filter(e -> {
             e.setOnFireFor(60);
             e.damage(getDamageCause(source, e), 0.1f);
             playEffect(source.asWorld(), e.getBlockPos());
             return true;
-        }
-
-        return false;
+        })
+        .count() > 0;
     }
 
     protected DamageSource getDamageCause(Caster<?> source, Entity target) {

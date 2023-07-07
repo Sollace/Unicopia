@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.VecHelper;
 
+import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -55,6 +56,9 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
             EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 0.001F,
             EntityAttributes.GENERIC_ARMOR, 0.01F
     );
+    private static final Float2ObjectFunction<EntityAttributeModifier> EFFECT_FACTORY = v -> {
+        return new EntityAttributeModifier(EFFECT_UUID, "Alicorn Amulet Modifier", v, EntityAttributeModifier.Operation.ADDITION);
+    };
 
     public AlicornAmuletItem(FabricItemSettings settings) {
         super(settings, 0, ImmutableMultimap.of());
@@ -159,12 +163,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         }
 
         EFFECT_SCALES.keySet().forEach(attribute -> {
-            EntityAttributeInstance instance = entity.getAttributeInstance(attribute);
-            @Nullable
-            EntityAttributeModifier modifier = instance.getModifier(EFFECT_UUID);
-            if (modifier != null) {
-                instance.removeModifier(modifier);
-            }
+            wearer.updateAttributeModifier(EFFECT_UUID, attribute, 0F, EFFECT_FACTORY, false);
         });
     }
 
@@ -268,16 +267,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         if (fullSecond) {
             EFFECT_SCALES.entrySet().forEach(attribute -> {
                 float seconds = (float)attachedTicks / ItemTracker.SECONDS;
-                EntityAttributeInstance instance = living.asEntity().getAttributeInstance(attribute.getKey());
-                @Nullable
-                EntityAttributeModifier modifier = instance.getModifier(EFFECT_UUID);
-                float desiredValue = attribute.getValue() * seconds;
-                if (!MathHelper.approximatelyEquals(desiredValue, modifier == null ? 0 : modifier.getValue())) {
-                    if (modifier != null) {
-                        instance.removeModifier(modifier);
-                    }
-                    instance.addTemporaryModifier(new EntityAttributeModifier(EFFECT_UUID, "Alicorn Amulet Modifier", attribute.getValue() * seconds, EntityAttributeModifier.Operation.ADDITION));
-                }
+                living.updateAttributeModifier(EFFECT_UUID, attribute.getKey(), attribute.getValue() * seconds, EFFECT_FACTORY, false);
             });
         }
     }
