@@ -198,6 +198,7 @@ public class WorldRenderDelegate {
             BlockEntityRenderer<BlockEntity> r = MinecraftClient.getInstance().getBlockEntityRenderDispatcher().get(blockEntity);
             if (r != null) {
                 ((FallingBlockBehaviour.Positioned)blockEntity).setPos(e.getBlockPos());
+                blockEntity.setWorld(e.getWorld());
                 matrices.push();
 
                 BlockState state = blockEntity.getCachedState();
@@ -213,6 +214,7 @@ public class WorldRenderDelegate {
                 r.render(blockEntity, 1, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
 
                 matrices.pop();
+                blockEntity.setWorld(null);
                 return;
             }
         }
