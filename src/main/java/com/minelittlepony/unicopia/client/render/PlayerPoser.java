@@ -13,10 +13,12 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.command.argument.EnumArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Arm;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.*;
 
 public class PlayerPoser {
@@ -232,7 +234,7 @@ public class PlayerPoser {
         model.leftLeg.yaw = roll / 7F;
     }
 
-    public enum Animation {
+    public enum Animation implements StringIdentifiable {
         NONE(0),
         WOLOLO(USounds.ENTITY_PLAYER_WOLOLO, 40),
         ARMS_FORWARD(5),
@@ -265,6 +267,25 @@ public class PlayerPoser {
         public Optional<SoundEvent> getSound() {
             return sound;
         }
+
+        @Override
+        public String asString() {
+            return name();
+        }
+
+        public static EnumArgumentType<Animation> argument() {
+            return new ArgumentType();
+        }
+
+        public static final class ArgumentType extends EnumArgumentType<Animation> {
+            @SuppressWarnings("deprecation")
+            static final Codec<Animation> CODEC = StringIdentifiable.createCodec(Animation::values);
+
+            protected ArgumentType() {
+                super(CODEC, Animation::values);
+            }
+        }
+
     }
 
     public enum Context {

@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
@@ -12,7 +13,7 @@ public class EmoteCommand {
     static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager
                 .literal("emote")
-                .then(CommandManager.argument("animation", EnumArgumentType.of(Animation.class)).executes(source -> apply(
+                .then(CommandManager.argument("animation", Animation.argument()).executes(source -> apply(
                         source.getSource(),
                         source.getArgument("animation", Animation.class)
                     )

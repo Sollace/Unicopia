@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.Unicopia;
 
+import net.minecraft.command.argument.EnumArgumentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
@@ -14,8 +15,9 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringIdentifiable;
 
-public enum Trait {
+public enum Trait implements StringIdentifiable {
     /**
      * Imparts physical strength or enhances endurance.
      * Spells with more of the strength trait hit harder and last longer.
@@ -97,6 +99,11 @@ public enum Trait {
         return id;
     }
 
+    @Override
+    public String asString() {
+        return name();
+    }
+
     public TraitGroup getGroup() {
         return group;
     }
@@ -148,5 +155,18 @@ public enum Trait {
 
     public static Optional<Trait> fromName(String name) {
         return Optional.ofNullable(REGISTRY.getOrDefault(name.toUpperCase(), null));
+    }
+
+    public static EnumArgumentType<Trait> argument() {
+        return new ArgumentType();
+    }
+
+    public static final class ArgumentType extends EnumArgumentType<Trait> {
+        @SuppressWarnings("deprecation")
+        static final Codec<Trait> CODEC = StringIdentifiable.createCodec(Trait::values);
+
+        protected ArgumentType() {
+            super(CODEC, Trait::values);
+        }
     }
 }
