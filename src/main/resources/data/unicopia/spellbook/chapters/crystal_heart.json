@@ -38,7 +38,47 @@
           "Other accounts say that this artefact only functions when mounted on a specific pedestal of diamond blocks, like a beacon."
         ]
       },
-
+      {
+        "title": "Torn Page",
+        "level": 0,
+        "elements": [
+          {
+            "text": "",
+            "extra": [
+              { "text": "aaa", "obfuscated": "true" },
+              { "text": "ential c" },
+              { "text": "a", "obfuscated": "true" },
+              { "text": "r" },
+              { "text": "aaa", "obfuscated": "true" },
+              { "text": "nial purpose" },
+              { "text": "aaa", "obfuscated": "true" },
+              { "text": "?" }
+            ]
+          },
+          {
+            "text": "Aasa sasa fwefsd q43rgfd wqklmsdfl as, klasn.", "obfuscated": "true"
+          },
+          "Building Materials:",
+          "- 2x end rod\n- 20x diamond block\n- 1x crystal heart"
+        ]
+      },
+      {
+        "title": "Crystal Podium",
+        "level": 0,
+        "elements": [
+          { "x": 40, "item": { "item": "minecraft:diamond_block" } },
+          { "x": 60, "y": -17, "item": { "item": "minecraft:diamond_block" } },
+          { "x": 80, "y": -34, "item": { "item": "minecraft:diamond_block" } },
+          { "x": 60, "y": -34, "item": { "item": "minecraft:diamond_block" } },
+          { "x": 60, "y": -34, "item": { "item": "minecraft:end_rod" } },
+          { "x": 60, "y": -34, "item": { "item": "unicopia:crystal_heart" } },
+          { "x": 60, "y": -34, "item": { "item": "minecraft:end_rod" } },
+          { "x": 60, "y": -34, "item": { "item": "minecraft:diamond_block" } },
+          { "x": 40, "y": -34, "item": { "item": "minecraft:diamond_block" } },
+          { "x": 60, "y": -51, "item": { "item": "minecraft:diamond_block" } },
+          { "x": 80, "y": -68, "item": { "item": "minecraft:diamond_block" } }
+        ]
+      },
       {
         "title": "Dragon's Breath Scroll",
         "level": 0,
