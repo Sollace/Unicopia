@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.block.state.StatePredicate;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.Physics;
@@ -183,7 +184,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         getSpellSlot().get(true).filter(spell -> spell.tick(this, Situation.PROJECTILE));
 
         if (getHydrophobic()) {
-            if (getWorld().getBlockState(getBlockPos()).isLiquid()) {
+            if (StatePredicate.isFluid(getWorld().getBlockState(getBlockPos()))) {
                 Vec3d vel = getVelocity();
 
                 double velY = vel.y;
