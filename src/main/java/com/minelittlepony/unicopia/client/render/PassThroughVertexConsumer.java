@@ -1,88 +1,57 @@
 package com.minelittlepony.unicopia.client.render;
 
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumers;
 
-public class PassThroughVertexConsumer implements VertexConsumer {
-    private static final ColorFix COLOR = VertexConsumer::color;
-    private static final FUvFix TEXTURE = VertexConsumer::texture;
-    private static final IUvFix OVERLAY = VertexConsumer::overlay;
-    private static final IUvFix LIGHT = VertexConsumer::light;
+public class PassThroughVertexConsumer extends VertexConsumers.Union implements VertexConsumer {
+    private final Applicate<ColorFix> colorFix;
+    private final Applicate<FUvFix> textureFix;
+    private final Applicate<IUvFix> overlayFix;
+    private final Applicate<IUvFix> lightFix;
 
-    private final VertexConsumer parent;
-
-    private final ColorFix colorFix;
-    private final FUvFix textureFix;
-    private final IUvFix overlayFix;
-    private final IUvFix lightFix;
-
-    public static VertexConsumer of(VertexConsumer parent, Parameters parameters) {
-        return new PassThroughVertexConsumer(parent, parameters);
-    }
-
-    PassThroughVertexConsumer(VertexConsumer parent, Parameters parameters) {
-        this.parent = parent;
-        colorFix = parameters.colorFix;
-        textureFix = parameters.textureFix;
-        overlayFix = parameters.overlayFix;
-        lightFix = parameters.lightFix;
-    }
-
-    @Override
-    public VertexConsumer vertex(double x, double y, double z) {
-        parent.vertex(x, y, z);
-        return this;
+    private PassThroughVertexConsumer(VertexConsumer parent, Parameters parameters) {
+        super(new VertexConsumer[] {parent});
+        colorFix = Applicate.of(parameters.colorFix, (self, r, g, b, a) -> super.color(r, g, b, a));
+        textureFix = Applicate.of(parameters.textureFix, (self, u, v) -> super.texture(u, v));
+        overlayFix = Applicate.of(parameters.overlayFix, (self, u, v) -> super.overlay(u, v));
+        lightFix = Applicate.of(parameters.lightFix, (self, u, v) -> super.light(u, v));
     }
 
     @Override
     public VertexConsumer color(int r, int g, int b, int a) {
-        colorFix.apply(parent, r, g, b, a);
+        colorFix.getFix().apply(this, r, g, b, a);
+        colorFix.nested = false;
         return this;
     }
 
     @Override
     public VertexConsumer texture(float u, float v) {
-        textureFix.apply(parent, u, v);
+        textureFix.getFix().apply(this, u, v);
+        textureFix.nested = false;
         return this;
     }
 
     @Override
     public VertexConsumer overlay(int u, int v) {
-        overlayFix.apply(parent, u, v);
+        overlayFix.getFix().apply(this, u, v);
+        overlayFix.nested = false;
         return this;
     }
 
     @Override
     public VertexConsumer light(int u, int v) {
-        lightFix.apply(parent, u, v);
+        lightFix.getFix().apply(this, u, v);
+        lightFix.nested = false;
         return this;
-    }
-
-    @Override
-    public VertexConsumer normal(float x, float y, float z) {
-        parent.normal(x, y, z);
-        return this;
-    }
-
-    @Override
-    public void next() {
-        parent.next();
-    }
-
-    @Override
-    public void fixedColor(int r, int g, int b, int a) {
-        parent.fixedColor(r, g, b, a);
-    }
-
-    @Override
-    public void unfixColor() {
-        parent.unfixColor();
     }
 
     public static class Parameters {
-        private ColorFix colorFix = COLOR;
-        private FUvFix textureFix = TEXTURE;
-        private IUvFix overlayFix = OVERLAY;
-        private IUvFix lightFix = LIGHT;
+        private @Nullable ColorFix colorFix;
+        private @Nullable FUvFix textureFix;
+        private @Nullable IUvFix overlayFix;
+        private @Nullable IUvFix lightFix;
 
         public Parameters color(ColorFix fix) {
             colorFix = fix;
@@ -102,6 +71,34 @@ public class PassThroughVertexConsumer implements VertexConsumer {
         public Parameters light(IUvFix fix) {
             lightFix = fix;
             return this;
+        }
+
+        public VertexConsumer build(VertexConsumer parent) {
+            return new PassThroughVertexConsumer(parent, this);
+        }
+    }
+
+    private static class Applicate<T> {
+        public final T fix;
+        public final T fallback;
+
+        public boolean nested;
+
+        public Applicate(T fix, T fallback) {
+            this.fix = fix;
+            this.fallback = fallback;
+        }
+
+        public T getFix() {
+            try {
+                return nested ? fallback : fix;
+            } finally {
+                nested = true;
+            }
+        }
+
+        static <T> Applicate<T> of(@Nullable T fix, T fallback) {
+            return new Applicate<>(fix == null ? fallback : fix, fallback);
         }
     }
 
