@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.render;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.client.util.render.RenderLayerUtil;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
@@ -35,9 +36,6 @@ import net.minecraft.util.math.*;
 public class WorldRenderDelegate {
     public static final WorldRenderDelegate INSTANCE = new WorldRenderDelegate();
 
-    private static final PassThroughVertexConsumer.Parameters MINION_OVERLAY = new PassThroughVertexConsumer.Parameters()
-            .color((parent, r, g, b, a) -> parent.color((float)Math.random(), 0.6F, 1, a / 255F));
-
     private boolean recurseMinion;
     private boolean recurseFrosting;
 
@@ -50,13 +48,13 @@ public class WorldRenderDelegate {
 
             if (MinecraftClient.getInstance().getResourceManager().getResource(frostingTexture).isPresent()) {
                 recurseFrosting = true;
-
-                dispatcher.render(entity, x, y, z, yaw, tickDelta, matrices, vertices, light);
-                dispatcher.setRenderShadows(false);
+                //dispatcher.render(entity, x, y, z, yaw, tickDelta, matrices, vertices, light);
                 dispatcher.render(entity, x, y, z, yaw, tickDelta, matrices, layer -> {
-                    return vertices.getBuffer(RenderLayers.getEntityTranslucent(frostingTexture));
+                    if (RenderLayerUtil.getTexture(layer).orElse(null) == null) {
+                        return vertices.getBuffer(layer);
+                    }
+                    return VertexConsumers.union(vertices.getBuffer(layer), vertices.getBuffer(RenderLayers.getEntityTranslucent(frostingTexture)));
                 }, light);
-                dispatcher.setRenderShadows(true);
                 recurseFrosting = false;
                 return true;
             }
@@ -77,7 +75,14 @@ public class WorldRenderDelegate {
             try {
                 recurseMinion = true;
                 dispatcher.render(creature.asEntity(), x, y, z, yaw, tickDelta, matrices, layer -> {
-                    return MINION_OVERLAY.build(vertices.getBuffer(layer));
+                    var buffer = vertices.getBuffer(layer);
+                    return RenderLayerUtil.getTexture(layer).map(texture -> {
+                        return VertexConsumers.union(
+                                vertices.getBuffer(RenderLayers.getMagicColored(texture, 0x0000FF)),
+                                vertices.getBuffer(layer)
+                        );
+                    }).orElse(buffer);
+                    //return MINION_OVERLAY.build(vertices.getBuffer(layer));
                 }, light);
             } finally {
                 recurseMinion = false;
