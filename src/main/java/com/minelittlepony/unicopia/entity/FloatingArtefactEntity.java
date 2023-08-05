@@ -145,9 +145,9 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound compound) {
-        ItemStack itemStack = ItemStack.fromNbt(compound.getCompound("Item"));
-        setStack(itemStack);
+        setStack(ItemStack.fromNbt(compound.getCompound("Item")));
         setState(State.valueOf(compound.getInt("State")));
+        setSpin(compound.getFloat("spin"));
     }
 
     @Override
@@ -157,6 +157,7 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
             compound.put("Item", stack.writeNbt(new NbtCompound()));
         }
         compound.putInt("State", getState().ordinal());
+        compound.putFloat("spin", getSpin());
     }
 
     @Override
@@ -184,11 +185,6 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
     @Override
     public boolean canHit() {
         return true;
-    }
-
-    @Override
-    public Packet<ClientPlayPacketListener> createSpawnPacket() {
-        return Channel.SERVER_SPAWN_PROJECTILE.toPacket(new MsgSpawnProjectile(this));
     }
 
     @Override
