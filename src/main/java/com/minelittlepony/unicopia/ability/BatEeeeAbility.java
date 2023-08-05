@@ -76,7 +76,7 @@ public class BatEeeeAbility implements Ability<Hit> {
         }, rng.nextInt(10));
 
         if (!player.getPhysics().isFlying()) {
-            player.setAnimation(Animation.SPREAD_WINGS);
+            player.setAnimation(Animation.SPREAD_WINGS, Animation.Recipient.ANYONE);
         }
 
         Vec3d origin = player.getOriginVector();

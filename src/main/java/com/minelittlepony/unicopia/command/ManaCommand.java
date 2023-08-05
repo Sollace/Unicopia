@@ -44,7 +44,7 @@ public class ManaCommand {
         );
     }
 
-    enum ManaType implements StringIdentifiable {
+    enum ManaType implements CommandArgumentEnum<ManaType> {
         EXERTION(MagicReserves::getExertion),
         EXHAUSTION(MagicReserves::getExhaustion),
         ENERGY(MagicReserves::getEnergy),
@@ -59,11 +59,6 @@ public class ManaCommand {
 
         public MagicReserves.Bar getBar(MagicReserves reserves) {
             return getter.apply(reserves);
-        }
-
-        @Override
-        public String asString() {
-            return name();
         }
 
         public static EnumArgumentType<ManaType> argument() {

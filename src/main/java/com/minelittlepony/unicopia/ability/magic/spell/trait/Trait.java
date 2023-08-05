@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.command.CommandArgumentEnum;
 
 import net.minecraft.command.argument.EnumArgumentType;
 import net.minecraft.item.Item;
@@ -17,7 +18,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 
-public enum Trait implements StringIdentifiable {
+public enum Trait implements CommandArgumentEnum<Trait> {
     /**
      * Imparts physical strength or enhances endurance.
      * Spells with more of the strength trait hit harder and last longer.

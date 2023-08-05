@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import java.util.function.Supplier;
+
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -120,7 +122,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     @Override
     public float getWingAngle() {
 
-        if (pony.getAnimation() == Animation.SPREAD_WINGS) {
+        if (pony.getAnimation().isOf(Animation.SPREAD_WINGS)) {
             return AnimationUtil.seeSitSaw(pony.getAnimationProgress(1), 1.5F);
         }
 
@@ -485,6 +487,14 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         isFlyingSurvival = true;
         thrustScale = 0;
         entity.calculateDimensions();
+
+
+
+        if (entity.isOnGround() || !force) {
+            Supplier<Vec3d> vec = VecHelper.sphere(pony.asWorld().getRandom(), 0.5D);
+            pony.spawnParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, vec, vec, 5);
+            pony.spawnParticles(ParticleTypes.CLOUD, vec, vec, 5);
+        }
     }
 
     private void handleWallCollission(MutableVector velocity) {

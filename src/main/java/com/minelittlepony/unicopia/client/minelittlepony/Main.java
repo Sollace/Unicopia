@@ -51,7 +51,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
                 model.getAttributes().isGoingFast |= pony.getMotion().isRainbooming();
                 model.getAttributes().isGoingFast &= !pony.getEntityInArms().isPresent();
 
-                if (pony.getAnimation() == Animation.SPREAD_WINGS) {
+                if (pony.getAnimation().isOf(Animation.SPREAD_WINGS)) {
                     model.getAttributes().wingAngle = -AnimationUtil.seeSitSaw(pony.getAnimationProgress(1), 1.5F) * (float)Math.PI / 1.2F;
                     model.getAttributes().isFlying = true;
                 }

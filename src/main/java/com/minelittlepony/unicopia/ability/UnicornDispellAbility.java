@@ -58,7 +58,7 @@ public class UnicornDispellAbility implements Ability<Pos> {
 
         if (player.getSpecies() != Race.CHANGELING) {
             if (type.getTapCount() > 1) {
-                player.setAnimation(Animation.WOLOLO, 10);
+                player.setAnimation(Animation.WOLOLO, Animation.Recipient.ANYONE, 10);
                 if (player.getSpellSlot().clear()) {
                     player.asEntity().sendMessage(Text.translatable("gui.unicopia.action.spells_cleared"), true);
                 } else {
@@ -90,7 +90,7 @@ public class UnicornDispellAbility implements Ability<Pos> {
 
     @Override
     public void apply(Pony player, Pos data) {
-        player.setAnimation(Animation.WOLOLO);
+        player.setAnimation(Animation.WOLOLO, Animation.Recipient.ANYONE);
         Caster.stream(VecHelper.findInRange(player.asEntity(), player.asWorld(), data.vec(), 3, EquinePredicates.IS_PLACED_SPELL).stream()).forEach(target -> {
             target.getSpellSlot().clear();
         });

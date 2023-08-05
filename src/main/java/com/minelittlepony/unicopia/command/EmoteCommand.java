@@ -15,23 +15,31 @@ public class EmoteCommand {
                 .literal("emote")
                 .then(CommandManager.argument("animation", Animation.argument()).executes(source -> apply(
                         source.getSource(),
-                        source.getArgument("animation", Animation.class)
+                        source.getArgument("animation", Animation.class),
+                        Animation.Recipient.ANYONE
                     )
                 ).then(CommandManager.argument("duration", IntegerArgumentType.integer(1, 99)).executes(source -> apply(
                         source.getSource(),
                         source.getArgument("animation", Animation.class),
-                        source.getArgument("duration", Integer.class)
+                        Animation.Recipient.ANYONE,
+                        IntegerArgumentType.getInteger(source, "duration")
                     )
-                )
+                ).then(CommandManager.argument("recipient_type", Animation.Recipient.argument()).executes(source -> apply(
+                        source.getSource(),
+                        source.getArgument("animation", Animation.class),
+                        source.getArgument("recipient_type", Animation.Recipient.class),
+                        IntegerArgumentType.getInteger(source, "duration")
+                    )
+                ))
         )));
     }
 
-    static int apply(ServerCommandSource source, Animation animation) throws CommandSyntaxException {
-        return apply(source, animation, animation.getDuration());
+    static int apply(ServerCommandSource source, Animation animation, Animation.Recipient recipient) throws CommandSyntaxException {
+        return apply(source, animation, recipient, animation.getDuration());
     }
 
-    static int apply(ServerCommandSource source, Animation animation, int duration) throws CommandSyntaxException {
-        Pony.of(source.getPlayer()).setAnimation(animation, duration);
+    static int apply(ServerCommandSource source, Animation animation, Animation.Recipient recipient, int duration) throws CommandSyntaxException {
+        Pony.of(source.getPlayer()).setAnimation(animation, recipient, duration);
         return 0;
     }
 }

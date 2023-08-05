@@ -111,14 +111,14 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
                         player.spawnParticles(ParticleTypes.LARGE_SMOKE, 6);
                         player.playSound(USounds.SPELL_CAST_FAIL, 1, 0.5F);
                     } else {
-                        player.setAnimation(Animation.ARMS_UP);
+                        player.setAnimation(Animation.ARMS_UP, Animation.Recipient.HUMAN);
                         if (s instanceof HomingSpell homer) {
                             TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EntityPredicates.VALID_ENTITY).ifPresent(homer::setTarget);
                         }
                         player.playSound(USounds.SPELL_CAST_SUCCESS, 0.05F, 2.2F);
                     }
                 } else {
-                    player.setAnimation(Animation.WOLOLO);
+                    player.setAnimation(Animation.WOLOLO, Animation.Recipient.ANYONE);
                 }
             }
         }

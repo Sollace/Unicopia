@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.network;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.AnimationInstance;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.sollace.fabwork.api.packets.HandledPacket;
 
@@ -15,22 +16,23 @@ import net.minecraft.network.PacketByteBuf;
  */
 public record MsgPlayerAnimationChange (
         UUID playerId,
-        Animation animation,
+        AnimationInstance animation,
         int duration
     ) implements HandledPacket<PlayerEntity> {
 
     MsgPlayerAnimationChange(PacketByteBuf buffer) {
-        this(buffer.readUuid(), buffer.readEnumConstant(Animation.class), buffer.readInt());
+        this(buffer.readUuid(), new AnimationInstance(buffer.readEnumConstant(Animation.class), buffer.readEnumConstant(Animation.Recipient.class)), buffer.readInt());
     }
 
-    public MsgPlayerAnimationChange(Pony player, Animation animation, int duration) {
+    public MsgPlayerAnimationChange(Pony player, AnimationInstance animation, int duration) {
         this(player.asEntity().getUuid(), animation, duration);
     }
 
     @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeUuid(playerId);
-        buffer.writeEnumConstant(animation);
+        buffer.writeEnumConstant(animation.animation());
+        buffer.writeEnumConstant(animation.recipient());
         buffer.writeInt(duration);
     }
 

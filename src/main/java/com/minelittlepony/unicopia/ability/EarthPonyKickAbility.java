@@ -88,14 +88,14 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                             entity.takeKnockback(calculatedStrength, origin.x - entity.getX(), origin.z - entity.getZ());
                             Living.updateVelocity(entity);
                             player.subtractEnergyCost(3);
-                            player.setAnimation(Animation.KICK);
+                            player.setAnimation(Animation.KICK, Animation.Recipient.ANYONE);
                             return;
                         }
                     }
 
                     BlockPos pos = kickLocation.pos();
                     EarthPonyStompAbility.stompBlock(w, pos, 10 * (1 + player.getLevel().getScaled(5)) * w.getBlockState(pos).calcBlockBreakingDelta(player.asEntity(), w, pos));
-                    player.setAnimation(Animation.KICK);
+                    player.setAnimation(Animation.KICK, Animation.Recipient.ANYONE);
                 });
             }
 
@@ -153,7 +153,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         BlockPos pos = data.pos();
         TreeType tree = TreeType.at(pos, iplayer.asWorld());
 
-        iplayer.setAnimation(Animation.KICK);
+        iplayer.setAnimation(Animation.KICK, Animation.Recipient.ANYONE);
         iplayer.subtractEnergyCost(tree == TreeType.NONE ? 1 : 3);
 
         if (tree == TreeType.NONE) {

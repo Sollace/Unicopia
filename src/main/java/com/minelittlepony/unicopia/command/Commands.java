@@ -16,6 +16,7 @@ public class Commands {
     @SuppressWarnings("deprecation")
     public static void bootstrap() {
         ArgumentTypeRegistry.registerArgumentType(Unicopia.id("animation"), Animation.ArgumentType.class, ConstantArgumentSerializer.of(Animation::argument));
+        ArgumentTypeRegistry.registerArgumentType(Unicopia.id("animation_recipient"), Animation.Recipient.ArgumentType.class, ConstantArgumentSerializer.of(Animation.Recipient::argument));
         ArgumentTypeRegistry.registerArgumentType(Unicopia.id("mana_type"), ManaType.ArgumentType.class, ConstantArgumentSerializer.of(ManaType::argument));
         ArgumentTypeRegistry.registerArgumentType(Unicopia.id("trait_type"), Trait.ArgumentType.class, ConstantArgumentSerializer.of(Trait::argument));
         ArgumentTypeRegistry.registerArgumentType(Unicopia.id("spell_traits"), TraitsArgumentType.class, ConstantArgumentSerializer.of(TraitsArgumentType::traits));

@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.AnimationInstance;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.*;
 import com.minelittlepony.unicopia.ability.magic.*;
@@ -100,7 +101,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private boolean hasShades;
     private int ticksSunImmunity = INITIAL_SUN_IMMUNITY;
 
-    private Animation animation = Animation.NONE;
+    private AnimationInstance animation = new AnimationInstance(Animation.NONE, Animation.Recipient.ANYONE);
     private int animationMaxDuration;
     private int animationDuration;
 
@@ -124,34 +125,53 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         builder.add(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
     }
 
+    @Deprecated
     public void setAnimation(Animation animation) {
-        setAnimation(animation, animation.getDuration());
+        setAnimation(new AnimationInstance(animation, Animation.Recipient.ANYONE));
     }
 
+    @Deprecated
     public void setAnimation(Animation animation, int duration) {
-        if (animation != this.animation && duration != animationDuration) {
+        setAnimation(new AnimationInstance(animation, Animation.Recipient.ANYONE));
+    }
+
+    public void setAnimation(Animation animation, Animation.Recipient recipient) {
+        setAnimation(new AnimationInstance(animation, recipient), animation.getDuration());
+    }
+
+    public void setAnimation(Animation animation, Animation.Recipient recipient, int duration) {
+        setAnimation(new AnimationInstance(animation, recipient), duration);
+    }
+
+    public void setAnimation(AnimationInstance animation) {
+        setAnimation(animation, animation.animation().getDuration());
+    }
+
+    public void setAnimation(AnimationInstance animation, int duration) {
+        if (!animation.equals(this.animation) || duration != animationDuration) {
             this.animation = animation;
-            this.animationDuration = animation == Animation.NONE ? 0 : Math.max(0, duration);
+            this.animationDuration = animation.isOf(Animation.NONE) ? 0 : Math.max(0, duration);
             this.animationMaxDuration = animationDuration;
 
             if (!isClient()) {
                 Channel.SERVER_PLAYER_ANIMATION_CHANGE.sendToAllPlayers(new MsgPlayerAnimationChange(this, animation, animationDuration), asWorld());
             }
 
-            animation.getSound().ifPresent(sound -> {
+            animation.animation().getSound().ifPresent(sound -> {
                 playSound(sound, sound == USounds.ENTITY_PLAYER_WOLOLO ? 0.1F : 0.9F, 1);
             });
         }
     }
 
-    public Animation getAnimation() {
+    public AnimationInstance getAnimation() {
         return animation;
     }
 
     public float getAnimationProgress(float delta) {
-        if (animation == Animation.NONE) {
+        if (animation.isOf(Animation.NONE)) {
             return 0;
         }
+        System.out.println(animationMaxDuration);
         return 1 - (((float)animationDuration) / animationMaxDuration);
     }
 
@@ -378,8 +398,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     private void updateAnimations() {
-        if (animationDuration >= 0 && --animationDuration <= 0) {
-            setAnimation(Animation.NONE);
+        if (animationDuration > 0 && --animationDuration <= 0) {
+            setAnimation(AnimationInstance.NONE);
         }
     }
 

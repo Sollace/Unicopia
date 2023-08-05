@@ -3,11 +3,14 @@ package com.minelittlepony.unicopia.util;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.EntityView;
 
 public interface VecHelper {
@@ -18,6 +21,18 @@ public interface VecHelper {
 
     static Vec3d supply(DoubleSupplier rng) {
         return new Vec3d(rng.getAsDouble(), rng.getAsDouble(), rng.getAsDouble());
+    }
+
+    static Supplier<Vec3d> supplier(DoubleSupplier rng) {
+        return () -> supply(rng);
+    }
+
+    static Supplier<Vec3d> sphere(Random rng) {
+        return sphere(rng, 1);
+    }
+
+    static Supplier<Vec3d> sphere(Random rng, double radius) {
+        return supplier(() -> (rng.nextGaussian() - 0.5) * radius);
     }
 
     static Predicate<Entity> inRange(Vec3d center, double range) {
