@@ -80,6 +80,10 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
         return pos;
     }
 
+    public boolean isSet() {
+        return getId().isPresent();
+    }
+
     public boolean referenceEquals(Entity entity) {
         return entity != null && entity.getUuid().equals(uuid.orElse(null));
     }

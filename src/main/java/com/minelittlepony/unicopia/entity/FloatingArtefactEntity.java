@@ -3,8 +3,6 @@ package com.minelittlepony.unicopia.entity;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.damage.UDamageSources;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.network.Channel;
-import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -14,8 +12,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;

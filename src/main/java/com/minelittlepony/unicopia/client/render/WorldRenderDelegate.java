@@ -74,10 +74,14 @@ public class WorldRenderDelegate {
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
 
         if (!recurseMinion && pony instanceof Creature creature && creature.isMinion()) {
-            recurseMinion = true;
-            dispatcher.render(creature.asEntity(), x, y, z, yaw, tickDelta, matrices, layer -> MINION_OVERLAY.build(vertices.getBuffer(layer)), light);
-            recurseMinion = false;
-
+            try {
+                recurseMinion = true;
+                dispatcher.render(creature.asEntity(), x, y, z, yaw, tickDelta, matrices, layer -> {
+                    return MINION_OVERLAY.build(vertices.getBuffer(layer));
+                }, light);
+            } finally {
+                recurseMinion = false;
+            }
             return true;
         }
 
