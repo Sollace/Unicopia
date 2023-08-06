@@ -1,55 +1,57 @@
 package com.minelittlepony.unicopia.client.sound;
 
-import com.minelittlepony.unicopia.entity.player.Pony;
+import java.util.function.Predicate;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
-public class MotionBasedSoundInstance extends FadeOutSoundInstance {
-
+public class MotionBasedSoundInstance<E extends Entity> extends FadeOutSoundInstance {
     // Tune these if you want to change the way this sounds!
     // Currently just hardcoded for flying because nothing else uses this class
     private static final float MAX_VELOCITY = 1.5F;  // Max velocity before we clamp volume (units/tick?)
-    private static final float VOLUME_AT_MAX = 1;
     private static final float ATTEN_EXPO = 2;       // Exponent for velocity based attenuation
     private static final int FADEIN_TICKS = 20;      // Ticks for fade-in
     private static final float MIN_PITCH = 0.7F;     // Pitch at 0-speed
     private static final float MAX_PITCH = 2.6F;     // Pitch at reference speed MAX_VELOCITY
     private static final float MAX_RATE_TICKS = 20;  // How many ticks it takes to go from 0 to max volume (filter!)
 
-    private final PlayerEntity player;
+    private final E entity;
 
     private int tickCount;
     private float currentVal;   // Cache last tick's curve value
 
-    public MotionBasedSoundInstance(SoundEvent sound, PlayerEntity player, Random random) {
-        super(sound, player.getSoundCategory(), 0.1F, random);
-        this.player = player;
+    private final float minVolume;
+    private final float maxVolume;
+    private final float referencePitch;
+    private final Predicate<E> playingCondition;
+
+    public MotionBasedSoundInstance(SoundEvent sound, E entity, Predicate<E> playingCondition, float minVolume, float maxVolume, float pitch, Random random) {
+        super(sound, entity.getSoundCategory(), 0.1F, random);
+        this.entity = entity;
+        this.pitch = pitch;
+        this.referencePitch = pitch;
+        this.minVolume = minVolume;
+        this.maxVolume = maxVolume;
+        this.playingCondition = playingCondition;
     }
 
     @Override
     protected boolean shouldKeepPlaying() {
         ++tickCount;
 
-        if (player.isRemoved()) {
-            return false;
-        }
-
-        Pony pony = Pony.of(player);
-
-        if (!pony.getPhysics().isFlying() || !pony.getPhysics().getFlightType().isAvian()) {
+        if (entity.isRemoved() || !playingCondition.test(entity)) {
             return false;
         }
 
         // Update effect position
-        x = (float)player.getX();
-        y = (float)player.getY();
-        z = (float)player.getZ();
+        x = (float)entity.getX();
+        y = (float)entity.getY();
+        z = (float)entity.getZ();
 
         // Get velocity
-        float f = (float)player.getVelocity().horizontalLength();
+        float f = (float)entity.getVelocity().horizontalLength();
 
         float lastVal = currentVal;
 
@@ -62,7 +64,7 @@ public class MotionBasedSoundInstance extends FadeOutSoundInstance {
 
         if (f >= 1.0E-7D) {
            // Multiply output volume by reference volume for overall gain control.
-           volume = currentVal * VOLUME_AT_MAX;
+           volume = MathHelper.lerp(currentVal, minVolume, maxVolume);
         } else {
            volume = 0.0F;
         }
@@ -73,7 +75,7 @@ public class MotionBasedSoundInstance extends FadeOutSoundInstance {
         }
 
         // Control pitch with velocity
-        pitch = MathHelper.lerp(currentVal,MIN_PITCH,MAX_PITCH);
+        pitch = MathHelper.lerp(currentVal, MIN_PITCH, MAX_PITCH) * referencePitch;
 
         // Setting target volume every frame breaks interpolation. We set volume directly,
         // so that FadeOutSoundInstance only handles stopping the sound with an actual fade out!
