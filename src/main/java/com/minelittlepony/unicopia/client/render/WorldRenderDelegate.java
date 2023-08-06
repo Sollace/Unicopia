@@ -48,7 +48,6 @@ public class WorldRenderDelegate {
 
             if (MinecraftClient.getInstance().getResourceManager().getResource(frostingTexture).isPresent()) {
                 recurseFrosting = true;
-                //dispatcher.render(entity, x, y, z, yaw, tickDelta, matrices, vertices, light);
                 dispatcher.render(entity, x, y, z, yaw, tickDelta, matrices, layer -> {
                     if (RenderLayerUtil.getTexture(layer).orElse(null) == null) {
                         return vertices.getBuffer(layer);
@@ -78,11 +77,10 @@ public class WorldRenderDelegate {
                     var buffer = vertices.getBuffer(layer);
                     return RenderLayerUtil.getTexture(layer).map(texture -> {
                         return VertexConsumers.union(
-                                vertices.getBuffer(RenderLayers.getMagicColored(texture, 0x0000FF)),
+                                vertices.getBuffer(RenderLayers.getMagicColored(texture, creature.isDiscorded() ? 0xFF0000 : 0x0000FF)),
                                 vertices.getBuffer(layer)
                         );
                     }).orElse(buffer);
-                    //return MINION_OVERLAY.build(vertices.getBuffer(layer));
                 }, light);
             } finally {
                 recurseMinion = false;
