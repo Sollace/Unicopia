@@ -171,7 +171,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         if (animation.isOf(Animation.NONE)) {
             return 0;
         }
-        System.out.println(animationMaxDuration);
         return 1 - (((float)animationDuration) / animationMaxDuration);
     }
 
@@ -360,6 +359,11 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         powers.tick();
 
+        if (entity.getClimbingPos().isPresent() && entity.isSneaky()) {
+            Vec3d vel = entity.getVelocity();
+            entity.setVelocity(vel.x, 0, vel.z);
+        }
+
         return false;
     }
 
@@ -395,6 +399,14 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         BlockState state = asWorld().getBlockState(pos);
 
         return state.isSolidSurface(asWorld(), pos, entity, Direction.DOWN);
+    }
+
+    @Override
+    public Optional<BlockPos> chooseClimbingPos() {
+        if (getObservedSpecies() == Race.CHANGELING && getSpellSlot().get(SpellPredicate.IS_DISGUISE, false).isEmpty()) {
+            return Optional.of(entity.getBlockPos());
+        }
+        return super.chooseClimbingPos();
     }
 
     private void updateAnimations() {

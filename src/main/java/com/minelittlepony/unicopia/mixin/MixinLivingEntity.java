@@ -17,7 +17,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.duck.*;
-import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -85,12 +84,9 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
 
     @Inject(method = "isClimbing()Z", at = @At("HEAD"), cancellable = true)
     public void onIsClimbing(CallbackInfoReturnable<Boolean> info) {
-        if (get() instanceof Pony && horizontalCollision) {
-            ((Pony)get()).getSpellSlot().get(SpellPredicate.IS_DISGUISE, false)
-            .map(AbstractDisguiseSpell::getDisguise)
-            .filter(EntityAppearance::canClimbWalls)
-            .ifPresent(v -> {
-                climbingPos = Optional.of(getBlockPos());
+        if (horizontalCollision) {
+            get().chooseClimbingPos().ifPresent(pos -> {
+                climbingPos = Optional.of(pos);
                 info.setReturnValue(true);
             });
         }
