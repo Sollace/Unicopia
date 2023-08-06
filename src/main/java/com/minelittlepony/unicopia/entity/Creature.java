@@ -56,10 +56,10 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     private boolean discordedChanged = true;
 
-    private final Predicate<LivingEntity> targetPredicate = TargetSelecter.<LivingEntity>notOwnerOrFriend(this, this).and(e -> {
+    private final Predicate<LivingEntity> targetPredicate = TargetSelecter.<LivingEntity>notOwnerOrFriend(() -> getOriginatingCaster().getAffinity(), this).and(e -> {
         return Equine.of(e)
                 .filter(eq -> eq instanceof Creature)
-                .filter(eq -> ((Creature)eq).hasCommonOwner(this))
+                .filter(eq -> isDiscorded() != ((Creature)eq).hasCommonOwner(this))
                 .isEmpty();
     });
 
@@ -162,6 +162,9 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     }
 
     private void initDiscordedAi() {
+        if (getMasterReference().isSet()) {
+            return;
+        }
         targets.ifPresent(this::clearGoals);
         // the brain drain
         entity.getBrain().clear();
@@ -269,7 +272,11 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     @Override
     public Affinity getAffinity() {
         if (getMaster() instanceof Affine) {
-            return ((Affine)getMaster()).getAffinity();
+            Affinity affinity = ((Affine)getMaster()).getAffinity();
+            if (isDiscorded()) {
+                return affinity == Affinity.BAD ? Affinity.GOOD : affinity == Affinity.GOOD ? Affinity.BAD : affinity;
+            }
+            return affinity;
         }
         return Affinity.NEUTRAL;
     }
