@@ -108,11 +108,10 @@ public class PlayerPoser {
 
                     float pitch = 3F * saw;
                     float yaw = 0.5F * saw;
-                    float roll = saw;
 
                     if (ponyRace.isEquine()) {
                         rearUp(matrices, model, saw);
-                        pitch = roll * 2F;
+                        pitch = saw * 2F;
                         model.head.pitch += saw * 0.5F;
                     }
 
@@ -129,6 +128,31 @@ public class PlayerPoser {
                         model.rightArm.pitch += saw / 4F;
                         model.rightArm.roll += saw / 4F;
                     }
+
+                    break;
+                }
+                case CLIMB: {
+                    float saw = AnimationUtil.seesaw(progress);
+
+                    float pitch = MathHelper.clamp(3F * saw, 1, 2);
+                    float yaw = 0.5F * saw;
+
+                    if (ponyRace.isEquine()) {
+                        rearUp(matrices, model, saw);
+                        pitch = saw * 2F;
+                        model.head.pitch += saw * 0.5F;
+                    }
+
+                    rotateArm(model.leftArm, pitch, -yaw, yaw / 2F);
+                    rotateArm(model.rightLeg, pitch / 2F, yaw, 0);
+
+                    saw = AnimationUtil.seesaw((progress + 0.5F) % 1);
+
+                    pitch = MathHelper.clamp(3F * saw, 1, 2) * (ponyRace.isEquine() ? 2 : 1);
+                    yaw = 0.5F * saw;
+
+                    rotateArm(model.rightArm, pitch, yaw, -yaw / 2F);
+                    rotateArm(model.leftLeg, pitch / 2F, -yaw, 0);
 
                     break;
                 }
@@ -283,6 +307,7 @@ public class PlayerPoser {
         WAVE_ONE(USounds.ENTITY_PLAYER_WHISTLE, 20),
         WAVE_TWO(USounds.ENTITY_PLAYER_WHISTLE, 20),
         KICK(USounds.ENTITY_PLAYER_KICK, 5),
+        CLIMB(20),
         STOMP(5),
         WIGGLE_NOSE(6),
         SPREAD_WINGS(6),

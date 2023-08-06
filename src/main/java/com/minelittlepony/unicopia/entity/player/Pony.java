@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation.Recipient;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.AnimationInstance;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.*;
@@ -34,6 +35,7 @@ import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.SideShapeType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -58,6 +60,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.World;
 
 public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, UpdateCallback {
     private static final TrackedData<String> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
@@ -100,6 +103,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private int ticksInSun;
     private boolean hasShades;
     private int ticksSunImmunity = INITIAL_SUN_IMMUNITY;
+
+    private Direction attachDirection;
+    private double distanceClimbed;
 
     private AnimationInstance animation = new AnimationInstance(Animation.NONE, Animation.Recipient.ANYONE);
     private int animationMaxDuration;
@@ -359,12 +365,67 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         powers.tick();
 
-        if (entity.getClimbingPos().isPresent() && entity.isSneaky()) {
+        BlockPos climbingPos = entity.getClimbingPos().orElse(null);
+
+        if (!getPhysics().isFlying() && !entity.getAbilities().flying && climbingPos != null && getObservedSpecies() == Race.CHANGELING) {
             Vec3d vel = entity.getVelocity();
-            entity.setVelocity(vel.x, 0, vel.z);
+            if (entity.isSneaky()) {
+                entity.setVelocity(vel.x, 0, vel.z);
+            }
+
+            distanceClimbed += vel.length();
+            BlockPos hangingPos = entity.getBlockPos().up();
+            boolean canhangHere = canHangAt(hangingPos);
+
+            if (distanceClimbed > 1.5) {
+                if (vel.length() > 0.08F && entity.age % (3 + entity.getRandom().nextInt(5)) == 0) {
+                    entity.playSound(SoundEvents.ENTITY_CHICKEN_STEP,
+                            (float)entity.getRandom().nextTriangular(0.5, 0.3),
+                            entity.getSoundPitch()
+                    );
+                }
+
+                boolean skipHangCheck = false;
+                Direction newAttachDirection = entity.getHorizontalFacing();
+                if (isFaceClimbable(entity.getWorld(), entity.getBlockPos(), newAttachDirection) && (newAttachDirection != attachDirection)) {
+                    attachDirection = newAttachDirection;
+                    skipHangCheck = true;
+                }
+
+                if (!skipHangCheck && canhangHere) {
+                    if (!isHanging()) {
+                        startHanging(hangingPos);
+                    } else {
+                        if (((LivingEntityDuck)entity).isJumping()) {
+                            // Jump to let go
+                            return false;
+                        }
+                        entity.setVelocity(entity.getVelocity().multiply(1, 0, 1));
+                        entity.setSneaking(false);
+                    }
+                } else if (attachDirection != null && isFaceClimbable(entity.getWorld(), entity.getBlockPos(), attachDirection)) {
+                    entity.setBodyYaw(attachDirection.asRotation());
+                    entity.prevBodyYaw = attachDirection.asRotation();
+                }
+            }
+
+            if (getAnimation().isOf(Animation.NONE) || (getAnimation().isOf(Animation.NONE) && canhangHere)) {
+                if (canhangHere) {
+                    setAnimation(Animation.ARMS_UP, Recipient.HUMAN);
+                } else if (distanceClimbed > 1.5) {
+                    setAnimation(Animation.CLIMB, Recipient.HUMAN);
+                }
+            }
+        } else {
+            distanceClimbed = 0;
         }
 
         return false;
+    }
+
+    private boolean isFaceClimbable(World world, BlockPos pos, Direction direction) {
+        pos = pos.offset(direction);
+        return world.getBlockState(pos).isSideSolid(world, pos, direction, SideShapeType.CENTER);
     }
 
     public Optional<BlockPos> getHangingPosition() {
@@ -410,6 +471,17 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     private void updateAnimations() {
+
+        if (distanceClimbed > 0
+                && ((animation.isOf(Animation.CLIMB) && entity.isSneaky()) || (animation.isOf(Animation.ARMS_UP) && isHanging()))
+                && entity.getClimbingPos().isPresent()
+                && entity.getVelocity().length() < 0.08F) {
+            if (animation.isOf(Animation.ARMS_UP)) {
+                animationDuration = 2;
+            }
+            return;
+        }
+
         if (animationDuration > 0 && --animationDuration <= 0) {
             setAnimation(AnimationInstance.NONE);
         }
@@ -422,8 +494,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         if (isHanging()) {
             ((LivingEntityDuck)entity).setLeaningPitch(0);
-            if (!isClient() && (getObservedSpecies() != Race.BAT || (ticksHanging++ > 2 && getHangingPosition().filter(getOrigin().down()::equals).filter(this::canHangAt).isEmpty()))) {
-                stopHanging();
+            if (!getObservedSpecies().canHang() || (ticksHanging++ > 2 && getHangingPosition().filter(getOrigin().down()::equals).filter(this::canHangAt).isEmpty())) {
+                if (!isClient()) {
+                    stopHanging();
+                }
             }
         } else {
             ticksHanging = 0;

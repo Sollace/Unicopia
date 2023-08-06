@@ -98,7 +98,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     @Override
     public float getGravityModifier() {
         float modifier = getPersistantGravityModifier();
-        if (pony.isHanging()) {
+        if (pony.isHanging() && pony.getObservedSpecies() == Race.BAT) {
             modifier *= -0.05F;
         }
         return modifier;
