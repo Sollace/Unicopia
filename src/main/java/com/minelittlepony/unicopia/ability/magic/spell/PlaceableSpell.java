@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.entity.EntityReference.EntityValues;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
@@ -86,8 +87,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
                     setDirty();
                 }
 
-                castEntity.getId().ifPresentOrElse(
-                        id -> checkDetachment(source, id),
+                castEntity.getTarget().ifPresentOrElse(
+                        target -> checkDetachment(source, target),
                         () -> spawnPlacedEntity(source)
                 );
             }
@@ -96,9 +97,12 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         }
 
         if (situation == Situation.GROUND_ENTITY) {
-            if (!source.isClient() && Ether.get(source.asWorld()).getEntry(getType(), source).isEmpty()) {
-                setDead();
-                return false;
+            if (!source.isClient()) {
+                Ether ether = Ether.get(source.asWorld());
+                if (ether.getEntry(getType(), source).isEmpty()) {
+                    setDead();
+                    return false;
+                }
             }
 
             if (spell instanceof PlacementDelegate delegate) {
@@ -115,15 +119,15 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         return !isDead();
     }
 
-    private void checkDetachment(Caster<?> source, UUID id) {
-        if (getWorld(source).map(Ether::get).flatMap(ether -> ether.getEntry(getType(), id)).isEmpty()) {
+    private void checkDetachment(Caster<?> source, EntityValues<?> target) {
+        if (getWorld(source).map(Ether::get).flatMap(ether -> ether.getEntry(getType(), target.uuid())).isEmpty()) {
             setDead();
         }
     }
 
     private void spawnPlacedEntity(Caster<?> source) {
         CastSpellEntity entity = UEntities.CAST_SPELL.create(source.asWorld());
-        Vec3d pos = castEntity.getPosition().orElse(position.orElse(source.getOriginVector()));
+        Vec3d pos = getPosition().orElse(position.orElse(source.getOriginVector()));
         entity.updatePositionAndAngles(pos.x, pos.y, pos.z, source.asEntity().getYaw(), source.asEntity().getPitch());
         PlaceableSpell copy = spell.toPlaceable();
         if (spell instanceof PlacementDelegate delegate) {
@@ -162,9 +166,9 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     @Override
     public void onDestroyed(Caster<?> source) {
         if (!source.isClient()) {
-            castEntity.getId().ifPresent(id -> {
+            castEntity.getTarget().ifPresent(target -> {
                 getWorld(source).map(Ether::get)
-                    .flatMap(ether -> ether.getEntry(getType(), id))
+                    .flatMap(ether -> ether.getEntry(getType(), target.uuid()))
                     .ifPresent(Ether.Entry::markDead);
             });
             castEntity.set(null);
@@ -184,7 +188,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     }
 
     public Optional<Vec3d> getPosition() {
-        return castEntity.getPosition();
+        return castEntity.getTarget().map(EntityValues::pos);
     }
 
     public Optional<Attachment> getParticleEffectAttachment(Caster<?> source) {

@@ -89,11 +89,6 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
     }
 
     @Override
-    public LivingEntity getMaster() {
-        return WeaklyOwned.Mutable.super.getMaster();
-    }
-
-    @Override
     public LevelStore getLevel() {
         return level;
     }

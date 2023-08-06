@@ -73,8 +73,14 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
     }
 
     @Override
+    public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
+        return method == CastingMethod.GEM ? toPlaceable() : super.prepareForCast(caster, method);
+    }
+
+    @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        float radius = source.getLevel().getScaled(4) * 4 + getTraits().get(Trait.POWER);
+
+        float radius = 4 + source.getLevel().getScaled(4) * 4 + getTraits().get(Trait.POWER);
 
         if (radius <= 0) {
             return false;
@@ -82,22 +88,22 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
 
         boolean rainy = source.asWorld().hasRain(source.getOrigin());
 
-        if (source.isClient()) {
-            source.spawnParticles(new Sphere(true, radius * 2), rainy ? 98 : 125, pos -> {
-                BlockPos bpos = BlockPos.ofFloored(pos);
+        source.spawnParticles(new Sphere(true, radius * 2), rainy ? 98 : 125, pos -> {
+            BlockPos bpos = BlockPos.ofFloored(pos);
 
-                if (!source.asWorld().isAir(bpos.down())) {
-                    source.addParticle(source.asWorld().hasRain(bpos) ? ParticleTypes.SMOKE : ParticleTypes.FLAME, pos, Vec3d.ZERO);
-                }
-            });
-            return true;
-        }
+            if (source.asWorld().isAir(bpos) && !source.asWorld().isAir(bpos.down())) {
+                source.addParticle(source.asWorld().hasRain(bpos) ? ParticleTypes.SMOKE : ParticleTypes.FLAME, pos, Vec3d.ZERO);
+            }
+        });
 
-        if (source.asWorld().getDifficulty() == Difficulty.PEACEFUL) {
+        if (source.isClient() || source.asWorld().getDifficulty() == Difficulty.PEACEFUL) {
             return true;
         }
 
         summonedEntities.removeIf(ref -> ref.getOrEmpty(source.asWorld()).filter(e -> {
+            if (e.isRemoved()) {
+                return false;
+            }
             if (e.getPos().distanceTo(source.getOriginVector()) > radius * 2) {
                 e.getWorld().sendEntityStatus(e, (byte)60);
                 e.discard();

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
@@ -78,7 +79,7 @@ public class PegasusRainboomAbility implements Ability<Hit> {
 
         player.subtractEnergyCost(9);
         player.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, player.getPhysics().getMotionAngle()), player.getOriginVector(), Vec3d.ZERO);
-        SpellType.RAINBOOM.withTraits().apply(player);
+        SpellType.RAINBOOM.withTraits().apply(player, CastingMethod.INNATE);
     }
 
     @Override

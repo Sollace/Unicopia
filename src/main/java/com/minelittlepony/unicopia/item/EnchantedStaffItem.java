@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
@@ -152,7 +153,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
         if (attacker.isSneaking() && hasCharge(stack)) {
             stack.damage(50, attacker, p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
             Caster.of(attacker).ifPresent(c -> c.subtractEnergyCost(4));
-            Caster.of(target).ifPresent(c -> getSpellEffect(stack).create().apply(c));
+            Caster.of(target).ifPresent(c -> getSpellEffect(stack).apply(c, CastingMethod.STAFF));
             ChargeableItem.consumeEnergy(stack, 1);
 
             return true;
@@ -182,7 +183,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
                     living.clearActiveItem();
                     living.damage(entity.getDamageSources().magic(), 1);
                     if (EnchantableItem.isEnchanted(stack) && hasCharge(stack)) {
-                        Caster.of(entity).ifPresent(c -> getSpellEffect(stack).create().apply(c));
+                        Caster.of(entity).ifPresent(c -> getSpellEffect(stack).apply(c, CastingMethod.STAFF));
                         ChargeableItem.consumeEnergy(stack, 1);
                     }
                 }

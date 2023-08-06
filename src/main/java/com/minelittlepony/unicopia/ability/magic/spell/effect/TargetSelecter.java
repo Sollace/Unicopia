@@ -43,22 +43,22 @@ public class TargetSelecter {
         return targets.values().stream().filter(Target::canHurt).count();
     }
 
-    public static <T extends Entity> Predicate<T> notOwnerOrFriend(Affine spell, Caster<?> source) {
-        return target -> notOwnerOrFriend(spell, source, target);
+    public static <T extends Entity> Predicate<T> notOwnerOrFriend(Affine affine, Caster<?> source) {
+        return target -> notOwnerOrFriend(affine, source, target);
     }
 
-    public static <T extends Entity> Predicate<T> isOwnerOrFriend(Affine spell, Caster<?> source) {
-        return target -> isOwnerOrFriend(spell, source, target);
+    public static <T extends Entity> Predicate<T> isOwnerOrFriend(Affine affine, Caster<?> source) {
+        return target -> isOwnerOrFriend(affine, source, target);
     }
 
-    public static <T extends Entity> boolean notOwnerOrFriend(Affine spell, Caster<?> source, Entity target) {
-        return !isOwnerOrFriend(spell, source, target);
+    public static <T extends Entity> boolean notOwnerOrFriend(Affine affine, Caster<?> source, Entity target) {
+        return !isOwnerOrFriend(affine, source, target);
     }
 
-    public static <T extends Entity> boolean isOwnerOrFriend(Affine spell, Caster<?> source, Entity target) {
+    public static <T extends Entity> boolean isOwnerOrFriend(Affine affine, Caster<?> source, Entity target) {
         Entity owner = source.getMaster();
 
-        if (!(spell.isFriendlyTogether(source) && EquinePredicates.PLAYER_UNICORN.test(owner))) {
+        if (affine.isEnemy(source) || !EquinePredicates.PLAYER_UNICORN.test(owner)) {
             return FriendshipBraceletItem.isComrade(source, target);
         }
 
