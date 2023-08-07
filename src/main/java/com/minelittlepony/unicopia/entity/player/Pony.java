@@ -128,7 +128,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
         builder.add(UEntityAttributes.EXTRA_MINING_SPEED);
-        builder.add(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
+        builder.add(UEntityAttributes.ENTITY_GRAVITY_MODIFIER);
     }
 
     @Deprecated

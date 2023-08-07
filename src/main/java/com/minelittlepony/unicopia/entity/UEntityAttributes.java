@@ -17,7 +17,7 @@ public interface UEntityAttributes {
     EntityAttribute EXTENDED_REACH_DISTANCE = ReachEntityAttributes.REACH;
     EntityAttribute EXTENDED_ATTACK_DISTANCE = ReachEntityAttributes.ATTACK_RANGE;
     EntityAttribute EXTRA_MINING_SPEED = register("earth.mining_speed", new ClampedEntityAttribute("player.miningSpeed", 1, 0, 5).setTracked(true));
-    EntityAttribute ENTITY_GRAVTY_MODIFIER = register("player.gravity", (new EntityAttribute("player.gravityModifier", 1) {}).setTracked(true));
+    EntityAttribute ENTITY_GRAVITY_MODIFIER = register("player.gravity", (new EntityAttribute("player.gravityModifier", 1) {}).setTracked(true));
 
     private static EntityAttribute register(String name, EntityAttribute attribute) {
         REGISTRY.add(attribute);
