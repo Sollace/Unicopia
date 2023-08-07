@@ -327,7 +327,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         if (entity.getWorld() instanceof ServerWorld sw
                 && getObservedSpecies() == Race.BAT
                 && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE
-                && SunBlindnessStatusEffect.isPositionExposedToSun(sw, getOrigin())) {
+                && MeteorlogicalUtil.isPositionExposedToSun(sw, getOrigin())) {
             SpawnLocator.selectSpawnPosition(sw, entity);
         }
         ticksSunImmunity = INITIAL_SUN_IMMUNITY;

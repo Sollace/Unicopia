@@ -553,7 +553,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (entity.getWorld().hasRain(entity.getBlockPos())) {
             applyTurbulance(velocity);
         } else {
-            descentRate -= WeatherConditions.getUpdraft(new BlockPos.Mutable().set(entity.getBlockPos()), entity.getWorld()) / 3F;
+            double updraft = WeatherConditions.getUpdraft(new BlockPos.Mutable().set(entity.getBlockPos()), entity.getWorld()) / 3F;
+            updraft *= 1 + motion;
+            velocity.y += updraft;
+            descentRate -= updraft;
         }
 
         descentRate += 0.001F;

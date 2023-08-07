@@ -1,12 +1,14 @@
 package com.minelittlepony.unicopia.server.world;
 
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.entity.player.MeteorlogicalUtil;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
@@ -15,23 +17,23 @@ import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
 public class WeatherConditions extends PersistentState implements Tickable {
-    public static final TwoDimensionalField HEIGHT_MAP_FIELD = (world, pos) -> {
-        return world.getTopY(Type.WORLD_SURFACE_WG, pos.getX(), pos.getZ());
-    };
-    public static final TwoDimensionalField THERMAL_FIELD = (world, pos) -> {
-        return world.getBiome(pos).value().getTemperature() + (float)getUpdraft(pos, world);
-    };
-    public static final TwoDimensionalField LOCAL_ALTITUDE_FIELD = (world, pos) -> {
+    public static final Plane HEIGHT_MAP_FIELD = (world, pos) -> world.getTopY(Type.WORLD_SURFACE_WG, pos.getX(), pos.getZ());
+    public static final Plane THERMAL_FIELD = (world, pos) -> (float)getUpdraft(pos, world);
+    public static final Plane LOCAL_ALTITUDE_FIELD = (world, pos) -> {
         if (!world.isAir(pos)) {
             return 0;
         }
-        return pos.getY() - getSurfaceBelow(pos, world);
+        int y = pos.getY();
+        do {
+            pos.move(Direction.DOWN);
+        } while (world.isAir(pos) && world.isInBuildLimit(pos));
+        return y - pos.getY();
     };
 
-    public static final double FIRE_UPDRAFT = 0.3;
-    public static final double SAND_UPDRAFT = 0.13;
-    public static final double SOUL_SAND_UPDRAFT = -0.13;
-    public static final double ICE_UPDRAFT = -0.10;
+    public static final double FIRE_UPDRAFT = 0.13;
+    public static final double SAND_UPDRAFT = 0.03;
+    public static final double SOUL_SAND_UPDRAFT = -0.03;
+    public static final double ICE_UPDRAFT = 0;
     public static final double VOID_UPDRAFT = -0.23;
 
     public static final float MAX_UPDRAFT_HEIGHT = 20;
@@ -108,47 +110,57 @@ public class WeatherConditions extends PersistentState implements Tickable {
     public static Vec3d getAirflow(BlockPos pos, World world) {
         BlockPos.Mutable probedPosition = new BlockPos.Mutable();
 
-        final float localAltitude = LOCAL_ALTITUDE_FIELD.getValue(world, probedPosition.set(pos));
-        final float terrainFactor = Math.min(MAX_TERRAIN_HEIGHT, localAltitude) / MAX_TERRAIN_HEIGHT;
-        final float windFactor = Math.min(MAX_WIND_HEIGHT, localAltitude) / MAX_WIND_HEIGHT;
+        final float terrainFactor = getScaledDistanceFromTerrain(probedPosition.set(pos), world, MAX_TERRAIN_HEIGHT);
+        final float windFactor = getScaledDistanceFromTerrain(probedPosition.set(pos), world, MAX_WIND_HEIGHT);
 
         Vec3d terrainGradient = LOCAL_ALTITUDE_FIELD.computeAverage(world, pos, probedPosition).multiply(1 - terrainFactor);
-        Vec3d thermalGradient = THERMAL_FIELD.computeAverage(world, pos, probedPosition).multiply(terrainFactor);
-        Vec3d wind = get(world).getWindDirection().multiply(1 - windFactor);
+        Vec3d thermalGradient = THERMAL_FIELD.computeAverage(world, pos, probedPosition).multiply(1 - terrainFactor);
+        Vec3d wind = get(world).getWindDirection().multiply(windFactor);
 
         return terrainGradient
                 .add(thermalGradient)
                 .add(wind)
                 .normalize()
-                .add(0, getUpdraft(probedPosition.set(pos), world), 0)
-                .multiply(localAltitude / MAX_WIND_HEIGHT);
+                .multiply(windFactor);
     }
 
     public static double getUpdraft(BlockPos.Mutable pos, World world) {
-        final float ratio = 1 - Math.min(MAX_UPDRAFT_HEIGHT, pos.getY() - getSurfaceBelow(pos, world)) / MAX_UPDRAFT_HEIGHT;
+        double factor = 1 - getScaledDistanceFromTerrain(pos, world, MAX_UPDRAFT_HEIGHT);
+        return factor * getMaterialSurfaceTemperature(pos, world);
+    }
 
+    private static float getScaledDistanceFromTerrain(BlockPos.Mutable pos, World world, float maxDistance) {
+        return Math.min(maxDistance, LOCAL_ALTITUDE_FIELD.getValue(world, pos)) / maxDistance;
+    }
+
+    private static double getMaterialSurfaceTemperature(BlockPos.Mutable pos, World world) {
         BlockState state = world.getBlockState(pos);
+
         if (state.isAir()) {
-            return VOID_UPDRAFT * ratio;
+            return VOID_UPDRAFT;
         }
 
         if (state.isOf(Blocks.SOUL_SAND) || state.isOf(Blocks.SOUL_SOIL)) {
-            return SOUL_SAND_UPDRAFT * ratio;
+            return SOUL_SAND_UPDRAFT;
         }
 
         if (state.isOf(Blocks.LAVA) || state.isOf(Blocks.LAVA_CAULDRON)
                 || state.isIn(BlockTags.FIRE)
                 || state.isIn(BlockTags.CAMPFIRES)
                 || state.isOf(Blocks.MAGMA_BLOCK)) {
-            return FIRE_UPDRAFT * ratio;
+            return FIRE_UPDRAFT;
         }
 
         if (state.isIn(BlockTags.SAND)) {
-            return SAND_UPDRAFT * ratio;
+            return SAND_UPDRAFT * MeteorlogicalUtil.getSunIntensity(world);
         }
 
         if (state.isIn(BlockTags.SNOW) || state.isIn(BlockTags.ICE)) {
-            return ICE_UPDRAFT * ratio;
+            return ICE_UPDRAFT * MeteorlogicalUtil.getSunIntensity(world);
+        }
+
+        if (state.getFluidState().isIn(FluidTags.WATER)) {
+            return MeteorlogicalUtil.getSunIntensity(world);
         }
 
         return 0;
@@ -182,14 +194,7 @@ public class WeatherConditions extends PersistentState implements Tickable {
         return Random.create(posLong + time);
     }
 
-    private static int getSurfaceBelow(BlockPos.Mutable pos, World world) {
-        do {
-            pos.move(Direction.DOWN);
-        } while (world.isAir(pos) && world.isInBuildLimit(pos));
-        return pos.getY();
-    }
-
-    public interface TwoDimensionalField {
+    public interface Plane {
         float getValue(World world, BlockPos.Mutable pos);
 
         default Vec3d computedAverage(World world, BlockPos pos) {
