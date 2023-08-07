@@ -95,7 +95,7 @@ public class DismissSpellScreen extends GameGui {
 
         matrices.push();
         matrices.translate(0, 0, 300);
-        Text cancel = Text.literal("Press ESC to cancel");
+        Text cancel = Text.translatable("gui.unicopia.dispell_screen.cancel");
         context.drawText(getFont(), cancel, (width - getFont().getWidth(cancel)) / 2, height - 30, 0xFFFFFFFF, true);
         matrices.pop();
     }
@@ -189,18 +189,18 @@ public class DismissSpellScreen extends GameGui {
                 MutableText name = actualSpell.getType().getName().copy();
                 color = actualSpell.getType().getColor();
                 name.setStyle(name.getStyle().withColor(color == 0 ? 0xFFAAAAAA : color));
-                tooltip.add(Text.translatable("Spell Type: %s", name));
+                tooltip.add(Text.translatable("gui.unicopia.dispell_screen.spell_type", name));
                 actualSpell.getType().getTraits().appendTooltip(tooltip);
                 tooltip.add(ScreenTexts.EMPTY);
-                tooltip.add(Text.translatable("Affinity: %s", actualSpell.getAffinity().name()).formatted(actualSpell.getAffinity().getColor()));
+                tooltip.add(Text.translatable("gui.unicopia.dispell_screen.affinity", actualSpell.getAffinity().name()).formatted(actualSpell.getAffinity().getColor()));
                 tooltip.add(ScreenTexts.EMPTY);
                 tooltip.addAll(FlowingText.wrap(Text.translatable(actualSpell.getType().getTranslationKey() + ".lore").formatted(actualSpell.getAffinity().getColor()), 180).toList());
                 if (spell instanceof TimedSpell timed) {
                     tooltip.add(ScreenTexts.EMPTY);
-                    tooltip.add(Text.translatable("Time Left: %s", StringHelper.formatTicks(timed.getTimer().getTicksRemaining())));
+                    tooltip.add(Text.translatable("gui.unicopia.dispell_screen.time_left", StringHelper.formatTicks(timed.getTimer().getTicksRemaining())));
                 }
                 tooltip.add(ScreenTexts.EMPTY);
-                tooltip.add(Text.translatable("[Click to Discard]"));
+                tooltip.add(Text.translatable("gui.unicopia.dispell_screen.discard"));
                 context.drawTooltip(getFont(), tooltip, 0, 0);
 
                 if (!lastMouseOver) {
