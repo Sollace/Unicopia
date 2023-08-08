@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.compat.pehkui.PehkUtil;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
@@ -63,6 +64,7 @@ public class EntityBehaviour<T extends Entity> {
 
     public T onCreate(T entity, EntityAppearance context, boolean wasNew) {
         entity.extinguish();
+        PehkUtil.clearScale(entity);
         return entity;
     }
 
