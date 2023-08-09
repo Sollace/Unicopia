@@ -6,15 +6,18 @@ import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
+
+import net.minecraft.command.argument.EnumArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import net.minecraft.util.StringIdentifiable;
 
 public class ManaCommand {
     static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(CommandManager
                 .literal("mana").requires(s -> s.hasPermissionLevel(2))
-                .then(CommandManager.argument("type", EnumArgumentType.of(ManaType.class)).executes(source -> {
+                .then(CommandManager.argument("type", ManaType.argument()).executes(source -> {
                     var type = source.getArgument("type", ManaType.class);
                     var pony = Pony.of(source.getSource().getPlayer());
                     var bar = type.getBar(pony.getMagicalReserves());
@@ -41,7 +44,7 @@ public class ManaCommand {
         );
     }
 
-    enum ManaType {
+    enum ManaType implements CommandArgumentEnum<ManaType> {
         EXERTION(MagicReserves::getExertion),
         EXHAUSTION(MagicReserves::getExhaustion),
         ENERGY(MagicReserves::getEnergy),
@@ -56,6 +59,19 @@ public class ManaCommand {
 
         public MagicReserves.Bar getBar(MagicReserves reserves) {
             return getter.apply(reserves);
+        }
+
+        public static EnumArgumentType<ManaType> argument() {
+            return new ArgumentType();
+        }
+
+        public static final class ArgumentType extends EnumArgumentType<ManaType> {
+            @SuppressWarnings("deprecation")
+            static final Codec<ManaType> CODEC = StringIdentifiable.createCodec(ManaType::values);
+
+            protected ArgumentType() {
+                super(CODEC, ManaType::values);
+            }
         }
     }
 }

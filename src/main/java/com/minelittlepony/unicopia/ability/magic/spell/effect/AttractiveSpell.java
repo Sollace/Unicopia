@@ -45,11 +45,12 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
         }
 
         setDirty();
-
-        Vec3d pos = caster.getOriginVector();
-        if (target.isPresent(caster.asWorld()) && target.get(caster.asWorld()).distanceTo(caster.asEntity()) > getDrawDropOffRange(caster)) {
-            target.get(caster.asWorld()).requestTeleport(pos.x, pos.y, pos.z);
-        }
+        target.getOrEmpty(caster.asWorld())
+            .filter(entity -> entity.distanceTo(caster.asEntity()) > getDrawDropOffRange(caster))
+            .ifPresent(entity -> {
+                Vec3d pos = caster.getOriginVector();
+                entity.requestTeleport(pos.x, pos.y, pos.z);
+            });
 
         return super.tick(caster, situation);
     }
@@ -145,7 +146,7 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         if (!isDead() && getTraits().get(Trait.CHAOS) > 0) {
             setDead();
-            Caster.of(hit.getEntity()).ifPresent(getTypeAndTraits()::apply);
+            Caster.of(hit.getEntity()).ifPresent(caster -> getTypeAndTraits().apply(caster, CastingMethod.PROJECTILE));
         }
     }
 

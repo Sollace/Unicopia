@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.entity.EntityReference.EntityValues;
 import com.minelittlepony.unicopia.entity.FairyEntity;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
@@ -60,14 +62,14 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
             if (lights.isEmpty()) {
                 int size = 2 + caster.asWorld().random.nextInt(2) + (int)(getTraits().get(Trait.LIFE, 10, 20) - 10)/10;
                 while (lights.size() < size) {
-                    lights.add(new EntityReference<FairyEntity>());
+                    lights.add(new EntityReference<>());
                 }
             }
 
             lights.forEach(ref -> {
-                if (!ref.isPresent(caster.asWorld())) {
+                if (ref.getOrEmpty(caster.asWorld()).isEmpty()) {
                     FairyEntity entity = UEntities.TWITTERMITE.create(caster.asWorld());
-                    entity.setPosition(ref.getPosition().orElseGet(() -> {
+                    entity.setPosition(ref.getTarget().map(EntityValues::pos).orElseGet(() -> {
                         return caster.getOriginVector().add(VecHelper.supply(() -> caster.asWorld().random.nextInt(3) - 1));
                     }));
                     entity.setMaster(caster);
@@ -84,7 +86,7 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
 
     @Override
     public void onImpact(MagicProjectileEntity projectile) {
-        Caster.of(projectile.getMaster()).ifPresent(getTypeAndTraits()::apply);
+        Caster.of(projectile.getMaster()).ifPresent(caster -> getTypeAndTraits().apply(caster, CastingMethod.PROJECTILE));
     }
 
     @Override

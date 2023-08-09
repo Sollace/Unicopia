@@ -39,7 +39,7 @@ repositories {
     mavenLocal()
     flatDir { dirs 'lib' }
     maven { name 'entity-reach-attributes'; url 'https://maven.jamieswhiteshirt.com/libs-release' }
-    maven { name 'trinkets'; url 'https://ladysnake.jfrog.io/artifactory/mods' }
+    maven { name 'trinkets'; url 'https://maven.ladysnake.org/releases' }
     maven { name 'mod-menu'; url 'https://maven.terraformersmc.com/' }
     maven { name 'minelp-snapshot'; url 'https://repo.minelittlepony-mod.com/maven/snapshot' }
     maven { name 'minelp-releases'; url 'https://repo.minelittlepony-mod.com/maven/release' }
@@ -67,10 +67,8 @@ dependencies {
     include "com.sollace:Romanizer:Romanizer:1.0.2"
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modCompileOnly "dev.emi:trinkets-dummy:${project.trinkets_version}"
-    modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.1.0"
-    modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.1.0"
-    
+    modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
+
     modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
     include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
 

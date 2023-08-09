@@ -34,10 +34,10 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
 
         addDrawableChild(new Button(width / 2 + 5, top + columnHeight + padding, 100, 20))
             .onClick(b -> callback.accept(true))
-            .getStyle().setText("Join Tribe");
+            .getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.join"));
         addDrawableChild(new Button(width / 2 - 105, top + columnHeight + padding, 100, 20))
             .onClick(b -> callback.accept(false))
-            .getStyle().setText("Go Back");
+            .getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.cancel"));
 
         addDrawable(new Label(width / 2, top - 30).setCentered()).getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.confirm", selection.getDisplayName().copy().formatted(Formatting.YELLOW)));
 

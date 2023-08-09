@@ -56,6 +56,13 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     private boolean discordedChanged = true;
 
+    private final Predicate<LivingEntity> targetPredicate = TargetSelecter.<LivingEntity>notOwnerOrFriend(() -> getOriginatingCaster().getAffinity(), this).and(e -> {
+        return Equine.of(e)
+                .filter(eq -> eq instanceof Creature)
+                .filter(eq -> isDiscorded() != ((Creature)eq).hasCommonOwner(this))
+                .isEmpty();
+    });
+
     public Creature(LivingEntity entity) {
         super(entity, EFFECT);
         physics = new EntityPhysics<>(entity, GRAVITY);
@@ -77,7 +84,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     }
 
     public boolean isMinion() {
-        return owner.getId().isPresent();
+        return getMasterReference().isSet();
     }
 
     public boolean isDiscorded() {
@@ -92,13 +99,15 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     @Override
     @NotNull
     public LivingEntity getMaster() {
-        NbtCompound data = entity.getDataTracker().get(MASTER);
-        owner.fromNBT(data);
-        return owner.getOrEmpty(asWorld()).orElse(entity);
+        return getMasterReference().getOrEmpty(asWorld()).orElse(entity);
     }
 
     @Override
     public EntityReference<LivingEntity> getMasterReference() {
+        if (entity.getDataTracker().containsKey(MASTER)) {
+            NbtCompound data = entity.getDataTracker().get(MASTER);
+            owner.fromNBT(data);
+        }
         return owner;
     }
 
@@ -127,7 +136,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
             goals.add(3, eatMuffinGoal);
         }
 
-        if (owner.isPresent(asWorld())) {
+        if (getMasterReference().isSet()) {
             initMinionAi(targets);
         }
 
@@ -143,21 +152,19 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         }
     }
 
-    private void initMinionAi(GoalSelector targets) {
-        Predicate<LivingEntity> filter = TargetSelecter.<LivingEntity>notOwnerOrFriend(this, this).and(e -> {
-            return Equine.of(e)
-                    .filter(eq -> eq instanceof Creature)
-                    .filter(eq -> ((Creature)eq).hasCommonOwner(this))
-                    .isEmpty();
-        });
 
+
+    private void initMinionAi(GoalSelector targets) {
         clearGoals(targets);
-        targets.add(2, new ActiveTargetGoal<>((MobEntity)entity, PlayerEntity.class, true, filter));
-        targets.add(2, new ActiveTargetGoal<>((MobEntity)entity, HostileEntity.class, true, filter));
-        targets.add(2, new ActiveTargetGoal<>((MobEntity)entity, SlimeEntity.class, true, filter));
+        targets.add(2, new ActiveEnemyGoal<>(PlayerEntity.class));
+        targets.add(2, new ActiveEnemyGoal<>(HostileEntity.class));
+        targets.add(2, new ActiveEnemyGoal<>(SlimeEntity.class));
     }
 
     private void initDiscordedAi() {
+        if (getMasterReference().isSet()) {
+            return;
+        }
         targets.ifPresent(this::clearGoals);
         // the brain drain
         entity.getBrain().clear();
@@ -180,7 +187,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
         builder.add(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         builder.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
-        builder.add(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
+        builder.add(UEntityAttributes.ENTITY_GRAVITY_MODIFIER);
     }
 
     @Override
@@ -189,6 +196,9 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
             discordedChanged = false;
             initDiscordedAi();
         }
+
+
+
         return false;
     }
 
@@ -262,7 +272,11 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     @Override
     public Affinity getAffinity() {
         if (getMaster() instanceof Affine) {
-            return ((Affine)getMaster()).getAffinity();
+            Affinity affinity = ((Affine)getMaster()).getAffinity();
+            if (isDiscorded()) {
+                return affinity == Affinity.BAD ? Affinity.GOOD : affinity == Affinity.GOOD ? Affinity.BAD : affinity;
+            }
+            return affinity;
         }
         return Affinity.NEUTRAL;
     }
@@ -273,7 +287,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         getSpellSlot().get(true).ifPresent(effect -> {
             compound.put("effect", Spell.writeNbt(effect));
         });
-        compound.put("master", owner.toNBT());
+        compound.put("master", getMasterReference().toNBT());
         physics.toNBT(compound);
         compound.putBoolean("discorded", isDiscorded());
     }
@@ -286,11 +300,26 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         }
         if (compound.contains("master", NbtElement.COMPOUND_TYPE)) {
             owner.fromNBT(compound.getCompound("master"));
-            if (owner.isPresent(asWorld())) {
+            if (entity.getDataTracker().containsKey(MASTER)) {
+                entity.getDataTracker().set(MASTER, owner.toNBT());
+            }
+            if (owner.isSet()) {
                 targets.ifPresent(this::initMinionAi);
             }
         }
         physics.fromNBT(compound);
         setDiscorded(compound.getBoolean("discorded"));
+    }
+
+    private class ActiveEnemyGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
+        public ActiveEnemyGoal(Class<T> targetClass) {
+            super((MobEntity)entity, targetClass, true, Creature.this.targetPredicate);
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            LivingEntity target = this.mob.getTarget();
+            return target != null  && targetPredicate.test(mob, target) && super.shouldContinue();
+        }
     }
 }

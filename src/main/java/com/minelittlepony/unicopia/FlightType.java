@@ -38,6 +38,10 @@ public enum FlightType {
         return this == INSECTOID ? USounds.ENTITY_PLAYER_CHANGELING_BUZZ : USounds.ENTITY_PLAYER_PEGASUS_WINGSFLAP;
     }
 
+    public float getWingFlapSoundPitch() {
+        return this == INSECTOID ? 0.66F : 1;
+    }
+
     /**
      * Predicate for abilities to control whether a player can fly.
      *

@@ -33,6 +33,11 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
         return List.of(spell);
     }
 
+    @Override
+    public boolean apply(Caster<?> source) {
+        return throwProjectile(source).isPresent();
+    }
+
     /**
      * Projects this spell.
      *
@@ -59,7 +64,7 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
             projectile.setPosition(entity.getX(), entity.getEyeY() - 0.1F, entity.getZ());
             projectile.setOwner(entity);
             projectile.setItem(UItems.GEMSTONE.getDefaultStack(spell.getType()));
-            projectile.getSpellSlot().put(spell);
+            spell.prepareForCast(caster, CastingMethod.PROJECTILE).apply(projectile);
             projectile.setVelocity(entity, entity.getPitch(), entity.getYaw(), 0, 1.5F, divergance);
             projectile.setNoGravity(true);
             configureProjectile(projectile, caster);

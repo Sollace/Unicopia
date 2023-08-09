@@ -81,7 +81,6 @@ class TraitsArgumentType implements ArgumentType<SpellTraits> {
         }
 
         final String incomplete = input;
-        System.out.println(incomplete);
         Trait.all().stream()
             .map(trait -> trait.name().toLowerCase(Locale.ROOT))
             .filter(trait -> incomplete.isBlank() || trait.startsWith(incomplete))

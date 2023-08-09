@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.entity.EntityReference.EntityValues;
 
 import net.minecraft.entity.Entity;
 
@@ -26,7 +27,7 @@ public interface WeaklyOwned<E extends Entity> extends Owned<E>, WorldConvertabl
 
     @Override
     default Optional<UUID> getMasterId() {
-        return getMasterReference().getId();
+        return getMasterReference().getTarget().map(EntityValues::uuid);
     }
 
     interface Mutable<E extends Entity> extends WeaklyOwned<E>, Owned.Mutable<E> {

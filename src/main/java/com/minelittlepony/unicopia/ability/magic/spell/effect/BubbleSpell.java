@@ -36,7 +36,7 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
             new EntityAttributeModifier(UUID.fromString("9dc7818b-927b-46e0-acbe-48d31a28128f"), "Bubble Floating", 0.01D - 1D, Operation.MULTIPLY_TOTAL);
 
     private static final Map<EntityAttribute, EntityAttributeModifier> MODIFIERS = Map.of(
-            UEntityAttributes.ENTITY_GRAVTY_MODIFIER, GRAVITY_MODIFIER,
+            UEntityAttributes.ENTITY_GRAVITY_MODIFIER, GRAVITY_MODIFIER,
             UEntityAttributes.EXTENDED_REACH_DISTANCE, GRAVITY_MODIFIER,
             UEntityAttributes.EXTENDED_ATTACK_DISTANCE, GRAVITY_MODIFIER,
             EntityAttributes.GENERIC_MOVEMENT_SPEED, SPEED_MODIFIER,
@@ -154,7 +154,7 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
     @Override
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         Caster.of(hit.getEntity()).ifPresent(caster -> {
-            getTypeAndTraits().apply(caster);
+            getTypeAndTraits().apply(caster, CastingMethod.PROJECTILE);
         });
     }
 

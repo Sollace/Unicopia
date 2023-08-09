@@ -143,7 +143,7 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
                 return 1;
             }
 
-            return getBaseGravityModifier() * (float)((LivingEntity)entity).getAttributeValue(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
+            return getBaseGravityModifier() * (float)((LivingEntity)entity).getAttributeValue(UEntityAttributes.ENTITY_GRAVITY_MODIFIER);
         }
 
         return getBaseGravityModifier();

@@ -171,7 +171,7 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
             if (this == ZapAppleStageStore.Stage.FLOWERING) {
                 return UBlocks.FLOWERING_ZAP_LEAVES.getDefaultState();
             }
-            return currentState.withIfExists(ZapAppleLeavesBlock.STAGE, this);
+            return UBlocks.FLOWERING_ZAP_LEAVES.getDefaultState().withIfExists(ZapAppleLeavesBlock.STAGE, this);
         }
 
         @Override

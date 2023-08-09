@@ -7,7 +7,7 @@ import java.util.function.Function;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
-import com.minelittlepony.unicopia.Owned;
+import com.minelittlepony.unicopia.WeaklyOwned;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.block.state.StatePredicate;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.Physics;
@@ -52,7 +53,7 @@ import net.minecraft.world.World;
  *
  * Can also carry a spell if needed.
  */
-public class MagicProjectileEntity extends ThrownItemEntity implements Caster<MagicProjectileEntity>, Owned.Mutable<LivingEntity> {
+public class MagicProjectileEntity extends ThrownItemEntity implements Caster<MagicProjectileEntity>, WeaklyOwned.Mutable<LivingEntity> {
     private static final TrackedData<Float> DAMAGE = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Float> GRAVITY = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -65,6 +66,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this, GRAVITY, false);
 
     private final EntityReference<Entity> homingTarget = new EntityReference<>();
+    private final EntityReference<LivingEntity> owner = new EntityReference<>();
 
     public MagicProjectileEntity(EntityType<MagicProjectileEntity> type, World world) {
         super(type, world);
@@ -107,9 +109,23 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     }
 
     @Override
+    public void setOwner(@Nullable Entity entity) {
+        super.setOwner(entity);
+        if (entity instanceof LivingEntity l) {
+            this.owner.set(l);
+        }
+    }
+
+    @Override
     @Nullable
-    public LivingEntity getMaster() {
-        return (LivingEntity)getOwner();
+    public Entity getOwner() {
+        return getMaster();
+    }
+
+
+    @Override
+    public EntityReference<LivingEntity> getMasterReference() {
+        return owner;
     }
 
     public void setHomingTarget(@Nullable Entity target) {
@@ -118,12 +134,12 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
 
     @Override
     public LevelStore getLevel() {
-        return Caster.of(getMaster()).map(Caster::getLevel).orElse(Levelled.EMPTY);
+        return getMasterReference().getTarget().map(target -> target.level()).orElse(Levelled.EMPTY);
     }
 
     @Override
     public LevelStore getCorruption() {
-        return Caster.of(getMaster()).map(Caster::getCorruption).orElse(Levelled.EMPTY);
+        return getMasterReference().getTarget().map(target -> target.corruption()).orElse(Levelled.EMPTY);
     }
 
     @Override
@@ -168,7 +184,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
 
     @Override
     public void tick() {
-        if (!getWorld().isClient() && !homingTarget.isPresent(getWorld())) {
+        if (!getWorld().isClient() && homingTarget.getOrEmpty(asWorld()).isEmpty()) {
             if (getVelocity().length() < 0.1 || age > 90) {
                 discard();
             }
@@ -183,7 +199,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         getSpellSlot().get(true).filter(spell -> spell.tick(this, Situation.PROJECTILE));
 
         if (getHydrophobic()) {
-            if (getWorld().getBlockState(getBlockPos()).isLiquid()) {
+            if (StatePredicate.isFluid(getWorld().getBlockState(getBlockPos()))) {
                 Vec3d vel = getVelocity();
 
                 double velY = vel.y;
@@ -237,6 +253,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         super.readCustomDataFromNbt(compound);
         physics.fromNBT(compound);
         homingTarget.fromNBT(compound.getCompound("homingTarget"));
+        owner.fromNBT(compound.getCompound("owner"));
         if (compound.contains("effect")) {
             getSpellSlot().put(Spell.readNbt(compound.getCompound("effect")));
         }
@@ -247,6 +264,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         super.writeCustomDataToNbt(compound);
         physics.toNBT(compound);
         compound.put("homingTarget", homingTarget.toNBT());
+        compound.put("owner", owner.toNBT());
         getSpellSlot().get(true).ifPresent(effect -> {
             compound.put("effect", Spell.writeNbt(effect));
         });

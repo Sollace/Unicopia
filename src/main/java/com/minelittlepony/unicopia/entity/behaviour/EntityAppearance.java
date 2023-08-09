@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.compat.pehkui.PehkUtil;
 import com.minelittlepony.unicopia.entity.ButterflyEntity;
 import com.minelittlepony.unicopia.entity.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
@@ -198,7 +199,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         }
 
         if (entity instanceof LivingEntity) {
-            ((LivingEntity) entity).getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER).clearModifiers();
+            ((LivingEntity) entity).getAttributeInstance(UEntityAttributes.ENTITY_GRAVITY_MODIFIER).clearModifiers();
         }
 
         if (source.isClient()) {
@@ -245,7 +246,8 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
             if (entity instanceof FallingBlockEntity) {
                 return BLOCK_HEIGHT;
             }
-            return Optional.of(entity.getStandingEyeHeight());
+
+            return Optional.of(PehkUtil.ignoreScaleFor(entity, Entity::getStandingEyeHeight));
         }
         return Optional.empty();
     }
@@ -255,18 +257,19 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
             if (entity instanceof FallingBlockEntity) {
                 return 0.9F;
             }
-            return entity.getHeight() - 0.1F;
+
+            return PehkUtil.ignoreScaleFor(entity, Entity::getHeight) - 0.1F;
         }
         return -1;
     }
 
     public Optional<Double> getDistance(Pony player) {
-        return EntityBehaviour.forEntity(entity).getCameraDistance(entity, player);
+        return PehkUtil.ignoreScaleFor(entity, e -> EntityBehaviour.forEntity(e).getCameraDistance(e, player));
     }
 
     @Override
     public Optional<EntityDimensions> getTargetDimensions(Pony player) {
-        return dimensions = EntityBehaviour.forEntity(entity).getDimensions(entity, dimensions);
+        return dimensions = PehkUtil.ignoreScaleFor(entity, e -> EntityBehaviour.forEntity(e).getDimensions(e, dimensions));
     }
 
     public boolean skipsUpdate() {

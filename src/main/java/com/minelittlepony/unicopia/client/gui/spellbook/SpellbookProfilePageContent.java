@@ -140,7 +140,7 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
         String manaString = (int)reserves.getMana().get() + "/" + (int)reserves.getMana().getMax();
 
         y = 15;
-        context.drawText(font, "Mana", -font.getWidth("Mana") / 2, y, SpellbookScreen.TITLE_COLOR, false);
+        context.drawText(font, Text.translatable("gui.unicopia.spellbook.page.mana"), -font.getWidth("Mana") / 2, y, SpellbookScreen.TITLE_COLOR, false);
         context.drawText(font, manaString, -font.getWidth(manaString) / 2, y += font.fontHeight, SpellbookScreen.TITLE_COLOR, false);
 
         Text levelString = Text.literal(Romanizer.romanize(currentLevel + 1));

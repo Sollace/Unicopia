@@ -147,6 +147,7 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
     @Override
     public void fromNBT(NbtCompound compound) {
         spells.fromNbt(compound.getCompound("spells"));
+        owner.asEntity().getDataTracker().set(param, spells.toNbt());
     }
 
     public interface UpdateCallback {

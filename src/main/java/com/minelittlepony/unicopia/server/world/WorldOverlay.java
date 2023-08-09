@@ -40,7 +40,7 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
             return serverWorld.getPersistentStateManager().getOrCreate(
                     compound -> loadFunc.apply(world, compound),
                     () -> factory.apply(world),
-                    id.toString()
+                    id.getNamespace() + "_" + id.getPath().replace('/', '_')
             );
         }
 

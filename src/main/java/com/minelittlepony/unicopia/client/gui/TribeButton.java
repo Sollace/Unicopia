@@ -50,8 +50,10 @@ public class TribeButton extends Button {
             }
         }
 
+        ISprite icon = getStyle().getIcon();
+
         if (getStyle().hasIcon()) {
-            getStyle().getIcon().render(context, getX(), getY(), mouseX, mouseY, partialTicks);
+            icon.render(context, getX(), getY(), mouseX, mouseY, partialTicks);
         }
 
         int foreColor = getStyle().getColor();
@@ -63,8 +65,11 @@ public class TribeButton extends Button {
 
         setMessage(getStyle().getText());
 
+        getStyle().setIcon(ISprite.EMPTY);
 
         renderForground(context, mc, mouseX, mouseY, foreColor | MathHelper.ceil(alpha * 255.0F) << 24);
+
+        getStyle().setIcon(icon);
     }
 
     public static ISprite createSprite(Race race, int x, int y, int size) {

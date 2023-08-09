@@ -6,16 +6,14 @@ import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.block.state.StatePredicate;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.Trace;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.FenceBlock;
-import net.minecraft.block.LeavesBlock;
-import net.minecraft.block.WallBlock;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -24,6 +22,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 
 /**
@@ -158,12 +157,21 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             Living.transmitPassengers(mount);
         }
 
-        Vec3d offset = teleportee.getOriginVector().subtract(teleporter.getOriginVector());
+        Vec3d offset = teleportee.getOriginVector()
+                .subtract(teleporter.getOriginVector())
+                .add(
+                    participant.getX() - Math.floor(participant.getX()),
+                    0,
+                    participant.getZ() - Math.floor(participant.getZ())
+                );
+
+        Vec3d dest = destination.vec().add(offset);
 
         participant.teleport(
-                destination.x + offset.x + (participant.getX() - Math.floor(participant.getX())),
-                destination.y + offset.y,
-                destination.z + offset.z + (participant.getZ() - Math.floor(participant.getZ())));
+                dest.x,
+                getTargetYPosition(participant.getEntityWorld(), BlockPos.ofFloored(dest), ShapeContext.of(participant)),
+                dest.z
+        );
         teleporter.subtractEnergyCost(distance);
 
         participant.fallDistance /= distance;
@@ -173,23 +181,22 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
     private boolean enterable(World w, BlockPos pos) {
         BlockState state = w.getBlockState(pos);
-
-        Block block = state.getBlock();
-
-        return w.isAir(pos)
-                || !state.isOpaque()
-                || (block instanceof LeavesBlock);
+        return w.isAir(pos) || !state.isOpaque();
     }
 
     private boolean exception(World w, BlockPos pos, PlayerEntity player) {
         BlockState state = w.getBlockState(pos);
+        VoxelShape shape;
 
-        Block c = state.getBlock();
         return state.hasSolidTopSurface(w, pos, player)
-                || state.isLiquid()
-                || (c instanceof WallBlock)
-                || (c instanceof FenceBlock)
-                || (c instanceof LeavesBlock);
+                || StatePredicate.isFluid(state)
+                || (shape = state.getCollisionShape(w, pos, ShapeContext.of(player))).isEmpty()
+                || shape.getBoundingBox().getYLength() > 1;
+    }
+
+    private double getTargetYPosition(World world, BlockPos pos, ShapeContext context) {
+        VoxelShape shape = world.getBlockState(pos).getCollisionShape(world, pos, context);
+        return pos.getY() + (shape.isEmpty() ? 0 : shape.getBoundingBox().getYLength());
     }
 
     @Override

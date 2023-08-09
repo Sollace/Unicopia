@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.behaviour.EntitySwap;
@@ -65,7 +66,7 @@ public class MindSwapSpell extends MimicSpell {
 
                     setDisguise(e);
                     Caster<?> other = Caster.of(e).get();
-                    SpellType.MIMIC.withTraits().apply(other).setDisguise(master);
+                    SpellType.MIMIC.withTraits().apply(other, CastingMethod.PROJECTILE).setDisguise(master);
 
                     EntitySwap.ALL.accept(master, e);
                     Inventory.swapInventories(
@@ -80,7 +81,7 @@ public class MindSwapSpell extends MimicSpell {
                 });
             }
 
-            if (counterpart.getId().isPresent() && counterpart.get(caster.asWorld()) == null) {
+            if (counterpart.isSet() && counterpart.get(caster.asWorld()) == null) {
                 caster.getOriginatingCaster().asEntity().damage(caster.asWorld().getDamageSources().magic(), Float.MAX_VALUE);
                 setDead();
                 return false;

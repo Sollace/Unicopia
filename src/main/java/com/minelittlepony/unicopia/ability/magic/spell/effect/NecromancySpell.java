@@ -6,7 +6,9 @@ import java.util.function.Supplier;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -22,6 +24,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -31,6 +35,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.WorldEvents;
@@ -59,6 +64,17 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
             match(EntityType.WARDEN), EntityType.RABBIT,
             (e -> e instanceof VillagerEntity), EntityType.ZOMBIE_VILLAGER
     );
+    static final Item[][] GEAR = {
+            { Items.LEATHER_HELMET, Items.TURTLE_HELMET, Items.IRON_HELMET, Items.GOLDEN_HELMET, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET },
+            { Items.LEATHER_CHESTPLATE, Items.IRON_CHESTPLATE, Items.GOLDEN_CHESTPLATE, Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE },
+            { Items.LEATHER_LEGGINGS, Items.IRON_LEGGINGS, Items.GOLDEN_LEGGINGS, Items.DIAMOND_LEGGINGS, Items.NETHERITE_LEGGINGS },
+            { Items.LEATHER_BOOTS, Items.IRON_BOOTS, Items.GOLDEN_BOOTS, Items.DIAMOND_BOOTS, Items.NETHERITE_BOOTS },
+            { Items.STONE_SHOVEL, Items.IRON_SHOVEL, Items.GOLDEN_SHOVEL,
+              Items.STONE_SWORD, Items.IRON_SWORD, Items.GOLDEN_SWORD,
+              Items.STONE_AXE, Items.IRON_AXE, Items.GOLDEN_AXE, Items.DIAMOND_AXE,
+              Items.DIAMOND_SHOVEL, Items.DIAMOND_SWORD
+            }
+    };
 
     static Predicate<Entity> match(EntityType<?> type) {
         return e -> e.getType() == type;
@@ -73,8 +89,14 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
     }
 
     @Override
+    public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
+        return method == CastingMethod.GEM ? toPlaceable() : super.prepareForCast(caster, method);
+    }
+
+    @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        float radius = source.getLevel().getScaled(4) * 4 + getTraits().get(Trait.POWER);
+
+        float radius = 4 + source.getLevel().getScaled(4) * 4 + getTraits().get(Trait.POWER);
 
         if (radius <= 0) {
             return false;
@@ -82,26 +104,26 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
 
         boolean rainy = source.asWorld().hasRain(source.getOrigin());
 
-        if (source.isClient()) {
-            source.spawnParticles(new Sphere(true, radius * 2), rainy ? 98 : 125, pos -> {
-                BlockPos bpos = BlockPos.ofFloored(pos);
+        source.spawnParticles(new Sphere(true, radius * 2), rainy ? 98 : 125, pos -> {
+            BlockPos bpos = BlockPos.ofFloored(pos);
 
-                if (!source.asWorld().isAir(bpos.down())) {
-                    source.addParticle(source.asWorld().hasRain(bpos) ? ParticleTypes.SMOKE : ParticleTypes.FLAME, pos, Vec3d.ZERO);
-                }
-            });
-            return true;
-        }
+            if (source.asWorld().isAir(bpos) && !source.asWorld().isAir(bpos.down())) {
+                source.addParticle(source.asWorld().hasRain(bpos) ? ParticleTypes.SMOKE : ParticleTypes.FLAME, pos, Vec3d.ZERO);
+            }
+        });
 
-        if (source.asWorld().getDifficulty() == Difficulty.PEACEFUL) {
+        if (source.isClient() || source.asWorld().getDifficulty() == Difficulty.PEACEFUL) {
             return true;
         }
 
         summonedEntities.removeIf(ref -> ref.getOrEmpty(source.asWorld()).filter(e -> {
+            if (e.isRemoved()) {
+                return false;
+            }
             if (e.getPos().distanceTo(source.getOriginVector()) > radius * 2) {
                 e.getWorld().sendEntityStatus(e, (byte)60);
-                e.discard();
-                return false;
+                Vec3d pos = source.getOriginVector();
+                e.setPos(pos.x, pos.y, pos.z);
             }
             return true;
         }).isEmpty());
@@ -165,10 +187,26 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
         source.asWorld().syncWorldEvent(WorldEvents.DRAGON_BREATH_CLOUD_SPAWNS, minion.getBlockPos(), 0);
         source.playSound(SoundEvents.BLOCK_BELL_USE, 1, 0.3F);
         source.spawnParticles(ParticleTypes.LARGE_SMOKE, 10);
-        minion.equipStack(EquipmentSlot.HEAD, Items.IRON_HELMET.getDefaultStack());
+
+        int level = source.getLevel().get();
+        float levelSqr = MathHelper.clamp(level * level, 0, source.getLevel().getMax());
+        float powerScale = levelSqr / source.getLevel().getMax();
+
+        for (int i = source.asWorld().random.nextInt(GEAR.length); i < GEAR.length; i++) {
+            ItemStack pick = GEAR[i][(int)(powerScale * GEAR[i].length) % GEAR[i].length].getDefaultStack();
+
+            minion.equipStack(LivingEntity.getPreferredEquipmentSlot(pick), pick);
+
+            if (source.asWorld().random.nextFloat() > powerScale) {
+                break;
+            }
+        }
 
         Equine.of(minion).filter(eq -> eq instanceof Creature).ifPresent(eq -> {
             ((Creature)eq).setMaster(source.getMaster());
+            if (source.asWorld().random.nextFloat() < source.getCorruption().getScaled(1)) {
+                ((Creature)eq).setDiscorded(true);
+            }
         });
 
         source.asWorld().spawnEntity(minion);

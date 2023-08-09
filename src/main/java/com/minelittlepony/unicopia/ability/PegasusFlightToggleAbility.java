@@ -68,7 +68,7 @@ public class PegasusFlightToggleAbility implements Ability<Hit> {
             player.getPhysics().cancelFlight(true);
         }
         player.setDirty();
-        player.setAnimation(Animation.SPREAD_WINGS);
+        player.setAnimation(Animation.SPREAD_WINGS, Animation.Recipient.ANYONE);
     }
 
     @Override

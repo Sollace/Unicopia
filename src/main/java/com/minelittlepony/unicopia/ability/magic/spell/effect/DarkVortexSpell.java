@@ -5,7 +5,9 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
@@ -66,8 +68,8 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
     }
 
     @Override
-    public boolean apply(Caster<?> source) {
-        return toPlaceable().apply(source);
+    public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
+        return method == CastingMethod.STAFF ? toThrowable() : toPlaceable();
     }
 
     @Override

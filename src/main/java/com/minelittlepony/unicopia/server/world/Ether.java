@@ -11,7 +11,6 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.*;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
@@ -66,9 +65,10 @@ public class Ether extends PersistentState implements CasterView {
 
     public Entry put(SpellType<?> spellType, Caster<?> caster) {
         synchronized (locker) {
-            getEntries(spellType.getId()).add(new Entry(caster));
+            var entry = new Entry(caster);
+            getEntries(spellType.getId()).add(entry);
             markDirty();
-            return getEntry(spellType, caster).get();
+            return entry;
         }
     }
 
@@ -77,7 +77,7 @@ public class Ether extends PersistentState implements CasterView {
             Identifier typeId = spellType.getId();
             Set<Entry> refs = advertisingEndpoints.get(typeId);
             if (refs != null) {
-                refs.removeIf(ref -> ref.removed || ref.entity.getId().orElse(Util.NIL_UUID).equals(id));
+                refs.removeIf(ref -> ref.isDead() || ref.entity.getTarget().filter(target -> id.equals(target.uuid())).isPresent());
                 if (refs.isEmpty()) {
                     advertisingEndpoints.remove(typeId);
                 }
@@ -149,7 +149,7 @@ public class Ether extends PersistentState implements CasterView {
         }
 
         public void markDead() {
-            Unicopia.LOGGER.debug("Marking " + entity.getId().orElse(null) + " as dead");
+            Unicopia.LOGGER.debug("Marking " + entity.getTarget().orElse(null) + " as dead");
             removed = true;
             markDirty();
         }
@@ -183,17 +183,16 @@ public class Ether extends PersistentState implements CasterView {
 
         @Override
         public boolean equals(Object other) {
-            return other instanceof Entry e
-                && e.equals(entity.getId().orElse(Util.NIL_UUID));
+            return other instanceof Entry e && e.entity.referenceEquals(entity);
         }
 
         public boolean equals(UUID uuid) {
-            return entity.getId().orElse(Util.NIL_UUID).equals(uuid);
+            return entity.referenceEquals(uuid);
         }
 
         @Override
         public int hashCode() {
-            return entity.getId().orElse(Util.NIL_UUID).hashCode();
+            return entity.hashCode();
         }
     }
 }

@@ -1,10 +1,13 @@
 package com.minelittlepony.unicopia.mixin;
 
+import java.util.Map;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.duck.PlayerEntityDuck;
@@ -87,11 +90,22 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
         get().getMotion().getDimensions().calculateActiveEyeHeight(dimensions).ifPresent(info::setReturnValue);
     }
 
+    /*
     @Inject(method = "getDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;",
             at = @At("RETURN"),
             cancellable = true)
     private void onGetDimensions(EntityPose pose, CallbackInfoReturnable<EntityDimensions> info) {
         get().getMotion().getDimensions().calculateDimensions().ifPresent(info::setReturnValue);
+    }*/
+
+    @Redirect(method = "getDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;",
+            at = @At(
+                value = "INVOKE",
+                target = "Ljava/util/Map;getOrDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
+                remap = false
+            ))
+    private Object redirect_onGetDimensions(Map<EntityPose, EntityDimensions> self, Object key, Object def) {
+        return get().getMotion().getDimensions().calculateDimensions().orElse(self.getOrDefault((EntityPose)key, (EntityDimensions)def));
     }
 
     @Inject(method = "getBlockBreakingSpeed(Lnet/minecraft/block/BlockState;)F",

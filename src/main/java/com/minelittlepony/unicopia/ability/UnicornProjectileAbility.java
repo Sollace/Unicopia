@@ -43,7 +43,7 @@ public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
                 if (thrown.getResult() != ActionResult.FAIL) {
                     thrown.getValue().create().toThrowable().throwProjectile(player).ifPresent(projectile -> {
                         player.subtractEnergyCost(getCostEstimate(player));
-                        player.setAnimation(Animation.ARMS_FORWARD, 2);
+                        player.setAnimation(Animation.ARMS_FORWARD, Animation.Recipient.ANYONE, 2);
                     });
                 }
             }
@@ -62,7 +62,7 @@ public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
 
             spell.toThrowable().throwProjectile(player).ifPresent(projectile -> {
                 player.subtractEnergyCost(getCostEstimate(player));
-                player.setAnimation(Animation.ARMS_FORWARD);
+                player.setAnimation(Animation.ARMS_FORWARD, Animation.Recipient.ANYONE);
                 projectile.setHydrophobic();
 
                 if (spell instanceof HomingSpell) {

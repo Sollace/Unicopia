@@ -261,9 +261,8 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     }
 
     static class HiddenStacks extends Stacks {
-        private static final PassThroughVertexConsumer.Parameters FIXTURE = new PassThroughVertexConsumer.Parameters().color((parent, r, g, b, a) -> {
-            parent.color(0, 0, 0, 0.6F);
-        });
+        private static final PassThroughVertexConsumer.Parameters FIXTURE = new PassThroughVertexConsumer.Parameters()
+                .color((parent, r, g, b, a) -> parent.color(0, 0, 0, 0.6F));
 
         HiddenStacks(ItemStack stack) {
             super(stack);
@@ -288,7 +287,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             }
             RenderSystem.disableDepthTest();
             try {
-                itemRenderer.renderItem(stack, ModelTransformationMode.GUI, false, matrices, layer -> PassThroughVertexConsumer.of(immediate.getBuffer(layer), FIXTURE), 0, OverlayTexture.DEFAULT_UV, model);
+                itemRenderer.renderItem(stack, ModelTransformationMode.GUI, false, matrices, layer -> FIXTURE.build(immediate.getBuffer(layer)), 0, OverlayTexture.DEFAULT_UV, model);
                 immediate.draw();
             } catch (Exception e) {
                 // Sodium
