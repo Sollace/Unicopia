@@ -32,7 +32,7 @@ abstract class MixinDamageSource {
 
         Pony.of(entity).filter(e -> e.getSpecies().canFly()).ifPresent(pony -> {
             if (pony.getPhysics().isFlying()) {
-                info.setReturnValue(Text.translatable("death.attack.generic.whilst_flying", info.getReturnValue()));
+                info.setReturnValue(Text.translatable("death.attack.unicopia.generic.whilst_flying", info.getReturnValue()));
             }
         });
     }

@@ -697,6 +697,7 @@
   "death.fell.accident.other_climbable.pegasus": "%1$s forgot they could fly and fell while climbing",
   "death.fell.accident.generic.pegasus": "%1$s forgot they could fly",
   "death.fell.accident.pegasus": "%1$s forgot they could fly",
+  "death.fell.accident.water": "%1$s got their wings wet",
 
   "unicopia.subtitle.flap_wings": "Wing flaps",
   "unicopia.subtitle.dash": "Pony Dashes",
