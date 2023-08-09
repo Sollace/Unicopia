@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.LimbAnimationUtil;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
@@ -79,6 +80,7 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
     }
 
     private void renderCarriedEntity(LivingEntity p, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float tickDelta) {
+        LimbAnimationUtil.resetToZero(p.limbAnimator);
         Entity vehicle = p.getVehicle();
         ((EntityDuck)p).setVehicle(null);
 
@@ -109,7 +111,7 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
         ((EntityDuck)p).setVehicle(vehicle);
     }
 
-    protected Vec3d getCarryPosition(Living<E> entity, Living<?> passenger) {
+    public static Vec3d getCarryPosition(Living<?> entity, Living<?> passenger) {
         float passengerHeight = MineLPDelegate.getInstance().getPonyHeight(passenger.asEntity()) / 2F;
         float carrierHeight = MineLPDelegate.getInstance().getPonyHeight(entity.asEntity()) / 5F;
 
