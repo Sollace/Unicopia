@@ -59,11 +59,9 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
             float h = -0.2f * MathHelper.sin(swingProgress * (float)Math.PI);
             matrices.push();
             matrices.translate(f, g, h);
-            matrices.translate(0, -1.3F, -1.3F);
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(13));
-            if (!(passenger instanceof Pony)) {
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
-            }
+            matrices.translate(0, -1.3F, passenger instanceof Pony ? -1.9F : -1.3F);
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(passenger instanceof Pony ? 33 : 13));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(passenger instanceof Pony ? 180 : 90));
 
             renderCarriedEntity(passenger.asEntity(), matrices, vertexConsumers, light, tickDelta);
             matrices.pop();
@@ -76,7 +74,7 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
             matrices.push();
             sender.invokeRenderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, swingProgress, Arm.RIGHT);
             matrices.pop();
-            return true;
+            return false;
         }).isPresent();
     }
 
@@ -86,23 +84,38 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
 
         p.prevBodyYaw = 0;
         p.bodyYaw = 0;
+
+        float oldHeadYaw = p.headYaw;
+        float oldPrevHeadYaw = p.prevHeadYaw;
+        float oldPrevYaw = p.prevYaw;
+        float oldYaw = p.getYaw();
+        boolean onGround = p.isOnGround();
         p.headYaw = 0;
         p.prevHeadYaw = 0;
         p.prevYaw = 0;
         p.setYaw(0);
         p.setBodyYaw(0);
+        p.setOnGround(true);
         @SuppressWarnings("unchecked")
         EntityRenderer<LivingEntity> renderer = (EntityRenderer<LivingEntity>)MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(p);
         renderer.render(p, 0, tickDelta, matrices, vertexConsumers, light);
+
+        p.headYaw = oldHeadYaw;
+        p.prevHeadYaw = oldPrevHeadYaw;
+        p.prevYaw = oldPrevYaw;
+        p.setYaw(oldYaw);
+        p.setOnGround(onGround);
 
         ((EntityDuck)p).setVehicle(vehicle);
     }
 
     protected Vec3d getCarryPosition(Living<E> entity, Living<?> passenger) {
         float passengerHeight = MineLPDelegate.getInstance().getPonyHeight(passenger.asEntity()) / 2F;
-        float carrierHeight = entity.asEntity().getHeight() / 5F;
+        float carrierHeight = MineLPDelegate.getInstance().getPonyHeight(entity.asEntity()) / 5F;
 
-        if (entity instanceof Pony pony && MineLPDelegate.getInstance().getPlayerPonyRace(pony.asEntity()).isEquine() && pony.getPhysics().isFlying()) {
+        if (entity instanceof Pony pony
+                && MineLPDelegate.getInstance().getPlayerPonyRace(pony.asEntity()).isEquine()
+                && pony.getPhysics().isFlying()) {
             return new Vec3d(0,
                     -carrierHeight * 10 - passengerHeight * 2,
                     0

@@ -6,13 +6,11 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.*;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
-import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.entity.ItemTracker;
-import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -24,9 +22,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
@@ -160,29 +156,6 @@ public class UHud {
         }
 
         RenderSystem.disableBlend();
-
-        if (pony.getSpecies() == Race.CHANGELING && !client.player.isSneaking()) {
-            pony.getSpellSlot().get(SpellType.CHANGELING_DISGUISE, false).map(AbstractDisguiseSpell::getDisguise)
-                .map(EntityAppearance::getAppearance)
-                .ifPresent(appearance -> {
-
-                    float baseHeight = 20;
-
-                    EntityDimensions dims = appearance.getDimensions(appearance.getPose());
-
-                    float entityHeight = Math.max(dims.height, dims.width);
-                    int scale = (int)(baseHeight / entityHeight);
-
-                    int x = scaledWidth / 2 + xDirection * 67;
-                    int y = (int)(scaledHeight - 18 - dims.height/2F);
-
-                    matrices.push();
-                    matrices.translate(x, y, 0);
-                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(xDirection * 45));
-                    InventoryScreen.drawEntity(context, 0, 0, scale, 0, -20, client.player);
-                    matrices.pop();
-                });
-        }
     }
 
     public void renderSpell(DrawContext context, CustomisedSpellType<?> spell, double x, double y) {

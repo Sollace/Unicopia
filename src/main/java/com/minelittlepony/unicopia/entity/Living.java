@@ -216,6 +216,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 entity.refreshPositionAfterTeleport(carrier.getOriginVector());
                 Living.transmitPassengers(carrier.asEntity());
             }
+            entity.setYaw(carrier.asEntity().getYaw());
         }
 
         updateDragonBreath();

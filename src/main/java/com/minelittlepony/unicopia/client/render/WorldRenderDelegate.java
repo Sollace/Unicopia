@@ -108,7 +108,7 @@ public class WorldRenderDelegate {
             double x, double y, double z, float yaw,
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 
-        if (pony.isBeingCarried() && !(pony instanceof Pony && ((Pony)pony).isClientPlayer())) {
+        if (pony.isBeingCarried()) {
             return true;
         }
 
