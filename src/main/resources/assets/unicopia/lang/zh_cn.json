@@ -354,6 +354,12 @@
   "ability.unicopia.disguise": "变形",
   "ability.unicopia.rainboom": "彩虹音爆",
   
+  "gui.unicopia.dispell_screen.cancel": "按ESC键取消",
+  "gui.unicopia.dispell_screen.spell_type": "魔法类型： %s",
+  "gui.unicopia.dispell_screen.affinity": "适应性：%s",
+  "gui.unicopia.dispell_screen.time_left": "剩余时间：%s",
+  "gui.unicopia.dispell_screen.discard": "[点击解除该魔法]",
+  
   "gui.unicopia": "奇幻小马国……",
   "gui.unicopia.page_num": "第%d页（共%d页）",
   
@@ -437,10 +443,14 @@
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.changeling": " - 吃普通食物会生病，必须汲取爱来加速治愈",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.changeling": "",
   
+  "gui.unicopia.tribe_selection.join": "加入种族",
+  "gui.unicopia.tribe_selection.cancel": "返回",
+  
   "gui.unicopia.spellbook.page.inventory": "物品栏",
   "gui.unicopia.spellbook.page.recipes": "魔咒配方",
   "gui.unicopia.spellbook.page.recipes.empty": "已解锁 0 份魔咒配方",
-  
+  "gui.unicopia.spellbook.page.mana": "法力值",
+
   "gui.unicopia.action.spells_cleared": "移除所有的魔咒",
   "gui.unicopia.action.no_spells_cleared": "你目前没有正在生效的魔咒",
   
