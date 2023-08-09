@@ -28,6 +28,7 @@
     "MixinPersistentProjectileEntity",
     "MixinPlayerEntity",
     "MixinPlayerInventory",
+    "MixinPlayerManager",
     "MixinPowderSnowBlock",
     "MixinProjectileEntity",
     "MixinServerPlayerEntity",
