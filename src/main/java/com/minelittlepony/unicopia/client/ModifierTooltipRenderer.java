@@ -133,9 +133,9 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
         if (baseAdjusted) {
             lines.add(Text.literal(" ").append(getModifierLineBase("equals", displayValue, op, attribute, Formatting.DARK_GREEN)));
         } else if (value > 0) {
-            lines.add(getModifierLineBase("plus", displayValue, op, attribute, attribute == UEntityAttributes.ENTITY_GRAVTY_MODIFIER ? Formatting.RED : Formatting.BLUE));
+            lines.add(getModifierLineBase("plus", displayValue, op, attribute, attribute == UEntityAttributes.ENTITY_GRAVITY_MODIFIER ? Formatting.RED : Formatting.BLUE));
         } else if (value < 0) {
-            lines.add(getModifierLineBase("take", -displayValue, op, attribute, attribute == UEntityAttributes.ENTITY_GRAVTY_MODIFIER ? Formatting.BLUE : Formatting.RED));
+            lines.add(getModifierLineBase("take", -displayValue, op, attribute, attribute == UEntityAttributes.ENTITY_GRAVITY_MODIFIER ? Formatting.BLUE : Formatting.RED));
         }
     }
 

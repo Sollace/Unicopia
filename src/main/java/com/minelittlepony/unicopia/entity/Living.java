@@ -15,8 +15,10 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -326,6 +328,13 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         }
 
         return Optional.empty();
+    }
+
+    public Optional<BlockPos> chooseClimbingPos() {
+        return getSpellSlot().get(SpellPredicate.IS_DISGUISE, false)
+                .map(AbstractDisguiseSpell::getDisguise)
+                .filter(EntityAppearance::canClimbWalls)
+                .map(v -> entity.getBlockPos());
     }
 
     private boolean tryCaptureLightning() {

@@ -22,18 +22,18 @@ import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 
-public record Race (boolean canCast, FlightType flightType, boolean canUseEarth, boolean isNocturnal) implements Affine {
+public record Race (boolean canCast, FlightType flightType, boolean canUseEarth, boolean isNocturnal, boolean canHang) implements Affine {
     public static final String DEFAULT_ID = "unicopia:unset";
     public static final Registry<Race> REGISTRY = RegistryUtils.createDefaulted(Unicopia.id("race"), DEFAULT_ID);
     public static final RegistryKey<? extends Registry<Race>> REGISTRY_KEY = REGISTRY.getKey();
     private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("race.unknown", id));
 
-    public static Race register(String name, boolean magic, FlightType flight, boolean earth, boolean nocturnal) {
-        return register(Unicopia.id(name), magic, flight, earth, nocturnal);
+    public static Race register(String name, boolean magic, FlightType flight, boolean earth, boolean nocturnal, boolean canHang) {
+        return register(Unicopia.id(name), magic, flight, earth, nocturnal, canHang);
     }
 
-    public static Race register(Identifier id, boolean magic, FlightType flight, boolean earth, boolean nocturnal) {
-        return Registry.register(REGISTRY, id, new Race(magic, flight, earth, nocturnal));
+    public static Race register(Identifier id, boolean magic, FlightType flight, boolean earth, boolean nocturnal, boolean canHang) {
+        return Registry.register(REGISTRY, id, new Race(magic, flight, earth, nocturnal, canHang));
     }
 
     public static RegistryKeyArgumentType<Race> argument() {
@@ -44,14 +44,14 @@ public record Race (boolean canCast, FlightType flightType, boolean canUseEarth,
      * The default, unset race.
      * This is used if there are no other races.
      */
-    public static final Race UNSET = register("unset", false, FlightType.NONE, false, false);
-    public static final Race HUMAN = register("human", false, FlightType.NONE, false, false);
-    public static final Race EARTH = register("earth", false, FlightType.NONE, true, false);
-    public static final Race UNICORN = register("unicorn", true, FlightType.NONE, false, false);
-    public static final Race PEGASUS = register("pegasus", false, FlightType.AVIAN, false, false);
-    public static final Race BAT = register("bat", false, FlightType.AVIAN, false, true);
-    public static final Race ALICORN = register("alicorn", true, FlightType.AVIAN, true, false);
-    public static final Race CHANGELING = register("changeling", false, FlightType.INSECTOID, false, false);
+    public static final Race UNSET = register("unset", false, FlightType.NONE, false, false, false);
+    public static final Race HUMAN = register("human", false, FlightType.NONE, false, false, false);
+    public static final Race EARTH = register("earth", false, FlightType.NONE, true, false, false);
+    public static final Race UNICORN = register("unicorn", true, FlightType.NONE, false, false, false);
+    public static final Race PEGASUS = register("pegasus", false, FlightType.AVIAN, false, false, false);
+    public static final Race BAT = register("bat", false, FlightType.AVIAN, false, true, true);
+    public static final Race ALICORN = register("alicorn", true, FlightType.AVIAN, true, false, false);
+    public static final Race CHANGELING = register("changeling", false, FlightType.INSECTOID, false, false, true);
 
     public static void bootstrap() {}
 

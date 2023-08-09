@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import java.util.function.Supplier;
+
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -96,7 +98,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     @Override
     public float getGravityModifier() {
         float modifier = getPersistantGravityModifier();
-        if (pony.isHanging()) {
+        if (pony.isHanging() && pony.getObservedSpecies() == Race.BAT) {
             modifier *= -0.05F;
         }
         return modifier;
@@ -120,7 +122,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     @Override
     public float getWingAngle() {
 
-        if (pony.getAnimation() == Animation.SPREAD_WINGS) {
+        if (pony.getAnimation().isOf(Animation.SPREAD_WINGS)) {
             return AnimationUtil.seeSitSaw(pony.getAnimationProgress(1), 1.5F);
         }
 
@@ -291,7 +293,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     strafe = 1;
                     ticksToGlide = MAX_TICKS_TO_GLIDE;
                     if (!SpellPredicate.IS_DISGUISE.isOn(pony)) {
-                        entity.playSound(type.getWingFlapSound(), 0.25F, 1);
+                        if (type != FlightType.INSECTOID) {
+                            entity.playSound(type.getWingFlapSound(), 0.25F, entity.getSoundPitch() * type.getWingFlapSoundPitch());
+                        }
                         entity.getWorld().emitGameEvent(entity, GameEvent.ELYTRA_GLIDE, entity.getPos());
                     }
                 } else {
@@ -360,31 +364,35 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 entity.playSound(USounds.ENTITY_PLAYER_PEGASUS_MOLT, 0.3F, 1);
                 UCriteria.SHED_FEATHER.trigger(entity);
             }
+        } else {
+            applyThrust(velocity);
         }
 
         moveFlying(velocity);
 
-        if (type.isAvian()) {
-            if (entity.getWorld().isClient && ticksInAir % IDLE_FLAP_INTERVAL == 0 && entity.getVelocity().length() < 0.29) {
-                flapping = true;
-                ticksToGlide = MAX_TICKS_TO_GLIDE;
-            }
+        if (entity.getWorld().isClient && ticksInAir % IDLE_FLAP_INTERVAL == 0 && entity.getVelocity().length() < 0.29) {
+            flapping = true;
+            ticksToGlide = MAX_TICKS_TO_GLIDE;
+        }
 
-            if (!SpellPredicate.IS_DISGUISE.isOn(pony)) {
-                if (ticksInAir % GLIDING_SOUND_INTERVAL == 1 && pony.isClient()) {
+        if (type.isAvian()) {
+            if (!SpellPredicate.IS_DISGUISE.isOn(pony) && pony.isClient()) {
+                if (ticksInAir % GLIDING_SOUND_INTERVAL == 5) {
                     InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_GLIDING, entity.getId());
                 }
             }
 
-            velocity.y -= 0.02 * getGravitySignum();
-            velocity.x *= 0.9896;
-            velocity.z *= 0.9896;
+
         } else if (type == FlightType.INSECTOID && !SpellPredicate.IS_DISGUISE.isOn(pony)) {
             if (entity.getWorld().isClient && !soundPlaying) {
                 soundPlaying = true;
                 InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_CHANGELING_BUZZ, entity.getId());
             }
         }
+
+        velocity.y -= 0.02 * getGravitySignum();
+        velocity.x *= 0.9896;
+        velocity.z *= 0.9896;
     }
 
     private void tickArtificialFlight(MutableVector velocity) {
@@ -485,6 +493,14 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         isFlyingSurvival = true;
         thrustScale = 0;
         entity.calculateDimensions();
+
+
+
+        if (entity.isOnGround() || !force) {
+            Supplier<Vec3d> vec = VecHelper.sphere(pony.asWorld().getRandom(), 0.5D);
+            pony.spawnParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, vec, vec, 5);
+            pony.spawnParticles(ParticleTypes.CLOUD, vec, vec, 5);
+        }
     }
 
     private void handleWallCollission(MutableVector velocity) {
@@ -507,12 +523,12 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
 
                 if (bouncyness > 0) {
-                    entity.playSound(USounds.ENTITY_PLAYER_REBOUND, 1, 1);
+                    entity.playSound(USounds.ENTITY_PLAYER_REBOUND, 1, entity.getSoundPitch());
                     ProjectileUtil.ricochet(entity, Vec3d.of(pos), 0.4F + Math.min(2, bouncyness / 18F));
                     velocity.fromImmutable(entity.getVelocity());
                     distance /= bouncyness;
                 } else {
-                    entity.playSound(distance > 4 ? SoundEvents.ENTITY_PLAYER_BIG_FALL : SoundEvents.ENTITY_PLAYER_SMALL_FALL, 1, 1);
+                    entity.playSound(distance > 4 ? SoundEvents.ENTITY_PLAYER_BIG_FALL : SoundEvents.ENTITY_PLAYER_SMALL_FALL, 1, entity.getSoundPitch());
                 }
                 entity.damage(entity.getDamageSources().flyIntoWall(), distance);
             }
@@ -537,7 +553,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (entity.getWorld().hasRain(entity.getBlockPos())) {
             applyTurbulance(velocity);
         } else {
-            descentRate -= WeatherConditions.getUpdraft(new BlockPos.Mutable().set(entity.getBlockPos()), entity.getWorld()) / 3F;
+            double updraft = WeatherConditions.getUpdraft(new BlockPos.Mutable().set(entity.getBlockPos()), entity.getWorld()) / 3F;
+            updraft *= 1 + motion;
+            velocity.y += updraft;
+            descentRate -= updraft;
         }
 
         descentRate += 0.001F;
@@ -562,7 +581,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (thrustScale <= 0.000001F & flapping) {
             flapping = false;
             if (!SpellPredicate.IS_DISGUISE.isOn(pony)) {
-                entity.playSound(getFlightType().getWingFlapSound(), 0.5F, 1);
+                if (getFlightType() != FlightType.INSECTOID) {
+                    entity.playSound(getFlightType().getWingFlapSound(), 0.25F, entity.getSoundPitch() * getFlightType().getWingFlapSoundPitch());
+                }
                 entity.getWorld().emitGameEvent(entity, GameEvent.ELYTRA_GLIDE, entity.getPos());
             }
             thrustScale = 1;
@@ -591,7 +612,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (velocity.y < 0 && hovering) {
             velocity.y *= 0.01;
         }
-
     }
 
     private void applyTurbulance(MutableVector velocity) {

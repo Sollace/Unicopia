@@ -46,13 +46,6 @@ public interface Caster<E extends Entity> extends
     boolean subtractEnergyCost(double amount);
 
     /**
-     * Gets the entity who originally cast the currently active spell.
-     * @return
-     */
-    @Override
-    LivingEntity getMaster();
-
-    /**
      * Gets the original caster responsible for this spell.
      * If none is found, will return itself.
      */

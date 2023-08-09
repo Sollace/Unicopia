@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
+import com.minelittlepony.unicopia.entity.player.MeteorlogicalUtil;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 
@@ -16,9 +17,6 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.LightType;
-import net.minecraft.world.World;
 
 public class SunBlindnessStatusEffect extends StatusEffect {
     public static final int MAX_DURATION = 250;
@@ -80,14 +78,6 @@ public class SunBlindnessStatusEffect extends StatusEffect {
             return false;
         }
 
-        return isPositionExposedToSun(entity.getWorld(), entity.getBlockPos());
-    }
-
-    public static boolean isPositionExposedToSun(World world, BlockPos pos) {
-        if (world.isClient) {
-            world.calculateAmbientDarkness();
-        }
-
-        return world.getDimension().hasSkyLight() && world.getLightLevel(LightType.SKY, pos) >= 12 && !world.isRaining() && !world.isThundering() && world.isDay();
+        return MeteorlogicalUtil.isPositionExposedToSun(entity.getWorld(), entity.getBlockPos());
     }
 }

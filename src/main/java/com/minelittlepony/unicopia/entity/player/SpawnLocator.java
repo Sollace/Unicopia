@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.entity.player;
 
 import java.util.Optional;
 
-import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
-
 import net.minecraft.entity.ai.FuzzyPositions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.SpawnLocating;
@@ -84,7 +82,7 @@ public class SpawnLocator extends SpawnLocating {
 
             entity.refreshPositionAndAngles(mutable, 0, 0);
 
-            if (!world.isSpaceEmpty(entity) || SunBlindnessStatusEffect.isPositionExposedToSun(world, mutable)) {
+            if (!world.isSpaceEmpty(entity) || MeteorlogicalUtil.isPositionExposedToSun(world, mutable)) {
                 continue;
             }
 

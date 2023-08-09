@@ -354,6 +354,12 @@
   "ability.unicopia.disguise": "Change Form",
   "ability.unicopia.rainboom": "Sonic Rainboom",
 
+  "gui.unicopia.dispell_screen.cancel": "Press ESC to cancel",
+  "gui.unicopia.dispell_screen.spell_type": "Spell Type: %s",
+  "gui.unicopia.dispell_screen.affinity": "Affinity: %s",
+  "gui.unicopia.dispell_screen.time_left": "Time Left: %s",
+  "gui.unicopia.dispell_screen.discard": "[Click to Discard]",
+
   "gui.unicopia": "Unicopia...",
   "gui.unicopia.page_num": "%d of %d",
 
@@ -437,9 +443,13 @@
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.changeling": " - Becomes sick from eating regular food and must eat love to hasten a cure",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.changeling": "",
 
+  "gui.unicopia.tribe_selection.join": "Join Tribe",
+  "gui.unicopia.tribe_selection.cancel": "Go Back",
+
   "gui.unicopia.spellbook.page.inventory": "Inventory",
   "gui.unicopia.spellbook.page.recipes": "Recipes",
   "gui.unicopia.spellbook.page.recipes.empty": "0 Recipes Unlocked",
+  "gui.unicopia.spellbook.page.mana": "Mana",
 
   "gui.unicopia.action.spells_cleared": "Removed all spells",
   "gui.unicopia.action.no_spells_cleared": "You have no active spells",

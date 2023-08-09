@@ -33,6 +33,6 @@ public class WorldTribeManager extends PersistentState {
     }
 
     public static WorldTribeManager forWorld(ServerWorld world) {
-        return world.getPersistentStateManager().getOrCreate(WorldTribeManager::new, WorldTribeManager::new, "unicopia:tribes");
+        return world.getPersistentStateManager().getOrCreate(WorldTribeManager::new, WorldTribeManager::new, "unicopia_tribes");
     }
 }

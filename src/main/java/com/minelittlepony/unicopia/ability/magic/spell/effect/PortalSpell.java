@@ -62,10 +62,10 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
             if (source.isClient()) {
                 Vec3d origin = source.getOriginVector();
 
-                ParticleEffect effect = teleportationTarget.getPosition()
+                ParticleEffect effect = teleportationTarget.getTarget()
                         .map(target -> {
                             getType();
-                            return new FollowingParticleEffect(UParticles.HEALTH_DRAIN, target, 0.2F).withChild(ParticleTypes.ELECTRIC_SPARK);
+                            return new FollowingParticleEffect(UParticles.HEALTH_DRAIN, target.pos(), 0.2F).withChild(ParticleTypes.ELECTRIC_SPARK);
                         })
                         .orElse(ParticleTypes.ELECTRIC_SPARK);
 
@@ -73,7 +73,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
                     source.addParticle(effect, pos, Vec3d.ZERO);
                 });
 
-                teleportationTarget.getPosition().ifPresentOrElse(position -> {
+                teleportationTarget.getTarget().ifPresentOrElse(target -> {
                     particleEffect.update(getUuid(), source, spawner -> {
                         spawner.addParticle(new SphereParticleEffect(UParticles.DISK, getType().getColor(), 0.8F, 1.8F, new Vec3d(pitch, yaw, 0)), source.getOriginVector(), Vec3d.ZERO);
                     });
@@ -81,9 +81,9 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
                     particleEffect.destroy();
                 });
             } else {
-                teleportationTarget.getId().ifPresent(id -> {
-                    if (Ether.get(source.asWorld()).getEntry(getType(), id).isEmpty()) {
-                        Unicopia.LOGGER.debug("Lost sibling, breaking connection to " + id);
+                teleportationTarget.getTarget().ifPresent(target -> {
+                    if (Ether.get(source.asWorld()).getEntry(getType(), target.uuid()).isEmpty()) {
+                        Unicopia.LOGGER.debug("Lost sibling, breaking connection to " + target.uuid());
                         teleportationTarget.set(null);
                         setDirty();
                         source.asWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, source.getOrigin(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
@@ -109,12 +109,12 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
     private void tickWithTargetLink(Caster<?> source, Ether.Entry destination) {
 
-        destination.entity.getPosition().ifPresent(targetPos -> {
+        destination.entity.getTarget().ifPresent(target -> {
             source.findAllEntitiesInRange(1).forEach(entity -> {
                 if (!entity.hasPortalCooldown() && entity.timeUntilRegen <= 0) {
                     Vec3d offset = entity.getPos().subtract(source.getOriginVector());
                     float yawDifference = pitch < 15 ? (180 - yaw + destination.yaw) : 0;
-                    Vec3d dest = targetPos.add(offset.rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE)).add(0, 0.05, 0);
+                    Vec3d dest = target.pos().add(offset.rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE)).add(0, 0.05, 0);
 
                     entity.resetPortalCooldown();
                     entity.timeUntilRegen = 100;
@@ -145,7 +145,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
         Ether ether = Ether.get(source.asWorld());
         ether.getEntries(getType())
             .stream()
-            .filter(entry -> entry.isAvailable() && !entry.entity.referenceEquals(source.asEntity()) && entry.entity.getId().isPresent())
+            .filter(entry -> entry.isAvailable() && !entry.entity.referenceEquals(source.asEntity()) && entry.entity.isSet())
             .findAny()
             .ifPresent(entry -> {
                 entry.setTaken(true);
@@ -155,7 +155,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
     }
 
     private Optional<Ether.Entry> getTarget(Caster<?> source) {
-        return teleportationTarget.getId().flatMap(id -> Ether.get(source.asWorld()).getEntry(getType(), id));
+        return teleportationTarget.getTarget().flatMap(target -> Ether.get(source.asWorld()).getEntry(getType(), target.uuid()));
     }
 
     @Override

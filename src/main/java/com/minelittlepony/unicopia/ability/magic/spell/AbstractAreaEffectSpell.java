@@ -9,7 +9,7 @@ public abstract class AbstractAreaEffectSpell extends AbstractSpell {
     }
 
     @Override
-    public boolean apply(Caster<?> source) {
-        return toPlaceable().apply(source);
+    public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
+        return toPlaceable();
     }
 }

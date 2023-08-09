@@ -57,7 +57,7 @@ public class FireBoltSpell extends AbstractSpell implements HomingSpell,
             return true;
         }
 
-        if (getTraits().get(Trait.FOCUS) >= 50 && !target.isPresent(caster.asWorld())) {
+        if (getTraits().get(Trait.FOCUS) >= 50 && target.getOrEmpty(caster.asWorld()).isEmpty()) {
             target.set(caster.findAllEntitiesInRange(
                 getTraits().get(Trait.FOCUS) - 49,
                 EntityPredicates.VALID_LIVING_ENTITY.and(TargetSelecter.notOwnerOrFriend(this, caster))

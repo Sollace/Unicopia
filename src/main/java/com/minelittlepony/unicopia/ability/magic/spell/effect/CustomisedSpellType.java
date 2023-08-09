@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 
@@ -32,13 +33,13 @@ public record CustomisedSpellType<T extends Spell> (
 
 
     @Nullable
-    public T apply(Caster<?> caster) {
+    public T apply(Caster<?> caster, CastingMethod method) {
         if (isEmpty()) {
             return null;
         }
 
         T spell = create();
-        if (spell != null && spell.apply(caster)) {
+        if (spell != null && spell.prepareForCast(caster, method).apply(caster)) {
             return spell;
         }
 

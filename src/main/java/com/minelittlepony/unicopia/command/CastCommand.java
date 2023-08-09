@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.command;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -112,7 +113,7 @@ public class CastCommand {
     private static int apply(CommandContext<ServerCommandSource> source, TraitsFunc traits) throws CommandSyntaxException {
         CustomisedSpellType<?> spellType = getSpell(source, traits);
         EntityArgumentType.getEntities(source, "targets").forEach(target -> {
-            Caster.of(target).ifPresent(caster -> spellType.apply(caster));
+            Caster.of(target).ifPresent(caster -> spellType.apply(caster, CastingMethod.INNATE));
         });
 
         return 0;

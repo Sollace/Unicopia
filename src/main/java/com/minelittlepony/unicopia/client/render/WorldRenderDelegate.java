@@ -2,9 +2,11 @@ package com.minelittlepony.unicopia.client.render;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.client.util.render.RenderLayerUtil;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.compat.pehkui.PehkUtil;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.ItemImpl;
@@ -17,11 +19,9 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -35,9 +35,6 @@ import net.minecraft.util.math.*;
 public class WorldRenderDelegate {
     public static final WorldRenderDelegate INSTANCE = new WorldRenderDelegate();
 
-    private static final PassThroughVertexConsumer.Parameters MINION_OVERLAY = new PassThroughVertexConsumer.Parameters()
-            .color((parent, r, g, b, a) -> parent.color((float)Math.random(), 0.6F, 1, a / 255F));
-
     private boolean recurseMinion;
     private boolean recurseFrosting;
 
@@ -50,13 +47,12 @@ public class WorldRenderDelegate {
 
             if (MinecraftClient.getInstance().getResourceManager().getResource(frostingTexture).isPresent()) {
                 recurseFrosting = true;
-
-                dispatcher.render(entity, x, y, z, yaw, tickDelta, matrices, vertices, light);
-                dispatcher.setRenderShadows(false);
                 dispatcher.render(entity, x, y, z, yaw, tickDelta, matrices, layer -> {
-                    return vertices.getBuffer(RenderLayers.getEntityTranslucent(frostingTexture));
+                    if (RenderLayerUtil.getTexture(layer).orElse(null) == null) {
+                        return vertices.getBuffer(layer);
+                    }
+                    return VertexConsumers.union(vertices.getBuffer(layer), vertices.getBuffer(RenderLayers.getEntityTranslucent(frostingTexture)));
                 }, light);
-                dispatcher.setRenderShadows(true);
                 recurseFrosting = false;
                 return true;
             }
@@ -74,12 +70,20 @@ public class WorldRenderDelegate {
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
 
         if (!recurseMinion && pony instanceof Creature creature && creature.isMinion()) {
-            recurseMinion = true;
-            dispatcher.render(creature.asEntity(), x, y, z, yaw, tickDelta, matrices, layer -> {
-                return PassThroughVertexConsumer.of(vertices.getBuffer(layer), MINION_OVERLAY);
-            }, light);
-            recurseMinion = false;
-
+            try {
+                recurseMinion = true;
+                dispatcher.render(creature.asEntity(), x, y, z, yaw, tickDelta, matrices, layer -> {
+                    var buffer = vertices.getBuffer(layer);
+                    return RenderLayerUtil.getTexture(layer).map(texture -> {
+                        return VertexConsumers.union(
+                                vertices.getBuffer(RenderLayers.getMagicColored(texture, creature.isDiscorded() ? 0xFF0000 : 0x0000FF)),
+                                vertices.getBuffer(layer)
+                        );
+                    }).orElse(buffer);
+                }, light);
+            } finally {
+                recurseMinion = false;
+            }
             return true;
         }
 
@@ -150,13 +154,22 @@ public class WorldRenderDelegate {
                 Entity e = ve.getAppearance();
 
                 if (e != null) {
+                    PehkUtil.copyScale(pony.asEntity(), e);
+
+                    if (dispatcher.shouldRenderHitboxes()) {
+                        e.setBoundingBox(pony.asEntity().getBoundingBox());
+                    }
+
                     renderDisguise(dispatcher, ve, e, x, y, z, fireTicks, tickDelta, matrices, vertexConsumers, light);
                     ve.getAttachments().forEach(ee -> {
+                        PehkUtil.copyScale(pony.asEntity(), ee);
                         Vec3d difference = ee.getPos().subtract(e.getPos());
                         renderDisguise(dispatcher, ve, ee, x + difference.x, y + difference.y, z + difference.z, fireTicks, tickDelta, matrices, vertexConsumers, light);
+                        PehkUtil.clearScale(ee);
                     });
 
                     afterEntityRender(pony, matrices);
+                    PehkUtil.clearScale(e);
                     return true;
                 }
                 return false;
@@ -236,12 +249,9 @@ public class WorldRenderDelegate {
 
     @Nullable
     private BipedEntityModel<?> getBipedModel(EntityRenderDispatcher dispatcher, Entity entity) {
-        EntityRenderer<?> renderer = dispatcher.getRenderer(entity);
-        if (renderer instanceof LivingEntityRenderer) {
-            Model m = ((LivingEntityRenderer<?, ?>) renderer).getModel();
-            if (m instanceof BipedEntityModel<?>) {
-                return (BipedEntityModel<?>)m;
-            }
+        if (dispatcher.getRenderer(entity) instanceof LivingEntityRenderer livingRenderer
+              && livingRenderer.getModel() instanceof BipedEntityModel<?> biped) {
+            return biped;
         }
         return null;
     }

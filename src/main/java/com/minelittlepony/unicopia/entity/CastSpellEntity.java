@@ -7,8 +7,6 @@ import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
-import com.minelittlepony.unicopia.network.Channel;
-import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
 
 import net.minecraft.entity.Entity;
@@ -18,8 +16,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
@@ -89,11 +85,6 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
     }
 
     @Override
-    public LivingEntity getMaster() {
-        return WeaklyOwned.Mutable.super.getMaster();
-    }
-
-    @Override
     public LevelStore getLevel() {
         return level;
     }
@@ -149,10 +140,5 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
         }
         level = Levelled.fromNbt(tag.getCompound("level"));
         corruption = Levelled.fromNbt(tag.getCompound("corruption"));
-    }
-
-    @Override
-    public Packet<ClientPlayPacketListener> createSpawnPacket() {
-        return Channel.SERVER_SPAWN_PROJECTILE.toPacket(new MsgSpawnProjectile(this));
     }
 }

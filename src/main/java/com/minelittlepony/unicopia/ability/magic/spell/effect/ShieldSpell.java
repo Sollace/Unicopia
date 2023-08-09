@@ -4,7 +4,9 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -47,11 +49,8 @@ public class ShieldSpell extends AbstractSpell {
     }
 
     @Override
-    public boolean apply(Caster<?> source) {
-        if (getTraits().get(Trait.GENEROSITY) > 0) {
-            return toPlaceable().apply(source);
-        }
-        return super.apply(source);
+    public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
+        return method == CastingMethod.STAFF || getTraits().get(Trait.GENEROSITY) > 0 ? toPlaceable() : this;
     }
 
     @Override

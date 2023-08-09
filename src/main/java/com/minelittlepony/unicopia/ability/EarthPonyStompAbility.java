@@ -95,7 +95,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     public void apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.asEntity();
 
-        iplayer.setAnimation(Animation.STOMP, 10);
+        iplayer.setAnimation(Animation.STOMP, Animation.Recipient.ANYONE, 10);
 
         thrustDownwards(iplayer);
 

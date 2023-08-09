@@ -124,11 +124,16 @@ public abstract class StatePredicate implements Predicate<BlockState> {
     }
 
     static boolean isWater(BlockState s) {
-        return s.isLiquid() && s.getFluidState().isIn(FluidTags.WATER);
+        return isFluid(s) && s.getFluidState().isIn(FluidTags.WATER);
     }
 
     static boolean isLava(BlockState s) {
-        return s.isLiquid() && s.getFluidState().isIn(FluidTags.LAVA);
+        return isFluid(s) && s.getFluidState().isIn(FluidTags.LAVA);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static boolean isFluid(BlockState s) {
+        return s.isLiquid();
     }
 
     public static Predicate<BlockState> ofState(String state) {

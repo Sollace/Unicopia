@@ -37,7 +37,7 @@
         "elements": [
           { "recipe": "unicopia:spells/frost" },
           "Requires:",
-          "- At least 15x cold trait"
+          "- At least 15x ice trait"
         ]
       },
       {

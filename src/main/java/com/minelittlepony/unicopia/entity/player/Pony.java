@@ -6,6 +6,8 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation.Recipient;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.AnimationInstance;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.*;
 import com.minelittlepony.unicopia.ability.magic.*;
@@ -33,6 +35,7 @@ import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.SideShapeType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -57,6 +60,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.World;
 
 public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, UpdateCallback {
     private static final TrackedData<String> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
@@ -100,7 +104,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private boolean hasShades;
     private int ticksSunImmunity = INITIAL_SUN_IMMUNITY;
 
-    private Animation animation = Animation.NONE;
+    private Direction attachDirection;
+    private double distanceClimbed;
+
+    private AnimationInstance animation = new AnimationInstance(Animation.NONE, Animation.Recipient.ANYONE);
     private int animationMaxDuration;
     private int animationDuration;
 
@@ -121,35 +128,53 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
         builder.add(UEntityAttributes.EXTRA_MINING_SPEED);
-        builder.add(UEntityAttributes.ENTITY_GRAVTY_MODIFIER);
+        builder.add(UEntityAttributes.ENTITY_GRAVITY_MODIFIER);
     }
 
+    @Deprecated
     public void setAnimation(Animation animation) {
-        setAnimation(animation, animation.getDuration());
+        setAnimation(new AnimationInstance(animation, Animation.Recipient.ANYONE));
     }
 
+    @Deprecated
     public void setAnimation(Animation animation, int duration) {
-        if (animation != this.animation && duration != animationDuration) {
+        setAnimation(new AnimationInstance(animation, Animation.Recipient.ANYONE));
+    }
+
+    public void setAnimation(Animation animation, Animation.Recipient recipient) {
+        setAnimation(new AnimationInstance(animation, recipient), animation.getDuration());
+    }
+
+    public void setAnimation(Animation animation, Animation.Recipient recipient, int duration) {
+        setAnimation(new AnimationInstance(animation, recipient), duration);
+    }
+
+    public void setAnimation(AnimationInstance animation) {
+        setAnimation(animation, animation.animation().getDuration());
+    }
+
+    public void setAnimation(AnimationInstance animation, int duration) {
+        if (!animation.equals(this.animation) || duration != animationDuration) {
             this.animation = animation;
-            this.animationDuration = animation == Animation.NONE ? 0 : Math.max(0, duration);
+            this.animationDuration = animation.isOf(Animation.NONE) ? 0 : Math.max(0, duration);
             this.animationMaxDuration = animationDuration;
 
             if (!isClient()) {
                 Channel.SERVER_PLAYER_ANIMATION_CHANGE.sendToAllPlayers(new MsgPlayerAnimationChange(this, animation, animationDuration), asWorld());
             }
 
-            animation.getSound().ifPresent(sound -> {
+            animation.animation().getSound().ifPresent(sound -> {
                 playSound(sound, sound == USounds.ENTITY_PLAYER_WOLOLO ? 0.1F : 0.9F, 1);
             });
         }
     }
 
-    public Animation getAnimation() {
+    public AnimationInstance getAnimation() {
         return animation;
     }
 
     public float getAnimationProgress(float delta) {
-        if (animation == Animation.NONE) {
+        if (animation.isOf(Animation.NONE)) {
             return 0;
         }
         return 1 - (((float)animationDuration) / animationMaxDuration);
@@ -302,7 +327,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         if (entity.getWorld() instanceof ServerWorld sw
                 && getObservedSpecies() == Race.BAT
                 && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE
-                && SunBlindnessStatusEffect.isPositionExposedToSun(sw, getOrigin())) {
+                && MeteorlogicalUtil.isPositionExposedToSun(sw, getOrigin())) {
             SpawnLocator.selectSpawnPosition(sw, entity);
         }
         ticksSunImmunity = INITIAL_SUN_IMMUNITY;
@@ -340,7 +365,67 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         powers.tick();
 
+        BlockPos climbingPos = entity.getClimbingPos().orElse(null);
+
+        if (!getPhysics().isFlying() && !entity.getAbilities().flying && climbingPos != null && getObservedSpecies() == Race.CHANGELING) {
+            Vec3d vel = entity.getVelocity();
+            if (entity.isSneaky()) {
+                entity.setVelocity(vel.x, 0, vel.z);
+            }
+
+            distanceClimbed += vel.length();
+            BlockPos hangingPos = entity.getBlockPos().up();
+            boolean canhangHere = canHangAt(hangingPos);
+
+            if (distanceClimbed > 1.5) {
+                if (vel.length() > 0.08F && entity.age % (3 + entity.getRandom().nextInt(5)) == 0) {
+                    entity.playSound(SoundEvents.ENTITY_CHICKEN_STEP,
+                            (float)entity.getRandom().nextTriangular(0.5, 0.3),
+                            entity.getSoundPitch()
+                    );
+                }
+
+                boolean skipHangCheck = false;
+                Direction newAttachDirection = entity.getHorizontalFacing();
+                if (isFaceClimbable(entity.getWorld(), entity.getBlockPos(), newAttachDirection) && (newAttachDirection != attachDirection)) {
+                    attachDirection = newAttachDirection;
+                    skipHangCheck = true;
+                }
+
+                if (!skipHangCheck && canhangHere) {
+                    if (!isHanging()) {
+                        startHanging(hangingPos);
+                    } else {
+                        if (((LivingEntityDuck)entity).isJumping()) {
+                            // Jump to let go
+                            return false;
+                        }
+                        entity.setVelocity(entity.getVelocity().multiply(1, 0, 1));
+                        entity.setSneaking(false);
+                    }
+                } else if (attachDirection != null && isFaceClimbable(entity.getWorld(), entity.getBlockPos(), attachDirection)) {
+                    entity.setBodyYaw(attachDirection.asRotation());
+                    entity.prevBodyYaw = attachDirection.asRotation();
+                }
+            }
+
+            if (getAnimation().isOf(Animation.NONE) || (getAnimation().isOf(Animation.NONE) && canhangHere)) {
+                if (canhangHere) {
+                    setAnimation(Animation.ARMS_UP, Recipient.HUMAN);
+                } else if (distanceClimbed > 1.5) {
+                    setAnimation(Animation.CLIMB, Recipient.HUMAN);
+                }
+            }
+        } else {
+            distanceClimbed = 0;
+        }
+
         return false;
+    }
+
+    private boolean isFaceClimbable(World world, BlockPos pos, Direction direction) {
+        pos = pos.offset(direction);
+        return world.getBlockState(pos).isSideSolid(world, pos, direction, SideShapeType.CENTER);
     }
 
     public Optional<BlockPos> getHangingPosition() {
@@ -377,9 +462,28 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return state.isSolidSurface(asWorld(), pos, entity, Direction.DOWN);
     }
 
+    @Override
+    public Optional<BlockPos> chooseClimbingPos() {
+        if (getObservedSpecies() == Race.CHANGELING && getSpellSlot().get(SpellPredicate.IS_DISGUISE, false).isEmpty()) {
+            return Optional.of(entity.getBlockPos());
+        }
+        return super.chooseClimbingPos();
+    }
+
     private void updateAnimations() {
-        if (animationDuration >= 0 && --animationDuration <= 0) {
-            setAnimation(Animation.NONE);
+
+        if (distanceClimbed > 0
+                && ((animation.isOf(Animation.CLIMB) && entity.isSneaky()) || (animation.isOf(Animation.ARMS_UP) && isHanging()))
+                && entity.getClimbingPos().isPresent()
+                && entity.getVelocity().length() < 0.08F) {
+            if (animation.isOf(Animation.ARMS_UP)) {
+                animationDuration = 2;
+            }
+            return;
+        }
+
+        if (animationDuration > 0 && --animationDuration <= 0) {
+            setAnimation(AnimationInstance.NONE);
         }
     }
 
@@ -390,8 +494,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         if (isHanging()) {
             ((LivingEntityDuck)entity).setLeaningPitch(0);
-            if (!isClient() && (getObservedSpecies() != Race.BAT || (ticksHanging++ > 2 && getHangingPosition().filter(getOrigin().down()::equals).filter(this::canHangAt).isEmpty()))) {
-                stopHanging();
+            if (!getObservedSpecies().canHang() || (ticksHanging++ > 2 && getHangingPosition().filter(getOrigin().down()::equals).filter(this::canHangAt).isEmpty())) {
+                if (!isClient()) {
+                    stopHanging();
+                }
             }
         } else {
             ticksHanging = 0;

@@ -27,8 +27,8 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
     }
 
     @Override
-    public boolean apply(Caster<?> caster) {
-        return toPlaceable().apply(caster);
+    public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
+        return toPlaceable();
     }
 
     @Override

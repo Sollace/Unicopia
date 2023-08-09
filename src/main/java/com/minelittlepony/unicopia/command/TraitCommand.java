@@ -22,7 +22,7 @@ class TraitCommand {
                 .requires(s -> s.hasPermissionLevel(2));
 
         builder.then(CommandManager.literal("add")
-                .then(CommandManager.argument("trait", EnumArgumentType.of(Trait.class))
+                .then(CommandManager.argument("trait", Trait.argument())
                 .then(CommandManager.argument("value", FloatArgumentType.floatArg()).executes(source -> add(
                         source.getSource(),
                         source.getSource().getPlayer(),
@@ -31,7 +31,7 @@ class TraitCommand {
                 )))
         ));
         builder.then(CommandManager.literal("remove")
-                .then(CommandManager.argument("trait", EnumArgumentType.of(Trait.class)).executes(source -> remove(
+                .then(CommandManager.argument("trait", Trait.argument()).executes(source -> remove(
                         source.getSource(),
                         source.getSource().getPlayer(),
                         source.getArgument("trait", Trait.class)

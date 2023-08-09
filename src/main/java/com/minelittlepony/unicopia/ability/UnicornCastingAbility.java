@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
@@ -106,19 +107,19 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
                 }, true);
                 player.subtractEnergyCost(removed ? 2 : 4);
                 if (!removed) {
-                    Spell s = spell.apply(player);
+                    Spell s = spell.apply(player, CastingMethod.GEM);
                     if (s == null) {
                         player.spawnParticles(ParticleTypes.LARGE_SMOKE, 6);
                         player.playSound(USounds.SPELL_CAST_FAIL, 1, 0.5F);
                     } else {
-                        player.setAnimation(Animation.ARMS_UP);
+                        player.setAnimation(Animation.ARMS_UP, Animation.Recipient.HUMAN);
                         if (s instanceof HomingSpell homer) {
                             TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EntityPredicates.VALID_ENTITY).ifPresent(homer::setTarget);
                         }
                         player.playSound(USounds.SPELL_CAST_SUCCESS, 0.05F, 2.2F);
                     }
                 } else {
-                    player.setAnimation(Animation.WOLOLO);
+                    player.setAnimation(Animation.WOLOLO, Animation.Recipient.ANYONE);
                 }
             }
         }
