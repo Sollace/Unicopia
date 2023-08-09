@@ -127,14 +127,18 @@ public class WorldRenderDelegate {
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(roll));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(roll));
 
-        if (pony instanceof Pony) {
-            roll = ((Pony)pony).getCamera().calculateRoll();
+        if (pony instanceof Pony p) {
+            roll = p.getCamera().calculateRoll();
             if (negative) {
                 roll -= 180;
             }
 
             matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(yaw));
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(roll));
+
+            float diveAngle = p.getInterpolator().interpolate("g_kdive", p.getMotion().isDiving() ? 80 : 0, 15);
+
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(diveAngle));
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
         }
 

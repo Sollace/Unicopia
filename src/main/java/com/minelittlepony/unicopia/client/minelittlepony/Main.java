@@ -47,6 +47,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
                     Vec3d motion = entity.getVelocity();
                     double zMotion = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
                     model.getAttributes().isGoingFast |= zMotion > 0.4F;
+                    model.getAttributes().isGoingFast |= pony.getMotion().isDiving();
                 }
                 model.getAttributes().isGoingFast |= pony.getMotion().isRainbooming();
                 model.getAttributes().isGoingFast &= !pony.getEntityInArms().isPresent();

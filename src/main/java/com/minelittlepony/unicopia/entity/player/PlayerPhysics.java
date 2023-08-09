@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.entity.player;
 import java.util.function.Supplier;
 
 import com.minelittlepony.unicopia.*;
+import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
@@ -53,6 +54,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
     private int ticksInAir;
     private int ticksToGlide;
+    private int ticksDiving;
 
     private float thrustScale = 0;
 
@@ -116,6 +118,11 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     @Override
     public boolean isGliding() {
         return ticksToGlide <= 0 && isFlying() && !entity.isSneaking();
+    }
+
+    @Override
+    public boolean isDiving() {
+        return ticksDiving > 0;
     }
 
     @Override
@@ -313,6 +320,19 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     velocity.y -= 0.2F * getGravitySignum();
                     velocity.y /= 2F;
                 }
+
+                double horizontalSpeed = this.getHorizontalMotion();
+                double verticalSpeed = velocity.y;
+
+                if (Abilities.RAINBOOM.canUse(pony.getActualSpecies()) && horizontalSpeed != 0 && verticalSpeed < -0.3F && (verticalSpeed / horizontalSpeed) < -0.3F) {
+                    ticksDiving++;
+                } else {
+                    ticksDiving = 0;
+                }
+
+                if (ticksDiving > 0 && ticksDiving % 25 == 0) {
+                    pony.getMagicalReserves().getCharge().add(25);
+                }
             } else {
                 prevStrafe = 0;
                 strafe = 0;
@@ -320,6 +340,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
                 soundPlaying = false;
                 descentRate = 0;
+
+                if (Abilities.RAINBOOM.canUse(pony.getActualSpecies()) && entity.isOnGround()) {
+                    pony.getMagicalReserves().getCharge().set(0);
+                }
 
                 if (!creative && type.isAvian()) {
                     checkAvianTakeoffConditions(velocity);
@@ -460,6 +484,19 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     }
 
                     entity.addExhaustion(exhaustion);
+                }
+
+                if (pony.getMagicalReserves().getExhaustion().get() > 99 && ticksInAir % 25 == 0) {
+                    entity.damage(pony.damageOf(UDamageTypes.EXHAUSTION), 2);
+
+                    if (entity.getWorld().random.nextInt(110) == 1 && !pony.isClient()) {
+                        pony.getLevel().add(1);
+                        pony.getMagicalReserves().getCharge().add(4);
+                        pony.getMagicalReserves().getExertion().set(0);
+                        pony.getMagicalReserves().getExhaustion().set(0);
+                        mana.set(mana.getMax() * 100);
+                        UCriteria.SECOND_WIND.trigger(entity);
+                    }
                 }
             }
         }
@@ -624,7 +661,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private void applyTurbulance(MutableVector velocity) {
         int globalEffectStrength = MathHelper.clamp(entity.getWorld().getGameRules().getInt(UGameRules.WEATHER_EFFECTS_STRENGTH), 0, 100);
         float effectStrength = Math.min(1, (float)ticksInAir / MAX_TICKS_TO_WEATHER_EFFECTS) * (globalEffectStrength / 100F);
-        Vec3d gust = WeatherConditions.getGustStrength(entity.getWorld(), entity.getBlockPos()).multiply(globalEffectStrength / 100D);
+        Vec3d gust = WeatherConditions.getGustStrength(entity.getWorld(), entity.getBlockPos())
+                .multiply(globalEffectStrength / 100D)
+                .multiply(1 / (1 + Math.floor(pony.getLevel().get() / 10F)));
 
         if (effectStrength * gust.getX() >= 1) {
             SoundEmitter.playSoundAt(entity, USounds.AMBIENT_WIND_GUST, SoundCategory.AMBIENT, 3, 1);

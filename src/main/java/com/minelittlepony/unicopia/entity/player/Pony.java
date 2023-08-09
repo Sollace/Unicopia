@@ -21,6 +21,7 @@ import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
+import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
@@ -71,6 +72,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     static final TrackedData<Optional<BlockPos>> HANGING_POSITION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
     static final TrackedData<Float> MANA = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> XP = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    static final TrackedData<Float> CHARGE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Integer> LEVEL = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
     static final TrackedData<Integer> CORRUPTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
@@ -264,6 +266,19 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public LevelStore getCorruption() {
         return corruption;
+    }
+
+    public boolean canUseSuperMove() {
+        return getMagicalReserves().getCharge().get() >= getMagicalReserves().getCharge().get();
+    }
+
+    public boolean consumeSuperMove() {
+        if (canUseSuperMove()) {
+            Bar charge = getMagicalReserves().getCharge();
+            charge.set(charge.get() - charge.getMax());
+            return true;
+        }
+        return false;
     }
 
     public boolean isSunImmune() {

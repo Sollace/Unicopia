@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
 
@@ -10,37 +13,43 @@ import net.minecraft.util.math.MathHelper;
 public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
     private final Pony pony;
 
+    private final Map<String, BarInst> bars = new HashMap<>();
+
     private final BarInst energy;
     private final BarInst exhaustion;
     private final BarInst exertion;
     private final BarInst mana;
     private final BarInst xp;
+    private final BarInst charge;
 
     public ManaContainer(Pony pony) {
         this.pony = pony;
-        this.energy = new BarInst(Pony.ENERGY, 100F, 0);
-        this.exhaustion = new BarInst(Pony.EXHAUSTION, 100F, 0);
-        this.exertion = new BarInst(Pony.EXERTION, 10F, 0);
-        this.xp = new BarInst(Pony.XP, 1, 0);
-        this.mana = new XpCollectingBar(Pony.MANA, 100F, 100F);
+        this.energy = addBar("energy", new BarInst(Pony.ENERGY, 100F, 0));
+        this.exhaustion = addBar("exhaustion", new BarInst(Pony.EXHAUSTION, 100F, 0));
+        this.exertion = addBar("exertion", new BarInst(Pony.EXERTION, 10F, 0));
+        this.xp = addBar("xp", new BarInst(Pony.XP, 1, 0));
+        this.mana = addBar("mana", new XpCollectingBar(Pony.MANA, 100F, 100F));
+        this.charge = addBar("charge", new BarInst(Pony.CHARGE, 10F, 0) {
+            @Override
+            protected float applyLimits(float value) {
+                return Math.max(0, value);
+            }
+        });
+    }
+
+    protected BarInst addBar(String name, BarInst bar) {
+        bars.put(name, bar);
+        return bar;
     }
 
     @Override
     public void toNBT(NbtCompound compound) {
-        compound.put("energy", energy.toNBT());
-        compound.put("exhaustion", exhaustion.toNBT());
-        compound.put("exertion", exertion.toNBT());
-        compound.put("mana",  mana.toNBT());
-        compound.put("xp",  xp.toNBT());
+        bars.forEach((key, bar) -> compound.put(key, bar.toNBT()));
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
-        energy.fromNBT(compound.getCompound("energy"));
-        exhaustion.fromNBT(compound.getCompound("exhaustion"));
-        exertion.fromNBT(compound.getCompound("exertion"));
-        mana.fromNBT(compound.getCompound("mana"));
-        xp.fromNBT(compound.getCompound("xp"));
+        bars.forEach((key, bar) -> bar.fromNBT(compound.getCompound(key)));
     }
 
     @Override
@@ -69,11 +78,13 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
     }
 
     @Override
+    public Bar getCharge() {
+        return charge;
+    }
+
+    @Override
     public void tick() {
-        exertion.tick();
-        energy.tick();
-        mana.tick();
-        xp.tick();
+        bars.values().forEach(BarInst::tick);
 
         exertion.add(-10);
 
@@ -142,7 +153,7 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
 
         @Override
         public float get() {
-            return pony.asEntity().getDataTracker().get(marker);
+            return applyLimits(pony.asEntity().getDataTracker().get(marker));
         }
 
         @Override
@@ -152,11 +163,17 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
 
         @Override
         public void set(float value) {
-            load(MathHelper.clamp(value, 0, getMax()));
+            load(applyLimits(value));
         }
 
         private void load(float value) {
-            pony.asEntity().getDataTracker().set(marker, value);
+            if (!pony.isClient()) {
+                pony.asEntity().getDataTracker().set(marker, value);
+            }
+        }
+
+        protected float applyLimits(float value) {
+            return MathHelper.clamp(value, 0, getMax());
         }
 
         @Override

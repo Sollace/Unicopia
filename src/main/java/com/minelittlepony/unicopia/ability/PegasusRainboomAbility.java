@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
 
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 /**
  * Pegasus ability to perform rainbooms
@@ -29,6 +30,11 @@ public class PegasusRainboomAbility implements Ability<Hit> {
     }
 
     @Override
+    public boolean canActivate(World w, Pony player) {
+        return player.canUseSuperMove();
+    }
+
+    @Override
     public boolean canUse(Race race) {
         return race.canInteractWithClouds();
     }
@@ -37,7 +43,7 @@ public class PegasusRainboomAbility implements Ability<Hit> {
     @Override
     public Hit tryActivate(Pony player) {
 
-        if (!player.asEntity().isCreative() && player.getMagicalReserves().getMana().getPercentFill() < 0.2F) {
+        if (!player.asEntity().isCreative() && !player.canUseSuperMove()) {
             return null;
         }
 
@@ -55,7 +61,7 @@ public class PegasusRainboomAbility implements Ability<Hit> {
 
     @Override
     public double getCostEstimate(Pony player) {
-        return 90F;
+        return 0;
     }
 
     @Override
@@ -64,6 +70,7 @@ public class PegasusRainboomAbility implements Ability<Hit> {
         if (type == ActivationType.TAP && player.getPhysics().isFlying() && player.getMagicalReserves().getMana().get() > 40) {
             player.getPhysics().dashForward((float)player.asWorld().random.nextTriangular(2.5F, 0.3F));
             player.subtractEnergyCost(4);
+            player.getMagicalReserves().getCharge().add(2);
             return true;
         }
 
@@ -77,9 +84,10 @@ public class PegasusRainboomAbility implements Ability<Hit> {
             return;
         }
 
-        player.subtractEnergyCost(9);
-        player.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, player.getPhysics().getMotionAngle()), player.getOriginVector(), Vec3d.ZERO);
-        SpellType.RAINBOOM.withTraits().apply(player, CastingMethod.INNATE);
+        if (player.consumeSuperMove()) {
+            player.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, player.getPhysics().getMotionAngle()), player.getOriginVector(), Vec3d.ZERO);
+            SpellType.RAINBOOM.withTraits().apply(player, CastingMethod.INNATE);
+        }
     }
 
     @Override

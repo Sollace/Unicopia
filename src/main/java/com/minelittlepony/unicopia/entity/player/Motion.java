@@ -11,6 +11,8 @@ public interface Motion {
 
     boolean isGliding();
 
+    boolean isDiving();
+
     boolean isRainbooming();
 
     float getWingAngle();

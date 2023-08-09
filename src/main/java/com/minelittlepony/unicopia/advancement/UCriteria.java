@@ -21,6 +21,7 @@ public interface UCriteria {
     CustomEventCriterion.Trigger KILL_PHANTOM_WHILE_FLYING = CUSTOM_EVENT.createTrigger("kill_phantom_while_flying");
     CustomEventCriterion.Trigger USE_CONSUMPTION = CUSTOM_EVENT.createTrigger("use_consumption");
     CustomEventCriterion.Trigger USE_SOULMATE = CUSTOM_EVENT.createTrigger("use_soulmate");
+    CustomEventCriterion.Trigger SECOND_WIND = CUSTOM_EVENT.createTrigger("second_wind");
 
     static void bootstrap() { }
 }

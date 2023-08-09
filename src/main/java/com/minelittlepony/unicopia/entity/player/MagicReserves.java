@@ -31,6 +31,11 @@ public interface MagicReserves {
      */
     Bar getXp();
 
+    /**
+     * Temporary mana charge collected by performing certain tasks.
+     */
+    Bar getCharge();
+
     public interface Bar {
 
         /**
