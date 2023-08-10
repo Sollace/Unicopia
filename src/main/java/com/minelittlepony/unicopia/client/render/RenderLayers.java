@@ -33,11 +33,10 @@ public final class RenderLayers extends RenderLayer {
                 .transparency(TRANSLUCENT_TRANSPARENCY)
                 .layering(VIEW_OFFSET_Z_LAYERING)
                // .target(TRANSLUCENT_TARGET)
-                .texturing(solid(Color.r(color), Color.g(color), Color.b(color), 0.6F))
+                .texturing(solid(color))
             .build(false));
     });
-    private static final RenderLayer MAGIC_COLORED = getMagicColored(Color.argbToHex(1, 0.8F, 0.9F, 1));
-
+    private static final RenderLayer MAGIC_COLORED = getMagicColored(Color.argbToHex(0.6F, 0.8F, 0.9F, 1));
 
     private static final BiFunction<Identifier, Integer, RenderLayer> MAGIC_TINT_FUNC = Util.memoize((texture, color) -> {
         return of("magic_tint_" + color,
@@ -69,14 +68,17 @@ public final class RenderLayers extends RenderLayer {
         return MAGIC_TINT_FUNC.apply(texture, color);
     }
 
-    private static Texturing solid(float r, float g, float b, float a) {
+    private static Texturing solid(int color) {
+        final float r = Color.r(color);
+        final float g = Color.g(color);
+        final float b = Color.b(color);
+        final float a = Color.a(color);
         return new Texturing("solid", () -> {
             RenderSystem.setShaderColor(r, g, b, a);
         }, () -> {
             RenderSystem.setShaderColor(1, 1, 1, 1);
         });
     }
-
 
     private static class Colored extends Texture {
 
@@ -90,7 +92,7 @@ public final class RenderLayers extends RenderLayer {
             this.red = Color.r(color);
             this.green = Color.g(color);
             this.blue = Color.b(color);
-            this.alpha = 0.8F;
+            this.alpha = Color.a(color);
         }
 
         @Override

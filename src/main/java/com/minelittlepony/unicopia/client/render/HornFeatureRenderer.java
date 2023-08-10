@@ -58,7 +58,7 @@ public class HornFeatureRenderer<E extends LivingEntity> implements AccessoryFea
                         .filter(i -> i != -1).or(() -> pony.getSpellSlot().get(SpellPredicate.IS_NOT_PLACED, false).map(spell -> spell.getType().getColor()));
             }).ifPresent(color -> {
                 model.setState(true);
-                model.render(stack, ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayers.getMagicColored(color), false, false), lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
+                model.render(stack, ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayers.getMagicColored((0x99 << 24) | color), false, false), lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
             });
         }
     }

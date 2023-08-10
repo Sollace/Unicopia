@@ -76,7 +76,7 @@ public class WorldRenderDelegate {
                     var buffer = vertices.getBuffer(layer);
                     return RenderLayerUtil.getTexture(layer).map(texture -> {
                         return VertexConsumers.union(
-                                vertices.getBuffer(RenderLayers.getMagicColored(texture, creature.isDiscorded() ? 0xFF0000 : 0x0000FF)),
+                                vertices.getBuffer(RenderLayers.getMagicColored(texture, creature.isDiscorded() ? 0xCCFF0000 : 0xCC0000FF)),
                                 vertices.getBuffer(layer)
                         );
                     }).orElse(buffer);
