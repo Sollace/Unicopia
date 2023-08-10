@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.entity.player.MeteorlogicalUtil;
@@ -232,6 +233,16 @@ public class SpellbookEntity extends MobEntity {
         }
 
         return ActionResult.PASS;
+    }
+
+    @Override
+    public boolean isImmuneToExplosion() {
+        return true;
+    }
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource damageSource) {
+        return super.isInvulnerableTo(damageSource) || damageSource.isIn(UTags.SPELLBOOK_IMMUNE_TO);
     }
 
     @Override

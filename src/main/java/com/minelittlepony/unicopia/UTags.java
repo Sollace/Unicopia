@@ -43,6 +43,7 @@ public interface UTags {
     TagKey<StatusEffect> PINEAPPLE_EFFECTS = effect("pineapple_effects");
 
     TagKey<DamageType> BREAKS_SUNGLASSES = damage("breaks_sunglasses");
+    TagKey<DamageType> SPELLBOOK_IMMUNE_TO = damage("spellbook_immune_to");
 
     TagKey<DimensionType> HAS_NO_ATMOSPHERE = dimension("has_no_atmosphere");
 
