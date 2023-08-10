@@ -11,11 +11,13 @@ import java.util.stream.StreamSupport;
 
 import com.google.common.collect.Lists;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public interface PosHelper {
@@ -64,5 +66,16 @@ public interface PosHelper {
                 return false;
             }
         }, false);
+    }
+
+    static BlockPos traverseChain(BlockView world, BlockPos startingPos, Direction chainDirection, Predicate<BlockState> isInChain) {
+        BlockPos.Mutable mutablePos = new BlockPos.Mutable();
+        mutablePos.set(startingPos);
+        do {
+            mutablePos.move(chainDirection);
+        } while (isInChain.test(world.getBlockState(mutablePos)) && !world.isOutOfHeightLimit(mutablePos));
+
+        mutablePos.move(chainDirection.getOpposite());
+        return mutablePos.toImmutable();
     }
 }

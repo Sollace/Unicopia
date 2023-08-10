@@ -76,7 +76,7 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
         int height = (tip.getY() - root.getY());
 
         BlockState tipState = world.getBlockState(tip);
-        double tipHeight = SegmentedBlock.getHeight(((SegmentedCropBlock)tipState.getBlock()).getAge(tipState));
+        double tipHeight = tipState.getBlock() instanceof SegmentedCropBlock tipBlock ? SegmentedBlock.getHeight(tipBlock.getAge(tipState)) : 0;
 
         double offset = (root.getY() - pos.getY()) * 16;
 
@@ -106,16 +106,16 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         BlockPos tip = getTip(world, pos);
-        BlockPos base = getRoot(world, pos);
+        BlockPos root = getRoot(world, pos);
 
-        if (base.getY() != pos.getY()) {
+        if (root.getY() != pos.getY()) {
             return;
         }
 
         if (world.getBaseLightLevel(tip, 0) >= 9) {
             int age = getAge(state);
             if (age < getMaxAge()) {
-                float moisture = CropBlock.getAvailableMoisture(world.getBlockState(base).getBlock(), world, base);
+                float moisture = CropBlock.getAvailableMoisture(world.getBlockState(root).getBlock(), world, root);
                 if (random.nextInt((int)(BASE_GROWTH_CHANCE / moisture) + 1) == 0) {
                     world.setBlockState(pos, withAge(age + 1), Block.NOTIFY_LISTENERS);
                     propagateGrowth(world, pos, state);
