@@ -417,7 +417,7 @@
   
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.human": " - 没有任何魔法能力",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.human": " - 需要鞘翅才能飞翔",
-  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.human": " - 必须以老方法，通过辛勤工作和体力劳动种植食物",
+  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.human": " - 必须以传统方法，通过辛勤工作和体力劳动种植食物",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.human": " - 没有软乎耳朵",
   
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.earth": " - 不能飞",
@@ -428,12 +428,12 @@
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.unicorn": " - 对物理攻击抗性很弱",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.unicorn": " - 只能吃植物和蔬菜",
   
-  "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.pegasus": " - 轻体重使它们对物理攻击抗性最弱",
+  "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.pegasus": " - 由于体重轻，它们对物理攻击抗性最弱",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.pegasus": " - 持续飞行时必须休息以恢复体力",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.pegasus": " - 没有其它小马的帮助就无法使用魔法",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.pegasus": "",
   
-  "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.bat": " - 轻体重使它们对物理攻击抗性很弱",
+  "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.bat": " - 由于体重轻，它们对物理攻击抗性很弱",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.bat": " - 持续飞行时必须休息以恢复体力",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.bat": " - 有时甚至自己吓到自己",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.bat": " - 是肉食性的。可以吃任何不会让它们生病的东西",
@@ -450,7 +450,7 @@
   "gui.unicopia.spellbook.page.recipes": "魔咒配方",
   "gui.unicopia.spellbook.page.recipes.empty": "已解锁 0 份魔咒配方",
   "gui.unicopia.spellbook.page.mana": "法力值",
-
+  
   "gui.unicopia.action.spells_cleared": "移除所有的魔咒",
   "gui.unicopia.action.no_spells_cleared": "你目前没有正在生效的魔咒",
   
