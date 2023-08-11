@@ -118,6 +118,8 @@ public interface UItems {
     Item BUTTERFLY = register("butterfly", new Item(new Item.Settings().food(UFoodComponents.INSECTS)), ItemGroups.FOOD_AND_DRINK);
 
     Item SPELLBOOK = register("spellbook", new SpellbookItem(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
+    Item BASKET = register("basket", new BasketItem(new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item LARGE_BALLOON = register("large_balloon", new Item(new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
 
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new FabricItemSettings()
             .maxCount(1)

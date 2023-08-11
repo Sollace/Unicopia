@@ -52,6 +52,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -172,6 +173,93 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return vehicle != null && getCarrierId().filter(vehicle.getUuid()::equals).isPresent();
     }
 
+    @Nullable
+    private Entity supportingEntity;
+    @Nullable
+    private Vec3d supportPositionOffset;
+    @Nullable
+    private Vec3d serverPositionOffset;
+
+    public void setSupportingEntity(Entity supportingEntity) {
+        this.supportingEntity = supportingEntity;
+    }
+
+    public void setPositionOffset(@Nullable Vec3d positionOffset, @Nullable Vec3d serverPositionOffset) {
+        this.supportPositionOffset = positionOffset;
+        this.serverPositionOffset = serverPositionOffset;
+    }
+
+    public void updatePositionOffset() {
+        setPositionOffset(
+                supportingEntity == null ? null : entity.getPos().subtract(supportingEntity.getPos()),
+                supportingEntity instanceof LivingEntity l ? LivingEntityDuck.serverPos(entity).subtract(LivingEntityDuck.serverPos(l)) : null
+        );
+    }
+
+    public void updateRelativePosition() {
+        if (supportingEntity == null || supportPositionOffset == null) {
+            return;
+        }
+        Vec3d newPos = supportingEntity.getPos().add(supportPositionOffset);
+        Vec3d posChange = entity.getPos().subtract(newPos);
+        entity.setPosition(newPos);
+        if (isClient()) {
+            Vec3d newServerPos = LivingEntityDuck.serverPos(entity);
+            if (newServerPos.lengthSquared() != 0) {
+                newServerPos = newServerPos.subtract(posChange);
+                entity.updateTrackedPositionAndAngles(
+                        newServerPos.x, newServerPos.y, newServerPos.z,
+                        entity.getYaw(), entity.getPitch(), 3, true);
+            }
+        } else {
+            entity.updateTrackedPosition(newPos.x, newPos.y, newPos.z);
+        }
+
+        if (!(entity instanceof PlayerEntity)) {
+            entity.lastRenderX = supportingEntity.lastRenderX + supportPositionOffset.x;
+            entity.lastRenderY = supportingEntity.lastRenderY + supportPositionOffset.y;
+            entity.lastRenderZ = supportingEntity.lastRenderZ + supportPositionOffset.z;
+
+            if (entity.getVelocity().length() < 0.1) {
+                LimbAnimationUtil.resetToZero(entity.limbAnimator);
+            }
+        }
+
+        entity.horizontalSpeed = 0;
+        entity.prevHorizontalSpeed = 0;
+        entity.speed = 0;
+        entity.setOnGround(true);
+        entity.verticalCollision = true;
+        entity.groundCollision = true;
+        //entity.distanceTraveled = 0;
+        entity.fallDistance = 0;
+    }
+
+    @Override
+    public boolean beforeUpdate() {
+        if (supportingEntity != null) {
+            Box ownBox = entity.getBoundingBox().expand(0.1);
+            if (MultiBoundingBoxEntity.getBoundingBoxes(supportingEntity).stream().noneMatch(box -> {
+                return box.expand(0, 0.5, 0).intersects(ownBox);
+            })) {
+                supportingEntity = null;
+                supportPositionOffset = null;
+            }
+        }
+        if (supportingEntity != null) {
+            if (supportPositionOffset == null) {
+                updatePositionOffset();
+            } else {
+                updateRelativePosition();
+            }
+            entity.setOnGround(true);
+            entity.verticalCollision = true;
+            entity.groundCollision = true;
+        }
+
+        return false;
+    }
+
     @Override
     public void tick() {
         tickers.forEach(Tickable::tick);
@@ -220,6 +308,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         }
 
         updateDragonBreath();
+        updatePositionOffset();
     }
 
     public void updateAttributeModifier(UUID id, EntityAttribute attribute, float desiredValue, Float2ObjectFunction<EntityAttributeModifier> modifierSupplier, boolean permanent) {

@@ -435,7 +435,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             distanceClimbed = 0;
         }
 
-        return false;
+        return super.beforeUpdate();
     }
 
     private boolean isFaceClimbable(World world, BlockPos pos, Direction direction) {

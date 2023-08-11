@@ -152,8 +152,6 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         }
     }
 
-
-
     private void initMinionAi(GoalSelector targets) {
         clearGoals(targets);
         targets.add(2, new ActiveEnemyGoal<>(PlayerEntity.class));
@@ -197,9 +195,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
             initDiscordedAi();
         }
 
-
-
-        return false;
+        return super.beforeUpdate();
     }
 
     private void clearGoals(GoalSelector t) {

@@ -112,6 +112,8 @@ public class WorldRenderDelegate {
             return true;
         }
 
+        pony.updateRelativePosition();
+
         matrices.push();
 
         Entity owner = pony.asEntity();

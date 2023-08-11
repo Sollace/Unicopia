@@ -51,8 +51,8 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntity> {
 		return TexturedModelData.of(modelData, 512, 512);
 	}
 	@Override
-	public void setAngles(AirBalloonEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-	    root.yaw = entity.bodyYaw;
+	public void setAngles(AirBalloonEntity entity, float tickDelta, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	    root.yaw = entity.getBodyYaw();
 	    burner.visible = entity.hasBurner();
 	    balloon.visible = entity.hasBalloon();
 
