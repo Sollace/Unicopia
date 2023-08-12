@@ -112,7 +112,7 @@ public class WorldRenderDelegate {
             return true;
         }
 
-        pony.updateRelativePosition();
+        pony.updateSupportingEntity();
 
         matrices.push();
 

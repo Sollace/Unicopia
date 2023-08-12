@@ -10,6 +10,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
@@ -22,8 +23,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
+import com.minelittlepony.unicopia.entity.collision.MultiBox;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
-import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 
@@ -33,11 +34,16 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
     private static final byte BURNER_ACTIVE = 4;
     private static final TrackedData<Integer> FLAGS = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> BOOSTING = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> INFLATION = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     private boolean prevBoosting;
+    private int prevInflation;
+    private Vec3d oldPosition = Vec3d.ZERO;
+    private Vec3d manualVelocity = Vec3d.ZERO;
 
     public AirBalloonEntity(EntityType<? extends AirBalloonEntity> type, World world) {
         super(type, world);
+        setPersistent();
     }
 
     @Override
@@ -45,6 +51,7 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
         super.initDataTracker();
         dataTracker.startTracking(FLAGS, 0);
         dataTracker.startTracking(BOOSTING, 0);
+        dataTracker.startTracking(INFLATION, 0);
     }
 
     public boolean hasBalloon() {
@@ -56,11 +63,27 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
     }
 
     public boolean hasBurner() {
-        return getFlag((byte)(HAS_BURNER | HAS_BALLOON));
+        return getFlag(HAS_BURNER);
     }
 
     public void setHasBurner(boolean hasBurner) {
         setFlag(HAS_BURNER, hasBurner);
+    }
+
+    public float getInflation(float tickDelta) {
+        return MathHelper.lerp(tickDelta, prevInflation, getInflation()) / (float)getMaxInflation();
+    }
+
+    private void setInflation(int inflation) {
+        dataTracker.set(INFLATION, MathHelper.clamp(inflation, 0, getMaxInflation()));
+    }
+
+    private int getInflation() {
+        return dataTracker.get(INFLATION);
+    }
+
+    protected int getMaxInflation() {
+        return 100;
     }
 
     public boolean isBurnerActive() {
@@ -94,34 +117,52 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
 
     @Override
     public List<Box> getBoundingBoxes() {
-        if (hasBalloon()) {
-            Box balloonBox = getBalloonBoundingBox();
-            return List.of(getBoundingBox(), balloonBox.withMinY(balloonBox.minY - 0.5));
+        if (hasBalloon() && getInflation(1) > 0.999F) {
+            return List.of(getInteriorBoundingBox(), getBalloonBoundingBox());
         }
-        return List.of(getBoundingBox());
+        return List.of(getInteriorBoundingBox());
     }
-
-    private Vec3d oldPosition = Vec3d.ZERO;
-    private Vec3d oldServerPosition = Vec3d.ZERO;
 
     @Override
     public void tick() {
+        this.shouldSave();
         setAir(getMaxAir());
         int boostTicks = getBoostTicks();
 
+        int inflation = getInflation();
+        prevInflation = inflation;
+
         if (boostTicks > 0) {
             boostTicks--;
+            if (inflation < getMaxInflation()) {
+                boostTicks--;
+            }
             setBoostTicks(boostTicks);
         }
 
-        addVelocity(0, isBurnerActive() ? 0.005 : -0.03, 0);
+        boolean boosting = boostTicks > 0;
 
-        if (!isAirworthy() && isSubmergedInWater()) {
-            double yy = getVelocity().y;
-            setVelocity(getVelocity().multiply(0.9, 0.4, 0.9).add(0, Math.abs(yy) / 2F, 0));
+        if (hasBurner() && isBurnerActive()) {
+            if (inflation < getMaxInflation()) {
+                inflation++;
+                if (boosting) {
+                    inflation++;
+                }
+                setInflation(inflation);
+            }
+        } else {
+            if (inflation < getMaxInflation() && inflation > 0) {
+                setInflation(--inflation);
+            }
         }
 
-        boolean boosting = boostTicks > 0;
+        addVelocity(0, isBurnerActive() && inflation >= getMaxInflation() ? 0.005 : -0.013, 0);
+        addVelocity(manualVelocity.multiply(0.1));
+        manualVelocity = manualVelocity.multiply(0.9);
+
+        if (!isAirworthy() && isSubmergedInWater()) {
+            setVelocity(getVelocity().multiply(0.9, 0.4, 0.9).add(0, 0.02, 0));
+        }
 
         Random rng = getWorld().random;
 
@@ -139,7 +180,7 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
                     );
                 }
             }
-        } else {
+        } else if (inflation >= getMaxInflation()) {
             if (hasBurner() && isBurnerActive()) {
                 addVelocity(WeatherConditions.getAirflow(getBlockPos(), getWorld()).multiply(0.2));
                 setVelocity(getVelocity().multiply(0.3, 1, 0.3));
@@ -170,24 +211,35 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
 
         prevBoosting = boosting;
         oldPosition = getPos();
-        oldServerPosition = LivingEntityDuck.serverPos(this);
 
         for (Box box : getBoundingBoxes()) {
-            for (Entity e : getWorld().getOtherEntities(this, box.expand(0, 0.5, 0))) {
+            for (Entity e : getWorld().getOtherEntities(this, box.expand(0, 0.5, 0).stretch(getVelocity().multiply(-1)))) {
                 updatePassenger(e, box, e.getY() > getY() + 3);
             }
         }
+
+        if (getFireTicks() > 0) {
+            setFireTicks(1);
+        }
+
         super.tick();
+        setBoundingBox(MultiBox.of(getBoundingBox(), getBoundingBoxes()));
     }
 
     private void updatePassenger(Entity e, Box box, boolean inBalloon) {
 
-        if (getVelocity().y > 0 && e.getBoundingBox().minY < box.maxY) {
-            e.setPos(e.getX(), box.maxY, e.getZ());
+        double height = box.getYLength();
+
+        if (height < 3 || e.getBoundingBox().minY > box.minY + height / 2D) {
+            if (getVelocity().y > 0 && e.getBoundingBox().minY < box.maxY + 0.02) {
+                e.setPos(e.getX(), box.maxY, e.getZ());
+            }
+            if (getVelocity().y < 0 && e.getBoundingBox().minY > box.maxY) {
+                e.setPos(e.getX(), box.maxY, e.getZ());
+            }
         }
-        if (getVelocity().y < 0 && e.getBoundingBox().minY > box.maxY) {
-            e.setPos(e.getX(), box.maxY, e.getZ());
-        }
+
+        e.setVelocity(e.getVelocity().multiply(0.1, 0.5, 0.1));
 
         if (inBalloon && !e.isSneaky() && Math.abs(e.getVelocity().y) > 0.079) {
             e.setVelocity(e.getVelocity().multiply(1, e.getVelocity().y < 0 ? -0.9 : 1.2, 1).add(0, 0.8, 0));
@@ -198,11 +250,8 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
 
         Living.getOrEmpty(e).ifPresent(living -> {
             living.setSupportingEntity(this);
-            living.setPositionOffset(
-                    e.getPos().subtract(oldPosition),
-                    LivingEntityDuck.serverPos(living.asEntity()).subtract(oldServerPosition)
-            );
-            living.updateRelativePosition();
+            living.setPositionOffset(e.getPos().subtract(oldPosition));
+            living.updateRelativePosition(box);
         });
 
         if (getWorld().isClient) {
@@ -215,24 +264,42 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
     }
 
     @Override
+    public ActionResult interactAt(PlayerEntity player, Vec3d hitPos, Hand hand) {
+        ItemStack stack = player.getStackInHand(hand);
+
+        if (hitPos.y > (3 * getInflation(1))) {
+            if (hasBalloon() && hasBurner()) {
+                if (stack.isOf(Items.FLINT_AND_STEEL)) {
+                    setBurnerActive(!isBurnerActive());
+                    if (isBurnerActive()) {
+                        playSound(SoundEvents.ENTITY_GHAST_SHOOT, 1, 1);
+                    }
+                    stack.damage(1, player, p -> p.sendEquipmentBreakStatus(hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));
+                    playSound(SoundEvents.ITEM_FLINTANDSTEEL_USE, 1, 1);
+                    return ActionResult.SUCCESS;
+                }
+
+                if (stack.isEmpty() && Math.abs(hitPos.x) > 1 && Math.abs(hitPos.z) > 1) {
+                    double xPush = Math.signum(hitPos.x);
+                    double zPush = Math.signum(hitPos.z);
+                    if (!getWorld().isClient) {
+                        manualVelocity = manualVelocity.add(0.3 * xPush, 0, 0.3 * zPush);
+                    }
+                } else if (stack.isEmpty() && isBurnerActive()) {
+                    setBoostTicks(50);
+                }
+            }
+        }
+
+        player.sendMessage(Text.literal(hitPos + ""));
+        return ActionResult.PASS;
+    }
+
+    @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (hasBalloon() && hasBurner()) {
-            if (stack.isOf(Items.FLINT_AND_STEEL)) {
-                setBurnerActive(!isBurnerActive());
-                if (isBurnerActive()) {
-                    playSound(SoundEvents.ENTITY_GHAST_SHOOT, 1, 1);
-                }
-                stack.damage(1, player, p -> p.sendEquipmentBreakStatus(hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));
-                playSound(SoundEvents.ITEM_FLINTANDSTEEL_USE, 1, 1);
-                return ActionResult.SUCCESS;
-            }
 
-            if (stack.isEmpty() && isBurnerActive()) {
-                setBoostTicks(50);
-            }
-        }
 
         if (stack.isOf(UItems.LARGE_BALLOON) && !hasBalloon()) {
             if (!player.getAbilities().creativeMode) {
@@ -277,23 +344,27 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
     @Override
     public Box getVisibilityBoundingBox() {
         if (hasBalloon()) {
-            return getBoundingBox().union(getBalloonBoundingBox());
+            return MultiBox.unbox(getBoundingBox()).union(getBalloonBoundingBox());
         }
-        return getBoundingBox();
+        return MultiBox.unbox(getBoundingBox());
     }
 
     protected Box getInteriorBoundingBox() {
-        return getBoundingBox().contract(0.7, 0, 0.7);
+        Box box = MultiBox.unbox(getBoundingBox());
+        return box.withMinY(box.minY - 0.2).contract(0.2, 0, 0.2);
     }
 
     protected Box getBalloonBoundingBox() {
-        return getBoundingBox().offset(0.125, 11, 0).expand(2.25, 0, 2);
+        float inflation = getInflation(1);
+        return MultiBox.unbox(getBoundingBox())
+                .offset(0.125, 7.3 * inflation, 0.125)
+                .expand(2.25, 3.7 * inflation, 2.25);
     }
 
     @Override
     public void getCollissionShapes(ShapeContext context, Consumer<VoxelShape> output) {
 
-        Box box = getBoundingBox().expand(0.3, 0, 0.3);
+        Box box = MultiBox.unbox(getBoundingBox()).expand(0.3, 0, 0.3);
 
         double wallheight = box.maxY + 0.7;
         double wallThickness = 0.7;
@@ -313,9 +384,7 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
 
         // top of balloon
         if (hasBalloon()) {
-            output.accept(VoxelShapes.cuboid(
-                    getBoundingBox().offset(0.12, 7.5, 0.12).expand(2.4, 3.5, 2.4)
-            ));
+            output.accept(VoxelShapes.cuboid(getBalloonBoundingBox()));
         }
     }
 
@@ -326,6 +395,8 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
         setHasBurner(compound.getBoolean("hasBurner"));
         setBurnerActive(compound.getBoolean("burnerActive"));
         setBoostTicks(compound.getInt("boostTicks"));
+        prevInflation = compound.getInt("inflationAmount");
+        setInflation(prevInflation);
     }
 
     @Override
@@ -335,10 +406,7 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
         compound.putBoolean("hasBurner", hasBurner());
         compound.putBoolean("burnerActive", isBurnerActive());
         compound.putInt("boostTicks", getBoostTicks());
-    }
-
-    static Vec3d getWind(World world, BlockPos pos) {
-        return Vec3d.ofCenter(pos).normalize().multiply(1, 0, 1).multiply(0.002);//.multiply((world.getRandom().nextFloat() - 0.5) * 0.2);
+        compound.putInt("inflationAmount", getInflation());
     }
 }
 

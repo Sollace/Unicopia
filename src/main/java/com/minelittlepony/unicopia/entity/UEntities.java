@@ -49,7 +49,7 @@ public interface UEntities {
             .dimensions(EntityDimensions.fixed(0.9F, 0.5F)));
     EntityType<AirBalloonEntity> AIR_BALLOON = register("air_balloon", FabricEntityTypeBuilder.create(SpawnGroup.MISC, AirBalloonEntity::new)
             .trackRangeBlocks(1000)
-            .dimensions(EntityDimensions.fixed(2.5F, 0.1F)));
+            .dimensions(EntityDimensions.changing(2.5F, 0.1F)));
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         EntityType<T> type = builder.build();

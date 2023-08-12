@@ -73,6 +73,12 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     private boolean invisible = false;
 
     @Nullable
+    private Entity supportingEntity;
+
+    @Nullable
+    private Vec3d supportPositionOffset;
+
+    @Nullable
     private Caster<?> attacker;
 
     private Optional<Living<?>> target = Optional.empty();
@@ -173,33 +179,36 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return vehicle != null && getCarrierId().filter(vehicle.getUuid()::equals).isPresent();
     }
 
-    @Nullable
-    private Entity supportingEntity;
-    @Nullable
-    private Vec3d supportPositionOffset;
-    @Nullable
-    private Vec3d serverPositionOffset;
-
     public void setSupportingEntity(Entity supportingEntity) {
         this.supportingEntity = supportingEntity;
     }
 
-    public void setPositionOffset(@Nullable Vec3d positionOffset, @Nullable Vec3d serverPositionOffset) {
+    public void setPositionOffset(@Nullable Vec3d positionOffset) {
         this.supportPositionOffset = positionOffset;
-        this.serverPositionOffset = serverPositionOffset;
     }
 
     public void updatePositionOffset() {
-        setPositionOffset(
-                supportingEntity == null ? null : entity.getPos().subtract(supportingEntity.getPos()),
-                supportingEntity instanceof LivingEntity l ? LivingEntityDuck.serverPos(entity).subtract(LivingEntityDuck.serverPos(l)) : null
-        );
+        setPositionOffset(supportingEntity == null ? null : entity.getPos().subtract(supportingEntity.getPos()));
     }
 
-    public void updateRelativePosition() {
+    public static void checkGroundCollission(Entity entity, Box box) {
+        double height = box.getYLength();
+
+        if (height < 3 || entity.getBoundingBox().minY > box.minY + height / 2D) {
+            if (entity.getBoundingBox().minY < box.maxY) {
+                entity.setPos(entity.getX(), box.maxY - 0.002, entity.getZ());
+            }
+            if (entity.getBoundingBox().minY > box.maxY) {
+                entity.setPos(entity.getX(), box.maxY - 0.002, entity.getZ());
+            }
+        }
+    }
+
+    public void updateRelativePosition(Box box) {
         if (supportingEntity == null || supportPositionOffset == null) {
             return;
         }
+
         Vec3d newPos = supportingEntity.getPos().add(supportPositionOffset);
         Vec3d posChange = entity.getPos().subtract(newPos);
         entity.setPosition(newPos);
@@ -231,33 +240,36 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         entity.setOnGround(true);
         entity.verticalCollision = true;
         entity.groundCollision = true;
-        //entity.distanceTraveled = 0;
         entity.fallDistance = 0;
     }
 
     @Override
     public boolean beforeUpdate() {
+        updateSupportingEntity();
+        return false;
+    }
+
+    public void updateSupportingEntity() {
         if (supportingEntity != null) {
             Box ownBox = entity.getBoundingBox().expand(0.1);
-            if (MultiBoundingBoxEntity.getBoundingBoxes(supportingEntity).stream().noneMatch(box -> {
+
+            MultiBoundingBoxEntity.getBoundingBoxes(supportingEntity).stream().filter(box -> {
                 return box.expand(0, 0.5, 0).intersects(ownBox);
-            })) {
+            }).findFirst().ifPresentOrElse(box -> {
+                if (supportPositionOffset == null) {
+                    updatePositionOffset();
+                } else {
+                    updateRelativePosition(box);
+                }
+                entity.setOnGround(true);
+                entity.verticalCollision = true;
+                entity.groundCollision = true;
+            }, () -> {
                 supportingEntity = null;
                 supportPositionOffset = null;
-            }
-        }
-        if (supportingEntity != null) {
-            if (supportPositionOffset == null) {
-                updatePositionOffset();
-            } else {
-                updateRelativePosition();
-            }
-            entity.setOnGround(true);
-            entity.verticalCollision = true;
-            entity.groundCollision = true;
+            });
         }
 
-        return false;
     }
 
     @Override
