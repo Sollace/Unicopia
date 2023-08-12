@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.item.group.UItemGroups;
 import com.minelittlepony.unicopia.item.toxin.UFoodComponents;
 
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -118,8 +119,8 @@ public interface UItems {
     Item BUTTERFLY = register("butterfly", new Item(new Item.Settings().food(UFoodComponents.INSECTS)), ItemGroups.FOOD_AND_DRINK);
 
     Item SPELLBOOK = register("spellbook", new SpellbookItem(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
-    Item BASKET = register("basket", new BasketItem(new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
-    Item LARGE_BALLOON = register("large_balloon", new Item(new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item OAK_BASKET = register("oak_basket", new BasketItem(BoatEntity.Type.OAK, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item GIANT_BALLOON = register("giant_balloon", new HotAirBalloonItem(new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
 
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new FabricItemSettings()
             .maxCount(1)

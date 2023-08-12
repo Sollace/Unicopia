@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.util.Dispensable;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.BoatItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -31,8 +32,11 @@ public class BasketItem extends Item implements Dispensable {
     private static final Predicate<Entity> RIDERS = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::canHit);
     private static final double REACH = 5;
 
-    public BasketItem(Item.Settings settings) {
+    private final BoatEntity.Type type;
+
+    public BasketItem(BoatEntity.Type type, Item.Settings settings) {
         super(settings);
+        this.type = type;
         DispenserBlock.registerBehavior(this, createDispenserBehaviour());
     }
 
@@ -71,6 +75,7 @@ public class BasketItem extends Item implements Dispensable {
         entity.updatePositionAndAngles(x, y, z, 0, 0);
         entity.setHeadYaw(yaw);
         entity.setBodyYaw(yaw);
+        entity.setBasketType(type);
         if (!world.isSpaceEmpty(entity, entity.getBoundingBox())) {
             return TypedActionResult.fail(stack);
         }

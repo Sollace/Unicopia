@@ -77,6 +77,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Nullable
     private Vec3d supportPositionOffset;
+    private int ticksOutsideVehicle;
 
     @Nullable
     private Caster<?> attacker;
@@ -181,6 +182,9 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     public void setSupportingEntity(Entity supportingEntity) {
         this.supportingEntity = supportingEntity;
+        if (supportingEntity != null) {
+            ticksOutsideVehicle = 0;
+        }
     }
 
     public void setPositionOffset(@Nullable Vec3d positionOffset) {
@@ -189,19 +193,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     public void updatePositionOffset() {
         setPositionOffset(supportingEntity == null ? null : entity.getPos().subtract(supportingEntity.getPos()));
-    }
-
-    public static void checkGroundCollission(Entity entity, Box box) {
-        double height = box.getYLength();
-
-        if (height < 3 || entity.getBoundingBox().minY > box.minY + height / 2D) {
-            if (entity.getBoundingBox().minY < box.maxY) {
-                entity.setPos(entity.getX(), box.maxY - 0.002, entity.getZ());
-            }
-            if (entity.getBoundingBox().minY > box.maxY) {
-                entity.setPos(entity.getX(), box.maxY - 0.002, entity.getZ());
-            }
-        }
     }
 
     public void updateRelativePosition(Box box) {
@@ -251,11 +242,16 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     public void updateSupportingEntity() {
         if (supportingEntity != null) {
-            Box ownBox = entity.getBoundingBox().expand(0.1);
+            Box ownBox = entity.getBoundingBox()
+                    .stretch(entity.getVelocity())
+                    .expand(0.1, 0.5, 0.1)
+                    .stretch(supportingEntity.getVelocity().multiply(-2));
 
-            MultiBoundingBoxEntity.getBoundingBoxes(supportingEntity).stream().filter(box -> {
-                return box.expand(0, 0.5, 0).intersects(ownBox);
-            }).findFirst().ifPresentOrElse(box -> {
+            MultiBoundingBoxEntity.getBoundingBoxes(supportingEntity).stream()
+            .filter(box -> box.stretch(supportingEntity.getVelocity()).expand(0, 0.5, 0).intersects(ownBox))
+            .findFirst()
+            .ifPresentOrElse(box -> {
+                ticksOutsideVehicle = 0;
                 if (supportPositionOffset == null) {
                     updatePositionOffset();
                 } else {
@@ -265,8 +261,14 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 entity.verticalCollision = true;
                 entity.groundCollision = true;
             }, () -> {
-                supportingEntity = null;
-                supportPositionOffset = null;
+                // Rubberband passengers to try and prevent players falling out when the velocity changes suddenly
+                if (ticksOutsideVehicle++ > 30) {
+                    supportingEntity = null;
+                    supportPositionOffset = null;
+                    Unicopia.LOGGER.info("Entity left vehicle");
+                } else {
+                    supportPositionOffset = supportPositionOffset.multiply(0.25, 1, 0.25);
+                }
             });
         }
 
@@ -320,7 +322,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         }
 
         updateDragonBreath();
-        updatePositionOffset();
+
+        if (ticksOutsideVehicle == 0) {
+            updatePositionOffset();
+        }
     }
 
     public void updateAttributeModifier(UUID id, EntityAttribute attribute, float desiredValue, Float2ObjectFunction<EntityAttributeModifier> modifierSupplier, boolean permanent) {

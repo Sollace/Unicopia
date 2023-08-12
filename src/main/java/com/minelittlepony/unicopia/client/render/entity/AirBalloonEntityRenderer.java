@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.minelittlepony.unicopia.Unicopia;
@@ -19,8 +20,8 @@ import net.minecraft.util.math.Box;
 public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity, AirBalloonEntityModel> {
     public AirBalloonEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new AirBalloonEntityModel(AirBalloonEntityModel.getBasketModelData().createModel()), 0);
-        addFeature(new BalloonFeature("burner", new AirBalloonEntityModel(AirBalloonEntityModel.getBurnerModelData().createModel()), this, AirBalloonEntity::hasBurner));
-        addFeature(new BalloonFeature("canopy", new AirBalloonEntityModel(AirBalloonEntityModel.getCanopyModelData().createModel()), this, AirBalloonEntity::hasBalloon));
+        addFeature(new BalloonFeature(new AirBalloonEntityModel(AirBalloonEntityModel.getBurnerModelData().createModel()), this, AirBalloonEntity::hasBurner, e -> getComponentTexture("burner")));
+        addFeature(new BalloonFeature(new AirBalloonEntityModel(AirBalloonEntityModel.getCanopyModelData().createModel()), this, AirBalloonEntity::hasBalloon, e -> getComponentTexture("canopy/" + e.getDesign().asString())));
     }
 
     @Override
@@ -36,7 +37,7 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
 
     @Override
     public Identifier getTexture(AirBalloonEntity entity) {
-        return getComponentTexture(entity, "basket");
+        return getComponentTexture("basket/" + entity.getBasketType().asString());
     }
 
     @Override
@@ -44,29 +45,30 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
         return 0;
     }
 
-    private Identifier getComponentTexture(AirBalloonEntity entity, String componentName) {
+    private Identifier getComponentTexture(String componentName) {
         return Unicopia.id("textures/entity/air_balloon/" + componentName + ".png");
     }
 
     final class BalloonFeature extends FeatureRenderer<AirBalloonEntity, AirBalloonEntityModel> {
         private final AirBalloonEntityModel model;
         private final Predicate<AirBalloonEntity> visibilityTest;
-        private final String componentName;
+        private final Function<AirBalloonEntity, Identifier> textureFunc;
 
-        public BalloonFeature(String componentName, AirBalloonEntityModel model,
+        public BalloonFeature(AirBalloonEntityModel model,
                 FeatureRendererContext<AirBalloonEntity, AirBalloonEntityModel> context,
-                Predicate<AirBalloonEntity> visibilityTest) {
+                Predicate<AirBalloonEntity> visibilityTest,
+                Function<AirBalloonEntity, Identifier> textureFunc) {
             super(context);
-            this.componentName = componentName;
             this.model = model;
             this.visibilityTest = visibilityTest;
+            this.textureFunc = textureFunc;
         }
 
         @Override
         public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, AirBalloonEntity entity,
                 float limbAngle, float limbDistance, float tickDelta, float animationProgress, float yaw, float pitch) {
             if (visibilityTest.test(entity)) {
-                render(getModel(), model, getComponentTexture(entity, componentName), matrices, vertices, light, entity, limbAngle, limbDistance, 0, yaw, pitch, tickDelta, 1, 1, 1);
+                render(getModel(), model, textureFunc.apply(entity), matrices, vertices, light, entity, limbAngle, limbDistance, 0, yaw, pitch, tickDelta, 1, 1, 1);
             }
         }
     }
