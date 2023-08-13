@@ -14,13 +14,17 @@ import net.minecraft.client.render.entity.*;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.Items;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 
 public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity, AirBalloonEntityModel> {
     public AirBalloonEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new AirBalloonEntityModel(AirBalloonEntityModel.getBasketModelData().createModel()), 0);
-        addFeature(new BalloonFeature(new AirBalloonEntityModel(AirBalloonEntityModel.getBurnerModelData().createModel()), this, AirBalloonEntity::hasBurner, e -> getComponentTexture("burner")));
+        addFeature(new BalloonFeature(new AirBalloonEntityModel(AirBalloonEntityModel.getBurnerModelData().createModel()), this, AirBalloonEntity::hasBurner, e -> {
+            return getComponentTexture(e.getStackInHand(Hand.MAIN_HAND).isOf(Items.SOUL_LANTERN) ? "soul_burner" : "burner");
+        }));
         addFeature(new BalloonFeature(new AirBalloonEntityModel(AirBalloonEntityModel.getCanopyModelData().createModel()), this, AirBalloonEntity::hasBalloon, e -> getComponentTexture("canopy/" + e.getDesign().asString())));
     }
 
