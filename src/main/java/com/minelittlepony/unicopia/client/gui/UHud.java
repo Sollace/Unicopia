@@ -88,6 +88,16 @@ public class UHud {
 
         MatrixStack matrices = context.getMatrices();
         matrices.push();
+        matrices.translate(scaledWidth / 2, scaledHeight / 2, 0);
+
+        float flapCooldown = pony.getPhysics().getFlapCooldown(tickDelta);
+        if (flapCooldown > 0) {
+            float angle = MathHelper.TAU * flapCooldown;
+            DrawableUtil.drawArc(context.getMatrices(), 3, 6, -angle / 2F, angle, 0x888888AF, false);
+        }
+
+        matrices.pop();
+        matrices.push();
 
         int hudX = ((scaledWidth - 50) / 2) + (104 * xDirection);
         int hudY = scaledHeight - 50;
