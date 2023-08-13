@@ -23,6 +23,17 @@
   "item.unicopia.friendship_bracelet.issuer": "Подписано %s",
   "item.unicopia.friendship_bracelet.glowing": "Светящийся",
 
+  "item.unicopia.oak_basket": "Дубовая корзина",
+  "item.unicopia.spruce_basket": "Еловая корзина",
+  "item.unicopia.birch_basket": "Берёзовая корзина",
+  "item.unicopia.jungle_basket": "Джунглевая корзина",
+  "item.unicopia.acacia_basket": "Акациевая корзина",
+  "item.unicopia.cherry_basket": "Вишнёвая корзина",
+  "item.unicopia.dark_oak_basket": "Корзина из тёмного дуба",
+  "item.unicopia.mangrove_basket": "Мангровая корзина",
+  "item.unicopia.bamboo_basket": "Бамбуковая корзина",
+  "item.unicopia.giant_balloon": "Гигантский воздушный шар",
+
   "item.unicopia.spellbook": "Книга заклинаний",
   "emi.category.unicopia.spellbook": "Книга заклинаний",
 
@@ -697,6 +708,38 @@
   "death.fell.accident.other_climbable.pegasus": "%1$s забыл, что умеет летать, и упал во время скалолазания",
   "death.fell.accident.generic.pegasus": "%1$s забыл, что умеет летать",
   "death.fell.accident.pegasus": "%1$s забыл, что умеет летать",
+  "death.fell.accident.water": "%1$s намочил свои крылья",
+
+  "painting.unicopia.hurricane.title": "Ураган",
+  "painting.unicopia.hurricane.author": "Племя пегасов",
+  "painting.unicopia.platinum.title": "Платина",
+  "painting.unicopia.platinum.author": "Племя единорогов",
+  "painting.unicopia.pudding.title": "Пудинг",
+  "painting.unicopia.pudding.author": "Племя земных пони",
+  "painting.unicopia.equestria.title": "Флаг Эквестрии",
+  "painting.unicopia.equestria.author": "Unicopia",
+  "painting.unicopia.terra.title": "Терра",
+  "painting.unicopia.terra.author": "Племя земных пони",
+  "painting.unicopia.blossom.title": "Цветение",
+  "painting.unicopia.blossom.author": "Канцлер Пудинг Хэд",
+  "painting.unicopia.shadow.title": "Тень",
+  "painting.unicopia.shadow.author": "Найтмер Мун",
+  "painting.unicopia.bloom.title": "Блюм",
+  "painting.unicopia.bloom.author": "Искатели Знаков Отличия",
+  "painting.unicopia.chicken.title": "Чикен",
+  "painting.unicopia.chicken.author": "Искатели Знаков Отличия",
+  "painting.unicopia.bells.title": "Бэллс",
+  "painting.unicopia.bells.author": "Искатели Знаков Отличия",
+  "painting.unicopia.crystal.title": "Кристал",
+  "painting.unicopia.crystal.author": "Король Сомбра",
+  "painting.unicopia.harmony.title": "Гармония",
+  "painting.unicopia.harmony.author": "Unicopia",
+  "painting.unicopia.lunar.title": "Луна",
+  "painting.unicopia.lunar.author": "Племя бэт-пони",
+  "painting.unicopia.solar.title": "Солнце",
+  "painting.unicopia.solar.author": "Королевская стража",
+  "painting.unicopia.equality.title": "Равенство",
+  "painting.unicopia.equality.author": "Старлайт Глиммер",
 
   "unicopia.subtitle.flap_wings": "Взмах крыла",
   "unicopia.subtitle.dash": "Пони мчится",
@@ -804,19 +847,16 @@
 
   "advancements.unicopia.sky_route.title": "Путь Пегаса",
   "advancements.unicopia.sky_route.description": "Присоединяйтесь к пегасам Клаудсдейла",
-
   "advancements.unicopia.molting_season_1.title": "Сезон линьки",
   "advancements.unicopia.molting_season_1.description": "Сбросьте перо во время полёта",
-
   "advancements.unicopia.molting_season_2.title": "Сезон линьки 2",
   "advancements.unicopia.molting_season_2.description": "Сбросьте 5 перьев во время полёта",
-
   "advancements.unicopia.molting_season_3.title": "Сезон линьки 3",
   "advancements.unicopia.molting_season_3.description": "Сбросьте 15 перьев во время полёта",
-
   "advancements.unicopia.rainbow_crash.title": "Дискорд тебя побери, Рэйнбоу",
   "advancements.unicopia.rainbow_crash.description": "Устройте войну против злой нации стеклянных окон",
-
+  "advancements.unicopia.second_wind.title": "Второе дыхание",
+  "advancements.unicopia.second_wind.description": "Летите сквозь боль",
   "advancements.unicopia.deter_phantom.title": "Что летает вокруг",
   "advancements.unicopia.deter_phantom.description": "Поднимитесь и дайте этим фантомам попробовать их собственное лекарство",
 
