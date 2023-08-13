@@ -147,7 +147,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
         context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight, 512, 256);
 
-        if (Debug.DEBUG_SPELLBOOK_CHAPTERS) {
+        if (Debug.SPELLBOOK_CHAPTERS) {
             clearAndInit();
         }
 

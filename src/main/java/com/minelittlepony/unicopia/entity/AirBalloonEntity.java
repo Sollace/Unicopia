@@ -6,6 +6,7 @@ import net.minecraft.entity.data.*;
 import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -31,6 +32,7 @@ import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.collision.MultiBox;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 import com.minelittlepony.unicopia.item.HotAirBalloonItem;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 
 public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.ComplexCollidable, MultiBoundingBoxEntity {
@@ -146,7 +148,6 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
 
     @Override
     public void tick() {
-        this.shouldSave();
         setAir(getMaxAir());
         int boostTicks = getBoostTicks();
 
@@ -343,7 +344,8 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
             return ActionResult.SUCCESS;
         }
 
-        if (stack.isOf(Items.LANTERN) && !hasBurner()) {
+        if ((stack.isOf(Items.LANTERN) || stack.isOf(Items.SOUL_LANTERN)) && !hasBurner()) {
+            setStackInHand(Hand.MAIN_HAND, stack.copyWithCount(1));
             if (!player.getAbilities().creativeMode) {
                 stack.decrement(1);
             }
@@ -354,6 +356,33 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
         }
 
         return ActionResult.PASS;
+    }
+
+    @Override
+    protected void dropInventory() {
+        ItemStack lantern = getStackInHand(Hand.MAIN_HAND);
+        setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+        dropStack(lantern);
+        dropStack(getPickBlockStack());
+    }
+
+    @Override
+    public ItemStack getPickBlockStack() {
+        return asItem().getDefaultStack();
+    }
+
+    public Item asItem() {
+        return switch (getBasketType()) {
+            case SPRUCE -> UItems.SPRUCE_BASKET;
+            case BIRCH -> UItems.BIRCH_BASKET;
+            case JUNGLE -> UItems.JUNGLE_BASKET;
+            case ACACIA -> UItems.ACACIA_BASKET;
+            case CHERRY -> UItems.CHERRY_BASKET;
+            case DARK_OAK -> UItems.DARK_OAK_BASKET;
+            case MANGROVE -> UItems.MANGROVE_BASKET;
+            case BAMBOO -> UItems.BAMBOO_BASKET;
+            default -> UItems.OAK_BASKET;
+        };
     }
 
     @Override
@@ -424,7 +453,7 @@ public class AirBalloonEntity extends FlyingEntity implements EntityCollisions.C
         output.accept(VoxelShapes.cuboid(new Box(box.minX, box.minY, box.minZ, box.minX + wallThickness, wallheight, box.maxZ)));
 
         // top of balloon
-        if (hasBalloon()) {
+        if (hasBalloon() && getInflation() > 0) {
             output.accept(VoxelShapes.cuboid(getBalloonBoundingBox()));
         }
     }

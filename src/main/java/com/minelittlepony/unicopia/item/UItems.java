@@ -120,6 +120,15 @@ public interface UItems {
 
     Item SPELLBOOK = register("spellbook", new SpellbookItem(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
     Item OAK_BASKET = register("oak_basket", new BasketItem(BoatEntity.Type.OAK, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item SPRUCE_BASKET = register("spruce_basket", new BasketItem(BoatEntity.Type.SPRUCE, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item BIRCH_BASKET = register("birch_basket", new BasketItem(BoatEntity.Type.BIRCH, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item JUNGLE_BASKET = register("jungle_basket", new BasketItem(BoatEntity.Type.JUNGLE, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item ACACIA_BASKET = register("acacia_basket", new BasketItem(BoatEntity.Type.ACACIA, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item CHERRY_BASKET = register("cherry_basket", new BasketItem(BoatEntity.Type.CHERRY, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item DARK_OAK_BASKET = register("dark_oak_basket", new BasketItem(BoatEntity.Type.DARK_OAK, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item MANGROVE_BASKET = register("mangrove_basket", new BasketItem(BoatEntity.Type.MANGROVE, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item BAMBOO_BASKET = register("bamboo_basket", new BasketItem(BoatEntity.Type.BAMBOO, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+
     Item GIANT_BALLOON = register("giant_balloon", new HotAirBalloonItem(new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
 
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new FabricItemSettings()

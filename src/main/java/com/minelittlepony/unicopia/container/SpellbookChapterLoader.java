@@ -71,7 +71,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             LOGGER.error("Could not load spellbook chapters due to exception", e);
         }
 
-        if (Debug.DEBUG_SPELLBOOK_CHAPTERS) {
+        if (Debug.SPELLBOOK_CHAPTERS) {
             CompletableFuture.runAsync(() -> {
                 try {
                     Util.waitAndApply(executor -> reload(CompletableFuture::completedFuture, manager, profiler, profiler, Util.getMainWorkerExecutor(), executor)).get();

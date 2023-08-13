@@ -39,7 +39,7 @@ public class SpellbookChapterList {
     }
 
     public Chapter getCurrentChapter() {
-        if (Debug.DEBUG_SPELLBOOK_CHAPTERS) {
+        if (Debug.SPELLBOOK_CHAPTERS) {
             ClientChapters.getChapters().forEach(chapter -> {
                 Optional.ofNullable(chapters.get(chapter.id())).flatMap(Chapter::content).ifPresent(old -> {
                     chapter.content().ifPresent(neu -> neu.copyStateFrom(old));
