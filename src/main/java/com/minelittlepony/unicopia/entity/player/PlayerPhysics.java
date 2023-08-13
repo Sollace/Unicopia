@@ -57,6 +57,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private int ticksDiving;
 
     private float thrustScale = 0;
+    private float prevThrustScale;
 
     private boolean flapping;
     private boolean isCancelled;
@@ -95,6 +96,11 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
     public final float getPersistantGravityModifier() {
         return super.getGravityModifier();
+    }
+
+    public float getFlapCooldown(float tickDelta) {
+        float lerpedThrust = MathHelper.lerp(tickDelta, prevThrustScale, thrustScale);
+        return lerpedThrust <= 0.000001F ? 0 : lerpedThrust;
     }
 
     @Override
@@ -208,6 +214,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     @Override
     public void tick() {
         super.tick();
+
+        prevThrustScale = thrustScale;
 
         if (wallHitCooldown > 0) {
             wallHitCooldown--;
