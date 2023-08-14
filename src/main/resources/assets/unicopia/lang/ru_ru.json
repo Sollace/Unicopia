@@ -461,6 +461,9 @@
   "gui.unicopia.spellbook.page.recipes": "Рецепты",
   "gui.unicopia.spellbook.page.recipes.empty": "0 рецептов разблокировано",
   "gui.unicopia.spellbook.page.mana": "Мана",
+  "gui.unicopia.spellbook.page.requirements.entry.item": "- %1$sx %2$s",
+  "gui.unicopia.spellbook.page.requirements.entry.trait": "- Не менее %1$sx черт %2$s",
+  "gui.unicopia.spellbook.page.requirements.entry.spell": "- %1$sx драгоценный камень \"%2$s\"",
 
   "gui.unicopia.action.spells_cleared": "Удалены все заклинания",
   "gui.unicopia.action.no_spells_cleared": "У вас нет активных заклинаний",
