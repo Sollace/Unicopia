@@ -1,10 +1,11 @@
-package com.minelittlepony.unicopia.client.gui.spellbook;
+package com.minelittlepony.unicopia.client.gui.spellbook.element;
 
 import java.util.*;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
+import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Content;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Drawable;
 import com.minelittlepony.unicopia.container.SpellbookChapterLoader.Flow;

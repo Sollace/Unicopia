@@ -35,7 +35,13 @@
         "elements": [
           { "recipe": "unicopia:spells/siphoning" },
           "Requires:",
-          "- 1x inferno gem\n- At least 10x poison trait\n- At least 8x blood trait"
+          {
+            "ingredients": [
+              { "count": 1, "spell": "unicopia:infernal" },
+              { "count": 10, "trait": "unicopia:poison" },
+              { "count": 8, "trait": "unicopia:blood" }
+            ]
+          }
         ]
       },
       {
@@ -59,7 +65,17 @@
         "elements": [
           { "recipe": "unicopia:spells/necromancy" },
           "Requires:",
-          "- 1x life sapping gem\n- At least 10x strength trait\n- At least 8x knowledge trait\n- At least 8x chaos trait\n- At least 19x darkness trait\n- At least 9x poison trait\n- At least 10x blood trait"
+          {
+            "ingredients": [
+              { "count": 1, "spell": "unicopia:siphoning" },
+              { "count": 10, "trait": "unicopia:strength" },
+              { "count": 8, "trait": "unicopia:knowledge" },
+              { "count": 8, "trait": "unicopia:chaos" },
+              { "count": 19, "trait": "unicopia:darkness" },
+              { "count": 9, "trait": "unicopia:poison" },
+              { "count": 10, "trait": "unicopia:blood" }
+            ]
+          }
         ]
       },
       {
@@ -78,7 +94,15 @@
         "elements": [
           { "recipe": "unicopia:spells/dark_vortex" },
           "Requires:",
-          "- 1x arcane attraction gem\n- At least 10x strength trait\n- At least 8x knowledge trait\n- At least 8x chaos trait\n- At least 9x darkness trait"
+          {
+            "ingredients": [
+              { "count": 1, "spell": "unicopia:vortex" },
+              { "count": 10, "trait": "unicopia:strength" },
+              { "count": 8, "trait": "unicopia:knowledge" },
+              { "count": 8, "trait": "unicopia:chaos" },
+              { "count": 9, "trait": "unicopia:darkness" }
+            ]
+          }
         ]
       },
       {
@@ -97,7 +121,15 @@
         "elements": [
           { "recipe": "unicopia:spells/portal" },
           "Requires:",
-          "- 1x gemstone\n- 1x displacement gem\n- 1x dark vortext gem\n- At least 18x knowledge trait\n- At least 20x chaos trait"
+          {
+            "ingredients": [
+              { "count": 1, "item": "unicopia:gemstone" },
+              { "count": 1, "spell": "unicopia:displacement" },
+              { "count": 1, "spell": "unicopia:dark_vortex" },
+              { "count": 18, "trait": "unicopia:knowledge" },
+              { "count": 20, "trait": "unicopia:chaos" }
+            ]
+          }
         ]
       },
       {
@@ -116,7 +148,14 @@
         "elements": [
           { "recipe": "unicopia:spells/mind_swap" },
           "Requires:",
-          "- A mimic gem\n- At least 19x knowledge trait\n- At least 10x life trait\n- At least 40x chaos trait",
+          {
+            "ingredients": [
+              { "count": 1, "spell": "unicopia:mimic" },
+              { "count": 19, "trait": "unicopia:knowledge" },
+              { "count": 10, "trait": "unicopia:life" },
+              { "count": 40, "trait": "unicopia:chaos" }
+            ]
+          },
           "* Add the focus trait to increase the effect's duration"
         ]
       }

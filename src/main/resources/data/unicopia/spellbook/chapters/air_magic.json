@@ -75,8 +75,14 @@
         "elements": [
           { "recipe": "unicopia:spells/catapult" },
           "Requires:",
-          "- 1x flame gem\n- At least 9x focus trait\n- At least 9x air trait",
-          "* One can add apply force by the strength trait"
+          {
+            "ingredients": [
+              { "count": 1, "spell": "unicopia:flame" },
+              { "count": 9, "trait": "unicopia:focus" },
+              { "count": 9, "trait": "unicopia:air" }
+            ]
+          },
+          "* One can add apply more force by adding the strength trait"
         ]
       },
       {
@@ -95,7 +101,13 @@
         "elements": [
           { "recipe": "unicopia:spells/bubble" },
           "Requires:",
-          "- 1x catapult gem\n- At least 9x water trait\n- At least 9x air trait"
+          {
+            "ingredients": [
+              { "count": 1, "spell": "unicopia:catapult" },
+              { "count": 9, "trait": "unicopia:water" },
+              { "count": 9, "trait": "unicopia:air" }
+            ]
+          }
         ]
       },
       {
@@ -147,7 +159,15 @@
         "elements": [
           { "recipe": "unicopia:spells/feather_fall" },
           "Requires:",
-          "- 1x protection gem\n- At least 20x knowlege trait\n- At least 10x life trait\n- At least 10x generosity trait\n- At least 4x chaos trait"
+          {
+            "ingredients": [
+              { "count": 1, "spell": "unicopia:shield" },
+              { "count": 20, "trait": "unicopia:knowledge" },
+              { "count": 10, "trait": "unicopia:life" },
+              { "count": 10, "trait": "unicopia:generosity" },
+              { "count": 4, "trait": "unicopia:chaos" }
+            ]
+          }
         ]
       },
       {

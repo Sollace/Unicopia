@@ -59,7 +59,13 @@
             "text": "Aasa sasa fwefsd q43rgfd wqklmsdfl as, klasn.", "obfuscated": "true"
           },
           "Building Materials:",
-          "- 2x end rod\n- 20x diamond block\n- 1x crystal heart"
+          {
+            "ingredients": [
+              { "count": 2, "item": "minecraft:end_rod" },
+              { "count": 20, "item": "minecraft:diamond_block" },
+              { "count": 1, "item": "unicopia:crystal_heart" }
+            ]
+          }
         ]
       },
       {

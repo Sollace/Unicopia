@@ -37,7 +37,11 @@
         "elements": [
           { "recipe": "unicopia:spells/scorch" },
           "Requires:",
-          "- At least 10x fire trait"
+          {
+            "ingredients": [
+              { "count": 10, "trait": "unicopia:fire" }
+            ]
+          }
         ]
       },
       {
@@ -56,7 +60,13 @@
         "elements": [
           { "recipe": "unicopia:spells/flame" },
           "Requires:",
-          "- 1x gemstone\n- At least 15x fire trait\n- A gem with scorch"
+          {
+            "ingredients": [
+              { "count": 1, "item": "unicopia:gemstone" },
+              { "count": 1, "spell": "unicopia:scorch" },
+              { "count": 15, "trait": "unicopia:fire" }
+            ]
+          }
         ]
       },
       {
@@ -123,7 +133,13 @@
         "elements": [
           { "recipe": "unicopia:spells/fire_bolt" },
           "Requires:",
-          "- At least 9x focus for control and flight\n- 30x fire trait for energy\n- A gem with flame"
+          {
+            "ingredients": [
+              { "count": 1, "spell": "unicopia:flame" },
+              { "count": 9, "trait": "unicopia:focus" },
+              { "count": 30, "trait": "unicopia:fire" }
+            ]
+          }
         ]
       },
       {
@@ -234,8 +250,15 @@
         "elements": [
           { "recipe": "unicopia:spells/shield" },
           "Requires:",
-          "- 1x gemstone\n- At least 10x strength trait\n- At least 6x focus trait\n- At least 10x power trait",
-          "\n+ add power trait to increase effect range"
+          {
+            "ingredients": [
+              { "count": 1, "item": "unicopia:gemstone" },
+              { "count": 6, "trait": "unicopia:focus" },
+              { "count": 10, "trait": "unicopia:strength" },
+              { "count": 10, "trait": "unicopia:power" }
+            ]
+          },
+          "+ add power trait to increase effect range"
         ]
       },
       {

@@ -12,6 +12,7 @@ import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgServerResources;
@@ -129,7 +130,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             this(
                 Text.Serializer.fromJson(json.get("title")),
                 JsonHelper.getInt(json, "level", 0),
-                new ArrayList<Element>()
+                new ArrayList<>()
             );
             JsonHelper.getArray(json, "elements", new JsonArray()).forEach(element -> {
                 elements.add(Element.read(element));
@@ -164,11 +165,19 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             }
         }
 
-        record Recipe (Identifier id) implements Element {
+        record Multi(int count, Element element) implements Element {
             @Override
             public void toBuffer(PacketByteBuf buffer) {
-                buffer.writeByte(1);
-                buffer.writeIdentifier(id);
+                buffer.writeVarInt(count);
+                element.toBuffer(buffer);
+            }
+        }
+
+        record Id(byte id, Identifier value) implements Element {
+            @Override
+            public void toBuffer(PacketByteBuf buffer) {
+                buffer.writeByte(id);
+                buffer.writeIdentifier(value);
             }
         }
 
@@ -189,6 +198,31 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             }
         }
 
+        record Ingredients(List<Element> entries) implements Element {
+            static Element loadIngredient(JsonObject json) {
+                int count = JsonHelper.getInt(json, "count", 1);
+                if (json.has("item")) {
+                    return new Multi(count, new Id((byte)1, Identifier.tryParse(json.get("item").getAsString())));
+                }
+
+                if (json.has("trait")) {
+                    return new Multi(count, new Id((byte)2, Trait.fromId(json.get("trait").getAsString()).orElseThrow().getId()));
+                }
+
+                if (json.has("spell")) {
+                    return new Multi(count, new Id((byte)4, Identifier.tryParse(json.get("spell").getAsString())));
+                }
+
+                return new Multi(count, new TextBlock(Text.Serializer.fromJson(json.get("text"))));
+            }
+
+            @Override
+            public void toBuffer(PacketByteBuf buffer) {
+                buffer.writeByte(4);
+                buffer.writeCollection(entries, (b, c) -> c.toBuffer(b));
+            }
+        }
+
         static void write(PacketByteBuf buffer, Element element) {
             element.toBuffer(buffer);
         }
@@ -204,12 +238,21 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
                         Flow.valueOf(JsonHelper.getString(el, "flow", "RIGHT"))
                     );
                 }
+
                 if (el.has("recipe")) {
-                    return new Recipe(new Identifier(JsonHelper.getString(el, "recipe")));
+                    return new Id((byte)1, new Identifier(JsonHelper.getString(el, "recipe")));
                 }
 
                 if (el.has("item")) {
                     return new Stack(IngredientWithSpell.fromJson(el.get("item")), boundsFromJson(el));
+                }
+
+                if (el.has("ingredients")) {
+                    return new Ingredients(JsonHelper.getArray(el, "ingredients").asList().stream()
+                            .map(JsonElement::getAsJsonObject)
+                            .map(Ingredients::loadIngredient)
+                            .toList()
+                    );
                 }
             }
 
