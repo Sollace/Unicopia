@@ -32,7 +32,11 @@
   "item.unicopia.dark_oak_basket": "Dark Oak Basket",
   "item.unicopia.mangrove_basket": "Mangrove Basket",
   "item.unicopia.bamboo_basket": "Bamboo Basket",
+  "item.unicopia.palm_basket": "Palm Basket",
   "item.unicopia.giant_balloon": "Giant Balloon",
+  
+  "item.unicopia.palm_boat": "Palm Boat",
+  "item.unicopia.palm_chest_boat": "Palm Boat with Chest",
 
   "item.unicopia.spellbook": "Spellbook",
   "emi.category.unicopia.spellbook": "Spellbook",
@@ -165,6 +169,10 @@
   "block.unicopia.stripped_palm_log": "Stripped Palm Log",
   "block.unicopia.stripped_palm_wood": "Stripped Palm Wood",
   "block.unicopia.palm_leaves": "Palm Leaves",
+  "block.unicopia.palm_door": "Palm Door",
+  "block.unicopia.palm_trapdoor": "Palm Trapdoor",
+  "block.unicopia.palm_sign": "Palm Sign",
+  "block.unicopia.palm_hanging_sign": "Palm Hanging Sign",
   "block.unicopia.apple_pie": "Apple Pie",
   "block.unicopia.weather_vane": "Weather Vane",
 

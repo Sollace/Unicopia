@@ -12,9 +12,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.*;
@@ -24,22 +26,29 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.collision.MultiBox;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
+import com.minelittlepony.unicopia.item.BasketItem;
 import com.minelittlepony.unicopia.item.HotAirBalloonItem;
-import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
+import com.terraformersmc.terraform.boat.api.TerraformBoatType;
 
 public class AirBalloonEntity extends MobEntity implements EntityCollisions.ComplexCollidable, MultiBoundingBoxEntity {
     private static final TrackedData<Boolean> ASCENDING = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> BOOSTING = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> INFLATION = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Integer> BASKET_TYPE = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<String> BASKET_TYPE = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.STRING);
     private static final TrackedData<Integer> BALLOON_DESIGN = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     private boolean prevBoosting;
@@ -59,16 +68,16 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         dataTracker.startTracking(ASCENDING, false);
         dataTracker.startTracking(BOOSTING, 0);
         dataTracker.startTracking(INFLATION, 0);
-        dataTracker.startTracking(BASKET_TYPE, 0);
+        dataTracker.startTracking(BASKET_TYPE, "");
         dataTracker.startTracking(BALLOON_DESIGN, 0);
     }
 
-    public BoatEntity.Type getBasketType() {
-        return BoatEntity.Type.getType(dataTracker.get(BASKET_TYPE));
+    public BasketType getBasketType() {
+        return BasketType.REGISTRY.get(Identifier.tryParse(dataTracker.get(BASKET_TYPE)));
     }
 
-    public void setBasketType(BoatEntity.Type type) {
-        dataTracker.set(BASKET_TYPE, type.ordinal());
+    public void setBasketType(BasketType type) {
+        dataTracker.set(BASKET_TYPE, type.id().toString());
     }
 
     public BalloonDesign getDesign() {
@@ -367,17 +376,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     }
 
     public Item asItem() {
-        return switch (getBasketType()) {
-            case SPRUCE -> UItems.SPRUCE_BASKET;
-            case BIRCH -> UItems.BIRCH_BASKET;
-            case JUNGLE -> UItems.JUNGLE_BASKET;
-            case ACACIA -> UItems.ACACIA_BASKET;
-            case CHERRY -> UItems.CHERRY_BASKET;
-            case DARK_OAK -> UItems.DARK_OAK_BASKET;
-            case MANGROVE -> UItems.MANGROVE_BASKET;
-            case BAMBOO -> UItems.BAMBOO_BASKET;
-            default -> UItems.OAK_BASKET;
-        };
+        return Objects.requireNonNull(BasketItem.REGISTRY.get(getBasketType()));
     }
 
     @Override
@@ -465,7 +464,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         double wallheight = box.maxY + 0.7;
         double wallThickness = 0.7;
 
-        if (getBasketType() != BoatEntity.Type.BAMBOO) {
+        if (!getBasketType().isOf(BoatEntity.Type.BAMBOO)) {
             // front left (next to door)
             output.accept(VoxelShapes.cuboid(new Box(box.minX, box.minY, box.minZ, box.minX + wallThickness + 0.2, wallheight, box.minZ + wallThickness)));
             // front right (next to door)
@@ -489,7 +488,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
-        setBasketType(BoatEntity.Type.getType(compound.getString("basketType")));
+        setBasketType(BasketType.of(compound.getString("basket")));
         setDesign(BalloonDesign.getType(compound.getString("design")));
         setAscending(compound.getBoolean("burnerActive"));
         setBoostTicks(compound.getInt("boostTicks"));
@@ -501,7 +500,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     public void writeCustomDataToNbt(NbtCompound compound) {
         super.writeCustomDataToNbt(compound);
         compound.putString("design", getDesign().asString());
-        compound.putString("basket", getBasketType().asString());
+        compound.putString("basket", getBasketType().id().toString());
         compound.putBoolean("burnerActive", isAscending());
         compound.putInt("boostTicks", getBoostTicks());
         compound.putInt("inflationAmount", getInflation());
@@ -528,6 +527,33 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
 
         public static BalloonDesign getType(String name) {
             return CODEC.byId(name, LUNA);
+        }
+    }
+
+    public record BasketType(Identifier id, @Nullable BoatEntity.Type boatType) {
+        private static final Map<Identifier, BasketType> REGISTRY = new HashMap<>();
+        static {
+            Arrays.stream(BoatEntity.Type.values()).forEach(BasketType::of);
+        }
+
+        public boolean isOf(BoatEntity.Type boatType) {
+            return this.boatType == boatType;
+        }
+
+        public static BasketType of(String name) {
+            Identifier id = Identifier.tryParse(name);
+            if (id == null) {
+                return of(BoatEntity.Type.OAK);
+            }
+            return REGISTRY.get(id);
+        }
+
+        public static BasketType of(BoatEntity.Type boatType) {
+            return REGISTRY.computeIfAbsent(new Identifier(boatType.asString()), id -> new BasketType(id, boatType));
+        }
+
+        public static BasketType of(RegistryKey<TerraformBoatType> id) {
+            return REGISTRY.computeIfAbsent(id.getValue(), i -> new BasketType(i, null));
         }
     }
 }

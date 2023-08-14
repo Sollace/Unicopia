@@ -41,7 +41,7 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
 
     @Override
     public Identifier getTexture(AirBalloonEntity entity) {
-        return getComponentTexture("basket/" + entity.getBasketType().asString());
+        return getComponentTexture("basket/" + entity.getBasketType().id().getPath());
     }
 
     @Override

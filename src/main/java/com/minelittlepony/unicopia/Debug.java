@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia;
 
+import com.minelittlepony.unicopia.entity.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.UEntities;
 
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -20,7 +21,7 @@ public interface Debug {
         try {
             for (var type : BoatEntity.Type.values()) {
                 var balloon = UEntities.AIR_BALLOON.create(world);
-                balloon.setBasketType(type);
+                balloon.setBasketType(AirBalloonEntity.BasketType.of(type));
                 balloon.asItem();
             }
         } catch (Throwable t) {
