@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "minecraft:cooked_cod",
-    "minecraft:cooked_salmon"
+    "minecraft:cooked_salmon",
+    { "id": "#c:cooked_fishes", "required": false }
   ]
 }
