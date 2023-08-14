@@ -461,6 +461,9 @@
   "gui.unicopia.spellbook.page.recipes": "Recipes",
   "gui.unicopia.spellbook.page.recipes.empty": "0 Recipes Unlocked",
   "gui.unicopia.spellbook.page.mana": "Mana",
+  "gui.unicopia.spellbook.page.requirements.entry.item": "- %1$sx %2$s",
+  "gui.unicopia.spellbook.page.requirements.entry.trait": "- At least %1$sx %2$s trait",
+  "gui.unicopia.spellbook.page.requirements.entry.spell": "- %1$sx %2$s gem",
 
   "gui.unicopia.action.spells_cleared": "Removed all spells",
   "gui.unicopia.action.no_spells_cleared": "You have no active spells",

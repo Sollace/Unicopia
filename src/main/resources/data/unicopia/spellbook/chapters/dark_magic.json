@@ -61,8 +61,20 @@
         "elements": [
           { "recipe": "unicopia:spells/vortex" },
           "Requires:",
-          "- 1x protection gem\n- At least 10x strength trait\n- At least 8x knowledge trait\n- At least 9x air trait",
-          "+ 10x knowledge to narrow the effect's range to items\n+ add focus trait to increase duration\n+ add power trait to increase range"
+          {
+            "ingredients": [
+              { "count": 1, "spell": "unicopia:shield" },
+              { "count": 10, "trait": "unicopia:strength" },
+              { "count": 8, "trait": "unicopia:knowledge" },
+              { "count": 9, "trait": "unicopia:air" }
+            ]
+          },
+          {
+            "ingredients": [
+              { "text": "+ 10x knowledge to narrow the effect's range to items" },
+              { "text": "+ add focus trait to increase duration\n+ add power trait to increase range" }
+            ]
+          }
         ]
       },
       {
@@ -170,7 +182,13 @@
         "elements": [
           { "recipe": "unicopia:spells/transformation" },
           "Requires:",
-          "- At least 18x knowledge trait\n- At least 10x life trait\n- At least 4x chaos trait"
+          {
+            "ingredients": [
+              { "count": 18, "trait": "unicopia:knowledge" },
+              { "count": 10, "trait": "unicopia:life" },
+              { "count": 4, "trait": "unicopia:chaos" }
+            ]
+          }
         ]
       },
       {
@@ -189,7 +207,14 @@
         "elements": [
           { "recipe": "unicopia:spells/reveal" },
           "Requires:",
-          "- A protection gem\n- At least 18x knowledge trait\n- At least 1x life trait\n- At least 4x harmony trait",
+          {
+            "ingredients": [
+              { "count": 1, "spell": "unicopia:shield" },
+              { "count": 18, "trait": "unicopia:knowledge" },
+              { "count": 1, "trait": "unicopia:life" },
+              { "count": 4, "trait": "unicopia:order" }
+            ]
+          },
           "* Increase range by adding the power trait"
         ]
       },
@@ -258,7 +283,14 @@
         "elements": [
           { "recipe": "unicopia:spells/arcane_protection" },
           "Requires:",
-          "- A protection gem\n- At least 10x strength trait\n- At least 18x knowledge trait\n- At least 1x darkness trait",
+          {
+            "ingredients": [
+              { "count": 1, "spell": "unicopia:shield" },
+              { "count": 10, "trait": "unicopia:strength" },
+              { "count": 18, "trait": "unicopia:knowledge" },
+              { "count": 1, "trait": "unicopia:darkness" }
+            ]
+          },
           "* Increase range by adding the power trait"
         ]
       },
@@ -277,7 +309,13 @@
         "elements": [
           { "recipe": "unicopia:spells/displacement" },
           "Requires:",
-          "- 1x gemstone\n- At least 18x knowledge trait\n- At least 10x chaos trait"
+          {
+            "ingredients": [
+              { "count": 1, "item": "unicopia:gemstone" },
+              { "count": 18, "trait": "unicopia:knowledge" },
+              { "count": 10, "trait": "unicopia:chaos" }
+            ]
+          }
         ]
       },
       {
@@ -311,7 +349,14 @@
         "elements": [
           { "recipe": "unicopia:spells/mimic" },
           "Requires:",
-          "- A transmutation gem\n- At least 19x knowledge trait\n- At least 10x life trait\n- At least 4x chaos trait",
+          {
+            "ingredients": [
+              { "count": 1, "spell": "unicopia:transformation" },
+              { "count": 19, "trait": "unicopia:knowledge" },
+              { "count": 10, "trait": "unicopia:life" },
+              { "count": 4, "trait": "unicopia:chaos" }
+            ]
+          },
           "* Add the focus trait to increase the effect's duration"
         ]
       },
@@ -381,7 +426,14 @@
         "elements": [
           { "recipe": "unicopia:spells/dispel_evil" },
           "Requires:",
-          "- An arcane protection gem\n- A displacement gem\n- At least 1x kindness trait\n- At least 1x power trait",
+          {
+            "ingredients": [
+              { "count": 1, "spell": "unicopia:arcane_protection" },
+              { "count": 1, "spell": "unicopia:displacement" },
+              { "count": 1, "trait": "unicopia:kindness" },
+              { "count": 1, "trait": "unicopia:power" }
+            ]
+          },
           "* Add the power trait to increase the effect's range"
         ]
       }

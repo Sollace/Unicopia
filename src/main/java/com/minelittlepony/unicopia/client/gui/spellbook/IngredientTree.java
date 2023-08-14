@@ -23,7 +23,7 @@ import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 
-class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
+public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     private final List<IngredientTree.Entry> entries = new ArrayList<>();
     private Optional<IngredientTree.Entry> result = Optional.empty();
 

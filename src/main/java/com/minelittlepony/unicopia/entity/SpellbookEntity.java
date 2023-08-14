@@ -170,8 +170,6 @@ public class SpellbookEntity extends MobEntity {
             }
         });
 
-        System.out.println(activeTicks);
-
         boolean daytime = MeteorlogicalUtil.getSkyAngle(getWorld()) < 1;
         if (daytime != prevDaytime) {
             prevDaytime = daytime;

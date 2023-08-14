@@ -114,9 +114,11 @@ public enum Trait implements CommandArgumentEnum<Trait> {
     }
 
     public Text getName() {
-        return Text.translatable("gui.unicopia.trait.label",
-                Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".name")
-            ).formatted(Formatting.YELLOW);
+        return Text.translatable("gui.unicopia.trait.label", getShortName()).formatted(Formatting.YELLOW);
+    }
+
+    public Text getShortName() {
+        return Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".name");
     }
 
     public List<Text> getTooltipLines() {
