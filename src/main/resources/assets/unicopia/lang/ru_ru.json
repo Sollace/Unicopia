@@ -32,7 +32,11 @@
   "item.unicopia.dark_oak_basket": "Корзина из тёмного дуба",
   "item.unicopia.mangrove_basket": "Мангровая корзина",
   "item.unicopia.bamboo_basket": "Бамбуковая корзина",
+  "item.unicopia.palm_basket": "Пальмовая корзина",
   "item.unicopia.giant_balloon": "Гигантский воздушный шар",
+
+  "item.unicopia.palm_boat": "Пальмовая лодка",
+  "item.unicopia.palm_chest_boat": "Пальмовая лодка с сундуком",
 
   "item.unicopia.spellbook": "Книга заклинаний",
   "emi.category.unicopia.spellbook": "Книга заклинаний",
@@ -165,6 +169,10 @@
   "block.unicopia.stripped_palm_log": "Обтёсанное пальмовое бревно",
   "block.unicopia.stripped_palm_wood": "Обтёсанная пальмовая древесина",
   "block.unicopia.palm_leaves": "Листья пальмы",
+  "block.unicopia.palm_door": "Пальмовая дверь",
+  "block.unicopia.palm_trapdoor": "Пальмовый люк",
+  "block.unicopia.palm_sign": "Пальмовая табличка",
+  "block.unicopia.palm_hanging_sign": "Пальмовая подвесная табличка",
   "block.unicopia.apple_pie": "Яблочный пирог",
   "block.unicopia.weather_vane": "Флюгер",
   
