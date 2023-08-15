@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
@@ -32,8 +34,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
     @Override
     public Identifier getIcon(Pony player) {
-        Identifier id = Abilities.REGISTRY.getId(this);
-        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (player.asEntity().isSneaking() ? "_far" : "_near") + ".png");
+        return getId().withPath(p -> "textures/gui/ability/" + p + (player.asEntity().isSneaking() ? "_far" : "_near") + ".png");
     }
 
     @Override
@@ -41,7 +42,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
         if (player.asEntity().isSneaking()) {
             return Text.translatable(getTranslationKey() + ".far");
         }
-        return getName();
+        return Ability.super.getName(player);
     }
 
     @Override
@@ -61,12 +62,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
     @Override
     public double getCostEstimate(Pony player) {
-        Pos pos = tryActivate(player);
-
-        if (pos == null) {
-            return 0;
-        }
-        return pos.distanceTo(player) / 10;
+        return prepare(player).map(pos -> pos.distanceTo(player) / 10).orElse(0D);
     }
 
     @Override
@@ -75,10 +71,10 @@ public class UnicornTeleportAbility implements Ability<Pos> {
     }
 
     @Override
-    public Pos tryActivate(Pony player) {
+    public Optional<Pos> prepare(Pony player) {
 
         if (!player.canCast()) {
-            return null;
+            return Optional.empty();
         }
 
         int maxDistance = player.asEntity().isCreative() ? 1000 : 100;
@@ -121,7 +117,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             }
 
             return new Pos(pos);
-        }).orElse(null);
+        });
     }
 
     @Override
@@ -130,20 +126,20 @@ public class UnicornTeleportAbility implements Ability<Pos> {
     }
 
     @Override
-    public void apply(Pony iplayer, Pos data) {
-        teleport(iplayer, iplayer, data);
+    public boolean apply(Pony iplayer, Pos data) {
+        return teleport(iplayer, iplayer, data);
     }
 
-    protected void teleport(Pony teleporter, Caster<?> teleportee, Pos destination) {
+    protected boolean teleport(Pony teleporter, Caster<?> teleportee, Pos destination) {
 
         if (!teleporter.canCast()) {
-            return;
+            return false;
         }
 
         Entity participant = teleportee.asEntity();
 
         if (participant == null) {
-            return;
+            return false;
         }
 
         teleportee.asWorld().playSound(null, teleportee.getOrigin(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
@@ -177,6 +173,8 @@ public class UnicornTeleportAbility implements Ability<Pos> {
         participant.fallDistance /= distance;
 
         participant.getWorld().playSound(null, destination.pos(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
+
+        return true;
     }
 
     private boolean enterable(World w, BlockPos pos) {
@@ -200,13 +198,13 @@ public class UnicornTeleportAbility implements Ability<Pos> {
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getExertion().add(30);
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 }

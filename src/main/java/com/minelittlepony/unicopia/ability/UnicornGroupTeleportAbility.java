@@ -23,9 +23,9 @@ public class UnicornGroupTeleportAbility extends UnicornTeleportAbility {
     }
 
     @Override
-    public void apply(Pony player, Pos data) {
+    public boolean apply(Pony player, Pos data) {
         getComrades(player).forEach(teleportee -> teleport(player, teleportee, data));
-        super.apply(player, data);
+        return super.apply(player, data);
     }
 
     private Stream<Caster<?>> getComrades(Pony player) {

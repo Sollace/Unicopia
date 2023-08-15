@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
@@ -35,8 +37,8 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     }
 
     @Override
-    public Pos tryActivate(Pony player) {
-        return TraceHelper.findBlock(player.asEntity(), 3, 1).map(Pos::new).orElse(null);
+    public Optional<Pos> prepare(Pony player) {
+        return TraceHelper.findBlock(player.asEntity(), 3, 1).map(Pos::new);
     }
 
     @Override
@@ -50,7 +52,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     }
 
     @Override
-    public void apply(Pony player, Pos data) {
+    public boolean apply(Pony player, Pos data) {
         int count = 0;
 
         for (BlockPos pos : BlockPos.iterate(
@@ -62,6 +64,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
         if (count > 0) {
             player.subtractEnergyCost(count / 5D);
         }
+        return true;
     }
 
     protected int applySingle(World w, BlockState state, BlockPos pos) {
@@ -77,7 +80,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getExertion().add(30);
 
         if (player.asWorld().isClient()) {
@@ -86,7 +89,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
 
     }
 }

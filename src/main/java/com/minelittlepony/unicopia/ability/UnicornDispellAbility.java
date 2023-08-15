@@ -54,7 +54,7 @@ public class UnicornDispellAbility implements Ability<Pos> {
     }
 
     @Override
-    public boolean onQuickAction(Pony player, ActivationType type) {
+    public boolean onQuickAction(Pony player, ActivationType type, Optional<Pos> data) {
 
         if (player.getSpecies() != Race.CHANGELING) {
             if (type.getTapCount() > 1) {
@@ -84,16 +84,17 @@ public class UnicornDispellAbility implements Ability<Pos> {
     }
 
     @Override
-    public Pos tryActivate(Pony player) {
-        return getTarget(player).map(Caster::getOrigin).map(Pos::new).orElse(null);
+    public Optional<Pos> prepare(Pony player) {
+        return getTarget(player).map(Caster::getOrigin).map(Pos::new);
     }
 
     @Override
-    public void apply(Pony player, Pos data) {
+    public boolean apply(Pony player, Pos data) {
         player.setAnimation(Animation.WOLOLO, Animation.Recipient.ANYONE);
         Caster.stream(VecHelper.findInRange(player.asEntity(), player.asWorld(), data.vec(), 3, EquinePredicates.IS_PLACED_SPELL).stream()).forEach(target -> {
             target.getSpellSlot().clear();
         });
+        return true;
     }
 
     private Optional<Caster<?>> getTarget(Pony player) {
@@ -102,12 +103,12 @@ public class UnicornDispellAbility implements Ability<Pos> {
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getExhaustion().multiply(3.3F);
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
     }
 }

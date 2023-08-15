@@ -1,26 +1,16 @@
 package com.minelittlepony.unicopia.ability.data;
 
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Vec3i;
 
-public class Multi extends Pos {
-    public static final Serializer<Multi> SERIALIZER = Multi::new;
-
-    public final int hitType;
-
-    Multi(PacketByteBuf buf) {
-        super(buf);
-        hitType = buf.readInt();
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buf) {
-        super.toBuffer(buf);
-        buf.writeInt(hitType);
-    }
+public record Multi (Pos pos, int hitType) implements Hit {
+    public static final Serializer<Multi> SERIALIZER = new Serializer<>(
+            buf -> new Multi(Pos.SERIALIZER.read().apply(buf), buf.readInt()),
+            (buf, t) -> {
+                Pos.SERIALIZER.write().accept(buf, t.pos());
+                buf.writeInt(t.hitType());
+            });
 
     public Multi(Vec3i pos, int hit) {
-        super(pos.getX(), pos.getY(), pos.getZ());
-        hitType = hit;
+        this(new Pos(pos), hit);
     }
 }

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Multi;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -34,17 +36,16 @@ public class BatPonyHangAbility implements Ability<Multi> {
     }
 
     @Override
-    public Multi tryActivate(Pony player) {
+    public Optional<Multi> prepare(Pony player) {
 
         if (player.isHanging()) {
-            return new Multi(BlockPos.ZERO, 0);
+            return Optional.of(new Multi(BlockPos.ZERO, 0));
         }
 
         return TraceHelper.findBlock(player.asEntity(), 5, 1)
                 .map(BlockPos::down)
                 .filter(player::canHangAt)
-                .map(pos -> new Multi(pos, 1))
-                .orElse(null);
+                .map(pos -> new Multi(pos, 1));
     }
 
     @Override
@@ -53,22 +54,24 @@ public class BatPonyHangAbility implements Ability<Multi> {
     }
 
     @Override
-    public void apply(Pony player, Multi data) {
-        if (data.hitType == 0 && player.isHanging()) {
+    public boolean apply(Pony player, Multi data) {
+        if (data.hitType() == 0 && player.isHanging()) {
             player.stopHanging();
-            return;
+            return true;
         }
 
-        if (data.hitType == 1 && player.canHangAt(data.pos())) {
-            player.startHanging(data.pos());
+        if (data.hitType() == 1 && player.canHangAt(data.pos().pos())) {
+            player.startHanging(data.pos().pos());
         }
+
+        return true;
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
     }
 }

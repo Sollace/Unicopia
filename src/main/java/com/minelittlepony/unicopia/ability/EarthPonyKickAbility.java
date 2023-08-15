@@ -113,11 +113,11 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
     @Nullable
     @Override
-    public Pos tryActivate(Pony player) {
+    public Optional<Pos> prepare(Pony player) {
         return TraceHelper.findBlock(player.asEntity(), 6 * getKickDirection(player), 1)
                 .filter(pos -> TreeType.at(pos, player.asWorld()) != TreeType.NONE)
                 .map(Pos::new)
-                .orElseGet(() -> getDefaultKickLocation(player));
+                .or(() -> Optional.of(getDefaultKickLocation(player)));
     }
 
     private int getKickDirection(Pony player) {
@@ -134,31 +134,24 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     }
 
     @Override
-    public boolean canApply(Pony player, Pos data) {
-        BlockPos pos = data.pos();
-        TreeType tree = TreeType.at(pos, player.asWorld());
-
-        return tree == TreeType.NONE || tree.findBase(player.asWorld(), pos)
-                .map(base -> tree.countBlocks(player.asWorld(), pos) > 0)
-                .orElse(false);
-    }
-
-    @Override
     public Hit.Serializer<Pos> getSerializer() {
         return Pos.SERIALIZER;
     }
 
     @Override
-    public void apply(Pony iplayer, Pos data) {
+    public boolean apply(Pony iplayer, Pos data) {
+
         BlockPos pos = data.pos();
         TreeType tree = TreeType.at(pos, iplayer.asWorld());
 
+        if (tree == TreeType.NONE || tree.findBase(iplayer.asWorld(), pos)
+                .map(base -> tree.countBlocks(iplayer.asWorld(), pos) > 0)
+                .orElse(false)) {
+            return false;
+        }
+
         iplayer.setAnimation(Animation.KICK, Animation.Recipient.ANYONE);
         iplayer.subtractEnergyCost(tree == TreeType.NONE ? 1 : 3);
-
-        if (tree == TreeType.NONE) {
-            return;
-        }
 
         ParticleUtils.spawnParticle(iplayer.asWorld(), UParticles.GROUND_POUND, data.vec(), Vec3d.ZERO);
 
@@ -184,15 +177,17 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                 iplayer.subtractEnergyCost(cost / 7F);
             }
         }
+
+        return true;
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getExertion().add(40);
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
     }
 
     private int dropApples(PlayerEntity player, BlockPos pos) {
