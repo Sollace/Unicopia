@@ -269,7 +269,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public boolean canUseSuperMove() {
-        return getMagicalReserves().getCharge().get() >= getMagicalReserves().getCharge().get();
+        return entity.isCreative() || getMagicalReserves().getCharge().get() >= getMagicalReserves().getCharge().getMax();
     }
 
     public boolean consumeSuperMove() {
