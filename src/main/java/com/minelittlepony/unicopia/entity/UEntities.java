@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.behaviour.EntityBehaviour;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
-
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.item.toxin.ToxicHolder;
 
 import net.minecraft.advancement.criterion.Criteria;
@@ -31,7 +33,7 @@ public class DrinkableItem extends Item {
             stack.decrement(1);
         }
 
-        return stack.isEmpty() ? new ItemStack(getRecipeRemainder()) : stack;
+        return stack.isEmpty() ? Optional.ofNullable(getRecipeRemainder()).map(Item::getDefaultStack).orElse(ItemStack.EMPTY) : stack;
     }
 
     @Override

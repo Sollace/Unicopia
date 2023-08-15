@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +13,6 @@ import com.minelittlepony.unicopia.util.Dispensable;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.BoatItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -32,12 +33,15 @@ public class BasketItem extends Item implements Dispensable {
     private static final Predicate<Entity> RIDERS = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::canHit);
     private static final double REACH = 5;
 
-    private final BoatEntity.Type type;
+    private final AirBalloonEntity.BasketType type;
 
-    public BasketItem(BoatEntity.Type type, Item.Settings settings) {
+    public static final Map<AirBalloonEntity.BasketType, BasketItem> REGISTRY = new HashMap<>();
+
+    public BasketItem(AirBalloonEntity.BasketType type, Item.Settings settings) {
         super(settings);
         this.type = type;
         DispenserBlock.registerBehavior(this, createDispenserBehaviour());
+        REGISTRY.put(type, this);
     }
 
     @Override

@@ -9,6 +9,7 @@
     "MixinBlazeEntity",
     "MixinBlock",
     "MixinBlockEntity",
+    "MixinBlockEntityType",
     "MixinBlockItem",
     "MixinBoatEntity",
     "MixinBrain",

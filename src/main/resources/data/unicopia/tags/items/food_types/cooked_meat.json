@@ -1,6 +1,24 @@
 {
   "replace": false,
   "values": [
-    "#c:cooked_meats"
+    "#c:cooked_meats",
+    { "id": "farmersdelight:chicken_soup", "required": false },
+    { "id": "farmersdelight:bacon_and_eggs", "required": false },
+    { "id": "farmersdelight:pasta_with_meatballs", "required": false },
+    { "id": "farmersdelight:beef_stew", "required": false },
+    { "id": "farmersdelight:bone_broth", "required": false },
+    { "id": "farmersdelight:mutton_wrap", "required": false },
+    { "id": "farmersdelight:bacon_sandwich", "required": false },
+    { "id": "farmersdelight:hamburger", "required": false },
+    { "id": "farmersdelight:chicken_sandwich", "required": false },
+    { "id": "farmersdelight:barbecue_stick", "required": false },
+    { "id": "farmersdelight:smoked_ham", "required": false },
+    { "id": "farmersdelight:honey_glazed_ham", "required": false },
+    { "id": "farmersdelight:honey_glazed_ham_block", "required": false },
+    { "id": "farmersdelight:roast_chicken", "required": false },
+    { "id": "farmersdelight:roast_chicken_block", "required": false },
+    { "id": "farmersdelight:steak_and_potatoes", "required": false },
+    { "id": "farmersdelight:roasted_mutton_chops", "required": false },
+    { "id": "farmersdelight:pasta_with_mutton_chop", "required": false }
   ]
 }

@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.*;
 import com.minelittlepony.unicopia.client.particle.ChangelingMagicParticle;
 import com.minelittlepony.unicopia.client.particle.CloudsEscapingParticle;
@@ -20,6 +21,7 @@ import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.particle.UParticles;
+import com.terraformersmc.terraform.boat.api.client.TerraformBoatClientHelper;
 
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
@@ -154,6 +156,8 @@ public interface URenderers {
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), UBlocks.TRANSLUCENT_BLOCKS.stream().toArray(Block[]::new));
         // for lava boats
         BlockRenderLayerMap.INSTANCE.putFluids(RenderLayer.getTranslucent(), Fluids.LAVA, Fluids.FLOWING_LAVA);
+
+        TerraformBoatClientHelper.registerModelLayers(Unicopia.id("palm"), false);
     }
 
     static <T extends ParticleEffect> PendingParticleFactory<T> createFactory(ParticleSupplier<T> supplier) {

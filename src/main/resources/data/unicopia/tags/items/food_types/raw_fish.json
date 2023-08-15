@@ -1,6 +1,10 @@
 {
   "replace": false,
   "values": [
-    "#c:raw_fish"
+    "#c:raw_fish",
+    { "id": "farmersdelight:cod_roll", "required": false },
+    { "id": "farmersdelight:salmon_roll", "required": false },
+    { "id": "farmersdelight:salmon_slice", "required": false },
+    { "id": "farmersdelight:cod_slice", "required": false }
   ]
 }

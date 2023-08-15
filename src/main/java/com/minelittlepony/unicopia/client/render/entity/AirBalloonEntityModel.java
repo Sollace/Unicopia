@@ -96,7 +96,7 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntity> {
 	    if (isBalloon) {
 	        root.pivotY = 0;
 	        root.pivotX = inflation * MathHelper.cos(limbSwingAmount + entity.age / 5F) / 4F;
-	        if (entity.getBasketType() == BoatEntity.Type.BAMBOO) {
+	        if (entity.getBasketType().isOf(BoatEntity.Type.BAMBOO)) {
 	            ropes.forEach(rope -> rope.pivotY = 0);
 	        } else {
 	            ropes.forEach(ModelPart::resetTransform);
