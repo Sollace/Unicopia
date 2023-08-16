@@ -298,9 +298,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             }
         }
 
-
+        lastFlightType = type;
         if (!pony.isClient()) {
-            lastFlightType = type;
             isFlyingSurvival = entity.getAbilities().flying && !creative;
             isFlyingEither = isFlyingSurvival || (creative && entity.getAbilities().flying);
         }
