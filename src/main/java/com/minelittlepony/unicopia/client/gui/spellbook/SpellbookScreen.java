@@ -16,6 +16,8 @@ import com.minelittlepony.unicopia.container.*;
 import com.minelittlepony.unicopia.container.inventory.*;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
+import com.minelittlepony.unicopia.trinkets.TrinketSlotBackSprites;
+import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -202,6 +204,9 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
                     ItemTraitsTooltipRenderer.renderStackTraits(slot.getStack(), context, slot.x, slot.y, weight == 0 ? 1 : weight, delta, slot.id);
                     RenderSystem.enableBlend();
                 }
+            }
+            if (slot.isEnabled() && slot instanceof TrinketsDelegate.SlotWithForeground fg && slot.getStack().isEmpty()) {
+                context.drawTexture(TrinketSlotBackSprites.getBackSprite(fg.getForegroundIdentifier()), slot.x, slot.y, 0, 0, 16, 16, 16, 16);
             }
         }
         RenderSystem.disableBlend();
