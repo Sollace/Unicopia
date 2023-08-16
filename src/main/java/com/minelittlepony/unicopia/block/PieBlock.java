@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.util.SoundEmitter;
 
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -150,7 +151,7 @@ public class PieBlock extends Block implements Waterloggable {
 
     @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-        if (!state.get(STOMPED)) {
+        if (!state.get(STOMPED) && entity instanceof LivingEntity && !entity.bypassesSteppingEffects()) {
             world.setBlockState(pos, state.cycle(STOMPED));
             world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
             world.emitGameEvent(UGameEvents.PIE_STOMP, pos, GameEvent.Emitter.of(entity, state));
